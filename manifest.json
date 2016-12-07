@@ -1,0 +1,12 @@
+{
+    "name": "Apollo Client Devtools",
+    "version": "0.1",
+    "description": "Useful tools for developing with GraphQL and Apollo Client",
+    "devtools_page": "extension/devtools.html",
+    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+    "permissions": [
+        "http://*/*",
+        "https://*/*"
+    ],
+    "manifest_version": 2
+}
