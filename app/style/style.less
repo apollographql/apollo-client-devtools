@@ -2,7 +2,7 @@
   box-sizing: border-box;
 }
 
-html, body, #devtools, .ac-graphiql {
+html, body, #devtools {
   height: 100%;
   width: 100%;
   padding: 0;
@@ -12,6 +12,9 @@ html, body, #devtools, .ac-graphiql {
 }
 
 .apollo-client-panel {
+  display: flex;
+  flex-direction: column;
+
   &.in-window {
     position: fixed;
     right: 0;
@@ -23,9 +26,14 @@ html, body, #devtools, .ac-graphiql {
     background-color: white;
   }
 
+  .explorer-panel {
+    flex: 1;
+  }
+
   .tabs {
     background-color: #f3f3f3;
     border-bottom: 1px solid #ccc;
+    flex: none;
 
     .tab {
       display: inline-block;
@@ -42,13 +50,17 @@ html, body, #devtools, .ac-graphiql {
       }
 
       &:first-of-type {
-        margin-left: 5px;
+        margin-left: 10px;
       }
 
       &:hover {
         box-shadow: inset 0 0 25px #ddd;
       }
     }
+  }
+
+  .no-fetch-button.active {
+    background-color: pink;
   }
 
   .CodeMirror pre {

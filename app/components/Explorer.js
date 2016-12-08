@@ -5,6 +5,7 @@ import '../style/graphiql.less';
 
 let id = 0;
 const createPromise = (code) => {
+  console.log('making new promise for: \n', code);
   return new Promise((resolve, reject) => {
     const currId = id; id ++;
 
@@ -23,7 +24,9 @@ const createPromise = (code) => {
 
     chrome.devtools.inspectedWindow.eval(
       promiseCode,
-      (result, isException) => { console.warn('isException1', isException); }
+      (result, isException) => {
+        if (isException) console.warn('isException1', isException);
+      }
     );
 
     const pollCode = `
@@ -59,7 +62,9 @@ const createPromise = (code) => {
 try {
   chrome.devtools.inspectedWindow.eval(
     `window.__APOLLO_CLIENT__.makeGraphiqlQuery = (payload, noFetch) => {
+      console.log('called makeGraphiqlQuery');
       if (noFetch) {
+        console.log("not fetching");
         return window.__APOLLO_CLIENT__.query({
           query: payload.query,
           variables: payload.variables,
@@ -68,6 +73,7 @@ try {
           errors: e.graphQLErrors,
         }));
       }
+      console.log('fetching');
       return window.__APOLLO_CLIENT__.networkInterface.query(payload);
     };
     `, (result, isException) => {}
@@ -87,13 +93,14 @@ export default class Explorer extends Component {
     this.graphQLFetcher = (graphQLParams) => {
       const { noFetch } = this.state;
 
-      try { // in chrome extension
-        return createPromise("window.__APOLLO_CLIENT__.makeGraphiqlQuery(" + JSON.stringify({
-          query: parse(graphQLParams.query),
-          variables: graphQLParams.variables,
-        }) + ", " + noFetch + ")");
-      } catch(e) { // in extension development environment
-        console.log(e);
+      if (chrome && chrome.devtools) { // in chrome extension
+        return createPromise(
+          "window.__APOLLO_CLIENT__.makeGraphiqlQuery(" + JSON.stringify({
+            query: parse(graphQLParams.query),
+            variables: graphQLParams.variables,
+          }) + ", " + noFetch + ")"
+        );
+      } else { // in extension development environment
         if (noFetch) {
           return window.__APOLLO_CLIENT__.query({
             query: parse(graphQLParams.query),
@@ -112,7 +119,7 @@ export default class Explorer extends Component {
   render() {
     const { noFetch } = this.state;
     return (
-      <div className="ac-graphiql">
+      <div className="explorer-panel">
         <GraphiQL fetcher={this.graphQLFetcher}>
           <GraphiQL.Logo>
             Custom Logo
