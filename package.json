@@ -2,20 +2,24 @@
   "name": "apollo-client-devtools",
   "description": "Developer tools for Apollo Client, with GraphiQL integration, cache inspection, and query watching.",
   "license": "MIT",
-  "scripts": {
-    "build": "babel ./components/src --out-dir ./components/build && webpack -p --progress --config ./webpack.config.js && lessc style/src/style.less > style/build/style.css"
-  },
   "devDependencies": {
     "babel-cli": "^6.11.4",
+    "babel-core": "^6.18.2",
+    "babel-loader": "^6.2.9",
     "babel-plugin-transform-class-properties": "^6.11.5",
     "babel-plugin-transform-exponentiation-operator": "^6.8.0",
     "babel-preset-es2015": "^6.13.2",
-    "babel-preset-react": "^6.11.1",
+    "babel-preset-react": "^6.16.0",
+    "classnames": "^2.2.5",
+    "css-loader": "^0.26.1",
     "graphiql": "^0.8.0",
     "graphql": "^0.7.0",
+    "html-webpack-plugin": "^2.24.1",
     "less": "^2.7.1",
+    "less-loader": "^2.2.3",
     "react": "^15.4.1",
     "react-dom": "^15.4.1",
+    "style-loader": "^0.13.1",
     "webpack": "^1.13.3"
   }
 }

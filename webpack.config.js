@@ -1,21 +1,26 @@
+var HtmlWebpackPlugin = require('html-webpack-plugin');
+var HTMLWebpackPluginConfig = new HtmlWebpackPlugin({
+  template: __dirname + '/app/index.html',
+  filename: 'index.html',
+  inject: 'body'
+});
+
 module.exports = {
-  entry: './components/build/panel.js',
+  entry: ['./app/index.js'],
   output: {
-    filename: ".bundle.js",
-    publicPath: '/'
+    filename: "index_bundle.js",
+    path: __dirname + '/dist'
   },
   module: {
     loaders: [{
-      test: /\.css/,
-      loader: ['style', 'css']
+      test: /\.css$/,
+      loader: "style-loader!css-loader"
     }, {
-      test: /\.jsx$/,
-      loader: 'babel',
+      test: /\.js$/,
+      include: __dirname + '/app',
+      loader: "babel-loader",
       exclude: /(node_modules)/
-    }, {
-      test: /\.json$/,
-      loader: 'json'
     }]
   },
-  devtool: "eval-source-map",
+  plugins: [HTMLWebpackPluginConfig]
 }
