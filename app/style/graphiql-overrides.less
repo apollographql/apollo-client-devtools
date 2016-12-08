@@ -1,0 +1,160 @@
+.graphiql-container {
+  .topBar {
+    background: none;
+    border-bottom: none;
+    background-color: #FBFBFB;
+    padding: 5px 10px;
+    color: #333;
+    border-bottom: 1px solid #CCC;
+
+    .title {
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .execute-button-wrap {
+      margin: 0;
+      height: 24px;
+
+      .execute-button {
+        border: 1px solid #CCC;
+        height: 24px;
+        background: none;
+        background-color: #FFF;
+        width: 24px;
+        margin: 0 0 0 20px;
+
+        &:hover, &:active {
+          box-shadow: inset 6px 6px 30px #CCC;
+        }
+
+        svg {
+          margin-top: -5px;
+          margin-left: -4px;
+        }
+      }
+    }
+
+    .toolbar-button {
+      font-size: 12px;
+      padding: 2px 5px;
+      border-radius: 3px;
+      background: none;
+      border: 1px solid #CCC;
+      background-color: #FFF;
+      margin-left: 20px;
+
+      &:hover, &:active {
+        box-shadow: inset 6px 6px 30px #CCC;
+      }
+    }
+
+    label {
+      margin: 0 0 0 20px;
+      cursor: pointer;
+      font-weight: normal;
+      font-size: 12px;
+
+      input {
+        margin: 0 5px 0 0;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .variable-editor {
+    height: 60px;
+
+    .variable-editor-title {
+      font-variant: none;
+      font-size: 12px;
+      color: #333;
+      text-transform: none;
+      background-color: #FBFBFB;
+      border-bottom: none;
+      padding: 5px 10px;
+    }
+
+    .CodeMirror-lines {
+      padding: 10px 0;
+    }
+  }
+
+  .CodeMirror pre {
+    font-family: monospace !important;
+  }
+
+  .CodeMirror-linenumber.CodeMirror-gutter-elt {
+    font-family: monospace;
+  }
+
+  .CodeMirror-gutters {
+    border: none;
+    background-color: #FBFBFB;
+  }
+
+  .CodeMirror-gutter.CodeMirror-linenumbers {
+    width: 20px;
+  }
+
+  .result-window .CodeMirror-gutters {
+    cursor: ew-resize;
+    border: none;
+    background-color: transparent;
+  }
+
+  .docExplorerShow {
+    background: none;
+    background-color: #FBFBFB;
+    border-bottom: 1px solid #CCC;
+    color: #333;
+    font-weight: bold;
+    font-size: 12px;
+    padding: 0 10px;
+
+    &:before {
+      border-color: #333;
+      border-width: 1px;
+      margin: 0 5px 1px 0;
+      height: 5px;
+      width: 5px;
+    }
+  }
+
+  .doc-explorer-back {
+    color: #333;
+    font-size: 12px;
+    padding: 0 0 0 5px;
+    margin: 0;
+
+    &:before {
+      border-color: #333;
+      border-width: 1px;
+      margin: 0 5px 1px 0;
+      height: 5px;
+      width: 5px;
+    }
+  }
+
+  .doc-explorer {
+    .doc-explorer-title-bar {
+      padding: 10px;
+
+      .doc-explorer-title {
+        font-size: 12px;
+        padding: 0;
+      }
+
+      .docExplorerHide {
+        padding: 0;
+        margin: 0;
+        font-size: 12px;
+      }
+    }
+
+    .doc-explorer-contents {
+      top: 34px;
+      font-size: 12px;
+    }
+  }
+}

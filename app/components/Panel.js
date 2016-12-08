@@ -1,8 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import Explorer from './Explorer';
-import WatchedQueries from './WatchedQueries';
+// import WatchedQueries from './WatchedQueries';
 import classnames from 'classnames';
-import Inspector from './Inspector';
+// import Inspector from './Inspector';
 import '../style/style.less';
 
 export default class Panel extends Component {
@@ -20,11 +20,11 @@ export default class Panel extends Component {
     switch(active) {
       case 'queries':
         // XXX this won't work in the dev tools
-        body = <WatchedQueries apolloClient={window.__APOLLO_CLIENT__} />;
+        // body = <WatchedQueries apolloClient={window.__APOLLO_CLIENT__} />;
         break;
       case 'store':
-        console.log(window.__APOLLO_CLIENT__.queryManager.getDataWithOptimisticResults());
-        body = <Inspector client={window.__APOLLO_CLIENT__} />;
+        // console.log(window.__APOLLO_CLIENT__.queryManager.getDataWithOptimisticResults());
+        // body = <Inspector client={window.__APOLLO_CLIENT__} />;
         break;
       case 'graphiql':
         body = <Explorer />;

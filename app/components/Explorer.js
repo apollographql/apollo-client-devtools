@@ -4,6 +4,7 @@ import { parse } from 'graphql';
 import evalInPage from '../evalInPage.js';
 
 import '../style/graphiql.less';
+import '../style/graphiql-overrides.less';
 
 let id = 0;
 const createPromise = (code) => {
@@ -109,15 +110,15 @@ export default class Explorer extends Component {
     return (
       <div className="body">
         <GraphiQL fetcher={this.graphQLFetcher}>
-          <GraphiQL.Logo>
-            Custom Logo
-          </GraphiQL.Logo>
           <GraphiQL.Toolbar>
-            <button
-              name="NoFetchButton"
-              className={`${noFetch ? 'active ' : ''}no-fetch-button`}
-              onClick={() => { this.setState({ noFetch: !noFetch }); }}
-            >Local</button>
+            <label>
+              <input
+                type="checkbox"
+                checked={noFetch}
+                onChange={() => { this.setState({ noFetch: !noFetch }); }}
+              />
+              Load from cache
+            </label>
           </GraphiQL.Toolbar>
         </GraphiQL>
       </div>
