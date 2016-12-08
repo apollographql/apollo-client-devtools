@@ -1,0 +1,69 @@
+* {
+  box-sizing: border-box;
+}
+
+html, body, #devtools, .ac-graphiql {
+  height: 100%;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  font-size: 12;
+  color: #333333;
+}
+
+.apollo-client-panel {
+  &.in-window {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    height: 90%;
+    width: 90%;
+    border: 1px solid pink;
+    z-index: 100;
+    background-color: white;
+  }
+
+  .tabs {
+    background-color: #f3f3f3;
+    border-bottom: 1px solid #ccc;
+
+    .tab {
+      display: inline-block;
+      padding: 5px 6px;
+      cursor: pointer;
+      margin-top: 3px;
+
+      &.active {
+        background-color: #fff;
+        border-left: 1px solid #ccc;
+        border-top: 1px solid #ccc;
+        border-right: 1px solid #ccc;
+        padding: 3px 5px;
+      }
+
+      &:first-of-type {
+        margin-left: 5px;
+      }
+
+      &:hover {
+        box-shadow: inset 0 0 25px #ddd;
+      }
+    }
+  }
+
+  .CodeMirror pre {
+    font-family: monospace !important;
+  }
+
+  .CodeMirror-linenumber.CodeMirror-gutter-elt {
+    font-family: monospace;
+  }
+
+  .CodeMirror-foldgutter {
+    /*width: 0;*/
+  }
+
+  .graphiql-container .result-window .CodeMirror-gutters {
+    cursor: ew-resize;
+  }
+}

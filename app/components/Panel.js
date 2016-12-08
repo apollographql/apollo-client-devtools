@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import Explorer from './Explorer';
 import classnames from 'classnames';
-import '../style/style.css';
+import '../style/style.less';
 
 export default class Panel extends Component {
   constructor(props, context) {

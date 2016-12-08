@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import GraphiQL from 'graphiql';
 import { parse } from 'graphql';
-import '../style/graphiql.css';
+import '../style/graphiql.less';
 
 let id = 0;
 const createPromise = (code) => {
