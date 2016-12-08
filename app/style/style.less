@@ -26,7 +26,7 @@ html, body, #devtools {
     background-color: white;
   }
 
-  .explorer-panel {
+  .body {
     flex: 1;
   }
 
@@ -77,5 +77,48 @@ html, body, #devtools {
 
   .graphiql-container .result-window .CodeMirror-gutters {
     cursor: ew-resize;
+  }
+
+  .watchedQueries {
+    display: flex;
+    flex-direction: row;
+
+    .sidebar {
+      flex: 0;
+      width: 250px;
+      min-width: 250px;
+      overflow: scroll;
+      border-right: 1px solid #ddd;
+
+      .item {
+        padding: 3px 5px;
+      }
+
+      .active {
+        background: rgb(56, 121, 217);
+        color: white;
+      }
+
+      .loading {
+        color: LightGray;
+      }
+    }
+
+    .main {
+      flex: 1;
+      overflow: scroll;
+
+      .loading {
+        background: LightGray;
+      }
+    }
+
+    .toggle {
+      font-family: monospace;
+    }
+
+    .labeled {
+      padding-left: 16px;
+    }
   }
 }

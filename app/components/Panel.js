@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import Explorer from './Explorer';
+import WatchedQueries from './WatchedQueries';
 import classnames from 'classnames';
 import '../style/style.less';
 
@@ -8,7 +9,7 @@ export default class Panel extends Component {
     super(props, context);
 
     this.state = {
-      active: 'graphiql',
+      active: 'queries',
     };
   }
   render() {
@@ -17,7 +18,8 @@ export default class Panel extends Component {
     let body;
     switch(active) {
       case 'queries':
-        body = <div>todo</div>;
+        // XXX this won't work in the dev tools
+        body = <WatchedQueries apolloClient={window.__APOLLO_CLIENT__} />;
         break;
       case 'graphiql':
         body = <Explorer />;

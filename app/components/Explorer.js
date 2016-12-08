@@ -119,7 +119,7 @@ export default class Explorer extends Component {
   render() {
     const { noFetch } = this.state;
     return (
-      <div className="explorer-panel">
+      <div className="body">
         <GraphiQL fetcher={this.graphQLFetcher}>
           <GraphiQL.Logo>
             Custom Logo
