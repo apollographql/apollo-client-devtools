@@ -1,11 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 import GraphiQL from 'graphiql';
 import { parse } from 'graphql';
+import evalInPage from '../evalInPage.js';
+
 import '../style/graphiql.less';
 
 let id = 0;
 const createPromise = (code) => {
-  console.log('making new promise for: \n', code);
   return new Promise((resolve, reject) => {
     const currId = id; id ++;
 
@@ -22,7 +23,7 @@ const createPromise = (code) => {
     })()
     `;
 
-    chrome.devtools.inspectedWindow.eval(
+    evalInPage(
       promiseCode,
       (result, isException) => {
         if (isException) console.warn('isException1', isException);
@@ -41,7 +42,7 @@ const createPromise = (code) => {
 
     const poll = () => {
       setTimeout(() => {
-        chrome.devtools.inspectedWindow.eval(
+        evalInPage(
           pollCode,
           (result, isException) => {
             if (!result) {
@@ -59,29 +60,6 @@ const createPromise = (code) => {
   });
 };
 
-try {
-  chrome.devtools.inspectedWindow.eval(
-    `window.__APOLLO_CLIENT__.makeGraphiqlQuery = (payload, noFetch) => {
-      console.log('called makeGraphiqlQuery');
-      if (noFetch) {
-        console.log("not fetching");
-        return window.__APOLLO_CLIENT__.query({
-          query: payload.query,
-          variables: payload.variables,
-          nofetch: true,
-        }).catch(e => ({
-          errors: e.graphQLErrors,
-        }));
-      }
-      console.log('fetching');
-      return window.__APOLLO_CLIENT__.networkInterface.query(payload);
-    };
-    `, (result, isException) => {}
-  );
-} catch(e) {
-  console.warn(e);
-}
-
 export default class Explorer extends Component {
   constructor(props, context) {
     super(props, context);
@@ -90,30 +68,40 @@ export default class Explorer extends Component {
       noFetch: false,
     };
 
+    try {
+      evalInPage(
+        `
+        console.log('Attached makeGraphiqlQuery');
+        window.__APOLLO_CLIENT__.makeGraphiqlQuery = (payload, noFetch) => {
+          console.log('called makeGraphiqlQuery');
+          if (noFetch) {
+            console.log("not fetching");
+            return window.__APOLLO_CLIENT__.query({
+              query: payload.query,
+              variables: payload.variables,
+              nofetch: true,
+            }).catch(e => ({
+              errors: e.graphQLErrors,
+            }));
+          }
+          console.log('fetching');
+          return window.__APOLLO_CLIENT__.networkInterface.query(payload);
+        };
+        `, (result, isException) => {}
+      );
+    } catch(e) {
+      console.warn(e);
+    }
+
     this.graphQLFetcher = (graphQLParams) => {
       const { noFetch } = this.state;
 
-      if (chrome && chrome.devtools) { // in chrome extension
-        return createPromise(
-          "window.__APOLLO_CLIENT__.makeGraphiqlQuery(" + JSON.stringify({
-            query: parse(graphQLParams.query),
-            variables: graphQLParams.variables,
-          }) + ", " + noFetch + ")"
-        );
-      } else { // in extension development environment
-        if (noFetch) {
-          return window.__APOLLO_CLIENT__.query({
-            query: parse(graphQLParams.query),
-            variables: graphQLParams.variables,
-            noFetch: true,
-          });
-        } else {
-          return window.__APOLLO_CLIENT__.networkInterface.query({
-            query: parse(graphQLParams.query),
-            variables: graphQLParams.variables,
-          })
-        }
-      }
+      return createPromise(
+        "window.__APOLLO_CLIENT__.makeGraphiqlQuery(" + JSON.stringify({
+          query: parse(graphQLParams.query),
+          variables: graphQLParams.variables,
+        }) + ", " + noFetch + ")"
+      );
     };
   }
   render() {
