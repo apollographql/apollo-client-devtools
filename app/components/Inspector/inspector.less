@@ -1,0 +1,75 @@
+.inspector-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.inspector-toolbar {
+  flex: 0;
+  min-height: 30px;
+  background-color: #f3f3f3;
+  border-bottom: #ccc 1px solid;
+}
+
+.inspector-search {
+  margin: 2px;
+}
+
+.inspector-body {
+  flex: 1;
+  display: flex;
+}
+
+.inspector-sidebar {
+  flex: 0;
+  width: 150px;
+  min-width: 150px;
+  overflow: scroll;
+  border-right: 1px solid #ddd;
+}
+
+.inspector-sidebar-item {
+  padding: 3px 5px;
+}
+
+.inspector-sidebar .active {
+  background: rgb(56, 121, 217);
+  color: white;
+}
+
+.inspector-main {
+  flex: 1;
+  overflow: scroll;
+}
+
+.store-tree-field-set {
+  margin-left: 20px;
+}
+
+.store-tree-field-set.double-indent {
+  margin-left: 40px;
+}
+
+.store-tree-ref-id {
+  margin-left: 20px;
+  color: blue;
+}
+
+.inspector-highlight {
+  background-color: yellow;
+}
+
+.inspector-sidebar-highlighted {
+  background-color: yellow;
+}
+
+.inspector-field-key {
+  color: rgb(136, 19, 145);
+}
+
+.inspector-value-string {
+  color: rgb(196, 26, 22);
+}
+
+.inspector-value-number {
+  color: rgb(28, 0, 207);
+}
