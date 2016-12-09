@@ -55,15 +55,12 @@ const queryLabel = (action) => {
 };
 
 class Logger extends React.Component {
-  constructor(props, context) {
-    super(props, context);
-    this.state = {
-      selectedId: null,
-    };
-  }
-
   selectId(id) {
-    this.setState({ selectedId: id });
+    if (this.props.selectedId !== id) {
+      this.props.onSelectLogItem(id);
+    } else {
+      this.props.onSelectLogItem(null);
+    }
   }
 
   renderSidebarItem(logEntry) {
@@ -72,7 +69,7 @@ class Logger extends React.Component {
     return (
       <div key={logEntry.id} onClick={() => this.selectId(logEntry.id)}
         className={classnames('item', {
-          active: logEntry.id === this.state.selectedId,
+          active: logEntry.id === this.props.selectedId,
         })}>
         {queryLabel(logEntry.action)}
       </div>
@@ -89,7 +86,7 @@ class Logger extends React.Component {
   }
 
   render() {
-    const { selectedId } = this.state;
+    const { selectedId } = this.props;
     let reqToDisplay = null;
 
     if (selectedId) {

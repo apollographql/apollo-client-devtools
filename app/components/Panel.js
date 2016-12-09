@@ -33,9 +33,11 @@ export default class Panel extends Component {
       actionLog: [],
       runQuery: undefined,
       runVariables: undefined,
+      selectedRequestId: undefined,
     };
 
     this.onRun = this.onRun.bind(this);
+    this.selectLogItem = this.selectLogItem.bind(this);
   }
 
   componentDidMount() {
@@ -84,9 +86,18 @@ export default class Panel extends Component {
     clearInterval(this.interval);
   }
 
-  lastApolloLog() {
-    return this.state.actionLog && this.state.actionLog.length &&
-      this.state.actionLog[this.state.actionLog.length - 1];
+  selectedApolloLog() {
+    const logIsPopulated = this.state.actionLog && this.state.actionLog.length
+
+    if (this.state.selectedRequestId) {
+      const filtered = this.state.actionLog.filter((item) => {
+        return item.id === this.state.selectedRequestId;
+      });
+
+      return filtered.length && filtered[0];
+    }
+
+    return this.state.actionLog[this.state.actionLog.length - 1];
   }
 
   onRun(queryString, variables) {
@@ -107,23 +118,35 @@ export default class Panel extends Component {
     });
   }
 
+  selectLogItem(id) {
+    this.setState({
+      selectedRequestId: id,
+    });
+  }
+
   render() {
     const { active } = this.state;
+
+    const selectedLog = this.selectedApolloLog();
 
     let body;
     switch(active) {
     case 'queries':
       // XXX this won't work in the dev tools
-      body = <WatchedQueries state={this.lastApolloLog().state} onRun={this.onRun}/>;
+      body = selectedLog && <WatchedQueries state={selectedLog.state} onRun={this.onRun}/>;
       break;
     case 'store':
-      body = <Inspector state={this.lastApolloLog().state} />;
+      body = selectedLog && <Inspector state={selectedLog.state} />;
       break;
     case 'graphiql':
       body = <Explorer query={this.state.runQuery} variables={this.state.runVariables}/>;
       break;
     case 'logger':
-      body = <Logger log={this.state.actionLog} />;
+      body = <Logger
+        log={this.state.actionLog}
+        onSelectLogItem={this.selectLogItem}
+        selectedId={this.state.selectedRequestId}
+      />;
       break;
     default: break;
     }
