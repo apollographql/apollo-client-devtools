@@ -75,10 +75,8 @@ class WatchedQueries extends React.Component {
           <div className="queries-sidebar-title">Watched queries</div>
           {this.sortedQueryIds().map(id => this.renderSidebarItem(id, queries[id]))}
         </div>
-        <div className="main">
-          {selectedId && queries[selectedId] &&
-          <WatchedQuery queryId={selectedId} query={queries[selectedId]} onRun={this.props.onRun} />}
-        </div>
+        {selectedId && queries[selectedId] &&
+        <WatchedQuery queryId={selectedId} query={queries[selectedId]} onRun={this.props.onRun} />}
       </div>
     );
   }
@@ -100,10 +98,10 @@ class LabeledShowHide extends React.Component {
   }
   render() {
     return (
-      <div className={this.props.className}>
+      <div className={classnames(this.props.className, 'toggled-section')}>
         <span onClick={this.toggle} className="toggle">
           {this.state.show ? <span>&#9662; </span> : <span>&#9656; </span>}
-          {this.props.label}
+          <span className="section-label">{this.props.label}</span>
         </span>
         {this.state.show &&
           <div className="labeled">{this.props.children}</div>}
@@ -123,10 +121,14 @@ const Variables = ({variables} ) => {
   }
   const inner = [];
   Object.keys(variables).sort().forEach((name) => {
-    inner.push(<dt key={"dt"+name}>{ name }</dt>);
-    inner.push(<dd key={"dd"+name}>{ JSON.stringify(variables[name]) }</dd>);
+    inner.push(
+      <tr>
+        <td key={"dt"+name}>{ name }</td>
+        <td key={"dd"+name}>{ JSON.stringify(variables[name]) }</td>
+      </tr>
+    );
   });
-  return <dl>{inner}</dl>;
+  return <table><tbody>{inner}</tbody></table>;
 };
 
 class WatchedQuery extends React.Component {
@@ -136,21 +138,16 @@ class WatchedQuery extends React.Component {
             && query.metadata.reactComponent
             && query.metadata.reactComponent.displayName;
     return (
-      <div className={classnames({loading: query.loading})}>
-        <div className="header">
-          Query {queryLabel(queryId, query)}
+      <div className={classnames('main', {loading: query.loading})}>
+        <div className="panel-title">
+          { queryLabel(queryId, query) }
+          {reactComponentDisplayName && <span className='component-name'>{`<${reactComponentDisplayName}>`}</span>}
           { query.loading && " [loading]" }
-          <button
-             onClick={() => this.props.onRun(query.queryString, query.variables)}>
-            Run in GraphiQL
-          </button>
+          <span
+            className="run-in-graphiql-link"
+            onClick={() => this.props.onRun(query.queryString, query.variables)}
+          >Run in GraphiQL</span>
         </div>
-        {
-          reactComponentDisplayName &&
-            <LabeledShowHide className="react-component" label="React component">
-              {`<`}{reactComponentDisplayName}{`>`}
-            </LabeledShowHide>
-        }
         {
           query.variables &&
           <LabeledShowHide label="Variables">

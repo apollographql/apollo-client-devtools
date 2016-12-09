@@ -43,8 +43,57 @@
 
   .main {
     flex: 1;
-    overflow: scroll;
+    overflow-y: auto;
     padding: 20px;
+
+    .toggled-section {
+      margin-bottom: 10px;
+
+      &:last-of-type {
+        margin: 0;
+      }
+
+      table {
+        tr {
+          font-size: 12px;
+
+          td:first-child {
+            font-weight: bold;
+            padding: 0 15px 0 5px;
+          }
+
+          td:nth-child(2) {
+            font-family: monospace;
+          }
+        }
+      }
+    }
+
+    .panel-title {
+      font-family: monospace;
+      font-size: 14px;
+      margin-bottom: 10px;
+
+      .component-name {
+        color: #8B2BB9;
+        font-weight: normal;
+        margin-left: 10px;
+      }
+
+      .run-in-graphiql-link {
+        font-size: 10px;
+        cursor: pointer;
+        font-family: sans-serif;
+        margin-left: 10px;
+        padding: 2px 5px;
+        border-radius: 3px;
+        border: 1px solid #CCC;
+
+        &:hover {
+          box-shadow: inset 6px 6px 30px #CCC;
+        }
+      }
+    }
 
     pre {
       border: none;
@@ -61,6 +110,10 @@
     font-size: 12px;
     font-weight: bold;
     cursor: pointer;
+
+    &:hover .section-label {
+      text-decoration: underline;
+    }
   }
 
   .labeled {
