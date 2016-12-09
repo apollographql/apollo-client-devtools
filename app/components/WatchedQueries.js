@@ -36,8 +36,15 @@ class WatchedQueriesList extends React.Component {
     this.setState({ selectedId: id });
   }
 
+  getQueries() {
+    return this.props.state ?
+      pickBy(this.props.state.queries, query => !query.stopped) :
+      {};
+  }
+
   sortedQueryIds() {
-    return sortBy(Object.keys(this.props.queries), id => parseInt(id, 10));
+    const queries = this.getQueries();
+    return sortBy(Object.keys(queries), id => parseInt(id, 10));
   }
 
   renderSidebarItem(id, query) {
@@ -59,7 +66,7 @@ class WatchedQueriesList extends React.Component {
   }
 
   render() {
-    const { queries } = this.props;
+    const queries = this.getQueries();
     const { selectedId } = this.state;
     return (
       <div className="watchedQueries body">
@@ -76,9 +83,7 @@ class WatchedQueriesList extends React.Component {
 }
 
 WatchedQueriesList.propTypes = {
-  queries: PropTypes.objectOf(PropTypes.shape({
-    queryString: PropTypes.string.isRequired,
-  })).isRequired,
+  state: React.PropTypes.object,
 };
 
 class LabeledShowHide extends React.Component {
@@ -154,30 +159,4 @@ class WatchedQuery extends React.Component {
   }
 }
 
-const WatchedQueriesListWithData = connect(
-  (state, props) => {
-    const apolloState = props.reduxRootSelector(state);
-    // Skip queries that are no longer being watched. (We never actually remove
-    // them from Redux!)
-    const queries = pickBy(apolloState.queries, query => !query.stopped);
-    return { queries };
-  }
-)(WatchedQueriesList);
-
-const WatchedQueries = ({ apolloClient }) => (
-  <WatchedQueriesListWithData
-    store={apolloClient.store}
-    reduxRootSelector={apolloClient.queryManager.reduxRootSelector}
-  />
-);
-
-WatchedQueries.propTypes = {
-  apolloClient: PropTypes.shape({
-    store: PropTypes.shape({
-      subscribe: PropTypes.func.isRequired,
-    }).isRequired,
-  }).isRequired,
-};
-
-
-export default WatchedQueries;
+export default WatchedQueriesList;

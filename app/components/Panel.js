@@ -63,7 +63,7 @@ export default class Panel extends Component {
     switch(active) {
       case 'queries':
         // XXX this won't work in the dev tools
-        body = <WatchedQueries apolloClient={window.__APOLLO_CLIENT__} />;
+        body = <WatchedQueries state={this.lastApolloLog().state} />;
         break;
       case 'store':
         body = <Inspector state={this.lastApolloLog().state} />;
