@@ -3,7 +3,9 @@ import Explorer from './Explorer';
 // import WatchedQueries from './WatchedQueries';
 import classnames from 'classnames';
 // import Inspector from './Inspector';
-import '../style/style.less';
+import '../style.less';
+
+console.log(Explorer);
 
 export default class Panel extends Component {
   constructor(props, context) {

@@ -1,10 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 import GraphiQL from 'graphiql';
 import { parse } from 'graphql';
-import evalInPage from '../evalInPage.js';
+import evalInPage from '../../evalInPage.js';
 
-import '../style/graphiql.less';
-import '../style/graphiql-overrides.less';
+import './graphiql.less';
+import './graphiql-overrides.less';
 
 let id = 0;
 const createPromise = (code) => {
@@ -80,7 +80,7 @@ export default class Explorer extends Component {
             return window.__APOLLO_CLIENT__.query({
               query: payload.query,
               variables: payload.variables,
-              nofetch: true,
+              noFetch: true,
             }).catch(e => ({
               errors: e.graphQLErrors,
             }));
