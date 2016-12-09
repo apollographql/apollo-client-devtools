@@ -8,6 +8,7 @@ import Apollo from './Images/Apollo';
 import GraphQL from './Images/GraphQL';
 import Store from './Images/Store';
 import Queries from './Images/Queries';
+import Logger from './Logger';
 
 import evalInPage from '../evalInPage';
 
@@ -56,6 +57,11 @@ export default class Panel extends Component {
       (function () {
         let id = 0;
         const logger = (logItem) => {
+          // Only log Apollo actions for now
+          if (logItem.action.type.split('_')[0] !== 'APOLLO') {
+            return;
+          }
+
           id++;
 
           logItem.id = id;
@@ -115,6 +121,9 @@ export default class Panel extends Component {
     case 'graphiql':
       body = <Explorer query={this.state.runQuery} variables={this.state.runVariables}/>;
       break;
+    case 'logger':
+      body = <Logger log={this.state.actionLog} />;
+      break;
     default: break;
     }
 
@@ -137,6 +146,11 @@ export default class Panel extends Component {
             className={classnames('tab', { active: active === 'graphiql' })}
             onClick={() => this.switchPane('graphiql')}
           ><GraphQL />GraphiQL</div>
+          <div
+            title="Request logger"
+            className={classnames('tab', { active: active === 'logger' })}
+            onClick={() => this.switchPane('logger')}
+          ><GraphQL />Requests</div>
         </div>
         {body}
       </div>
