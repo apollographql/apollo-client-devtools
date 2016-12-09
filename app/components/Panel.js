@@ -47,6 +47,26 @@ export default class Panel extends Component {
         }
       });
     }, 100);
+
+    evalInPage(`
+      (function () {
+        let id = 0;
+        const logger = (logItem) => {
+          id++;
+
+          logItem.id = id;
+
+          window.__action_log__ = window.__action_log__ || [];
+          window.__action_log__.push(logItem);
+
+          if (window.__action_log__.length > 10) {
+            window.__action_log__.shift();
+          }
+        }
+
+        window.__APOLLO_CLIENT__.__actionHookForDevTools(logger);
+      })()
+    `, () => {});
   }
 
   componentWillUnmount() {
@@ -78,8 +98,6 @@ export default class Panel extends Component {
 
   render() {
     const { active } = this.state;
-
-    console.log(this.state.actionLog);
 
     let body;
     switch(active) {
