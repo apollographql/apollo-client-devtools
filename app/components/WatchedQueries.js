@@ -5,6 +5,7 @@ import sortBy from 'lodash/sortBy';
 import classnames from 'classnames';
 import { getQueryDefinition } from 'apollo-client';
 import { parse } from 'graphql-tag/parser';
+import { GraphqlCodeBlock } from 'graphql-syntax-highlighter-react';
 
 const queryNameFromQueryString = (queryString) => {
   const doc = parse(queryString);
@@ -143,7 +144,7 @@ class WatchedQuery extends React.Component {
         }
 
         <LabeledShowHide label="Query string" show={false}>
-          <pre>{query.queryString}</pre>
+            <GraphqlCodeBlock className="GraphqlCodeBlock" queryBody={query.queryString} />
         </LabeledShowHide>
         <LabeledShowHide label="Variables">
           <Variables variables={query.variables} />

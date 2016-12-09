@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "apollo-client": "^0.5.12",
+    "graphql-syntax-highlighter-react": "^0.1.0",
     "graphql-tag": "^1.1.2",
     "react-redux": "^4.4.6"
   }
