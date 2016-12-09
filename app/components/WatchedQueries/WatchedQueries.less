@@ -21,6 +21,7 @@
       font-family: monospace;
       border-bottom: 1px solid #EEE;
       cursor: pointer;
+      transition: .25s;
 
       &:hover {
         background-color: fade(#22a699, 10%);
@@ -33,11 +34,13 @@
           background-color: fade(#22a699, 30%);
         }
       }
+
+      &.loading {
+        color: #AAA;
+      }
     }
 
-    .loading {
-      color: LightGray;
-    }
+
   }
 
   .main {
@@ -73,6 +76,19 @@
       font-size: 14px;
       margin-bottom: 10px;
 
+      .loading-label {
+        font-size: 12px;
+        font-family: sans-serif;
+        margin-left: 10px;
+        color: #AAA;
+        opacity: 0;
+        transition: .25s;
+
+        &.show {
+          opacity: 1;
+        }
+      }
+
       .component-name {
         color: #8B2BB9;
         font-weight: normal;
@@ -101,7 +117,7 @@
     }
 
     .loading {
-      background: LightGray;
+      background: #AAA;
     }
   }
 

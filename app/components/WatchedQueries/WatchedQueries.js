@@ -52,16 +52,11 @@ class WatchedQueries extends React.Component {
 
   renderSidebarItem(id, query) {
     let className = 'item';
-    if (id === this.state.selectedId) {
-      className += ' active';
-    }
-    if (query.loading) {
-      className += ' loading';
-    }
     return (
       <div key={id} onClick={() => this.selectId(id)}
         className={classnames('item', {
-          active: id === this.state.selectedId, loading: query.loading
+          active: id === this.state.selectedId,
+          loading: query.loading,
         })}>
         {queryLabel(id, query)}
       </div>
@@ -144,11 +139,11 @@ class WatchedQuery extends React.Component {
         <div className="panel-title">
           { queryLabel(queryId, query) }
           {reactComponentDisplayName && <span className='component-name'>{`<${reactComponentDisplayName}>`}</span>}
-          { query.loading && " [loading]" }
           <span
             className="run-in-graphiql-link"
             onClick={() => this.props.onRun(query.queryString, query.variables)}
           >Run in GraphiQL</span>
+        <span className={classnames('loading-label', { show: query.loading })}>(loading)</span>
         </div>
         {
           query.variables &&

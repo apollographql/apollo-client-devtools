@@ -72,11 +72,8 @@ export default class Explorer extends Component {
     try {
       evalInPage(
         `
-        console.log('Attached makeGraphiqlQuery');
         window.__APOLLO_CLIENT__.makeGraphiqlQuery = (payload, noFetch) => {
-          console.log('called makeGraphiqlQuery');
           if (noFetch) {
-            console.log("not fetching");
             return window.__APOLLO_CLIENT__.query({
               query: payload.query,
               variables: payload.variables,
@@ -85,7 +82,6 @@ export default class Explorer extends Component {
               errors: e.graphQLErrors,
             }));
           }
-          console.log('fetching');
           return window.__APOLLO_CLIENT__.networkInterface.query(payload);
         };
         `, (result, isException) => {}
