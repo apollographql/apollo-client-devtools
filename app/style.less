@@ -37,12 +37,17 @@ html, body, #devtools {
     flex: none;
     text-align: center;
     width: 40px;
+    overflow-y: auto;
 
     .tab {
       cursor: pointer;
       color: #FFF;
       font-size: 8px;
       padding: 2px;
+
+      &:last-of-type {
+        margin-bottom: 10px;
+      }
 
       svg {
         margin: 8px 0 0;
@@ -103,53 +108,6 @@ html, body, #devtools {
           fill: fade(#FFFFFF, 80%);
         }
       }
-    }
-  }
-
-  .no-fetch-button.active {
-    background-color: pink;
-  }
-
-  .watchedQueries {
-    display: flex;
-    flex-direction: row;
-
-    .sidebar {
-      flex: 0;
-      width: 250px;
-      min-width: 250px;
-      overflow: scroll;
-      border-right: 1px solid #ddd;
-
-      .item {
-        padding: 3px 5px;
-      }
-
-      .active {
-        background: rgb(56, 121, 217);
-        color: white;
-      }
-
-      .loading {
-        color: LightGray;
-      }
-    }
-
-    .main {
-      flex: 1;
-      overflow: scroll;
-
-      .loading {
-        background: LightGray;
-      }
-    }
-
-    .toggle {
-      font-family: monospace;
-    }
-
-    .labeled {
-      padding-left: 16px;
     }
   }
 }

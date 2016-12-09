@@ -3,19 +3,37 @@
   flex-direction: row;
 
   .sidebar {
-    flex: 0;
-    width: 250px;
-    min-width: 250px;
+    flex: none;
+    width: 200px;
     overflow: scroll;
-    border-right: 1px solid #ddd;
+    border-right: 1px solid #DDD;
 
-    .item {
-      padding: 3px 5px;
+    .queries-sidebar-title {
+      font-weight: bold;
+      background-color: #FBFBFB;
+      border-bottom: 1px solid #CCC;
+      line-height: 33px;
+      padding-left: 10px;
     }
 
-    .active {
-      background: rgb(56, 121, 217);
-      color: white;
+    .item {
+      padding: 3px 10px;
+      font-size: 12px;
+      font-family: monospace;
+      border-bottom: 1px solid #EEE;
+      cursor: pointer;
+
+      &:hover {
+        background-color: fade(#22a699, 10%);
+      }
+
+      &.active {
+        background-color: fade(#22a699, 40%);
+
+        &:hover {
+          background-color: fade(#22a699, 30%);
+        }
+      }
     }
 
     .loading {
@@ -26,6 +44,13 @@
   .main {
     flex: 1;
     overflow: scroll;
+    padding: 20px;
+
+    pre {
+      border: none;
+      font-family: monospace;
+      font-size: 12px;
+    }
 
     .loading {
       background: LightGray;
@@ -33,7 +58,9 @@
   }
 
   .toggle {
-    font-family: monospace;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
   }
 
   .labeled {

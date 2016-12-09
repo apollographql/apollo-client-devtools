@@ -22,7 +22,7 @@ const queryLabel = (queryId, query) => {
   if (queryName === null) {
     return queryId;
   }
-  return `${queryId} (${queryName})`;
+  return `${queryName}`;
 };
 
 class WatchedQueries extends React.Component {
@@ -72,6 +72,7 @@ class WatchedQueries extends React.Component {
     return (
       <div className="watchedQueries body">
         <div className="sidebar">
+          <div className="queries-sidebar-title">Watched queries</div>
           {this.sortedQueryIds().map(id => this.renderSidebarItem(id, queries[id]))}
         </div>
         <div className="main">
@@ -91,7 +92,7 @@ class LabeledShowHide extends React.Component {
   constructor(props, context) {
     super(props, context);
     const { show = true } = props;
-    this.state = { show };
+    this.state = { show: true };
     this.toggle = this.toggle.bind(this);
   }
   toggle() {
@@ -99,13 +100,11 @@ class LabeledShowHide extends React.Component {
   }
   render() {
     return (
-      <div>
-        <div>
-          <span onClick={this.toggle} className="toggle">
-            {this.state.show ? '- ' : '+ '}
-          </span>
+      <div className={this.props.className}>
+        <span onClick={this.toggle} className="toggle">
+          {this.state.show ? <span>&#9662; </span> : <span>&#9656; </span>}
           {this.props.label}
-        </div>
+        </span>
         {this.state.show &&
           <div className="labeled">{this.props.children}</div>}
       </div>
@@ -148,16 +147,18 @@ class WatchedQuery extends React.Component {
         </div>
         {
           reactComponentDisplayName &&
-            <LabeledShowHide label="React component">
-              {reactComponentDisplayName}
+            <LabeledShowHide className="react-component" label="React component">
+              {`<`}{reactComponentDisplayName}{`>`}
             </LabeledShowHide>
         }
-
+        {
+          query.variables &&
+          <LabeledShowHide label="Variables">
+            <Variables variables={query.variables} />
+          </LabeledShowHide>
+        }
         <LabeledShowHide label="Query string" show={false}>
             <GraphqlCodeBlock className="GraphqlCodeBlock" queryBody={query.queryString} />
-        </LabeledShowHide>
-        <LabeledShowHide label="Variables">
-          <Variables variables={query.variables} />
         </LabeledShowHide>
       </div>
     );
