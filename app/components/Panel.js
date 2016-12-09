@@ -5,7 +5,18 @@ import WatchedQueries from './WatchedQueries';
 import Explorer from './Explorer';
 import Inspector from './Inspector';
 
+import evalInPage from '../evalInPage';
+
 import '../style.less';
+
+function lastActionId(actionLog) {
+  if (actionLog && actionLog.length) {
+    const lastApolloState = actionLog[actionLog.length - 1];
+    return lastApolloState && lastApolloState.id;
+  }
+
+  return null;
+}
 
 export default class Panel extends Component {
   constructor(props, context) {
@@ -13,10 +24,40 @@ export default class Panel extends Component {
 
     this.state = {
       active: 'queries',
+      actionLog: [],
     };
   }
+
+  componentDidMount() {
+    this.lastActionId = null;
+    this.interval = setInterval(() => {
+      evalInPage(`
+        window.__action_log__
+      `, (result) => {
+        const newLastActionId = lastActionId(result);
+        if (newLastActionId !== this.lastActionId) {
+          this.lastActionId = newLastActionId;
+          this.setState({
+            actionLog: result,
+          });
+        }
+      });
+    }, 100);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
+
+  lastApolloLog() {
+    return this.state.actionLog && this.state.actionLog.length &&
+      this.state.actionLog[this.state.actionLog.length - 1];
+  }
+
   render() {
     const { active } = this.state;
+
+    console.log(this.state.actionLog);
 
     let body;
     switch(active) {
@@ -25,8 +66,7 @@ export default class Panel extends Component {
         body = <WatchedQueries apolloClient={window.__APOLLO_CLIENT__} />;
         break;
       case 'store':
-        console.log(window.__APOLLO_CLIENT__.queryManager.getDataWithOptimisticResults());
-        body = <Inspector client={window.__APOLLO_CLIENT__} />;
+        body = <Inspector state={this.lastApolloLog().state} />;
         break;
       case 'graphiql':
         body = <Explorer />;

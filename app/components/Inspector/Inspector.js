@@ -3,6 +3,10 @@ import React from 'react';
 import './inspector.less';
 
 export default class Inspector extends React.Component {
+  static propTypes = {
+    state: React.PropTypes.object.isRequired,
+  }
+
   static childContextTypes = {
     inspectorContext: React.PropTypes.object.isRequired,
   }
@@ -23,7 +27,7 @@ export default class Inspector extends React.Component {
   }
 
   updateData() {
-    const dataWithOptimistic = this.props.client.queryManager.getDataWithOptimisticResults();
+    const dataWithOptimistic = this.props.state.data;
 
     let toHighlight = {};
 
@@ -44,8 +48,11 @@ export default class Inspector extends React.Component {
     });
   }
 
-  componentWillMount() {
-    this.props.client.store.subscribe(this.updateData);
+  componentDidMount() {
+    this.updateData();
+  }
+
+  componentWillReceiveProps() {
     this.updateData();
   }
 
