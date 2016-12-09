@@ -76,7 +76,7 @@ class WatchedQueries extends React.Component {
         </div>
         <div className="main">
           {selectedId && queries[selectedId] &&
-          <WatchedQuery queryId={selectedId} query={queries[selectedId]} />}
+          <WatchedQuery queryId={selectedId} query={queries[selectedId]} onRun={this.props.onRun} />}
         </div>
       </div>
     );
@@ -141,7 +141,10 @@ class WatchedQuery extends React.Component {
         <div className="header">
           Query {queryLabel(queryId, query)}
           { query.loading && " [loading]" }
-          <button>Run in GraphiQL</button>
+          <button
+             onClick={() => this.props.onRun(query.queryString, query.variables)}>
+            Run in GraphiQL
+          </button>
         </div>
         {
           reactComponentDisplayName &&

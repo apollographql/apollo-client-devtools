@@ -25,7 +25,11 @@ export default class Panel extends Component {
     this.state = {
       active: 'queries',
       actionLog: [],
+      runQuery: undefined,
+      runVariables: undefined,
     };
+
+    this.onRun = this.onRun.bind(this);
   }
 
   componentDidMount() {
@@ -54,6 +58,24 @@ export default class Panel extends Component {
       this.state.actionLog[this.state.actionLog.length - 1];
   }
 
+  onRun(queryString, variables) {
+    this.setState({
+      active: 'graphiql',
+      runQuery: queryString,
+      runVariables: variables ? JSON.stringify(variables, null, 2) : '',
+    });
+  }
+
+  switchPane(pane) {
+    this.setState({
+      active: pane,
+      // Don't leave this stuff around except when actively clicking the run
+      // button.
+      runQuery: undefined,
+      runVariables: undefined,
+    });
+  }
+
   render() {
     const { active } = this.state;
 
@@ -61,17 +83,17 @@ export default class Panel extends Component {
 
     let body;
     switch(active) {
-      case 'queries':
-        // XXX this won't work in the dev tools
-        body = <WatchedQueries state={this.lastApolloLog().state} />;
-        break;
-      case 'store':
-        body = <Inspector state={this.lastApolloLog().state} />;
-        break;
-      case 'graphiql':
-        body = <Explorer />;
-        break;
-      default: break;
+    case 'queries':
+      // XXX this won't work in the dev tools
+      body = <WatchedQueries state={this.lastApolloLog().state} onRun={this.onRun}/>;
+      break;
+    case 'store':
+      body = <Inspector state={this.lastApolloLog().state} />;
+      break;
+    case 'graphiql':
+      body = <Explorer query={this.state.runQuery} variables={this.state.runVariables}/>;
+      break;
+    default: break;
     }
 
     return (
@@ -79,15 +101,15 @@ export default class Panel extends Component {
         <div className="tabs">
           <div
             className={classnames('tab', { active: active === 'queries' })}
-            onClick={() => this.setState({ active: 'queries' })}
+            onClick={() => this.switchPane('queries')}
           >Queries</div>
           <div
             className={classnames('tab', { active: active === 'store' })}
-            onClick={() => this.setState({ active: 'store' })}
+            onClick={() => this.switchPane('store')}
           >Store</div>
           <div
             className={classnames('tab', { active: active === 'graphiql' })}
-            onClick={() => this.setState({ active: 'graphiql' })}
+            onClick={() => this.switchPane('graphiql')}
           >GraphiQL</div>
         </div>
         {body}

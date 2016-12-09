@@ -105,23 +105,32 @@ export default class Explorer extends Component {
       );
     };
   }
+
+  componentDidMount() {
+    if (this.props.query) {
+      this.graphiql.handleRunQuery();
+    }
+  }
+
   render() {
     const { noFetch } = this.state;
-    return (
-      <div className="body">
-        <GraphiQL fetcher={this.graphQLFetcher}>
-          <GraphiQL.Toolbar>
-            <label>
-              <input
-                type="checkbox"
-                checked={noFetch}
-                onChange={() => { this.setState({ noFetch: !noFetch }); }}
+    const graphiql = (
+      <GraphiQL fetcher={this.graphQLFetcher} query={this.props.query}
+                variables={this.props.variables}
+                ref={r => {this.graphiql = r}}>
+        <GraphiQL.Toolbar>
+          <label>
+            <input
+               type="checkbox"
+               checked={noFetch}
+               onChange={() => { this.setState({ noFetch: !noFetch }); }}
               />
               Load from cache
-            </label>
-          </GraphiQL.Toolbar>
-        </GraphiQL>
-      </div>
+          </label>
+        </GraphiQL.Toolbar>
+      </GraphiQL>
     );
+
+    return <div className="body">{graphiql}</div>;
   }
 }
