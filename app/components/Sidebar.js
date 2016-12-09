@@ -2,6 +2,11 @@ import React, { Component, PropTypes } from 'react';
 import classnames from 'classnames';
 
 export class Sidebar extends Component {
+  static propTypes = {
+    className: PropTypes.string,
+    name: PropTypes.string.isRequired,
+  };
+
   constructor(props, context) {
     super(props, context);
 
@@ -10,14 +15,20 @@ export class Sidebar extends Component {
     this.stopResize = this.stopResize.bind(this);
   }
 
+  componentDidMount() {
+    const savedWidth = localStorage.getItem(`apollo-client:${this.props.name}`);
+    if (savedWidth) this.sidebar.style.width = `${savedWidth}px`;
+  }
+
   initResize(e) {
     window.addEventListener('mousemove', this.Resize, false);
     window.addEventListener('mouseup', this.stopResize, false);
   }
 
   Resize(e) {
-    console.log(this.sidebar.offsetLeft);
-    this.sidebar.style.width = (e.clientX - this.sidebar.offsetLeft) + 'px';
+    const width = e.clientX - this.sidebar.offsetLeft;
+    localStorage.setItem(`apollo-client:${this.props.name}`, width);
+    this.sidebar.style.width = `${width}px`;
     window.getSelection().removeAllRanges();
   }
 

@@ -98,7 +98,7 @@ class Logger extends React.Component {
 
     return (
       <div className="Logger body">
-        <Sidebar>
+        <Sidebar name="logger-sidebar">
           <div className="queries-sidebar-title">Request log</div>
           {this.props.log.map(logEntry => this.renderSidebarItem(logEntry))}
         </Sidebar>

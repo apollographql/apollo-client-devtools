@@ -108,7 +108,7 @@ export default class Inspector extends React.Component {
     return (
       <div className="inspector-panel body">
         <div className="inspector-body">
-          <Sidebar className="inspector-sidebar">
+          <Sidebar className="inspector-sidebar" name="inspector-sidebar">
             <div className="inspector-sidebar-title">Apollo client state</div>
             <InspectorToolbar
               searchTerm={this.state.searchTerm}

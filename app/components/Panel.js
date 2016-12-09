@@ -130,7 +130,7 @@ export default class Panel extends Component {
 
     return (
       <div className={classnames('apollo-client-panel', { 'in-window': !chrome.devtools })}>
-        <Sidebar className="tabs">
+        <Sidebar className="tabs" name="nav-tabs">
           <div className="tab logo-tab"><Apollo /></div>
           <div
             title="Watched queries"

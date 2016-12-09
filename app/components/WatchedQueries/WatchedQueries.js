@@ -73,7 +73,7 @@ class WatchedQueries extends React.Component {
     const { selectedId } = this.state;
     return (
       <div className="watchedQueries body">
-        <Sidebar className="sidebar">
+        <Sidebar className="sidebar" name="watched-queries-sidebar">
           <div className="queries-sidebar-title">Watched queries</div>
           {this.sortedQueryIds().map(id => this.renderSidebarItem(id, queries[id]))}
         </Sidebar>
