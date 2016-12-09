@@ -1,6 +1,6 @@
 export default function evalInPage(code, cb) {
   if (chrome && chrome.devtools) {
-    return chrome.devtools.inspectedWindow.eval(code);
+    return chrome.devtools.inspectedWindow.eval(code, cb);
   } else {
     let result;
     try {
