@@ -107,13 +107,14 @@ export default class Inspector extends React.Component {
   render() {
     return (
       <div className="inspector-panel body">
-        <InspectorToolbar
-          searchTerm={this.state.searchTerm}
-          setSearchTerm={this.setSearchTerm}
-        />
         <div className="inspector-body">
           <div className="inspector-sidebar">
-            {this.state.ids.map(id => this.renderSidebarItem(id))}
+          <div className="inspector-sidebar-title">Apollo client state</div>
+            <InspectorToolbar
+              searchTerm={this.state.searchTerm}
+              setSearchTerm={this.setSearchTerm}
+            />
+          {this.state.ids.map(id => this.renderSidebarItem(id))}
           </div>
           <div className="inspector-main">
             {this.state.selectedId &&
@@ -130,7 +131,7 @@ const InspectorToolbar = ({ searchTerm, setSearchTerm }) => (
     <input
       className="inspector-search"
       type="text"
-      placeholder="Search"
+      placeholder="Search..."
       onChange={(evt) => setSearchTerm(evt.target.value)}
       value={searchTerm}
     />
@@ -269,12 +270,10 @@ class StoreTreeFieldSet extends React.Component {
         {this.shouldDisplayId() && (
           <span className="store-tree-ref-id">
             <span onClick={this.toggleExpand}>
-              {this.state.expand ? '- ' : '+ '}
-              {this.props.dataId}
+              {this.state.expand ? <span>&#9662; </span> : <span>&#9656; </span>}
+              <span className="data-id">{this.props.dataId}</span>
             </span>
-            <span onClick={this.selectId}>
-              {' '}>>
-            </span>
+            <span onClick={this.selectId} />
           </span>
         )}
         {this.state.expand && this.renderFieldSet({ doubleIndent: this.shouldDisplayId() })}

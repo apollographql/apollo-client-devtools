@@ -4,6 +4,10 @@ import classnames from 'classnames';
 import WatchedQueries from './WatchedQueries';
 import Explorer from './Explorer';
 import Inspector from './Inspector';
+import Apollo from './Images/Apollo';
+import GraphQL from './Images/GraphQL';
+import Store from './Images/Store';
+import Queries from './Images/Queries';
 
 import evalInPage from '../evalInPage';
 
@@ -117,18 +121,22 @@ export default class Panel extends Component {
     return (
       <div className={classnames('apollo-client-panel', { 'in-window': !chrome.devtools })}>
         <div className="tabs">
+          <div className="tab logo-tab"><Apollo /></div>
           <div
+            title="Watched queries"
             className={classnames('tab', { active: active === 'queries' })}
             onClick={() => this.switchPane('queries')}
-          >Queries</div>
+          ><Queries />Queries</div>
           <div
+            title="Apollo client store"
             className={classnames('tab', { active: active === 'store' })}
             onClick={() => this.switchPane('store')}
-          >Store</div>
+          ><Store />Store</div>
           <div
+            title="GraphiQL console"
             className={classnames('tab', { active: active === 'graphiql' })}
             onClick={() => this.switchPane('graphiql')}
-          >GraphiQL</div>
+          ><GraphQL />GraphiQL</div>
         </div>
         {body}
       </div>

@@ -14,7 +14,7 @@ html, body, #devtools {
 
 .apollo-client-panel {
   display: flex;
-  flex-direction: column;
+  height: 100%;
 
   &.in-window {
     position: fixed;
@@ -32,30 +32,76 @@ html, body, #devtools {
   }
 
   .tabs {
-    background-color: #f3f3f3;
+    background-color: #666;
     border-bottom: 1px solid #ccc;
     flex: none;
+    text-align: center;
+    width: 40px;
 
     .tab {
-      display: inline-block;
-      padding: 5px 6px 4px;
       cursor: pointer;
-      margin-top: 3px;
+      color: #FFF;
+      font-size: 8px;
+      padding: 2px;
 
-      &.active {
-        background-color: #fff;
-        border-left: 1px solid #ccc;
-        border-top: 1px solid #ccc;
-        border-right: 1px solid #ccc;
-        padding: 4px 5px;
+      svg {
+        margin: 8px 0 0;
+        height: 20px;
+        width: 20px;
+        display: inline-block;
       }
 
-      &:first-of-type {
-        margin-left: 10px;
+      &.logo-tab {
+        background-color: #22a699;
+        height: 40px;
+        cursor: default;
+
+        svg {
+          margin: 8px 0;
+          margin: 8px 0 0;
+          height: 24px;
+          width: 24px;
+        }
+
+        &:hover {
+          color: #FFF;
+          path, rect {
+            fill: #FFF;
+          }
+        }
+      }
+
+      &.active {
+        color: lighten(#22a699, 10%);
+        position: relative;
+        path, rect {
+          fill: lighten(#22a699, 10%);
+        }
+
+        &:before {
+          content: "";
+          background-color: #22a699;
+          height: 5px;
+          width: 5px;
+          position: absolute;
+          border-radius: 5px;
+          left: -2.5px;
+          top: ~"calc(50% - 2.5px)";
+        }
+
+        &:hover {
+          color: #22a699;
+          path, rect {
+            fill: #22a699;
+          }
+        }
       }
 
       &:hover {
-        box-shadow: inset 0 0 25px #ddd;
+        color: fade(#FFFFFF, 80%);
+        path, rect {
+          fill: fade(#FFFFFF, 80%);
+        }
       }
     }
   }

@@ -5,13 +5,16 @@
 
 .inspector-toolbar {
   flex: 0;
-  min-height: 30px;
   background-color: #f3f3f3;
   border-bottom: #ccc 1px solid;
 }
 
 .inspector-search {
-  margin: 2px;
+  width: 100%;
+  outline: none;
+  border: none;
+  padding: 5px 10px;
+  font-size: 12px;
 }
 
 .inspector-body {
@@ -20,29 +23,53 @@
 }
 
 .inspector-sidebar {
-  flex: 0;
-  width: 150px;
-  min-width: 150px;
+  flex: none;
+  width: 200px;
   overflow: scroll;
   border-right: 1px solid #ddd;
-}
 
-.inspector-sidebar-item {
-  padding: 3px 5px;
-}
+  .inspector-sidebar-title {
+    font-weight: bold;
+    background-color: #FBFBFB;
+    border-bottom: 1px solid #CCC;
+    line-height: 33px;
+    padding-left: 10px;
+  }
 
-.inspector-sidebar .active {
-  background: rgb(56, 121, 217);
-  color: white;
+  .inspector-sidebar-item {
+    cursor: pointer;
+    padding: 3px 10px;
+    border-bottom: 1px solid #EFEFEF;
+    font-size: 12px;
+    font-family: monospace;
+    font-weight: 100;
+
+    &:hover {
+      background-color: fade(#22a699, 10%);
+    }
+
+    &.active {
+      background-color: fade(#22a699, 40%);
+
+      &:hover {
+        background-color: fade(#22a699, 30%);
+      }
+    }
+  }
 }
 
 .inspector-main {
   flex: 1;
   overflow: scroll;
+  font-size: 12px;
+  font-family: monospace;
+  padding: 20px 0;
 }
 
 .store-tree-field-set {
   margin-left: 20px;
+  border-left: 1px solid #EEE;
+  padding-left: 5px;
 }
 
 .store-tree-field-set.double-indent {
@@ -51,25 +78,48 @@
 
 .store-tree-ref-id {
   margin-left: 20px;
-  color: blue;
+  color: #B11A04;
+  cursor: pointer;
+
+  &:hover {
+    .data-id {
+      text-decoration: underline;
+    }
+  }
 }
 
 .inspector-highlight {
-  background-color: yellow;
+  background-color: #FFF59D !important;
 }
 
 .inspector-sidebar-highlighted {
-  background-color: yellow;
+  background-color: #FFF59D !important;
+
+  &:hover {
+    background-color: fade(#FFF59D, 50%) !important;
+  }
+
+  &.active {
+    background-color: #B5DB9C !important;
+
+    &:hover {
+      background-color: fade(#B5DB9C, 50%) !important;
+    }
+  }
 }
 
 .inspector-field-key {
-  color: rgb(136, 19, 145);
+  color: #1F61A0;
 }
 
 .inspector-value-string {
-  color: rgb(196, 26, 22);
+  color: #D64292;
 }
 
 .inspector-value-number {
-  color: rgb(28, 0, 207);
+  color: #2882F9;
+}
+
+.inspector-typename {
+  color: #8B2BB9;
 }
