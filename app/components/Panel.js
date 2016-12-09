@@ -9,6 +9,7 @@ import GraphQL from './Images/GraphQL';
 import Store from './Images/Store';
 import Queries from './Images/Queries';
 import Logger from './Logger';
+import { Sidebar } from './Sidebar';
 
 import evalInPage from '../evalInPage';
 
@@ -129,29 +130,29 @@ export default class Panel extends Component {
 
     return (
       <div className={classnames('apollo-client-panel', { 'in-window': !chrome.devtools })}>
-        <div className="tabs">
+        <Sidebar className="tabs">
           <div className="tab logo-tab"><Apollo /></div>
           <div
             title="Watched queries"
             className={classnames('tab', { active: active === 'queries' })}
             onClick={() => this.switchPane('queries')}
-          ><Queries />Queries</div>
+          ><Queries /><div>Queries</div></div>
           <div
             title="Apollo client store"
             className={classnames('tab', { active: active === 'store' })}
             onClick={() => this.switchPane('store')}
-          ><Store />Store</div>
+          ><Store /><div>Store</div></div>
           <div
             title="GraphiQL console"
             className={classnames('tab', { active: active === 'graphiql' })}
             onClick={() => this.switchPane('graphiql')}
-          ><GraphQL />GraphiQL</div>
+          ><GraphQL /><div>GraphiQL</div></div>
           <div
             title="Request logger"
             className={classnames('tab', { active: active === 'logger' })}
             onClick={() => this.switchPane('logger')}
-          ><GraphQL />Requests</div>
-        </div>
+          ><GraphQL /><div>Requests</div></div>
+        </Sidebar>
         {body}
       </div>
     );

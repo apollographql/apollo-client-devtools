@@ -6,6 +6,7 @@ import classnames from 'classnames';
 import { getQueryDefinition } from 'apollo-client';
 import { parse } from 'graphql-tag/parser';
 import { GraphqlCodeBlock } from 'graphql-syntax-highlighter-react';
+import { Sidebar } from '../Sidebar';
 import './WatchedQueries.less';
 
 const queryNameFromQueryString = (queryString) => {
@@ -28,6 +29,7 @@ const queryLabel = (queryId, query) => {
 class WatchedQueries extends React.Component {
   constructor(props, context) {
     super(props, context);
+
     this.state = {
       selectedId: null,
     };
@@ -71,10 +73,10 @@ class WatchedQueries extends React.Component {
     const { selectedId } = this.state;
     return (
       <div className="watchedQueries body">
-        <div className="sidebar">
+        <Sidebar className="sidebar">
           <div className="queries-sidebar-title">Watched queries</div>
           {this.sortedQueryIds().map(id => this.renderSidebarItem(id, queries[id]))}
-        </div>
+        </Sidebar>
         {selectedId && queries[selectedId] &&
         <WatchedQuery queryId={selectedId} query={queries[selectedId]} onRun={this.props.onRun} />}
       </div>

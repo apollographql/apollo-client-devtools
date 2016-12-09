@@ -12,13 +12,28 @@ html, body, #devtools {
   overflow: hidden;
 }
 
+.sidebar {
+  position: relative;
+  overflow-y: scroll;
+  overflow-x: hidden;
+
+  .dragger {
+    position: absolute;
+    height: 100%;
+    width: 4px;
+    right: 0;
+    cursor: ew-resize;
+    background-color: transparent;
+  }
+}
+
 .apollo-client-panel {
   display: flex;
   height: 100%;
 
   &.in-window {
     position: fixed;
-    right: 0;
+    left: 0;
     bottom: 0;
     height: 40%;
     width: 90%;
@@ -36,36 +51,34 @@ html, body, #devtools {
     border-bottom: 1px solid #ccc;
     flex: none;
     text-align: center;
-    width: 40px;
+    width: 50px;
     overflow-y: auto;
 
     .tab {
       cursor: pointer;
       color: #FFF;
       font-size: 8px;
-      padding: 2px;
+      padding: 8px;
 
       &:last-of-type {
         margin-bottom: 10px;
       }
 
       svg {
-        margin: 8px 0 0;
-        height: 20px;
-        width: 20px;
         display: inline-block;
+        width: 80%;
+        max-width: 50px;
+        min-width: 20px;
+        height: 35px;
       }
 
       &.logo-tab {
         background-color: #22a699;
-        height: 40px;
         cursor: default;
+        font-size: 0;
 
         svg {
-          margin: 8px 0;
-          margin: 8px 0 0;
-          height: 24px;
-          width: 24px;
+          width: 100%;
         }
 
         &:hover {

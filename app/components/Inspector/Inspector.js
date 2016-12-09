@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { Sidebar } from '../Sidebar';
 import './inspector.less';
 
 export default class Inspector extends React.Component {
@@ -108,14 +108,14 @@ export default class Inspector extends React.Component {
     return (
       <div className="inspector-panel body">
         <div className="inspector-body">
-          <div className="inspector-sidebar">
-          <div className="inspector-sidebar-title">Apollo client state</div>
+          <Sidebar className="inspector-sidebar">
+            <div className="inspector-sidebar-title">Apollo client state</div>
             <InspectorToolbar
               searchTerm={this.state.searchTerm}
               setSearchTerm={this.setSearchTerm}
             />
-          {this.state.ids.map(id => this.renderSidebarItem(id))}
-          </div>
+            {this.state.ids.map(id => this.renderSidebarItem(id))}
+          </Sidebar>
           <div className="inspector-main">
             {this.state.selectedId &&
               <StoreTreeFieldSet data={this.state.dataWithOptimistic} dataId={this.state.selectedId} expand={true} />}

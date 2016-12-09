@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react';
+import { Sidebar } from '../Sidebar';
 import { connect } from 'react-redux';
 import pickBy from 'lodash/pickBy';
 import sortBy from 'lodash/sortBy';
@@ -97,10 +98,10 @@ class Logger extends React.Component {
 
     return (
       <div className="Logger body">
-        <div className="sidebar">
+        <Sidebar>
           <div className="queries-sidebar-title">Request log</div>
           {this.props.log.map(logEntry => this.renderSidebarItem(logEntry))}
-        </div>
+        </Sidebar>
         <div className="main">
           {reqToDisplay &&
             <RequestDetails
