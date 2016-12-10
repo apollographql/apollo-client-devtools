@@ -44,7 +44,23 @@ export default class Panel extends Component {
     this.lastActionId = null;
     this.interval = setInterval(() => {
       evalInPage(`
-        window.__action_log__
+        (function THIS_IS_POLLING() {
+          return window.__action_log__.map(function (logItem) {
+            // It turns out evaling the whole store is actually incredibly
+            // expensive.
+            const slimItem = {
+              action: logItem.action,
+              id: logItem.id,
+              state: {
+                mutations: logItem.state.mutations,
+                optimistic: logItem.state.optimistic,
+                queries: logItem.state.queries
+              }
+            }
+
+            return slimItem;
+          });
+        })()
       `, (result) => {
         const newLastActionId = lastActionId(result);
         if (newLastActionId !== this.lastActionId) {
@@ -136,7 +152,7 @@ export default class Panel extends Component {
       body = selectedLog && <WatchedQueries state={selectedLog.state} onRun={this.onRun}/>;
       break;
     case 'store':
-      body = selectedLog && <Inspector state={selectedLog.state} />;
+      body = selectedLog && <Inspector />;
       break;
     case 'graphiql':
       body = <Explorer query={this.state.runQuery} variables={this.state.runVariables}/>;

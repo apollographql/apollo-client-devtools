@@ -1,6 +1,8 @@
 import React from 'react';
 import { Sidebar } from '../Sidebar';
 import classnames from 'classnames';
+import evalInPage from '../../evalInPage';
+
 import './inspector.less';
 
 export default class Inspector extends React.Component {
@@ -28,33 +30,43 @@ export default class Inspector extends React.Component {
   }
 
   updateData() {
-    const dataWithOptimistic = this.props.state.data;
+    evalInPage(`
+      (function () {
+        const numActions = window.__action_log__.length;
+        if(numActions) {
+          return window.__action_log__[numActions - 1].dataWithOptimisticResults;
+        }
+      })()
+    `, (dataWithOptimistic) => {
+      let toHighlight = {};
 
-    let toHighlight = {};
+      if (this.state.searchTerm.length >= 3) {
+        toHighlight = highlightFromSearchTerm({
+          data: dataWithOptimistic,
+          query: this.state.searchTerm,
+        });
+      }
 
-    if (this.state.searchTerm.length >= 3) {
-      toHighlight = highlightFromSearchTerm({
-        data: this.state.dataWithOptimistic,
-        query: this.state.searchTerm,
+      const ids = getIdsFromData(dataWithOptimistic);
+
+      this.setState({
+        dataWithOptimistic,
+        toHighlight,
+        ids,
+        selectedId: this.state.selectedId || ids[0],
       });
-    }
-
-    const ids = getIdsFromData(dataWithOptimistic);
-
-    this.setState({
-      dataWithOptimistic,
-      toHighlight,
-      ids,
-      selectedId: this.state.selectedId || ids[0],
     });
   }
 
   componentDidMount() {
     this.updateData();
+    this._interval = setInterval(() => {
+      this.updateData();
+    }, 500);
   }
 
-  componentWillReceiveProps() {
-    this.updateData();
+  componentWillUnmount() {
+    clearInterval(this._interval);
   }
 
   getChildContext() {
