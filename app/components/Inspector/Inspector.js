@@ -1,5 +1,6 @@
 import React from 'react';
 import { Sidebar } from '../Sidebar';
+import classnames from 'classnames';
 import './inspector.less';
 
 export default class Inspector extends React.Component {
@@ -268,13 +269,11 @@ class StoreTreeFieldSet extends React.Component {
     return (
       <div>
         {this.shouldDisplayId() && (
-          <span className="store-tree-ref-id">
-            <span onClick={this.toggleExpand}>
-              {this.state.expand ? <span>&#9662; </span> : <span>&#9656; </span>}
-              <span className="data-id">{this.props.dataId}</span>
-            </span>
-            <span onClick={this.selectId} />
-          </span>
+          <div className="store-tree-ref-id toggle" onClick={this.toggleExpand}>
+            <div className={classnames('triangle', { toggled: !this.state.expand })}>&#9662;</div>
+            <div className="data-id">{this.props.dataId}</div>
+            <span className="jump-to-object" onClick={this.selectId} />
+          </div>
         )}
         {this.state.expand && this.renderFieldSet({ doubleIndent: this.shouldDisplayId() })}
       </div>

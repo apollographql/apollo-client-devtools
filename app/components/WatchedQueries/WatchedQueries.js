@@ -97,7 +97,7 @@ class LabeledShowHide extends React.Component {
     return (
       <div className={classnames(this.props.className, 'toggled-section')}>
         <span onClick={this.toggle} className="toggle">
-          {this.state.show ? <span>&#9662; </span> : <span>&#9656; </span>}
+          <span className={classnames('triangle', { toggled: !this.state.show })}>&#9662;</span>
           <span className="section-label">{this.props.label}</span>
         </span>
         {this.state.show &&

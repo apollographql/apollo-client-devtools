@@ -125,6 +125,26 @@
     font-size: 12px;
     font-weight: bold;
     cursor: pointer;
+    display: block;
+
+    .triangle {
+      width: 15px;
+      display: inline-block;
+      transition: 300ms all cubic-bezier(0.175, 0.885, 0.335, 1.05);
+      line-height: 15px;
+      vertical-align: top;
+      text-align: center;
+
+      &.toggled {
+        transform: rotate(-90deg);
+      }
+    }
+
+    .section-label {
+      line-height: 15px;
+      display: inline-block;
+      vertical-align: top;
+    }
 
     &:hover .section-label {
       text-decoration: underline;

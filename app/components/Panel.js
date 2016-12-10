@@ -156,6 +156,11 @@ export default class Panel extends Component {
         <Sidebar className="tabs" name="nav-tabs">
           <div className="tab logo-tab"><Apollo /></div>
           <div
+            title="GraphiQL console"
+            className={classnames('tab', { active: active === 'graphiql' })}
+            onClick={() => this.switchPane('graphiql')}
+          ><GraphQL /><div>GraphiQL</div></div>
+          <div
             title="Watched queries"
             className={classnames('tab', { active: active === 'queries' })}
             onClick={() => this.switchPane('queries')}
@@ -165,16 +170,6 @@ export default class Panel extends Component {
             className={classnames('tab', { active: active === 'store' })}
             onClick={() => this.switchPane('store')}
           ><Store /><div>Store</div></div>
-          <div
-            title="GraphiQL console"
-            className={classnames('tab', { active: active === 'graphiql' })}
-            onClick={() => this.switchPane('graphiql')}
-          ><GraphQL /><div>GraphiQL</div></div>
-          <div
-            title="Request logger"
-            className={classnames('tab', { active: active === 'logger' })}
-            onClick={() => this.switchPane('logger')}
-          ><GraphQL /><div>Requests</div></div>
         </Sidebar>
         {body}
       </div>
