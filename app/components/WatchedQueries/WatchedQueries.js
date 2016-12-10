@@ -53,13 +53,13 @@ class WatchedQueries extends React.Component {
   renderSidebarItem(id, query) {
     let className = 'item';
     return (
-      <div key={id} onClick={() => this.selectId(id)}
+      <li key={id} onClick={() => this.selectId(id)}
         className={classnames('item', {
           active: id === this.state.selectedId,
           loading: query.loading,
         })}>
-        {queryLabel(id, query)}
-      </div>
+        <span>{queryLabel(id, query)}</span>
+      </li>
     );
   }
 
@@ -70,7 +70,7 @@ class WatchedQueries extends React.Component {
       <div className="watchedQueries body">
         <Sidebar className="sidebar" name="watched-queries-sidebar">
           <div className="queries-sidebar-title">Watched queries</div>
-          {this.sortedQueryIds().map(id => this.renderSidebarItem(id, queries[id]))}
+          <ol className="query-list">{this.sortedQueryIds().map(id => this.renderSidebarItem(id, queries[id]))}</ol>
         </Sidebar>
         {selectedId && queries[selectedId] &&
         <WatchedQuery queryId={selectedId} query={queries[selectedId]} onRun={this.props.onRun} />}

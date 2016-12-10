@@ -15,32 +15,34 @@
       padding-left: 10px;
     }
 
-    .item {
-      padding: 3px 10px;
-      font-size: 12px;
-      font-family: monospace;
-      border-bottom: 1px solid #EEE;
-      cursor: pointer;
-      transition: .25s;
+    .query-list {
+      padding: 0 0 0 20px;
+      margin: 0;
 
-      &:hover {
-        background-color: fade(#22a699, 10%);
-      }
-
-      &.active {
-        background-color: fade(#22a699, 40%);
+      .item {
+        padding: 10px 10px 0;
+        font-size: 12px;
+        cursor: pointer;
+        transition: .25s;
 
         &:hover {
-          background-color: fade(#22a699, 30%);
+          span { color: fade(#333, 60%); }
         }
-      }
 
-      &.loading {
-        color: #AAA;
+        &.active {
+          span { color: #22a699; }
+
+          &:hover {
+            span { color: fade(#22a699, 60%); }
+          }
+        }
+
+        &.loading {
+          span { color: #AAA; }
+        }
+
       }
     }
-
-
   }
 
   .main {
@@ -72,7 +74,6 @@
     }
 
     .panel-title {
-      font-family: monospace;
       font-size: 14px;
       margin-bottom: 10px;
 
@@ -92,6 +93,7 @@
       .component-name {
         color: #8B2BB9;
         font-weight: normal;
+        font-family: monospace;
         margin-left: 10px;
       }
 
