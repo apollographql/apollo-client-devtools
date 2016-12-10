@@ -2,14 +2,11 @@ import React from 'react';
 import { Sidebar } from '../Sidebar';
 import classnames from 'classnames';
 import evalInPage from '../../evalInPage';
+import _ from 'lodash';
 
 import './inspector.less';
 
 export default class Inspector extends React.Component {
-  static propTypes = {
-    state: React.PropTypes.object.isRequired,
-  }
-
   static childContextTypes = {
     inspectorContext: React.PropTypes.object.isRequired,
   }
@@ -171,24 +168,28 @@ function dfsSearch({ data, regex, toHighlight, pathToId = [], dataId }) {
   const storeObjHighlight = {};
 
   Object.keys(storeObj).forEach((storeFieldKey) => {
-    const val = storeObj[storeFieldKey];
+    const arr = [storeObj[storeFieldKey]];
 
-    const valueMatches = typeof val === 'string' && regex.test(val);
-    const keyMatches = regex.test(storeFieldKey);
+    const flatArr = _.flattenDeep(arr);
 
-    if (valueMatches || keyMatches) {
-      storeObjHighlight[storeFieldKey] = val;
-    }
+    flatArr.forEach((val) => {
+      const valueMatches = typeof val === 'string' && regex.test(val);
+      const keyMatches = regex.test(storeFieldKey);
 
-    if (val && val.id && val.generated) {
-      dfsSearch({
-        data,
-        regex,
-        toHighlight,
-        pathToId: [...pathToId, [dataId, storeFieldKey]],
-        dataId: val.id,
-      });
-    }
+      if (valueMatches || keyMatches) {
+        storeObjHighlight[storeFieldKey] = val;
+      }
+
+      if (val && val.id && val.generated) {
+        dfsSearch({
+          data,
+          regex,
+          toHighlight,
+          pathToId: [...pathToId, [dataId, storeFieldKey]],
+          dataId: val.id,
+        });
+      }
+    })
   });
 
   if (Object.keys(storeObjHighlight).length > 0) {
