@@ -2,9 +2,9 @@ Apollo Client Devtools
 ===
 This project contains the Apollo Client Devtools chrome extension.
 
-Use of the devtools requires at least `apollo-client@0.5.18`, and if you're using React, it's best with `react-apollo@0.7.1`.
+Use of the devtools requires at least `apollo-client@0.5.18`. React integration (showing component names in the queries tab) requires `react-apollo@0.7.1`.
 
-You can install the extension via the Chrome Webstore. While your app is in dev mode, the devtools will appear as an "Apollo" tab in your chrome inspector. The tools will not appear in production unless you specify this flag in apollo-client... [glasser]?
+You can install the extension via the Chrome Webstore. While your app is in dev mode, the devtools will appear as an "Apollo" tab in your chrome inspector. To enable the devtools in your app even in production, pass `connectToDevTools: true` to the ApolloClient constructor in your app.  Pass `connectToDevTools: false` if you never want to enable the devtools.
 
 
 Installation
@@ -14,7 +14,7 @@ If you're looking to use the devtools, you can install the extension via the Chr
 
 After cloning this repo, compile the extension bundle:
 
- * `cd apollo-chrome-devtools`
+ * `cd apollo-client-devtools`
  * `npm install && webpack`
 
 Install the extension in Chrome:
@@ -22,7 +22,7 @@ Install the extension in Chrome:
  * Open [chrome://extensions](chrome://extensions)
  * Enable the 'Developer Mode' checkbox
  * Click 'Load unpacked extensions...'
- * Select the `apollo-chrome-devtools` folder
+ * Select the `apollo-client-devtools` folder
 
 
 Now while on any page, open the chrome inspector. If you're inspecting a page that is using Apollo Client, there will be a global `window.__APOLLO_CLIENT__` object on that page. If that object exists, you will see an "Apollo" tab in the inspector menu. This tab will contain the Apollo Client devtools.
@@ -49,7 +49,7 @@ Then in your app, import the apollo-client-devtools Panel:
 
 Now you can insert the `<Panel />` component into your app. This will overlay the contents of the Apollo dev tools tab onto your app, allowing you to work on code in the extension at the same speed with which you'd work on code for your app.
 
-We've been developing internally against [Githunt-React](https://github.com/apollostack/GitHunt-React). If you run the `devtools` branch on Githunt-React, you can develop agains the same configuration we've been using.
+We've been developing internally against [Githunt-React](https://github.com/apollostack/GitHunt-React). If you run the `devtools` branch on Githunt-React, you can develop against the same configuration we've been using. [XXX Danielle: didn't we use a separate repo?]
 
 *Note: While great for expedited development of layout and CSS, this method doesn't allow you to simulate the environment of a chrome extension perfectly. Thus, we recommend you use a combination of both these processes while working on the extension.*
 
