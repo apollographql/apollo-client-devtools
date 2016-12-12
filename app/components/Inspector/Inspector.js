@@ -44,12 +44,16 @@ export default class Inspector extends React.Component {
         });
       }
 
-      const ids = getIdsFromData(dataWithOptimistic);
+      const ids = Object.keys(data).filter(id => id[0] !== '$');
+      const sortedIdsWithoutRoot = ids.filter(id => id !== 'ROOT_QUERY').sort();
+
+      // XXX handle root mutation and subscription fields as well
+      const rootFirst = ['ROOT_QUERY', ...sortedIdsWithoutRoot];
 
       this.setState({
         dataWithOptimistic,
         toHighlight,
-        ids,
+        ids: rootFirst,
         selectedId: this.state.selectedId || ids[0],
       });
     });
@@ -200,17 +204,6 @@ function dfsSearch({ data, regex, toHighlight, pathToId = [], dataId }) {
       toHighlight[pathSegment[0]][pathSegment[1]] = data[pathSegment[0]][pathSegment[1]];
     });
   }
-}
-
-function getIdsFromData(data) {
-  const ids = Object.keys(data).filter(id => id[0] !== '$');
-
-  const sortedIdsWithoutRoot = ids.filter(id => id !== 'ROOT_QUERY').sort();
-
-  // XXX handle root mutation and subscription fields as well
-  const rootFirst = ['ROOT_QUERY', ...sortedIdsWithoutRoot];
-
-  return rootFirst;
 }
 
 // Props: data, dataId, expand
