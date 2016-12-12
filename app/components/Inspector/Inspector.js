@@ -44,7 +44,12 @@ export default class Inspector extends React.Component {
         });
       }
 
-      const ids = getIdsFromData(dataWithOptimistic);
+      const unsortedIds = Object.keys(dataWithOptimistic).filter(id => id[0] !== '$');
+      const highlightedIds = Object.keys(toHighlight).filter(id => id[0] !== '$');
+      const sortedIdsWithoutRoot = unsortedIds.filter(
+        id => id !== 'ROOT_QUERY' && highlightedIds.indexOf(id) < 0
+      ).sort();
+      const ids = [...highlightedIds, 'ROOT_QUERY', ...sortedIdsWithoutRoot];
 
       this.setState({
         dataWithOptimistic,
@@ -74,6 +79,23 @@ export default class Inspector extends React.Component {
         selectId: this.selectId.bind(this),
       },
     };
+  }
+
+  componentWillUpdate(nextProps, nextState) {
+    if (nextState.selectedId !== this.state.selectedId) {
+      function isInViewport(element) {
+        const rect = element.getBoundingClientRect();
+        const html = document.documentElement;
+        return (
+          rect.top >= 0 &&
+          rect.left >= 0 &&
+          rect.bottom <= (window.innerHeight || html.clientHeight) &&
+          rect.right <= (window.innerWidth || html.clientWidth)
+        );
+      }
+      const node = document.getElementById(nextState.selectedId);
+      if (node && !isInViewport(node)) node.scrollIntoView();
+    }
   }
 
   selectId(id) {
@@ -110,25 +132,26 @@ export default class Inspector extends React.Component {
     }
 
     return (
-      <div onClick={this.selectId.bind(this, id)} className={className}>{id}</div>
+      <div id={id} onClick={this.selectId.bind(this, id)} className={className}>{id}</div>
     );
   }
 
   render() {
+    const { selectedId, dataWithOptimistic, searchTerm, ids } = this.state;
     return (
       <div className="inspector-panel body">
         <div className="inspector-body">
           <Sidebar className="inspector-sidebar" name="inspector-sidebar">
             <div className="inspector-sidebar-title">Apollo client state</div>
             <InspectorToolbar
-              searchTerm={this.state.searchTerm}
+              searchTerm={searchTerm}
               setSearchTerm={this.setSearchTerm}
             />
-            {this.state.ids.map(id => this.renderSidebarItem(id))}
+            {ids.map(id => this.renderSidebarItem(id))}
           </Sidebar>
           <div className="inspector-main">
-            {this.state.selectedId &&
-              <StoreTreeFieldSet data={this.state.dataWithOptimistic} dataId={this.state.selectedId} expand={true} />}
+            {selectedId &&
+              <StoreTreeFieldSet data={dataWithOptimistic} dataId={selectedId} expand={true} />}
           </div>
         </div>
       </div>
@@ -200,17 +223,6 @@ function dfsSearch({ data, regex, toHighlight, pathToId = [], dataId }) {
       toHighlight[pathSegment[0]][pathSegment[1]] = data[pathSegment[0]][pathSegment[1]];
     });
   }
-}
-
-function getIdsFromData(data) {
-  const ids = Object.keys(data).filter(id => id[0] !== '$');
-
-  const sortedIdsWithoutRoot = ids.filter(id => id !== 'ROOT_QUERY').sort();
-
-  // XXX handle root mutation and subscription fields as well
-  const rootFirst = ['ROOT_QUERY', ...sortedIdsWithoutRoot];
-
-  return rootFirst;
 }
 
 // Props: data, dataId, expand
