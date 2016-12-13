@@ -13,6 +13,8 @@ import { Sidebar } from './Sidebar';
 
 import evalInPage from '../evalInPage';
 
+import { version as devToolsVersion } from '../../manifest.json';
+
 import '../style.less';
 
 function lastActionId(actionLog) {
@@ -113,9 +115,62 @@ export default class Panel extends Component {
           });
 
           window.__APOLLO_CLIENT__.__actionHookForDevTools(logger);
+
+          return {
+            version: window.__APOLLO_CLIENT__.version
+          }
         }
       })()
-    `, () => {});
+    `, (result) => {
+      const versions = [];
+
+      if (result && result['apollo-client']) {
+        versions.push({
+          packageName: 'apollo-client',
+          version: result['apollo-client'],
+        });
+      }
+
+      const graphQLParams = {
+        query: `
+          query CompatibilityMessages(
+            $uuid: String
+            $devToolsVersion: String!
+            $versions: [VersionInput]
+          ) {
+            compatibilityMessages(
+              uuid: $uuid,
+              devToolsVersion: $devToolsVersion,
+              versions: $versions
+            ) {
+              message
+            }
+          }
+        `,
+        variables: {
+          uuid: 'chrome-extension',
+          devToolsVersion: '1.0.0',
+          versions,
+        }
+      }
+
+      return fetch('https://devtools.apollodata.com/graphql', {
+        method: 'post',
+        mode: 'cors',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(graphQLParams),
+      }).then(function (response) {
+        return response.json();
+      }).then(function (response) {
+        console.log(response);
+        response.data.compatibilityMessages.forEach((cm) => {
+          evalInPage(`console.info('Apollo devtools message:', "${cm.message}")`);
+        });
+      });
+    });
   }
 
   componentWillUnmount() {
