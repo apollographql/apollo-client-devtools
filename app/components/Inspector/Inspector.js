@@ -29,7 +29,7 @@ export default class Inspector extends React.Component {
   updateData() {
     evalInPage(`
       (function () {
-        const numActions = window.__action_log__.length;
+        const numActions = window.__action_log__ && window.__action_log__.length;
         if(numActions) {
           return window.__action_log__[numActions - 1].dataWithOptimisticResults;
         }

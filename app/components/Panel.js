@@ -45,7 +45,7 @@ export default class Panel extends Component {
     this.interval = setInterval(() => {
       evalInPage(`
         (function THIS_IS_POLLING() {
-          return window.__action_log__.map(function (logItem) {
+          return window.__action_log__ && window.__action_log__.map(function (logItem) {
             // It turns out evaling the whole store is actually incredibly
             // expensive.
             const slimItem = {
@@ -62,6 +62,11 @@ export default class Panel extends Component {
           });
         })()
       `, (result) => {
+        if (typeof result === 'undefined') {
+          // We switched to a different window at some point, re-init
+          this.initLogger();
+        }
+
         const newLastActionId = lastActionId(result);
         if (newLastActionId !== this.lastActionId) {
           this.lastActionId = newLastActionId;
@@ -72,9 +77,18 @@ export default class Panel extends Component {
       });
     }, 100);
 
+    this.initLogger();
+  }
+
+  initLogger() {
     evalInPage(`
       (function () {
         let id = 0;
+
+        if (window.__APOLLO_CLIENT__) {
+          window.__action_log__ = [];
+        }
+
         const logger = (logItem) => {
           // Only log Apollo actions for now
           if (logItem.action.type.split('_')[0] !== 'APOLLO') {
@@ -85,7 +99,6 @@ export default class Panel extends Component {
 
           logItem.id = id;
 
-          window.__action_log__ = window.__action_log__ || [];
           window.__action_log__.push(logItem);
 
           if (window.__action_log__.length > 10) {
@@ -104,6 +117,10 @@ export default class Panel extends Component {
 
   selectedApolloLog() {
     const logIsPopulated = this.state.actionLog && this.state.actionLog.length
+
+    if (! logIsPopulated) {
+      return null;
+    }
 
     if (this.state.selectedRequestId) {
       const filtered = this.state.actionLog.filter((item) => {
