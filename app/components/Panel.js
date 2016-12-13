@@ -29,7 +29,7 @@ export default class Panel extends Component {
     super(props, context);
 
     this.state = {
-      active: 'queries',
+      active: 'graphiql',
       actionLog: [],
       runQuery: undefined,
       runVariables: undefined,
