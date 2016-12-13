@@ -108,6 +108,11 @@ export default class Explorer extends Component {
     }
   }
 
+  shouldComponentUpdate(nextProps) {
+    // prevent component from re-rendering due to page polling
+    return false;
+  }
+
   render() {
     const { noFetch } = this.state;
     const graphiql = (
