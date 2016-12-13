@@ -45,7 +45,7 @@ export default class Inspector extends React.Component {
       }
 
       const unsortedIds = Object.keys(dataWithOptimistic).filter(id => id[0] !== '$');
-      const highlightedIds = Object.keys(toHighlight).filter(id => id[0] !== '$');
+      const highlightedIds = Object.keys(toHighlight).filter(id => id[0] !== '$' && id !== 'ROOT_QUERY');
       const sortedIdsWithoutRoot = unsortedIds.filter(
         id => id !== 'ROOT_QUERY' && highlightedIds.indexOf(id) < 0
       ).sort();
