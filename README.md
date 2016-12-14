@@ -3,7 +3,7 @@ Apollo Client Devtools
 
 This repository contains the [Apollo Client Devtools](https://chrome.google.com/webstore/detail/apollo-client-developer-t/jdkknkkbebbapilgoeccciglkfbmbnfm) Chrome extension and React component.
 
-Use of the devtools requires at least `apollo-client@0.5.18`. React integration (showing component names in the queries tab) requires `react-apollo@0.7.1`. Angular integration is coming soon.
+The dev tools require at least `apollo-client@0.5.18`. To see component names in the query inspector, you need at least `react-apollo@0.7.1`.
 
 Features
 ===
