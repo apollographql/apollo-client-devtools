@@ -115,7 +115,9 @@ export default class Panel extends Component {
           window.__APOLLO_CLIENT__.__actionHookForDevTools(logger);
         }
       })()
-    `, () => {});
+    `, (result) => {
+      // Nothing
+    });
   }
 
   componentWillUnmount() {

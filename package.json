@@ -15,6 +15,7 @@
     "graphiql": "^0.8.0",
     "graphql": "^0.7.0",
     "html-webpack-plugin": "^2.24.1",
+    "json-loader": "^0.5.4",
     "less": "^2.7.1",
     "less-loader": "^2.2.3",
     "react": "^15.4.1",
@@ -27,6 +28,7 @@
     "graphql-syntax-highlighter-react": "^0.1.0",
     "graphql-tag": "^1.1.2",
     "lodash": "^4.17.2",
-    "react-redux": "^4.4.6"
+    "react-redux": "^4.4.6",
+    "uuid": "^3.0.1"
   }
 }

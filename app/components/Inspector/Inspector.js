@@ -293,30 +293,44 @@ class StoreTreeFieldSet extends React.Component {
 
   render() {
     return (
-      <div>
+      <span>
         {this.shouldDisplayId() && (
-          <div className="store-tree-ref-id toggle" onClick={this.toggleExpand}>
-            <div className={classnames('triangle', { toggled: !this.state.expand })}>&#9662;</div>
-            <div className="data-id">{this.props.dataId}</div>
+          <span className={
+            classnames("store-tree-ref-id toggle", { 'store-tree-ref-id-inline': this.props.inArray })
+          } onClick={this.toggleExpand}>
+            <span className={classnames('triangle', { toggled: !this.state.expand })}>&#9662;</span>
+            <span className="data-id">{this.props.dataId}</span>
             <span className="jump-to-object" onClick={this.selectId} />
-          </div>
+          </span>
         )}
-        {this.state.expand && this.renderFieldSet({ doubleIndent: this.shouldDisplayId() })}
-      </div>
+        <div>
+          {this.state.expand && this.renderFieldSet({ doubleIndent: this.shouldDisplayId() })}
+        </div>
+      </span>
     )
   }
 }
 
 const StoreTreeArray = ({ value }) => (
-  <div>
-    {value.map(item => <StoreTreeValue value={item} /> )}
+  <div className="store-tree-field-set">
+    {value.map((item, index) => <StoreTreeArrayItem item={item} index={index} /> )}
   </div>
 )
 
-const StoreTreeObject = ({ value, highlight }) => {
+const StoreTreeArrayItem = ({ item, index }) => (
+  <div>
+    <span className="inspector-field-key">
+      {index}
+    </span>
+    :
+    <StoreTreeValue value={item} inArray={true} />
+  </div>
+)
+
+const StoreTreeObject = ({ value, highlight, inArray }) => {
   if (isIdReference(value)) {
     return (
-      <StoreTreeFieldSet dataId={value.id} />
+      <StoreTreeFieldSet dataId={value.id} inArray={inArray} />
     )
   }
 
@@ -342,18 +356,14 @@ const StoreTreeObject = ({ value, highlight }) => {
 }
 
 // props: data, value
-class StoreTreeValue extends React.Component {
-  render() {
-    return (
-      <span>
-        {Array.isArray(this.props.value) ?
-          <StoreTreeArray {...this.props} /> :
-          <StoreTreeObject {...this.props} />
-        }
-      </span>
-    )
-  }
-}
+const StoreTreeValue = (props) => (
+  <span>
+    {Array.isArray(props.value) ?
+      <StoreTreeArray {...props} /> :
+      <StoreTreeObject {...props} />
+    }
+  </span>
+)
 
 // Props: data, storeKey, value
 class StoreTreeField extends React.Component {
