@@ -12,18 +12,26 @@ module.exports = {
     path: __dirname + '/dist'
   },
   module: {
-    loaders: [{
+    loaders: [
+      {
         test: /\.css$/,
         loader: "style-loader!css-loader"
-      },{
+      },
+      {
+        test: /\.json$/,
+        loader: "json-loader"
+      },
+      {
         test: /\.less$/,
         loader: "style-loader!css-loader!less-loader"
-      }, {
-      test: /\.js$/,
-      include: __dirname + '/app',
-      loader: "babel-loader",
-      exclude: /(node_modules)/
-    }]
+      },
+      {
+        test: /\.js$/,
+        include: __dirname + '/app',
+        loader: "babel-loader",
+        exclude: /(node_modules)/
+      }
+    ]
   },
   plugins: [HTMLWebpackPluginConfig]
 }

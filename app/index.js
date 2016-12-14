@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import Panel from './components/Panel';
+import runVersionCheck from './checkVersions';
 import { render } from 'react-dom';
 
 // Standard Google Universal Analytics code
@@ -14,3 +15,5 @@ ga('require', 'displayfeatures');
 ga('send', 'pageview', 'DevtoolsPanel');
 
 render(<Panel />, document.getElementById('devtools'));
+
+runVersionCheck();
