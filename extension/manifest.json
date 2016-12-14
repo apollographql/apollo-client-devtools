@@ -8,7 +8,7 @@
            "48": "imgs/logo128.png",
           "128": "imgs/logo400.png" },
 
-    "devtools_page": "extension/devtools.html",
+    "devtools_page": "devtools.html",
     "content_security_policy": "script-src 'self' https://www.google-analytics.com 'unsafe-eval'; object-src 'self'",
     "permissions": [
         "tabs",

@@ -36,7 +36,7 @@ class WatchedQueries extends React.Component {
   }
 
   componentDidMount() {
-    if (ga) ga('send', 'pageview', 'WathedQueries');
+    if (ga) ga('send', 'pageview', 'WatchedQueries');
   }
 
   selectId(id) {

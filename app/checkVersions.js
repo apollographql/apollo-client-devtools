@@ -1,6 +1,6 @@
 import genUuid from 'uuid/v1';
 import evalInPage from './evalInPage';
-import { version as devToolsVersion } from '../manifest.json';
+import { version as devToolsVersion } from '../extension/manifest.json';
 
 let uuid = localStorage.getItem('uuid');
 
