@@ -56,10 +56,23 @@ Install the extension in Chrome:
  * Open [chrome://extensions](chrome://extensions)
  * Enable the 'Developer Mode' checkbox
  * Click 'Load unpacked extensions...'
- * Select the `apollo-client-devtools` folder
-
+ * Select the `apollo-client-devtools/extension` folder
 
 Now while on any page, open the chrome inspector. If you're inspecting a page that is using Apollo Client, there will be a global `window.__APOLLO_CLIENT__` object on that page. If that object exists, you will see an "Apollo" tab in the inspector menu. This tab will contain the Apollo Client devtools.
+
+### Folder structure
+The extension is built using React and ES6. All the main source code for the devtools exists in the `/app`
+folder, with `components/Panel.js` being the container component, and `index.js` attatching the
+`Panel` to the document itself. If you're interested in editing the current code or adding a new feature,
+you would do so here.
+
+Wepback bundles the code from `/app` into `/extension/dist`. Thus the `/extension` folder contains
+the chrome extension itself, and has the necessary manifest.json file and image resources. To load the
+extension locally, you would load from this folder. Likewise, to upload the extension to the Chrome Webstore,
+you would upload a zip of this folder.
+
+The root of the repo contains the .bablerc file, webpack config file, and necessary package.json and
+index.js files to make the repo bundle correctly and export as a node module (see the next section).
 
 ### Hot Reloading
 Unfortunately, there is no way to hot-reload a Chrome extension in the inspector while developing it.
