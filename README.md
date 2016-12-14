@@ -34,10 +34,10 @@ You can install the extension via the [Chrome Webstore](...). If you want to ins
 ### Configuration
 While your app is in dev mode, the devtools will appear as an "Apollo" tab in your chrome inspector. To enable the devtools in your app even in production, pass `connectToDevTools: true` to the ApolloClient constructor in your app.  Pass `connectToDevTools: false` if you never want to enable the devtools.
 
-### Debugging
-The "Apollo" tab will appear in the Chrome console iff there exists a global `window.__APOLLO_CLIENT__` object in your app. Apollo Client adds this hook to the window automatically (as of version 0.5.18), unless... [sashko]?
+### Enabling devtools in production
+The "Apollo" tab will appear in the Chrome console iff there exists a global `window.__APOLLO_CLIENT__` object in your app. Apollo Client adds this hook to the window automatically as of version 0.5.18, unless `process.env.NODE_ENV === 'production'`. If you would like to use the devtools in production, just manually attach your Apollo Client instance to `window.__APOLLO_CLIENT__`.
 
-If you're seeing the "Apollo" tab but still having issues, skip ahead to the __Developing:Debugging__ section.
+If you're seeing the "Apollo" tab but still having issues, skip ahead to the __Developing: Debugging__ section.
 
 Developing
 ===
