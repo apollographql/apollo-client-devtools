@@ -89,8 +89,10 @@ For faster development with hot reloading, we have also created a way for you to
 
 To do this, first link the apollo-client-devtools to your app's node modules.
 
- * `cd /path/to/your/apollo-client/app`
- * `npm link /path/to/apollo-client-devtools`
+```bash
+cd /path/to/your/apollo-client/app
+npm link /path/to/apollo-client-devtools
+```
 
 Then in your app, import the apollo-client-devtools `Panel` component:
 
