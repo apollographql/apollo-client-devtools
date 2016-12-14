@@ -77,11 +77,11 @@ you would upload a zip of this folder.
 The root of the repo contains the .bablerc file, webpack config file, and necessary package.json and
 index.js files to make the repo bundle correctly and export as a node module (see the next section).
 
-### Reloading Chrome extension
+### Reloading the Chrome extension
 
 Unfortunately, there is no way to hot-reload a Chrome extension in the inspector while developing it.
 
-While actively working on the devtools, you should run `webpack -w` in the devtools repo. This will have webpack watch your files, and rebundle them automatically whenever you make a change (necessary because we're using React + ES2015). With `webpack -w` running, you'll simply have to close the chrome inspector and open it again to see your changes in effect (no need to hit reload on the [chrome://extensions](chrome://extensions) page).
+While actively working on the devtools, you should run `webpack -w` in the devtools repo. This will have webpack watch your files, and rebundle them automatically whenever you make a change. With `webpack -w` running, you'll simply have to close the chrome inspector and open it again to see your changes in effect (no need to hit reload on the [chrome://extensions](chrome://extensions) page unless you make a change to the extension manifest).
 
 ### Developing with hot reload in an app
 
@@ -102,13 +102,13 @@ const Panel = require('apollo-client-devtools').Panel;
 
 Now you can insert the `<Panel />` component into your app. This will overlay the contents of the Apollo dev tools tab onto your app, allowing you to work on code in the extension at the same speed with which you'd work on code for your app.
 
-We've been developing internally against [Githunt-React](https://github.com/apollostack/GitHunt-React). If you run the `devtools` branch on Githunt-React, you can develop against the same configuration we've been using.
+We've been developing internally against [Githunt-React](https://github.com/apollostack/GitHunt-React). If you checkout and run the `devtools` branch on Githunt-React, you can develop against the same configuration we've been using.
 
-*Note: While great for expedited development of layout and CSS, this method doesn't allow you to simulate the environment of a chrome extension perfectly. Thus, we recommend you use a combination of both these processes while working on the extension, and make sure to test any major changes in the final environment.*
+*Note: While great for expedited development of layout and CSS, this method doesn't allow you to simulate the environment of a chrome extension perfectly. Thus, we recommend you use a combination of both this process and the one described in the previous section while working on the extension. Make sure to test any major changes in the final environment.*
 
 ### Debugging
 
 If there is an error in the devtools panel, you can inspect it just like you would inspect a normal webpage. Detach the inspector console from the window (if it's not already detached) by clicking the button with three vertical dots in the upper right corner of the console and selecting the detach option. With the detached console in focus, press `opt-cmd-I` again to open an inspector
 for the detached console (inspector inception). In this new inspector, you will be able to inspect elements in the first inspector, including the Apollo dev tools panel.
 
-If you're seeing an error that's being caused by the devtools, please open an Issue on this repo with a detailed explanation of the problem and steps we can take to replicate the error.
+If you're seeing an error that's being caused by the devtools, please open an Issue on this repository with a detailed explanation of the problem and steps that we can take to replicate the error.
