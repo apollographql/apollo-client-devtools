@@ -67,6 +67,8 @@ export default class Explorer extends Component {
 
     this.state = {
       noFetch: false,
+      query: this.props.query,
+      variables: this.props.variables,
     };
 
     try {
@@ -109,23 +111,18 @@ export default class Explorer extends Component {
     }
   }
 
-  shouldComponentUpdate(nextProps) {
-    // prevent component from re-rendering due to page polling
-    return false;
-  }
-
   render() {
     const { noFetch } = this.state;
     const graphiql = (
-      <GraphiQL fetcher={this.graphQLFetcher} query={this.props.query}
-                variables={this.props.variables}
+      <GraphiQL fetcher={this.graphQLFetcher} defaultQuery={this.state.query}
+                variables={this.state.variables}
                 ref={r => {this.graphiql = r}}>
         <GraphiQL.Toolbar>
           <label>
             <input
                type="checkbox"
                checked={noFetch}
-               onChange={() => { this.setState({ noFetch: !noFetch }); }}
+               onChange={() => { this.setState({ noFetch: !noFetch, query: undefined, variables: undefined }); }}
               />
               Load from cache
           </label>
