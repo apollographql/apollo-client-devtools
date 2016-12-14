@@ -1,6 +1,6 @@
 Apollo Client Devtools
 ===
-This project contains the [Apollo Client Devtools](...) Chrome extension.
+This project contains the [Apollo Client Devtools](https://chrome.google.com/webstore/detail/apollo-client-developer-t/jdkknkkbebbapilgoeccciglkfbmbnfm) Chrome extension.
 
 Use of the devtools requires at least `apollo-client@0.5.18`. React integration (showing component names in the queries tab) requires `react-apollo@0.7.1`, and Angular integration is coming soon.
 
@@ -29,7 +29,8 @@ they're using, and if you’re using React, which React component they’re atta
 
 Installation
 ===
-You can install the extension via the [Chrome Webstore](...). If you want to install a local version of the extension instead, skip ahead to the __Developing__ section.
+You can install the extension via the [Chrome Webstore](https://chrome.google.com/webstore/detail/apollo-client-developer-t/jdkknkkbebbapilgoeccciglkfbmbnfm).
+If you want to install a local version of the extension instead, skip ahead to the __Developing__ section.
 
 ### Configuration
 While your app is in dev mode, the devtools will appear as an "Apollo" tab in your chrome inspector. To enable the devtools in your app even in production, pass `connectToDevTools: true` to the ApolloClient constructor in your app.  Pass `connectToDevTools: false` if you never want to enable the devtools.
