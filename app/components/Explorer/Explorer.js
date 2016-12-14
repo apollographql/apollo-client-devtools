@@ -103,6 +103,7 @@ export default class Explorer extends Component {
   }
 
   componentDidMount() {
+    if (ga) ga('send', 'pageview', 'GraphiQL');
     if (this.props.query) {
       this.graphiql.handleRunQuery();
     }
