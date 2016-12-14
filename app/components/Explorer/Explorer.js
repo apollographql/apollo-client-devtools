@@ -111,12 +111,21 @@ export default class Explorer extends Component {
     }
   }
 
+  clearDefaultQueryState() {
+    this.setState({ query: undefined, variables: undefined });
+  }
+
   render() {
     const { noFetch } = this.state;
     const graphiql = (
-      <GraphiQL fetcher={this.graphQLFetcher} defaultQuery={this.state.query}
-                variables={this.state.variables}
-                ref={r => {this.graphiql = r}}>
+      <GraphiQL
+        fetcher={this.graphQLFetcher}
+        query={this.state.query}
+        onEditQuery={() => { this.clearDefaultQueryState() }}
+        onEditVariables={() => { this.clearDefaultQueryState() }}
+        variables={this.state.variables}
+        ref={r => {this.graphiql = r}}
+      >
         <GraphiQL.Toolbar>
           <label>
             <input
