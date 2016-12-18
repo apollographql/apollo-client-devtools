@@ -97,6 +97,7 @@ export default class Explorer extends Component {
 
       return createPromise(
         "window.__APOLLO_CLIENT__.makeGraphiqlQuery(" + JSON.stringify({
+          operationName: graphQLParams.operationName,
           query: parse(graphQLParams.query),
           variables: graphQLParams.variables,
         }) + ", " + noFetch + ")"
