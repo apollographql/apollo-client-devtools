@@ -50,7 +50,7 @@ After cloning this repo, compile the extension bundle:
 ```bash
 cd apollo-client-devtools
 npm install
-webpack
+npm run build
 ```
 
 Install the extension in Chrome:
@@ -81,7 +81,7 @@ index.js files to make the repo bundle correctly and export as a node module (se
 
 Unfortunately, there is no way to hot-reload a Chrome extension in the inspector while developing it.
 
-While actively working on the devtools, you should run `webpack -w` in the devtools repo. This will have webpack watch your files, and rebundle them automatically whenever you make a change. With `webpack -w` running, you'll simply have to close the chrome inspector and open it again to see your changes in effect (no need to hit reload on the [chrome://extensions](chrome://extensions) page unless you make a change to the extension manifest).
+While actively working on the devtools, you should run `npm start` in the devtools repo. This will have webpack watch your files, and rebundle them automatically whenever you make a change. With `webpack -w` running, you'll simply have to close the chrome inspector and open it again to see your changes in effect (no need to hit reload on the [chrome://extensions](chrome://extensions) page unless you make a change to the extension manifest).
 
 ### Developing with hot reload in an app
 
