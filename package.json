@@ -3,6 +3,7 @@
   "description": "Developer tools for Apollo Client, with GraphiQL integration, cache inspection, and query watching.",
   "license": "MIT",
   "scripts": {
+    "build": "webpack",
     "start": "webpack -w"
   },
   "devDependencies": {
