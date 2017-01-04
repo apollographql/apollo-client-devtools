@@ -13,6 +13,11 @@
       border-bottom: 1px solid #CCC;
       line-height: 33px;
       padding-left: 10px;
+
+      // support dev-tools dark theme
+      .apollo-client-panel.dark & {
+        color: #333333;
+      }
     }
 
     .query-list {
@@ -27,6 +32,11 @@
 
         &:hover {
           span { color: fade(#333, 60%); }
+
+          // support dev-tools dark theme
+          .apollo-client-panel.dark & {
+            span { color: fade(#ffffff, 60%); }
+          }
         }
 
         &.active {
@@ -60,6 +70,11 @@
       table {
         tr {
           font-size: 12px;
+
+          // support dev-tools dark theme
+          .apollo-client-panel.dark & {
+            color: #dddddd;
+          }
 
           td:first-child {
             font-weight: bold;
