@@ -2,6 +2,10 @@
   "name": "apollo-client-devtools",
   "description": "Developer tools for Apollo Client, with GraphiQL integration, cache inspection, and query watching.",
   "license": "MIT",
+  "scripts": {
+    "build": "webpack",
+    "start": "webpack -w"
+  },
   "devDependencies": {
     "babel-cli": "^6.11.4",
     "babel-core": "^6.18.2",
