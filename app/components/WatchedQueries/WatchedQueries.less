@@ -1,3 +1,67 @@
+.dark {
+  .watchedQueries {
+    color: #FFF;
+
+    .sidebar {
+      border-right-color: rgb(61, 61, 61);
+
+      .queries-sidebar-title {
+        background-color: #2a2a2a;
+        border-bottom-color: rgb(61, 61, 61);
+        color: #FFF !important;
+      }
+    }
+
+    .main {
+      table {
+        tr {
+          color: #CCC;
+        }
+      }
+
+      .component-name {
+        color: #c678dd !important; // TODO
+      }
+
+      .GraphqlCodeBlock span.comment {
+        color: #CCC;
+      }
+
+      .GraphqlCodeBlock span.number {
+        color: rgb(93, 176, 215);
+      }
+
+      .GraphqlCodeBlock span.variable {
+        color: rgb(53, 212, 199);
+      }
+
+      .GraphqlCodeBlock span.atom {
+        color: rgb(242, 151, 102);
+      }
+
+      .GraphqlCodeBlock span.attribute {
+        color: #c678dd;
+      }
+
+      .GraphqlCodeBlock span.punctuation {
+        color: #CCCCCC;
+      }
+
+      .GraphqlCodeBlock span.keyword {
+        color: rgb(231, 194, 111);
+      }
+
+      .GraphqlCodeBlock span.def {
+        color: hsl(0, 100%, 75%);
+      }
+
+      .GraphqlCodeBlock span.property {
+        color: rgb(155, 187, 220);
+      }
+    }
+  }
+}
+
 .watchedQueries {
   display: flex;
   flex-direction: row;
