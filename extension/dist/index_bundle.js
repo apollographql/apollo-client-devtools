@@ -99797,7 +99797,7 @@
 /***/ function(module, exports) {
 
 	module.exports = {
-		"version": "1.0.3",
+		"version": "1.0.4",
 		"name": "Apollo Client Developer Tools",
 		"short_name": "Apollo DevTools",
 		"description": "GraphQL debugging tools for Apollo Client in the Chrome developer console.",
