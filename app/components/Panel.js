@@ -195,7 +195,7 @@ export default class Panel extends Component {
     }
 
     return (
-      <div className={classnames('apollo-client-panel', { 'in-window': !chrome.devtools })}>
+      <div className={classnames('apollo-client-panel', { 'in-window': !chrome.devtools }, chrome.devtools.panels.themeName)}>
         <Sidebar className="tabs" name="nav-tabs">
           <div className="tab logo-tab"><Apollo /></div>
           <div
