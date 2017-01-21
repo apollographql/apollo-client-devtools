@@ -133,7 +133,12 @@ export default class Inspector extends React.Component {
     }
 
     return (
-      <div id={id} onClick={this.selectId.bind(this, id)} className={className}>{id}</div>
+      <div
+        id={id}
+        key={`inspector-sidebar-item-${id}`}
+        onClick={this.selectId.bind(this, id)}
+        className={className}
+      >{id}</div>
     );
   }
 
@@ -311,11 +316,12 @@ class StoreTreeFieldSet extends React.Component {
   }
 }
 
-const StoreTreeArray = ({ value }) => (
-  <div className="store-tree-field-set">
+const StoreTreeArray = ({ value }) => {
+  console.log(value);
+  return (<div className="store-tree-field-set">
     {value.map((item, index) => <StoreTreeArrayItem item={item} index={index} /> )}
-  </div>
-)
+  </div>);
+}
 
 const StoreTreeArrayItem = ({ item, index }) => (
   <div>
@@ -330,7 +336,7 @@ const StoreTreeArrayItem = ({ item, index }) => (
 const StoreTreeObject = ({ value, highlight, inArray }) => {
   if (isIdReference(value)) {
     return (
-      <StoreTreeFieldSet dataId={value.id} inArray={inArray} />
+      <StoreTreeFieldSet key={`storee-tree-field-set-${value.id}`} dataId={value.id} inArray={inArray} />
     )
   }
 

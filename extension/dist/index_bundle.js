@@ -81441,7 +81441,12 @@
 
 	      return _react2.default.createElement(
 	        'div',
-	        { id: id, onClick: this.selectId.bind(this, id), className: className },
+	        {
+	          id: id,
+	          key: 'inspector-sidebar-item-' + id,
+	          onClick: this.selectId.bind(this, id),
+	          className: className
+	        },
 	        id
 	      );
 	    }
@@ -81699,6 +81704,8 @@
 
 	var StoreTreeArray = function StoreTreeArray(_ref6) {
 	  var value = _ref6.value;
+
+	  console.log(value);
 	  return _react2.default.createElement(
 	    'div',
 	    { className: 'store-tree-field-set' },
@@ -81730,7 +81737,7 @@
 	      inArray = _ref8.inArray;
 
 	  if (isIdReference(value)) {
-	    return _react2.default.createElement(StoreTreeFieldSet, { dataId: value.id, inArray: inArray });
+	    return _react2.default.createElement(StoreTreeFieldSet, { key: 'storee-tree-field-set-' + value.id, dataId: value.id, inArray: inArray });
 	  }
 
 	  var className = '';
