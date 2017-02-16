@@ -90,7 +90,8 @@ export default class Panel extends Component {
 
           const logger = (logItem) => {
             // Only log Apollo actions for now
-            if (logItem.action.type.split('_')[0] !== 'APOLLO') {
+            // type check 'type' to avoid issues with thunks and other middlewares
+            if (typeof logItem.action.type !== 'string' || logItem.action.type.split('_')[0] !== 'APOLLO') {
               return;
             }
 
