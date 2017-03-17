@@ -1,3 +1,4 @@
+chrome.devtools.inspectedWindow.eval('window.__APOLLO_DEVTOOLS_GLOBAL_HOOK__ = {}');
 chrome.devtools.inspectedWindow.eval(
   `!!(window.__APOLLO_CLIENT__)`,
    function(result, isException) {

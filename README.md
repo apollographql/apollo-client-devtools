@@ -112,3 +112,15 @@ If there is an error in the devtools panel, you can inspect it just like you wou
 for the detached console (inspector inception). In this new inspector, you will be able to inspect elements in the first inspector, including the Apollo dev tools panel.
 
 If you're seeing an error that's being caused by the devtools, please open an Issue on this repository with a detailed explanation of the problem and steps that we can take to replicate the error.
+
+### Releasing new Versions
+
+We will release new versions of the devtools to the Chrome Webstore as we merge PRs or add new features.
+
+Release process, for those with permission:
+
+ * Commit changes, update the `manifest.json` version number, and tag your version release.
+ * Verify that your changes work as expected by loading the `/extension` folder as an "unpacked extension" locally.
+ * Merge changes and version tag to `master`.
+ * Zip the `/extension` folder and name it `extension-[v.X.X.X].zip`.
+ * Create a new release on the Chrome Webstore, uploading the new zip folder.
