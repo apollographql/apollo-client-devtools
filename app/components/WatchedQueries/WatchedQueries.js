@@ -7,6 +7,8 @@ import { getQueryDefinition } from 'apollo-client';
 import { parse } from 'graphql-tag/parser';
 import { GraphqlCodeBlock } from 'graphql-syntax-highlighter-react';
 import { Sidebar } from '../Sidebar';
+import Warning from '../Images/Warning';
+
 import './WatchedQueries.less';
 
 const queryNameFromQueryString = (queryString) => {
@@ -56,13 +58,18 @@ class WatchedQueries extends React.Component {
 
   renderSidebarItem(id, query) {
     let className = 'item';
+    const hasError = query.networkError || query.graphQLErrors.length > 0;
     return (
       <li key={id} onClick={() => this.selectId(id)}
         className={classnames('item', {
           active: id === this.state.selectedId,
           loading: query.loading,
+          error: hasError
         })}>
-        <span>{queryLabel(id, query)}</span>
+        <div className='item-row'>
+          <span>{queryLabel(id, query)}</span>
+          {hasError && <span className='error-icon'><Warning /></span>}
+        </div>
       </li>
     );
   }
@@ -91,7 +98,7 @@ class LabeledShowHide extends React.Component {
   constructor(props, context) {
     super(props, context);
     const { show = true } = props;
-    this.state = { show: true };
+    this.state = { show };
     this.toggle = this.toggle.bind(this);
   }
   toggle() {
@@ -132,6 +139,20 @@ const Variables = ({variables} ) => {
   return <table><tbody>{inner}</tbody></table>;
 };
 
+const GraphQLError = ({error}) => (
+  <li className='graphql-error'>
+    {
+      error.message && 
+      <span>{error.message}</span>
+    }
+  </li>
+);
+GraphQLError.propTypes = {
+  error: PropTypes.shape({
+    message: React.PropTypes.string
+  }),
+};
+
 class WatchedQuery extends React.Component {
   render() {
     const { queryId, query } = this.props;
@@ -156,7 +177,21 @@ class WatchedQuery extends React.Component {
           </LabeledShowHide>
         }
         <LabeledShowHide label="Query string" show={false}>
-            <GraphqlCodeBlock className="GraphqlCodeBlock" queryBody={query.queryString} />
+          <GraphqlCodeBlock className="GraphqlCodeBlock" queryBody={query.queryString} />
+        </LabeledShowHide>
+
+        <LabeledShowHide label="GraphQL Errors" show={query.graphQLErrors && query.graphQLErrors.length > 0}>
+          <ul>
+            {query.graphQLErrors.map((error, i) => <GraphQLError key={i} error={error} />)}
+          </ul>
+        </LabeledShowHide>
+
+        <LabeledShowHide label="Network Error" show={!!query.networkError}>
+          {
+            query.networkError &&
+            <pre>{query.networkError}</pre> ||
+            <div>No errors</div>
+          }
         </LabeledShowHide>
       </div>
     );
