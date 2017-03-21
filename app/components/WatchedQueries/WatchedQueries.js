@@ -186,11 +186,11 @@ class WatchedQuery extends React.Component {
           </ul>
         </LabeledShowHide>
 
-        <LabeledShowHide label="Network Error" show={!!query.networkError}>
+        <LabeledShowHide label="Network Errors" show={!!query.networkError}>
           {
-            query.networkError &&
-            <pre>{query.networkError}</pre> ||
-            <div>No errors</div>
+            query.networkError ?
+            <pre>{query.networkError}</pre> :
+            null
           }
         </LabeledShowHide>
       </div>
