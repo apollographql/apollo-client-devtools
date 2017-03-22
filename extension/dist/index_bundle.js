@@ -93820,7 +93820,7 @@
 /***/ function(module, exports) {
 
 	module.exports = {
-		"version": "1.0.6",
+		"version": "1.0.8",
 		"name": "Apollo Client Developer Tools",
 		"short_name": "Apollo DevTools",
 		"description": "GraphQL debugging tools for Apollo Client in the Chrome developer console.",
@@ -93829,12 +93829,23 @@
 			"48": "imgs/logo128.png",
 			"128": "imgs/logo400.png"
 		},
-		"devtools_page": "devtools.html",
 		"content_security_policy": "script-src 'self' https://www.google-analytics.com 'unsafe-eval'; object-src 'self'",
 		"permissions": [
 			"tabs",
 			"http://*/*",
 			"https://*/*"
+		],
+		"devtools_page": "devtools.html",
+		"content_scripts": [
+			{
+				"matches": [
+					"<all_urls>"
+				],
+				"js": [
+					"hook.js"
+				],
+				"run_at": "document_start"
+			}
 		],
 		"manifest_version": 2
 	};
