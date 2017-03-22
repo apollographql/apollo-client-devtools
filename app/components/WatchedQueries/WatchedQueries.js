@@ -58,7 +58,7 @@ class WatchedQueries extends React.Component {
 
   renderSidebarItem(id, query) {
     let className = 'item';
-    const hasError = query.networkError || query.graphQLErrors.length > 0;
+    const hasError = query.networkError || (query.graphQLErrors && query.graphQLErrors.length > 0);
     return (
       <li key={id} onClick={() => this.selectId(id)}
         className={classnames('item', {
@@ -130,9 +130,9 @@ const Variables = ({variables} ) => {
   const inner = [];
   Object.keys(variables).sort().forEach((name) => {
     inner.push(
-      <tr>
-        <td key={"dt"+name}>{ name }</td>
-        <td key={"dd"+name}>{ JSON.stringify(variables[name]) }</td>
+      <tr key={`tr-${name}`}>
+        <td key={`dt-${name}`}>{ name }</td>
+        <td key={`dd-${name}`}>{ JSON.stringify(variables[name]) }</td>
       </tr>
     );
   });
@@ -142,7 +142,7 @@ const Variables = ({variables} ) => {
 const GraphQLError = ({error}) => (
   <li className='graphql-error'>
     {
-      error.message && 
+      error.message &&
       <span>{error.message}</span>
     }
   </li>
@@ -179,20 +179,21 @@ class WatchedQuery extends React.Component {
         <LabeledShowHide label="Query string" show={false}>
           <GraphqlCodeBlock className="GraphqlCodeBlock" queryBody={query.queryString} />
         </LabeledShowHide>
+        {
+          query.graphQLErrors && query.graphQLErrors.length > 0 &&
+          <LabeledShowHide label="GraphQL Errors" show={query.graphQLErrors && query.graphQLErrors.length > 0}>
+            <ul>
+              {query.graphQLErrors.map((error, i) => <GraphQLError key={i} error={error} />)}
+            </ul>
+          </LabeledShowHide>
+        }
+        {
+          query.networkError &&
+          <LabeledShowHide label="Network Errors" show={!!query.networkError}>
+            <pre>There is a network error: {JSON.stringify(query.networkError)}</pre>
+          </LabeledShowHide>
+        }
 
-        <LabeledShowHide label="GraphQL Errors" show={query.graphQLErrors && query.graphQLErrors.length > 0}>
-          <ul>
-            {query.graphQLErrors.map((error, i) => <GraphQLError key={i} error={error} />)}
-          </ul>
-        </LabeledShowHide>
-
-        <LabeledShowHide label="Network Errors" show={!!query.networkError}>
-          {
-            query.networkError ?
-            <pre>{query.networkError}</pre> :
-            null
-          }
-        </LabeledShowHide>
       </div>
     );
   }
