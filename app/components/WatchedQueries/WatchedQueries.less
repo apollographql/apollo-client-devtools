@@ -115,6 +115,23 @@
           span { color: #AAA; }
         }
 
+        .item-row {
+          display: inline-flex;
+          justify-content: space-between;
+          align-items: center;
+          width: 100%;
+
+          span {
+            max-width: 95%;
+            word-wrap: break-word;
+          }
+
+          .error-icon {
+            width: 16px;
+            height: 16px;
+          }
+        }
+
       }
     }
   }
@@ -199,6 +216,11 @@
 
     .loading {
       background: #AAA;
+    }
+
+    .graphql-error {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, monospace;
     }
   }
 
