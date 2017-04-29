@@ -94263,7 +94263,17 @@
 			"http://*/*",
 			"https://*/*"
 		],
+		"browser_action": {
+			"default_icon": "imgs/plug.png",
+			"default_popup": "devtools.html"
+		},
 		"devtools_page": "devtools.html",
+		"background": {
+			"scripts": [
+				"background.js"
+			],
+			"persistent": false
+		},
 		"content_scripts": [
 			{
 				"matches": [
