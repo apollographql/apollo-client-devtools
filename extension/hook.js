@@ -1,12 +1,25 @@
 const getManifest = chrome.runtime.getManifest;
 const version = (getManifest && getManifest().version) || 'electron-version';
 
+chrome.runtime.onMessage.addListener((request, sender) => {
+  if (request.APOLLO_CONNECTED) {
+    console.log('==> changing icon')
+    chrome.browserAction.setIcon({
+      path: "imgs/plug.png",
+      tabId: sender.tab.id
+    })
+  }
+})
+
 const js = `
 window.__APOLLO_DEVTOOLS_GLOBAL_HOOK__ = { version: "${version}" };
 
 // TODO: change to __APOLLO_DEVTOOLS_EXTENSION__
 window.devToolsExtension = () => {
-  console.log('called extension')
+  console.log('called extension!!')
+
+  chrome.runtime.sendMessage('floladdeneinfkcajfegmmncekeblkke', { APOLLO_CONNECTED: true })
+
   return applyMiddleware(logger)
 }
 
