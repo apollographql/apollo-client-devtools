@@ -14,6 +14,12 @@ ga('set', 'checkProtocolTask', function(){}); // Removes failing protocol check.
 ga('require', 'displayfeatures');
 ga('send', 'pageview', 'DevtoolsPanel');
 
-render(<Panel />, document.getElementById('devtools'));
+document.write('hey')
+
+try {
+  render(<Panel />, document.getElementById('devtools'));
+} catch (e) {
+  document.write(e)
+}
 
 runVersionCheck();
