@@ -23,8 +23,8 @@ document.documentElement.appendChild(script);
 script.parentNode.removeChild(script);
 
 window.addEventListener('message', event => {
-  if (event.source != window) return
-  if (!event.data.APOLLO_CONNECTED) return
+  if (event.source != window) return;
+  if (!event.data.APOLLO_CONNECTED) return;
 
-  chrome.runtime.sendMessage({ APOLLO_CONNECTED: true })
+  chrome.runtime.sendMessage({ APOLLO_CONNECTED: true });
 })

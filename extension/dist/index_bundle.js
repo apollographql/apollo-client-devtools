@@ -81,13 +81,7 @@
 	ga('require', 'displayfeatures');
 	ga('send', 'pageview', 'DevtoolsPanel');
 
-	document.write('hey');
-
-	try {
-	  (0, _reactDom.render)(_react2.default.createElement(_Panel2.default, null), document.getElementById('devtools'));
-	} catch (e) {
-	  document.write(e);
-	}
+	(0, _reactDom.render)(_react2.default.createElement(_Panel2.default, null), document.getElementById('devtools'));
 
 	(0, _checkVersions2.default)();
 
