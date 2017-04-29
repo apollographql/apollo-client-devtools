@@ -94254,7 +94254,7 @@
 		"description": "GraphQL debugging tools for Apollo Client in the Chrome developer console.",
 		"icons": {
 			"16": "imgs/logo64.png",
-			"48": "imgs/logo128.png",
+			"48": "imgs/logo128-green.png",
 			"128": "imgs/logo400.png"
 		},
 		"content_security_policy": "script-src 'self' https://www.google-analytics.com 'unsafe-eval'; object-src 'self'",
@@ -94264,7 +94264,9 @@
 			"https://*/*"
 		],
 		"browser_action": {
-			"default_icon": "imgs/plug.png",
+			"default_icon": {
+				"48": "imgs/logo128.png"
+			},
 			"default_popup": "devtools.html"
 		},
 		"devtools_page": "devtools.html",
