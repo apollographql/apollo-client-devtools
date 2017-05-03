@@ -14,8 +14,8 @@ const __APOLLO_POLL__ = setInterval(() => {
   }
 
   if (__APOLLO_POLL_COUNT__ > 20) clearInterval(__APOLLO_POLL__);
-}, 500)
-`
+}, 500);
+`;
 
 var script = document.createElement('script');
 script.textContent = js;
@@ -27,4 +27,4 @@ window.addEventListener('message', event => {
   if (!event.data.APOLLO_CONNECTED) return;
 
   chrome.runtime.sendMessage({ APOLLO_CONNECTED: true });
-})
+});
