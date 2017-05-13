@@ -28,7 +28,7 @@
     "webpack": "^1.13.3"
   },
   "dependencies": {
-    "apollo-client": "^0.5.12",
+    "apollo-client": "^1.4.2",
     "graphql-syntax-highlighter-react": "^0.1.0",
     "graphql-tag": "^1.1.2",
     "lodash": "^4.17.2",
