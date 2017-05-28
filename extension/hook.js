@@ -27,7 +27,7 @@ window.addEventListener('message', event => {
 
   if (event.data.APOLLO_CONNECTED) {
     chrome.runtime.sendMessage({ APOLLO_CONNECTED: true });
-  } else {
+  } else if (event.data.APOLLO_ACTION) {
     chrome.runtime.sendMessage(event.data);
   }
 });

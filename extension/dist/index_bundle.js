@@ -4493,13 +4493,22 @@
 	  }, {
 	    key: 'initLogger',
 	    value: function initLogger() {
-	      (0, _evalInPage2.default)('\n      (function () {\n        let id = 1;\n\n        if (window.__APOLLO_CLIENT__) {\n          window.__action_log__ = [];\n\n          const logger = (logItem) => {\n            window.postMessage(logItem, \'*\')\n            // Only log Apollo actions for now\n            // type check \'type\' to avoid issues with thunks and other middlewares\n            if (typeof logItem.action.type !== \'string\' || logItem.action.type.split(\'_\')[0] !== \'APOLLO\') {\n              return;\n            }\n\n            id++;\n\n            logItem.id = id;\n\n            window.__action_log__.push(logItem);\n\n            if (window.__action_log__.length > 10) {\n              window.__action_log__.shift();\n            }\n          }\n\n          window.__action_log__.push({\n            id: 0,\n            action: { type: \'INIT\' },\n            state: window.__APOLLO_CLIENT__.queryManager.getApolloState(),\n            dataWithOptimisticResults: window.__APOLLO_CLIENT__.queryManager.getDataWithOptimisticResults(),\n          });\n\n          window.__APOLLO_CLIENT__.__actionHookForDevTools(logger);\n        }\n      })()\n    ', function (result) {
+	      (0, _evalInPage2.default)('\n      (function () {\n        let id = 1;\n\n        if (window.__APOLLO_CLIENT__) {\n          window.__action_log__ = [];\n\n          const logger = (logItem) => {\n            // Only log Apollo actions for now\n            // type check \'type\' to avoid issues with thunks and other middlewares\n            if (typeof logItem.action.type !== \'string\' || logItem.action.type.split(\'_\')[0] !== \'APOLLO\') {\n              return;\n            }\n\n            window.postMessage({ APOLLO_ACTION: logItem }, \'*\')\n          }\n\n          window.__APOLLO_CLIENT__.__actionHookForDevTools(logger);\n        }\n      })()\n    ', function (result) {
 	        // Nothing
 	      });
 
-	      // chrome.runtime.onMessage.addListener((request, sender) => {
-	      //   console.log(request)
-	      // });
+	      this.backgroundPageConnection = chrome.runtime.connect({
+	        name: 'panel'
+	      });
+
+	      this.backgroundPageConnection.postMessage({
+	        name: 'init',
+	        tabId: chrome.devtools.inspectedWindow.tabId
+	      });
+
+	      this.backgroundPageConnection.onMessage.addListener(function (request, sender) {
+	        console.log(request);
+	      });
 	    }
 	  }, {
 	    key: 'componentWillUnmount',
