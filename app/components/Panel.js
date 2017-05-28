@@ -104,6 +104,8 @@ export default class Panel extends Component {
             if (window.__action_log__.length > 10) {
               window.__action_log__.shift();
             }
+
+            window.postMessage(logItem, '*')
           }
 
           window.__action_log__.push({
@@ -118,6 +120,10 @@ export default class Panel extends Component {
       })()
     `, (result) => {
       // Nothing
+    });
+
+    chrome.runtime.onMessage.addListener((request, sender) => {
+      console.log(request)
     });
   }
 
