@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import { connect } from 'react-redux'
 
 import WatchedQueries from './WatchedQueries';
 import Explorer from './Explorer';
@@ -23,7 +24,7 @@ function lastActionId(actionLog) {
   return null;
 }
 
-export default class Panel extends Component {
+class Panel extends Component {
   constructor(props, context) {
     super(props, context);
 
@@ -84,6 +85,7 @@ export default class Panel extends Component {
   }
 
   render() {
+    return <div>{JSON.stringify(this.props.store, null, 2)}</div>
     const { active } = this.state;
 
     const selectedLog = this.selectedApolloLog();
@@ -135,3 +137,5 @@ export default class Panel extends Component {
     );
   }
 }
+
+export default connect(store => ({ store }))(Panel)

@@ -22190,6 +22190,8 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
+	var _redux = __webpack_require__(200);
+
 	var _reactApollo = __webpack_require__(190);
 
 	var _evalInPage = __webpack_require__(41);
@@ -22208,6 +22210,25 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+	function makeHydratable(reducer, hydrateActionType) {
+	  return function (state, action) {
+	    switch (action.type) {
+	      case hydrateActionType:
+	        return reducer(action.state, action);
+	      default:
+	        return reducer(state, action);
+	    }
+	  };
+	}
+
+	var client = new _reactApollo.ApolloClient();
+
+	var rootReducer = makeHydratable((0, _redux.combineReducers)({
+	  apollo: client.reducer()
+	}), '@@HYDRATE');
+
+	var store = (0, _redux.createStore)(rootReducer);
+
 	var App = function (_Component) {
 	  _inherits(App, _Component);
 
@@ -22222,11 +22243,12 @@
 	      args[_key] = arguments[_key];
 	    }
 
-	    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = App.__proto__ || Object.getPrototypeOf(App)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
-	      client: null
-	    }, _this.initLogger = function () {
-	      (0, _evalInPage2.default)('\n      (function () {\n        if (window.__APOLLO_CLIENT__) {\n          window.__action_log__ = [];\n\n          const logger = (logItem) => {\n            // Only log Apollo actions for now\n            // type check \'type\' to avoid issues with thunks and other middlewares\n            if (typeof logItem.action.type !== \'string\' || logItem.action.type.split(\'_\')[0] !== \'APOLLO\') {\n              return;\n            }\n\n            window.postMessage({ APOLLO_ACTION: logItem }, \'*\')\n          }\n\n          window.__APOLLO_CLIENT__.__actionHookForDevTools(logger);\n          return window.__APOLLO_CLIENT__.store.getState().apollo\n        }\n\n        return null;\n      })()\n    ', function (result) {
-	        _this.initClient({ apollo: result });
+	    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = App.__proto__ || Object.getPrototypeOf(App)).call.apply(_ref, [this].concat(args))), _this), _this.initLogger = function () {
+	      (0, _evalInPage2.default)('\n      (function () {\n        if (window.__APOLLO_CLIENT__) {\n          window.__action_log__ = [];\n\n          const logger = (logItem) => {\n            // Only log Apollo actions for now\n            // type check \'type\' to avoid issues with thunks and other middlewares\n            if (typeof logItem.action.type !== \'string\' || logItem.action.type.split(\'_\')[0] !== \'APOLLO\') {\n              return;\n            }\n\n            window.postMessage({ APOLLO_ACTION: logItem }, \'*\')\n          }\n\n          window.__APOLLO_CLIENT__.__actionHookForDevTools(logger);\n          return window.__APOLLO_CLIENT__.store.getState()\n        }\n\n        return null;\n      })()\n    ', function (result) {
+	        store.dispatch({
+	          type: '@@HYDRATE',
+	          state: result
+	        });
 	      });
 
 	      _this.backgroundPageConnection = chrome.runtime.connect({
@@ -22241,13 +22263,6 @@
 	      _this.backgroundPageConnection.onMessage.addListener(function (request, sender) {
 	        console.log(request);
 	      });
-	    }, _this.initClient = function (initialState) {
-	      var client = new _reactApollo.ApolloClient({
-	        initialState: initialState,
-	        connectToDevTools: true
-	      });
-
-	      _this.setState({ client: client });
 	    }, _temp), _possibleConstructorReturn(_this, _ret);
 	  }
 
@@ -22259,12 +22274,10 @@
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      if (!this.state.client) return null;
-
 	      return _react2.default.createElement(
-	        _reactApollo.ApolloClient,
-	        { client: this.state.client },
-	        JSON.stringify(this.state.client.getInitialState(), null, 2)
+	        _reactApollo.ApolloProvider,
+	        { client: client, store: store },
+	        _react2.default.createElement(_Panel2.default, null)
 	      );
 	    }
 	  }]);
@@ -32694,6 +32707,8 @@
 
 	var _classnames2 = _interopRequireDefault(_classnames);
 
+	var _reactRedux = __webpack_require__(250);
+
 	var _WatchedQueries = __webpack_require__(248);
 
 	var _WatchedQueries2 = _interopRequireDefault(_WatchedQueries);
@@ -32824,6 +32839,11 @@
 	    value: function render() {
 	      var _this3 = this;
 
+	      return _react2.default.createElement(
+	        'div',
+	        null,
+	        JSON.stringify(this.props.store, null, 2)
+	      );
 	      var active = this.state.active;
 
 
@@ -32920,7 +32940,9 @@
 	  return Panel;
 	}(_react.Component);
 
-	exports.default = Panel;
+	exports.default = (0, _reactRedux.connect)(function (store) {
+	  return { store: store };
+	})(Panel);
 
 /***/ }),
 /* 247 */

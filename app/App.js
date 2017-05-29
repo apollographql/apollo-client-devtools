@@ -1,13 +1,29 @@
 import React, { Component } from 'react';
+import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import { ApolloClient, ApolloProvider } from 'react-apollo';
 import evalInPage from './evalInPage';
 import Panel from './components/Panel';
 
-export default class App extends Component {
-  state = {
-    client: null
+function makeHydratable(reducer, hydrateActionType) {
+  return function (state, action) {
+    switch (action.type) {
+    case hydrateActionType:
+      return reducer(action.state, action);
+    default:
+      return reducer(state, action);
+    }
   }
+}
 
+const client = new ApolloClient();
+
+const rootReducer = makeHydratable(combineReducers({
+  apollo: client.reducer()
+}), '@@HYDRATE');
+
+const store = createStore(rootReducer);
+
+export default class App extends Component {
   componentDidMount () {
     this.initLogger()
   }
@@ -29,13 +45,16 @@ export default class App extends Component {
           }
 
           window.__APOLLO_CLIENT__.__actionHookForDevTools(logger);
-          return window.__APOLLO_CLIENT__.store.getState().apollo
+          return window.__APOLLO_CLIENT__.store.getState()
         }
 
         return null;
       })()
     `, result => {
-      this.initClient({ apollo: result })
+        store.dispatch({
+          type: '@@HYDRATE',
+          state: result
+        })
     });
 
     this.backgroundPageConnection = chrome.runtime.connect({
@@ -52,23 +71,11 @@ export default class App extends Component {
     });
   }
 
-  initClient = initialState => {
-    const client = new ApolloClient({
-      initialState,
-      connectToDevTools: true
-    });
-
-    this.setState({ client });
-  }
-
   render () {
-    if (!this.state.client) return null
-
     return (
-      <ApolloClient client={this.state.client}>
-        {/* <Panel /> */}
-        {JSON.stringify(this.state.client.getInitialState(), null, 2)}
-      </ApolloClient>
+      <ApolloProvider client={client} store={store}>
+        <Panel />
+      </ApolloProvider>
     )
   };
 }
