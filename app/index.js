@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
-import Panel from './components/Panel';
 import runVersionCheck from './checkVersions';
 import { render } from 'react-dom';
+import App from './App';
 
 // Standard Google Universal Analytics code
 (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -14,6 +14,6 @@ ga('set', 'checkProtocolTask', function(){}); // Removes failing protocol check.
 ga('require', 'displayfeatures');
 ga('send', 'pageview', 'DevtoolsPanel');
 
-render(<Panel />, document.getElementById('devtools'));
+render(<App />, document.getElementById('devtools'));
 
 runVersionCheck();

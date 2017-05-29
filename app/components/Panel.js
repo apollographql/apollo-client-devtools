@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 import WatchedQueries from './WatchedQueries';
@@ -10,8 +11,6 @@ import Store from './Images/Store';
 import Queries from './Images/Queries';
 import Logger from './Logger';
 import { Sidebar } from './Sidebar';
-
-import evalInPage from '../evalInPage';
 
 import '../style.less';
 
@@ -35,88 +34,6 @@ export default class Panel extends Component {
       runVariables: undefined,
       selectedRequestId: undefined,
     };
-
-    this.onRun = this.onRun.bind(this);
-    this.selectLogItem = this.selectLogItem.bind(this);
-  }
-
-  componentDidMount() {
-    this.lastActionId = null;
-    this.interval = setInterval(() => {
-      evalInPage(`
-        (function THIS_IS_POLLING() {
-          return window.__action_log__ && window.__action_log__.map(function (logItem) {
-            // It turns out evaling the whole store is actually incredibly
-            // expensive.
-            const slimItem = {
-              action: logItem.action,
-              id: logItem.id,
-              state: {
-                mutations: logItem.state.mutations,
-                optimistic: logItem.state.optimistic,
-                queries: logItem.state.queries
-              }
-            }
-
-            return slimItem;
-          });
-        })()
-      `, (result) => {
-        if (typeof result === 'undefined') {
-          // We switched to a different window at some point, re-init
-          this.initLogger();
-        }
-
-        const newLastActionId = lastActionId(result);
-        if (newLastActionId !== this.lastActionId) {
-          this.lastActionId = newLastActionId;
-          this.setState({
-            actionLog: result,
-          });
-        }
-      });
-    }, 100);
-
-    this.initLogger();
-  }
-
-  initLogger() {
-    evalInPage(`
-      (function () {
-        let id = 1;
-
-        if (window.__APOLLO_CLIENT__) {
-          window.__action_log__ = [];
-
-          const logger = (logItem) => {
-            // Only log Apollo actions for now
-            // type check 'type' to avoid issues with thunks and other middlewares
-            if (typeof logItem.action.type !== 'string' || logItem.action.type.split('_')[0] !== 'APOLLO') {
-              return;
-            }
-
-            window.postMessage({ APOLLO_ACTION: logItem }, '*')
-          }
-
-          window.__APOLLO_CLIENT__.__actionHookForDevTools(logger);
-        }
-      })()
-    `, (result) => {
-      // Nothing
-    });
-
-    this.backgroundPageConnection = chrome.runtime.connect({
-      name: 'panel'
-    });
-
-    this.backgroundPageConnection.postMessage({
-      name: 'init',
-      tabId: chrome.devtools.inspectedWindow.tabId
-    });
-
-    this.backgroundPageConnection.onMessage.addListener((request, sender) => {
-      console.log(request)
-    });
   }
 
   componentWillUnmount() {
