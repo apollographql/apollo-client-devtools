@@ -14,8 +14,9 @@ chrome.runtime.onConnect.addListener(port => {
     port.onDisconnect.addListener(port => {
         port.onMessage.removeListener(extensionListener);
 
-        var tabs = Object.keys(connections);
-        for (var i=0, len=tabs.length; i < len; i++) {
+        const tabs = Object.keys(connections);
+
+        for (let i = 0; i < tabs.length; i++) {
           if (connections[tabs[i]] == port) {
             delete connections[tabs[i]]
             break;
@@ -28,6 +29,6 @@ chrome.runtime.onMessage.addListener((request, sender) => {
   if (request.APOLLO_CONNECTED) {
     chrome.pageAction.show(sender.tab.id);
   } else if (sender.tab.id in connections && request.APOLLO_ACTION) {
-    connections[sender.tab.id].postMessage(request)
+    connections[sender.tab.id].postMessage(request.APOLLO_ACTION)
   }
 });

@@ -1,27 +1,13 @@
 import React, { Component } from 'react';
-import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import { ApolloClient, ApolloProvider } from 'react-apollo';
+import configureStore from './configureStore'
 import evalInPage from './evalInPage';
 import Panel from './components/Panel';
 
-function makeHydratable(reducer, hydrateActionType) {
-  return function (state, action) {
-    switch (action.type) {
-    case hydrateActionType:
-      return reducer(action.state, action);
-    default:
-      return reducer(state, action);
-    }
-  }
-}
-
 const client = new ApolloClient();
-
-const rootReducer = makeHydratable(combineReducers({
+const store = configureStore({
   apollo: client.reducer()
-}), '@@HYDRATE');
-
-const store = createStore(rootReducer);
+});
 
 export default class App extends Component {
   componentDidMount () {
@@ -61,13 +47,14 @@ export default class App extends Component {
       name: 'panel'
     });
 
+    this.backgroundPageConnection.onMessage.addListener((request, sender) => {
+      console.log(request)
+      store.dispatch(request.action)
+    });
+
     this.backgroundPageConnection.postMessage({
       name: 'init',
       tabId: chrome.devtools.inspectedWindow.tabId
-    });
-
-    this.backgroundPageConnection.onMessage.addListener((request, sender) => {
-      console.log(request)
     });
   }
 

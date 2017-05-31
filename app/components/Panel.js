@@ -85,7 +85,7 @@ class Panel extends Component {
   }
 
   render() {
-    return <div>{JSON.stringify(this.props.store, null, 2)}</div>
+    return <pre style={{ overflow: 'auto', height: '100%' }}>{JSON.stringify(this.props.store, null, 2)}</pre>
     const { active } = this.state;
 
     const selectedLog = this.selectedApolloLog();
