@@ -65,7 +65,7 @@ export default class Inspector extends React.Component {
     this.updateData();
     this._interval = setInterval(() => {
       this.updateData();
-    }, 500);
+    }, 5000);
   }
 
   componentWillUnmount() {
