@@ -1,5 +1,7 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import { connect } from 'react-redux'
 
 import WatchedQueries from './WatchedQueries';
 import Explorer from './Explorer';
@@ -10,8 +12,6 @@ import Store from './Images/Store';
 import Queries from './Images/Queries';
 import Logger from './Logger';
 import { Sidebar } from './Sidebar';
-
-import evalInPage from '../evalInPage';
 
 import '../style.less';
 
@@ -24,7 +24,7 @@ function lastActionId(actionLog) {
   return null;
 }
 
-export default class Panel extends Component {
+class Panel extends Component {
   constructor(props, context) {
     super(props, context);
 
@@ -35,90 +35,6 @@ export default class Panel extends Component {
       runVariables: undefined,
       selectedRequestId: undefined,
     };
-
-    this.onRun = this.onRun.bind(this);
-    this.selectLogItem = this.selectLogItem.bind(this);
-  }
-
-  componentDidMount() {
-    this.lastActionId = null;
-    this.interval = setInterval(() => {
-      evalInPage(`
-        (function THIS_IS_POLLING() {
-          return window.__action_log__ && window.__action_log__.map(function (logItem) {
-            // It turns out evaling the whole store is actually incredibly
-            // expensive.
-            const slimItem = {
-              action: logItem.action,
-              id: logItem.id,
-              state: {
-                mutations: logItem.state.mutations,
-                optimistic: logItem.state.optimistic,
-                queries: logItem.state.queries
-              }
-            }
-
-            return slimItem;
-          });
-        })()
-      `, (result) => {
-        if (typeof result === 'undefined') {
-          // We switched to a different window at some point, re-init
-          this.initLogger();
-        }
-
-        const newLastActionId = lastActionId(result);
-        if (newLastActionId !== this.lastActionId) {
-          this.lastActionId = newLastActionId;
-          this.setState({
-            actionLog: result,
-          });
-        }
-      });
-    }, 100);
-
-    this.initLogger();
-  }
-
-  initLogger() {
-    evalInPage(`
-      (function () {
-        let id = 1;
-
-        if (window.__APOLLO_CLIENT__) {
-          window.__action_log__ = [];
-
-          const logger = (logItem) => {
-            // Only log Apollo actions for now
-            // type check 'type' to avoid issues with thunks and other middlewares
-            if (typeof logItem.action.type !== 'string' || logItem.action.type.split('_')[0] !== 'APOLLO') {
-              return;
-            }
-
-            id++;
-
-            logItem.id = id;
-
-            window.__action_log__.push(logItem);
-
-            if (window.__action_log__.length > 10) {
-              window.__action_log__.shift();
-            }
-          }
-
-          window.__action_log__.push({
-            id: 0,
-            action: { type: 'INIT' },
-            state: window.__APOLLO_CLIENT__.queryManager.getApolloState(),
-            dataWithOptimisticResults: window.__APOLLO_CLIENT__.queryManager.getDataWithOptimisticResults(),
-          });
-
-          window.__APOLLO_CLIENT__.__actionHookForDevTools(logger);
-        }
-      })()
-    `, (result) => {
-      // Nothing
-    });
   }
 
   componentWillUnmount() {
@@ -169,6 +85,7 @@ export default class Panel extends Component {
   }
 
   render() {
+    return <pre style={{ overflow: 'auto', height: '100%' }}>{JSON.stringify(this.props.store, null, 2)}</pre>
     const { active } = this.state;
 
     const selectedLog = this.selectedApolloLog();
@@ -220,3 +137,5 @@ export default class Panel extends Component {
     );
   }
 }
+
+export default connect(store => ({ store }))(Panel)
