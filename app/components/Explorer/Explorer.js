@@ -79,7 +79,7 @@ export default class Explorer extends Component {
             return window.__APOLLO_CLIENT__.query({
               query: payload.query,
               variables: payload.variables,
-              noFetch: true,
+              fetchPolicy: 'cache-only',
             }).catch(e => ({
               errors: e.graphQLErrors,
             }));
