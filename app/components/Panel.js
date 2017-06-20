@@ -1,7 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import classnames from 'classnames';
+import { getMutationDefinition } from 'apollo-client';
 
 import WatchedQueries from './WatchedQueries';
+import Mutations from './Mutations';
 import Explorer from './Explorer';
 import Inspector from './Inspector';
 import Apollo from './Images/Apollo';
@@ -34,6 +36,7 @@ export default class Panel extends Component {
       runQuery: undefined,
       runVariables: undefined,
       selectedRequestId: undefined,
+      automaticallyRunQuery: undefined
     };
 
     this.onRun = this.onRun.bind(this);
@@ -143,12 +146,13 @@ export default class Panel extends Component {
     return this.state.actionLog[this.state.actionLog.length - 1];
   }
 
-  onRun(queryString, variables) {
-    ga('send', 'event', 'WatchedQueries', 'run-in-graphiql');
+  onRun(queryString, variables, tab, automaticallyRunQuery) {
+    ga('send', 'event', tab, 'run-in-graphiql');
     this.setState({
       active: 'graphiql',
       runQuery: queryString,
       runVariables: variables ? JSON.stringify(variables, null, 2) : '',
+      automaticallyRunQuery
     });
   }
 
@@ -179,11 +183,15 @@ export default class Panel extends Component {
       // XXX this won't work in the dev tools
       body = selectedLog && <WatchedQueries state={selectedLog.state} onRun={this.onRun}/>;
       break;
+    case 'mutations':
+      // XXX this won't work in the dev tools
+      body = selectedLog && <Mutations state={selectedLog.state} onRun={this.onRun}/>;
+      break;
     case 'store':
       body = selectedLog && <Inspector />;
       break;
     case 'graphiql':
-      body = <Explorer query={this.state.runQuery} variables={this.state.runVariables}/>;
+      body = <Explorer query={this.state.runQuery} variables={this.state.runVariables} automaticallyRunQuery={this.state.automaticallyRunQuery} />;
       break;
     case 'logger':
       body = <Logger
@@ -209,6 +217,11 @@ export default class Panel extends Component {
             className={classnames('tab', { active: active === 'queries' })}
             onClick={() => this.switchPane('queries')}
           ><Queries /><div>Queries</div></div>
+          { getMutationDefinition && <div
+            title="Watched mutations"
+            className={classnames('tab', { active: active === 'mutations' })}
+            onClick={() => this.switchPane('mutations')}
+          ><Queries /><div>Mutations</div></div> }
           <div
             title="Apollo client store"
             className={classnames('tab', { active: active === 'store' })}

@@ -1,34 +1,33 @@
 import React, { PropTypes } from 'react';
-import { connect } from 'react-redux';
 import pickBy from 'lodash/pickBy';
 import sortBy from 'lodash/sortBy';
 import classnames from 'classnames';
-import { getQueryDefinition } from 'apollo-client';
+import { getMutationDefinition } from 'apollo-client';
 import { parse } from 'graphql-tag/parser';
 import { GraphqlCodeBlock } from 'graphql-syntax-highlighter-react';
 import { Sidebar } from '../Sidebar';
 import Warning from '../Images/Warning';
 
-import './WatchedQueries.less';
+import './Mutations.less';
 
-const queryNameFromQueryString = (queryString) => {
-  const doc = parse(queryString);
-  const queryDefinition = getQueryDefinition(doc);
-  if (queryDefinition.name && queryDefinition.name.value) {
-    return queryDefinition.name.value;
+const mutationNameFromMutationString = (mutationString) => {
+  const doc = parse(mutationString);
+  const mutationDefinition = getMutationDefinition(doc);
+  if (mutationDefinition.name && mutationDefinition.name.value) {
+    return mutationDefinition.name.value;
   }
   return null;
 };
 
-const queryLabel = (queryId, query) => {
-  const queryName = queryNameFromQueryString(query.queryString);
-  if (queryName === null) {
-    return queryId;
+const mutationLabel = (mutationId, mutation) => {
+  const mutationName = mutationNameFromMutationString(mutation.mutationString);
+  if (mutationName === null) {
+    return mutationId;
   }
-  return `${queryName}`;
+  return `${mutationName}`;
 };
 
-class WatchedQueries extends React.Component {
+class Mutations extends React.Component {
   constructor(props, context) {
     super(props, context);
 
@@ -38,36 +37,36 @@ class WatchedQueries extends React.Component {
   }
 
   componentDidMount() {
-    if (ga) ga('send', 'pageview', 'WatchedQueries');
+    if (ga) ga('send', 'pageview', 'Mutations');
   }
 
   selectId(id) {
     this.setState({ selectedId: id });
   }
 
-  getQueries() {
+  getMutations() {
     return this.props.state ?
-      pickBy(this.props.state.queries, query => !query.stopped) :
+      pickBy(this.props.state.mutations, mutation => !mutation.stopped) :
       {};
   }
 
-  sortedQueryIds() {
-    const queries = this.getQueries();
-    return sortBy(Object.keys(queries), id => parseInt(id, 10));
+  sortedMutationIds() {
+    const mutations = this.getMutations();
+    return sortBy(Object.keys(mutations), id => parseInt(id, 10));
   }
 
-  renderSidebarItem(id, query) {
+  renderSidebarItem(id, mutation) {
     let className = 'item';
-    const hasError = query.networkError || (query.graphQLErrors && query.graphQLErrors.length > 0);
+    const hasError = mutation.networkError || (mutation.graphQLErrors && mutation.graphQLErrors.length > 0);
     return (
       <li key={id} onClick={() => this.selectId(id)}
         className={classnames('item', {
           active: id === this.state.selectedId,
-          loading: query.loading,
+          loading: mutation.loading,
           error: hasError
         })}>
         <div className='item-row'>
-          <span>{queryLabel(id, query)}</span>
+          <span>{mutationLabel(id, mutation)}</span>
           {hasError && <span className='error-icon'><Warning /></span>}
         </div>
       </li>
@@ -75,22 +74,23 @@ class WatchedQueries extends React.Component {
   }
 
   render() {
-    const queries = this.getQueries();
+    const mutations = this.getMutations();
+
     const { selectedId } = this.state;
     return (
-      <div className="watchedQueries body">
-        <Sidebar className="sidebar" name="watched-queries-sidebar">
-          <div className="queries-sidebar-title">Watched queries</div>
-          <ol className="query-list">{this.sortedQueryIds().map(id => this.renderSidebarItem(id, queries[id]))}</ol>
+      <div className="mutations body">
+        <Sidebar className="sidebar" name="watched-mutations-sidebar">
+          <div className="mutations-sidebar-title">Watched mutations</div>
+          <ol className="mutation-list">{this.sortedMutationIds().map(id => this.renderSidebarItem(id, mutations[id]))}</ol>
         </Sidebar>
-        {selectedId && queries[selectedId] &&
-        <WatchedQuery queryId={selectedId} query={queries[selectedId]} onRun={this.props.onRun} />}
+        {selectedId && mutations[selectedId] &&
+        <WatchedMutation mutationId={selectedId} mutation={mutations[selectedId]} onRun={this.props.onRun} />}
       </div>
     );
   }
 }
 
-WatchedQueries.propTypes = {
+Mutations.propTypes = {
   state: PropTypes.object,
 };
 
@@ -153,44 +153,44 @@ GraphQLError.propTypes = {
   }),
 };
 
-class WatchedQuery extends React.Component {
+class WatchedMutation extends React.Component {
   render() {
-    const { queryId, query } = this.props;
-    const reactComponentDisplayName = query && query.metadata
-            && query.metadata.reactComponent
-            && query.metadata.reactComponent.displayName;
+    const { mutationId, mutation } = this.props;
+    const reactComponentDisplayName = mutation && mutation.metadata
+            && mutation.metadata.reactComponent
+            && mutation.metadata.reactComponent.displayName;
     return (
-      <div className={classnames('main', {loading: query.loading})}>
+      <div className={classnames('main', {loading: mutation.loading})}>
         <div className="panel-title">
-          { queryLabel(queryId, query) }
+          { mutationLabel(mutationId, mutation) }
           {reactComponentDisplayName && <span className='component-name'>{`<${reactComponentDisplayName}>`}</span>}
           <span
-            className="run-in-graphiql-link"
-            onClick={() => this.props.onRun(query.queryString, query.variables, 'WatchedQueries', true)}
-          >Run in GraphiQL</span>
-        <span className={classnames('loading-label', { show: query.loading })}>(loading)</span>
+            className="show-in-graphiql-link"
+            onClick={() => this.props.onRun(mutation.mutationString, mutation.variables, 'Mutations', false)}
+          >Show in GraphiQL</span>
+        <span className={classnames('loading-label', { show: mutation.loading })}>(loading)</span>
         </div>
         {
-          query.variables &&
+          mutation.variables &&
           <LabeledShowHide label="Variables">
-            <Variables variables={query.variables} />
+            <Variables variables={mutation.variables} />
           </LabeledShowHide>
         }
-        <LabeledShowHide label="Query string" show={false}>
-          <GraphqlCodeBlock className="GraphqlCodeBlock" queryBody={query.queryString} />
+        <LabeledShowHide label="Mutation string" show={false}>
+          <GraphqlCodeBlock className="GraphqlCodeBlock" queryBody={mutation.mutationString} />
         </LabeledShowHide>
         {
-          query.graphQLErrors && query.graphQLErrors.length > 0 &&
-          <LabeledShowHide label="GraphQL Errors" show={query.graphQLErrors && query.graphQLErrors.length > 0}>
+          mutation.graphQLErrors && mutation.graphQLErrors.length > 0 &&
+          <LabeledShowHide label="GraphQL Errors" show={mutation.graphQLErrors && mutation.graphQLErrors.length > 0}>
             <ul>
-              {query.graphQLErrors.map((error, i) => <GraphQLError key={i} error={error} />)}
+              {mutation.graphQLErrors.map((error, i) => <GraphQLError key={i} error={error} />)}
             </ul>
           </LabeledShowHide>
         }
         {
-          query.networkError &&
-          <LabeledShowHide label="Network Errors" show={!!query.networkError}>
-            <pre>There is a network error: {JSON.stringify(query.networkError)}</pre>
+          mutation.networkError &&
+          <LabeledShowHide label="Network Errors" show={!!mutation.networkError}>
+            <pre>There is a network error: {JSON.stringify(mutation.networkError)}</pre>
           </LabeledShowHide>
         }
 
@@ -199,4 +199,4 @@ class WatchedQuery extends React.Component {
   }
 }
 
-export default WatchedQueries;
+export default Mutations;
