@@ -22,7 +22,6 @@ function lastActionId(actionLog) {
     const lastApolloState = actionLog[actionLog.length - 1];
     return lastApolloState && lastApolloState.id;
   }
-
   return null;
 }
 
@@ -51,11 +50,21 @@ export default class Panel extends Component {
           return window.__action_log__ && window.__action_log__.map(function (logItem) {
             // It turns out evaling the whole store is actually incredibly
             // expensive.
+            let mutations = logItem.state.mutations;
+            let mutationsArray = Object.keys(mutations).map(function(key, index) {
+              return [key, mutations[key]];
+            });
+            // chose 10 arbitrarily so we only display 10 mutations in log
+            mutationsArray = mutationsArray.slice(mutationsArray.length - 10, mutationsArray.length);
+            mutations = {}
+            mutationsArray.forEach(function(m) {
+              mutations[m[0]] = m[1];
+            });
             const slimItem = {
               action: logItem.action,
               id: logItem.id,
               state: {
-                mutations: logItem.state.mutations,
+                mutations: mutations,
                 optimistic: logItem.state.optimistic,
                 queries: logItem.state.queries
               }
@@ -180,11 +189,11 @@ export default class Panel extends Component {
     let body;
     switch(active) {
     case 'queries':
-      // XXX this won't work in the dev tools
+      // XXX this won't work in the dev tools (probably does work now)
       body = selectedLog && <WatchedQueries state={selectedLog.state} onRun={this.onRun}/>;
       break;
     case 'mutations':
-      // XXX this won't work in the dev tools
+      // XXX this won't work in the dev tools (probably does work now)
       body = selectedLog && <Mutations state={selectedLog.state} onRun={this.onRun}/>;
       break;
     case 'store':

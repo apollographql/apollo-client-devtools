@@ -317,7 +317,6 @@ class StoreTreeFieldSet extends React.Component {
 }
 
 const StoreTreeArray = ({ value }) => {
-  console.log(value);
   return (<div className="store-tree-field-set">
     {value.map((item, index) => <StoreTreeArrayItem item={item} index={index} /> )}
   </div>);
