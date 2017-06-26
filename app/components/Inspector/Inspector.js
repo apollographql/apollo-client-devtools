@@ -63,13 +63,20 @@ export default class Inspector extends React.Component {
   componentDidMount() {
     if (ga) ga('send', 'pageview', 'StoreInspector');
     this.updateData();
-    this._interval = setInterval(() => {
-      this.updateData();
+    
+    const updater = () => this._interval = setTimeout(() => {
+      try {
+        this.updateData();
+      } finally {
+        updater();
+      }
     }, 1000);
+    
+    updater();
   }
 
   componentWillUnmount() {
-    clearInterval(this._interval);
+    clearTimeout(this._interval);
   }
 
   getChildContext() {
