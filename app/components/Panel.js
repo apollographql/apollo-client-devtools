@@ -92,9 +92,7 @@ export default class Panel extends Component {
   componentDidMount() {
     this.lastActionId = null;
     const updater = () => this._interval = setTimeout(() => {
-      this.updateData().then(()=>{
-        updater();
-      })
+      this.updateData().catch(console.error).then(updater)
     }, 1000);
     
     updater();

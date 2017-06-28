@@ -67,9 +67,7 @@ export default class Inspector extends React.Component {
     if (ga) ga('send', 'pageview', 'StoreInspector');
     this.updateData();
     const updater = () => this._interval = setTimeout(() => {
-      this.updateData().then(() => {
-        updater();
-      })
+      this.updateData().catch(console.error).then(updater)
     }, 1000);
     
     updater();
