@@ -91,15 +91,11 @@ export default class Panel extends Component {
   }
   componentDidMount() {
     this.lastActionId = null;
-    let lasttime = Date.now()
     const updater = () => this._interval = setTimeout(() => {
-      const newTime = Date.now()
-      console.log('polling! time from last = ',newTime-lasttime)
-      lasttime = newTime
       this.updateData().then(()=>{
         updater();
       })
-    }, 100);
+    }, 1000);
     
     updater();
     this.initLogger();
