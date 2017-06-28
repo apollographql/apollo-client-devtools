@@ -27,49 +27,56 @@ export default class Inspector extends React.Component {
   }
 
   updateData() {
-    evalInPage(`
-      (function () {
-        const numActions = window.__action_log__ && window.__action_log__.length;
-        if(numActions) {
-          return window.__action_log__[numActions - 1].dataWithOptimisticResults;
+    return new Promise((resolve) => {
+      evalInPage(`
+        (function () {
+          const numActions = window.__action_log__ && window.__action_log__.length;
+          if(numActions) {
+            return window.__action_log__[numActions - 1].dataWithOptimisticResults;
+          }
+        })()
+      `, (dataWithOptimistic) => {
+        let toHighlight = {};
+
+        if (this.state.searchTerm.length >= 3) {
+          toHighlight = highlightFromSearchTerm({
+            data: dataWithOptimistic,
+            query: this.state.searchTerm,
+          });
         }
-      })()
-    `, (dataWithOptimistic) => {
-      let toHighlight = {};
 
-      if (this.state.searchTerm.length >= 3) {
-        toHighlight = highlightFromSearchTerm({
-          data: dataWithOptimistic,
-          query: this.state.searchTerm,
+        const unsortedIds = Object.keys(dataWithOptimistic).filter(id => id[0] !== '$');
+        const highlightedIds = Object.keys(toHighlight).filter(id => id[0] !== '$' && id !== 'ROOT_QUERY');
+        const sortedIdsWithoutRoot = unsortedIds.filter(
+          id => id !== 'ROOT_QUERY' && highlightedIds.indexOf(id) < 0
+        ).sort();
+        const ids = [...highlightedIds, 'ROOT_QUERY', ...sortedIdsWithoutRoot];
+
+        this.setState({
+          dataWithOptimistic,
+          toHighlight,
+          ids,
+          selectedId: this.state.selectedId || ids[0],
         });
-      }
-
-      const unsortedIds = Object.keys(dataWithOptimistic).filter(id => id[0] !== '$');
-      const highlightedIds = Object.keys(toHighlight).filter(id => id[0] !== '$' && id !== 'ROOT_QUERY');
-      const sortedIdsWithoutRoot = unsortedIds.filter(
-        id => id !== 'ROOT_QUERY' && highlightedIds.indexOf(id) < 0
-      ).sort();
-      const ids = [...highlightedIds, 'ROOT_QUERY', ...sortedIdsWithoutRoot];
-
-      this.setState({
-        dataWithOptimistic,
-        toHighlight,
-        ids,
-        selectedId: this.state.selectedId || ids[0],
+        resolve()
       });
-    });
+    })
   }
 
   componentDidMount() {
     if (ga) ga('send', 'pageview', 'StoreInspector');
     this.updateData();
-    this._interval = setInterval(() => {
-      this.updateData();
+    const updater = () => this._interval = setTimeout(() => {
+      this.updateData().then(() => {
+        updater();
+      })
     }, 1000);
+    
+    updater();
   }
 
   componentWillUnmount() {
-    clearInterval(this._interval);
+    clearTimeout(this._interval);
   }
 
   getChildContext() {

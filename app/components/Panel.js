@@ -41,10 +41,8 @@ export default class Panel extends Component {
     this.onRun = this.onRun.bind(this);
     this.selectLogItem = this.selectLogItem.bind(this);
   }
-
-  componentDidMount() {
-    this.lastActionId = null;
-    this.interval = setInterval(() => {
+  updateData() {
+    return new Promise((resolve) => {
       evalInPage(`
         (function THIS_IS_POLLING() {
           return window.__action_log__ && window.__action_log__.map(function (logItem) {
@@ -86,9 +84,24 @@ export default class Panel extends Component {
             actionLog: result,
           });
         }
+        resolve()
       });
+    })
+    
+  }
+  componentDidMount() {
+    this.lastActionId = null;
+    let lasttime = Date.now()
+    const updater = () => this._interval = setTimeout(() => {
+      const newTime = Date.now()
+      console.log('polling! time from last = ',newTime-lasttime)
+      lasttime = newTime
+      this.updateData().then(()=>{
+        updater();
+      })
     }, 100);
-
+    
+    updater();
     this.initLogger();
   }
 
@@ -134,7 +147,7 @@ export default class Panel extends Component {
   }
 
   componentWillUnmount() {
-    clearInterval(this.interval);
+    clearTimeout(this._interval);
   }
 
   selectedApolloLog() {
