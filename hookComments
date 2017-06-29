@@ -1,0 +1,38 @@
+/*console.log(window.__APOLLO_CLIENT__);
+  if (window.__APOLLO_CLIENT__) {
+    window.__APOLLO_CLIENT__.__actionHookForDevTools((item) => {
+      console.log('in hook.js action hook');
+      console.log(item);
+    });
+  }
+  */
+
+  /*
+var apolloClientInit = function () {
+  console.log('in apollo client');
+  console.log(window.__APOLLO_CLIENT__);
+  function check() {
+    if (window.__APOLLO_CLIENT__ != undefined) {
+      console.log('clearing interval');
+      clearInterval(id);
+    }
+  }
+  var id = setInterval(check(), 100);
+}
+apolloClientInit();
+*/
+
+/*
+.then() {
+  window.__APOLLO_CLIENT__.__actionHookForDevTools((item) => {
+    console.log(item);
+  });
+}
+*/
+
+/*
+window.__APOLLO_CLIENT__.__actionHookForDevTools((item) => {
+  console.log('in hook.js action hook');
+  console.log(item);
+});
+*/

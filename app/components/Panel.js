@@ -17,6 +17,7 @@ import evalInPage from '../evalInPage';
 
 import '../style.less';
 
+
 function lastActionId(actionLog) {
   if (actionLog && actionLog.length) {
     const lastApolloState = actionLog[actionLog.length - 1];
@@ -35,8 +36,18 @@ export default class Panel extends Component {
       runQuery: undefined,
       runVariables: undefined,
       selectedRequestId: undefined,
-      automaticallyRunQuery: undefined
+      automaticallyRunQuery: undefined,
     };
+    /*
+    let backgroundPageConnection = chrome.runtime.connect({
+      // sending tabId as name to make connection one-step process
+      name: chrome.devtools.inspectedWindow.tabId.toString()
+    });
+
+    backgroundPageConnection.onMessage.addListener((request, sender) => {
+      console.log('recieved message from background.onConnect ', request);
+    });
+    */
 
     this.onRun = this.onRun.bind(this);
     this.selectLogItem = this.selectLogItem.bind(this);
