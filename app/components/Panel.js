@@ -47,138 +47,140 @@ export default class Panel extends Component {
     backgroundPageConnection.onMessage.addListener((request, sender) => {
       console.log('recieved message from background.onConnect ', request);
       request = [request];
-      request.map(function(logItem) {
-        console.log('in request.map')
-        // mutations throwing error
-        /*
-        let mutations = logItem.state.mutations;
-        let mutationsArray = Object.keys(mutations).map(function(key, index) {
-          return [key, mutations[key]];
-        });
-        // chose 10 arbitrary so we only display 10 mutations in log
-        mutationsArray = mutationsArray.slice(mutationsArray.length - 10, mutationsArray.length);
-        mutations = {}
-        mutationsArray.forEach(function(m) {
-          mutations[m[0]] = m[1];
-        });
-        */
-        const slimItem = {
-          action: logItem.action,
-          //this logItem doesn't have an id???
-          state: {
-            //need to fix mutations before can be added
-            optimistic: logItem.state.optimistic, //nothing in optimistc???
-            queries: logItem.state.queries
+      function makeSlimItem(request) {
+        return request.map(function(logItem) {
+          console.log('in request.map')
+          // mutations throwing error
+          /*
+          let mutations = logItem.state.mutations;
+          let mutationsArray = Object.keys(mutations).map(function(key, index) {
+            return [key, mutations[key]];
+          });
+          // chose 10 arbitrary so we only display 10 mutations in log
+          mutationsArray = mutationsArray.slice(mutationsArray.length - 10, mutationsArray.length);
+          mutations = {}
+          mutationsArray.forEach(function(m) {
+            mutations[m[0]] = m[1];
+          });
+          */
+          const slimItem = {
+            //this logItem doesn't have an id???
+            state: {
+              //need to fix mutations before can be added
+              queries: logItem.state.queries
+            }
           }
-        }
-        return slimItem;
-        //console.log(slimItem);
-        //not including undefined portion because shouldn't ever have undefined object???
-        //can't add id stuff because doesn't have id?
-      });
-      console.log(request);
-      console.log(this.setState);
+          return slimItem;
+        });
+      }
+      const result = makeSlimItem(request);
       this.setState({
-        actionLog: request
+        actionLog: result
       });
-      console.log(this.state.actionLog);
+      //console.log('THIS.STATE.ACTIONLOG', this.state.actionLog);
     });
 
     this.onRun = this.onRun.bind(this);
     this.selectLogItem = this.selectLogItem.bind(this);
   }
 
+
   componentDidMount() {
-    this.lastActionId = null;
-    this.interval = setInterval(() => {
-      evalInPage(`
-        (function THIS_IS_POLLING() {
-          return window.__action_log__ && window.__action_log__.map(function (logItem) {
-            // It turns out evaling the whole store is actually incredibly
-            // expensive.
-            //console.log(logItem);
-            let mutations = logItem.state.mutations;
-            let mutationsArray = Object.keys(mutations).map(function(key, index) {
-              return [key, mutations[key]];
-            });
-            // chose 10 arbitrarily so we only display 10 mutations in log
-            mutationsArray = mutationsArray.slice(mutationsArray.length - 10, mutationsArray.length);
-            mutations = {}
-            mutationsArray.forEach(function(m) {
-              mutations[m[0]] = m[1];
-            });
-            const slimItem = {
-              action: logItem.action,
-              id: logItem.id,
-              state: {
-                mutations: mutations,
-                optimistic: logItem.state.optimistic,
-                queries: logItem.state.queries
-              }
-            }
 
-            return slimItem;
-          });
-        })()
-      `, (result) => {
-        if (typeof result === 'undefined') {
-          // We switched to a different window at some point, re-init
-          this.initLogger();
-        }
+    // this.lastActionId = null;
+    // this.interval = setInterval(() => {
+    //   evalInPage(`
+    //     (function THIS_IS_POLLING() {
+    //       return window.__action_log__ && window.__action_log__.map(function (logItem) {
+    //         // It turns out evaling the whole store is actually incredibly
+    //         // expensive.
+    //         //console.log(logItem);
+    //         let mutations = logItem.state.mutations;
+    //         let mutationsArray = Object.keys(mutations).map(function(key, index) {
+    //           return [key, mutations[key]];
+    //         });
+    //         // chose 10 arbitrarily so we only display 10 mutations in log
+    //         mutationsArray = mutationsArray.slice(mutationsArray.length - 10, mutationsArray.length);
+    //         mutations = {}
+    //         mutationsArray.forEach(function(m) {
+    //           mutations[m[0]] = m[1];
+    //         });
+    //         const slimItem = {
+    //           action: logItem.action,
+    //           id: logItem.id,
+    //           state: {
+    //             mutations: mutations,
+    //             optimistic: logItem.state.optimistic,
+    //             queries: logItem.state.queries
+    //           }
+    //         }
 
-        const newLastActionId = lastActionId(result);
-        if (newLastActionId !== this.lastActionId) {
-          this.lastActionId = newLastActionId;
-          this.setState({
-            actionLog: result,
-          });
-        }
-      });
-    }, 100);
+    //         return slimItem;
+    //       });
+    //     })()
+    //   `, (result) => {
+    //     //console.log('RESULT');
+    //     //console.log(result);
+    //     if (typeof result === 'undefined') {
+    //       // We switched to a different window at some point, re-init
+    //       this.initLogger();
+    //     }
 
-    this.initLogger();
+    //     const newLastActionId = lastActionId(result);
+    //     if (newLastActionId !== this.lastActionId) {
+    //       this.lastActionId = newLastActionId;
+    //       /*
+    //       this.setState({
+    //         actionLog: result,
+    //       });
+    //       */
+    //     }
+    //   });
+    // }, 100);
+
+    // this.initLogger();
   }
 
-  initLogger() {
-    evalInPage(`
-      (function () {
-        let id = 1;
+  // initLogger() {
+  //   evalInPage(`
+  //     (function () {
+  //       let id = 1;
 
-        if (window.__APOLLO_CLIENT__) {
-          window.__action_log__ = [];
+  //       if (window.__APOLLO_CLIENT__) {
+  //         window.__action_log__ = [];
 
-          const logger = (logItem) => {
-            // Only log Apollo actions for now
-            // type check 'type' to avoid issues with thunks and other middlewares
-            if (typeof logItem.action.type !== 'string' || logItem.action.type.split('_')[0] !== 'APOLLO') {
-              return;
-            }
+  //         const logger = (logItem) => {
+  //           // Only log Apollo actions for now
+  //           // type check 'type' to avoid issues with thunks and other middlewares
+  //           if (typeof logItem.action.type !== 'string' || logItem.action.type.split('_')[0] !== 'APOLLO') {
+  //             return;
+  //           }
 
-            id++;
+  //           id++;
 
-            logItem.id = id;
+  //           logItem.id = id;
 
-            window.__action_log__.push(logItem);
+  //           window.__action_log__.push(logItem);
 
-            if (window.__action_log__.length > 10) {
-              window.__action_log__.shift();
-            }
-          }
+  //           if (window.__action_log__.length > 10) {
+  //             window.__action_log__.shift();
+  //           }
+  //         }
 
-          window.__action_log__.push({
-            id: 0,
-            action: { type: 'INIT' },
-            state: window.__APOLLO_CLIENT__.queryManager.getApolloState(),
-            dataWithOptimisticResults: window.__APOLLO_CLIENT__.queryManager.getDataWithOptimisticResults(),
-          });
+  //         window.__action_log__.push({
+  //           id: 0,
+  //           action: { type: 'INIT' },
+  //           state: window.__APOLLO_CLIENT__.queryManager.getApolloState(),
+  //           dataWithOptimisticResults: window.__APOLLO_CLIENT__.queryManager.getDataWithOptimisticResults(),
+  //         });
 
-          //window.__APOLLO_CLIENT__.__actionHookForDevTools(logger);
-        }
-      })()
-    `, (result) => {
-      // Nothing
-    });
-  }
+  //         //window.__APOLLO_CLIENT__.__actionHookForDevTools(logger);
+  //       }
+  //     })()
+  //   `, (result) => {
+  //     // Nothing
+  //   });
+  // }
 
   componentWillUnmount() {
     clearInterval(this.interval);
@@ -230,7 +232,7 @@ export default class Panel extends Component {
 
   render() {
     const { active, actionLog} = this.state;
-    console.log(actionLog);
+    console.log('RENDER ACTION LOG ', actionLog);
     const selectedLog = this.selectedApolloLog();
 
     let body;
