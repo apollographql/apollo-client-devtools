@@ -1,13 +1,12 @@
 var connections = {};
 let apolloConnected = false;
 var random = Math.random();
+let backgroundPageConnection = undefined;
 
 var openCount = 0;
 chrome.runtime.onConnect.addListener((port) => {
-  console.log('in runtime connect');
   tabId = port.name
   connections[tabId] = port;
-  console.log(random, tabId, port, connections);
   //port.postMessage({test: 'test'});
   /*
   if (port.name == "devtools-page") {
@@ -50,33 +49,30 @@ chrome.runtime.onConnect.addListener((port) => {
 chrome.runtime.onMessage.addListener((request, sender) => {
 
   // sender.tab.id and/or request.tab.id getting send from messages (could be any type of message)
+  /* tried below try/catch statements to expedite process of getting tab id from extension
+   * but doesn't seem to be helping so probs delete
+   */
   /*
-  if (sender.tab.id) {
-    console.log('in sender.tab.id if statement', sender.tab.id, request, sender);
-  }
-  if (request.tab.id) {
-    console.log('in request.tab.id if statement', request.tab.id, request, sender);
-  }
-  */
   try {
-    console.log('in sender.tab.id if statement', sender.tab.id, request, sender);
+    console.log('in sender.tab.id try', sender.tab.id, request, sender);
+    backgroundPageConnection = chrome.runtime.connect(null, {name: sender.tab.id.toString()});
   }
   catch(err) {
     console.log(err)
     console.log('problem with sender tab id');
   }
+  */
 
-  //tabId gets sent from devtools.js
-  if (request.tabId) {
-    console.log('in request.tabId');
-    chrome.runtime.connect({name: request.tabId.toString()});
-  }
-
+  // why did I add this???
   if (!apolloConnected && request.APOLLO_CONNECTED) {
     chrome.pageAction.show(sender.tab.id);
     apolloConnected = true;
   }
 
+  // post data from background.js to port set up with panel.js
+  // poll to see if person has openend devtools panel in chrome extension every 500ms,
+  // need tabId to instantiate port b/w background and panel to push along data from background to panel
+  // tabId comes from panel.js
   if (request.apolloClientStore) {
     console.log(random, 'in request.apolloClientStore');
     try {
@@ -84,11 +80,17 @@ chrome.runtime.onMessage.addListener((request, sender) => {
       console.log('posted apolloClientStore message')
     }
     catch(err) {
-      console.log('in err');
-      chrome.runtime.connect({name: sender.tab.id.toString()});
-      connections[sender.tab.id].postMessage(request.apolloClientStore);
-      //console.log('posted apolloClientStore message from callback');
+      console.log('request.apolloClientStore err');
+      let connectionsPoll = setInterval(function() {
+        //console.log('in connectionsPoll');
+        //console.log(connections);
+        if(connections[sender.tab.id]) {
+          connections[sender.tab.id].postMessage(request.apolloClientStore);
+          console.log('posted apolloClientStore message from err', request.apolloClientStore);
+          //console.log(connections);
+          clearInterval(connectionsPoll);
+        }
+      }, 500);
     }
   }
-    //connections[sender.tab.id].postMessage(request.apolloClientStore);
 });

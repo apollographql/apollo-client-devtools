@@ -38,7 +38,7 @@ export default class Panel extends Component {
       selectedRequestId: undefined,
       automaticallyRunQuery: undefined,
     };
-    /*
+
     let backgroundPageConnection = chrome.runtime.connect({
       // sending tabId as name to make connection one-step process
       name: chrome.devtools.inspectedWindow.tabId.toString()
@@ -46,8 +46,43 @@ export default class Panel extends Component {
 
     backgroundPageConnection.onMessage.addListener((request, sender) => {
       console.log('recieved message from background.onConnect ', request);
+      request = [request];
+      request.map(function(logItem) {
+        console.log('in request.map')
+        // mutations throwing error
+        /*
+        let mutations = logItem.state.mutations;
+        let mutationsArray = Object.keys(mutations).map(function(key, index) {
+          return [key, mutations[key]];
+        });
+        // chose 10 arbitrary so we only display 10 mutations in log
+        mutationsArray = mutationsArray.slice(mutationsArray.length - 10, mutationsArray.length);
+        mutations = {}
+        mutationsArray.forEach(function(m) {
+          mutations[m[0]] = m[1];
+        });
+        */
+        const slimItem = {
+          action: logItem.action,
+          //this logItem doesn't have an id???
+          state: {
+            //need to fix mutations before can be added
+            optimistic: logItem.state.optimistic, //nothing in optimistc???
+            queries: logItem.state.queries
+          }
+        }
+        return slimItem;
+        //console.log(slimItem);
+        //not including undefined portion because shouldn't ever have undefined object???
+        //can't add id stuff because doesn't have id?
+      });
+      console.log(request);
+      console.log(this.setState);
+      this.setState({
+        actionLog: request
+      });
+      console.log(this.state.actionLog);
     });
-    */
 
     this.onRun = this.onRun.bind(this);
     this.selectLogItem = this.selectLogItem.bind(this);
@@ -61,6 +96,7 @@ export default class Panel extends Component {
           return window.__action_log__ && window.__action_log__.map(function (logItem) {
             // It turns out evaling the whole store is actually incredibly
             // expensive.
+            //console.log(logItem);
             let mutations = logItem.state.mutations;
             let mutationsArray = Object.keys(mutations).map(function(key, index) {
               return [key, mutations[key]];
@@ -136,7 +172,7 @@ export default class Panel extends Component {
             dataWithOptimisticResults: window.__APOLLO_CLIENT__.queryManager.getDataWithOptimisticResults(),
           });
 
-          window.__APOLLO_CLIENT__.__actionHookForDevTools(logger);
+          //window.__APOLLO_CLIENT__.__actionHookForDevTools(logger);
         }
       })()
     `, (result) => {
@@ -193,8 +229,8 @@ export default class Panel extends Component {
   }
 
   render() {
-    const { active } = this.state;
-
+    const { active, actionLog} = this.state;
+    console.log(actionLog);
     const selectedLog = this.selectedApolloLog();
 
     let body;
