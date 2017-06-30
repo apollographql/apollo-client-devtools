@@ -2,21 +2,12 @@ var connections = {};
 let apolloConnected = false;
 var random = Math.random();
 let backgroundPageConnection = undefined;
+let requestLog = {}; // this is shitty runtime
 
 var openCount = 0;
 chrome.runtime.onConnect.addListener((port) => {
   tabId = port.name
   connections[tabId] = port;
-  //port.postMessage({test: 'test'});
-  /*
-  if (port.name == "devtools-page") {
-    if (openCount == 0) {
-      alert("DevTools window opening.");
-    }
-    openCount++;
-  }
-  */
-
 
   var extensionListener = function(message, sender, sendResponse) {
     // original connection event doesn't include the tab ID of the
@@ -47,6 +38,8 @@ chrome.runtime.onConnect.addListener((port) => {
 });
 
 chrome.runtime.onMessage.addListener((request, sender) => {
+  console.log(request);
+  console.log('in runtime.onMessage');
 
   // sender.tab.id and/or request.tab.id getting send from messages (could be any type of message)
   /* tried below try/catch statements to expedite process of getting tab id from extension
@@ -73,24 +66,51 @@ chrome.runtime.onMessage.addListener((request, sender) => {
   // poll to see if person has openend devtools panel in chrome extension every 500ms,
   // need tabId to instantiate port b/w background and panel to push along data from background to panel
   // tabId comes from panel.js
+
+  let id = 0;
+  if (request != requestLog[id]) {
+    id++;
+    requestLog[id] = request;
+  }
+
+  /*
   if (request.apolloClientStore) {
     console.log(random, 'in request.apolloClientStore');
-    try {
+    console.log(request);
+   try {
       connections[sender.tab.id].postMessage(request.apolloClientStore);
       console.log('posted apolloClientStore message')
     }
+    // only need one interval with latest data
     catch(err) {
       console.log('request.apolloClientStore err');
       let connectionsPoll = setInterval(function() {
-        //console.log('in connectionsPoll');
-        //console.log(connections);
         if(connections[sender.tab.id]) {
           connections[sender.tab.id].postMessage(request.apolloClientStore);
           console.log('posted apolloClientStore message from err', request.apolloClientStore);
-          //console.log(connections);
           clearInterval(connectionsPoll);
         }
       }, 500);
+    }
+  }
+  */
+  if (request.trimmedObj) {
+    console.log(random, 'in request.trimmedObj');
+    console.log(request);
+    try {
+      connections[sender.tab.id].postMessage(request.trimmedObj);
+      console.log('posted apolloClientStore message');
+    }
+    // only need on interval with latest data
+    catch(err) {
+      console.log('request.trimmedObj err');
+      let connectionsPoll = setInterval(function() {
+        if (connections[sender.tab.id]) {
+          connections[sender.tab.id].postMessage(request.trimmedObj);
+          console.log('posted trimmedObj message from err', request.trimmedObj);
+          clearInterval(connectionsPoll);
+        }
+      }, 500); 
     }
   }
 });

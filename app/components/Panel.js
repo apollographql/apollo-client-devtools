@@ -49,10 +49,9 @@ export default class Panel extends Component {
       request = [request];
       function makeSlimItem(request) {
         return request.map(function(logItem) {
-          console.log('in request.map')
+          console.log(logItem);
           // mutations throwing error
-          /*
-          let mutations = logItem.state.mutations;
+          let mutations = logItem.mutations;
           let mutationsArray = Object.keys(mutations).map(function(key, index) {
             return [key, mutations[key]];
           });
@@ -62,12 +61,11 @@ export default class Panel extends Component {
           mutationsArray.forEach(function(m) {
             mutations[m[0]] = m[1];
           });
-          */
           const slimItem = {
-            //this logItem doesn't have an id???
             state: {
               //need to fix mutations before can be added
-              queries: logItem.state.queries
+              mutations: logItem.mutations,
+              queries: logItem.queries
             }
           }
           return slimItem;
@@ -77,7 +75,6 @@ export default class Panel extends Component {
       this.setState({
         actionLog: result
       });
-      //console.log('THIS.STATE.ACTIONLOG', this.state.actionLog);
     });
 
     this.onRun = this.onRun.bind(this);
@@ -87,8 +84,8 @@ export default class Panel extends Component {
 
   componentDidMount() {
 
-    // this.lastActionId = null;
-    // this.interval = setInterval(() => {
+    this.lastActionId = null;
+     this.interval = setInterval(() => {
     //   evalInPage(`
     //     (function THIS_IS_POLLING() {
     //       return window.__action_log__ && window.__action_log__.map(function (logItem) {
@@ -136,7 +133,7 @@ export default class Panel extends Component {
     //       */
     //     }
     //   });
-    // }, 100);
+     }, 100);
 
     // this.initLogger();
   }
