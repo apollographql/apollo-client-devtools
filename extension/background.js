@@ -73,27 +73,6 @@ chrome.runtime.onMessage.addListener((request, sender) => {
     requestLog[id] = request;
   }
 
-  /*
-  if (request.apolloClientStore) {
-    console.log(random, 'in request.apolloClientStore');
-    console.log(request);
-   try {
-      connections[sender.tab.id].postMessage(request.apolloClientStore);
-      console.log('posted apolloClientStore message')
-    }
-    // only need one interval with latest data
-    catch(err) {
-      console.log('request.apolloClientStore err');
-      let connectionsPoll = setInterval(function() {
-        if(connections[sender.tab.id]) {
-          connections[sender.tab.id].postMessage(request.apolloClientStore);
-          console.log('posted apolloClientStore message from err', request.apolloClientStore);
-          clearInterval(connectionsPoll);
-        }
-      }, 500);
-    }
-  }
-  */
   if (request.trimmedObj) {
     console.log(random, 'in request.trimmedObj');
     console.log(request);
