@@ -5,7 +5,7 @@ let requestLog = {};
 
 chrome.runtime.onConnect.addListener((port) => {
   tabId = port.name
-  connections[tabId] = port;
+  connections[tabId] = [port, {}];
 
   port.onDisconnect.addListener(port => {
 
@@ -20,21 +20,34 @@ chrome.runtime.onConnect.addListener((port) => {
 });
 
 chrome.runtime.onMessage.addListener((request, sender) => {
+  if (request.tabId || request.didMount) {
+    const mountedPanel = Object.values(request)[1];
+    port = connections[request.tabId];
+    port[1][mountedPanel] = true;
+  }
 
-  // not sure if being used
   if (!apolloConnected && request.APOLLO_CONNECTED) {
     chrome.pageAction.show(sender.tab.id);
     apolloConnected = true;
   }
 
+  if (request.queriesDidMount) {
+    console.log(request);
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      chrome.tabs.sendMessage({action: "queriesData"}, function() {
+        console.log('send queries mount to hook');
+      });
+    });
+  }
+
   if (request.trimmedObj) {
     if (connections[sender.tab.id]) {
-      connections[sender.tab.id].postMessage(request.trimmedObj);
+      connections[sender.tab.id][0].postMessage(request.trimmedObj);
     }
     else {
       let connectionsPoll = setInterval(function() {
         if (connections[sender.tab.id]) {
-          connections[sender.tab.id].postMessage(request.trimmedObj);
+          connections[sender.tab.id][0].postMessage(request.trimmedObj);
           clearInterval(connectionsPoll);
         }
       }, 500);
