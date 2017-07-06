@@ -9,8 +9,6 @@ chrome.runtime.onConnect.addListener((port) => {
 
   port.onDisconnect.addListener(port => {
 
-    port.onMessage.removeListener(extensionListener);
-
     const tabs = Object.keys(connections);
     for (let i = 0; i < tabs.length; i++) {
       if (connections[tabs[i]] == port) {
@@ -28,17 +26,18 @@ chrome.runtime.onMessage.addListener((request, sender) => {
     chrome.pageAction.show(sender.tab.id);
     apolloConnected = true;
   }
+
   if (request.trimmedObj) {
-    try {
+    if (connections[sender.tab.id]) {
       connections[sender.tab.id].postMessage(request.trimmedObj);
     }
-    catch(err) {
+    else {
       let connectionsPoll = setInterval(function() {
         if (connections[sender.tab.id]) {
           connections[sender.tab.id].postMessage(request.trimmedObj);
           clearInterval(connectionsPoll);
         }
-      }, 500); 
+      }, 500);
     }
   }
 });
