@@ -88,11 +88,8 @@ export default class Panel extends Component {
   initLogger() {
     evalInPage(`
       (function () {
-        let id = 1;
-
         if (window.__APOLLO_CLIENT__) {
-          window.__action_log__ = [];
-
+          // window.__action_log__ initialized in hook.js
           window.__action_log__.push({
             dataWithOptimisticResults: window.__APOLLO_CLIENT__.queryManager.getDataWithOptimisticResults(),
           });
@@ -153,9 +150,7 @@ export default class Panel extends Component {
 
   render() {
     const { active, actionLog } = this.state;
-    console.log(actionLog);
     const selectedLog = this.selectedApolloLog();
-    console.log('selectedLog ', selectedLog);
     let body;
     switch(active) {
     case 'queries':

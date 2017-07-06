@@ -29,7 +29,9 @@ window.__APOLLO_DEVTOOLS_GLOBAL_HOOK__ = { version: "${version}" };
 let __APOLLO_POLL_COUNT__ = 0;
 const __APOLLO_POLL__ = setInterval(() => {
   if (!!window.__APOLLO_CLIENT__) {
-    window.__action_log__ = [];
+    if (!window.__action_log__) {
+      window.__action_log__ = [];
+    }
     window.postMessage({ APOLLO_CONNECTED: true}, '*');
     isConnected = true;
     window.__APOLLO_CLIENT__.__actionHookForDevTools(hookLogger);
