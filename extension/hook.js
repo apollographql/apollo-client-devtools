@@ -2,16 +2,25 @@ const getManifest = chrome.runtime.getManifest;
 const version = (getManifest && getManifest().version) || 'electron-version';
 let passedApolloConnected = false;
 
+
 const js = `
 let isConnected = false;
 
-const hookLogger = (stateObj) => {
+const hookLogger = (logItem) => {
+
   if (!!window.__APOLLO_CLIENT__) {
+    
     const trimmedObj = {
-      queries: stateObj.state.queries,
-      mutations: stateObj.state.mutations
+      queries: logItem.state.queries,
+      mutations: logItem.state.mutations
     }
+
     window.postMessage({ trimmedObj }, '*');
+
+    if (typeof logItem.action.type !== 'string' || logItem.action.type.split('_')[0] !== 'APOLLO') {
+        return;
+    }
+    window.__action_log__.push(logItem);    
   }
 }
 
@@ -20,9 +29,10 @@ window.__APOLLO_DEVTOOLS_GLOBAL_HOOK__ = { version: "${version}" };
 let __APOLLO_POLL_COUNT__ = 0;
 const __APOLLO_POLL__ = setInterval(() => {
   if (!!window.__APOLLO_CLIENT__) {
+    window.__action_log__ = [];
     window.postMessage({ APOLLO_CONNECTED: true}, '*');
     isConnected = true;
-    window.__APOLLO_CLIENT__.__actionHookForDevTools(hookLogger)
+    window.__APOLLO_CLIENT__.__actionHookForDevTools(hookLogger);
     clearInterval(__APOLLO_POLL__);
   } else {
     __APOLLO_POLL_COUNT__ += 1;

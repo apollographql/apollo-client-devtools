@@ -93,32 +93,10 @@ export default class Panel extends Component {
         if (window.__APOLLO_CLIENT__) {
           window.__action_log__ = [];
 
-          const logger = (logItem) => {
-            // Only log Apollo actions for now
-            // type check 'type' to avoid issues with thunks and other middlewares
-            if (typeof logItem.action.type !== 'string' || logItem.action.type.split('_')[0] !== 'APOLLO') {
-              return;
-            }
-
-            id++;
-
-            logItem.id = id;
-
-            window.__action_log__.push(logItem);
-
-            if (window.__action_log__.length > 10) {
-              window.__action_log__.shift();
-            }
-          }
-
           window.__action_log__.push({
-            id: 0,
-            action: { type: 'INIT' },
-            state: window.__APOLLO_CLIENT__.queryManager.getApolloState(),
             dataWithOptimisticResults: window.__APOLLO_CLIENT__.queryManager.getDataWithOptimisticResults(),
           });
           
-          window.__APOLLO_CLIENT__.__actionHookForDevTools(logger);
         }
       })()
     `, (result) => {
@@ -144,7 +122,6 @@ export default class Panel extends Component {
 
       return filtered.length && filtered[0];
     }
-
     return this.state.actionLog[this.state.actionLog.length - 1];
   }
 
@@ -175,8 +152,10 @@ export default class Panel extends Component {
   }
 
   render() {
-    const { active, actionLog} = this.state;
+    const { active, actionLog } = this.state;
+    console.log(actionLog);
     const selectedLog = this.selectedApolloLog();
+    console.log('selectedLog ', selectedLog);
     let body;
     switch(active) {
     case 'queries':
