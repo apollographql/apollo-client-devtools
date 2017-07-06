@@ -64,7 +64,5 @@ window.addEventListener('message', event => {
   if (!!event.data.trimmedObj) {
     chrome.runtime.sendMessage({ trimmedObj: event.data.trimmedObj });
   }
-  else {
-    return;
-  }
+  return;
 });
