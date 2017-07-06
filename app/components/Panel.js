@@ -36,7 +36,7 @@ export default class Panel extends Component {
       runQuery: undefined,
       runVariables: undefined,
       selectedRequestId: undefined,
-      automaticallyRunQuery: undefined,
+      automaticallyRunQuery: undefined
     };
 
     let backgroundPageConnection = chrome.runtime.connect({
@@ -45,11 +45,9 @@ export default class Panel extends Component {
     });
 
     backgroundPageConnection.onMessage.addListener((request, sender) => {
-      console.log('recieved message from background.onConnect ', request);
       request = [request];
       function makeSlimItem(request) {
         return request.map(function(logItem) {
-          console.log(logItem);
           let mutations = logItem.mutations;
           let mutationsArray = Object.keys(mutations).map(function(key, index) {
             return [key, mutations[key]];
@@ -81,11 +79,9 @@ export default class Panel extends Component {
 
 
   componentDidMount() {
-
     this.lastActionId = null;
      this.interval = setInterval(() => {
      }, 100);
-
     this.initLogger();
   }
 
@@ -121,8 +117,6 @@ export default class Panel extends Component {
             state: window.__APOLLO_CLIENT__.queryManager.getApolloState(),
             dataWithOptimisticResults: window.__APOLLO_CLIENT__.queryManager.getDataWithOptimisticResults(),
           });
-
-          //window.__APOLLO_CLIENT__.__actionHookForDevTools(logger);
         }
       })()
     `, (result) => {
@@ -180,9 +174,7 @@ export default class Panel extends Component {
 
   render() {
     const { active, actionLog} = this.state;
-    console.log('RENDER ACTION LOG ', actionLog);
     const selectedLog = this.selectedApolloLog();
-
     let body;
     switch(active) {
     case 'queries':
