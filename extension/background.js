@@ -24,6 +24,10 @@ chrome.runtime.onMessage.addListener((request, sender) => {
     const mountedPanel = Object.values(request)[1];
     port = connections[request.tabId];
     port[1][mountedPanel] = true;
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      chrome.tabs.sendMessage(request.tabId, {action: mountedPanel});
+    });
+    console.log('sent onMount message to hook???');
   }
 
   if (!apolloConnected && request.APOLLO_CONNECTED) {

@@ -37,6 +37,12 @@ class Mutations extends React.Component {
   }
 
   componentDidMount() {
+    chrome.runtime.sendMessage({
+      tabId: chrome.devtools.inspectedWindow.tabId,
+      didMount: 'mutations'
+    }, function() {
+      console.log('send mutataions mount to background');
+    });
     if (ga) ga('send', 'pageview', 'Mutations');
   }
 

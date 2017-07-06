@@ -1,7 +1,7 @@
 const getManifest = chrome.runtime.getManifest;
 const version = (getManifest && getManifest().version) || 'electron-version';
 let passedApolloConnected = false;
-
+let mountedTabs = {};
 
 const js = `
 let isConnected = false;
@@ -50,8 +50,15 @@ script.parentNode.removeChild(script);
 
 // event.data has the data being passed in the message
 window.addEventListener('message', event => {
+
+  /*
   if (event.source != window) 
     return;
+  */ 
+  console.log(event);
+  if (event.data.didMount) {
+    console.log('event.data.didMount in hook');
+  }
 
   if (event.data.APOLLO_CONNECTED) {
     if (!passedApolloConnected) {
@@ -66,3 +73,11 @@ window.addEventListener('message', event => {
   }
   return;
 });
+
+// check which tab on extension has mounted
+chrome.runtime.onMessage.addListener(
+  function(request, sender) {
+    mountedTabs[request.action] = true;
+    console.log(mountedTabs);
+  }
+);

@@ -19,7 +19,7 @@ export default class Inspector extends React.Component {
       ids: [],
       selectedId: null,
       toHighlight: {},
-      searchTerm: '',
+      searchTerm: ''
     };
 
     this.setSearchTerm = this.setSearchTerm.bind(this);
@@ -61,6 +61,12 @@ export default class Inspector extends React.Component {
   }
 
   componentDidMount() {
+    chrome.runtime.sendMessage({
+      tabId: chrome.devtools.inspectedWindow.tabId,
+      didMount: 'inspector'
+    }, function() {
+      console.log('send inspector mount to background');
+    });
     if (ga) ga('send', 'pageview', 'StoreInspector');
     this.updateData();
     this._interval = setInterval(() => {
@@ -69,6 +75,7 @@ export default class Inspector extends React.Component {
   }
 
   componentWillUnmount() {
+    this.didMount = false;
     clearInterval(this._interval);
   }
 
