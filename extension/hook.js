@@ -1,10 +1,8 @@
 const getManifest = chrome.runtime.getManifest;
 const version = (getManifest && getManifest().version) || 'electron-version';
 let passedApolloConnected = false;
-let apolloClientStoreLog = [];
 
 const js = `
-// where to put actionHookForDevTools part shouldn't need to go in setInterval
 let isConnected = false;
 
 const hookLogger = (stateObj) => {
@@ -23,10 +21,8 @@ let __APOLLO_POLL_COUNT__ = 0;
 const __APOLLO_POLL__ = setInterval(() => {
   if (!!window.__APOLLO_CLIENT__) {
     window.postMessage({ APOLLO_CONNECTED: true}, '*');
-    console.log(window.__APOLLO_CLIENT__);
     isConnected = true;
     window.__APOLLO_CLIENT__.__actionHookForDevTools(hookLogger)
-    console.log('set actionHookForDevTools');
     clearInterval(__APOLLO_POLL__);
   } else {
     __APOLLO_POLL_COUNT__ += 1;
@@ -35,33 +31,27 @@ const __APOLLO_POLL__ = setInterval(() => {
 }, 500);
 `;
 
-var script = document.createElement('script');
+let script = document.createElement('script');
 script.textContent = js;
 document.documentElement.appendChild(script);
 script.parentNode.removeChild(script);
 
 // event.data has the data being passed in the message
 window.addEventListener('message', event => {
-  console.log('in hook.js window event listener', event);
   if (event.source != window) 
     return;
 
   if (event.data.APOLLO_CONNECTED) {
-    console.log('in event.data.APOLLO_CONNECTED');
     if (!passedApolloConnected) {
       chrome.runtime.sendMessage({ APOLLO_CONNECTED: true}, function() {
         passedApolloConnected = true;
-        console.log('sent event.data.APOLLO_CONNECTED message');
       });
     }
   }
 
   if (!!event.data.trimmedObj) {
-    chrome.runtime.sendMessage({ trimmedObj: event.data.trimmedObj }, function() {
-      console.log('sent APOLLOCLIENTSTORE message', event.data.apolloClientStore);
-    });
+    chrome.runtime.sendMessage({ trimmedObj: event.data.trimmedObj });
   }
-  // else equivalent to if (!event.data.APOLLO_CONNECTED)
   else {
     return;
   }

@@ -50,7 +50,6 @@ export default class Panel extends Component {
       function makeSlimItem(request) {
         return request.map(function(logItem) {
           console.log(logItem);
-          // mutations throwing error
           let mutations = logItem.mutations;
           let mutationsArray = Object.keys(mutations).map(function(key, index) {
             return [key, mutations[key]];
@@ -63,7 +62,6 @@ export default class Panel extends Component {
           });
           const slimItem = {
             state: {
-              //need to fix mutations before can be added
               mutations: logItem.mutations,
               queries: logItem.queries
             }
@@ -86,53 +84,6 @@ export default class Panel extends Component {
 
     this.lastActionId = null;
      this.interval = setInterval(() => {
-    //   evalInPage(`
-    //     (function THIS_IS_POLLING() {
-    //       return window.__action_log__ && window.__action_log__.map(function (logItem) {
-    //         // It turns out evaling the whole store is actually incredibly
-    //         // expensive.
-    //         //console.log(logItem);
-    //         let mutations = logItem.state.mutations;
-    //         let mutationsArray = Object.keys(mutations).map(function(key, index) {
-    //           return [key, mutations[key]];
-    //         });
-    //         // chose 10 arbitrarily so we only display 10 mutations in log
-    //         mutationsArray = mutationsArray.slice(mutationsArray.length - 10, mutationsArray.length);
-    //         mutations = {}
-    //         mutationsArray.forEach(function(m) {
-    //           mutations[m[0]] = m[1];
-    //         });
-    //         const slimItem = {
-    //           action: logItem.action,
-    //           id: logItem.id,
-    //           state: {
-    //             mutations: mutations,
-    //             optimistic: logItem.state.optimistic,
-    //             queries: logItem.state.queries
-    //           }
-    //         }
-
-    //         return slimItem;
-    //       });
-    //     })()
-    //   `, (result) => {
-    //     //console.log('RESULT');
-    //     //console.log(result);
-    //     if (typeof result === 'undefined') {
-    //       // We switched to a different window at some point, re-init
-    //       this.initLogger();
-    //     }
-
-    //     const newLastActionId = lastActionId(result);
-    //     if (newLastActionId !== this.lastActionId) {
-    //       this.lastActionId = newLastActionId;
-    //       /*
-    //       this.setState({
-    //         actionLog: result,
-    //       });
-    //       */
-    //     }
-    //   });
      }, 100);
 
     this.initLogger();
