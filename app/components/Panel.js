@@ -117,6 +117,8 @@ export default class Panel extends Component {
             state: window.__APOLLO_CLIENT__.queryManager.getApolloState(),
             dataWithOptimisticResults: window.__APOLLO_CLIENT__.queryManager.getDataWithOptimisticResults(),
           });
+          
+          window.__APOLLO_CLIENT__.__actionHookForDevTools(logger);
         }
       })()
     `, (result) => {
