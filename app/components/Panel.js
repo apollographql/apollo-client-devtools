@@ -44,32 +44,25 @@ export default class Panel extends Component {
       name: chrome.devtools.inspectedWindow.tabId.toString()
     });
 
-    backgroundPageConnection.onMessage.addListener((request, sender) => {
-      request = [request];
-      function makeSlimItem(request) {
-        return request.map(function(logItem) {
-          let mutations = logItem.mutations;
-          let mutationsArray = Object.keys(mutations).map(function(key, index) {
-            return [key, mutations[key]];
-          });
-          // chose 10 arbitrary so we only display 10 mutations in log
-          mutationsArray = mutationsArray.slice(mutationsArray.length - 10, mutationsArray.length);
-          mutations = {}
-          mutationsArray.forEach(function(m) {
-            mutations[m[0]] = m[1];
-          });
-          const slimItem = {
-            state: {
-              mutations: logItem.mutations,
-              queries: logItem.queries
-            }
-          }
-          return slimItem;
-        });
+    backgroundPageConnection.onMessage.addListener((logItem, sender) => {
+      let mutations = logItem.mutations;
+      let mutationsArray = Object.keys(mutations).map(function(key, index) {
+        return [key, mutations[key]];
+      });
+      // chose 10 arbitrary so we only display 10 mutations in log
+      mutationsArray = mutationsArray.slice(mutationsArray.length - 10, mutationsArray.length);
+      mutations = {}
+      mutationsArray.forEach(function(m) {
+        mutations[m[0]] = m[1];
+      });
+      const slimItem = {
+        state: {
+          mutations: logItem.mutations,
+          queries: logItem.queries
+        }
       }
-      const result = makeSlimItem(request);
       this.setState({
-        actionLog: result
+        actionLog: [slimItem]
       });
     });
 
@@ -80,8 +73,6 @@ export default class Panel extends Component {
 
   componentDidMount() {
     this.lastActionId = null;
-     this.interval = setInterval(() => {
-     }, 100);
     this.initLogger();
   }
 

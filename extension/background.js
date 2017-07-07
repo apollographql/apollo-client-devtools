@@ -9,13 +9,9 @@ chrome.runtime.onConnect.addListener((port) => {
 
   port.onDisconnect.addListener(port => {
 
+
     const tabs = Object.keys(connections);
-    for (let i = 0; i < tabs.length; i++) {
-      if (connections[tabs[i]] == port) {
-        delete connections[tabs[i]];
-        break;
-      }
-    }
+    delete connections[tabId];
   });
 });
 
