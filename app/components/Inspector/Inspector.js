@@ -3,8 +3,13 @@ import { Sidebar } from '../Sidebar';
 import classnames from 'classnames';
 import evalInPage from '../../evalInPage';
 import _ from 'lodash';
-
 import './inspector.less';
+
+
+export function inspectorHook(dataWithOptimistic) {
+  console.log('in inspectorHook from inspector.js');
+  console.log(dataWithOptimistic);
+}
 
 export default class Inspector extends React.Component {
   static childContextTypes = {
@@ -24,6 +29,7 @@ export default class Inspector extends React.Component {
 
     this.setSearchTerm = this.setSearchTerm.bind(this);
     this.updateData = this.updateData.bind(this);
+
   }
 
   updateData() {
@@ -61,15 +67,19 @@ export default class Inspector extends React.Component {
   }
 
   componentDidMount() {
-
+    console.log('in inspector mount');
+    // tab detection
     chrome.runtime.sendMessage({
       tabId: chrome.devtools.inspectedWindow.tabId,
       panelTab: 'inspector'
     }, function() {
       console.log('send inspector mount to background');
     });
+
+    //analytics
     if (ga) ga('send', 'pageview', 'StoreInspector');
     
+    // polling
     this.updateData();
     this._interval = setInterval(() => {
       this.updateData();
@@ -77,7 +87,6 @@ export default class Inspector extends React.Component {
   }
 
   componentWillUnmount() {
-    console.log('inspector unmount');
     this.didMount = false;
     clearInterval(this._interval);
   }

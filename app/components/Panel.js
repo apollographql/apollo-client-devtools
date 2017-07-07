@@ -12,11 +12,9 @@ import Store from './Images/Store';
 import Queries from './Images/Queries';
 import Logger from './Logger';
 import { Sidebar } from './Sidebar';
-
 import evalInPage from '../evalInPage';
-
+import { inspectorHook } from './Inspector/Inspector'; //inspectorHook is a js function
 import '../style.less';
-
 
 function lastActionId(actionLog) {
   if (actionLog && actionLog.length) {
@@ -27,6 +25,7 @@ function lastActionId(actionLog) {
 }
 
 export default class Panel extends Component {
+  
   constructor(props, context) {
     super(props, context);
 
@@ -43,9 +42,12 @@ export default class Panel extends Component {
       // sending tabId as name to make connection one-step process
       name: chrome.devtools.inspectedWindow.tabId.toString()
     });
-
     backgroundPageConnection.onMessage.addListener((request, sender) => {
+      // send dataWithOptimistic to inspector file
+      inspectorHook(request.dataWithOptimistic);
+      
       request = [request];
+      console.log(request)
       function makeSlimItem(request) {
         return request.map(function(logItem) {
           let mutations = logItem.mutations;
@@ -79,6 +81,7 @@ export default class Panel extends Component {
 
 
   componentDidMount() {
+    console.log('panel mount');
     this.lastActionId = null;
      this.interval = setInterval(() => {
      }, 100);
@@ -93,7 +96,6 @@ export default class Panel extends Component {
           window.__action_log__.push({
             dataWithOptimisticResults: window.__APOLLO_CLIENT__.queryManager.getDataWithOptimisticResults(),
           });
-          
         }
       })()
     `, (result) => {
