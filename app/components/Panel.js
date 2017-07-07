@@ -17,6 +17,7 @@ import evalInPage from '../evalInPage';
 
 import '../style.less';
 
+
 function lastActionId(actionLog) {
   if (actionLog && actionLog.length) {
     const lastApolloState = actionLog[actionLog.length - 1];
@@ -38,101 +39,50 @@ export default class Panel extends Component {
       automaticallyRunQuery: undefined
     };
 
+    let backgroundPageConnection = chrome.runtime.connect({
+      // sending tabId as name to make connection one-step process
+      name: chrome.devtools.inspectedWindow.tabId.toString()
+    });
+
+    backgroundPageConnection.onMessage.addListener((logItem, sender) => {
+      let mutations = logItem.mutations;
+      let mutationsArray = Object.keys(mutations).map(function(key, index) {
+        return [key, mutations[key]];
+      });
+      // chose 10 arbitrary so we only display 10 mutations in log
+      mutationsArray = mutationsArray.slice(mutationsArray.length - 10, mutationsArray.length);
+      mutations = {}
+      mutationsArray.forEach(function(m) {
+        mutations[m[0]] = m[1];
+      });
+      const slimItem = {
+        state: {
+          mutations: logItem.mutations,
+          queries: logItem.queries
+        }
+      }
+      this.setState({
+        actionLog: [slimItem]
+      });
+    });
+
     this.onRun = this.onRun.bind(this);
     this.selectLogItem = this.selectLogItem.bind(this);
   }
-  updateData() {
-    return new Promise((resolve) => {
-      evalInPage(`
-        (function THIS_IS_POLLING() {
-          return window.__action_log__ && window.__action_log__.map(function (logItem) {
-            // It turns out evaling the whole store is actually incredibly
-            // expensive.
-            let mutations = logItem.state.mutations;
-            let mutationsArray = Object.keys(mutations).map(function(key, index) {
-              return [key, mutations[key]];
-            });
-            // chose 10 arbitrarily so we only display 10 mutations in log
-            mutationsArray = mutationsArray.slice(mutationsArray.length - 10, mutationsArray.length);
-            mutations = {}
-            mutationsArray.forEach(function(m) {
-              mutations[m[0]] = m[1];
-            });
-            const slimItem = {
-              action: logItem.action,
-              id: logItem.id,
-              state: {
-                mutations: mutations,
-                optimistic: logItem.state.optimistic,
-                queries: logItem.state.queries
-              }
-            }
-
-            return slimItem;
-          });
-        })()
-      `, (result) => {
-        if (typeof result === 'undefined') {
-          // We switched to a different window at some point, re-init
-          this.initLogger();
-        }
-
-        const newLastActionId = lastActionId(result);
-        if (newLastActionId !== this.lastActionId) {
-          this.lastActionId = newLastActionId;
-          this.setState({
-            actionLog: result,
-          });
-        }
-        resolve()
-      });
-    })
-    
-  }
   componentDidMount() {
     this.lastActionId = null;
-    const updater = () => this._interval = setTimeout(() => {
-      this.updateData().catch(console.error).then(updater)
-    }, 1000);
-    
-    updater();
     this.initLogger();
   }
 
   initLogger() {
     evalInPage(`
       (function () {
-        let id = 1;
-
         if (window.__APOLLO_CLIENT__) {
-          window.__action_log__ = [];
-
-          const logger = (logItem) => {
-            // Only log Apollo actions for now
-            // type check 'type' to avoid issues with thunks and other middlewares
-            if (typeof logItem.action.type !== 'string' || logItem.action.type.split('_')[0] !== 'APOLLO') {
-              return;
-            }
-
-            id++;
-
-            logItem.id = id;
-
-            window.__action_log__.push(logItem);
-
-            if (window.__action_log__.length > 10) {
-              window.__action_log__.shift();
-            }
-          }
-
+          // window.__action_log__ initialized in hook.js
           window.__action_log__.push({
-            id: 0,
-            action: { type: 'INIT' },
-            state: window.__APOLLO_CLIENT__.queryManager.getApolloState(),
             dataWithOptimisticResults: window.__APOLLO_CLIENT__.queryManager.getDataWithOptimisticResults(),
           });
-
-          window.__APOLLO_CLIENT__.__actionHookForDevTools(logger);
+          
         }
       })()
     `, (result) => {
@@ -158,7 +108,6 @@ export default class Panel extends Component {
 
       return filtered.length && filtered[0];
     }
-
     return this.state.actionLog[this.state.actionLog.length - 1];
   }
 
@@ -189,10 +138,8 @@ export default class Panel extends Component {
   }
 
   render() {
-    const { active } = this.state;
-
+    const { active, actionLog } = this.state;
     const selectedLog = this.selectedApolloLog();
-
     let body;
     switch(active) {
     case 'queries':
