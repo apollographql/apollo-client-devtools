@@ -1,26 +1,30 @@
 const getManifest = chrome.runtime.getManifest;
 const version = (getManifest && getManifest().version) || 'electron-version';
 let passedApolloConnected = false;
-let mountedTabs = {};
+let activeTab;
+let trimmedObj;
+let dataWithOptimistic;
 
 const js = `
 let isConnected = false;
 
 const hookLogger = (logItem) => {
+  console.log(logItem);
 
   if (!!window.__APOLLO_CLIENT__) {
-    
+    // for queries and mutations, passed through panel.js
     const trimmedObj = {
       queries: logItem.state.queries,
       mutations: logItem.state.mutations
     }
-
     window.postMessage({ trimmedObj }, '*');
 
+    // for store inspector, passed through panel
     if (typeof logItem.action.type !== 'string' || logItem.action.type.split('_')[0] !== 'APOLLO') {
         return;
     }
-    window.__action_log__.push(logItem);    
+    window.__action_log__.push(logItem);
+
   }
 }
 
@@ -51,10 +55,9 @@ script.parentNode.removeChild(script);
 // event.data has the data being passed in the message
 window.addEventListener('message', event => {
 
-  /*
   if (event.source != window) 
     return;
-  */ 
+     
   console.log(event);
   if (event.data.didMount) {
     console.log('event.data.didMount in hook');
@@ -77,7 +80,8 @@ window.addEventListener('message', event => {
 // check which tab on extension has mounted
 chrome.runtime.onMessage.addListener(
   function(request, sender) {
-    mountedTabs[request.action] = true;
-    console.log(mountedTabs);
+    activeTab = request.action;
+    console.log('request', request);
+    console.log(activeTab);
   }
 );

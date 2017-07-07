@@ -20,12 +20,13 @@ chrome.runtime.onConnect.addListener((port) => {
 });
 
 chrome.runtime.onMessage.addListener((request, sender) => {
-  if (request.tabId || request.didMount) {
-    const mountedPanel = Object.values(request)[1];
+  if (request.tabId || request.panelTab) {
+    const panelTab = Object.values(request)[1];
+    console.log(panelTab);
     port = connections[request.tabId];
-    port[1][mountedPanel] = true;
+    port[1][panelTab] = true; // don't think I need this
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-      chrome.tabs.sendMessage(request.tabId, {action: mountedPanel});
+      chrome.tabs.sendMessage(request.tabId, {action: panelTab});
     });
     console.log('sent onMount message to hook???');
   }

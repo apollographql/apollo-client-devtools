@@ -61,13 +61,15 @@ export default class Inspector extends React.Component {
   }
 
   componentDidMount() {
+
     chrome.runtime.sendMessage({
       tabId: chrome.devtools.inspectedWindow.tabId,
-      didMount: 'inspector'
+      panelTab: 'inspector'
     }, function() {
       console.log('send inspector mount to background');
     });
     if (ga) ga('send', 'pageview', 'StoreInspector');
+    
     this.updateData();
     this._interval = setInterval(() => {
       this.updateData();
@@ -75,6 +77,7 @@ export default class Inspector extends React.Component {
   }
 
   componentWillUnmount() {
+    console.log('inspector unmount');
     this.didMount = false;
     clearInterval(this._interval);
   }

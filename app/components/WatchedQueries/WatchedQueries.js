@@ -40,7 +40,7 @@ class WatchedQueries extends React.Component {
   componentDidMount() {
     chrome.runtime.sendMessage({
       tabId: chrome.devtools.inspectedWindow.tabId,
-      didMount: 'queries'
+      panelTab: 'queries'
     }, function() {
       console.log('send queries mount to background');
     });
