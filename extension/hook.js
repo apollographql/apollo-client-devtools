@@ -1,30 +1,33 @@
 const getManifest = chrome.runtime.getManifest;
 const version = (getManifest && getManifest().version) || 'electron-version';
 let passedApolloConnected = false;
-let activeTab;
-let trimmedObj;
-let dataWithOptimistic;
+let contentScriptState = {
+  activeTab: '',
+  data: ''
+}
 
 const js = `
 let isConnected = false;
 
 const hookLogger = (logItem) => {
-  console.log(logItem);
+  if (typeof logItem.action.type !== 'string' || logItem.action.type.split('_')[0] !== 'APOLLO') {
+        return;
+  }
 
   if (!!window.__APOLLO_CLIENT__) {
-    // for queries and mutations, passed through panel.js
+
     const trimmedObj = {
       queries: logItem.state.queries,
       mutations: logItem.state.mutations
     }
     window.postMessage({ trimmedObj }, '*');
 
-    // for store inspector, passed through panel
-    if (typeof logItem.action.type !== 'string' || logItem.action.type.split('_')[0] !== 'APOLLO') {
-        return;
+    const newStateData = {
+      queries: logItem.state.queries,
+      mutations: logItem.state.mutations
     }
-    window.__action_log__.push(logItem);
 
+    window.postMessage({ newStateData }, '*');
   }
 }
 
@@ -57,11 +60,7 @@ window.addEventListener('message', event => {
 
   if (event.source != window) 
     return;
-     
-  console.log(event);
-  if (event.data.didMount) {
-    console.log('event.data.didMount in hook');
-  }
+    
 
   if (event.data.APOLLO_CONNECTED) {
     if (!passedApolloConnected) {
@@ -71,17 +70,38 @@ window.addEventListener('message', event => {
     }
   }
 
+  // eventually get rid of trimmedObj
   if (!!event.data.trimmedObj) {
     chrome.runtime.sendMessage({ trimmedObj: event.data.trimmedObj });
   }
+
+  // set up for only sending data to open panel tab
+  if (!!event.data.newStateData) {
+    console.log('in event.data.newStateData');
+    if (contentScriptState.activeTab == 'queries') {
+      chrome.runtime.sendMessage({ queries: event.data.newStateData.queries});
+      console.log('new queries');
+    }
+    else if (contentScriptState.activeTab == 'mutations') {
+      chrome.runtime.sendMessage({ mutations: event.data.newStateData.mutations});
+      console.log('new mutations');
+    }
+    contentScriptState.data = event.data.newState;
+    /*
+    else if (activeTab == 'store') {
+      chrome.runtime.sendMessage({ store: event.data.newState.store });
+    }
+    */
+  }
+
   return;
 });
 
-// check which tab on extension has mounted
 chrome.runtime.onMessage.addListener(
   function(request, sender) {
-    activeTab = request.action;
-    console.log('request', request);
-    console.log(activeTab);
+    let activeTab = request.activeTab;
+    console.log('activeTab ', activeTab);
   }
-);
+)
+
+

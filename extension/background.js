@@ -5,7 +5,9 @@ let requestLog = {};
 
 chrome.runtime.onConnect.addListener((port) => {
   tabId = port.name
-  connections[tabId] = [port, {}];
+  connections[tabId] = port;
+  // ????????????? why did I make below change
+  //connections[tabId] = [port, {}];
 
   port.onDisconnect.addListener(port => {
 
@@ -20,15 +22,10 @@ chrome.runtime.onConnect.addListener((port) => {
 });
 
 chrome.runtime.onMessage.addListener((request, sender) => {
-  if (request.tabId || request.panelTab) {
-    const panelTab = Object.values(request)[1];
-    console.log(panelTab);
-    port = connections[request.tabId];
-    port[1][panelTab] = true; // don't think I need this
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-      chrome.tabs.sendMessage(request.tabId, {action: panelTab});
-    });
-    console.log('sent onMount message to hook???');
+
+  if (request.type == 'OPEN_TAB') {
+    chrome.tabs.sendMessage(request.tabId, 
+      {type: 'OPEN_TAB', activeTab: request.activeTab});
   }
 
   if (!apolloConnected && request.APOLLO_CONNECTED) {
@@ -36,23 +33,16 @@ chrome.runtime.onMessage.addListener((request, sender) => {
     apolloConnected = true;
   }
 
-  if (request.queriesDidMount) {
-    console.log(request);
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-      chrome.tabs.sendMessage({action: "queriesData"}, function() {
-        console.log('send queries mount to hook');
-      });
-    });
-  }
-
   if (request.trimmedObj) {
     if (connections[sender.tab.id]) {
-      connections[sender.tab.id][0].postMessage(request.trimmedObj);
+      //connections[sender.tab.id][0].postMessage(request.trimmedObj);
+      connections[sender.tab.id].postMessage(request.trimmedObj);
     }
     else {
       let connectionsPoll = setInterval(function() {
         if (connections[sender.tab.id]) {
-          connections[sender.tab.id][0].postMessage(request.trimmedObj);
+          //connections[sender.tab.id][0].postMessage(request.trimmedObj);
+          connections[sender.tab.id].postMessage(request.trimmedObj);
           clearInterval(connectionsPoll);
         }
       }, 500);

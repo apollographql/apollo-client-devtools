@@ -39,10 +39,11 @@ class WatchedQueries extends React.Component {
 
   componentDidMount() {
     chrome.runtime.sendMessage({
+      type: 'OPEN_TAB',
       tabId: chrome.devtools.inspectedWindow.tabId,
-      panelTab: 'queries'
+      activeTab: 'queries'
     }, function() {
-      console.log('send queries mount to background');
+      console.log('queries = activeTab sent from panel -> background');
     });
 
     if (ga) ga('send', 'pageview', 'WatchedQueries');
