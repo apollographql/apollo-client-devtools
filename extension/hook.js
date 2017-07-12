@@ -1,7 +1,7 @@
 const getManifest = chrome.runtime.getManifest;
 const version = (getManifest && getManifest().version) || 'electron-version';
 let passedApolloConnected = false;
-let contentScriptState = {
+let contentScriptState  = {
   activeTab: '',
   data: ''
 }
@@ -24,7 +24,8 @@ const hookLogger = (logItem) => {
 
     const newStateData = {
       queries: logItem.state.queries,
-      mutations: logItem.state.mutations
+      mutations: logItem.state.mutations,
+      state: ''
     }
 
     window.postMessage({ newStateData }, '*');
@@ -77,7 +78,9 @@ window.addEventListener('message', event => {
 
   // set up for only sending data to open panel tab
   if (!!event.data.newStateData) {
-    console.log('in event.data.newStateData');
+    contentScriptState.data = event.data.newStateData;
+    console.log('contentScriptState ', contentScriptState);
+
     if (contentScriptState.activeTab == 'queries') {
       chrome.runtime.sendMessage({ queries: event.data.newStateData.queries});
       console.log('new queries');
@@ -86,7 +89,6 @@ window.addEventListener('message', event => {
       chrome.runtime.sendMessage({ mutations: event.data.newStateData.mutations});
       console.log('new mutations');
     }
-    contentScriptState.data = event.data.newState;
     /*
     else if (activeTab == 'store') {
       chrome.runtime.sendMessage({ store: event.data.newState.store });
@@ -99,8 +101,10 @@ window.addEventListener('message', event => {
 
 chrome.runtime.onMessage.addListener(
   function(request, sender) {
-    let activeTab = request.activeTab;
-    console.log('activeTab ', activeTab);
+    //activeTab = request.activeTab;
+    contentScriptState.activeTab = request.activeTab;
+    console.log('in hook on message');
+    console.log('contentSCriptState from onMessage ', contentScriptState);
   }
 )
 

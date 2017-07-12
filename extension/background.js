@@ -24,6 +24,7 @@ chrome.runtime.onConnect.addListener((port) => {
 chrome.runtime.onMessage.addListener((request, sender) => {
 
   if (request.type == 'OPEN_TAB') {
+    console.log('open tab request in background.js');
     chrome.tabs.sendMessage(request.tabId, 
       {type: 'OPEN_TAB', activeTab: request.activeTab});
   }
