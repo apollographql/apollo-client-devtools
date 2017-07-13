@@ -5,7 +5,7 @@
   "scripts": {
     "build": "webpack",
     "start": "webpack -w",
-    "prettier": "prettier --single-quote --write app/**/*.js extension/**/*.js"
+    "prettier": "prettier --single-quote --write \"extension/**/*.js\"  \"app/**/*.js\""
   },
   "devDependencies": {
     "babel-cli": "^6.11.4",

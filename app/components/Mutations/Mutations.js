@@ -1,14 +1,14 @@
-import React, { PropTypes } from "react";
-import pickBy from "lodash/pickBy";
-import sortBy from "lodash/sortBy";
-import classnames from "classnames";
-import { getMutationDefinition } from "apollo-client";
-import { parse } from "graphql-tag/parser";
-import { GraphqlCodeBlock } from "graphql-syntax-highlighter-react";
-import { Sidebar } from "../Sidebar";
-import Warning from "../Images/Warning";
+import React, { PropTypes } from 'react';
+import pickBy from 'lodash/pickBy';
+import sortBy from 'lodash/sortBy';
+import classnames from 'classnames';
+import { getMutationDefinition } from 'apollo-client';
+import { parse } from 'graphql-tag/parser';
+import { GraphqlCodeBlock } from 'graphql-syntax-highlighter-react';
+import { Sidebar } from '../Sidebar';
+import Warning from '../Images/Warning';
 
-import "./Mutations.less";
+import './Mutations.less';
 
 const mutationNameFromMutationString = mutationString => {
   const doc = parse(mutationString);
@@ -38,11 +38,11 @@ class Mutations extends React.Component {
 
   componentDidMount() {
     chrome.runtime.sendMessage({
-      type: "OPEN_TAB",
+      type: 'OPEN_TAB',
       tabId: chrome.devtools.inspectedWindow.tabId,
-      activeTab: "mutations"
+      activeTab: 'mutations'
     });
-    if (ga) ga("send", "pageview", "Mutations");
+    if (ga) ga('send', 'pageview', 'Mutations');
   }
 
   selectId(id) {
@@ -61,7 +61,7 @@ class Mutations extends React.Component {
   }
 
   renderSidebarItem(id, mutation) {
-    let className = "item";
+    let className = 'item';
     const hasError =
       mutation.networkError ||
       (mutation.graphQLErrors && mutation.graphQLErrors.length > 0);
@@ -69,7 +69,7 @@ class Mutations extends React.Component {
       <li
         key={id}
         onClick={() => this.selectId(id)}
-        className={classnames("item", {
+        className={classnames('item', {
           active: id === this.state.selectedId,
           loading: mutation.loading,
           error: hasError
@@ -130,10 +130,10 @@ class LabeledShowHide extends React.Component {
   }
   render() {
     return (
-      <div className={classnames(this.props.className, "toggled-section")}>
+      <div className={classnames(this.props.className, 'toggled-section')}>
         <span onClick={this.toggle} className="toggle">
           <span
-            className={classnames("triangle", { toggled: !this.state.show })}
+            className={classnames('triangle', { toggled: !this.state.show })}
           >
             &#9662;
           </span>
@@ -203,7 +203,7 @@ class WatchedMutation extends React.Component {
       mutation.metadata.reactComponent &&
       mutation.metadata.reactComponent.displayName;
     return (
-      <div className={classnames("main", { loading: mutation.loading })}>
+      <div className={classnames('main', { loading: mutation.loading })}>
         <div className="panel-title">
           {mutationLabel(mutationId, mutation)}
           {reactComponentDisplayName &&
@@ -214,14 +214,14 @@ class WatchedMutation extends React.Component {
               this.props.onRun(
                 mutation.mutationString,
                 mutation.variables,
-                "Mutations",
+                'Mutations',
                 false
               )}
           >
             Show in GraphiQL
           </span>
           <span
-            className={classnames("loading-label", { show: mutation.loading })}
+            className={classnames('loading-label', { show: mutation.loading })}
           >
             (loading)
           </span>

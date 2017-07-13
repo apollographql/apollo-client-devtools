@@ -1,15 +1,15 @@
-import React, { PropTypes } from "react";
-import { connect } from "react-redux";
-import pickBy from "lodash/pickBy";
-import sortBy from "lodash/sortBy";
-import classnames from "classnames";
-import { getQueryDefinition } from "apollo-client";
-import { parse } from "graphql-tag/parser";
-import { GraphqlCodeBlock } from "graphql-syntax-highlighter-react";
-import { Sidebar } from "../Sidebar";
-import Warning from "../Images/Warning";
+import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
+import pickBy from 'lodash/pickBy';
+import sortBy from 'lodash/sortBy';
+import classnames from 'classnames';
+import { getQueryDefinition } from 'apollo-client';
+import { parse } from 'graphql-tag/parser';
+import { GraphqlCodeBlock } from 'graphql-syntax-highlighter-react';
+import { Sidebar } from '../Sidebar';
+import Warning from '../Images/Warning';
 
-import "./WatchedQueries.less";
+import './WatchedQueries.less';
 
 const queryNameFromQueryString = queryString => {
   const doc = parse(queryString);
@@ -39,12 +39,12 @@ class WatchedQueries extends React.Component {
 
   componentDidMount() {
     chrome.runtime.sendMessage({
-      type: "OPEN_TAB",
+      type: 'OPEN_TAB',
       tabId: chrome.devtools.inspectedWindow.tabId,
-      activeTab: "queries"
+      activeTab: 'queries'
     });
 
-    if (ga) ga("send", "pageview", "WatchedQueries");
+    if (ga) ga('send', 'pageview', 'WatchedQueries');
   }
 
   selectId(id) {
@@ -63,7 +63,7 @@ class WatchedQueries extends React.Component {
   }
 
   renderSidebarItem(id, query) {
-    let className = "item";
+    let className = 'item';
     const hasError =
       query.networkError ||
       (query.graphQLErrors && query.graphQLErrors.length > 0);
@@ -71,7 +71,7 @@ class WatchedQueries extends React.Component {
       <li
         key={id}
         onClick={() => this.selectId(id)}
-        className={classnames("item", {
+        className={classnames('item', {
           active: id === this.state.selectedId,
           loading: query.loading,
           error: hasError
@@ -131,10 +131,10 @@ class LabeledShowHide extends React.Component {
   }
   render() {
     return (
-      <div className={classnames(this.props.className, "toggled-section")}>
+      <div className={classnames(this.props.className, 'toggled-section')}>
         <span onClick={this.toggle} className="toggle">
           <span
-            className={classnames("triangle", { toggled: !this.state.show })}
+            className={classnames('triangle', { toggled: !this.state.show })}
           >
             &#9662;
           </span>
@@ -204,7 +204,7 @@ class WatchedQuery extends React.Component {
       query.metadata.reactComponent &&
       query.metadata.reactComponent.displayName;
     return (
-      <div className={classnames("main", { loading: query.loading })}>
+      <div className={classnames('main', { loading: query.loading })}>
         <div className="panel-title">
           {queryLabel(queryId, query)}
           {reactComponentDisplayName &&
@@ -215,14 +215,14 @@ class WatchedQuery extends React.Component {
               this.props.onRun(
                 query.queryString,
                 query.variables,
-                "WatchedQueries",
+                'WatchedQueries',
                 true
               )}
           >
             Run in GraphiQL
           </span>
           <span
-            className={classnames("loading-label", { show: query.loading })}
+            className={classnames('loading-label', { show: query.loading })}
           >
             (loading)
           </span>

@@ -7,7 +7,7 @@ export default function evalInPage(code, cb) {
   try {
     result = eval(code);
   } catch (e) {
-    cb(undefined, {isException: true, value: e.toString()});
+    cb(undefined, { isException: true, value: e.toString() });
     return;
   }
   cb(result);
