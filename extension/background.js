@@ -24,10 +24,16 @@ chrome.runtime.onMessage.addListener((request, sender) => {
   console.log(request);
   if (request.type == "OPEN_TAB") {
     console.log("open tab request in background.js");
-    chrome.tabs.sendMessage(request.tabId, {
-      type: "OPEN_TAB",
-      activeTab: request.activeTab
-    });
+    chrome.tabs.sendMessage(
+      request.tabId,
+      {
+        type: "OPEN_TAB",
+        activeTab: request.activeTab
+      },
+      function() {
+        console.log("sent request for " + request.activeTab);
+      }
+    );
   }
 
   if (request.type == "UPDATE_TAB_DATA") {
@@ -51,4 +57,21 @@ chrome.runtime.onMessage.addListener((request, sender) => {
     chrome.pageAction.show(sender.tab.id);
     apolloConnected = true;
   }
+
+  /*
+  if (request.trimmedObj) {
+    if (connections[sender.tab.id]) {
+      //connections[sender.tab.id][0].postMessage(request.trimmedObj);
+      connections[sender.tab.id].postMessage(request.trimmedObj);
+    } else {
+      let connectionsPoll = setInterval(function() {
+        if (connections[sender.tab.id]) {
+          //connections[sender.tab.id][0].postMessage(request.trimmedObj);
+          connections[sender.tab.id].postMessage(request.trimmedObj);
+          clearInterval(connectionsPoll);
+        }
+      }, 500);
+    }
+  }
+  */
 });
