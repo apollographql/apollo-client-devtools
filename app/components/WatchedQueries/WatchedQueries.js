@@ -12,7 +12,6 @@ import Warning from "../Images/Warning";
 import "./WatchedQueries.less";
 
 const queryNameFromQueryString = queryString => {
-  console.log("in queryNameFromQueryString");
   const doc = parse(queryString);
   const queryDefinition = getQueryDefinition(doc);
   if (queryDefinition.name && queryDefinition.name.value) {
@@ -22,7 +21,6 @@ const queryNameFromQueryString = queryString => {
 };
 
 const queryLabel = (queryId, query) => {
-  console.log("in queryLabel");
   const queryName = queryNameFromQueryString(query.queryString);
   if (queryName === null) {
     return queryId;
@@ -40,17 +38,11 @@ class WatchedQueries extends React.Component {
   }
 
   componentDidMount() {
-    console.log("in queries mount");
-    chrome.runtime.sendMessage(
-      {
-        type: "OPEN_TAB",
-        tabId: chrome.devtools.inspectedWindow.tabId,
-        activeTab: "queries"
-      },
-      function() {
-        console.log("queries = activeTab sent from panel -> background");
-      }
-    );
+    chrome.runtime.sendMessage({
+      type: "OPEN_TAB",
+      tabId: chrome.devtools.inspectedWindow.tabId,
+      activeTab: "queries"
+    });
 
     if (ga) ga("send", "pageview", "WatchedQueries");
   }
@@ -60,20 +52,17 @@ class WatchedQueries extends React.Component {
   }
 
   getQueries() {
-    console.log("in getQueries");
     return this.props.state
       ? pickBy(this.props.state.queries, query => !query.stopped)
       : {};
   }
 
   sortedQueryIds() {
-    console.log("in sortedQueryIds");
     const queries = this.getQueries();
     return sortBy(Object.keys(queries), id => parseInt(id, 10));
   }
 
   renderSidebarItem(id, query) {
-    console.log("in renderSidebarItem");
     let className = "item";
     const hasError =
       query.networkError ||
@@ -102,7 +91,6 @@ class WatchedQueries extends React.Component {
   }
 
   render() {
-    console.log("in watched queries render");
     const queries = this.getQueries();
     const { selectedId } = this.state;
     return (

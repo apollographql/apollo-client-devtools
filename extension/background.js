@@ -21,24 +21,14 @@ chrome.runtime.onConnect.addListener(port => {
 });
 
 chrome.runtime.onMessage.addListener((request, sender) => {
-  console.log(request);
   if (request.type == "OPEN_TAB") {
-    console.log("open tab request in background.js");
-    chrome.tabs.sendMessage(
-      request.tabId,
-      {
-        type: "OPEN_TAB",
-        activeTab: request.activeTab
-      },
-      function() {
-        console.log("sent request for " + request.activeTab);
-      }
-    );
+    chrome.tabs.sendMessage(request.tabId, {
+      type: "OPEN_TAB",
+      activeTab: request.activeTab
+    });
   }
 
   if (request.type == "UPDATE_TAB_DATA") {
-    console.log("update tab request form hook");
-    console.log(request);
     if (connections[sender.tab.id]) {
       // activeTabName is the name of the opened tab
       const activeTabName = Object.keys(request)[1];
@@ -46,7 +36,6 @@ chrome.runtime.onMessage.addListener((request, sender) => {
       const tabData = request[activeTabName];
       const message = {};
       message[activeTabName] = request[activeTabName];
-      console.log("message: ", message);
       if (connections[sender.tab.id]) {
         connections[sender.tab.id].postMessage(message);
       }
@@ -57,21 +46,4 @@ chrome.runtime.onMessage.addListener((request, sender) => {
     chrome.pageAction.show(sender.tab.id);
     apolloConnected = true;
   }
-
-  /*
-  if (request.trimmedObj) {
-    if (connections[sender.tab.id]) {
-      //connections[sender.tab.id][0].postMessage(request.trimmedObj);
-      connections[sender.tab.id].postMessage(request.trimmedObj);
-    } else {
-      let connectionsPoll = setInterval(function() {
-        if (connections[sender.tab.id]) {
-          //connections[sender.tab.id][0].postMessage(request.trimmedObj);
-          connections[sender.tab.id].postMessage(request.trimmedObj);
-          clearInterval(connectionsPoll);
-        }
-      }, 500);
-    }
-  }
-  */
 });

@@ -65,21 +65,17 @@ window.addEventListener("message", event => {
   // set up for only sending data to open panel tab
   if (!!event.data.newStateData) {
     contentScriptState.data = event.data.newStateData;
-    console.log("contentScriptState ", contentScriptState);
 
     if (contentScriptState.activeTab == "queries") {
-      chrome.runtime.sendMessage(
-        { queries: event.data.newStateData.queries },
-        function() {
-          console.log("send queries from hook to background");
-        }
-      );
-      console.log("new queries");
+      chrome.runtime.sendMessage({
+        type: "UPDATE_TAB_DATA",
+        queries: event.data.newStateData.queries
+      });
     } else if (contentScriptState.activeTab == "mutations") {
       chrome.runtime.sendMessage({
+        type: "UPDATE_TAB_DATA",
         mutations: event.data.newStateData.mutations
       });
-      console.log("new mutations");
     }
     /*
     else if (activeTab == 'store') {
@@ -95,8 +91,6 @@ chrome.runtime.onMessage.addListener(function(request, sender) {
   contentScriptState.activeTab = request.activeTab;
   let activeTab = contentScriptState.activeTab;
   let data = contentScriptState.data[activeTab];
-  console.log("contentScriptState from onMessage ", contentScriptState);
-  console.log("activeTab: ", activeTab, "data: ", data);
 
   // this is jank
   message = {
