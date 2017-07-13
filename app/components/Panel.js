@@ -42,37 +42,7 @@ export default class Panel extends Component {
       name: chrome.devtools.inspectedWindow.tabId.toString()
     });
 
-    /*
     backgroundPageConnection.onMessage.addListener((logItem, sender) => {
-      console.log("logItem: ", logItem);
-
-      let mutations = logItem.mutations;
-      let mutationsArray = Object.keys(mutations).map(function(key, index) {
-        return [key, mutations[key]];
-      });
-      // chose 10 arbitrary so we only display 10 mutations in log
-      mutationsArray = mutationsArray.slice(
-        mutationsArray.length - 10,
-        mutationsArray.length
-      );
-      mutations = {};
-      mutationsArray.forEach(function(m) {
-        mutations[m[0]] = m[1];
-      });
-      const slimItem = {
-        state: {
-          mutations: logItem.mutations,
-          queries: logItem.queries
-        }
-      };
-      this.setState({
-        actionLog: [slimItem]
-      });
-    });
-    */
-
-    backgroundPageConnection.onMessage.addListener((logItem, sender) => {
-      console.log("logItem: ", logItem);
       let slimItem;
 
       if (logItem.queries) {
@@ -109,7 +79,6 @@ export default class Panel extends Component {
   }
 
   componentDidMount() {
-    console.log("panel mount");
     this.lastActionId = null;
     this.interval = setInterval(() => {}, 100);
     this.initLogger();
@@ -138,7 +107,6 @@ export default class Panel extends Component {
   }
 
   selectedApolloLog() {
-    console.log("actionLog from inside selectApolloLog ", this.state.actionLog);
     if (this.state.actionLog.length < 1) {
       //eventually replace this with loading symbol
       this.state.actionLog[0] = {};
@@ -156,7 +124,6 @@ export default class Panel extends Component {
   }
 
   onRun(queryString, variables, tab, automaticallyRunQuery) {
-    console.log("in panel onRun");
     ga("send", "event", tab, "run-in-graphiql");
     this.setState({
       active: "graphiql",
@@ -183,18 +150,8 @@ export default class Panel extends Component {
   }
 
   render() {
-    console.log("in render");
     const { active, actionLog } = this.state;
-    console.log("actionLog ", actionLog);
     const selectedLog = this.selectedApolloLog();
-    console.log("selectedLog ", selectedLog);
-    /*
-    if (!selectedLog) {
-      selectedLog = {};
-      selectedLog.queries = {};
-      selectedLog.queries.state = "loading";
-    }
-    */
 
     let body;
     switch (active) {

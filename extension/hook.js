@@ -10,6 +10,7 @@ const js = `
 let isConnected = false;
 
 const hookLogger = (logItem) => {
+  console.log('in hookLogger function');
   if (typeof logItem.action.type !== 'string' || logItem.action.type.split('_')[0] !== 'APOLLO') {
         return;
   }
@@ -68,15 +69,13 @@ window.addEventListener("message", event => {
     console.log("contentScriptState ", contentScriptState);
 
     if (contentScriptState.activeTab == "queries") {
-      chrome.runtime.sendMessage(
-        { queries: event.data.newStateData.queries },
-        function() {
-          console.log("send queries from hook to background");
-        }
-      );
-      console.log("new queries");
+      chrome.runtime.sendMessage({
+        type: "UPDATE_TAB_DATA",
+        queries: event.data.newStateData.queries
+      });
     } else if (contentScriptState.activeTab == "mutations") {
       chrome.runtime.sendMessage({
+        type: "UPDATE_TAB_DATA",
         mutations: event.data.newStateData.mutations
       });
       console.log("new mutations");
