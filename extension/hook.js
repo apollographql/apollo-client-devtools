@@ -117,7 +117,7 @@ chrome.runtime.onMessage.addListener(function(request, sender) {
     type: "UPDATE_TAB_DATA"
   };
   message[activeTab] = data;
-
+  console.log("message: ", message);
   chrome.runtime.sendMessage(message, function() {
     console.log("sent update data message");
   });

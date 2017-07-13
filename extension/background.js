@@ -24,10 +24,16 @@ chrome.runtime.onMessage.addListener((request, sender) => {
   console.log(request);
   if (request.type == "OPEN_TAB") {
     console.log("open tab request in background.js");
-    chrome.tabs.sendMessage(request.tabId, {
-      type: "OPEN_TAB",
-      activeTab: request.activeTab
-    });
+    chrome.tabs.sendMessage(
+      request.tabId,
+      {
+        type: "OPEN_TAB",
+        activeTab: request.activeTab
+      },
+      function() {
+        console.log("sent request for " + request.activeTab);
+      }
+    );
   }
 
   if (request.type == "UPDATE_TAB_DATA") {

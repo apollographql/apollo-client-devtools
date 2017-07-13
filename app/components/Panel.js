@@ -73,17 +73,35 @@ export default class Panel extends Component {
 
     backgroundPageConnection.onMessage.addListener((logItem, sender) => {
       console.log("logItem: ", logItem);
+      let slimItem;
 
       if (logItem.queries) {
-        const slimItem = {
-          state: {
-            queries: logItem.queries
-          }
+        slimItem = {
+          state: { queries: logItem.queries }
         };
-        this.setState({
-          actionLog: [slimItem]
-        });
       }
+
+      if (logItem.mutations) {
+        let mutations = logItem.mutations;
+        let mutationsArray = Object.keys(mutations).map(function(key, index) {
+          return [key, mutations[key]];
+        });
+        // chose 10 arbitrary so we only display 10 mutations in log
+        mutationsArray = mutationsArray.slice(
+          mutationsArray.length - 10,
+          mutationsArray.length
+        );
+        mutations = {};
+        mutationsArray.forEach(function(m) {
+          mutations[m[0]] = m[1];
+        });
+        slimItem = {
+          state: { mutations: logItem.mutation }
+        };
+      }
+      this.setState({
+        actionLog: [slimItem]
+      });
     });
 
     this.onRun = this.onRun.bind(this);
