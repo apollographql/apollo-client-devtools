@@ -1,10 +1,10 @@
 const getManifest = chrome.runtime.getManifest;
-const version = (getManifest && getManifest().version) || 'electron-version';
+const version = (getManifest && getManifest().version) || "electron-version";
 let passedApolloConnected = false;
-let contentScriptState  = {
-  activeTab: '',
-  data: ''
-}
+let contentScriptState = {
+  activeTab: "",
+  data: ""
+};
 
 const js = `
 let isConnected = false;
@@ -51,43 +51,48 @@ const __APOLLO_POLL__ = setInterval(() => {
 }, 500);
 `;
 
-let script = document.createElement('script');
+let script = document.createElement("script");
 script.textContent = js;
 document.documentElement.appendChild(script);
 script.parentNode.removeChild(script);
 
 // event.data has the data being passed in the message
-window.addEventListener('message', event => {
-
-  if (event.source != window) 
-    return;
-    
+window.addEventListener("message", event => {
+  if (event.source != window) return;
 
   if (event.data.APOLLO_CONNECTED) {
     if (!passedApolloConnected) {
-      chrome.runtime.sendMessage({ APOLLO_CONNECTED: true}, function() {
+      chrome.runtime.sendMessage({ APOLLO_CONNECTED: true }, function() {
         passedApolloConnected = true;
       });
     }
   }
 
   // eventually get rid of trimmedObj
+  /*
   if (!!event.data.trimmedObj) {
     chrome.runtime.sendMessage({ trimmedObj: event.data.trimmedObj });
   }
+  */
 
   // set up for only sending data to open panel tab
   if (!!event.data.newStateData) {
     contentScriptState.data = event.data.newStateData;
-    console.log('contentScriptState ', contentScriptState);
+    console.log("contentScriptState ", contentScriptState);
 
-    if (contentScriptState.activeTab == 'queries') {
-      chrome.runtime.sendMessage({ queries: event.data.newStateData.queries});
-      console.log('new queries');
-    }
-    else if (contentScriptState.activeTab == 'mutations') {
-      chrome.runtime.sendMessage({ mutations: event.data.newStateData.mutations});
-      console.log('new mutations');
+    if (contentScriptState.activeTab == "queries") {
+      chrome.runtime.sendMessage(
+        { queries: event.data.newStateData.queries },
+        function() {
+          console.log("send queries from hook to background");
+        }
+      );
+      console.log("new queries");
+    } else if (contentScriptState.activeTab == "mutations") {
+      chrome.runtime.sendMessage({
+        mutations: event.data.newStateData.mutations
+      });
+      console.log("new mutations");
     }
     /*
     else if (activeTab == 'store') {
@@ -99,13 +104,21 @@ window.addEventListener('message', event => {
   return;
 });
 
-chrome.runtime.onMessage.addListener(
-  function(request, sender) {
-    //activeTab = request.activeTab;
-    contentScriptState.activeTab = request.activeTab;
-    console.log('in hook on message');
-    console.log('contentSCriptState from onMessage ', contentScriptState);
-  }
-)
+chrome.runtime.onMessage.addListener(function(request, sender) {
+  contentScriptState.activeTab = request.activeTab;
+  let activeTab = contentScriptState.activeTab;
+  let data = contentScriptState.data[activeTab];
+  console.log("in hook on message");
+  console.log("contentScriptState from onMessage ", contentScriptState);
+  console.log("activeTab: ", activeTab, "data: ", data);
 
+  // this is jank
+  message = {
+    type: "UPDATE_TAB_DATA"
+  };
+  message[activeTab] = data;
 
+  chrome.runtime.sendMessage(message, function() {
+    console.log("sent update data message");
+  });
+});
