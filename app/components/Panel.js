@@ -96,7 +96,7 @@ export default class Panel extends Component {
           mutations[m[0]] = m[1];
         });
         slimItem = {
-          state: { mutations: logItem.mutation }
+          state: { mutations: logItem.mutations }
         };
       }
       this.setState({

@@ -16,12 +16,6 @@ const hookLogger = (logItem) => {
 
   if (!!window.__APOLLO_CLIENT__) {
 
-    const trimmedObj = {
-      queries: logItem.state.queries,
-      mutations: logItem.state.mutations
-    }
-    window.postMessage({ trimmedObj }, '*');
-
     const newStateData = {
       queries: logItem.state.queries,
       mutations: logItem.state.mutations,
@@ -68,13 +62,6 @@ window.addEventListener("message", event => {
     }
   }
 
-  // eventually get rid of trimmedObj
-  /*
-  if (!!event.data.trimmedObj) {
-    chrome.runtime.sendMessage({ trimmedObj: event.data.trimmedObj });
-  }
-  */
-
   // set up for only sending data to open panel tab
   if (!!event.data.newStateData) {
     contentScriptState.data = event.data.newStateData;
@@ -108,7 +95,6 @@ chrome.runtime.onMessage.addListener(function(request, sender) {
   contentScriptState.activeTab = request.activeTab;
   let activeTab = contentScriptState.activeTab;
   let data = contentScriptState.data[activeTab];
-  console.log("in hook on message");
   console.log("contentScriptState from onMessage ", contentScriptState);
   console.log("activeTab: ", activeTab, "data: ", data);
 
@@ -117,8 +103,6 @@ chrome.runtime.onMessage.addListener(function(request, sender) {
     type: "UPDATE_TAB_DATA"
   };
   message[activeTab] = data;
-  console.log("message: ", message);
-  chrome.runtime.sendMessage(message, function() {
-    console.log("sent update data message");
-  });
+
+  chrome.runtime.sendMessage(message);
 });
