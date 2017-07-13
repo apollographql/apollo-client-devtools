@@ -1,9 +1,9 @@
 const getManifest = chrome.runtime.getManifest;
-const version = (getManifest && getManifest().version) || "electron-version";
+const version = (getManifest && getManifest().version) || 'electron-version';
 let passedApolloConnected = false;
 let contentScriptState = {
-  activeTab: "",
-  data: ""
+  activeTab: '',
+  data: ''
 };
 
 const js = `
@@ -45,13 +45,13 @@ const __APOLLO_POLL__ = setInterval(() => {
 }, 500);
 `;
 
-let script = document.createElement("script");
+let script = document.createElement('script');
 script.textContent = js;
 document.documentElement.appendChild(script);
 script.parentNode.removeChild(script);
 
 // event.data has the data being passed in the message
-window.addEventListener("message", event => {
+window.addEventListener('message', event => {
   if (event.source != window) return;
 
   if (event.data.APOLLO_CONNECTED) {
@@ -66,14 +66,14 @@ window.addEventListener("message", event => {
   if (!!event.data.newStateData) {
     contentScriptState.data = event.data.newStateData;
 
-    if (contentScriptState.activeTab == "queries") {
+    if (contentScriptState.activeTab == 'queries') {
       chrome.runtime.sendMessage({
-        type: "UPDATE_TAB_DATA",
+        type: 'UPDATE_TAB_DATA',
         queries: event.data.newStateData.queries
       });
-    } else if (contentScriptState.activeTab == "mutations") {
+    } else if (contentScriptState.activeTab == 'mutations') {
       chrome.runtime.sendMessage({
-        type: "UPDATE_TAB_DATA",
+        type: 'UPDATE_TAB_DATA',
         mutations: event.data.newStateData.mutations
       });
     }
@@ -94,7 +94,7 @@ chrome.runtime.onMessage.addListener(function(request, sender) {
 
   // this is jank
   message = {
-    type: "UPDATE_TAB_DATA"
+    type: 'UPDATE_TAB_DATA'
   };
   message[activeTab] = data;
 

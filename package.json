@@ -4,7 +4,8 @@
   "license": "MIT",
   "scripts": {
     "build": "webpack",
-    "start": "webpack -w"
+    "start": "webpack -w",
+    "prettier": "prettier --single-quote --write app/**/*.js extension/**/*.js"
   },
   "devDependencies": {
     "babel-cli": "^6.11.4",
@@ -22,6 +23,7 @@
     "json-loader": "^0.5.4",
     "less": "^2.7.1",
     "less-loader": "^2.2.3",
+    "prettier": "^1.5.2",
     "react": "^15.4.1",
     "react-dom": "^15.4.1",
     "style-loader": "^0.13.1",

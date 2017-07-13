@@ -1,20 +1,20 @@
-import React, { Component, PropTypes } from "react";
-import classnames from "classnames";
-import { getMutationDefinition } from "apollo-client";
+import React, { Component, PropTypes } from 'react';
+import classnames from 'classnames';
+import { getMutationDefinition } from 'apollo-client';
 
-import WatchedQueries from "./WatchedQueries";
-import Mutations from "./Mutations";
-import Explorer from "./Explorer";
-import Inspector from "./Inspector";
-import Apollo from "./Images/Apollo";
-import GraphQL from "./Images/GraphQL";
-import Store from "./Images/Store";
-import Queries from "./Images/Queries";
-import Logger from "./Logger";
-import { Sidebar } from "./Sidebar";
-import evalInPage from "../evalInPage";
-import { inspectorHook } from "./Inspector/Inspector"; //inspectorHook is a js function
-import "../style.less";
+import WatchedQueries from './WatchedQueries';
+import Mutations from './Mutations';
+import Explorer from './Explorer';
+import Inspector from './Inspector';
+import Apollo from './Images/Apollo';
+import GraphQL from './Images/GraphQL';
+import Store from './Images/Store';
+import Queries from './Images/Queries';
+import Logger from './Logger';
+import { Sidebar } from './Sidebar';
+import evalInPage from '../evalInPage';
+import { inspectorHook } from './Inspector/Inspector'; //inspectorHook is a js function
+import '../style.less';
 
 function lastActionId(actionLog) {
   if (actionLog && actionLog.length) {
@@ -29,7 +29,7 @@ export default class Panel extends Component {
     super(props, context);
 
     this.state = {
-      active: "graphiql",
+      active: 'graphiql',
       actionLog: [],
       runQuery: undefined,
       runVariables: undefined,
@@ -122,11 +122,11 @@ export default class Panel extends Component {
   }
 
   onRun(queryString, variables, tab, automaticallyRunQuery) {
-    ga("send", "event", tab, "run-in-graphiql");
+    ga('send', 'event', tab, 'run-in-graphiql');
     this.setState({
-      active: "graphiql",
+      active: 'graphiql',
       runQuery: queryString,
-      runVariables: variables ? JSON.stringify(variables, null, 2) : "",
+      runVariables: variables ? JSON.stringify(variables, null, 2) : '',
       automaticallyRunQuery
     });
   }
@@ -152,22 +152,22 @@ export default class Panel extends Component {
     const selectedLog = this.selectedApolloLog();
     let body;
     switch (active) {
-      case "queries":
+      case 'queries':
         // XXX this won't work in the dev tools (probably does work now)
         body =
           selectedLog &&
           <WatchedQueries state={selectedLog.state} onRun={this.onRun} />;
         break;
-      case "mutations":
+      case 'mutations':
         // XXX this won't work in the dev tools (probably does work now)
         body =
           selectedLog &&
           <Mutations state={selectedLog.state} onRun={this.onRun} />;
         break;
-      case "store":
+      case 'store':
         body = selectedLog && <Inspector />;
         break;
-      case "graphiql":
+      case 'graphiql':
         body = (
           <Explorer
             query={this.state.runQuery}
@@ -176,7 +176,7 @@ export default class Panel extends Component {
           />
         );
         break;
-      case "logger":
+      case 'logger':
         body = (
           <Logger
             log={this.state.actionLog}
@@ -192,8 +192,8 @@ export default class Panel extends Component {
     return (
       <div
         className={classnames(
-          "apollo-client-panel",
-          { "in-window": !chrome.devtools },
+          'apollo-client-panel',
+          { 'in-window': !chrome.devtools },
           chrome.devtools && chrome.devtools.panels.themeName
         )}
       >
@@ -203,16 +203,16 @@ export default class Panel extends Component {
           </div>
           <div
             title="GraphiQL console"
-            className={classnames("tab", { active: active === "graphiql" })}
-            onClick={() => this.switchPane("graphiql")}
+            className={classnames('tab', { active: active === 'graphiql' })}
+            onClick={() => this.switchPane('graphiql')}
           >
             <GraphQL />
             <div>GraphiQL</div>
           </div>
           <div
             title="Watched queries"
-            className={classnames("tab", { active: active === "queries" })}
-            onClick={() => this.switchPane("queries")}
+            className={classnames('tab', { active: active === 'queries' })}
+            onClick={() => this.switchPane('queries')}
           >
             <Queries />
             <div>Queries</div>
@@ -220,16 +220,16 @@ export default class Panel extends Component {
           {getMutationDefinition &&
             <div
               title="Watched mutations"
-              className={classnames("tab", { active: active === "mutations" })}
-              onClick={() => this.switchPane("mutations")}
+              className={classnames('tab', { active: active === 'mutations' })}
+              onClick={() => this.switchPane('mutations')}
             >
               <Queries />
               <div>Mutations</div>
             </div>}
           <div
             title="Apollo client store"
-            className={classnames("tab", { active: active === "store" })}
-            onClick={() => this.switchPane("store")}
+            className={classnames('tab', { active: active === 'store' })}
+            onClick={() => this.switchPane('store')}
           >
             <Store />
             <div>Store</div>

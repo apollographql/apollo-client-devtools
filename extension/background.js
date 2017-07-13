@@ -16,14 +16,14 @@ chrome.runtime.onConnect.addListener(port => {
 });
 
 chrome.runtime.onMessage.addListener((request, sender) => {
-  if (request.type == "OPEN_TAB") {
+  if (request.type == 'OPEN_TAB') {
     chrome.tabs.sendMessage(request.tabId, {
-      type: "OPEN_TAB",
+      type: 'OPEN_TAB',
       activeTab: request.activeTab
     });
   }
 
-  if (request.type == "UPDATE_TAB_DATA") {
+  if (request.type == 'UPDATE_TAB_DATA') {
     if (connections[sender.tab.id]) {
       // activeTabName is the name of the opened tab
       const activeTabName = Object.keys(request)[1];
