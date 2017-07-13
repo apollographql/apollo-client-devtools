@@ -1,3 +1,4 @@
+var webpack = require('webpack')
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var HTMLWebpackPluginConfig = new HtmlWebpackPlugin({
   template: __dirname + '/app/index.html',
@@ -33,5 +34,8 @@ module.exports = {
       }
     ]
   },
-  plugins: [HTMLWebpackPluginConfig]
+  plugins: [
+    HTMLWebpackPluginConfig,
+    new webpack.IgnorePlugin(/\.flow$/)
+  ]
 }

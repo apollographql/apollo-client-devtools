@@ -77,10 +77,8 @@ export default class Panel extends Component {
     this.onRun = this.onRun.bind(this);
     this.selectLogItem = this.selectLogItem.bind(this);
   }
-
   componentDidMount() {
     this.lastActionId = null;
-    this.interval = setInterval(() => {}, 100);
     this.initLogger();
   }
 
@@ -103,7 +101,7 @@ export default class Panel extends Component {
   }
 
   componentWillUnmount() {
-    clearInterval(this.interval);
+    clearTimeout(this._interval);
   }
 
   selectedApolloLog() {

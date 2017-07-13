@@ -16,7 +16,7 @@
     "babel-preset-react": "^6.16.0",
     "classnames": "^2.2.5",
     "css-loader": "^0.26.1",
-    "graphiql": "^0.8.0",
+    "graphiql": "^0.11.2",
     "graphql": "^0.7.0",
     "html-webpack-plugin": "^2.24.1",
     "json-loader": "^0.5.4",
