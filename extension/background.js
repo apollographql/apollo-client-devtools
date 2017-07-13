@@ -34,7 +34,16 @@ chrome.runtime.onMessage.addListener((request, sender) => {
     console.log("update tab request form hook");
     console.log(request);
     if (connections[sender.tab.id]) {
-      connections[sender.tab.id].postMessage(request.queries);
+      // activeTabName is the name of the opened tab
+      const activeTabName = Object.keys(request)[1];
+      // tabData is data to be sent
+      const tabData = request[activeTabName];
+      const message = {};
+      message[activeTabName] = request[activeTabName];
+      console.log("message: ", message);
+      if (connections[sender.tab.id]) {
+        connections[sender.tab.id].postMessage(message);
+      }
     }
   }
 
