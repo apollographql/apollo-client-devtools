@@ -5,11 +5,6 @@ import evalInPage from "../../evalInPage";
 import _ from "lodash";
 import "./inspector.less";
 
-export function inspectorHook(dataWithOptimistic) {
-  console.log("in inspectorHook from inspector.js");
-  console.log(dataWithOptimistic);
-}
-
 export default class Inspector extends React.Component {
   static childContextTypes = {
     inspectorContext: React.PropTypes.object.isRequired
@@ -79,18 +74,6 @@ export default class Inspector extends React.Component {
   }
 
   componentDidMount() {
-    console.log("in inspector mount");
-    // tab detection
-    chrome.runtime.sendMessage(
-      {
-        tabId: chrome.devtools.inspectedWindow.tabId,
-        panelTab: "inspector"
-      },
-      function() {
-        console.log("send inspector mount to background");
-      }
-    );
-
     //analytics
     if (ga) ga("send", "pageview", "StoreInspector");
 
