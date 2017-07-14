@@ -10,9 +10,8 @@ export default class Inspector extends React.Component {
     inspectorContext: React.PropTypes.object.isRequired
   };
 
-  constructor() {
-    super();
-
+  constructor(props) {
+    super(props);
     this.state = {
       dataWithOptimistic: null,
       ids: [],
@@ -74,6 +73,11 @@ export default class Inspector extends React.Component {
   }
 
   componentDidMount() {
+    chrome.runtime.sendMessage({
+      type: 'OPEN_TAB',
+      tabId: chrome.devtools.inspectedWindow.tabId,
+      activeTab: 'inspector'
+    });
     //analytics
     if (ga) ga('send', 'pageview', 'StoreInspector');
 
@@ -84,7 +88,7 @@ export default class Inspector extends React.Component {
         this.updateData().catch(console.error).then(updater);
       }, 1000));
 
-    updater();
+    // updater();
   }
 
   componentWillUnmount() {
@@ -165,6 +169,7 @@ export default class Inspector extends React.Component {
   }
 
   render() {
+    console.log('INSPECTOR PROPS: ', this.props);
     const { selectedId, dataWithOptimistic, searchTerm, ids } = this.state;
     return (
       <div className="inspector-panel body">

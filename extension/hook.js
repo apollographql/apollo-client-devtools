@@ -19,7 +19,7 @@ const hookLogger = (logItem) => {
     const newStateData = {
       queries: logItem.state.queries,
       mutations: logItem.state.mutations,
-      state: ''
+      inspector: logItem.dataWithOptimisticResults
     }
 
     window.postMessage({ newStateData }, '*');
@@ -76,12 +76,12 @@ window.addEventListener('message', event => {
         type: 'UPDATE_TAB_DATA',
         mutations: event.data.newStateData.mutations
       });
+    } else if (contentScriptState.activeTab == 'inspector') {
+      chrome.runtime.sendMessage({
+        type: 'UPDATE_TAB_DATA',
+        inspector: event.data.newStateData.inspector
+      });
     }
-    /*
-    else if (activeTab == 'store') {
-      chrome.runtime.sendMessage({ store: event.data.newState.store });
-    }
-    */
   }
 
   return;
@@ -91,12 +91,12 @@ chrome.runtime.onMessage.addListener(function(request, sender) {
   contentScriptState.activeTab = request.activeTab;
   let activeTab = contentScriptState.activeTab;
   let data = contentScriptState.data[activeTab];
-
   // this is jank
   message = {
     type: 'UPDATE_TAB_DATA'
   };
   message[activeTab] = data;
+  console.log('activeTab: ', activeTab, 'data: ', data);
 
   chrome.runtime.sendMessage(message);
 });
