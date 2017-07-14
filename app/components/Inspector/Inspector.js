@@ -73,9 +73,7 @@ export default class Inspector extends React.Component {
   }
 
   getUpdatedData() {
-    console.log("in getUpdatedData, PROPS: ", this.props.state);
     if (!this.props.state.inspector) {
-      console.log("in return");
       return [null, null, null, null];
       //return ["loading", "loading", "loading", "loading"];
     }
@@ -83,7 +81,6 @@ export default class Inspector extends React.Component {
     let toHighlight = {};
 
     if (this.state.searchTerm.length >= 3) {
-      console.log("in this.state.searchTerm");
       toHighlight = highlightFromSearchTerm({
         data: dataWithOptimistic,
         query: this.state.searchTerm
@@ -93,7 +90,7 @@ export default class Inspector extends React.Component {
     const unsortedIds = Object.keys(dataWithOptimistic).filter(
       id => id[0] !== "$"
     );
-    console.log("above highlightedIds");
+
     const highlightedIds = Object.keys(toHighlight).filter(
       id => id[0] !== "$" && id !== "ROOT_QUERY"
     );
@@ -103,6 +100,42 @@ export default class Inspector extends React.Component {
     const ids = [...highlightedIds, "ROOT_QUERY", ...sortedIdsWithoutRoot];
     const selectedId = this.state.selectedId || ids[0];
     return [dataWithOptimistic, toHighlight, ids, selectedId];
+  }
+
+  // call inside componentWillRecieveProps
+  updateData2(nextProps) {
+    // might be able to remove below if statement
+    if (!nextProps) {
+      return [null, null, null, null];
+    }
+    const dataWithOptimistic = nextProps.state.inspector;
+    let toHighlight = {};
+
+    if (this.state.searchTerm.length >= 3) {
+      toHighlight = highlightFromSearchTerm({
+        data: dataWithOptimistic,
+        query: this.state.searchTerm
+      });
+    }
+
+    const unsortedIds = Object.keys(dataWithOptimistic).filter(
+      id => id[0] !== "$"
+    );
+    const highlightedIds = Object.keys(toHighlight).filter(
+      id => id[0] !== "$" && id !== "ROOT_QUERY"
+    );
+    const sortedIdsWithoutRoot = unsortedIds
+      .filter(id => id !== "ROOT_QUERY" && highlightedIds.indexOf(id) < 0)
+      .sort();
+    const ids = [...highlightedIds, "ROOT_QUERY", ...sortedIdsWithoutRoot];
+    const selectedId = this.state.selectedId || ids[0];
+    this.setState({
+      dataWithOptimistic,
+      toHighlight,
+      ids,
+      selectedId: this.state.selectedId || ids[0]
+    });
+    //return [dataWithOptimistic, toHighlight, ids, selectedId];
   }
 
   componentDidMount() {
@@ -129,7 +162,15 @@ export default class Inspector extends React.Component {
     clearInterval(this._interval);
   }
 
+  componentWillReceiveProps(nextProps) {
+    console.log("in componentWillReceiveProps");
+    this.updateData2(nextProps);
+  }
+
   getChildContext() {
+    // when is getChildContext() even used???
+    let dataWithOptimistic = this.getUpdatedData()[2];
+    let toHighlight = this.getUpdatedData()[1];
     return {
       inspectorContext: {
         dataWithOptimistic: this.state.dataWithOptimistic,
@@ -163,14 +204,7 @@ export default class Inspector extends React.Component {
   }
 
   setSearchTerm(searchTerm) {
-    console.log("in searchTerm");
     let toHighlight = {};
-
-    /*
-    if (!searchTerm) {
-      searchTerm = 'u';
-    }
-    */
 
     if (searchTerm.length >= 3) {
       toHighlight = highlightFromSearchTerm({
@@ -209,30 +243,22 @@ export default class Inspector extends React.Component {
   }
 
   render() {
-    console.log("in render");
-    console.log("INSPECTOR PROPS: ", this.props);
-    //let { selectedId, dataWithOptimistic, searchTerm, ids } = this.state;
+    const { selectedId, dataWithOptimistic, searchTerm, ids } = this.state;
     //let { selectedId, searchTerm, ids } = this.state;
     //let dataWithOptimistic = this.props.state.inspector;
     //dataWithOptimistic = this.props.state.inspector;
+    /*
     const [
       dataWithOptimistic,
       toHighlight,
       ids,
       selectedId
     ] = this.getUpdatedData();
-    const searchTerm = this.state.searchTerm;
-    console.log(
-      "dataWithOptimistic: ",
-      dataWithOptimistic,
-      "toHighlight: ",
-      toHighlight,
-      "ids: ",
-      ids,
-      "selectedId ",
-      selectedId
-    );
-    console.log("searchTerm: ", searchTerm);
+    */
+    //const searchTerm = this.state.searchTerm;
+
+    console.log("dataWithOptimistic1", dataWithOptimistic);
+
     return (
       <div className="inspector-panel body">
         <div className="inspector-body">
@@ -341,10 +367,19 @@ class StoreTreeFieldSet extends React.Component {
   }
 
   getStoreObj() {
-    return this.context.inspectorContext.dataWithOptimistic[this.props.dataId];
+    //return this.props.data[this.props.dataId];
+    /*
+    if (this.context.inspectorContext.dataWithOptimistic[this.props.dataId]) {
+      return this.context.inspectorContext.dataWithOptimistic[
+        this.props.dataId
+      ];
+    }
+    */
+    return this.context.insepctorContext.getUpdatedData()[0].this.props.dataId;
   }
 
   getHighlightObj() {
+    //return this.props.toHighlight[this.props.dataId];
     return this.context.inspectorContext.toHighlight[this.props.dataId];
   }
 
@@ -386,10 +421,15 @@ class StoreTreeFieldSet extends React.Component {
   }
 
   selectId() {
-    this.context.inspectorContext.selectId(this.props.dataId);
+    //this.context.inspectorContext.selectId(this.props.dataId);
+    this.props.selectId(this.props.dataId);
   }
 
   render() {
+    const { data } = this.props;
+
+    if (!data) return <div>Sad :(</div>;
+
     return (
       <span>
         {this.shouldDisplayId() &&
