@@ -92,12 +92,10 @@ chrome.runtime.onMessage.addListener(function(request, sender) {
   contentScriptState.activeTab = request.activeTab;
   let activeTab = contentScriptState.activeTab;
   let data = contentScriptState.data[activeTab];
-  // this is jank
+
   message = {
     type: 'UPDATE_TAB_DATA'
   };
   message[activeTab] = data;
-  console.log('activeTab: ', activeTab, 'data: ', data);
-
   chrome.runtime.sendMessage(message);
 });

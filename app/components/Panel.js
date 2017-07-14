@@ -43,7 +43,6 @@ export default class Panel extends Component {
     });
 
     backgroundPageConnection.onMessage.addListener((logItem, sender) => {
-      console.log('panel logItem: ', logItem);
       let slimItem;
 
       if (logItem.queries) {
@@ -72,7 +71,6 @@ export default class Panel extends Component {
       }
 
       if (logItem.inspector) {
-        console.log('in logItem.inspector if statement');
         slimItem = {
           state: { inspector: logItem.inspector }
         };
@@ -158,11 +156,9 @@ export default class Panel extends Component {
   render() {
     const { active, actionLog } = this.state;
     const selectedLog = this.selectedApolloLog();
-    console.log('selectedLog.state: ', selectedLog.state);
     let body;
     switch (active) {
       case 'queries':
-        console.log('from queries case: ', selectedLog.state);
         // XXX this won't work in the dev tools (probably does work now)
         body =
           selectedLog &&
@@ -175,7 +171,6 @@ export default class Panel extends Component {
           <Mutations state={selectedLog.state} onRun={this.onRun} />;
         break;
       case 'store':
-        console.log('from inspector case: ', selectedLog.state);
         body = selectedLog && <Inspector state={selectedLog.state} />;
         break;
       case 'graphiql':

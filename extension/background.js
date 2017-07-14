@@ -6,8 +6,6 @@ let requestLog = {};
 chrome.runtime.onConnect.addListener(port => {
   tabId = port.name;
   connections[tabId] = port;
-  // ????????????? why did I make below change
-  //connections[tabId] = [port, {}];
 
   port.onDisconnect.addListener(port => {
     const tabs = Object.keys(connections);
