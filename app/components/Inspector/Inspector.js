@@ -242,7 +242,7 @@ export default class Inspector extends React.Component {
               searchTerm={searchTerm}
               setSearchTerm={this.setSearchTerm}
             />
-            {ids.map(id => this.renderSidebarItem(id))}
+            {ids && ids.map(id => this.renderSidebarItem(id))}
           </Sidebar>
           <div className="inspector-main">
             {selectedId &&
