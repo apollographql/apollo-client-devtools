@@ -11,7 +11,7 @@ import Warning from '../Images/Warning';
 
 import './WatchedQueries.less';
 
-const queryNameFromQueryString = (queryString) => {
+const queryNameFromQueryString = queryString => {
   const doc = parse(queryString);
   const queryDefinition = getQueryDefinition(doc);
   if (queryDefinition.name && queryDefinition.name.value) {
@@ -33,7 +33,7 @@ class WatchedQueries extends React.Component {
     super(props, context);
 
     this.state = {
-      selectedId: null,
+      selectedId: null
     };
   }
 
@@ -46,9 +46,9 @@ class WatchedQueries extends React.Component {
   }
 
   getQueries() {
-    return this.props.state ?
-      pickBy(this.props.state.queries, query => !query.stopped) :
-      {};
+    return this.props.state
+      ? pickBy(this.props.state.queries, query => !query.stopped)
+      : {};
   }
 
   sortedQueryIds() {
@@ -58,17 +58,27 @@ class WatchedQueries extends React.Component {
 
   renderSidebarItem(id, query) {
     let className = 'item';
-    const hasError = query.networkError || (query.graphQLErrors && query.graphQLErrors.length > 0);
+    const hasError =
+      query.networkError ||
+      (query.graphQLErrors && query.graphQLErrors.length > 0);
     return (
-      <li key={id} onClick={() => this.selectId(id)}
+      <li
+        key={id}
+        onClick={() => this.selectId(id)}
         className={classnames('item', {
           active: id === this.state.selectedId,
           loading: query.loading,
           error: hasError
-        })}>
-        <div className='item-row'>
-          <span>{queryLabel(id, query)}</span>
-          {hasError && <span className='error-icon'><Warning /></span>}
+        })}
+      >
+        <div className="item-row">
+          <span>
+            {queryLabel(id, query)}
+          </span>
+          {hasError &&
+            <span className="error-icon">
+              <Warning />
+            </span>}
         </div>
       </li>
     );
@@ -81,17 +91,26 @@ class WatchedQueries extends React.Component {
       <div className="watchedQueries body">
         <Sidebar className="sidebar" name="watched-queries-sidebar">
           <div className="queries-sidebar-title">Watched queries</div>
-          <ol className="query-list">{this.sortedQueryIds().map(id => this.renderSidebarItem(id, queries[id]))}</ol>
+          <ol className="query-list">
+            {this.sortedQueryIds().map(id =>
+              this.renderSidebarItem(id, queries[id])
+            )}
+          </ol>
         </Sidebar>
-        {selectedId && queries[selectedId] &&
-        <WatchedQuery queryId={selectedId} query={queries[selectedId]} onRun={this.props.onRun} />}
+        {selectedId &&
+          queries[selectedId] &&
+          <WatchedQuery
+            queryId={selectedId}
+            query={queries[selectedId]}
+            onRun={this.props.onRun}
+          />}
       </div>
     );
   }
 }
 
 WatchedQueries.propTypes = {
-  state: PropTypes.object,
+  state: PropTypes.object
 };
 
 class LabeledShowHide extends React.Component {
@@ -108,11 +127,19 @@ class LabeledShowHide extends React.Component {
     return (
       <div className={classnames(this.props.className, 'toggled-section')}>
         <span onClick={this.toggle} className="toggle">
-          <span className={classnames('triangle', { toggled: !this.state.show })}>&#9662;</span>
-          <span className="section-label">{this.props.label}</span>
+          <span
+            className={classnames('triangle', { toggled: !this.state.show })}
+          >
+            &#9662;
+          </span>
+          <span className="section-label">
+            {this.props.label}
+          </span>
         </span>
         {this.state.show &&
-          <div className="labeled">{this.props.children}</div>}
+          <div className="labeled">
+            {this.props.children}
+          </div>}
       </div>
     );
   }
@@ -120,80 +147,108 @@ class LabeledShowHide extends React.Component {
 LabeledShowHide.propTypes = {
   label: PropTypes.string.isRequired,
   children: PropTypes.any.isRequired,
-  show: PropTypes.bool,
+  show: PropTypes.bool
 };
 
-const Variables = ({variables} ) => {
+const Variables = ({ variables }) => {
   if (!variables) {
     return null;
   }
   const inner = [];
-  Object.keys(variables).sort().forEach((name) => {
+  Object.keys(variables).sort().forEach(name => {
     inner.push(
       <tr key={`tr-${name}`}>
-        <td key={`dt-${name}`}>{ name }</td>
-        <td key={`dd-${name}`}>{ JSON.stringify(variables[name]) }</td>
+        <td key={`dt-${name}`}>
+          {name}
+        </td>
+        <td key={`dd-${name}`}>
+          {JSON.stringify(variables[name])}
+        </td>
       </tr>
     );
   });
-  return <table><tbody>{inner}</tbody></table>;
+  return (
+    <table>
+      <tbody>
+        {inner}
+      </tbody>
+    </table>
+  );
 };
 
-const GraphQLError = ({error}) => (
-  <li className='graphql-error'>
-    {
-      error.message &&
-      <span>{error.message}</span>
-    }
-  </li>
-);
+const GraphQLError = ({ error }) =>
+  <li className="graphql-error">
+    {error.message &&
+      <span>
+        {error.message}
+      </span>}
+  </li>;
 GraphQLError.propTypes = {
   error: PropTypes.shape({
     message: React.PropTypes.string
-  }),
+  })
 };
 
 class WatchedQuery extends React.Component {
   render() {
     const { queryId, query } = this.props;
-    const reactComponentDisplayName = query && query.metadata
-            && query.metadata.reactComponent
-            && query.metadata.reactComponent.displayName;
+    const reactComponentDisplayName =
+      query &&
+      query.metadata &&
+      query.metadata.reactComponent &&
+      query.metadata.reactComponent.displayName;
     return (
-      <div className={classnames('main', {loading: query.loading})}>
+      <div className={classnames('main', { loading: query.loading })}>
         <div className="panel-title">
-          { queryLabel(queryId, query) }
-          {reactComponentDisplayName && <span className='component-name'>{`<${reactComponentDisplayName}>`}</span>}
+          {queryLabel(queryId, query)}
+          {reactComponentDisplayName &&
+            <span className="component-name">{`<${reactComponentDisplayName}>`}</span>}
           <span
             className="run-in-graphiql-link"
-            onClick={() => this.props.onRun(query.queryString, query.variables, 'WatchedQueries', true)}
-          >Run in GraphiQL</span>
-        <span className={classnames('loading-label', { show: query.loading })}>(loading)</span>
+            onClick={() =>
+              this.props.onRun(
+                query.queryString,
+                query.variables,
+                'WatchedQueries',
+                true
+              )}
+          >
+            Run in GraphiQL
+          </span>
+          <span
+            className={classnames('loading-label', { show: query.loading })}
+          >
+            (loading)
+          </span>
         </div>
-        {
-          query.variables &&
+        {query.variables &&
           <LabeledShowHide label="Variables">
             <Variables variables={query.variables} />
-          </LabeledShowHide>
-        }
+          </LabeledShowHide>}
         <LabeledShowHide label="Query string" show={false}>
-          <GraphqlCodeBlock className="GraphqlCodeBlock" queryBody={query.queryString} />
+          <GraphqlCodeBlock
+            className="GraphqlCodeBlock"
+            queryBody={query.queryString}
+          />
         </LabeledShowHide>
-        {
-          query.graphQLErrors && query.graphQLErrors.length > 0 &&
-          <LabeledShowHide label="GraphQL Errors" show={query.graphQLErrors && query.graphQLErrors.length > 0}>
+        {query.graphQLErrors &&
+          query.graphQLErrors.length > 0 &&
+          <LabeledShowHide
+            label="GraphQL Errors"
+            show={query.graphQLErrors && query.graphQLErrors.length > 0}
+          >
             <ul>
-              {query.graphQLErrors.map((error, i) => <GraphQLError key={i} error={error} />)}
+              {query.graphQLErrors.map((error, i) =>
+                <GraphQLError key={i} error={error} />
+              )}
             </ul>
-          </LabeledShowHide>
-        }
-        {
-          query.networkError &&
+          </LabeledShowHide>}
+        {query.networkError &&
           <LabeledShowHide label="Network Errors" show={!!query.networkError}>
-            <pre>There is a network error: {JSON.stringify(query.networkError)}</pre>
-          </LabeledShowHide>
-        }
-
+            <pre>
+              There is a network error: {JSON.stringify(query.networkError)}
+            </pre>
+          </LabeledShowHide>}
       </div>
     );
   }

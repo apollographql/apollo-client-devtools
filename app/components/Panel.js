@@ -17,7 +17,6 @@ import evalInPage from '../evalInPage';
 
 import '../style.less';
 
-
 function lastActionId(actionLog) {
   if (actionLog && actionLog.length) {
     const lastApolloState = actionLog[actionLog.length - 1];
@@ -50,8 +49,11 @@ export default class Panel extends Component {
         return [key, mutations[key]];
       });
       // chose 10 arbitrary so we only display 10 mutations in log
-      mutationsArray = mutationsArray.slice(mutationsArray.length - 10, mutationsArray.length);
-      mutations = {}
+      mutationsArray = mutationsArray.slice(
+        mutationsArray.length - 10,
+        mutationsArray.length
+      );
+      mutations = {};
       mutationsArray.forEach(function(m) {
         mutations[m[0]] = m[1];
       });
@@ -60,7 +62,7 @@ export default class Panel extends Component {
           mutations: logItem.mutations,
           queries: logItem.queries
         }
-      }
+      };
       this.setState({
         actionLog: [slimItem]
       });
@@ -75,7 +77,8 @@ export default class Panel extends Component {
   }
 
   initLogger() {
-    evalInPage(`
+    evalInPage(
+      `
       (function () {
         if (window.__APOLLO_CLIENT__) {
           // window.__action_log__ initialized in hook.js
@@ -85,9 +88,11 @@ export default class Panel extends Component {
           
         }
       })()
-    `, (result) => {
-      // Nothing
-    });
+    `,
+      result => {
+        // Nothing
+      }
+    );
   }
 
   componentWillUnmount() {
@@ -95,14 +100,14 @@ export default class Panel extends Component {
   }
 
   selectedApolloLog() {
-    const logIsPopulated = this.state.actionLog && this.state.actionLog.length
+    const logIsPopulated = this.state.actionLog && this.state.actionLog.length;
 
-    if (! logIsPopulated) {
+    if (!logIsPopulated) {
       return null;
     }
 
     if (this.state.selectedRequestId) {
-      const filtered = this.state.actionLog.filter((item) => {
+      const filtered = this.state.actionLog.filter(item => {
         return item.id === this.state.selectedRequestId;
       });
 
@@ -127,13 +132,13 @@ export default class Panel extends Component {
       // Don't leave this stuff around except when actively clicking the run
       // button.
       runQuery: undefined,
-      runVariables: undefined,
+      runVariables: undefined
     });
   }
 
   selectLogItem(id) {
     this.setState({
-      selectedRequestId: id,
+      selectedRequestId: id
     });
   }
 
@@ -141,55 +146,89 @@ export default class Panel extends Component {
     const { active, actionLog } = this.state;
     const selectedLog = this.selectedApolloLog();
     let body;
-    switch(active) {
-    case 'queries':
-      // XXX this won't work in the dev tools (probably does work now)
-      body = selectedLog && <WatchedQueries state={selectedLog.state} onRun={this.onRun}/>;
-      break;
-    case 'mutations':
-      // XXX this won't work in the dev tools (probably does work now)
-      body = selectedLog && <Mutations state={selectedLog.state} onRun={this.onRun}/>;
-      break;
-    case 'store':
-      body = selectedLog && <Inspector />;
-      break;
-    case 'graphiql':
-      body = <Explorer query={this.state.runQuery} variables={this.state.runVariables} automaticallyRunQuery={this.state.automaticallyRunQuery} />;
-      break;
-    case 'logger':
-      body = <Logger
-        log={this.state.actionLog}
-        onSelectLogItem={this.selectLogItem}
-        selectedId={this.state.selectedRequestId}
-      />;
-      break;
-    default: break;
+    switch (active) {
+      case 'queries':
+        // XXX this won't work in the dev tools (probably does work now)
+        body =
+          selectedLog &&
+          <WatchedQueries state={selectedLog.state} onRun={this.onRun} />;
+        break;
+      case 'mutations':
+        // XXX this won't work in the dev tools (probably does work now)
+        body =
+          selectedLog &&
+          <Mutations state={selectedLog.state} onRun={this.onRun} />;
+        break;
+      case 'store':
+        body = selectedLog && <Inspector />;
+        break;
+      case 'graphiql':
+        body = (
+          <Explorer
+            query={this.state.runQuery}
+            variables={this.state.runVariables}
+            automaticallyRunQuery={this.state.automaticallyRunQuery}
+          />
+        );
+        break;
+      case 'logger':
+        body = (
+          <Logger
+            log={this.state.actionLog}
+            onSelectLogItem={this.selectLogItem}
+            selectedId={this.state.selectedRequestId}
+          />
+        );
+        break;
+      default:
+        break;
     }
 
     return (
-      <div className={classnames('apollo-client-panel', { 'in-window': !chrome.devtools }, chrome.devtools && chrome.devtools.panels.themeName)}>
+      <div
+        className={classnames(
+          'apollo-client-panel',
+          { 'in-window': !chrome.devtools },
+          chrome.devtools && chrome.devtools.panels.themeName
+        )}
+      >
         <Sidebar className="tabs" name="nav-tabs">
-          <div className="tab logo-tab"><Apollo /></div>
+          <div className="tab logo-tab">
+            <Apollo />
+          </div>
           <div
             title="GraphiQL console"
             className={classnames('tab', { active: active === 'graphiql' })}
             onClick={() => this.switchPane('graphiql')}
-          ><GraphQL /><div>GraphiQL</div></div>
+          >
+            <GraphQL />
+            <div>GraphiQL</div>
+          </div>
           <div
             title="Watched queries"
             className={classnames('tab', { active: active === 'queries' })}
             onClick={() => this.switchPane('queries')}
-          ><Queries /><div>Queries</div></div>
-          { getMutationDefinition && <div
-            title="Watched mutations"
-            className={classnames('tab', { active: active === 'mutations' })}
-            onClick={() => this.switchPane('mutations')}
-          ><Queries /><div>Mutations</div></div> }
+          >
+            <Queries />
+            <div>Queries</div>
+          </div>
+          {getMutationDefinition &&
+            <div
+              title="Watched mutations"
+              className={classnames('tab', { active: active === 'mutations' })}
+              onClick={() => this.switchPane('mutations')}
+            >
+              <Queries />
+              <div>Mutations</div>
+            </div>}
           <div
             title="Apollo client store"
             className={classnames('tab', { active: active === 'store' })}
             onClick={() => this.switchPane('store')}
-          ><Store /><div>Store</div></div>
+          >
+            <Store />
+            <div>Store</div>
+          </div>
         </Sidebar>
         {body}
       </div>

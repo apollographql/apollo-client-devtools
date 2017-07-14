@@ -9,7 +9,7 @@ import { parse } from 'graphql-tag/parser';
 import { GraphqlCodeBlock } from 'graphql-syntax-highlighter-react';
 import './Logger.less';
 
-const queryNameFromQueryString = (queryString) => {
+const queryNameFromQueryString = queryString => {
   const doc = parse(queryString);
   const queryDefinition = getQueryDefinition(doc);
   if (queryDefinition.name && queryDefinition.name.value) {
@@ -18,7 +18,7 @@ const queryNameFromQueryString = (queryString) => {
   return null;
 };
 
-const queryLabel = (action) => {
+const queryLabel = action => {
   let label = '';
 
   if (action.type.startsWith('APOLLO_QUERY')) {
@@ -67,10 +67,13 @@ class Logger extends React.Component {
     let className = 'item';
 
     return (
-      <div key={logEntry.id} onClick={() => this.selectId(logEntry.id)}
+      <div
+        key={logEntry.id}
+        onClick={() => this.selectId(logEntry.id)}
         className={classnames('item', {
-          active: logEntry.id === this.props.selectedId,
-        })}>
+          active: logEntry.id === this.props.selectedId
+        })}
+      >
         {queryLabel(logEntry.action)}
       </div>
     );
@@ -101,10 +104,7 @@ class Logger extends React.Component {
         </Sidebar>
         <div className="main">
           {reqToDisplay &&
-            <RequestDetails
-              request={reqToDisplay}
-              onRun={this.props.onRun}
-            />}
+            <RequestDetails request={reqToDisplay} onRun={this.props.onRun} />}
         </div>
       </div>
     );
@@ -112,7 +112,7 @@ class Logger extends React.Component {
 }
 
 Logger.propTypes = {
-  log: PropTypes.array,
+  log: PropTypes.array
 };
 
 class LabeledShowHide extends React.Component {
@@ -133,7 +133,9 @@ class LabeledShowHide extends React.Component {
           {this.props.label}
         </span>
         {this.state.show &&
-          <div className="labeled">{this.props.children}</div>}
+          <div className="labeled">
+            {this.props.children}
+          </div>}
       </div>
     );
   }
@@ -141,19 +143,31 @@ class LabeledShowHide extends React.Component {
 LabeledShowHide.propTypes = {
   label: PropTypes.string.isRequired,
   children: PropTypes.any.isRequired,
-  show: PropTypes.bool,
+  show: PropTypes.bool
 };
 
-const Variables = ({variables} ) => {
+const Variables = ({ variables }) => {
   if (!variables) {
     return null;
   }
   const inner = [];
-  Object.keys(variables).sort().forEach((name) => {
-    inner.push(<dt key={"dt"+name}>{ name }</dt>);
-    inner.push(<dd key={"dd"+name}>{ JSON.stringify(variables[name]) }</dd>);
+  Object.keys(variables).sort().forEach(name => {
+    inner.push(
+      <dt key={'dt' + name}>
+        {name}
+      </dt>
+    );
+    inner.push(
+      <dd key={'dd' + name}>
+        {JSON.stringify(variables[name])}
+      </dd>
+    );
   });
-  return <dl>{inner}</dl>;
+  return (
+    <dl>
+      {inner}
+    </dl>
+  );
 };
 
 class RequestDetails extends React.Component {
@@ -161,7 +175,7 @@ class RequestDetails extends React.Component {
     const { request } = this.props;
     const action = request.action;
 
-    if (! actionTypeToComponent[action.type]) {
+    if (!actionTypeToComponent[action.type]) {
       return <div>Unknown action type. Probably a bug in the dev tools.</div>;
     }
 
@@ -176,18 +190,22 @@ const QueryInit = ({ request }) => {
     <table>
       <tr>
         <th>Type</th>
-        <td>{action.type}</td>
+        <td>
+          {action.type}
+        </td>
       </tr>
       <tr>
         <th>Query ID</th>
-        <td>{action.queryId}</td>
+        <td>
+          {action.queryId}
+        </td>
       </tr>
     </table>
   );
-}
+};
 
 const actionTypeToComponent = {
-  APOLLO_QUERY_INIT: QueryInit,
-}
+  APOLLO_QUERY_INIT: QueryInit
+};
 
 export default Logger;

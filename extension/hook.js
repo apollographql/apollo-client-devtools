@@ -2,7 +2,6 @@ const getManifest = chrome.runtime.getManifest;
 const version = (getManifest && getManifest().version) || 'electron-version';
 let passedApolloConnected = false;
 
-
 const js = `
 let isConnected = false;
 
@@ -50,12 +49,11 @@ script.parentNode.removeChild(script);
 
 // event.data has the data being passed in the message
 window.addEventListener('message', event => {
-  if (event.source != window) 
-    return;
+  if (event.source != window) return;
 
   if (event.data.APOLLO_CONNECTED) {
     if (!passedApolloConnected) {
-      chrome.runtime.sendMessage({ APOLLO_CONNECTED: true}, function() {
+      chrome.runtime.sendMessage({ APOLLO_CONNECTED: true }, function() {
         passedApolloConnected = true;
       });
     }
