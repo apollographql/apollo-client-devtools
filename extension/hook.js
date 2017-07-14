@@ -57,7 +57,7 @@ window.addEventListener("message", event => {
 
   if (event.data.APOLLO_CONNECTED) {
     if (!passedApolloConnected) {
-      chrome.runtime.sendMessage({ APOLLO_CONNECTED: true }, function() {
+      chrome.runtime.sendMessage({ APOLLO_CONNECTED: true }, function () {
         passedApolloConnected = true;
       });
     }
@@ -78,26 +78,18 @@ window.addEventListener("message", event => {
         mutations: event.data.newStateData.mutations
       });
     }
-    /*
-    else if (activeTab == 'store') {
-      chrome.runtime.sendMessage({ store: event.data.newState.store });
-    }
-    */
   }
 
   return;
 });
 
-chrome.runtime.onMessage.addListener(function(request, sender) {
+chrome.runtime.onMessage.addListener(function (request, sender) {
   contentScriptState.activeTab = request.activeTab;
   let activeTab = contentScriptState.activeTab;
   let data = contentScriptState.data[activeTab];
-
-  // this is jank
   message = {
-    type: "UPDATE_TAB_DATA"
+    type: "UPDATE_TAB_DATA",
+    [activeTab]: data
   };
-  message[activeTab] = data;
-
   chrome.runtime.sendMessage(message);
 });
