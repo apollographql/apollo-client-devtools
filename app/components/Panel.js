@@ -53,7 +53,7 @@ export default class Panel extends Component {
 
       if (logItem.mutations) {
         let mutations = logItem.mutations;
-        let mutationsArray = Object.keys(mutations).map(function(key, index) {
+        let mutationsArray = Object.keys(mutations).map(function (key, index) {
           return [key, mutations[key]];
         });
         // chose 10 arbitrary so we only display 10 mutations in log
@@ -62,7 +62,7 @@ export default class Panel extends Component {
           mutationsArray.length
         );
         mutations = {};
-        mutationsArray.forEach(function(m) {
+        mutationsArray.forEach(function (m) {
           mutations[m[0]] = m[1];
         });
         slimItem = {
@@ -106,11 +106,8 @@ export default class Panel extends Component {
 
   selectedApolloLog() {
     if (this.state.actionLog.length < 1) {
-      //eventually replace this with loading symbol
       this.state.actionLog[0] = {};
     }
-    const logIsPopulated = this.state.actionLog && this.state.actionLog.length;
-
     if (this.state.selectedRequestId) {
       const filtered = this.state.actionLog.filter(item => {
         return item.id === this.state.selectedRequestId;
