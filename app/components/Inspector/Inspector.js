@@ -244,19 +244,6 @@ export default class Inspector extends React.Component {
 
   render() {
     const { selectedId, dataWithOptimistic, searchTerm, ids } = this.state;
-    //let { selectedId, searchTerm, ids } = this.state;
-    //let dataWithOptimistic = this.props.state.inspector;
-    //dataWithOptimistic = this.props.state.inspector;
-    /*
-    const [
-      dataWithOptimistic,
-      toHighlight,
-      ids,
-      selectedId
-    ] = this.getUpdatedData();
-    */
-    //const searchTerm = this.state.searchTerm;
-
     console.log("dataWithOptimistic1", dataWithOptimistic);
 
     return (
@@ -367,19 +354,10 @@ class StoreTreeFieldSet extends React.Component {
   }
 
   getStoreObj() {
-    //return this.props.data[this.props.dataId];
-    /*
-    if (this.context.inspectorContext.dataWithOptimistic[this.props.dataId]) {
-      return this.context.inspectorContext.dataWithOptimistic[
-        this.props.dataId
-      ];
-    }
-    */
-    return this.context.insepctorContext.getUpdatedData()[0].this.props.dataId;
+    return this.context.inspectorContext.dataWithOptimistic[this.props.dataId];
   }
 
   getHighlightObj() {
-    //return this.props.toHighlight[this.props.dataId];
     return this.context.inspectorContext.toHighlight[this.props.dataId];
   }
 
@@ -421,14 +399,17 @@ class StoreTreeFieldSet extends React.Component {
   }
 
   selectId() {
-    //this.context.inspectorContext.selectId(this.props.dataId);
-    this.props.selectId(this.props.dataId);
+    this.context.inspectorContext.selectId(this.props.dataId);
   }
 
   render() {
+    {
+      /*
     const { data } = this.props;
 
     if (!data) return <div>Sad :(</div>;
+    */
+    }
 
     return (
       <span>
