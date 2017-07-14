@@ -1,6 +1,7 @@
 const getManifest = chrome.runtime.getManifest;
 const version = (getManifest && getManifest().version) || 'electron-version';
 let passedApolloConnected = false;
+
 let contentScriptState = {
   activeTab: '',
   data: ''
