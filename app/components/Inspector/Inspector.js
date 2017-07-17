@@ -88,7 +88,6 @@ export default class Inspector extends React.Component {
   }
 
   componentWillUnmount() {
-    this.didMount = false;
     clearTimeout(this._interval);
   }
 
