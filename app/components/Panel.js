@@ -106,7 +106,7 @@ export default class Panel extends Component {
 
   selectedApolloLog() {
     if (this.state.actionLog.length < 1) {
-      this.state.actionLog[0] = {};
+      return {};
     }
     if (this.state.selectedRequestId) {
       const filtered = this.state.actionLog.filter(item => {
