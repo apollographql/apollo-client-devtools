@@ -103,9 +103,9 @@ chrome.runtime.onMessage.addListener(function (request, sender) {
   let data = contentScriptState.data[activeTab];
 
   message = {
-    type: 'UPDATE_TAB_DATA'
+    type: 'UPDATE_TAB_DATA',
+    [activeTab]: data
   };
   // sends message with data back to background page
-  message[activeTab] = data;
   chrome.runtime.sendMessage(message);
 });
