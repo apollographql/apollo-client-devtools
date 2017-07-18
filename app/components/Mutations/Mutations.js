@@ -37,6 +37,11 @@ class Mutations extends React.Component {
   }
 
   componentDidMount() {
+    chrome.runtime.sendMessage({
+      type: 'OPEN_TAB',
+      tabId: chrome.devtools.inspectedWindow.tabId,
+      activeTab: 'mutations'
+    });
     if (ga) ga('send', 'pageview', 'Mutations');
   }
 

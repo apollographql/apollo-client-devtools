@@ -12,18 +12,9 @@ import Store from './Images/Store';
 import Queries from './Images/Queries';
 import Logger from './Logger';
 import { Sidebar } from './Sidebar';
-
 import evalInPage from '../evalInPage';
-
+import { inspectorHook } from './Inspector/Inspector'; //inspectorHook is a js function
 import '../style.less';
-
-function lastActionId(actionLog) {
-  if (actionLog && actionLog.length) {
-    const lastApolloState = actionLog[actionLog.length - 1];
-    return lastApolloState && lastApolloState.id;
-  }
-  return null;
-}
 
 export default class Panel extends Component {
   constructor(props, context) {
@@ -31,7 +22,7 @@ export default class Panel extends Component {
 
     this.state = {
       active: 'graphiql',
-      actionLog: [],
+      tabData: undefined,
       runQuery: undefined,
       runVariables: undefined,
       selectedRequestId: undefined,
@@ -44,55 +35,48 @@ export default class Panel extends Component {
     });
 
     backgroundPageConnection.onMessage.addListener((logItem, sender) => {
-      let mutations = logItem.mutations;
-      let mutationsArray = Object.keys(mutations).map(function(key, index) {
-        return [key, mutations[key]];
-      });
-      // chose 10 arbitrary so we only display 10 mutations in log
-      mutationsArray = mutationsArray.slice(
-        mutationsArray.length - 10,
-        mutationsArray.length
-      );
-      mutations = {};
-      mutationsArray.forEach(function(m) {
-        mutations[m[0]] = m[1];
-      });
-      const slimItem = {
-        state: {
-          mutations: logItem.mutations,
-          queries: logItem.queries
-        }
-      };
+      let tabData;
+
+      if (logItem.queries) {
+        tabData = {
+          state: { queries: logItem.queries }
+        };
+      }
+
+      if (logItem.mutations) {
+        let mutations = logItem.mutations;
+        let mutationsArray = Object.keys(mutations).map(function (key, index) {
+          return [key, mutations[key]];
+        });
+        // chose 10 arbitrary so we only display 10 mutations in log
+        mutationsArray = mutationsArray.slice(
+          mutationsArray.length - 10,
+          mutationsArray.length
+        );
+        mutations = {};
+        mutationsArray.forEach(function (m) {
+          mutations[m[0]] = m[1];
+        });
+
+        tabData = {
+          state: { mutations: logItem.mutations }
+        };
+      }
+
+      if (logItem.inspector) {
+
+        tabData = {
+          state: { inspector: logItem.inspector }
+        };
+      }
+
       this.setState({
-        actionLog: [slimItem]
+        tabData: tabData
       });
     });
 
     this.onRun = this.onRun.bind(this);
     this.selectLogItem = this.selectLogItem.bind(this);
-  }
-  componentDidMount() {
-    this.lastActionId = null;
-    this.initLogger();
-  }
-
-  initLogger() {
-    evalInPage(
-      `
-      (function () {
-        if (window.__APOLLO_CLIENT__) {
-          // window.__action_log__ initialized in hook.js
-          window.__action_log__.push({
-            dataWithOptimisticResults: window.__APOLLO_CLIENT__.queryManager.getDataWithOptimisticResults(),
-          });
-          
-        }
-      })()
-    `,
-      result => {
-        // Nothing
-      }
-    );
   }
 
   componentWillUnmount() {
@@ -100,20 +84,12 @@ export default class Panel extends Component {
   }
 
   selectedApolloLog() {
-    const logIsPopulated = this.state.actionLog && this.state.actionLog.length;
 
-    if (!logIsPopulated) {
-      return null;
+    if (!this.state.tabData) {
+      return {};
     }
 
-    if (this.state.selectedRequestId) {
-      const filtered = this.state.actionLog.filter(item => {
-        return item.id === this.state.selectedRequestId;
-      });
-
-      return filtered.length && filtered[0];
-    }
-    return this.state.actionLog[this.state.actionLog.length - 1];
+    return this.state.tabData;
   }
 
   onRun(queryString, variables, tab, automaticallyRunQuery) {
@@ -143,7 +119,7 @@ export default class Panel extends Component {
   }
 
   render() {
-    const { active, actionLog } = this.state;
+    const { active } = this.state;
     const selectedLog = this.selectedApolloLog();
     let body;
     switch (active) {
@@ -160,7 +136,7 @@ export default class Panel extends Component {
           <Mutations state={selectedLog.state} onRun={this.onRun} />;
         break;
       case 'store':
-        body = selectedLog && <Inspector />;
+        body = selectedLog && <Inspector state={selectedLog.state} />;
         break;
       case 'graphiql':
         body = (
@@ -174,7 +150,6 @@ export default class Panel extends Component {
       case 'logger':
         body = (
           <Logger
-            log={this.state.actionLog}
             onSelectLogItem={this.selectLogItem}
             selectedId={this.state.selectedRequestId}
           />
