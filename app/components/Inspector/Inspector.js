@@ -25,9 +25,8 @@ export default class Inspector extends React.Component {
   }
 
   updateData() {
-    return new Promise(resolve => {
-      evalInPage(
-        `
+    evalInPage(
+      `
         (function () {
           const numActions = window.__action_log__ && window.__action_log__.length;
           if(numActions) {
@@ -35,13 +34,11 @@ export default class Inspector extends React.Component {
           }
         })()
       `,
-        dataWithOptimistic => {
-          let toHighlight = {};
-          this.updateDataInStore(dataWithOptimistic);
-          resolve();
-        }
-      );
-    });
+      dataWithOptimistic => {
+        let toHighlight = {};
+        this.updateDataInStore(dataWithOptimistic);
+      }
+    );
   }
 
   updateDataInStore(dataWithOptimistic) {
