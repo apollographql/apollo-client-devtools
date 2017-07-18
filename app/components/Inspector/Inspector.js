@@ -81,8 +81,7 @@ export default class Inspector extends React.Component {
   }
 
   componentWillUnmount() {
-    this.didMount = false;
-    clearInterval(this._interval);
+    clearTimeout(this._interval);
   }
 
   componentWillReceiveProps(nextProps) {

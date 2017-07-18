@@ -45,7 +45,6 @@ export default class Panel extends Component {
 
       if (logItem.mutations) {
         let mutations = logItem.mutations;
-        console.log(mutations);
         let mutationsArray = Object.keys(mutations).map(function (key, index) {
           return [key, mutations[key]];
         });

@@ -10,6 +10,8 @@ const js = `
 let isConnected = false;
 
 const hookLogger = (logItem) => {
+
+  
   if (typeof logItem.action.type !== 'string' || logItem.action.type.split('_')[0] !== 'APOLLO') {
         return;
   }
@@ -57,13 +59,19 @@ window.addEventListener('message', event => {
 
   if (event.data.APOLLO_CONNECTED) {
     if (!passedApolloConnected) {
-      chrome.runtime.sendMessage({ APOLLO_CONNECTED: true }, function() {
+      chrome.runtime.sendMessage({ APOLLO_CONNECTED: true }, function () {
         passedApolloConnected = true;
       });
     }
   }
 
   // set up for only sending data to open panel tab
+  /* lines 69 - 70 update a tab that recieves new data after it has been open for some time
+   * (For example, say the mutations tab was opened at timestep 1 and remains open at timestep 2.
+   *  The user then makes a mutation at timestep 2. Lines 69 - 70 will make sure the tab updates
+   *  after this mutation.) This needs to be different from lines 97 - 108 because the 
+   *  message source is different.
+   */
   if (!!event.data.newStateData) {
     contentScriptState.data = event.data.newStateData;
 
@@ -88,14 +96,17 @@ window.addEventListener('message', event => {
   return;
 });
 
-chrome.runtime.onMessage.addListener(function(request, sender) {
+// lines 97 - 108 send data to a tab only when a new tab is opened
+chrome.runtime.onMessage.addListener(function (request, sender) {
   contentScriptState.activeTab = request.activeTab;
   let activeTab = contentScriptState.activeTab;
   let data = contentScriptState.data[activeTab];
 
   message = {
-    type: 'UPDATE_TAB_DATA'
+    type: 'UPDATE_TAB_DATA',
+    [activeTab]: data
   };
-  message[activeTab] = data;
+
+  // sends message with data back to background page
   chrome.runtime.sendMessage(message);
 });
