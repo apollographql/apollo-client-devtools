@@ -16,21 +16,13 @@ import evalInPage from '../evalInPage';
 import { inspectorHook } from './Inspector/Inspector'; //inspectorHook is a js function
 import '../style.less';
 
-function lastActionId(actionLog) {
-  if (actionLog && actionLog.length) {
-    const lastApolloState = actionLog[actionLog.length - 1];
-    return lastApolloState && lastApolloState.id;
-  }
-  return null;
-}
-
 export default class Panel extends Component {
   constructor(props, context) {
     super(props, context);
 
     this.state = {
       active: 'graphiql',
-      actionLog: [],
+      tabData: undefined,
       runQuery: undefined,
       runVariables: undefined,
       selectedRequestId: undefined,
@@ -43,16 +35,17 @@ export default class Panel extends Component {
     });
 
     backgroundPageConnection.onMessage.addListener((logItem, sender) => {
-      let slimItem;
+      let tabData;
 
       if (logItem.queries) {
-        slimItem = {
+        tabData = {
           state: { queries: logItem.queries }
         };
       }
 
       if (logItem.mutations) {
         let mutations = logItem.mutations;
+        console.log(mutations);
         let mutationsArray = Object.keys(mutations).map(function (key, index) {
           return [key, mutations[key]];
         });
@@ -65,46 +58,26 @@ export default class Panel extends Component {
         mutationsArray.forEach(function (m) {
           mutations[m[0]] = m[1];
         });
-        slimItem = {
+
+        tabData = {
           state: { mutations: logItem.mutations }
         };
       }
 
       if (logItem.inspector) {
-        slimItem = {
+
+        tabData = {
           state: { inspector: logItem.inspector }
         };
       }
 
       this.setState({
-        actionLog: [slimItem]
+        tabData: tabData
       });
     });
 
     this.onRun = this.onRun.bind(this);
     this.selectLogItem = this.selectLogItem.bind(this);
-  }
-  componentDidMount() {
-    this.lastActionId = null;
-    this.initLogger();
-  }
-
-  initLogger() {
-    evalInPage(
-      `
-      (function () {
-        if (window.__APOLLO_CLIENT__) {
-          // window.__action_log__ initialized in hook.js
-          window.__action_log__.push({
-            dataWithOptimisticResults: window.__APOLLO_CLIENT__.queryManager.getDataWithOptimisticResults(),
-          });
-        }
-      })()
-    `,
-      result => {
-        // Nothing
-      }
-    );
   }
 
   componentWillUnmount() {
@@ -112,20 +85,12 @@ export default class Panel extends Component {
   }
 
   selectedApolloLog() {
-    if (this.state.actionLog.length < 1) {
+
+    if (!this.state.tabData) {
       return {};
     }
 
-    const logIsPopulated = this.state.actionLog && this.state.actionLog.length;
-
-    if (this.state.selectedRequestId) {
-      const filtered = this.state.actionLog.filter(item => {
-        return item.id === this.state.selectedRequestId;
-      });
-
-      return filtered.length && filtered[0];
-    }
-    return this.state.actionLog[this.state.actionLog.length - 1];
+    return this.state.tabData;
   }
 
   onRun(queryString, variables, tab, automaticallyRunQuery) {
@@ -155,7 +120,7 @@ export default class Panel extends Component {
   }
 
   render() {
-    const { active, actionLog } = this.state;
+    const { active } = this.state;
     const selectedLog = this.selectedApolloLog();
     let body;
     switch (active) {
@@ -186,7 +151,6 @@ export default class Panel extends Component {
       case 'logger':
         body = (
           <Logger
-            log={this.state.actionLog}
             onSelectLogItem={this.selectLogItem}
             selectedId={this.state.selectedRequestId}
           />
