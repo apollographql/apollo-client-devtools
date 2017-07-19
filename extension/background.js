@@ -3,37 +3,40 @@ let apolloConnected = false;
 let backgroundPageConnection = undefined;
 let requestLog = {};
 
-chrome.runtime.onConnect.addListener((port) => {
-  tabId = port.name
+chrome.runtime.onConnect.addListener(port => {
+  tabId = port.name;
   connections[tabId] = port;
 
   port.onDisconnect.addListener(port => {
-
-
     const tabs = Object.keys(connections);
     delete connections[tabId];
   });
 });
 
 chrome.runtime.onMessage.addListener((request, sender) => {
+  if (request.type == 'OPEN_TAB') {
+    chrome.tabs.sendMessage(request.tabId, {
+      type: 'OPEN_TAB',
+      activeTab: request.activeTab
+    });
+  }
 
-  // not sure if being used
+  if (request.type == 'UPDATE_TAB_DATA') {
+    if (connections[sender.tab.id]) {
+      // activeTabName is the name of the opened tab
+      const activeTabName = Object.keys(request)[1];
+      // tabData is data to be sent
+      const tabData = request[activeTabName];
+      const message = {};
+      message[activeTabName] = request[activeTabName];
+      if (connections[sender.tab.id]) {
+        connections[sender.tab.id].postMessage(message);
+      }
+    }
+  }
+
   if (!apolloConnected && request.APOLLO_CONNECTED) {
     chrome.pageAction.show(sender.tab.id);
     apolloConnected = true;
-  }
-
-  if (request.trimmedObj) {
-    if (connections[sender.tab.id]) {
-      connections[sender.tab.id].postMessage(request.trimmedObj);
-    }
-    else {
-      let connectionsPoll = setInterval(function() {
-        if (connections[sender.tab.id]) {
-          connections[sender.tab.id].postMessage(request.trimmedObj);
-          clearInterval(connectionsPoll);
-        }
-      }, 500);
-    }
   }
 });

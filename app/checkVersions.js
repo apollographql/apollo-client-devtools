@@ -12,7 +12,7 @@ if (!uuid) {
 export default function runVersionCheck() {
   let hasSeenApollo = false;
   setInterval(() => {
-    evalInPage(`!!window.__APOLLO_CLIENT__`, (result) => {
+    evalInPage(`!!window.__APOLLO_CLIENT__`, result => {
       if (result) {
         if (!hasSeenApollo) {
           hasSeenApollo = true;
@@ -31,7 +31,8 @@ export default function runVersionCheck() {
 }
 
 function checkVersions() {
-  evalInPage(`
+  evalInPage(
+    `
     (function(){
       var versions = [];
 
@@ -42,9 +43,9 @@ function checkVersions() {
       return versions;
     })()
   `,
-  (versions) => {
-    const graphQLParams = {
-      query: `
+    versions => {
+      const graphQLParams = {
+        query: `
         query CompatibilityMessages(
           $uuid: String
           $devToolsVersion: String!
@@ -59,27 +60,32 @@ function checkVersions() {
           }
         }
       `,
-      variables: {
-        uuid,
-        devToolsVersion,
-        versions,
-      }
-    }
+        variables: {
+          uuid,
+          devToolsVersion,
+          versions
+        }
+      };
 
-    return fetch('https://devtools.apollodata.com/graphql', {
-      method: 'post',
-      mode: 'cors',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(graphQLParams),
-    }).then(function (response) {
-      return response.json();
-    }).then(function (response) {
-      response.data.compatibilityMessages.forEach((cm) => {
-        evalInPage(`console.info('Apollo devtools message:', "${cm.message}")`);
-      });
-    });
-  })
+      return fetch('https://devtools.apollodata.com/graphql', {
+        method: 'post',
+        mode: 'cors',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(graphQLParams)
+      })
+        .then(function(response) {
+          return response.json();
+        })
+        .then(function(response) {
+          response.data.compatibilityMessages.forEach(cm => {
+            evalInPage(
+              `console.info('Apollo devtools message:', "${cm.message}")`
+            );
+          });
+        });
+    }
+  );
 }

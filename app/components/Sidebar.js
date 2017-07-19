@@ -4,7 +4,7 @@ import classnames from 'classnames';
 export class Sidebar extends Component {
   static propTypes = {
     className: PropTypes.string,
-    name: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired
   };
 
   constructor(props, context) {
@@ -40,7 +40,12 @@ export class Sidebar extends Component {
   render() {
     const { children } = this.props;
     return (
-      <div className={classnames(this.props.className, 'sidebar')} ref={(sidebar) => { this.sidebar = sidebar; }}>
+      <div
+        className={classnames(this.props.className, 'sidebar')}
+        ref={sidebar => {
+          this.sidebar = sidebar;
+        }}
+      >
         <div className="dragger" onMouseDown={this.initResize} />
         {children}
       </div>
