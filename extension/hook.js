@@ -96,7 +96,7 @@ window.addEventListener('message', event => {
   return;
 });
 
-// lines 97 - 108 send data to a tab only when a new tab is opened
+// send data to a tab only when a new tab is opened
 chrome.runtime.onMessage.addListener(function (request, sender) {
   contentScriptState.activeTab = request.activeTab;
   let activeTab = contentScriptState.activeTab;
