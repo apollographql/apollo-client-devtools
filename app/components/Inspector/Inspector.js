@@ -3,7 +3,6 @@ import { Sidebar } from '../Sidebar';
 import classnames from 'classnames';
 import evalInPage from '../../evalInPage';
 import _ from 'lodash';
-
 import './inspector.less';
 
 export default class Inspector extends React.Component {
@@ -11,9 +10,8 @@ export default class Inspector extends React.Component {
     inspectorContext: React.PropTypes.object.isRequired
   };
 
-  constructor() {
-    super();
-
+  constructor(props) {
+    super(props);
     this.state = {
       dataWithOptimistic: null,
       ids: [],
@@ -27,9 +25,8 @@ export default class Inspector extends React.Component {
   }
 
   updateData() {
-    return new Promise(resolve => {
-      evalInPage(
-        `
+    evalInPage(
+      `
         (function () {
           const numActions = window.__action_log__ && window.__action_log__.length;
           if(numActions) {
@@ -37,56 +34,61 @@ export default class Inspector extends React.Component {
           }
         })()
       `,
-        dataWithOptimistic => {
-          let toHighlight = {};
+      dataWithOptimistic => {
+        let toHighlight = {};
+        this.updateDataInStore(dataWithOptimistic);
+      }
+    );
+  }
 
-          if (this.state.searchTerm.length >= 3) {
-            toHighlight = highlightFromSearchTerm({
-              data: dataWithOptimistic,
-              query: this.state.searchTerm
-            });
-          }
+  updateDataInStore(dataWithOptimistic) {
+    let toHighlight = {};
+    if (this.state.searchTerm.length >= 3) {
+      toHighlight = highlightFromSearchTerm({
+        data: dataWithOptimistic,
+        query: this.state.searchTerm
+      });
+    }
 
-          const unsortedIds = Object.keys(dataWithOptimistic).filter(
-            id => id[0] !== '$'
-          );
-          const highlightedIds = Object.keys(toHighlight).filter(
-            id => id[0] !== '$' && id !== 'ROOT_QUERY'
-          );
-          const sortedIdsWithoutRoot = unsortedIds
-            .filter(id => id !== 'ROOT_QUERY' && highlightedIds.indexOf(id) < 0)
-            .sort();
-          const ids = [
-            ...highlightedIds,
-            'ROOT_QUERY',
-            ...sortedIdsWithoutRoot
-          ];
-
-          this.setState({
-            dataWithOptimistic,
-            toHighlight,
-            ids,
-            selectedId: this.state.selectedId || ids[0]
-          });
-          resolve();
-        }
-      );
+    const unsortedIds = Object.keys(dataWithOptimistic).filter(
+      id => id[0] !== '$'
+    );
+    const highlightedIds = Object.keys(toHighlight).filter(
+      id => id[0] !== '$' && id !== 'ROOT_QUERY'
+    );
+    const sortedIdsWithoutRoot = unsortedIds
+      .filter(id => id !== 'ROOT_QUERY' && highlightedIds.indexOf(id) < 0)
+      .sort();
+    const ids = [...highlightedIds, 'ROOT_QUERY', ...sortedIdsWithoutRoot];
+    const selectedId = this.state.selectedId || ids[0];
+    this.setState({
+      dataWithOptimistic,
+      toHighlight,
+      ids,
+      selectedId: this.state.selectedId || ids[0]
     });
   }
 
   componentDidMount() {
+    chrome.runtime.sendMessage({
+      type: 'OPEN_TAB',
+      tabId: chrome.devtools.inspectedWindow.tabId,
+      activeTab: 'inspector'
+    });
+    //analytics
     if (ga) ga('send', 'pageview', 'StoreInspector');
     this.updateData();
-    const updater = () =>
-      (this._interval = setTimeout(() => {
-        this.updateData().catch(console.error).then(updater);
-      }, 1000));
-
-    updater();
   }
 
   componentWillUnmount() {
     clearTimeout(this._interval);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (!nextProps) {
+      return [null, null, null, null];
+    }
+    this.updateDataInStore(nextProps.state.inspector);
   }
 
   getChildContext() {
@@ -163,6 +165,7 @@ export default class Inspector extends React.Component {
 
   render() {
     const { selectedId, dataWithOptimistic, searchTerm, ids } = this.state;
+
     return (
       <div className="inspector-panel body">
         <div className="inspector-body">
@@ -172,7 +175,7 @@ export default class Inspector extends React.Component {
               searchTerm={searchTerm}
               setSearchTerm={this.setSearchTerm}
             />
-            {ids.map(id => this.renderSidebarItem(id))}
+            {ids && ids.map(id => this.renderSidebarItem(id))}
           </Sidebar>
           <div className="inspector-main">
             {selectedId &&
