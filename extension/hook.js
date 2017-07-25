@@ -18,7 +18,11 @@ const hookLogger = (logItem) => {
 
   if (!!window.__APOLLO_CLIENT__) {
   
+    var testDate = new Date();
+    logItem.state.queries[2].variables.data = testDate;
     const queries = logItem.state.queries;
+    
+    // stringify query variables
     for (var query in queries) {
       const variablesObject = logItem.state.queries[query].variables;
       console.log('variablesObject :', variablesObject);
@@ -31,6 +35,13 @@ const hookLogger = (logItem) => {
       inspector: logItem.dataWithOptimisticResults
     }
 
+    // unstringify query variables so the stringified versions don't get stored in state
+    for (var query in queries) {
+      const variablesObject = logItem.state.queries[query].variables;
+      console.log('variablesObject :', variablesObject);
+      logItem.state.queries[query].variables = JSON.parse(variablesObject);
+    }
+    
     window.postMessage({ newStateData }, '*');
     window.__action_log__.push(logItem);    
   }

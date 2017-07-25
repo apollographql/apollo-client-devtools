@@ -41,12 +41,12 @@ export default class Panel extends Component {
         console.log(logItem.queries);
 
         let queries = logItem.queries;
+        /*
         for (var query in queries) {
           const variablesObject = logItem.queries[query].variables;
-          logItem.queries[query].variables = JSON.parse(
-            JSON.parse(variablesObject)
-          );
+          logItem.queries[query].variables = JSON.parse(variablesObject);
         }
+        */
 
         tabData = {
           state: { queries: logItem.queries }
