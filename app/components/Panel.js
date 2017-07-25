@@ -38,6 +38,16 @@ export default class Panel extends Component {
       let tabData;
 
       if (logItem.queries) {
+        console.log(logItem.queries);
+
+        let queries = logItem.queries;
+        for (var query in queries) {
+          const variablesObject = logItem.queries[query].variables;
+          logItem.queries[query].variables = JSON.parse(
+            JSON.parse(variablesObject)
+          );
+        }
+
         tabData = {
           state: { queries: logItem.queries }
         };
@@ -45,7 +55,7 @@ export default class Panel extends Component {
 
       if (logItem.mutations) {
         let mutations = logItem.mutations;
-        let mutationsArray = Object.keys(mutations).map(function (key, index) {
+        let mutationsArray = Object.keys(mutations).map(function(key, index) {
           return [key, mutations[key]];
         });
         // chose 10 arbitrary so we only display 10 mutations in log
@@ -54,7 +64,7 @@ export default class Panel extends Component {
           mutationsArray.length
         );
         mutations = {};
-        mutationsArray.forEach(function (m) {
+        mutationsArray.forEach(function(m) {
           mutations[m[0]] = m[1];
         });
 
@@ -64,7 +74,6 @@ export default class Panel extends Component {
       }
 
       if (logItem.inspector) {
-
         tabData = {
           state: { inspector: logItem.inspector }
         };
@@ -84,7 +93,6 @@ export default class Panel extends Component {
   }
 
   selectedApolloLog() {
-
     if (!this.state.tabData) {
       return {};
     }
