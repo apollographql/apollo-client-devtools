@@ -17,11 +17,22 @@ const hookLogger = (logItem) => {
   }
 
   if (!!window.__APOLLO_CLIENT__) {
-  
-    var testDate = new Date();
-    logItem.state.queries[2].variables.data = testDate;
-    const queries = logItem.state.queries;
+
+    let queries = logItem.state.queries;
     
+    // why does this not work??
+    /*
+    for (var query in queries) {
+      const variablesObject = logItem.state.queries[query].variables;
+      queries[query].variables = JSON.stringify(variablesObject);
+    }
+    const newStateData = {
+      queries: queries,
+      mutations: logItem.state.mutations,
+      inspector: logItem.dataWithOptimisticResults
+    }
+    */
+
     // stringify query variables
     for (var query in queries) {
       const variablesObject = logItem.state.queries[query].variables;
@@ -35,7 +46,7 @@ const hookLogger = (logItem) => {
       inspector: logItem.dataWithOptimisticResults
     }
 
-    // unstringify query variables so the stringified versions don't get stored in state
+    // unstringify query variables after message so the stringified versions don't get stored in state
     for (var query in queries) {
       const variablesObject = logItem.state.queries[query].variables;
       console.log('variablesObject :', variablesObject);
