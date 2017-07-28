@@ -38,8 +38,6 @@ export default class Panel extends Component {
       let tabData;
 
       if (logItem.queries) {
-        console.log(logItem.queries);
-        let queries = logItem.queries;
         tabData = {
           state: { queries: logItem.queries }
         };

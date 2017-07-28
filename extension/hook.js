@@ -20,19 +20,6 @@ const hookLogger = (logItem) => {
 
     let queries = logItem.state.queries;
     
-    // why does this not work??
-    /*
-    for (var query in queries) {
-      const variablesObject = logItem.state.queries[query].variables;
-      queries[query].variables = JSON.stringify(variablesObject);
-    }
-    const newStateData = {
-      queries: queries,
-      mutations: logItem.state.mutations,
-      inspector: logItem.dataWithOptimisticResults
-    }
-    */
-
     // stringify query variables
     for (var query in queries) {
       const variablesObject = logItem.state.queries[query].variables;
