@@ -24,7 +24,13 @@ const hookLogger = (logItem) => {
       inspector: logItem.dataWithOptimisticResults
     }
 
-    window.postMessage({ newStateData }, '*');
+    try {
+      window.postMessage({ newStateData }, '*');  
+    }
+    catch(err) {
+      console.log(err);
+    }
+    
     window.__action_log__.push(logItem);    
   }
 }
