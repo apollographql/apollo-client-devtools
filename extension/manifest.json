@@ -1,5 +1,5 @@
 {
-  "version": "2.0.2",
+  "version": "2.0.3",
   "name": "Apollo Client Developer Tools",
   "short_name": "Apollo DevTools",
   "description": "GraphQL debugging tools for Apollo Client in the Chrome developer console.",
