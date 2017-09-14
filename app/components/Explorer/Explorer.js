@@ -79,7 +79,25 @@ export default class Explorer extends Component {
               errors: e.graphQLErrors,
             }));
           }
-          return window.__APOLLO_CLIENT__.networkInterface.query(payload);
+          if (window.__APOLLO_CLIENT__.networkInterface) {
+            return window.__APOLLO_CLIENT__.networkInterface.query(payload);
+          }
+          var completed;
+          return new Promise(function(resolve, reject) {
+            return window.__APOLLO_CLIENT__.link.request(payload).subscribe({
+              next: data => {
+                if (completed) {
+                   console.warn(
+                     'Promise Wrapper does not support multiple results from Observable',
+                   );
+                 } else {
+                   completed = true;
+                   resolve(data);
+                }
+              },
+              error: reject,
+            });
+          });
         };
         `,
         (result, isException) => {}
