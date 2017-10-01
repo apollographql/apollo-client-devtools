@@ -305,6 +305,7 @@ class StoreTreeFieldSet extends React.Component {
       <div className={className}>
         {this.keysToDisplay().map(key =>
           <StoreTreeField
+            key={key}
             storeKey={key}
             value={storeObj[key]}
             highlight={!!(highlightObj && highlightObj[key])}
@@ -357,7 +358,7 @@ const StoreTreeArray = ({ value }) => {
   return (
     <div className="store-tree-field-set">
       {value.map((item, index) =>
-        <StoreTreeArrayItem item={item} index={index} />
+        <StoreTreeArrayItem key={index} item={item} index={index} />
       )}
     </div>
   );
