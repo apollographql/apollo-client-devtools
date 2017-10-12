@@ -3,7 +3,7 @@ import React from 'react';
 import { Sidebar } from '../Sidebar';
 import classnames from 'classnames';
 import evalInPage from '../../evalInPage';
-import _ from 'lodash';
+import flattenDeep from 'lodash.flattendeep';
 import './inspector.less';
 
 export default class Inspector extends React.Component {
@@ -225,7 +225,7 @@ function dfsSearch({ data, regex, toHighlight, pathToId = [], dataId }) {
   Object.keys(storeObj).forEach(storeFieldKey => {
     const arr = [storeObj[storeFieldKey]];
 
-    const flatArr = _.flattenDeep(arr);
+    const flatArr = flattenDeep(arr);
 
     flatArr.forEach(val => {
       const valueMatches = typeof val === 'string' && regex.test(val);

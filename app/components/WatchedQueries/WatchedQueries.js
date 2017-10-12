@@ -1,28 +1,18 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { connect } from 'react-redux';
-import pickBy from 'lodash/pickBy';
-import sortBy from 'lodash/sortBy';
+import pickBy from 'lodash.pickby';
+import sortBy from 'lodash.sortby';
 import classnames from 'classnames';
-import { getQueryDefinition } from 'apollo-client';
-import { parse } from 'graphql-tag/parser';
+import { getOperationName } from 'apollo-utilities';
+import { parse } from 'graphql/language/parser';
 import { GraphqlCodeBlock } from 'graphql-syntax-highlighter-react';
 import { Sidebar } from '../Sidebar';
 import Warning from '../Images/Warning';
 
 import './WatchedQueries.less';
 
-const queryNameFromQueryString = queryString => {
-  const doc = parse(queryString);
-  const queryDefinition = getQueryDefinition(doc);
-  if (queryDefinition.name && queryDefinition.name.value) {
-    return queryDefinition.name.value;
-  }
-  return null;
-};
-
 const queryLabel = (queryId, query) => {
-  const queryName = queryNameFromQueryString(query.queryString);
+  const queryName = getOperationName(parse(query.queryString));
   if (queryName === null) {
     return queryId;
   }

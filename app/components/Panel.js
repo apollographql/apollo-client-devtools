@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import classnames from 'classnames';
-import { getMutationDefinition } from 'apollo-client';
 
 import WatchedQueries from './WatchedQueries';
 import Mutations from './Mutations';
@@ -185,15 +184,15 @@ export default class Panel extends Component {
             <Queries />
             <div>Queries</div>
           </div>
-          {getMutationDefinition &&
-            <div
-              title="Watched mutations"
-              className={classnames('tab', { active: active === 'mutations' })}
-              onClick={() => this.switchPane('mutations')}
-            >
-              <Queries />
-              <div>Mutations</div>
-            </div>}
+
+          <div
+            title="Watched mutations"
+            className={classnames('tab', { active: active === 'mutations' })}
+            onClick={() => this.switchPane('mutations')}
+          >
+            <Queries />
+            <div>Mutations</div>
+          </div>
           <div
             title="Apollo client store"
             className={classnames('tab', { active: active === 'store' })}
