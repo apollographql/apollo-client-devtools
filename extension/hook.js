@@ -10,12 +10,6 @@ const js = `
 let isConnected = false;
 
 const hookLogger = (logItem) => {
-
-  
-  if (typeof logItem.action.type !== 'string' || logItem.action.type.split('_')[0] !== 'APOLLO') {
-        return;
-  }
-
   if (!!window.__APOLLO_CLIENT__) {
 
     const newStateData = {
@@ -23,7 +17,7 @@ const hookLogger = (logItem) => {
       mutations: logItem.state.mutations,
       inspector: logItem.dataWithOptimisticResults
     }
-
+    
     try {
       window.postMessage({ newStateData }, '*');  
     }
@@ -62,10 +56,9 @@ script.parentNode.removeChild(script);
 // event.data has the data being passed in the message
 window.addEventListener('message', event => {
   if (event.source != window) return;
-
   if (event.data.APOLLO_CONNECTED) {
     if (!passedApolloConnected) {
-      chrome.runtime.sendMessage({ APOLLO_CONNECTED: true }, function () {
+      chrome.runtime.sendMessage({ APOLLO_CONNECTED: true }, function() {
         passedApolloConnected = true;
       });
     }
@@ -103,7 +96,7 @@ window.addEventListener('message', event => {
 });
 
 // send data to a tab only when a new tab is opened
-chrome.runtime.onMessage.addListener(function (request, sender) {
+chrome.runtime.onMessage.addListener(function(request, sender) {
   contentScriptState.activeTab = request.activeTab;
   let activeTab = contentScriptState.activeTab;
   let data = contentScriptState.data[activeTab];

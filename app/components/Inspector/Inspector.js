@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { Sidebar } from '../Sidebar';
 import classnames from 'classnames';
@@ -7,7 +8,7 @@ import './inspector.less';
 
 export default class Inspector extends React.Component {
   static childContextTypes = {
-    inspectorContext: React.PropTypes.object.isRequired
+    inspectorContext: PropTypes.object.isRequired
   };
 
   constructor(props) {
@@ -260,7 +261,7 @@ function dfsSearch({ data, regex, toHighlight, pathToId = [], dataId }) {
 // Props: data, dataId, expand
 class StoreTreeFieldSet extends React.Component {
   static contextTypes = {
-    inspectorContext: React.PropTypes.object.isRequired
+    inspectorContext: PropTypes.object.isRequired
   };
 
   constructor(props) {
@@ -414,7 +415,7 @@ const StoreTreeValue = props =>
 // Props: data, storeKey, value
 class StoreTreeField extends React.Component {
   static contextTypes = {
-    inspectorContext: React.PropTypes.object.isRequired
+    inspectorContext: PropTypes.object.isRequired
   };
 
   getPossibleTypename() {

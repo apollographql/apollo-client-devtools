@@ -80,6 +80,7 @@ function checkVersions() {
           return response.json();
         })
         .then(function(response) {
+          if (!response.data.compatibilityMessages) return;
           response.data.compatibilityMessages.forEach(cm => {
             evalInPage(
               `console.info('Apollo devtools message:', "${cm.message}")`

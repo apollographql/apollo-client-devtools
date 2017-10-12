@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import { connect } from 'react-redux';
 import pickBy from 'lodash/pickBy';
 import sortBy from 'lodash/sortBy';
@@ -191,7 +192,7 @@ const GraphQLError = ({ error }) =>
   </li>;
 GraphQLError.propTypes = {
   error: PropTypes.shape({
-    message: React.PropTypes.string
+    message: PropTypes.string
   })
 };
 

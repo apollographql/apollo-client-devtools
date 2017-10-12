@@ -31,9 +31,11 @@
   },
   "dependencies": {
     "apollo-client": "^1.4.2",
+    "apollo-link": "^0.7.0",
     "graphql-syntax-highlighter-react": "^0.1.0",
     "graphql-tag": "^1.1.2",
     "lodash": "^4.17.2",
+    "prop-types": "^15.6.0",
     "react-redux": "^4.4.6",
     "uuid": "^3.0.1"
   }
