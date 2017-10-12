@@ -4,6 +4,7 @@
   "license": "MIT",
   "scripts": {
     "build": "webpack",
+    "build-for-store": "NODE_ENV=production webpack",
     "start": "webpack -w",
     "prettier": "prettier --single-quote --write \"extension/**/*.js\"  \"app/**/*.js\""
   },
@@ -22,21 +23,20 @@
     "less-loader": "^2.2.3",
     "prettier": "^1.5.2",
     "style-loader": "^0.13.1",
-    "uglifyjs-webpack-plugin": "^1.0.0-beta.3",
     "webpack": "^1.13.3"
   },
   "dependencies": {
     "apollo-utilities": "^0.2.0-rc.0",
     "classnames": "^2.2.5",
     "graphiql": "0.11.4",
-    "graphql-syntax-highlighter-react": "^0.2.0",
     "graphql": "^0.11.7",
+    "graphql-syntax-highlighter-react": "^0.2.0",
     "lodash.flattendeep": "^4.4.0",
     "lodash.pickby": "^4.6.0",
     "lodash.sortby": "^4.7.0",
     "prop-types": "^15.6.0",
-    "react-dom": "^16.0.0",
     "react": "^16.0.0",
+    "react-dom": "^16.0.0",
     "uuid": "^3.0.1"
   }
 }

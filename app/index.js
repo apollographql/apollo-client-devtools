@@ -1,8 +1,13 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import Panel from './components/Panel';
-import runVersionCheck from './checkVersions';
 import { render } from 'react-dom';
+
+// polyfill propTypes for now
+React.PropTypes = PropTypes;
+
+// use require so polyfill above can work
+const Panel = require('./components/Panel').default;
+const runVersionCheck = require('./checkVersions').default;
 
 // Standard Google Universal Analytics code
 (function(i, s, o, g, r, a, m) {

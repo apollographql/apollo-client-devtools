@@ -1,12 +1,24 @@
 var webpack = require('webpack')
 var HtmlWebpackPlugin = require('html-webpack-plugin');
-var UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 var HTMLWebpackPluginConfig = new HtmlWebpackPlugin({
   template: __dirname + '/app/index.html',
   filename: 'index.html',
   inject: 'body'
 });
 
+const plugins = [
+  HTMLWebpackPluginConfig,
+  new webpack.IgnorePlugin(/\.flow$/)
+];
+if (process.env.NODE_ENV === 'production') {
+  plugins.push(
+    new webpack.DefinePlugin({
+      'process.env': {
+        'NODE_ENV': JSON.stringify('production')
+      }
+    })
+  )
+}
 module.exports = {
   entry: ['./app/index.js'],
   output: {
@@ -35,14 +47,5 @@ module.exports = {
       }
     ]
   },
-  plugins: [
-    HTMLWebpackPluginConfig,
-    new webpack.IgnorePlugin(/\.flow$/)
-    // new UglifyJSPlugin(),
-    // new webpack.DefinePlugin({
-    //   'process.env': {
-    //     'NODE_ENV': JSON.stringify('production')
-    //   }
-    // })
-  ]
+  plugins: plugins
 }
