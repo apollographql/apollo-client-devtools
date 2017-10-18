@@ -1,6 +1,6 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import classnames from 'classnames';
-import { getMutationDefinition } from 'apollo-client';
 
 import WatchedQueries from './WatchedQueries';
 import Mutations from './Mutations';
@@ -36,7 +36,6 @@ export default class Panel extends Component {
 
     backgroundPageConnection.onMessage.addListener((logItem, sender) => {
       let tabData;
-
       if (logItem.queries) {
         tabData = {
           state: { queries: logItem.queries }
@@ -45,7 +44,7 @@ export default class Panel extends Component {
 
       if (logItem.mutations) {
         let mutations = logItem.mutations;
-        let mutationsArray = Object.keys(mutations).map(function (key, index) {
+        let mutationsArray = Object.keys(mutations).map(function(key, index) {
           return [key, mutations[key]];
         });
         // chose 10 arbitrary so we only display 10 mutations in log
@@ -54,7 +53,7 @@ export default class Panel extends Component {
           mutationsArray.length
         );
         mutations = {};
-        mutationsArray.forEach(function (m) {
+        mutationsArray.forEach(function(m) {
           mutations[m[0]] = m[1];
         });
 
@@ -64,7 +63,6 @@ export default class Panel extends Component {
       }
 
       if (logItem.inspector) {
-
         tabData = {
           state: { inspector: logItem.inspector }
         };
@@ -84,7 +82,6 @@ export default class Panel extends Component {
   }
 
   selectedApolloLog() {
-
     if (!this.state.tabData) {
       return {};
     }
@@ -187,15 +184,15 @@ export default class Panel extends Component {
             <Queries />
             <div>Queries</div>
           </div>
-          {getMutationDefinition &&
-            <div
-              title="Watched mutations"
-              className={classnames('tab', { active: active === 'mutations' })}
-              onClick={() => this.switchPane('mutations')}
-            >
-              <Queries />
-              <div>Mutations</div>
-            </div>}
+
+          <div
+            title="Watched mutations"
+            className={classnames('tab', { active: active === 'mutations' })}
+            onClick={() => this.switchPane('mutations')}
+          >
+            <Queries />
+            <div>Mutations</div>
+          </div>
           <div
             title="Apollo client store"
             className={classnames('tab', { active: active === 'store' })}

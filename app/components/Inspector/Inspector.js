@@ -1,13 +1,14 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { Sidebar } from '../Sidebar';
 import classnames from 'classnames';
 import evalInPage from '../../evalInPage';
-import _ from 'lodash';
+import flattenDeep from 'lodash.flattendeep';
 import './inspector.less';
 
 export default class Inspector extends React.Component {
   static childContextTypes = {
-    inspectorContext: React.PropTypes.object.isRequired
+    inspectorContext: PropTypes.object.isRequired
   };
 
   constructor(props) {
@@ -224,7 +225,7 @@ function dfsSearch({ data, regex, toHighlight, pathToId = [], dataId }) {
   Object.keys(storeObj).forEach(storeFieldKey => {
     const arr = [storeObj[storeFieldKey]];
 
-    const flatArr = _.flattenDeep(arr);
+    const flatArr = flattenDeep(arr);
 
     flatArr.forEach(val => {
       const valueMatches = typeof val === 'string' && regex.test(val);
@@ -260,7 +261,7 @@ function dfsSearch({ data, regex, toHighlight, pathToId = [], dataId }) {
 // Props: data, dataId, expand
 class StoreTreeFieldSet extends React.Component {
   static contextTypes = {
-    inspectorContext: React.PropTypes.object.isRequired
+    inspectorContext: PropTypes.object.isRequired
   };
 
   constructor(props) {
@@ -414,7 +415,7 @@ const StoreTreeValue = props =>
 // Props: data, storeKey, value
 class StoreTreeField extends React.Component {
   static contextTypes = {
-    inspectorContext: React.PropTypes.object.isRequired
+    inspectorContext: PropTypes.object.isRequired
   };
 
   getPossibleTypename() {

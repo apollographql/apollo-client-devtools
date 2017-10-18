@@ -1,26 +1,18 @@
-import React, { PropTypes } from 'react';
-import pickBy from 'lodash/pickBy';
-import sortBy from 'lodash/sortBy';
+import PropTypes from 'prop-types';
+import React from 'react';
+import pickBy from 'lodash.pickby';
+import sortBy from 'lodash.sortby';
 import classnames from 'classnames';
-import { getMutationDefinition } from 'apollo-client';
-import { parse } from 'graphql-tag/parser';
+import { getOperationName } from 'apollo-utilities';
+import { parse } from 'graphql/language/parser';
 import { GraphqlCodeBlock } from 'graphql-syntax-highlighter-react';
 import { Sidebar } from '../Sidebar';
 import Warning from '../Images/Warning';
 
 import './Mutations.less';
 
-const mutationNameFromMutationString = mutationString => {
-  const doc = parse(mutationString);
-  const mutationDefinition = getMutationDefinition(doc);
-  if (mutationDefinition.name && mutationDefinition.name.value) {
-    return mutationDefinition.name.value;
-  }
-  return null;
-};
-
 const mutationLabel = (mutationId, mutation) => {
-  const mutationName = mutationNameFromMutationString(mutation.mutationString);
+  const mutationName = getOperationName(parse(mutation.mutationString));
   if (mutationName === null) {
     return mutationId;
   }
@@ -190,7 +182,7 @@ const GraphQLError = ({ error }) =>
   </li>;
 GraphQLError.propTypes = {
   error: PropTypes.shape({
-    message: React.PropTypes.string
+    message: PropTypes.string
   })
 };
 

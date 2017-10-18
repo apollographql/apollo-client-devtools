@@ -1,6 +1,7 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import GraphiQL from 'graphiql';
-import { parse } from 'graphql';
+import { parse } from 'graphql/language/parser';
 import evalInPage from '../../evalInPage.js';
 
 import './graphiql.less';
@@ -79,7 +80,25 @@ export default class Explorer extends Component {
               errors: e.graphQLErrors,
             }));
           }
-          return window.__APOLLO_CLIENT__.networkInterface.query(payload);
+          if (window.__APOLLO_CLIENT__.networkInterface) {
+            return window.__APOLLO_CLIENT__.networkInterface.query(payload);
+          }
+          var completed;
+          return new Promise(function(resolve, reject) {
+            return window.__APOLLO_CLIENT__.__requestRaw(payload).subscribe({
+              next: data => {
+                if (completed) {
+                   console.warn(
+                     'Promise Wrapper does not support multiple results from Observable',
+                   );
+                 } else {
+                   completed = true;
+                   resolve(data);
+                }
+              },
+              error: reject,
+            });
+          });
         };
         `,
         (result, isException) => {}
@@ -90,7 +109,6 @@ export default class Explorer extends Component {
 
     this.graphQLFetcher = graphQLParams => {
       const { noFetch } = this.state;
-
       return createPromise(
         'window.__APOLLO_CLIENT__.makeGraphiqlQuery(' +
           JSON.stringify({

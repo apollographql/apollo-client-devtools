@@ -6,6 +6,19 @@ var HTMLWebpackPluginConfig = new HtmlWebpackPlugin({
   inject: 'body'
 });
 
+const plugins = [
+  HTMLWebpackPluginConfig,
+  new webpack.IgnorePlugin(/\.flow$/)
+];
+if (process.env.NODE_ENV === 'production') {
+  plugins.push(
+    new webpack.DefinePlugin({
+      'process.env': {
+        'NODE_ENV': JSON.stringify('production')
+      }
+    })
+  )
+}
 module.exports = {
   entry: ['./app/index.js'],
   output: {
@@ -34,8 +47,5 @@ module.exports = {
       }
     ]
   },
-  plugins: [
-    HTMLWebpackPluginConfig,
-    new webpack.IgnorePlugin(/\.flow$/)
-  ]
+  plugins: plugins
 }

@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 
 const GraphQL = ({}) =>
   <svg version="1.1" width="32" height="32" viewBox="0 0 32 32">

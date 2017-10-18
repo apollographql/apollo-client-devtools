@@ -3,7 +3,9 @@ Apollo Client Devtools
 
 This repository contains the [Apollo Client Devtools Chrome extension](https://chrome.google.com/webstore/detail/apollo-client-developer-t/jdkknkkbebbapilgoeccciglkfbmbnfm).
 
-The dev tools require at least `apollo-client@0.5.18`. To see component names in the query inspector, you need at least `react-apollo@0.7.1`.
+If you are running Apollo Client 2.0, the dev tools require at least `apollo-client@2.0.0-rc.2` and `react-apollo@2.0.0-beta.0`.
+
+If you have not upgraded to 2.0 yet, the dev tools require at least `apollo-client@0.5.18`. To see component names in the query inspector, you need at least `react-apollo@0.7.1`.
 
 Features
 ===
