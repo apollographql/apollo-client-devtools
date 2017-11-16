@@ -3,7 +3,7 @@ Apollo Client Devtools
 
 This repository contains the [Apollo Client Devtools Chrome extension](https://chrome.google.com/webstore/detail/apollo-client-developer-t/jdkknkkbebbapilgoeccciglkfbmbnfm).
 
-If you are running Apollo Client 2.0, the dev tools require at least `apollo-client@2.0.0-rc.2` and `react-apollo@2.0.0-beta.0`.
+If you are running Apollo Client 2.0, the dev tools require at least `apollo-client@2.0.0-rc.2` and `react-apollo@2.0.0-beta.0`, and you must be running at least version 2.0.5 of the dev tools themselves.
 
 If you have not upgraded to 2.0 yet, the dev tools require at least `apollo-client@0.5.18`. To see component names in the query inspector, you need at least `react-apollo@0.7.1`.
 
@@ -114,6 +114,8 @@ If the devtools panel is blank, it may be because you have third party cookies d
 
 If there is an error in the devtools panel, you can inspect it just like you would inspect a normal webpage. Detach the inspector console from the window (if it's not already detached) by clicking the button with three vertical dots in the upper right corner of the console and selecting the detach option. With the detached console in focus, press `opt-cmd-I` again to open an inspector
 for the detached console (inspector inception). In this new inspector, you will be able to inspect elements in the first inspector, including the Apollo dev tools panel.
+
+If you are using Apollo Client 2.0, make sure you are using at least version 2.0.5 of the devtools.
 
 If you're seeing an error that's being caused by the devtools, please open an Issue on this repository with a detailed explanation of the problem and steps that we can take to replicate the error.
 
