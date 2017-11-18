@@ -28,10 +28,10 @@ function createPanel() {
   );
 }
 
-// Attempte to create Apollo panel on navigations as well
+// Attempt to create Apollo panel on navigations as well
 chrome.devtools.network.onNavigated.addListener(createPanel);
 
-// Attempte to create Apollo panel once per second in case
+// Attempt to create Apollo panel once per second in case
 // Apollo is loaded after page load
 const loadCheckInterval = setInterval(createPanel, 1000);
 
