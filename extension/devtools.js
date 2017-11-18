@@ -1,4 +1,5 @@
 let panelCreated = false;
+let loadCheckInterval;
 
 function createPanel() {
   if (panelCreated) {
@@ -16,8 +17,10 @@ function createPanel() {
         return;
       }
 
+      if (loadCheckInterval) {
+        clearInterval(loadCheckInterval);
+      }
       panelCreated = true;
-      clearInterval(loadCheckInterval);
       chrome.devtools.panels.create(
         'Apollo',
         './imgs/logo_devtools.png',
@@ -33,7 +36,7 @@ chrome.devtools.network.onNavigated.addListener(createPanel);
 
 // Attempt to create Apollo panel once per second in case
 // Apollo is loaded after page load
-const loadCheckInterval = setInterval(createPanel, 1000);
+loadCheckInterval = setInterval(createPanel, 1000);
 
 // Start the first attempt immediately
 createPanel();
