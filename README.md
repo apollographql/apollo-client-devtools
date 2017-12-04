@@ -1,7 +1,9 @@
 Apollo Client Devtools
 ===
 
-This repository contains the [Apollo Client Devtools Chrome extension](https://chrome.google.com/webstore/detail/apollo-client-developer-t/jdkknkkbebbapilgoeccciglkfbmbnfm).
+[Download for Chrome](https://chrome.google.com/webstore/detail/apollo-client-developer-t/jdkknkkbebbapilgoeccciglkfbmbnfm) | [Download for Firefox](https://addons.mozilla.org/en-US/firefox/addon/apollo-client-dev-tools/)
+
+This repository contains the Apollo DevTools extension for Chrome & Firefox.
 
 If you are running Apollo Client 2.0, the dev tools require at least `apollo-client@2.0.0-rc.2` and `react-apollo@2.0.0-beta.0`, and you must be running at least version 2.0.5 of the dev tools themselves.
 
