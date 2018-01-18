@@ -19,7 +19,7 @@ const hookLogger = (logItem) => {
     }
     
     try {
-      window.postMessage({ newStateData }, '*');  
+      window.postMessage(JSON.parse(JSON.stringify({ newStateData })), '*');  
     }
     catch(err) {
       console.log(err);
