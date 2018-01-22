@@ -4,10 +4,10 @@
   "license": "MIT",
   "main": "./extension/dist/index_bundle.js",
   "scripts": {
-    "build": "webpack",
-    "build-for-store": "NODE_ENV=production webpack",
-    "start": "webpack -w",
-    "prettier": "prettier --single-quote --write \"extension/**/*.js\"  \"app/**/*.js\""
+    "build": "cd shells/chrome && cross-env NODE_ENV=production webpack --progress --hide-modules",
+    "watch": "cd shells/chrome && cross-env webpack --progress --hide-modules --watch",
+    "start": "webpack -w --config ./shells/chrome/webpack.config.js",
+    "prettier": "prettier --single-quote --write \"{shells,devtools,tests,demo}/**/*.js\""
   },
   "devDependencies": {
     "babel-cli": "^6.11.4",
@@ -17,6 +17,7 @@
     "babel-plugin-transform-exponentiation-operator": "^6.8.0",
     "babel-preset-es2015": "^6.13.2",
     "babel-preset-react": "^6.16.0",
+    "cross-env": "^5.1.3",
     "css-loader": "^0.26.1",
     "html-webpack-plugin": "^2.24.1",
     "json-loader": "^0.5.4",

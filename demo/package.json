@@ -1,0 +1,25 @@
+{
+  "name": "apollo-client-20-example",
+  "description": "Sample project for Apollo Mission Briefing 001 featuring Apollo Client 2.0 & Launchpad\n\nLaunchpad: https://launchpad.graphql.com/v7mnw3m03",
+  "version": "0.0.154",
+  "dependencies": {
+    "react-native-web": "0.0.124",
+    "react-dom": "15.5.3",
+    "react-apollo": "1.4.16",
+    "react": "15.6.1",
+    "numeral": "2.0.6",
+    "graphql-tag": "2.4.2",
+    "apollo-link-http": "1.2.0",
+    "apollo-client": "2.0.3",
+    "apollo-cache-inmemory": "1.1.1"
+  },
+  "devDependencies": {
+    "react-scripts": "1.0.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}
