@@ -1,14 +1,13 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import { Sidebar } from '../Sidebar';
-import classnames from 'classnames';
-import evalInPage from '../../evalInPage';
-import flattenDeep from 'lodash.flattendeep';
-import './inspector.less';
+import PropTypes from "prop-types";
+import React from "react";
+import { Sidebar } from "../Sidebar";
+import classnames from "classnames";
+import flattenDeep from "lodash.flattendeep";
+import "./inspector.less";
 
 export default class Inspector extends React.Component {
   static childContextTypes = {
-    inspectorContext: PropTypes.object.isRequired
+    inspectorContext: PropTypes.object.isRequired,
   };
 
   constructor(props) {
@@ -18,28 +17,10 @@ export default class Inspector extends React.Component {
       ids: [],
       selectedId: null,
       toHighlight: {},
-      searchTerm: ''
+      searchTerm: "",
     };
 
     this.setSearchTerm = this.setSearchTerm.bind(this);
-    this.updateData = this.updateData.bind(this);
-  }
-
-  updateData() {
-    evalInPage(
-      `
-        (function () {
-          const numActions = window.__action_log__ && window.__action_log__.length;
-          if(numActions) {
-            return window.__action_log__[numActions - 1].dataWithOptimisticResults;
-          }
-        })()
-      `,
-      dataWithOptimistic => {
-        let toHighlight = {};
-        this.updateDataInStore(dataWithOptimistic);
-      }
-    );
   }
 
   updateDataInStore(dataWithOptimistic) {
@@ -47,38 +28,36 @@ export default class Inspector extends React.Component {
     if (this.state.searchTerm.length >= 3) {
       toHighlight = highlightFromSearchTerm({
         data: dataWithOptimistic,
-        query: this.state.searchTerm
+        query: this.state.searchTerm,
       });
     }
 
     const unsortedIds = Object.keys(dataWithOptimistic).filter(
-      id => id[0] !== '$'
+      id => id[0] !== "$"
     );
     const highlightedIds = Object.keys(toHighlight).filter(
-      id => id[0] !== '$' && id !== 'ROOT_QUERY'
+      id => id[0] !== "$" && id !== "ROOT_QUERY"
     );
     const sortedIdsWithoutRoot = unsortedIds
-      .filter(id => id !== 'ROOT_QUERY' && highlightedIds.indexOf(id) < 0)
+      .filter(id => id !== "ROOT_QUERY" && highlightedIds.indexOf(id) < 0)
       .sort();
-    const ids = [...highlightedIds, 'ROOT_QUERY', ...sortedIdsWithoutRoot];
+    const ids = [...highlightedIds, "ROOT_QUERY", ...sortedIdsWithoutRoot];
     const selectedId = this.state.selectedId || ids[0];
     this.setState({
       dataWithOptimistic,
       toHighlight,
       ids,
-      selectedId: this.state.selectedId || ids[0]
+      selectedId: this.state.selectedId || ids[0],
     });
   }
 
   componentDidMount() {
-    chrome.runtime.sendMessage({
-      type: 'OPEN_TAB',
-      tabId: chrome.devtools.inspectedWindow.tabId,
-      activeTab: 'inspector'
-    });
     //analytics
-    if (ga) ga('send', 'pageview', 'StoreInspector');
-    this.updateData();
+    if (ga) ga("send", "pageview", "StoreInspector");
+    // this.updateData();
+    if (this.props.state.inspector) {
+      this.updateDataInStore(this.props.state.inspector);
+    }
   }
 
   componentWillUnmount() {
@@ -97,8 +76,8 @@ export default class Inspector extends React.Component {
       inspectorContext: {
         dataWithOptimistic: this.state.dataWithOptimistic,
         toHighlight: this.state.toHighlight,
-        selectId: this.selectId.bind(this)
-      }
+        selectId: this.selectId.bind(this),
+      },
     };
   }
 
@@ -121,7 +100,7 @@ export default class Inspector extends React.Component {
 
   selectId(id) {
     this.setState({
-      selectedId: id
+      selectedId: id,
     });
   }
 
@@ -131,25 +110,25 @@ export default class Inspector extends React.Component {
     if (searchTerm.length >= 3) {
       toHighlight = highlightFromSearchTerm({
         data: this.state.dataWithOptimistic,
-        query: searchTerm
+        query: searchTerm,
       });
     }
 
     this.setState({
       searchTerm,
-      toHighlight
+      toHighlight,
     });
   }
 
   renderSidebarItem(id) {
-    let className = 'inspector-sidebar-item';
+    let className = "inspector-sidebar-item";
 
     if (id === this.state.selectedId) {
-      className += ' active';
+      className += " active";
     }
 
     if (this.state.toHighlight[id]) {
-      className += ' inspector-sidebar-highlighted';
+      className += " inspector-sidebar-highlighted";
     }
 
     return (
@@ -179,12 +158,13 @@ export default class Inspector extends React.Component {
             {ids && ids.map(id => this.renderSidebarItem(id))}
           </Sidebar>
           <div className="inspector-main">
-            {selectedId &&
+            {selectedId && (
               <StoreTreeFieldSet
                 data={dataWithOptimistic}
                 dataId={selectedId}
                 expand={true}
-              />}
+              />
+            )}
           </div>
         </div>
       </div>
@@ -192,7 +172,7 @@ export default class Inspector extends React.Component {
   }
 }
 
-const InspectorToolbar = ({ searchTerm, setSearchTerm }) =>
+const InspectorToolbar = ({ searchTerm, setSearchTerm }) => (
   <div className="inspector-toolbar">
     <input
       className="inspector-search"
@@ -201,7 +181,8 @@ const InspectorToolbar = ({ searchTerm, setSearchTerm }) =>
       onChange={evt => setSearchTerm(evt.target.value)}
       value={searchTerm}
     />
-  </div>;
+  </div>
+);
 
 function highlightFromSearchTerm({ data, query }) {
   const toHighlight = {};
@@ -211,7 +192,7 @@ function highlightFromSearchTerm({ data, query }) {
       data,
       regex: new RegExp(query),
       toHighlight,
-      dataId
+      dataId,
     });
   });
 
@@ -228,7 +209,7 @@ function dfsSearch({ data, regex, toHighlight, pathToId = [], dataId }) {
     const flatArr = flattenDeep(arr);
 
     flatArr.forEach(val => {
-      const valueMatches = typeof val === 'string' && regex.test(val);
+      const valueMatches = typeof val === "string" && regex.test(val);
       const keyMatches = regex.test(storeFieldKey);
 
       if (valueMatches || keyMatches) {
@@ -241,7 +222,7 @@ function dfsSearch({ data, regex, toHighlight, pathToId = [], dataId }) {
           regex,
           toHighlight,
           pathToId: [...pathToId, [dataId, storeFieldKey]],
-          dataId: val.id
+          dataId: val.id,
         });
       }
     });
@@ -261,13 +242,13 @@ function dfsSearch({ data, regex, toHighlight, pathToId = [], dataId }) {
 // Props: data, dataId, expand
 class StoreTreeFieldSet extends React.Component {
   static contextTypes = {
-    inspectorContext: PropTypes.object.isRequired
+    inspectorContext: PropTypes.object.isRequired,
   };
 
   constructor(props) {
     super();
     this.state = {
-      expand: props.expand || props.dataId[0] === '$'
+      expand: props.expand || props.dataId[0] === "$",
     };
 
     this.toggleExpand = this.toggleExpand.bind(this);
@@ -283,12 +264,12 @@ class StoreTreeFieldSet extends React.Component {
   }
 
   shouldDisplayId() {
-    return this.props.dataId[0] !== '$';
+    return this.props.dataId[0] !== "$";
   }
 
   keysToDisplay() {
     return Object.keys(this.getStoreObj())
-      .filter(key => key !== '__typename')
+      .filter(key => key !== "__typename")
       .sort();
   }
 
@@ -296,22 +277,22 @@ class StoreTreeFieldSet extends React.Component {
     const storeObj = this.getStoreObj();
     const highlightObj = this.getHighlightObj();
 
-    let className = 'store-tree-field-set';
+    let className = "store-tree-field-set";
 
     if (doubleIndent) {
-      className += ' double-indent';
+      className += " double-indent";
     }
 
     return (
       <div className={className}>
-        {this.keysToDisplay().map(key =>
+        {this.keysToDisplay().map(key => (
           <StoreTreeField
             key={key}
             storeKey={key}
             value={storeObj[key]}
             highlight={!!(highlightObj && highlightObj[key])}
           />
-        )}
+        ))}
       </div>
     );
   }
@@ -327,25 +308,24 @@ class StoreTreeFieldSet extends React.Component {
   render() {
     return (
       <span>
-        {this.shouldDisplayId() &&
+        {this.shouldDisplayId() && (
           <span
-            className={classnames('store-tree-ref-id toggle', {
-              'store-tree-ref-id-inline': this.props.inArray
+            className={classnames("store-tree-ref-id toggle", {
+              "store-tree-ref-id-inline": this.props.inArray,
             })}
             onClick={this.toggleExpand}
           >
             <span
-              className={classnames('triangle', {
-                toggled: !this.state.expand
+              className={classnames("triangle", {
+                toggled: !this.state.expand,
               })}
             >
               &#9662;
             </span>
-            <span className="data-id">
-              {this.props.dataId}
-            </span>
+            <span className="data-id">{this.props.dataId}</span>
             <span className="jump-to-object" onClick={this.selectId} />
-          </span>}
+          </span>
+        )}
         <div>
           {this.state.expand &&
             this.renderFieldSet({ doubleIndent: this.shouldDisplayId() })}
@@ -358,19 +338,20 @@ class StoreTreeFieldSet extends React.Component {
 const StoreTreeArray = ({ value }) => {
   return (
     <div className="store-tree-field-set">
-      {value.map((item, index) =>
+      {value.map((item, index) => (
         <StoreTreeArrayItem key={index} item={item} index={index} />
-      )}
+      ))}
     </div>
   );
 };
 
-const StoreTreeArrayItem = ({ item, index }) =>
+const StoreTreeArrayItem = ({ item, index }) => (
   <div>
     <span className="inspector-field-key">{index}</span>
     :
     <StoreTreeValue value={item} inArray={true} />
-  </div>;
+  </div>
+);
 
 const StoreTreeObject = ({ value, highlight, inArray }) => {
   if (isIdReference(value)) {
@@ -383,39 +364,38 @@ const StoreTreeObject = ({ value, highlight, inArray }) => {
     );
   }
 
-  let className = '';
+  let className = "";
 
-  if (typeof value === 'string') {
-    className += ' inspector-value-string';
+  if (typeof value === "string") {
+    className += " inspector-value-string";
   }
 
-  if (typeof value === 'number') {
-    className += ' inspector-value-number';
+  if (typeof value === "number") {
+    className += " inspector-value-number";
   }
 
   if (highlight) {
-    className += ' inspector-highlight';
+    className += " inspector-highlight";
   }
 
-  return (
-    <span className={className}>
-      {JSON.stringify(value)}
-    </span>
-  );
+  return <span className={className}>{JSON.stringify(value)}</span>;
 };
 
 // props: data, value
-const StoreTreeValue = props =>
+const StoreTreeValue = props => (
   <span>
-    {Array.isArray(props.value)
-      ? <StoreTreeArray {...props} />
-      : <StoreTreeObject {...props} />}
-  </span>;
+    {Array.isArray(props.value) ? (
+      <StoreTreeArray {...props} />
+    ) : (
+      <StoreTreeObject {...props} />
+    )}
+  </span>
+);
 
 // Props: data, storeKey, value
 class StoreTreeField extends React.Component {
   static contextTypes = {
-    inspectorContext: PropTypes.object.isRequired
+    inspectorContext: PropTypes.object.isRequired,
   };
 
   getPossibleTypename() {
@@ -435,7 +415,7 @@ class StoreTreeField extends React.Component {
     const baseTypename = targetStoreObj && targetStoreObj.__typename;
 
     if (baseTypename && isArray) {
-      return '[' + baseTypename + ']';
+      return "[" + baseTypename + "]";
     }
 
     return baseTypename;
@@ -445,21 +425,17 @@ class StoreTreeField extends React.Component {
     const __typename = this.getPossibleTypename();
 
     if (!__typename) {
-      return '';
+      return "";
     }
 
-    return (
-      <span className="inspector-typename">
-        {__typename}
-      </span>
-    );
+    return <span className="inspector-typename">{__typename}</span>;
   }
 
   render() {
-    let className = 'inspector-field-key';
+    let className = "inspector-field-key";
 
     if (this.props.highlight) {
-      className += ' inspector-highlight';
+      className += " inspector-highlight";
     }
 
     return (
@@ -477,5 +453,5 @@ class StoreTreeField extends React.Component {
 
 // Should be imported from AC
 function isIdReference(storeObj) {
-  return storeObj && storeObj.type === 'id';
+  return storeObj && storeObj.type === "id";
 }

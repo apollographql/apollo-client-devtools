@@ -15,6 +15,7 @@ export function installHook(window) {
   // XXX change how ApolloClient connects to the dev tools
   const hook = {
     ApolloClient: null,
+    actionLog: [],
 
     on(event, fn) {
       event = "$" + event;
@@ -87,8 +88,16 @@ export function installHook(window) {
   function findClient() {
     // only try for 10seconds
     if (count++ > 10) clearInterval(interval);
-    if (window.__APOLLO_CLIENT__) {
+    if (!!window.__APOLLO_CLIENT__) {
       hook.ApolloClient = window.__APOLLO_CLIENT__;
+      hook.ApolloClient.__actionHookForDevTools(
+        ({
+          state: { queries, mutations },
+          dataWithOptimisticResults: inspector,
+        }) => {
+          hook.actionLog.push({ queries, mutations, inspector });
+        }
+      );
       clearInterval(interval);
     }
   }

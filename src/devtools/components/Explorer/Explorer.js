@@ -1,130 +1,61 @@
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import GraphiQL from 'graphiql';
-import { parse } from 'graphql/language/parser';
-import evalInPage from '../../evalInPage.js';
+import PropTypes from "prop-types";
+import React, { Component } from "react";
+import GraphiQL from "graphiql";
+import { parse } from "graphql/language/parser";
+import { print } from "graphql/language/printer";
+import { Observable, execute, ApolloLink } from "apollo-link";
 
-import './graphiql.less';
-import './graphiql-overrides.less';
+import { withBridge } from "../bridge";
+
+import "./graphiql.less";
+import "./graphiql-overrides.less";
 
 let id = 0;
-const createPromise = code => {
-  return new Promise((resolve, reject) => {
-    const currId = id;
-    id++;
 
-    const promiseCode = `
-    (function() {
-      window.__chromePromises = window.__chromePromises || {};
-      var p = (${code})
-
-      p.then(function(r) {
-        window.__chromePromises[${currId}] = { result: r };
-      }).catch(function (e) {
-        window.__chromePromises[${currId}] = { error: e };
-      });
-    })()
-    `;
-
-    evalInPage(promiseCode, (result, isException) => {
-      if (isException) console.warn('isException1', isException);
-    });
-
-    const pollCode = `
-      (function () {
-        var result = window.__chromePromises[${currId}];
-        if (result) {
-          delete window.__chromePromises[${currId}];
-        }
-        return result;
-      })()
-    `;
-
-    const poll = () => {
-      setTimeout(() => {
-        evalInPage(pollCode, (result, isException) => {
-          if (!result) {
-            poll();
-          } else if (result.result) {
-            resolve(result.result);
-          } else {
-            reject(result.error);
-          }
-        });
-      }, 100);
-    };
-    poll();
-  });
-};
-
-export default class Explorer extends Component {
+export class Explorer extends Component {
   constructor(props, context) {
     super(props, context);
 
     this.state = {
       noFetch: false,
       query: this.props.query,
-      variables: this.props.variables
+      variables: this.props.variables,
     };
 
-    try {
-      evalInPage(
-        `
-        window.__APOLLO_CLIENT__.makeGraphiqlQuery = (payload, noFetch) => {
-          if (noFetch) {
-            return window.__APOLLO_CLIENT__.query({
-              query: payload.query,
-              variables: payload.variables,
-              fetchPolicy: 'cache-only',
-            }).catch(e => ({
-              errors: e.graphQLErrors,
-            }));
-          }
-          if (window.__APOLLO_CLIENT__.networkInterface) {
-            return window.__APOLLO_CLIENT__.networkInterface.query(payload);
-          }
-          var completed;
-          return new Promise(function(resolve, reject) {
-            return window.__APOLLO_CLIENT__.__requestRaw(payload).subscribe({
-              next: data => {
-                if (completed) {
-                   console.warn(
-                     'Promise Wrapper does not support multiple results from Observable',
-                   );
-                 } else {
-                   completed = true;
-                   resolve(data);
-                }
-              },
-              error: reject,
-            });
+    this.link = new ApolloLink(
+      operation =>
+        new Observable(obs => {
+          const key = operation.toKey();
+          const next = result => obs.next(JSON.parse(result));
+          const error = err => obs.error(JSON.parse(err));
+          const complete = () => obs.complete();
+          const { query, operationName, variables } = operation;
+
+          // subscribe to this operation's information
+          this.props.bridge.on(`link:next:${key}`, next);
+          this.props.bridge.on(`link:error:${key}`, error);
+          this.props.bridge.on(`link:complete:${key}`, complete);
+
+          const payload = JSON.stringify({
+            query: print(query),
+            operationName,
+            variables,
+            key,
           });
-        };
-        `,
-        (result, isException) => {}
-      );
-    } catch (e) {
-      console.warn(e);
-    }
+          // fire the event for the link on the other side of the wall
+          this.props.bridge.send("link:operation", payload);
 
-    this.graphQLFetcher = graphQLParams => {
-      const { noFetch } = this.state;
-      return createPromise(
-        'window.__APOLLO_CLIENT__.makeGraphiqlQuery(' +
-          JSON.stringify({
-            operationName: graphQLParams.operationName,
-            query: parse(graphQLParams.query),
-            variables: graphQLParams.variables
-          }) +
-          ', ' +
-          noFetch +
-          ')'
-      );
-    };
+          return () => {
+            this.props.bridge.removeListener(`link:next:${key}`, next);
+            this.props.bridge.removeListener(`link:error:${key}`, error);
+            this.props.bridge.removeListener(`link:complete:${key}`, complete);
+          };
+        })
+    );
   }
 
   componentDidMount() {
-    if (ga) ga('send', 'pageview', 'GraphiQL');
+    if (ga) ga("send", "pageview", "GraphiQL");
     if (this.props.query) {
       if (this.props.automaticallyRunQuery) {
         this.graphiql.handleRunQuery();
@@ -136,11 +67,14 @@ export default class Explorer extends Component {
     this.setState({ query: undefined, variables: undefined });
   }
 
+  fetcher = ({ query, variables = {} }) =>
+    execute(this.link, { query: parse(query), variables });
+
   render() {
     const { noFetch } = this.state;
     const graphiql = (
       <GraphiQL
-        fetcher={this.graphQLFetcher}
+        fetcher={this.fetcher}
         query={this.state.query}
         onEditQuery={() => {
           this.clearDefaultQueryState();
@@ -162,7 +96,7 @@ export default class Explorer extends Component {
                 this.setState({
                   noFetch: !noFetch,
                   query: undefined,
-                  variables: undefined
+                  variables: undefined,
                 });
               }}
             />
@@ -172,10 +106,8 @@ export default class Explorer extends Component {
       </GraphiQL>
     );
 
-    return (
-      <div className="body">
-        {graphiql}
-      </div>
-    );
+    return <div className="body">{graphiql}</div>;
   }
 }
+
+export default withBridge(Explorer);

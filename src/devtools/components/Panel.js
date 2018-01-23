@@ -21,19 +21,32 @@ export default class Panel extends Component {
 
     this.state = {
       active: "graphiql",
-      tabData: undefined,
+      tabData: {},
       runQuery: undefined,
       runVariables: undefined,
       selectedRequestId: undefined,
       automaticallyRunQuery: undefined,
     };
+
+    bridge.on("broadcast:initial", data => {
+      if (!this.state.tabData.inspector) {
+        const initial = JSON.parse(data);
+        const last = initial[initial.length - 1];
+        this.setState({ tabData: last });
+      }
+    });
+
+    this.props.bridge.on("broadcast:new", _data => {
+      const data = JSON.parse(_data);
+      this.setState(({ tabData }) => ({
+        tabData: Object.assign({}, tabData, data),
+      }));
+    });
   }
 
   componentWillUnmount() {
     clearTimeout(this._interval);
   }
-
-  selectedApolloLog = () => (!this.state.tabData ? {} : this.state.tabData);
 
   onRun = (queryString, variables, tab, automaticallyRunQuery) => {
     ga("send", "event", tab, "run-in-graphiql");
@@ -58,24 +71,19 @@ export default class Panel extends Component {
   selectLogItem = id => this.setState({ selectedRequestId: id });
 
   render() {
-    const { active } = this.state;
-    const selectedLog = this.selectedApolloLog();
+    const { active, tabData } = this.state;
     let body;
     switch (active) {
       case "queries":
         // XXX this won't work in the dev tools (probably does work now)
-        body = selectedLog && (
-          <WatchedQueries state={selectedLog.state} onRun={this.onRun} />
-        );
+        body = <WatchedQueries state={tabData} onRun={this.onRun} />;
         break;
       case "mutations":
         // XXX this won't work in the dev tools (probably does work now)
-        body = selectedLog && (
-          <Mutations state={selectedLog.state} onRun={this.onRun} />
-        );
+        body = <Mutations state={tabData} onRun={this.onRun} />;
         break;
       case "store":
-        body = selectedLog && <Inspector state={selectedLog.state} />;
+        body = <Inspector state={tabData} />;
         break;
       case "graphiql":
         body = (
@@ -102,8 +110,8 @@ export default class Panel extends Component {
       <div
         className={classnames(
           "apollo-client-panel",
-          { "in-window": !chrome.devtools },
-          chrome.devtools && chrome.devtools.panels.themeName
+          { "in-window": !this.props.isChrome },
+          this.props.theme
         )}
       >
         <Sidebar className="tabs" name="nav-tabs">

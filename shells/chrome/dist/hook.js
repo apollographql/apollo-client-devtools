@@ -47,7 +47,7 @@
 
 	"use strict";
 
-	var _hook = __webpack_require__(516);
+	var _hook = __webpack_require__(358);
 
 	// inject the hook
 	if (document instanceof HTMLDocument) {
@@ -59,7 +59,7 @@
 
 /***/ }),
 
-/***/ 516:
+/***/ 358:
 /***/ (function(module, exports) {
 
 	"use strict";
@@ -85,6 +85,7 @@
 	  // XXX change how ApolloClient connects to the dev tools
 	  var hook = {
 	    ApolloClient: null,
+	    actionLog: [],
 
 	    on: function on(event, fn) {
 	      event = "$" + event;
@@ -154,8 +155,16 @@
 	  function findClient() {
 	    // only try for 10seconds
 	    if (count++ > 10) clearInterval(interval);
-	    if (window.__APOLLO_CLIENT__) {
+	    if (!!window.__APOLLO_CLIENT__) {
 	      hook.ApolloClient = window.__APOLLO_CLIENT__;
+	      hook.ApolloClient.__actionHookForDevTools(function (_ref) {
+	        var _ref$state = _ref.state,
+	            queries = _ref$state.queries,
+	            mutations = _ref$state.mutations,
+	            inspector = _ref.dataWithOptimisticResults;
+
+	        hook.actionLog.push({ queries: queries, mutations: mutations, inspector: inspector });
+	      });
 	      clearInterval(interval);
 	    }
 	  }
