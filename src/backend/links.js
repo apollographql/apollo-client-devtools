@@ -1,27 +1,24 @@
 import { execute, ApolloLink, Observable, from } from "apollo-link";
 import gql from "graphql-tag";
 
-const dummySchema = `
-  type Todo {
-    id: String
-    message: String
-  }
-
-  type Query {
-    todo(id: String!): Todo
-  }
-`;
+/*
+ *
+ * supports dynamic client schemas set on the context
+ *
+ * schemas must be an array of the following shape
+ *
+      {
+        definition: schemaString,
+        directives: `directive @client on FIELD`,
+      }
+ *
+ */
 
 const schemaLink = new ApolloLink((operation, forward) => {
   return forward(operation).map(result => {
+    const { schemas } = operation.getContext();
     result.extensions = Object.assign(result.extensions, {
-      schemas: [
-        {
-          location: "state-link",
-          definition: dummySchema,
-          directives: `directive @client on FIELD`,
-        },
-      ],
+      schemas,
     });
     return result;
   });
