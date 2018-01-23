@@ -1,8 +1,19 @@
 import PropTypes from "prop-types";
 import React, { Component } from "react";
 import GraphiQL from "graphiql";
+import uniqBy from "lodash.uniqby";
+import flatten from "lodash.flattendeep";
 import { parse } from "graphql/language/parser";
 import { print } from "graphql/language/printer";
+import {
+  printIntrospectionSchema,
+  buildSchema,
+  introspectionQuery,
+  buildClientSchema,
+} from "graphql/utilities";
+import { mergeSchemas } from "graphql-tools";
+import { execute as graphql } from "graphql/execution";
+
 import { Observable, execute, ApolloLink } from "apollo-link";
 
 import { withBridge } from "../bridge";
@@ -11,6 +22,74 @@ import "./graphiql.less";
 import "./graphiql-overrides.less";
 
 let id = 0;
+
+const introAST = parse(introspectionQuery);
+const intro = introspectionQuery.replace(/\s/g, "");
+
+export const createBridgeLink = bridge =>
+  new ApolloLink(
+    operation =>
+      new Observable(obs => {
+        const key = operation.toKey();
+        const { query, operationName, variables } = operation;
+        const complete = () => obs.complete();
+        const error = err => obs.error(JSON.parse(err));
+
+        const next = _result => {
+          const result = JSON.parse(_result);
+          // we use gql here because it caches ast transforms
+          if (
+            !result.extensions ||
+            !result.extensions.schemas ||
+            print(query).replace(/\s/g, "") !== intro
+          ) {
+            obs.next(result);
+            return;
+          }
+          // merge schemas together
+          const remoteSchema = buildClientSchema(result.data);
+          const { schemas } = result.extensions;
+          const built = schemas.map(({ definition, directives = "" }) =>
+            buildSchema(`${directives} ${definition}`)
+          );
+          const directives = built.map(({ _directives }) => _directives);
+          const merged = mergeSchemas({
+            schemas: [remoteSchema].concat(built),
+          });
+
+          merged._directives = uniqBy(
+            flatten(merged._directives.concat(directives)),
+            "name"
+          );
+          try {
+            const newResult = graphql(merged, introAST);
+            obs.next(newResult);
+          } catch (e) {
+            obs.error(e.stack);
+          }
+        };
+
+        // subscribe to this operation's information
+        bridge.on(`link:next:${key}`, next);
+        bridge.on(`link:error:${key}`, error);
+        bridge.on(`link:complete:${key}`, complete);
+
+        const payload = JSON.stringify({
+          query: print(query),
+          operationName,
+          variables,
+          key,
+        });
+        // fire the event for the link on the other side of the wall
+        bridge.send("link:operation", payload);
+
+        return () => {
+          bridge.removeListener(`link:next:${key}`, next);
+          bridge.removeListener(`link:error:${key}`, error);
+          bridge.removeListener(`link:complete:${key}`, complete);
+        };
+      })
+  );
 
 export class Explorer extends Component {
   constructor(props, context) {
@@ -22,36 +101,7 @@ export class Explorer extends Component {
       variables: this.props.variables,
     };
 
-    this.link = new ApolloLink(
-      operation =>
-        new Observable(obs => {
-          const key = operation.toKey();
-          const next = result => obs.next(JSON.parse(result));
-          const error = err => obs.error(JSON.parse(err));
-          const complete = () => obs.complete();
-          const { query, operationName, variables } = operation;
-
-          // subscribe to this operation's information
-          this.props.bridge.on(`link:next:${key}`, next);
-          this.props.bridge.on(`link:error:${key}`, error);
-          this.props.bridge.on(`link:complete:${key}`, complete);
-
-          const payload = JSON.stringify({
-            query: print(query),
-            operationName,
-            variables,
-            key,
-          });
-          // fire the event for the link on the other side of the wall
-          this.props.bridge.send("link:operation", payload);
-
-          return () => {
-            this.props.bridge.removeListener(`link:next:${key}`, next);
-            this.props.bridge.removeListener(`link:error:${key}`, error);
-            this.props.bridge.removeListener(`link:complete:${key}`, complete);
-          };
-        })
-    );
+    this.link = createBridgeLink(this.props.bridge);
   }
 
   componentDidMount() {

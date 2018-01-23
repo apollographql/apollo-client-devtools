@@ -9,19 +9,18 @@
  * special thanks to the Vue devtools for this solution
  */
 
-export function installHook(window) {
+export function installHook(window, devToolsVersion) {
   let listeners = {};
 
   // XXX change how ApolloClient connects to the dev tools
   const hook = {
     ApolloClient: null,
     actionLog: [],
-
+    devToolsVersion,
     on(event, fn) {
       event = "$" + event;
       (listeners[event] || (listeners[event] = [])).push(fn);
     },
-
     once(event, fn) {
       const eventAlias = event;
       event = "$" + event;
@@ -31,7 +30,6 @@ export function installHook(window) {
       }
       (listeners[event] || (listeners[event] = [])).push(on);
     },
-
     off(event, fn) {
       event = "$" + event;
       if (!arguments.length) {
@@ -53,7 +51,6 @@ export function installHook(window) {
         }
       }
     },
-
     emit(event) {
       event = "$" + event;
       let cbs = listeners[event];
@@ -66,12 +63,6 @@ export function installHook(window) {
       }
     },
   };
-
-  // this is a better way for the AC instance to connect when
-  // it is ready to send some data
-  hook.once("init", ApolloClient => {
-    hook.ApolloClient = ApolloClient;
-  });
 
   Object.defineProperty(window, "__APOLLO_DEVTOOLS_GLOBAL_HOOK__", {
     get() {

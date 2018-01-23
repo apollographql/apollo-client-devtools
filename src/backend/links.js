@@ -1,17 +1,65 @@
-import { execute, ApolloLink } from "apollo-link";
+import { execute, ApolloLink, Observable, from } from "apollo-link";
 import gql from "graphql-tag";
 
+const dummySchema = `
+  type Todo {
+    id: String
+    message: String
+  }
+
+  type Query {
+    todo(id: String!): Todo
+  }
+`;
+
+const schemaLink = new ApolloLink((operation, forward) => {
+  return forward(operation).map(result => {
+    result.extensions = Object.assign(result.extensions, {
+      schemas: [
+        {
+          location: "state-link",
+          definition: dummySchema,
+          directives: `directive @client on FIELD`,
+        },
+      ],
+    });
+    return result;
+  });
+});
+
+// forward all "errors" to next with a good shape for graphiql
+const errorLink = new ApolloLink((operation, forward) => {
+  return new Observable(observer => {
+    let sub;
+    try {
+      sub = forward(operation).subscribe({
+        next: observer.next.bind(observer),
+        error: networkError =>
+          observer.next({
+            errors: [
+              {
+                message: networkError.message,
+                locations: [networkError.stack],
+              },
+            ],
+          }),
+        complete: observer.complete.bind(observer),
+      });
+    } catch (e) {
+      observer.next({ errors: [{ message: e.message, locations: [e.stack] }] });
+    }
+
+    return () => {
+      if (sub) sub.unsubscribe();
+    };
+  });
+});
+
 export const initLinkEvents = (hook, bridge) => {
-  const link = hook.ApolloClient.link;
+  const userLink = hook.ApolloClient.link;
   const cache = hook.ApolloClient.cache;
 
-  const cachelink = new ApolloLink((operation, forward) => {
-    // XXX get some data from links here?
-    // add cache to link chain like AC does
-    operation.setContext({ cache });
-    return forward(operation);
-  });
-  const devtoolsLink = cachelink.concat(link);
+  const devtoolsLink = from([errorLink, schemaLink, userLink]);
 
   // handle incoming requests
   const subscriber = request => {
@@ -21,6 +69,7 @@ export const initLinkEvents = (hook, bridge) => {
         query: gql(query),
         variables,
         operationName,
+        context: { __devtools_key__: key, cache },
       });
       obs.subscribe({
         next: data => bridge.send(`link:next:${key}`, JSON.stringify(data)),

@@ -34,6 +34,7 @@ export const initDevTools = shell => {
   loadAnalytics();
   // runVersionCheck();
   shell.onReload(() => {
+    console.log("reloading...");
     bridge && bridge.removeAllListeners();
     initApp(shell);
   });

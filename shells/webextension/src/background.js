@@ -79,10 +79,8 @@ function doublePipe(id, one, two) {
     one.disconnect();
     two.disconnect();
     ports[id] = null;
-    updateContextMenuItem();
   }
   one.onDisconnect.addListener(shutdown);
   two.onDisconnect.addListener(shutdown);
   console.log("tab " + id + " connected.");
-  updateContextMenuItem();
 }

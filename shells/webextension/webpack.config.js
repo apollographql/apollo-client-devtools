@@ -1,6 +1,9 @@
 const path = require("path");
 const webpack = require("webpack");
 const alias = require("../alias");
+const UglifyPlugin = require("uglifyjs-webpack-plugin");
+const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
+  .BundleAnalyzerPlugin;
 
 const plugins = [new webpack.IgnorePlugin(/\.flow$/)];
 if (process.env.NODE_ENV === "production") {
@@ -11,6 +14,9 @@ if (process.env.NODE_ENV === "production") {
       },
     })
   );
+  plugins.push(new UglifyPlugin());
+} else {
+  plugins.push(new BundleAnalyzerPlugin());
 }
 
 module.exports = {
