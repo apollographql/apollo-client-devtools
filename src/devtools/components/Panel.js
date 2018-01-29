@@ -105,7 +105,7 @@ export default class Panel extends Component {
       <div
         className={classnames(
           "apollo-client-panel",
-          { "in-window": !this.props.isChrome },
+          { "in-window": this.props.isChrome },
           this.props.theme
         )}
       >

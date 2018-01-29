@@ -21,7 +21,7 @@ const App = () => (
     <View style={styles.top}>
       <ApolloProvider client={client}>
         <ExchangeRateView />
-      </ApolloProvider>;
+      </ApolloProvider>
     </View>
   </View>
 );
