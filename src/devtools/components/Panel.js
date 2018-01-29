@@ -28,14 +28,9 @@ export default class Panel extends Component {
       automaticallyRunQuery: undefined,
     };
 
-    bridge.on("broadcast:initial", data => {
-      if (!this.state.tabData.inspector) {
-        const initial = JSON.parse(data);
-        const last = initial[initial.length - 1];
-        this.setState({ tabData: last });
-      }
+    this.props.bridge.on("ready", () => {
+      this.props.bridge.send("panel:ready", "ready");
     });
-
     this.props.bridge.on("broadcast:new", _data => {
       const data = JSON.parse(_data);
       this.setState(({ tabData }) => ({

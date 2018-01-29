@@ -1,4 +1,5 @@
 import { execute, ApolloLink, Observable, from } from "apollo-link";
+import { getQueryDefinition } from "apollo-utilities";
 import gql from "graphql-tag";
 
 /*
@@ -14,54 +15,77 @@ import gql from "graphql-tag";
  *
  */
 
-const schemaLink = new ApolloLink((operation, forward) => {
-  return forward(operation).map(result => {
-    const { schemas } = operation.getContext();
-    result.extensions = Object.assign(result.extensions, {
-      schemas,
+const schemaLink = () =>
+  new ApolloLink((operation, forward) => {
+    return forward(operation).map(result => {
+      const { schemas } = operation.getContext();
+      result.extensions = Object.assign(result.extensions, {
+        schemas,
+      });
+      return result;
     });
-    return result;
   });
-});
 
 // forward all "errors" to next with a good shape for graphiql
-const errorLink = new ApolloLink((operation, forward) => {
-  return new Observable(observer => {
-    let sub;
-    try {
-      sub = forward(operation).subscribe({
-        next: observer.next.bind(observer),
-        error: networkError =>
-          observer.next({
-            errors: [
-              {
-                message: networkError.message,
-                locations: [networkError.stack],
-              },
-            ],
-          }),
-        complete: observer.complete.bind(observer),
-      });
-    } catch (e) {
-      observer.next({ errors: [{ message: e.message, locations: [e.stack] }] });
-    }
+const errorLink = () =>
+  new ApolloLink((operation, forward) => {
+    return new Observable(observer => {
+      let sub;
+      try {
+        sub = forward(operation).subscribe({
+          next: observer.next.bind(observer),
+          error: networkError =>
+            observer.next({
+              errors: [
+                {
+                  message: networkError.message,
+                  locations: [networkError.stack],
+                },
+              ],
+            }),
+          complete: observer.complete.bind(observer),
+        });
+      } catch (e) {
+        observer.next({
+          errors: [{ message: e.message, locations: [e.stack] }],
+        });
+      }
 
-    return () => {
-      if (sub) sub.unsubscribe();
-    };
+      return () => {
+        if (sub) sub.unsubscribe();
+      };
+    });
   });
-});
+
+// XXX replace for raw network policy in apollo-client?
+const cacheLink = () =>
+  new ApolloLink((operation, forward) => {
+    const { cache } = operation.getContext();
+    const { variables, query } = operation;
+    // quick check if this is a query
+    try {
+      const def = getQueryDefinition(query);
+      const results = cache.readQuery({ query, variables });
+      if (results) return Observable.of({ data: results });
+    } catch (e) {}
+
+    return forward(operation);
+  });
 
 export const initLinkEvents = (hook, bridge) => {
-  const userLink = hook.ApolloClient.link;
-  const cache = hook.ApolloClient.cache;
-
-  const devtoolsLink = from([errorLink, schemaLink, userLink]);
-
   // handle incoming requests
   const subscriber = request => {
     const { query, variables, operationName, key } = JSON.parse(request);
     try {
+      const userLink = hook.ApolloClient.link;
+      const cache = hook.ApolloClient.cache;
+
+      const devtoolsLink = from([
+        errorLink(),
+        cacheLink(),
+        schemaLink(),
+        userLink,
+      ]);
       const obs = execute(devtoolsLink, {
         query: gql(query),
         variables,

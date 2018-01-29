@@ -5,7 +5,6 @@ import { render } from "react-dom";
 import Panel from "./components/Panel";
 import { BridgeProvider } from "./components/bridge";
 import { loadAnalytics } from "./analytics";
-// import runVersionCheck from "./checkVersions";
 
 const isChrome = typeof chrome !== "undefined" && !!chrome.devtools;
 const isDark = isChrome ? chrome.devtools.panels.themeName === "dark" : false;
@@ -32,9 +31,7 @@ export const initApp = shell => {
 export const initDevTools = shell => {
   initApp(shell);
   loadAnalytics();
-  // runVersionCheck();
   shell.onReload(() => {
-    console.log("reloading...");
     bridge && bridge.removeAllListeners();
     initApp(shell);
   });

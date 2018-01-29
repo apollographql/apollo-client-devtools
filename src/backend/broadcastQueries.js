@@ -14,9 +14,15 @@ export const initBroadCastEvents = (hook, bridge) => {
     );
   };
 
-  if (hook.actionLog.length) {
-    bridge.send("broadcast:initial", JSON.stringify(hook.actionLog));
-  }
+  bridge.on("panel:ready", () => {
+    const client = hook.ApolloClient;
+    const initial = {
+      queries: client.queryManager.queryStore.getStore(),
+      mutations: client.queryManager.mutationStore.getStore(),
+      inspector: client.cache.extract(true),
+    };
+    bridge.send("broadcast:new", JSON.stringify(initial));
+  });
 
   hook.ApolloClient.__actionHookForDevTools(logger);
 };
