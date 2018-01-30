@@ -79,6 +79,9 @@ export const createBridgeLink = bridge =>
           operationName,
           variables,
           key,
+          fetchPolicy: operation.getContext().noFetch
+            ? "cache-only"
+            : "no-cache",
         });
         // fire the event for the link on the other side of the wall
         bridge.send("link:operation", payload);
@@ -118,7 +121,18 @@ export class Explorer extends Component {
   }
 
   fetcher = ({ query, variables = {} }) =>
-    execute(this.link, { query: parse(query), variables });
+    execute(this.link, {
+      query: parse(query),
+      variables,
+      context: { noFetch: this.state.noFetch },
+    });
+
+  handleClickPrettifyButton = event => {
+    const editor = this.graphiql.getQueryEditor();
+    const currentText = editor.getValue();
+    const prettyText = print(parse(currentText));
+    editor.setValue(prettyText);
+  };
 
   render() {
     const { noFetch } = this.state;
@@ -138,10 +152,15 @@ export class Explorer extends Component {
         }}
       >
         <GraphiQL.Toolbar>
+          <GraphiQL.Button
+            onClick={this.handleClickPrettifyButton}
+            label="Prettify"
+          />
           <label>
             <input
               type="checkbox"
               checked={noFetch}
+              style={{ verticalAlign: "middle" }}
               onChange={() => {
                 this.setState({
                   noFetch: !noFetch,

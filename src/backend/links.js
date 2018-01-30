@@ -57,9 +57,11 @@ const errorLink = () =>
     });
   });
 
-// XXX replace for raw network policy in apollo-client?
-const cacheLink = () =>
+const cacheLink = fetchPolicy =>
   new ApolloLink((operation, forward) => {
+    // XXX how do we handle local state here? It *should* still work right?
+    if (fetchPolicy === "no-cache") return forward(operation);
+
     const { cache } = operation.getContext();
     const { variables, query } = operation;
     // quick check if this is a query
@@ -75,14 +77,16 @@ const cacheLink = () =>
 export const initLinkEvents = (hook, bridge) => {
   // handle incoming requests
   const subscriber = request => {
-    const { query, variables, operationName, key } = JSON.parse(request);
+    const { query, variables, operationName, key, fetchPolicy } = JSON.parse(
+      request
+    );
     try {
       const userLink = hook.ApolloClient.link;
       const cache = hook.ApolloClient.cache;
 
       const devtoolsLink = from([
         errorLink(),
-        cacheLink(),
+        cacheLink(fetchPolicy),
         schemaLink(),
         userLink,
       ]);
