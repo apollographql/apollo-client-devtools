@@ -20,15 +20,15 @@ The devtools appear as an "Apollo" tab in your Chrome inspector, along side the 
 * Normalized store inspector: Visualize your GraphQL store the way Apollo Client sees it, and search by field names or values.
 * Watched query inspector: View active queries and variables, and locate the associated UI components.
 
-![GraphiQL Console](/imgs/apollo-devtools-graphiql.png)
+![GraphiQL Console](/assets/apollo-devtools-graphiql.png)
 
 Make requests against either your app’s GraphQL server or the Apollo Client cache through the Chrome developer console. This version of GraphiQL leverages your app’s network interface, so there’s no configuration necessary — it automatically passes along the proper HTTP headers, etc. the same way your Apollo Client app does.
 
-![Store Inspector](/imgs/apollo-devtools-store.png)
+![Store Inspector](/assets/apollo-devtools-store.png)
 
 View the state of your client-side cache as a tree and inspect every object inside. Visualize the [mental model](https://dev-blog.apollodata.com/the-concepts-of-graphql-bc68bd819be3) of the Apollo cache. Search for specific keys and values in the store and see the path to those keys highlighted.
 
-![Watched Query Inspector](/imgs/apollo-devtools-queries.png)
+![Watched Query Inspector](/assets/apollo-devtools-queries.png)
 
 View the queries being actively watched on any given page. See when they're loading, what variables they're using, and, if you’re using React, which React component they’re attached to. Angular support coming soon.
 
