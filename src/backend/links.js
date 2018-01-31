@@ -19,7 +19,7 @@ const schemaLink = () =>
   new ApolloLink((operation, forward) => {
     return forward(operation).map(result => {
       const { schemas } = operation.getContext();
-      result.extensions = Object.assign(result.extensions, {
+      result.extensions = Object.assign({}, result.extensions, {
         schemas,
       });
       return result;
