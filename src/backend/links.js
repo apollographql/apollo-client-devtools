@@ -14,13 +14,15 @@ import gql from "graphql-tag";
       }
  *
  */
-
+const apolloClientSchema = {
+  directives: "directive @connection(key: String!, filter: [String]) on FIELD",
+};
 const schemaLink = () =>
   new ApolloLink((operation, forward) => {
     return forward(operation).map(result => {
-      const { schemas } = operation.getContext();
+      let { schemas = [] } = operation.getContext();
       result.extensions = Object.assign({}, result.extensions, {
-        schemas,
+        schemas: schemas.concat([apolloClientSchema]),
       });
       return result;
     });

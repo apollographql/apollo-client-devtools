@@ -9,6 +9,7 @@ import {
   printIntrospectionSchema,
   buildSchema,
   introspectionQuery,
+  printSchema,
   buildClientSchema,
 } from "graphql/utilities";
 import { mergeSchemas } from "graphql-tools";
@@ -37,22 +38,46 @@ export const createBridgeLink = bridge =>
 
         const next = _result => {
           const result = JSON.parse(_result);
+
           // we use gql here because it caches ast transforms
           if (
             !result.extensions ||
             !result.extensions.schemas ||
             print(query).replace(/\s/g, "") !== intro
           ) {
+            // clean up some data
+            if (result.extensions) {
+              delete result.extensions.schemas;
+              if (Object.keys(result.extensions).length === 0) {
+                delete result.extensions;
+              }
+            }
             obs.next(result);
             return;
           }
-          // merge schemas together
-          const remoteSchema = buildClientSchema(result.data);
+
           const { schemas } = result.extensions;
-          const built = schemas.map(({ definition, directives = "" }) =>
+          // merge schemas together
+          let remoteSchema = buildClientSchema(result.data);
+
+          // add add-hoc client only directives
+          // XXX replace this with better directives => types function
+          // XXX this is a bottleneck but only happens once
+          let remoteSchemaString = printSchema(remoteSchema);
+          const directivesOnly = schemas
+            .filter(x => !x.definition)
+            .map(x => x.directives);
+          remoteSchemaString =
+            remoteSchemaString + ` ${directivesOnly.join("\n")}`;
+          remoteSchema = buildSchema(remoteSchemaString);
+
+          const definitions = schemas.filter(x => !!x.definition);
+          const built = definitions.map(({ definition, directives = "" }) =>
             buildSchema(`${directives} ${definition}`),
           );
-          const directives = built.map(({ _directives }) => _directives);
+          const directives = built
+            .map(({ _directives }) => _directives)
+            .concat(remoteSchema._directives);
           const merged = mergeSchemas({
             schemas: [remoteSchema].concat(built),
           });

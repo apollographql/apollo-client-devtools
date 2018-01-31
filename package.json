@@ -12,7 +12,7 @@
     "firefox": "web-ext run -s shells/webextension -a dist -i src",
     "prettier":
       "prettier --write --config=./.prettierrc \"{,!(node_modules|dist)/**/}*.{ts*,js*,json,md}\"",
-    "prezip": "npm run build",
+    "prezip": "npm run build && rm -rf dist && mkdir dist",
     "zip": "npm run zip:chrome && npm run zip:firefox",
     "zip:chrome":
       "cd shells && zip -r -FS ../dist/chrome.zip webextension -x *src/* -x *webpack.config.js",
