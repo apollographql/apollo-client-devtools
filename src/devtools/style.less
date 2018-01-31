@@ -1,0 +1,150 @@
+* {
+  box-sizing: border-box;
+}
+
+html, body, #devtools {
+  height: 100%;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  font-size: 12px;
+  color: #333333;
+  overflow: hidden;
+}
+
+.sidebar {
+  position: relative;
+  overflow-y: scroll;
+  overflow-x: hidden;
+
+  .dragger {
+    position: absolute;
+    height: 100%;
+    width: 4px;
+    right: 0;
+    cursor: ew-resize;
+    background-color: transparent;
+  }
+}
+
+.apollo-client-panel {
+  display: flex;
+  height: 100%;
+
+  &.in-window {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    top: 0;
+    right: 0;
+    z-index: 100;
+    background-color: white;
+  }
+
+  .body {
+    flex: 1;
+  }
+
+  .tabs {
+    background-color: #666;
+    border-bottom: 1px solid #ccc;
+    flex: none;
+    text-align: center;
+    width: 55px;
+    overflow-y: auto;
+
+    .docs-link {
+      position: absolute;
+      bottom: 5px;
+      font-size: 10px;
+      display: block;
+      width: 100%;
+      text-align: center;
+      color: #FFF;
+      cursor: pointer;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+        color: fade(#FFFFFF, 80%);
+      }
+    }
+
+    .tab {
+      cursor: pointer;
+      color: #FFF;
+      font-size: 8px;
+      padding: 8px;
+
+      &:last-of-type {
+        margin-bottom: 10px;
+      }
+
+      svg {
+        display: inline-block;
+        width: 40%;
+        max-width: 50px;
+        min-width: 20px;
+        height: 30px;
+        vertical-align: top;
+      }
+
+      &.logo-tab {
+        background-color: #22a699;
+        cursor: default;
+        font-size: 0;
+
+        svg {
+          width: 100%;
+        }
+
+        &:hover {
+          color: #FFF;
+          path, rect {
+            fill: #FFF;
+          }
+        }
+      }
+
+      &.active {
+        color: lighten(#22a699, 10%);
+        position: relative;
+        path, rect {
+          fill: lighten(#22a699, 10%);
+        }
+
+        &:before {
+          content: "";
+          background-color: #22a699;
+          height: 5px;
+          width: 5px;
+          position: absolute;
+          border-radius: 5px;
+          left: -2.5px;
+          top: ~"calc(50% - 2.5px)";
+        }
+
+        &:hover {
+          color: #22a699;
+          path, rect {
+            fill: #22a699;
+          }
+        }
+      }
+
+      &:hover {
+        color: fade(#FFFFFF, 80%);
+        path, rect {
+          fill: fade(#FFFFFF, 80%);
+        }
+      }
+    }
+  }
+
+  &.dark {
+    .tabs {
+      background-color: rgb(42, 42, 42);
+      border-bottom: 1px solid #ccc;
+    }
+  }
+}

@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf8">
+    <title>Plain Shell</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      #container {
+        display: flex;
+        height: 100vh;
+        width: 100%;
+        flex-direction: column;
+        align-content: stretch;
+      }
+      .split-item {
+        flex: 1 0 0; 
+        border: none;
+          justify-content: center;
+            flex-direction: column;
+      }
+      #target {
+        border-bottom: 1px solid #ccc;
+      }
+      #app {
+        position: relative;
+        width: 100%;
+      }
+      body {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <iframe id="target" class="split-item" name="target" src="target.html"></iframe>
+      <div id="app" class="split-item"></div>
+    </div>
+    <script src="dist/devtools.js"></script>
+  </body>
+</html>
