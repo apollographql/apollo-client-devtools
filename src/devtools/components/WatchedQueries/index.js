@@ -1,2 +1,2 @@
-import WatchedQueries from './WatchedQueries';
+import WatchedQueries from "./WatchedQueries";
 export default WatchedQueries;

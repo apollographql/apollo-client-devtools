@@ -1,2 +1,2 @@
-import Mutations from './Mutations';
+import Mutations from "./Mutations";
 export default Mutations;

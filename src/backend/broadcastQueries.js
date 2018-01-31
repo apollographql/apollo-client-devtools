@@ -10,7 +10,7 @@ export const initBroadCastEvents = (hook, bridge) => {
         queries,
         mutations,
         inspector,
-      })
+      }),
     );
   };
 

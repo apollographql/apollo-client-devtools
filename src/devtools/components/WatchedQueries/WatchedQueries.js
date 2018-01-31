@@ -83,18 +83,18 @@ class WatchedQueries extends React.Component {
           <div className="queries-sidebar-title">Watched queries</div>
           <ol className="query-list">
             {this.sortedQueryIds().map(id =>
-              this.renderSidebarItem(id, queries[id])
+              this.renderSidebarItem(id, queries[id]),
             )}
           </ol>
         </Sidebar>
         {selectedId &&
-        queries[selectedId] && (
-          <WatchedQuery
-            queryId={selectedId}
-            query={queries[selectedId]}
-            onRun={this.props.onRun}
-          />
-        )}
+          queries[selectedId] && (
+            <WatchedQuery
+              queryId={selectedId}
+              query={queries[selectedId]}
+              onRun={this.props.onRun}
+            />
+          )}
       </div>
     );
   }
@@ -150,7 +150,7 @@ const Variables = ({ variables }) => {
         <tr key={`tr-${name}`}>
           <td key={`dt-${name}`}>{name}</td>
           <td key={`dd-${name}`}>{JSON.stringify(variables[name])}</td>
-        </tr>
+        </tr>,
       );
     });
   return (
@@ -193,8 +193,9 @@ class WatchedQuery extends React.Component {
                 query.queryString,
                 query.variables,
                 "WatchedQueries",
-                true
-              )}
+                true,
+              )
+            }
           >
             Run in GraphiQL
           </span>
@@ -216,18 +217,18 @@ class WatchedQuery extends React.Component {
           />
         </LabeledShowHide>
         {query.graphQLErrors &&
-        query.graphQLErrors.length > 0 && (
-          <LabeledShowHide
-            label="GraphQL Errors"
-            show={query.graphQLErrors && query.graphQLErrors.length > 0}
-          >
-            <ul>
-              {query.graphQLErrors.map((error, i) => (
-                <GraphQLError key={i} error={error} />
-              ))}
-            </ul>
-          </LabeledShowHide>
-        )}
+          query.graphQLErrors.length > 0 && (
+            <LabeledShowHide
+              label="GraphQL Errors"
+              show={query.graphQLErrors && query.graphQLErrors.length > 0}
+            >
+              <ul>
+                {query.graphQLErrors.map((error, i) => (
+                  <GraphQLError key={i} error={error} />
+                ))}
+              </ul>
+            </LabeledShowHide>
+          )}
         {query.networkError && (
           <LabeledShowHide label="Network Errors" show={!!query.networkError}>
             <pre>

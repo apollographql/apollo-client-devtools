@@ -53,9 +53,9 @@ function createPanel() {
         panel => {
           panel.onShown.addListener(onPanelShown);
           panel.onHidden.addListener(onPanelHidden);
-        }
+        },
       );
-    }
+    },
   );
 }
 

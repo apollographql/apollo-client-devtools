@@ -26,7 +26,7 @@ function handshake(e) {
             source: "apollo-devtools-backend",
             payload: data,
           },
-          "*"
+          "*",
         );
       },
     });

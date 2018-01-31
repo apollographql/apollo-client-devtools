@@ -87,7 +87,7 @@ export function installHook(window, devToolsVersion) {
           dataWithOptimisticResults: inspector,
         }) => {
           hook.actionLog.push({ queries, mutations, inspector });
-        }
+        },
       );
       clearInterval(interval);
     }

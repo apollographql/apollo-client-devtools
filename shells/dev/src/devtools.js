@@ -17,14 +17,14 @@ target.onload = () => {
           new Bridge({
             listen(fn) {
               targetWindow.parent.addEventListener("message", evt =>
-                fn(evt.data)
+                fn(evt.data),
               );
             },
             send(data) {
               console.log("devtools -> backend", data);
               targetWindow.postMessage(data, "*");
             },
-          })
+          }),
         );
       });
     },

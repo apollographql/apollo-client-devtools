@@ -1,6 +1,6 @@
 import React from "react";
-export default () =>
-<svg
+export default () => (
+  <svg
     version="1.1"
     x="0px"
     y="0px"
@@ -27,4 +27,5 @@ export default () =>
     				c55.229,0,100-44.771,100-100.001C200,90.658,198.709,81.616,196.313,73.037z"
       />
     </g>
-</svg>
+  </svg>
+);

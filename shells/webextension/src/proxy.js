@@ -8,7 +8,7 @@ const port = chrome.runtime.connect({ name: "content-script" });
 function sendMessageToBackend(payload) {
   window.postMessage(
     { source: "apollo-devtools-proxy", payload: payload },
-    "*"
+    "*",
   );
 }
 

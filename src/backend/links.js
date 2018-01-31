@@ -78,7 +78,7 @@ export const initLinkEvents = (hook, bridge) => {
   // handle incoming requests
   const subscriber = request => {
     const { query, variables, operationName, key, fetchPolicy } = JSON.parse(
-      request
+      request,
     );
     try {
       const userLink = hook.ApolloClient.link;

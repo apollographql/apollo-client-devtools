@@ -106,7 +106,7 @@ export default class Panel extends Component {
         className={classnames(
           "apollo-client-panel",
           { "in-window": this.props.isChrome },
-          this.props.theme
+          this.props.theme,
         )}
       >
         <Sidebar className="tabs" name="nav-tabs">

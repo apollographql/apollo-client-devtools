@@ -1,40 +1,40 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import { Sidebar } from '../Sidebar';
-import classnames from 'classnames';
-import { parse } from 'graphql/language/parser';
-import { GraphqlCodeBlock } from 'graphql-syntax-highlighter-react';
-import './Logger.less';
+import PropTypes from "prop-types";
+import React from "react";
+import { Sidebar } from "../Sidebar";
+import classnames from "classnames";
+import { parse } from "graphql/language/parser";
+import { GraphqlCodeBlock } from "graphql-syntax-highlighter-react";
+import "./Logger.less";
 
 const queryLabel = action => {
-  let label = '';
+  let label = "";
 
-  if (action.type.startsWith('APOLLO_QUERY')) {
-    label += 'Q:' + action.queryId;
+  if (action.type.startsWith("APOLLO_QUERY")) {
+    label += "Q:" + action.queryId;
 
-    if (action.type === 'APOLLO_QUERY_INIT') {
-      label += ':INIT';
-    } else if (action.type === 'APOLLO_QUERY_RESULT_CLIENT') {
-      label += ':RES_CLIENT';
-    } else if (action.type === 'APOLLO_QUERY_RESULT') {
-      label += ':RES';
-    } else if (action.type === 'APOLLO_QUERY_STOP') {
-      label += ':STOP';
+    if (action.type === "APOLLO_QUERY_INIT") {
+      label += ":INIT";
+    } else if (action.type === "APOLLO_QUERY_RESULT_CLIENT") {
+      label += ":RES_CLIENT";
+    } else if (action.type === "APOLLO_QUERY_RESULT") {
+      label += ":RES";
+    } else if (action.type === "APOLLO_QUERY_STOP") {
+      label += ":STOP";
     }
 
     if (action.requestId) {
       label += `(${action.requestId})`;
     }
-  } else if (action.type.startsWith('APOLLO_MUTATION')) {
-    label += 'M:' + action.mutationId;
+  } else if (action.type.startsWith("APOLLO_MUTATION")) {
+    label += "M:" + action.mutationId;
 
-    if (action.type === 'APOLLO_MUTATION_INIT') {
-      label += ':INIT';
-    } else if (action.type === 'APOLLO_MUTATION_RESULT') {
-      label += ':RES';
+    if (action.type === "APOLLO_MUTATION_INIT") {
+      label += ":INIT";
+    } else if (action.type === "APOLLO_MUTATION_RESULT") {
+      label += ":RES";
     }
-  } else if (action.type.startsWith('APOLLO_SUBSCRIPTION')) {
-    label += 'S:' + action.subscriptionId;
+  } else if (action.type.startsWith("APOLLO_SUBSCRIPTION")) {
+    label += "S:" + action.subscriptionId;
   } else {
     label += action.type;
   }
@@ -52,14 +52,14 @@ class Logger extends React.Component {
   }
 
   renderSidebarItem(logEntry) {
-    let className = 'item';
+    let className = "item";
 
     return (
       <div
         key={logEntry.id}
         onClick={() => this.selectId(logEntry.id)}
-        className={classnames('item', {
-          active: logEntry.id === this.props.selectedId
+        className={classnames("item", {
+          active: logEntry.id === this.props.selectedId,
         })}
       >
         {queryLabel(logEntry.action)}
@@ -91,8 +91,9 @@ class Logger extends React.Component {
           {this.props.log.map(logEntry => this.renderSidebarItem(logEntry))}
         </Sidebar>
         <div className="main">
-          {reqToDisplay &&
-            <RequestDetails request={reqToDisplay} onRun={this.props.onRun} />}
+          {reqToDisplay && (
+            <RequestDetails request={reqToDisplay} onRun={this.props.onRun} />
+          )}
         </div>
       </div>
     );
@@ -100,7 +101,7 @@ class Logger extends React.Component {
 }
 
 Logger.propTypes = {
-  log: PropTypes.array
+  log: PropTypes.array,
 };
 
 class LabeledShowHide extends React.Component {
@@ -120,10 +121,9 @@ class LabeledShowHide extends React.Component {
           {this.state.show ? <span>&#9662; </span> : <span>&#9656; </span>}
           {this.props.label}
         </span>
-        {this.state.show &&
-          <div className="labeled">
-            {this.props.children}
-          </div>}
+        {this.state.show && (
+          <div className="labeled">{this.props.children}</div>
+        )}
       </div>
     );
   }
@@ -131,7 +131,7 @@ class LabeledShowHide extends React.Component {
 LabeledShowHide.propTypes = {
   label: PropTypes.string.isRequired,
   children: PropTypes.any.isRequired,
-  show: PropTypes.bool
+  show: PropTypes.bool,
 };
 
 const Variables = ({ variables }) => {
@@ -139,23 +139,13 @@ const Variables = ({ variables }) => {
     return null;
   }
   const inner = [];
-  Object.keys(variables).sort().forEach(name => {
-    inner.push(
-      <dt key={'dt' + name}>
-        {name}
-      </dt>
-    );
-    inner.push(
-      <dd key={'dd' + name}>
-        {JSON.stringify(variables[name])}
-      </dd>
-    );
-  });
-  return (
-    <dl>
-      {inner}
-    </dl>
-  );
+  Object.keys(variables)
+    .sort()
+    .forEach(name => {
+      inner.push(<dt key={"dt" + name}>{name}</dt>);
+      inner.push(<dd key={"dd" + name}>{JSON.stringify(variables[name])}</dd>);
+    });
+  return <dl>{inner}</dl>;
 };
 
 class RequestDetails extends React.Component {
@@ -178,22 +168,18 @@ const QueryInit = ({ request }) => {
     <table>
       <tr>
         <th>Type</th>
-        <td>
-          {action.type}
-        </td>
+        <td>{action.type}</td>
       </tr>
       <tr>
         <th>Query ID</th>
-        <td>
-          {action.queryId}
-        </td>
+        <td>{action.queryId}</td>
       </tr>
     </table>
   );
 };
 
 const actionTypeToComponent = {
-  APOLLO_QUERY_INIT: QueryInit
+  APOLLO_QUERY_INIT: QueryInit,
 };
 
 export default Logger;

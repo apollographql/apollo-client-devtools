@@ -51,7 +51,7 @@ export const checkVersions = (hook, bridge) => {
       if (!response.data.compatibilityMessages) return;
       response.data.compatibilityMessages.forEach(cm => {
         bridge.send(
-          `console.info('Apollo devtools message:', "${cm.message}")`
+          `console.info('Apollo devtools message:', "${cm.message}")`,
         );
       });
     });

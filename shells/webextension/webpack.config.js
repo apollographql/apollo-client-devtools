@@ -12,7 +12,7 @@ if (process.env.NODE_ENV === "production") {
       "process.env": {
         NODE_ENV: JSON.stringify("production"),
       },
-    })
+    }),
   );
   plugins.push(new UglifyPlugin());
 } else {

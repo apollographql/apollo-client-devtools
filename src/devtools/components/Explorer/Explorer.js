@@ -50,7 +50,7 @@ export const createBridgeLink = bridge =>
           const remoteSchema = buildClientSchema(result.data);
           const { schemas } = result.extensions;
           const built = schemas.map(({ definition, directives = "" }) =>
-            buildSchema(`${directives} ${definition}`)
+            buildSchema(`${directives} ${definition}`),
           );
           const directives = built.map(({ _directives }) => _directives);
           const merged = mergeSchemas({
@@ -59,7 +59,7 @@ export const createBridgeLink = bridge =>
 
           merged._directives = uniqBy(
             flatten(merged._directives.concat(directives)),
-            "name"
+            "name",
           );
           try {
             const newResult = graphql(merged, introAST);
@@ -91,7 +91,7 @@ export const createBridgeLink = bridge =>
           bridge.removeListener(`link:error:${key}`, error);
           bridge.removeListener(`link:complete:${key}`, complete);
         };
-      })
+      }),
   );
 
 export class Explorer extends Component {

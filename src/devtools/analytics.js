@@ -17,7 +17,7 @@ export function loadAnalytics() {
     document,
     "script",
     "https://www.google-analytics.com/analytics.js",
-    "ga"
+    "ga",
   );
 
   ga("create", "UA-74643563-7", "auto");

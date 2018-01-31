@@ -84,18 +84,18 @@ class Mutations extends React.Component {
           <div className="mutations-sidebar-title">Mutation log</div>
           <ol className="mutation-list">
             {this.sortedMutationIds().map(id =>
-              this.renderSidebarItem(id, mutations[id])
+              this.renderSidebarItem(id, mutations[id]),
             )}
           </ol>
         </Sidebar>
         {selectedId &&
-        mutations[selectedId] && (
-          <WatchedMutation
-            mutationId={selectedId}
-            mutation={mutations[selectedId]}
-            onRun={this.props.onRun}
-          />
-        )}
+          mutations[selectedId] && (
+            <WatchedMutation
+              mutationId={selectedId}
+              mutation={mutations[selectedId]}
+              onRun={this.props.onRun}
+            />
+          )}
       </div>
     );
   }
@@ -151,7 +151,7 @@ const Variables = ({ variables }) => {
         <tr key={`tr-${name}`}>
           <td key={`dt-${name}`}>{name}</td>
           <td key={`dd-${name}`}>{JSON.stringify(variables[name])}</td>
-        </tr>
+        </tr>,
       );
     });
   return (
@@ -194,8 +194,9 @@ class WatchedMutation extends React.Component {
                 mutation.mutationString,
                 mutation.variables,
                 "Mutations",
-                false
-              )}
+                false,
+              )
+            }
           >
             Show in GraphiQL
           </span>
@@ -217,18 +218,18 @@ class WatchedMutation extends React.Component {
           />
         </LabeledShowHide>
         {mutation.graphQLErrors &&
-        mutation.graphQLErrors.length > 0 && (
-          <LabeledShowHide
-            label="GraphQL Errors"
-            show={mutation.graphQLErrors && mutation.graphQLErrors.length > 0}
-          >
-            <ul>
-              {mutation.graphQLErrors.map((error, i) => (
-                <GraphQLError key={i} error={error} />
-              ))}
-            </ul>
-          </LabeledShowHide>
-        )}
+          mutation.graphQLErrors.length > 0 && (
+            <LabeledShowHide
+              label="GraphQL Errors"
+              show={mutation.graphQLErrors && mutation.graphQLErrors.length > 0}
+            >
+              <ul>
+                {mutation.graphQLErrors.map((error, i) => (
+                  <GraphQLError key={i} error={error} />
+                ))}
+              </ul>
+            </LabeledShowHide>
+          )}
         {mutation.networkError && (
           <LabeledShowHide
             label="Network Errors"
