@@ -161,10 +161,12 @@ export class Explorer extends Component {
 
   render() {
     const { noFetch } = this.state;
+    const { theme } = this.props;
     const graphiql = (
       <GraphiQL
         fetcher={this.fetcher}
         query={this.state.query}
+        editorTheme={theme === "dark" ? "dracula" : "graphiql"}
         onEditQuery={() => {
           this.clearDefaultQueryState();
         }}

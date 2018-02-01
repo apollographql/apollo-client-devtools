@@ -9,7 +9,7 @@ import { GraphqlCodeBlock } from "graphql-syntax-highlighter-react";
 import { Sidebar } from "../Sidebar";
 import Warning from "../Images/Warning";
 
-import "./Mutations.less";
+import "../WatchedQueries/WatchedQueries.less";
 
 const mutationLabel = (mutationId, mutation) => {
   const mutationName = getOperationName(parse(mutation.mutationString));
@@ -63,7 +63,7 @@ class Mutations extends React.Component {
         })}
       >
         <div className="item-row">
-          <span>{mutationLabel(id, mutation)}</span>
+          <h4>{mutationLabel(id, mutation)}</h4>
           {hasError && (
             <span className="error-icon">
               <Warning />
@@ -79,10 +79,10 @@ class Mutations extends React.Component {
 
     const { selectedId } = this.state;
     return (
-      <div className="mutations body">
+      <div className="watchedQueries body">
         <Sidebar className="sidebar" name="watched-mutations-sidebar">
-          <div className="mutations-sidebar-title">Mutation log</div>
-          <ol className="mutation-list">
+          <h4 className="queries-sidebar-title">Mutation log</h4>
+          <ol className="queries-list">
             {this.sortedMutationIds().map(id =>
               this.renderSidebarItem(id, mutations[id]),
             )}

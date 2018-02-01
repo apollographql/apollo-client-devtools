@@ -12,6 +12,31 @@ html, body, #devtools {
   overflow: hidden;
 }
 
+h1, h2, h4 {
+  font-family: "Open Sans",Helvetica,sans-serif;
+  font-weight: 600;
+  line-height: 1;
+}
+
+h4 {
+  margin-bottom: 0;
+  margin-top: 0;
+  font-weight: 600;
+}
+
+h1 {
+  font-size: 2.5em;
+}
+h3, p {
+  font-family: "Source Sans Pro","Helvetica Neue",Helvetica,Arial,sans-serif;
+  line-height: 140%;
+}
+
+h3 {
+  font-weight: 400;
+  font-size: 16px;
+}
+
 .sidebar {
   position: relative;
   overflow-y: scroll;
@@ -46,8 +71,8 @@ html, body, #devtools {
   }
 
   .tabs {
-    background-color: #666;
-    border-bottom: 1px solid #ccc;
+    background-image: linear-gradient(179deg, #2c2f39 2%, #363944 14%, #32353d 100%);
+    color: "#fff";
     flex: none;
     text-align: center;
     width: 55px;
@@ -91,6 +116,7 @@ html, body, #devtools {
 
       &.logo-tab {
         background-color: #22a699;
+        background-color: #21232b;
         cursor: default;
         font-size: 0;
 

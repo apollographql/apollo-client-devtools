@@ -63,7 +63,7 @@ class WatchedQueries extends React.Component {
         })}
       >
         <div className="item-row">
-          <span>{queryLabel(id, query)}</span>
+          <h4>{queryLabel(id, query)}</h4>
           {hasError && (
             <span className="error-icon">
               <Warning />
@@ -80,7 +80,7 @@ class WatchedQueries extends React.Component {
     return (
       <div className="watchedQueries body">
         <Sidebar className="sidebar" name="watched-queries-sidebar">
-          <div className="queries-sidebar-title">Watched queries</div>
+          <h4 className="queries-sidebar-title">Watched queries</h4>
           <ol className="query-list">
             {this.sortedQueryIds().map(id =>
               this.renderSidebarItem(id, queries[id]),
