@@ -82,7 +82,7 @@ class Mutations extends React.Component {
       <div className="watchedQueries body">
         <Sidebar className="sidebar" name="watched-mutations-sidebar">
           <h4 className="queries-sidebar-title">Mutation log</h4>
-          <ol className="queries-list">
+          <ol className="query-list">
             {this.sortedMutationIds().map(id =>
               this.renderSidebarItem(id, mutations[id]),
             )}
