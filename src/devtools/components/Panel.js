@@ -53,7 +53,7 @@ const UpgradeNotice = ({ version }) => (
       To continue using the Devtools with v{version}, check out this guide to
       <a
         style={{ color: "white" }}
-        href="https://github.com/apollographql/apollo-client-devtools#previous"
+        href="https://github.com/apollographql/apollo-client-devtools/releases/tag/2.0.6"
         target="_blank"
       >
         using the previous version
