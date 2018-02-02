@@ -36,7 +36,8 @@ const errorLink = () =>
       try {
         sub = forward(operation).subscribe({
           next: observer.next.bind(observer),
-          error: networkError =>
+          error: networkError => (
+            console.error(networkError),
             observer.next({
               errors: [
                 {
@@ -44,10 +45,12 @@ const errorLink = () =>
                   locations: [networkError.stack],
                 },
               ],
-            }),
+            })
+          ),
           complete: observer.complete.bind(observer),
         });
       } catch (e) {
+        console.error(e);
         observer.next({
           errors: [{ message: e.message, locations: [e.stack] }],
         });

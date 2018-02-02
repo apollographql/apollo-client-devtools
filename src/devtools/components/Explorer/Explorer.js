@@ -57,30 +57,39 @@ export const createBridgeLink = bridge =>
           }
 
           const { schemas } = result.extensions;
-          // merge schemas together
-          let remoteSchema = buildClientSchema(result.data);
-
-          // add add-hoc client only directives
-          // XXX replace this with better directives => types function
-          // XXX this is a bottleneck but only happens once
-          let remoteSchemaString = printSchema(remoteSchema);
           const directivesOnly = schemas
             .filter(x => !x.definition)
             .map(x => x.directives);
-          remoteSchemaString =
-            remoteSchemaString + ` ${directivesOnly.join("\n")}`;
-          remoteSchema = buildSchema(remoteSchemaString);
-
           const definitions = schemas.filter(x => !!x.definition);
           const built = definitions.map(({ definition, directives = "" }) =>
             buildSchema(`${directives} ${definition}`),
           );
-          const directives = built
-            .map(({ _directives }) => _directives)
-            .concat(remoteSchema._directives);
-          const merged = mergeSchemas({
-            schemas: [remoteSchema].concat(built),
-          });
+          let directives = built.map(({ _directives }) => _directives);
+          let merged;
+          // local only app
+          if (result.data && Object.keys(result.data).length !== 0) {
+            // local and remote app
+
+            // merge schemas together
+            let remoteSchema = buildClientSchema(result.data);
+
+            // add add-hoc client only directives
+            // XXX replace this with better directives => types function
+            // XXX this is a bottleneck but only happens once
+            let remoteSchemaString = printSchema(remoteSchema);
+
+            remoteSchemaString =
+              remoteSchemaString + ` ${directivesOnly.join("\n")}`;
+            remoteSchema = buildSchema(remoteSchemaString);
+
+            directives = directives.concat(remoteSchema._directives);
+
+            merged = mergeSchemas({
+              schemas: [remoteSchema].concat(built),
+            });
+          } else {
+            merged = mergeSchemas({ schemas: built });
+          }
 
           merged._directives = uniqBy(
             flatten(merged._directives.concat(directives)),
