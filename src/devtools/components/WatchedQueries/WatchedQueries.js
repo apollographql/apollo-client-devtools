@@ -179,12 +179,18 @@ class WatchedQuery extends React.Component {
       query.metadata &&
       query.metadata.reactComponent &&
       query.metadata.reactComponent.displayName;
+    const componentDisplayName =
+      query &&
+      query.metadata &&
+      query.metadata.component &&
+      query.metadata.component.displayName;
+    const displayName = componentDisplayName || reactComponentDisplayName;
     return (
       <div className={classnames("main", { loading: query.loading })}>
         <div className="panel-title">
           {queryLabel(queryId, query)}
-          {reactComponentDisplayName && (
-            <span className="component-name">{`<${reactComponentDisplayName}>`}</span>
+          {displayName && (
+            <span className="component-name">{`<${displayName}>`}</span>
           )}
           <span
             className="run-in-graphiql-link"
