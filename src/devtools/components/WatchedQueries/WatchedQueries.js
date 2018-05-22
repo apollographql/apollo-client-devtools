@@ -12,7 +12,7 @@ import Warning from "../Images/Warning";
 import "./WatchedQueries.less";
 
 const queryLabel = (queryId, query) => {
-  const queryName = getOperationName(parse(query.queryString));
+  const queryName = getOperationName(parse(query.document.loc.source.body));
   if (queryName === null) {
     return queryId;
   }
@@ -190,7 +190,7 @@ class WatchedQuery extends React.Component {
             className="run-in-graphiql-link"
             onClick={() =>
               this.props.onRun(
-                query.queryString,
+                query.document.loc.source.body,
                 query.variables,
                 "WatchedQueries",
                 true,
@@ -213,7 +213,7 @@ class WatchedQuery extends React.Component {
         <LabeledShowHide label="Query string" show={false}>
           <GraphqlCodeBlock
             className="GraphqlCodeBlock"
-            queryBody={query.queryString}
+            queryBody={query.document.loc.source.body}
           />
         </LabeledShowHide>
         {query.graphQLErrors &&
