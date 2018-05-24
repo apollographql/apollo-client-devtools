@@ -12,7 +12,9 @@ import Warning from "../Images/Warning";
 import "../WatchedQueries/WatchedQueries.less";
 
 const mutationLabel = (mutationId, mutation) => {
-  const mutationName = getOperationName(parse(mutation.mutationString));
+  const mutationName = getOperationName(
+    parse(mutation.mutationString || mutation.document.loc.source.body),
+  );
   if (mutationName === null) {
     return mutationId;
   }
@@ -187,6 +189,9 @@ class WatchedMutation extends React.Component {
       mutation.metadata.component.displayName;
     const displayName = componentDisplayName || reactComponentDisplayName;
 
+    const mutationString =
+      mutation.mutationString || mutation.document.loc.source.body;
+
     return (
       <div className={classnames("main", { loading: mutation.loading })}>
         <div className="panel-title">
@@ -198,7 +203,7 @@ class WatchedMutation extends React.Component {
             className="show-in-graphiql-link"
             onClick={() =>
               this.props.onRun(
-                mutation.mutationString,
+                mutationString,
                 mutation.variables,
                 "Mutations",
                 false,
@@ -221,7 +226,7 @@ class WatchedMutation extends React.Component {
         <LabeledShowHide label="Mutation string" show={false}>
           <GraphqlCodeBlock
             className="GraphqlCodeBlock"
-            queryBody={mutation.mutationString}
+            queryBody={mutationString}
           />
         </LabeledShowHide>
         {mutation.graphQLErrors &&
