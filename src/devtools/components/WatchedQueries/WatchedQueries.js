@@ -12,7 +12,7 @@ import Warning from "../Images/Warning";
 import "./WatchedQueries.less";
 
 const queryLabel = (queryId, query) => {
-  const queryName = getOperationName(parse(query.document.loc.source.body));
+  const queryName = getOperationName(parse(query.queryString || query.document.loc.source.body));
   if (queryName === null) {
     return queryId;
   }
@@ -179,6 +179,7 @@ class WatchedQuery extends React.Component {
       query.metadata &&
       query.metadata.reactComponent &&
       query.metadata.reactComponent.displayName;
+    const queryString = query.queryString || query.document.loc.source.body;
     return (
       <div className={classnames("main", { loading: query.loading })}>
         <div className="panel-title">
@@ -190,7 +191,7 @@ class WatchedQuery extends React.Component {
             className="run-in-graphiql-link"
             onClick={() =>
               this.props.onRun(
-                query.document.loc.source.body,
+                queryString,
                 query.variables,
                 "WatchedQueries",
                 true,
@@ -213,7 +214,7 @@ class WatchedQuery extends React.Component {
         <LabeledShowHide label="Query string" show={false}>
           <GraphqlCodeBlock
             className="GraphqlCodeBlock"
-            queryBody={query.document.loc.source.body}
+            queryBody={queryString}
           />
         </LabeledShowHide>
         {query.graphQLErrors &&
