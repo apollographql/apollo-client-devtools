@@ -2,6 +2,8 @@
 
 ## vNext
 
+## 2.1.3
+
 * fixed styling of mutation list
 * Allow to use `query.metadata.component.displayName` ([#126](https://github.com/apollographql/apollo-client-devtools/pull/126))
 * Fixed mutation run in GraphiQL button ([#127](https://github.com/apollographql/apollo-client-devtools/pull/127))
