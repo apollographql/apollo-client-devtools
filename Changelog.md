@@ -3,6 +3,7 @@
 ## vNext
 
 * fixed styling of mutation list
+* Allow to use `query.metadata.component.displayName`
 
 ## 2.1.0
 

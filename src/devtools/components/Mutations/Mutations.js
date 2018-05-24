@@ -182,15 +182,22 @@ class WatchedMutation extends React.Component {
       mutation.metadata &&
       mutation.metadata.reactComponent &&
       mutation.metadata.reactComponent.displayName;
+    const componentDisplayName =
+      mutation &&
+      mutation.metadata &&
+      mutation.metadata.component &&
+      mutation.metadata.component.displayName;
+    const displayName = componentDisplayName || reactComponentDisplayName;
 
     const mutationString =
       mutation.mutationString || mutation.document.loc.source.body;
+
     return (
       <div className={classnames("main", { loading: mutation.loading })}>
         <div className="panel-title">
           {mutationLabel(mutationId, mutation)}
-          {reactComponentDisplayName && (
-            <span className="component-name">{`<${reactComponentDisplayName}>`}</span>
+          {displayName && (
+            <span className="component-name">{`<${displayName}>`}</span>
           )}
           <span
             className="show-in-graphiql-link"
