@@ -200,7 +200,7 @@ class WatchedMutation extends React.Component {
             <span className="component-name">{`<${displayName}>`}</span>
           )}
           <span
-            className="show-in-graphiql-link"
+            className="run-in-graphiql-link"
             onClick={() =>
               this.props.onRun(
                 mutationString,
@@ -210,7 +210,7 @@ class WatchedMutation extends React.Component {
               )
             }
           >
-            Show in GraphiQL
+            Run in GraphiQL
           </span>
           <span
             className={classnames("loading-label", { show: mutation.loading })}
