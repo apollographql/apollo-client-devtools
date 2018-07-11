@@ -5,6 +5,7 @@ import sortBy from "lodash.sortby";
 import classnames from "classnames";
 import { getOperationName } from "apollo-utilities";
 import { parse } from "graphql/language/parser";
+import { print } from "graphql/language/printer";
 import { GraphqlCodeBlock } from "graphql-syntax-highlighter-react";
 import { Sidebar } from "../Sidebar";
 import Warning from "../Images/Warning";
@@ -189,8 +190,7 @@ class WatchedMutation extends React.Component {
       mutation.metadata.component.displayName;
     const displayName = componentDisplayName || reactComponentDisplayName;
 
-    const mutationString =
-      mutation.mutationString || mutation.document.loc.source.body;
+    const mutationString = mutation.mutationString || print(mutation.document);
 
     return (
       <div className={classnames("main", { loading: mutation.loading })}>

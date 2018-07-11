@@ -5,6 +5,7 @@ import sortBy from "lodash.sortby";
 import classnames from "classnames";
 import { getOperationName } from "apollo-utilities";
 import { parse } from "graphql/language/parser";
+import { print } from "graphql/language/printer";
 import { GraphqlCodeBlock } from "graphql-syntax-highlighter-react";
 import { Sidebar } from "../Sidebar";
 import Warning from "../Images/Warning";
@@ -12,7 +13,9 @@ import Warning from "../Images/Warning";
 import "./WatchedQueries.less";
 
 const queryLabel = (queryId, query) => {
-  const queryName = getOperationName(parse(query.queryString || query.document.loc.source.body));
+  const queryName = getOperationName(
+    parse(query.queryString || query.document.loc.source.body),
+  );
   if (queryName === null) {
     return queryId;
   }
@@ -186,7 +189,7 @@ class WatchedQuery extends React.Component {
       query.metadata.component.displayName;
     const displayName = componentDisplayName || reactComponentDisplayName;
 
-    const queryString = query.queryString || query.document.loc.source.body;
+    const queryString = query.queryString || print(query.document);
 
     return (
       <div className={classnames("main", { loading: query.loading })}>
