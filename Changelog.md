@@ -2,6 +2,8 @@
 
 ## vNext
 
+* Change cursor in dark theme to white ([#131](https://github.com/apollographql/apollo-client-devtools/pull/131))
+
 ## 2.1.3
 
 * fixed styling of mutation list
