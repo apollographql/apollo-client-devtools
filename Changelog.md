@@ -3,6 +3,7 @@
 ## vNext
 
 * Change cursor in dark theme to white ([#131](https://github.com/apollographql/apollo-client-devtools/pull/131))
+* Fix issue where "Run in GraphiQL" does not include fragments ([#133](https://github.com/apollographql/apollo-client-devtools/pull/133))
 
 ## 2.1.3
 
