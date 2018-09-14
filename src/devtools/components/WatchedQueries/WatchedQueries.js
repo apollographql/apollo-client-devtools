@@ -13,7 +13,9 @@ import Warning from "../Images/Warning";
 import "./WatchedQueries.less";
 
 const queryLabel = (queryId, query) => {
-  const queryName = getOperationName(parse(query.queryString || query.document.loc.source.body));
+  const queryName = getOperationName(
+    parse(query.queryString || query.document.loc.source.body),
+  );
   if (queryName === null) {
     return queryId;
   }

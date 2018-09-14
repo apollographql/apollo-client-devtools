@@ -347,8 +347,7 @@ const StoreTreeArray = ({ value }) => {
 
 const StoreTreeArrayItem = ({ item, index }) => (
   <div>
-    <span className="inspector-field-key">{index}</span>
-    :
+    <span className="inspector-field-key">{index}</span>:
     <StoreTreeValue value={item} inArray={true} />
   </div>
 );
@@ -440,8 +439,8 @@ class StoreTreeField extends React.Component {
 
     return (
       <div>
-        <span className={className}>{this.props.storeKey}</span>
-        : {this.renderPossibleTypename()}
+        <span className={className}>{this.props.storeKey}</span>:{" "}
+        {this.renderPossibleTypename()}
         <StoreTreeValue
           value={this.props.value}
           highlight={this.props.highlight}
