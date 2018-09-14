@@ -1,21 +1,11 @@
 const path = require("path");
 const webpack = require("webpack");
 const alias = require("../alias");
-const UglifyPlugin = require("uglifyjs-webpack-plugin");
 const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
   .BundleAnalyzerPlugin;
 
 const plugins = [new webpack.IgnorePlugin(/\.flow$/)];
-if (process.env.NODE_ENV === "production") {
-  plugins.push(
-    new webpack.DefinePlugin({
-      "process.env": {
-        NODE_ENV: JSON.stringify("production"),
-      },
-    }),
-  );
-  plugins.push(new UglifyPlugin());
-} else {
+if (process.env.NODE_ENV !== "production") {
   plugins.push(new BundleAnalyzerPlugin());
 }
 
@@ -38,14 +28,10 @@ module.exports = {
     extensions: [".wasm", ".mjs", ".js", ".json", ".jsx"],
   },
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.css$/,
         loader: "style-loader!css-loader",
-      },
-      {
-        test: /\.json$/,
-        loader: "json-loader",
       },
       {
         test: /\.less$/,
@@ -54,7 +40,7 @@ module.exports = {
       {
         test: /\.jsx?$/,
         loader: "babel-loader",
-        exclude: /(node_modules)/,
+        exclude: /node_modules/,
         options: {
           configFile: path.resolve(__dirname, "./../../.babelrc"),
         },
