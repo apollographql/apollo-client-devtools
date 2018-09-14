@@ -10,6 +10,7 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 module.exports = {
+  mode: process.env.NODE_ENV,
   entry: {
     hook: "./src/hook.js",
     devtools: "./src/devtools.js",
