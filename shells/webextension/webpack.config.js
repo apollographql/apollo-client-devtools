@@ -33,7 +33,10 @@ module.exports = {
     path: path.join(__dirname, "dist"),
     filename: "[name].js",
   },
-  resolve: { alias },
+  resolve: {
+    alias,
+    extensions: [".wasm", ".mjs", ".js", ".json", ".jsx"],
+  },
   module: {
     loaders: [
       {
@@ -49,9 +52,12 @@ module.exports = {
         loader: "style-loader!css-loader!less-loader",
       },
       {
-        test: /\.js$/,
+        test: /\.jsx?$/,
         loader: "babel-loader",
         exclude: /(node_modules)/,
+        options: {
+          configFile: path.resolve(__dirname, "./../../.babelrc"),
+        },
       },
     ],
   },
