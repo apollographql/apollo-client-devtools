@@ -53,8 +53,8 @@ After cloning this repo, compile the extension bundle:
 
 ```bash
 cd apollo-client-devtools
-npm install
-npm run build
+yarn install
+yarn run build
 ```
 
 Install the extension in Chrome:
@@ -83,11 +83,11 @@ The root of the repo contains the .bablerc file, webpack config file, and necess
 
 Unfortunately, there is no way to hot-reload a Chrome extension in the inspector while developing it.
 
-While actively working on the devtools, you should run `npm run chrome` in the devtools repo. This will have webpack watch your files, and rebundle them automatically whenever you make a change. With `webpack -w` running, you'll simply have to close the chrome inspector and open it again to see your changes in effect (no need to hit reload on the [chrome://extensions](chrome://extensions) page unless you make a change to the extension manifest).
+While actively working on the devtools, you should run `yarn run chrome` in the devtools repo. This will have webpack watch your files, and rebundle them automatically whenever you make a change. With `webpack -w` running, you'll simply have to close the chrome inspector and open it again to see your changes in effect (no need to hit reload on the [chrome://extensions](chrome://extensions) page unless you make a change to the extension manifest).
 
 ### Developing with hot reload in an app
 
-Working within a specific browser's extension environment can be a less than ideal development experience. To make this better, we have created a local shell with hot reloading to try out features. To run this, run `npm run dev` and go to [the local app](https://localhost:8080).
+Working within a specific browser's extension environment can be a less than ideal development experience. To make this better, we have created a local shell with hot reloading to try out features. To run this, run `yarn run dev` and go to [the local app](https://localhost:8080).
 
 _Note: While great for expedited development of layout and CSS, this method doesn't allow you to simulate the environment of a chrome extension perfectly. Thus, we recommend you use a combination of both this process and the one described in the previous section while working on the extension. Make sure to test any major changes in the final environment._
 
@@ -111,7 +111,7 @@ Release process, for those with permission:
 - Commit changes, update the `manifest.json` version number where needed, and tag your version release.
 - Verify that your changes work as expected by loading the extension as an "unpacked extension" locally for each browser.
 - Merge changes and version tag to `master`.
-- Run `npm run zip` to pack all of the builds for submission.
+- Run `yarn run zip` to pack all of the builds for submission.
 - Create a new release on the webstores of each extension (and eventually cut a new electron release), uploading the new zip folder.
 
 ### Prior Art
