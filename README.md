@@ -69,7 +69,7 @@ Now, while on any page, open the chrome inspector. If you're inspecting a page t
 ### Folder structure
 
 The extension is built using React and ES6. All the main source code for the devtools exists in the `/src`
-folder, with `devtools/components/Panel.js` being the container component, and `index.js` attatching the
+folder, with `devtools/components/Panel.jsx` being the container component, and `index.js` attatching the
 `Panel` to the document itself. If you're interested in editing the current code or adding a new feature,
 you would do so here.
 
