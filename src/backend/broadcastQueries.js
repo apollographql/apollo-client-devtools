@@ -17,8 +17,12 @@ export const initBroadCastEvents = (hook, bridge) => {
   bridge.on("panel:ready", () => {
     const client = hook.ApolloClient;
     const initial = {
-      queries: client.queryManager.queryStore.getStore(),
-      mutations: client.queryManager.mutationStore.getStore(),
+      queries: client.queryManager
+        ? client.queryManager.queryStore.getStore()
+        : {},
+      mutations: client.queryManager
+        ? client.queryManager.mutationStore.getStore()
+        : {},
       inspector: client.cache.extract(true),
     };
     bridge.send("broadcast:new", JSON.stringify(initial));
