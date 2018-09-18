@@ -1,6 +1,6 @@
 # Apollo Client Devtools
 
-[Download for Chrome](https://chrome.google.com/webstore/detail/apollo-client-developer-t/jdkknkkbebbapilgoeccciglkfbmbnfm) | [Download for Firefox](https://addons.mozilla.org/en-US/firefox/addon/apollo-developer-tools/)
+[Download for Chrome](https://chrome.google.com/webstore/detail/apollo-client-developer-t/jdkknkkbebbapilgoeccciglkfbmbnfm)
 
 This repository contains the Apollo DevTools extension for Chrome & Firefox.
 
