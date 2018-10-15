@@ -3,7 +3,7 @@
 ## 2.1.4
 
 * Removed all Google Analytics tracking. <br/>
-  [@]() in [#TODO](https://github.com/apollographql/apollo-client-devtools/pull/TODO)
+  [@hwillson](https://github.com/hwillson) in [#143](https://github.com/apollographql/apollo-client-devtools/pull/143)
 * Change cursor in dark theme to white <br/>
   [@islam3zzat](https://github.com/islam3zzat) in [#131](https://github.com/apollographql/apollo-client-devtools/pull/131)
 * Fix issue where "Run in GraphiQL" does not include fragments <br/>
