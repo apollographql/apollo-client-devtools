@@ -1,9 +1,13 @@
 # Changelog (started at 2.1.0)
 
-## vNext
+## 2.1.4
 
-* Change cursor in dark theme to white ([#131](https://github.com/apollographql/apollo-client-devtools/pull/131))
-* Fix issue where "Run in GraphiQL" does not include fragments ([#133](https://github.com/apollographql/apollo-client-devtools/pull/133))
+* Removed all Google Analytics tracking. <br/>
+  [@]() in [#TODO](https://github.com/apollographql/apollo-client-devtools/pull/TODO)
+* Change cursor in dark theme to white <br/>
+  [@islam3zzat](https://github.com/islam3zzat) in [#131](https://github.com/apollographql/apollo-client-devtools/pull/131)
+* Fix issue where "Run in GraphiQL" does not include fragments <br/>
+  [@henryqdineen](https://github.com/henryqdineen) in [#133](https://github.com/apollographql/apollo-client-devtools/pull/133)
 
 ## 2.1.3
 

@@ -131,7 +131,6 @@ export default class Panel extends Component {
   }
 
   onRun = (queryString, variables, tab, automaticallyRunQuery) => {
-    ga("send", "event", tab, "run-in-graphiql");
     this.setState({
       active: "graphiql",
       runQuery: queryString,
