@@ -62,7 +62,7 @@ Install the extension in Chrome:
 * Open [chrome://extensions](chrome://extensions)
 * Enable the 'Developer Mode' checkbox
 * Click 'Load unpacked extensions...'
-* Select the `apollo-client-devtools/shells/webextension/dist` folder
+* Select the `apollo-client-devtools/shells/webextension` folder
 
 Now, while on any page, open the chrome inspector. If you're inspecting a page that is using Apollo Client, there will be a global `window.__APOLLO_CLIENT__` object on that page. If that object exists, you will see an "Apollo" tab in the inspector menu. This tab will contain the Apollo Client devtools.
 
