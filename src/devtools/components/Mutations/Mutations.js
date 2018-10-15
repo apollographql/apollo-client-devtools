@@ -31,10 +31,6 @@ class Mutations extends React.Component {
     };
   }
 
-  componentDidMount() {
-    if (ga) ga("send", "pageview", "Mutations");
-  }
-
   selectId(id) {
     this.setState({ selectedId: id });
   }

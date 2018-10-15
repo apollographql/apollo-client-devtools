@@ -52,8 +52,6 @@ export default class Inspector extends React.Component {
   }
 
   componentDidMount() {
-    //analytics
-    if (ga) ga("send", "pageview", "StoreInspector");
     // this.updateData();
     if (this.props.state.inspector) {
       this.updateDataInStore(this.props.state.inspector);

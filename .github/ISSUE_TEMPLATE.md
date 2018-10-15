@@ -1,4 +1,3 @@
-
 <!--**Issue Labels**
 
 While not necessary, you can help organize our issues by labeling this issue when you open it.  To add a label automatically, simply [x] mark the appropriate box below:
