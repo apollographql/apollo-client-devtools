@@ -13,6 +13,13 @@ import Warning from "../Images/Warning";
 import "./WatchedQueries.less";
 
 const queryLabel = (queryId, query) => {
+  const queryDefinitions =
+    query && query.document && query.document.definitions;
+
+  if (queryDefinitions.length === 1) {
+    return queryDefinitions[0].name.value;
+  }
+
   const queryName = getOperationName(
     parse(query.queryString || query.document.loc.source.body),
   );
