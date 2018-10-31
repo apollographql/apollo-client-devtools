@@ -1,5 +1,11 @@
 # Changelog (started at 2.1.0)
 
+## 2.1.5
+
+* Fixes a query name parsing issue that lead to a blank page showing when
+  viewing the queries panel. <br/>
+  [@hwillson](https://github.com/hwillson) in [#149](https://github.com/apollographql/apollo-client-devtools/pull/149)
+
 ## 2.1.4
 
 * Removed all Google Analytics tracking. <br/>
