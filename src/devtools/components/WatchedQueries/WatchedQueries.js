@@ -13,13 +13,27 @@ import Warning from "../Images/Warning";
 import "./WatchedQueries.less";
 
 const queryLabel = (queryId, query) => {
-  const queryName = getOperationName(
-    parse(query.queryString || query.document.loc.source.body),
-  );
-  if (queryName === null) {
-    return queryId;
+  let queryName;
+
+  if (query.queryString) {
+    // Parse the query string, then extract the query name.
+    queryName = getOperationName(parse(query.queryString));
+  } else if (query.document) {
+    // The query string has already been parsed (e.g. using `graphql-tag`)
+    // so extract the query name from the parsed document.
+    queryName = getOperationName(query.document);
   }
-  return `${queryName}`;
+
+  // If we haven't been able to find the query name, make one last
+  // attempt to parse and pull it from the source of a document
+  // (if it exsts).
+  if (!queryName && query.document.loc.source) {
+    queryName = getOperationName(parse(query.document.loc.source.body));
+  }
+
+  // If the query name can't be extracted, fallback on the query ID as the
+  // label.
+  return queryName || queryId;
 };
 
 class WatchedQueries extends React.Component {
