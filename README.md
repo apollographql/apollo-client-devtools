@@ -117,3 +117,8 @@ Release process, for those with permission:
 ### Prior Art
 
 Special thanks goes out to the [Vue devtools](https://github.com/vuejs/vue-devtools) and in particular the help of [Guillaume Chau (@Akryum)](https://github.com/Akryum) who has been an incredible part of the Apollo community. The continued progress of this tool wouldn't be possible without his guidance and help.
+
+## Maintainers
+
+* [@hwillson](https://github.com/hwillson) (Apollo)
+* [@jbaxleyiii](https://github.com/jbaxleyiii) (Apollo)
