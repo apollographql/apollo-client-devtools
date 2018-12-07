@@ -7,6 +7,10 @@
   based on how that endpoint is being used. Removing it helps with
   Firefox's security review process. <br/>
   [@hwillson](https://github.com/hwillson) in [#156](https://github.com/apollographql/apollo-client-devtools/pull/156)
+* Fix to address issues caused by internal initial state not being set
+  properly, due to trying to access the Apollo Client `queryManager` when
+  it hasn't finished initializing. <br/>
+  [@adampetrie](https://github.com/adampetrie) in [#139](https://github.com/apollographql/apollo-client-devtools/pull/139)
 
 ## 2.1.5
 
