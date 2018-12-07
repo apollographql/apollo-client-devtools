@@ -1,6 +1,6 @@
 # Changelog (started at 2.1.0)
 
-## vNext
+## 2.1.6
 
 * Removed https://devtools.apollodata.com/graphql from the content security
   policy section of `manifest.json`, since it doesn't need to be referenced
