@@ -1,5 +1,13 @@
 # Changelog (started at 2.1.0)
 
+## vNext
+
+* Removed https://devtools.apollodata.com/graphql from the content security
+  policy section of `manifest.json`, since it doesn't need to be referenced
+  based on how that endpoint is being used. Removing it helps with
+  Firefox's security review process. <br/>
+  [@hwillson](https://github.com/hwillson) in [#156](https://github.com/apollographql/apollo-client-devtools/pull/156)
+
 ## 2.1.5
 
 * Fixes a query name parsing issue that lead to a blank page showing when
