@@ -12,7 +12,7 @@
   },
   "page_action": {},
   "content_security_policy":
-    "script-src 'self' 'unsafe-eval' https://devtools.apollodata.com/graphql; object-src 'self'",
+    "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "permissions": ["tabs", "http://*/*", "https://*/*"],
   "devtools_page": "devtools-background.html",
   "background": {
