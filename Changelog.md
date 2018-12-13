@@ -1,5 +1,10 @@
 # Changelog (started at 2.1.0)
 
+## vNext
+
+* Fix outdated client message. <br/>
+  [@jonas-arkulpa](https://github.com/jonas-arkulpa) in [#157](https://github.com/apollographql/apollo-client-devtools/pull/157)
+
 ## 2.1.6
 
 * Removed https://devtools.apollodata.com/graphql from the content security
