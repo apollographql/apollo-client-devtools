@@ -37,27 +37,27 @@ const UpgradeNotice = ({ version }) => (
   <Shell>
     <h1 style={{ color: "white" }}>Your Apollo Client needs updating!</h1>
     <h3 style={{ color: "white" }}>
-      We've detected your version of Apollo Client to be v{version}. The Apollo
+      We&apos;ve detected your version of Apollo Client to be v{version}. The Apollo
       Devtools requires version 2.0.0 or greater. Luckily, upgrading is pretty
       painless and brings a whole bunch of new features! To learn how to
       upgrade, check out the migration guide{" "}
       <a
         style={{ color: "white" }}
-        href="https://www.apollographql.com/docs/react/2.0-migration.html"
+        href="https://www.apollographql.com/docs/react/recipes/2.0-migration.html"
         target="_blank"
       >
         here!
       </a>
     </h3>
     <h3 style={{ color: "white" }}>
-      To continue using the Devtools with v{version}, check out this guide to
+      To continue using the Devtools with v{version}, check out this guide to{" "}
       <a
         style={{ color: "white" }}
         href="https://github.com/apollographql/apollo-client-devtools/releases/tag/2.0.6"
         target="_blank"
       >
         using the previous version
-      </a>
+      </a>.
     </h3>
   </Shell>
 );
