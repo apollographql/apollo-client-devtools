@@ -5,9 +5,13 @@ import { initLinkEvents } from "./links";
 import { checkVersions } from "./checkVersions";
 
 // hook should have been injected before this executes.
-const hook = window.__APOLLO_DEVTOOLS_GLOBAL_HOOK__;
+let hook;
 let bridge;
 let connected;
+
+export const sendBridgeReady = () => {
+  bridge.send("ready", hook.ApolloClient.version);
+};
 
 const connect = () => {
   if (connected) return;
@@ -17,12 +21,12 @@ const connect = () => {
     initBroadCastEvents(hook, bridge);
   }
   bridge.log("backend ready.");
-  bridge.send("ready", hook.ApolloClient.version);
+  sendBridgeReady();
   checkVersions(hook, bridge);
 };
 
-export const initBackend = b => {
+export const initBackend = (b, h) => {
   bridge = b;
-
+  hook = h;
   connect();
 };

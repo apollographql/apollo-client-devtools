@@ -1,11 +1,6 @@
 import genUuid from "uuid/v1";
 
-let uuid = localStorage.getItem("uuid");
-
-if (!uuid) {
-  uuid = genUuid();
-  localStorage.setItem("uuid", uuid);
-}
+let uuid = genUuid();
 
 export const checkVersions = (hook, bridge) => {
   const { version } = hook.ApolloClient;
