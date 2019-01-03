@@ -18,6 +18,7 @@ import { execute as graphql } from "graphql/execution";
 import { Observable, execute, ApolloLink } from "apollo-link";
 
 import { withBridge } from "../bridge";
+import Tracing from "../Tracing";
 
 import "./graphiql.less";
 import "./graphiql-overrides.less";
@@ -27,7 +28,7 @@ let id = 0;
 const introAST = parse(introspectionQuery);
 const intro = introspectionQuery.replace(/\s/g, "");
 
-export const createBridgeLink = bridge =>
+export const createBridgeLink = (bridge, explorer) =>
   new ApolloLink(
     operation =>
       new Observable(obs => {
@@ -52,6 +53,9 @@ export const createBridgeLink = bridge =>
                 delete result.extensions;
               }
             }
+            // send back query result to explorer for Tracing rendering
+            explorer.updateResult(result);
+
             obs.next(result);
             return;
           }
@@ -136,9 +140,10 @@ export class Explorer extends Component {
       noFetch: false,
       query: this.props.query,
       variables: this.props.variables,
+      tracingResult: undefined,
     };
 
-    this.link = createBridgeLink(this.props.bridge);
+    this.link = createBridgeLink(this.props.bridge, this);
   }
 
   componentDidMount() {
@@ -166,6 +171,14 @@ export class Explorer extends Component {
     const prettyText = print(parse(currentText));
     editor.setValue(prettyText);
   };
+
+  updateResult(result) {
+    if (result && result.extensions && result.extensions.tracing) {
+      this.setState({ tracingResult: result.extensions.tracing });
+    } else {
+      this.setState({ tracingResult: undefined });
+    }
+  }
 
   render() {
     const { noFetch } = this.state;
@@ -207,6 +220,9 @@ export class Explorer extends Component {
             Load from cache
           </label>
         </GraphiQL.Toolbar>
+        <GraphiQL.Footer>
+          <Tracing tracing={this.state.tracingResult} />
+        </GraphiQL.Footer>
       </GraphiQL>
     );
 
