@@ -19,12 +19,24 @@ const apolloClientSchema = {
 };
 const schemaLink = () =>
   new ApolloLink((operation, forward) => {
-    return forward(operation).map(result => {
-      let { schemas = [] } = operation.getContext();
-      result.extensions = Object.assign({}, result.extensions, {
-        schemas: schemas.concat([apolloClientSchema]),
-      });
-      return result;
+    return new Observable(observer => {
+      const ob = forward(operation);
+      if (ob) {
+        return forward(operation).subscribe(result => {
+          let { schemas = [] } = operation.getContext();
+          try {
+            result.extensions = Object.assign({}, result.extensions, {
+              schemas: schemas.concat([apolloClientSchema]),
+            });
+          } catch (error) {
+            console.error(error);
+          }
+          return observer.next(result);
+        });
+      }
+      return () => {
+        if (ob) ob.unsubscribe();
+      };
     });
   });
 
