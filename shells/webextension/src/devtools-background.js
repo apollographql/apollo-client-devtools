@@ -34,26 +34,29 @@ function createPanel() {
 
   panelLoaded = false;
   panelShown = false;
-  chrome.devtools.inspectedWindow.eval(`true`, function(result, isException) {
-    // XXX how should we better handle this error?
-    if (isException) console.warn(isException);
+  chrome.devtools.inspectedWindow.eval(
+    `!!(window.__APOLLO_DEVTOOLS_GLOBAL_HOOK__.ApolloClient || window.__APOLLO_DEVTOOLS_SHOULD_DISPLAY_PANEL__);`,
+    function(result, isException) {
+      // XXX how should we better handle this error?
+      if (isException) console.warn(isException);
 
-    // already created or no ApolloClient
-    if (!result || panelCreated) return;
+      // already created or no ApolloClient
+      if (!result || panelCreated) return;
 
-    // clear watcher
-    if (loadCheckInterval) clearInterval(loadCheckInterval);
-    panelCreated = true;
-    chrome.devtools.panels.create(
-      "Apollo",
-      "./imgs/logo_devtools.png",
-      "devtools.html",
-      panel => {
-        panel.onShown.addListener(onPanelShown);
-        panel.onHidden.addListener(onPanelHidden);
-      },
-    );
-  });
+      // clear watcher
+      if (loadCheckInterval) clearInterval(loadCheckInterval);
+      panelCreated = true;
+      chrome.devtools.panels.create(
+        "Apollo",
+        "./imgs/logo_devtools.png",
+        "devtools.html",
+        panel => {
+          panel.onShown.addListener(onPanelShown);
+          panel.onHidden.addListener(onPanelHidden);
+        },
+      );
+    },
+  );
 }
 
 // Attempt to create Apollo panel on navigations as well

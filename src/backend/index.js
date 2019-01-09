@@ -9,6 +9,10 @@ let hook;
 let bridge;
 let connected;
 
+export const sendBridgeReady = () => {
+  bridge.send("ready", hook.ApolloClient.version);
+};
+
 const connect = () => {
   if (connected) return;
   connected = true;
@@ -17,7 +21,7 @@ const connect = () => {
     initBroadCastEvents(hook, bridge);
   }
   bridge.log("backend ready.");
-  bridge.send("ready", hook.ApolloClient.version);
+  sendBridgeReady();
   checkVersions(hook, bridge);
 };
 
