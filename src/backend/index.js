@@ -5,7 +5,7 @@ import { initLinkEvents } from "./links";
 import { checkVersions } from "./checkVersions";
 
 // hook should have been injected before this executes.
-const hook = window.__APOLLO_DEVTOOLS_GLOBAL_HOOK__;
+let hook;
 let bridge;
 let connected;
 
@@ -21,8 +21,8 @@ const connect = () => {
   checkVersions(hook, bridge);
 };
 
-export const initBackend = b => {
+export const initBackend = (b, h) => {
   bridge = b;
-
+  hook = h;
   connect();
 };
