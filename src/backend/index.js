@@ -4,10 +4,10 @@ import { initBroadCastEvents } from "./broadcastQueries";
 import { initLinkEvents } from "./links";
 import { checkVersions } from "./checkVersions";
 
-// hook should have been injected before this executes.
 let hook;
 let bridge;
 let connected;
+let storage;
 
 export const sendBridgeReady = () => {
   bridge.send("ready", hook.ApolloClient.version);
@@ -22,11 +22,12 @@ const connect = () => {
   }
   bridge.log("backend ready.");
   sendBridgeReady();
-  checkVersions(hook, bridge);
+  checkVersions(hook, bridge, storage);
 };
 
-export const initBackend = (b, h) => {
+export const initBackend = (b, h, s) => {
   bridge = b;
   hook = h;
+  storage = s;
   connect();
 };

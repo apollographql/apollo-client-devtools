@@ -1,12 +1,19 @@
 import genUuid from "uuid/v1";
 
-let uuid = genUuid();
+const KEY = "uuid";
 
-export const checkVersions = (hook, bridge) => {
+export const checkVersions = async (hook, bridge, storage) => {
   const { version } = hook.ApolloClient;
   const { devToolsVersion } = hook;
 
   if (!devToolsVersion) return;
+
+  let uuid = await storage.getItem(KEY);
+  if (!uuid) {
+    uuid = genUuid();
+    storage.setItem(KEY, uuid);
+  }
+
   const graphQLParams = {
     query: `
     query CompatibilityMessages(
