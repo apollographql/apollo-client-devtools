@@ -123,7 +123,7 @@ export const initLinkEvents = (hook, bridge) => {
         // devtools IntrospectionQuery's (and potentially other future devtool
         // only queries) show up in the "Queries" panel as watched queries.
         // This means devtools specific queries will use their own query store.
-        const dtApolloClient = new ApolloClient({
+        const apolloClientReplica = new ApolloClient({
           link: userLink,
           cache,
           typeDefs,
@@ -136,7 +136,7 @@ export const initLinkEvents = (hook, bridge) => {
           queryAst.definitions[0].operation === "mutation"
         ) {
           operationExecution$ = new Observable(observer => {
-            dtApolloClient
+            apolloClientReplica
               .mutate({
                 mutation: queryAst,
                 variables,
@@ -146,7 +146,7 @@ export const initLinkEvents = (hook, bridge) => {
               });
           });
         } else {
-          operationExecution$ = dtApolloClient.watchQuery({
+          operationExecution$ = apolloClientReplica.watchQuery({
             query: queryAst,
             variables,
           });
