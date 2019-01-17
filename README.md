@@ -120,5 +120,5 @@ Special thanks goes out to the [Vue devtools](https://github.com/vuejs/vue-devto
 
 ## Maintainers
 
-* [@hwillson](https://github.com/hwillson) (Apollo)
-* [@jbaxleyiii](https://github.com/jbaxleyiii) (Apollo)
+* [@justinanastos](https://github.com/justinanastos) (Apollo)
+* [@cheapsteak](https://github.com/cheapsteak) (Apollo)
