@@ -84,7 +84,7 @@ export const initLinkEvents = (hook, bridge) => {
       const userLink = apolloClient.link;
       const cache = apolloClient.cache;
       let schemas = [];
-      let obs;
+      let operationExecution$;
       const queryAst = gql(query);
 
       // Devtools can currently be used with 2 versions of local state
@@ -135,7 +135,7 @@ export const initLinkEvents = (hook, bridge) => {
           queryAst.definitions.length > 0 &&
           queryAst.definitions[0].operation === "mutation"
         ) {
-          obs = new Observable(observer => {
+          operationExecution$ = new Observable(observer => {
             dtApolloClient
               .mutate({
                 mutation: queryAst,
@@ -146,7 +146,7 @@ export const initLinkEvents = (hook, bridge) => {
               });
           });
         } else {
-          obs = dtApolloClient.watchQuery({
+          operationExecution$ = dtApolloClient.watchQuery({
             query: queryAst,
             variables,
           });
@@ -161,7 +161,7 @@ export const initLinkEvents = (hook, bridge) => {
           schemaLink(),
           userLink,
         ]);
-        obs = execute(devtoolsLink, {
+        operationExecution$ = execute(devtoolsLink, {
           query: queryAst,
           variables,
           operationName,
@@ -169,7 +169,7 @@ export const initLinkEvents = (hook, bridge) => {
         });
       }
 
-      obs.subscribe({
+      operationExecution$.subscribe({
         next(data) {
           if (schemas && schemas.length > 0) {
             // `apollo-link-state` gets the local schema added to the result
