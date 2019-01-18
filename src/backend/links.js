@@ -78,6 +78,7 @@ const subscribeWithLegacyLinkState = ({
   fetchPolicy,
   userLink,
   operationName,
+  subscriptionHandlers,
 }) => {
   const context = { __devtools_key__: key, cache };
 
@@ -95,15 +96,7 @@ const subscribeWithLegacyLinkState = ({
     context,
   });
 
-  operationExecution$.subscribe({
-    next(data) {
-      bridge.send(`link:next:${key}`, JSON.stringify(data));
-    },
-    error(err) {
-      bridge.send(`link:error:${key}`, JSON.stringify(err));
-    },
-    complete: () => bridge.send(`link:complete:${key}`),
-  });
+  operationExecution$.subscribe(subscriptionHandlers);
 };
 
 export const initLinkEvents = (hook, bridge) => {
@@ -119,6 +112,15 @@ export const initLinkEvents = (hook, bridge) => {
       const cache = apolloClient.cache;
       let operationExecution$;
       const queryAst = gql(query);
+      const subscriptionHandlers = {
+        next(data) {
+          bridge.send(`link:next:${key}`, JSON.stringify(data));
+        },
+        error(err) {
+          bridge.send(`link:error:${key}`, JSON.stringify(err));
+        },
+        complete: () => bridge.send(`link:complete:${key}`),
+      };
 
       // Devtools can currently be used with 2 versions of local state
       // handling: 1) Using `apollo-link-state` or 2) Using local state
@@ -143,6 +145,7 @@ export const initLinkEvents = (hook, bridge) => {
           fetchPolicy,
           userLink,
           operationName,
+          subscriptionHandlers,
         });
         return;
       }
@@ -193,22 +196,20 @@ export const initLinkEvents = (hook, bridge) => {
         });
       }
 
-      operationExecution$.subscribe({
-        next(data) {
-          // `apollo-link-state` gets the local schema added to the result
-          // via the `schemaLink`, but Apollo Client local state does not.
-          // When using Apollo Client local state, we'll add the schema
-          // manually.
-          data.extensions = Object.assign({}, data.extensions, {
-            schemas: schemas.concat([apolloClientSchema]),
-          });
-          bridge.send(`link:next:${key}`, JSON.stringify(data));
-        },
-        error(err) {
-          bridge.send(`link:error:${key}`, JSON.stringify(err));
-        },
-        complete: () => bridge.send(`link:complete:${key}`),
-      });
+      operationExecution$.subscribe(
+        Object.assign({}, subscriptionHandlers, {
+          next(data) {
+            // `apollo-link-state` gets the local schema added to the result
+            // via the `schemaLink`, but Apollo Client local state does not.
+            // When using Apollo Client local state, we'll add the schema
+            // manually.
+            data.extensions = Object.assign({}, data.extensions, {
+              schemas: schemas.concat([apolloClientSchema]),
+            });
+            bridge.send(`link:next:${key}`, JSON.stringify(data));
+          },
+        }),
+      );
     } catch (e) {
       bridge.send(`link:error:${key}`, JSON.stringify(e));
     }
