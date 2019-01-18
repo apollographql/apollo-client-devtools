@@ -72,6 +72,40 @@ const cacheLink = fetchPolicy =>
     return forward(operation);
   });
 
+const subscribeWithLegacyLinkState = ({
+  key,
+  cache,
+  fetchPolicy,
+  userLink,
+  operationName,
+}) => {
+  const context = { __devtools_key__: key, cache };
+
+  const devtoolsLink = from([
+    errorLink(),
+    cacheLink(fetchPolicy),
+    schemaLink(),
+    userLink,
+  ]);
+
+  const operationExecution$ = execute(devtoolsLink, {
+    query: queryAst,
+    variables,
+    operationName,
+    context,
+  });
+
+  operationExecution$.subscribe({
+    next(data) {
+      bridge.send(`link:next:${key}`, JSON.stringify(data));
+    },
+    error(err) {
+      bridge.send(`link:error:${key}`, JSON.stringify(err));
+    },
+    complete: () => bridge.send(`link:complete:${key}`),
+  });
+};
+
 export const initLinkEvents = (hook, bridge) => {
   // Handle incoming requests
   const subscriber = request => {
@@ -83,7 +117,6 @@ export const initLinkEvents = (hook, bridge) => {
       const apolloClient = hook.ApolloClient;
       const userLink = apolloClient.link;
       const cache = apolloClient.cache;
-      let schemas = [];
       let operationExecution$;
       const queryAst = gql(query);
 
@@ -100,86 +133,75 @@ export const initLinkEvents = (hook, bridge) => {
       // ApolloClient instance, as if so, this means Apollo Client local state
       // is being used.
 
-      let typeDefs;
-      if (typeof apolloClient.getTypeDefs === "function") {
-        typeDefs = apolloClient.getTypeDefs();
+      const supportsApolloClientLocalState =
+        typeof apolloClient.getTypeDefs === "function";
+
+      if (!supportsApolloClientLocalState) {
+        subscribeWithLegacyLinkState({
+          key,
+          cache,
+          fetchPolicy,
+          userLink,
+          operationName,
+        });
+        return;
       }
 
-      if (typeDefs) {
-        // Supports Apollo Client local state.
+      const typeDefs = apolloClient.getTypeDefs();
 
-        // When using `apollo-link-state`, client supplied typeDefs (for a
-        // local only schema) are extracted by re-using the same Apollo Link
-        // chain as the application, along with the `schemaLink` mentioned
-        // above. When using the local state functionality built directly into
-        // Apollo Client however, the logic to extract and store the schema
-        // from typeDefs that is contained within `apollo-link-state` is not
-        // called. To address this, we'll generate the local schema
-        // using typeDefs pulled out of the current AC instance.
-        schemas = buildSchemasFromTypeDefs(typeDefs);
+      // When using `apollo-link-state`, client supplied typeDefs (for a
+      // local only schema) are extracted by re-using the same Apollo Link
+      // chain as the application, along with the `schemaLink` mentioned
+      // above. When using the local state functionality built directly into
+      // Apollo Client however, the logic to extract and store the schema
+      // from typeDefs that is contained within `apollo-link-state` is not
+      // called. To address this, we'll generate the local schema
+      // using typeDefs pulled out of the current AC instance.
+      const schemas = buildSchemasFromTypeDefs(typeDefs);
 
-        // Create a new ApolloClient instance (that re-uses parts of the
-        // user land application ApolloClient instance) to avoid having
-        // devtools IntrospectionQuery's (and potentially other future devtool
-        // only queries) show up in the "Queries" panel as watched queries.
-        // This means devtools specific queries will use their own query store.
-        const apolloClientReplica = new ApolloClient({
-          link: userLink,
-          cache,
-          typeDefs,
-          resolvers: apolloClient.getResolvers(),
+      // Create a new ApolloClient instance (that re-uses parts of the
+      // user land application ApolloClient instance) to avoid having
+      // devtools IntrospectionQuery's (and potentially other future devtool
+      // only queries) show up in the "Queries" panel as watched queries.
+      // This means devtools specific queries will use their own query store.
+      const apolloClientReplica = new ApolloClient({
+        link: userLink,
+        cache,
+        typeDefs,
+        resolvers: apolloClient.getResolvers(),
+      });
+
+      if (
+        queryAst.definitions &&
+        queryAst.definitions.length > 0 &&
+        queryAst.definitions[0].operation === "mutation"
+      ) {
+        operationExecution$ = new Observable(observer => {
+          apolloClientReplica
+            .mutate({
+              mutation: queryAst,
+              variables,
+            })
+            .then(result => {
+              observer.next(result);
+            });
         });
-
-        if (
-          queryAst.definitions &&
-          queryAst.definitions.length > 0 &&
-          queryAst.definitions[0].operation === "mutation"
-        ) {
-          operationExecution$ = new Observable(observer => {
-            apolloClientReplica
-              .mutate({
-                mutation: queryAst,
-                variables,
-              })
-              .then(result => {
-                observer.next(result);
-              });
-          });
-        } else {
-          operationExecution$ = apolloClientReplica.watchQuery({
-            query: queryAst,
-            variables,
-          });
-        }
       } else {
-        // Supports `apollo-link-state`.
-        const context = { __devtools_key__: key, cache };
-
-        const devtoolsLink = from([
-          errorLink(),
-          cacheLink(fetchPolicy),
-          schemaLink(),
-          userLink,
-        ]);
-        operationExecution$ = execute(devtoolsLink, {
+        operationExecution$ = apolloClientReplica.watchQuery({
           query: queryAst,
           variables,
-          operationName,
-          context,
         });
       }
 
       operationExecution$.subscribe({
         next(data) {
-          if (schemas && schemas.length > 0) {
-            // `apollo-link-state` gets the local schema added to the result
-            // via the `schemaLink`, but Apollo Client local state does not.
-            // When using Apollo Client local state, we'll add the schema
-            // manually.
-            data.extensions = Object.assign({}, data.extensions, {
-              schemas: schemas.concat([apolloClientSchema]),
-            });
-          }
+          // `apollo-link-state` gets the local schema added to the result
+          // via the `schemaLink`, but Apollo Client local state does not.
+          // When using Apollo Client local state, we'll add the schema
+          // manually.
+          data.extensions = Object.assign({}, data.extensions, {
+            schemas: schemas.concat([apolloClientSchema]),
+          });
           bridge.send(`link:next:${key}`, JSON.stringify(data));
         },
         error(err) {
