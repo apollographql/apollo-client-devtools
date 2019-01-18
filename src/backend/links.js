@@ -72,33 +72,6 @@ const cacheLink = fetchPolicy =>
     return forward(operation);
   });
 
-const subscribeWithLegacyLinkState = ({
-  key,
-  cache,
-  fetchPolicy,
-  userLink,
-  operationName,
-  subscriptionHandlers,
-}) => {
-  const context = { __devtools_key__: key, cache };
-
-  const devtoolsLink = from([
-    errorLink(),
-    cacheLink(fetchPolicy),
-    schemaLink(),
-    userLink,
-  ]);
-
-  const operationExecution$ = execute(devtoolsLink, {
-    query: queryAst,
-    variables,
-    operationName,
-    context,
-  });
-
-  operationExecution$.subscribe(subscriptionHandlers);
-};
-
 export const initLinkEvents = (hook, bridge) => {
   // Handle incoming requests
   const subscriber = request => {
@@ -139,16 +112,28 @@ export const initLinkEvents = (hook, bridge) => {
         typeof apolloClient.getTypeDefs === "function";
 
       if (!supportsApolloClientLocalState) {
-        subscribeWithLegacyLinkState({
-          key,
-          cache,
-          fetchPolicy,
+        // Supports `apollo-link-state`.
+        const context = { __devtools_key__: key, cache };
+
+        const devtoolsLink = from([
+          errorLink(),
+          cacheLink(fetchPolicy),
+          schemaLink(),
           userLink,
+        ]);
+
+        const operationExecution$ = execute(devtoolsLink, {
+          query: queryAst,
+          variables,
           operationName,
-          subscriptionHandlers,
+          context,
         });
+
+        operationExecution$.subscribe(subscriptionHandlers);
         return;
       }
+
+      // Supports Apollo Client local state.
 
       const typeDefs = apolloClient.getTypeDefs();
 
