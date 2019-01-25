@@ -9,6 +9,7 @@ let bridge;
 let connected;
 let storage;
 
+// Exposing bridge ready event, so other dev tools would have an easy way to notify apollo dev tools.
 export const sendBridgeReady = () => {
   bridge.send("ready", hook.ApolloClient.version);
 };
