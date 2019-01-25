@@ -34,6 +34,8 @@ function createPanel() {
 
   panelLoaded = false;
   panelShown = false;
+  
+  // Other dev tools may not have easy access to Apollo client, so they can set display flag to true manually.
   chrome.devtools.inspectedWindow.eval(
     `!!(window.__APOLLO_DEVTOOLS_GLOBAL_HOOK__.ApolloClient || window.__APOLLO_DEVTOOLS_SHOULD_DISPLAY_PANEL__);`,
     function(result, isException) {
