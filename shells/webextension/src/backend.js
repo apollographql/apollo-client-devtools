@@ -43,7 +43,11 @@ function handshake(e) {
     const init = () => {
       if (__APOLLO_DEVTOOLS_GLOBAL_HOOK__.ApolloClient) {
         started = true;
-        initBackend(bridge);
+        initBackend(
+          bridge,
+          window.__APOLLO_DEVTOOLS_GLOBAL_HOOK__,
+          localStorage,
+        );
         return;
       }
       setTimeout(init, 500);

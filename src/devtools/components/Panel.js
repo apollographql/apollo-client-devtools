@@ -107,7 +107,7 @@ export default class Panel extends Component {
     };
 
     this.props.bridge.on("ready", version => {
-      this.setState({ version });
+      this.setState({ version, notFound: false });
       this.props.bridge.send("panel:ready", "ready");
     });
 
@@ -115,6 +115,7 @@ export default class Panel extends Component {
       const data = JSON.parse(_data);
       this.setState(({ tabData }) => ({
         tabData: Object.assign({}, tabData, data),
+        notFound: false,
       }));
     });
   }
