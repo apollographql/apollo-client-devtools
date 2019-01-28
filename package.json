@@ -19,7 +19,8 @@
       "cd shells && zip -r -FS ../dist/chrome.zip webextension -x *src/* -x *webpack.config.js",
     "zip:firefox":
       "web-ext build -s shells/webextension -a dist -i src --overwrite-dest",
-    "precommit": "lint-staged"
+    "precommit": "lint-staged",
+    "prepublish": "npm run build"
   },
   "lint-staged": {
     "*.{ts*,js*,json,md}": ["prettier --write", "git add"]
