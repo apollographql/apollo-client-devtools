@@ -37,9 +37,9 @@ const UpgradeNotice = ({ version }) => (
   <Shell>
     <h1 style={{ color: "white" }}>Your Apollo Client needs updating!</h1>
     <h3 style={{ color: "white" }}>
-      We&apos;ve detected your version of Apollo Client to be v{version}. The Apollo
-      Devtools requires version 2.0.0 or greater. Luckily, upgrading is pretty
-      painless and brings a whole bunch of new features! To learn how to
+      We&apos;ve detected your version of Apollo Client to be v{version}. The
+      Apollo Devtools requires version 2.0.0 or greater. Luckily, upgrading is
+      pretty painless and brings a whole bunch of new features! To learn how to
       upgrade, check out the migration guide{" "}
       <a
         style={{ color: "white" }}
@@ -113,6 +113,7 @@ export default class Panel extends Component {
 
     this.props.bridge.on("broadcast:new", _data => {
       const data = JSON.parse(_data);
+      if (data.counter) this.props.bridge.send("broadcast:ack", data.counter);
       this.setState(({ tabData }) => ({
         tabData: Object.assign({}, tabData, data),
         notFound: false,
