@@ -2,11 +2,6 @@
 
 ## vNext
 
-- Fix outdated client message. <br/>
-  [@jonas-arkulpa](https://github.com/jonas-arkulpa) in [#157](https://github.com/apollographql/apollo-client-devtools/pull/157)
-
-## 2.1.6
-
 - Removed https://devtools.apollodata.com/graphql from the content security
   policy section of `manifest.json`, since it doesn't need to be referenced
   based on how that endpoint is being used. Removing it helps with
@@ -16,6 +11,26 @@
   properly, due to trying to access the Apollo Client `queryManager` when
   it hasn't finished initializing. <br/>
   [@adampetrie](https://github.com/adampetrie) in [#139](https://github.com/apollographql/apollo-client-devtools/pull/139)
+- Fix outdated client message
+  <br>
+  [@jonas-arkulpa](https://github.com/jonas-arkulpa)
+  in [#157](https://github.com/apollographql/apollo-client-devtools/pull/157)
+- Prepare to publish to npm (add README for npm and add version to package.json) ([#160](https://github.com/apollographql/apollo-client-devtools/issues/160))
+  <br>
+  [@cheapsteak](https://github.com/cheapsteak)
+  in [#167](https://github.com/apollographql/apollo-client-devtools/pull/167)
+- Adding code necessary for React Native support ([#160](https://github.com/apollographql/apollo-client-devtools/issues/160))
+  <br>
+  [@Gongreg](https://github.com/Gongreg)
+  in [#165](https://github.com/apollographql/apollo-client-devtools/pull/165)
+- Publish built extension (dist/) ([#169](https://github.com/apollographql/apollo-client-devtools/issues/169))
+  <br>
+  [@cheapsteak](https://github.com/cheapsteak)
+  in [#170](https://github.com/apollographql/apollo-client-devtools/pull/170)
+- Make prettier more developer-friendly
+  <br>
+  [@justinanastos](https://github.com/justinanastos)
+  in [#178](https://github.com/apollographql/apollo-client-devtools/pull/178)
 
 ## 2.1.5
 
