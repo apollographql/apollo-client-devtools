@@ -72,10 +72,8 @@
       "origins": [
         {
           "moduleId": 0,
-          "module":
-            "/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/node_modules/babel-loader/lib/index.js!/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/shells/webextension/src/backend.js",
-          "moduleIdentifier":
-            "/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/node_modules/babel-loader/lib/index.js!/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/shells/webextension/src/backend.js",
+          "module": "/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/node_modules/babel-loader/lib/index.js!/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/shells/webextension/src/backend.js",
+          "moduleIdentifier": "/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/node_modules/babel-loader/lib/index.js!/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/shells/webextension/src/backend.js",
           "moduleName": "./src/backend.js",
           "loc": "",
           "name": "backend",
@@ -97,10 +95,8 @@
       "origins": [
         {
           "moduleId": 0,
-          "module":
-            "/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/node_modules/babel-loader/lib/index.js!/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/shells/webextension/src/background.js",
-          "moduleIdentifier":
-            "/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/node_modules/babel-loader/lib/index.js!/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/shells/webextension/src/background.js",
+          "module": "/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/node_modules/babel-loader/lib/index.js!/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/shells/webextension/src/background.js",
+          "moduleIdentifier": "/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/node_modules/babel-loader/lib/index.js!/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/shells/webextension/src/background.js",
           "moduleName": "./src/background.js",
           "loc": "",
           "name": "background",
@@ -122,10 +118,8 @@
       "origins": [
         {
           "moduleId": 0,
-          "module":
-            "/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/node_modules/babel-loader/lib/index.js!/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/shells/webextension/src/devtools.js",
-          "moduleIdentifier":
-            "/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/node_modules/babel-loader/lib/index.js!/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/shells/webextension/src/devtools.js",
+          "module": "/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/node_modules/babel-loader/lib/index.js!/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/shells/webextension/src/devtools.js",
+          "moduleIdentifier": "/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/node_modules/babel-loader/lib/index.js!/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/shells/webextension/src/devtools.js",
           "moduleName": "./src/devtools.js",
           "loc": "",
           "name": "devtools",
@@ -147,10 +141,8 @@
       "origins": [
         {
           "moduleId": 0,
-          "module":
-            "/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/node_modules/babel-loader/lib/index.js!/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/shells/webextension/src/devtools-background.js",
-          "moduleIdentifier":
-            "/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/node_modules/babel-loader/lib/index.js!/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/shells/webextension/src/devtools-background.js",
+          "module": "/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/node_modules/babel-loader/lib/index.js!/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/shells/webextension/src/devtools-background.js",
+          "moduleIdentifier": "/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/node_modules/babel-loader/lib/index.js!/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/shells/webextension/src/devtools-background.js",
           "moduleName": "./src/devtools-background.js",
           "loc": "",
           "name": "devtools-background",
@@ -172,10 +164,8 @@
       "origins": [
         {
           "moduleId": 0,
-          "module":
-            "/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/node_modules/babel-loader/lib/index.js!/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/shells/webextension/src/hook.js",
-          "moduleIdentifier":
-            "/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/node_modules/babel-loader/lib/index.js!/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/shells/webextension/src/hook.js",
+          "module": "/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/node_modules/babel-loader/lib/index.js!/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/shells/webextension/src/hook.js",
+          "moduleIdentifier": "/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/node_modules/babel-loader/lib/index.js!/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/shells/webextension/src/hook.js",
           "moduleName": "./src/hook.js",
           "loc": "",
           "name": "hook",
@@ -197,10 +187,8 @@
       "origins": [
         {
           "moduleId": 0,
-          "module":
-            "/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/node_modules/babel-loader/lib/index.js!/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/shells/webextension/src/proxy.js",
-          "moduleIdentifier":
-            "/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/node_modules/babel-loader/lib/index.js!/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/shells/webextension/src/proxy.js",
+          "module": "/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/node_modules/babel-loader/lib/index.js!/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/shells/webextension/src/proxy.js",
+          "moduleIdentifier": "/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/node_modules/babel-loader/lib/index.js!/mnt/c/Users/james/Projects/apollo/apollo-client-devtools/shells/webextension/src/proxy.js",
           "moduleName": "./src/proxy.js",
           "loc": "",
           "name": "proxy",
