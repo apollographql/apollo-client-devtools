@@ -60,7 +60,15 @@ export const createBridgeLink = bridge =>
           const directivesOnly = schemas
             .filter(x => !x.definition)
             .map(x => x.directives);
-          const definitions = schemas.filter(x => !!x.definition);
+          const definitions = schemas
+            .filter(x => !!x.definition)
+            // Filter out @client directives because they can't be parsed by
+            // `buildSchema`. I don't know if any other directives work; if they
+            // don't, this won't fix them. If they do, this won't break them.
+            .filter(
+              definition =>
+                definition.directives !== "directive @client on FIELD",
+            );
           const built = definitions.map(({ definition, directives = "" }) =>
             buildSchema(`${directives} ${definition}`),
           );
