@@ -31,6 +31,10 @@
   <br>
   [@justinanastos](https://github.com/justinanastos)
   in [#178](https://github.com/apollographql/apollo-client-devtools/pull/178)
+- Add sourcemaps to build
+  <br>
+  [@justinanastos](https://github.com/justinanastos)
+  in [#179](https://github.com/apollographql/apollo-client-devtools/pull/179)
 
 ## 2.1.5
 

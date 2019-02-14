@@ -20,6 +20,8 @@ if (process.env.NODE_ENV === "production") {
 }
 
 module.exports = {
+  devtool:
+    process.env.NODE_ENV === "production" ? "source-map" : "eval-source-map",
   entry: {
     hook: "./src/hook.js",
     devtools: "./src/devtools.js",
