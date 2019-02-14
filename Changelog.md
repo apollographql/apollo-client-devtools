@@ -39,6 +39,10 @@
   <br>
   [@justinanastos](https://github.com/justinanastos)
   in [#177](https://github.com/apollographql/apollo-client-devtools/pull/177)
+- Fix GraphiQL Documentation Explorer crashing with client schema extensions ([#107](https://github.com/apollographql/apollo-client-devtools/issues/107))
+  <br>
+  [@justinanastos](https://github.com/justinanastos)
+  in [#180](https://github.com/apollographql/apollo-client-devtools/pull/180)
 
 ## 2.1.5
 
