@@ -100,14 +100,13 @@ class WatchedQueries extends React.Component {
             )}
           </ol>
         </Sidebar>
-        {selectedId &&
-          queries[selectedId] && (
-            <WatchedQuery
-              queryId={selectedId}
-              query={queries[selectedId]}
-              onRun={this.props.onRun}
-            />
-          )}
+        {selectedId && queries[selectedId] && (
+          <WatchedQuery
+            queryId={selectedId}
+            query={queries[selectedId]}
+            onRun={this.props.onRun}
+          />
+        )}
       </div>
     );
   }
@@ -238,19 +237,18 @@ class WatchedQuery extends React.Component {
             queryBody={queryString}
           />
         </LabeledShowHide>
-        {query.graphQLErrors &&
-          query.graphQLErrors.length > 0 && (
-            <LabeledShowHide
-              label="GraphQL Errors"
-              show={query.graphQLErrors && query.graphQLErrors.length > 0}
-            >
-              <ul>
-                {query.graphQLErrors.map((error, i) => (
-                  <GraphQLError key={i} error={error} />
-                ))}
-              </ul>
-            </LabeledShowHide>
-          )}
+        {query.graphQLErrors && query.graphQLErrors.length > 0 && (
+          <LabeledShowHide
+            label="GraphQL Errors"
+            show={query.graphQLErrors && query.graphQLErrors.length > 0}
+          >
+            <ul>
+              {query.graphQLErrors.map((error, i) => (
+                <GraphQLError key={i} error={error} />
+              ))}
+            </ul>
+          </LabeledShowHide>
+        )}
         {query.networkError && (
           <LabeledShowHide label="Network Errors" show={!!query.networkError}>
             <pre>

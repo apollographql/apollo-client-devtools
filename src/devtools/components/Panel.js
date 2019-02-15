@@ -37,9 +37,9 @@ const UpgradeNotice = ({ version }) => (
   <Shell>
     <h1 style={{ color: "white" }}>Your Apollo Client needs updating!</h1>
     <h3 style={{ color: "white" }}>
-      We&apos;ve detected your version of Apollo Client to be v{version}. The Apollo
-      Devtools requires version 2.0.0 or greater. Luckily, upgrading is pretty
-      painless and brings a whole bunch of new features! To learn how to
+      We&apos;ve detected your version of Apollo Client to be v{version}. The
+      Apollo Devtools requires version 2.0.0 or greater. Luckily, upgrading is
+      pretty painless and brings a whole bunch of new features! To learn how to
       upgrade, check out the migration guide{" "}
       <a
         style={{ color: "white" }}
@@ -57,7 +57,8 @@ const UpgradeNotice = ({ version }) => (
         target="_blank"
       >
         using the previous version
-      </a>.
+      </a>
+      .
     </h3>
   </Shell>
 );

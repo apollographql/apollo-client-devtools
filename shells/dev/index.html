@@ -1,10 +1,13 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf8">
+    <meta charset="utf8" />
     <title>Plain Shell</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,700|Source+Sans+Pro:300,300i,400,400i,600,700" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,700|Source+Sans+Pro:300,300i,400,400i,600,700"
+      rel="stylesheet"
+    />
     <style>
       #container {
         display: flex;
@@ -14,10 +17,10 @@
         align-content: stretch;
       }
       .split-item {
-        flex: 1 0 0; 
+        flex: 1 0 0;
         border: none;
-          justify-content: center;
-            flex-direction: column;
+        justify-content: center;
+        flex-direction: column;
       }
       #target {
         border-bottom: 1px solid #ccc;
@@ -41,7 +44,12 @@
   </head>
   <body>
     <div id="container">
-      <iframe id="target" class="split-item" name="target" src="target.html"></iframe>
+      <iframe
+        id="target"
+        class="split-item"
+        name="target"
+        src="target.html"
+      ></iframe>
       <div id="app" class="split-item"></div>
     </div>
     <script src="dist/devtools.js"></script>

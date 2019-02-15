@@ -443,8 +443,8 @@ class StoreTreeField extends React.Component {
 
     return (
       <div>
-        <span className={className}>{this.props.storeKey}</span>
-        : {this.renderPossibleTypename()}
+        <span className={className}>{this.props.storeKey}</span>:{" "}
+        {this.renderPossibleTypename()}
         <StoreTreeValue
           value={this.props.value}
           highlight={this.props.highlight}

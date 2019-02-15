@@ -87,14 +87,13 @@ class Mutations extends React.Component {
             )}
           </ol>
         </Sidebar>
-        {selectedId &&
-          mutations[selectedId] && (
-            <WatchedMutation
-              mutationId={selectedId}
-              mutation={mutations[selectedId]}
-              onRun={this.props.onRun}
-            />
-          )}
+        {selectedId && mutations[selectedId] && (
+          <WatchedMutation
+            mutationId={selectedId}
+            mutation={mutations[selectedId]}
+            onRun={this.props.onRun}
+          />
+        )}
       </div>
     );
   }
@@ -225,19 +224,18 @@ class WatchedMutation extends React.Component {
             queryBody={mutationString}
           />
         </LabeledShowHide>
-        {mutation.graphQLErrors &&
-          mutation.graphQLErrors.length > 0 && (
-            <LabeledShowHide
-              label="GraphQL Errors"
-              show={mutation.graphQLErrors && mutation.graphQLErrors.length > 0}
-            >
-              <ul>
-                {mutation.graphQLErrors.map((error, i) => (
-                  <GraphQLError key={i} error={error} />
-                ))}
-              </ul>
-            </LabeledShowHide>
-          )}
+        {mutation.graphQLErrors && mutation.graphQLErrors.length > 0 && (
+          <LabeledShowHide
+            label="GraphQL Errors"
+            show={mutation.graphQLErrors && mutation.graphQLErrors.length > 0}
+          >
+            <ul>
+              {mutation.graphQLErrors.map((error, i) => (
+                <GraphQLError key={i} error={error} />
+              ))}
+            </ul>
+          </LabeledShowHide>
+        )}
         {mutation.networkError && (
           <LabeledShowHide
             label="Network Errors"
