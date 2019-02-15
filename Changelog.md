@@ -2,6 +2,8 @@
 
 ## vNext
 
+## 2.1.8
+
 - Fix mutations tab crashing devtools ([#182](https://github.com/apollographql/apollo-client-devtools/issues/182))
   [@justinanastos](https://github.com/justinanastos) in [#184](https://github.com/apollographql/apollo-client-devtools/pull/184)
 
