@@ -14,9 +14,15 @@ import "../WatchedQueries/WatchedQueries.less";
 
 const mutationLabel = (mutationId, mutation) => {
   const mutationName = getOperationName(
-    parse(mutation.mutationString || mutation.document.loc.source.body),
+    // Apollo Client >= v2.5 includes `mutation.mutationString`. Versions prior
+    // include `mutation.mutation` which is an AST represetation of the
+    // mutation.
+    mutation.mutationString
+      ? parse(mutation.mutationString)
+      : mutation.mutation,
   );
-  if (mutationName === null) {
+
+  if (!mutationName) {
     return mutationId;
   }
   return `${mutationName}`;
@@ -185,7 +191,10 @@ class WatchedMutation extends React.Component {
       mutation.metadata.component.displayName;
     const displayName = componentDisplayName || reactComponentDisplayName;
 
-    const mutationString = mutation.mutationString || print(mutation.document);
+    // Apollo Client >= v2.5 includes `mutation.mutationString`. Versions prior
+    // include `mutation.mutation` which is an AST represetation of the
+    // mutation.
+    const mutationString = mutation.mutationString || print(mutation.mutation);
 
     return (
       <div className={classnames("main", { loading: mutation.loading })}>
