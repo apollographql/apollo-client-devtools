@@ -13,10 +13,9 @@ import Warning from "../Images/Warning";
 import "../WatchedQueries/WatchedQueries.less";
 
 const mutationLabel = (mutationId, mutation) => {
-  const mutationName = getOperationName(
-    parse(mutation.mutationString || mutation.document.loc.source.body),
-  );
-  if (mutationName === null) {
+  const mutationName = getOperationName(mutation.mutation);
+
+  if (!mutationName) {
     return mutationId;
   }
   return `${mutationName}`;
@@ -185,7 +184,7 @@ class WatchedMutation extends React.Component {
       mutation.metadata.component.displayName;
     const displayName = componentDisplayName || reactComponentDisplayName;
 
-    const mutationString = mutation.mutationString || print(mutation.document);
+    const mutationString = print(mutation.mutation);
 
     return (
       <div className={classnames("main", { loading: mutation.loading })}>
