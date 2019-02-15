@@ -2,6 +2,9 @@
 
 ## vNext
 
+- Fix mutations tab crashing devtools ([#182](https://github.com/apollographql/apollo-client-devtools/issues/182))
+  [@justinanastos](https://github.com/justinanastos) in [#184](https://github.com/apollographql/apollo-client-devtools/pull/184)
+
 ## 2.1.7
 
 - Removed https://devtools.apollodata.com/graphql from the content security
