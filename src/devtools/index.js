@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import React, { Component } from "react";
 import { render } from "react-dom";
-
+import { StorageContextProvider } from "./context/StorageContextProvider";
 import Panel from "./components/Panel";
 import { BridgeProvider } from "./components/bridge";
 
@@ -15,11 +15,13 @@ export const initApp = shell => {
 
     const app = (
       <BridgeProvider bridge={bridge}>
-        <Panel
-          isChrome={isChrome}
-          bridge={bridge}
-          theme={isDark ? "dark" : "light"}
-        />
+        <StorageContextProvider storage={shell.storage}>
+          <Panel
+            isChrome={isChrome}
+            bridge={bridge}
+            theme={isDark ? "dark" : "light"}
+          />
+        </StorageContextProvider>
       </BridgeProvider>
     );
 
