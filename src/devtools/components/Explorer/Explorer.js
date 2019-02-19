@@ -14,7 +14,7 @@ import {
 } from "graphql/utilities";
 import { mergeSchemas } from "graphql-tools";
 import { execute as graphql } from "graphql/execution";
-
+import { StorageContext } from "../../context/StorageContext";
 import { Observable, execute, ApolloLink } from "apollo-link";
 
 import { withBridge } from "../bridge";
@@ -137,6 +137,8 @@ export const createBridgeLink = bridge =>
   );
 
 export class Explorer extends Component {
+  static contextType = StorageContext;
+
   constructor(props, context) {
     super(props, context);
 
@@ -178,6 +180,7 @@ export class Explorer extends Component {
   render() {
     const { noFetch } = this.state;
     const { theme } = this.props;
+
     const graphiql = (
       <GraphiQL
         fetcher={this.fetcher}
@@ -189,6 +192,7 @@ export class Explorer extends Component {
         onEditVariables={() => {
           this.clearDefaultQueryState();
         }}
+        storage={this.context.storage}
         variables={this.state.variables}
         ref={r => {
           this.graphiql = r;
