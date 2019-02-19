@@ -2,6 +2,9 @@
 
 ## vNext
 
+- Eliminate use of `window.localStorage` ([#118](https://github.com/apollographql/apollo-client-devtools/issues/118), [#142](https://github.com/apollographql/apollo-client-devtools/issues/142))
+  [@justinanastos](https://github.com/justinanastos) in [#185](https://github.com/apollographql/apollo-client-devtools/pull/185)
+
 ## 2.1.8
 
 - Fix mutations tab crashing devtools ([#182](https://github.com/apollographql/apollo-client-devtools/issues/182))
