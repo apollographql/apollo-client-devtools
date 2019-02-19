@@ -93,8 +93,6 @@ _Note: While great for expedited development of layout and CSS, this method does
 
 ### Debugging
 
-If the devtools panel is blank, it may be because you have third party cookies disabled. See [this stackoverflow](https://stackoverflow.com/questions/30481516/iframe-in-chrome-error-failted-to-read-localstorage-from-window-access-den) issue on how to enable them. This affects the devtools because they access `localStorage`, and that settings makes them throw an error when rendering.
-
 If there is an error in the devtools panel, you can inspect it just like you would inspect a normal webpage. Detach the inspector console from the window (if it's not already detached) by clicking the button with three vertical dots in the upper right corner of the console and selecting the detach option. With the detached console in focus, press `opt-cmd-I` again to open an inspector
 for the detached console (inspector inception). In this new inspector, you will be able to inspect elements in the first inspector, including the Apollo dev tools panel.
 
