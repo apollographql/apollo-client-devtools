@@ -2,7 +2,9 @@
 
 ## vNext
 
-- Eliminate use of `window.localStorage` ([#118](https://github.com/apollographql/apollo-client-devtools/issues/118), [#142](https://github.com/apollographql/apollo-client-devtools/issues/142))
+## 2.1.9
+
+- Eliminate use of `window.localStorage`, removing the need for 3rd party cookies ([#118](https://github.com/apollographql/apollo-client-devtools/issues/118), [#142](https://github.com/apollographql/apollo-client-devtools/issues/142))
   [@justinanastos](https://github.com/justinanastos) in [#185](https://github.com/apollographql/apollo-client-devtools/pull/185)
 
 ## 2.1.8
