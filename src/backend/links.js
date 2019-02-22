@@ -109,7 +109,7 @@ export const initLinkEvents = (hook, bridge) => {
       // is being used.
 
       const supportsApolloClientLocalState =
-        typeof apolloClient.getTypeDefs === "function";
+        typeof apolloClient.typeDefs !== "undefined";
 
       if (!supportsApolloClientLocalState) {
         // Supports `apollo-link-state`.
@@ -135,7 +135,7 @@ export const initLinkEvents = (hook, bridge) => {
 
       // Supports Apollo Client local state.
 
-      const typeDefs = apolloClient.getTypeDefs();
+      const typeDefs = apolloClient.typeDefs;
 
       // When using `apollo-link-state`, client supplied typeDefs (for a
       // local only schema) are extracted by re-using the same Apollo Link
