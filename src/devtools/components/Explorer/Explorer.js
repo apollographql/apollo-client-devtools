@@ -73,7 +73,8 @@ export const createBridgeLink = bridge =>
             buildSchema(`${directives} ${definition}`),
           );
           let directives = built.map(({ _directives }) => _directives);
-          let merged;
+
+          let mergedSchema;
 
           if (result.data && Object.keys(result.data).length !== 0) {
             // local and remote app
@@ -92,19 +93,19 @@ export const createBridgeLink = bridge =>
 
             directives = directives.concat(remoteSchema._directives);
 
-            merged = mergeSchemas({
+            mergedSchema = mergeSchemas({
               schemas: [remoteSchema].concat(built),
             });
           } else {
-            merged = mergeSchemas({ schemas: built });
+            mergedSchema = mergeSchemas({ schemas: built });
           }
 
-          merged._directives = uniqBy(
-            flatten(merged._directives.concat(directives)),
+          mergedSchema._directives = uniqBy(
+            flatten(mergedSchema._directives.concat(directives)),
             "name",
           );
           try {
-            const newResult = graphql(merged, introAST);
+            const newResult = graphql(mergedSchema, introAST);
             obs.next(newResult);
           } catch (e) {
             obs.error(e.stack);
