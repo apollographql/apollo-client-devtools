@@ -74,7 +74,7 @@ export const createBridgeLink = bridge =>
           );
           let directives = built.map(({ _directives }) => _directives);
           let merged;
-          // local only app
+
           if (result.data && Object.keys(result.data).length !== 0) {
             // local and remote app
 
