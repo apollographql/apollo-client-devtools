@@ -2,6 +2,8 @@
 
 ## vNext
 
+## 2.2.0
+
 - Include local fields and types in GraphiQL ([#172](https://github.com/apollographql/apollo-client-devtools/issues/172), [#159](https://github.com/apollographql/apollo-client-devtools/issues/159))
   [@justinanastos](https://github.com/justinanastos) in [#188](https://github.com/apollographql/apollo-client-devtools/pull/188)
 
