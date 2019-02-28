@@ -11,6 +11,7 @@ import Apollo from "./Images/Apollo";
 import GraphQL from "./Images/GraphQL";
 import Cache from "./Images/Store";
 import Queries from "./Images/Queries";
+import Switch from "./Switch";
 
 import "../style.less";
 
@@ -105,6 +106,8 @@ export default class Panel extends Component {
       automaticallyRunQuery: undefined,
       // assume success
       notFound: false,
+      // clients data for select box
+      clients: [],
     };
 
     this.props.bridge.on("ready", version => {
@@ -117,6 +120,13 @@ export default class Panel extends Component {
       this.setState(({ tabData }) => ({
         tabData: Object.assign({}, tabData, data),
         notFound: false,
+      }));
+    });
+
+    this.props.bridge.on("broadcast:clients-set", _data => {
+      const data = JSON.parse(_data);
+      this.setState(() => ({
+        clients: data,
       }));
     });
   }
@@ -151,8 +161,13 @@ export default class Panel extends Component {
     });
   };
 
+  onClientChange = (id) => {
+    this.props.bridge.send("broadcast:active-client-set", JSON.stringify(id));
+  };
+
+
   render() {
-    const { active, tabData, version, notFound } = this.state;
+    const { active, tabData, version, notFound, clients } = this.state;
     if (notFound) return <NotFound />;
     if (!version) return <Loading />;
     if (Number(version[0]) === 1) return <UpgradeNotice version={version} />;
@@ -195,6 +210,10 @@ export default class Panel extends Component {
           <div className="tab logo-tab">
             <Apollo />
           </div>
+          {clients && clients.length > 0 ? 
+            <Switch data={clients} onChange={this.onClientChange} /> :
+            null
+          }
           <div
             title="GraphiQL console"
             className={classnames("tab", { active: active === "graphiql" })}

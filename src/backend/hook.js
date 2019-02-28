@@ -15,6 +15,7 @@ export function installHook(window, devToolsVersion) {
   // XXX change how ApolloClient connects to the dev tools
   const hook = {
     ApolloClient: null,
+    ApolloClients: null,
     actionLog: [],
     devToolsVersion,
     on(event, fn) {
@@ -89,6 +90,11 @@ export function installHook(window, devToolsVersion) {
           hook.actionLog.push({ queries, mutations, inspector });
         },
       );
+
+      if(!!window.__APOLLO_CLIENTS_FOR_DEVTOOLS__) {
+        hook.ApolloClients = window.__APOLLO_CLIENTS_FOR_DEVTOOLS__;
+      }
+      
       clearInterval(interval);
     }
   }

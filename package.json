@@ -44,6 +44,7 @@
     "webpack-dev-server": "^2.11.1"
   },
   "dependencies": {
+    "@material-ui/core": "^3.9.2",
     "apollo-cache-inmemory": "^1.1.5",
     "apollo-client": "^2.2.0",
     "apollo-link": "^1.0.7",
