@@ -34,7 +34,7 @@ export const initBroadCastEvents = (hook, bridge) => {
     if(clients) {
       const data = clients.map(item => ({
         id: item.id, 
-        name: item.name,
+        name: item.name || 'Unknown',
         isSelected: item.client === activeClient,
       }));
       bridge.send("broadcast:clients-set", JSON.stringify(data));
