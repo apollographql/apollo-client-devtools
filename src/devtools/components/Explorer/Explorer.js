@@ -11,6 +11,7 @@ import {
   introspectionQuery,
   printSchema,
   buildClientSchema,
+  extendSchema,
 } from "graphql/utilities";
 import { mergeSchemas } from "graphql-tools";
 import { execute as graphql } from "graphql/execution";
@@ -62,9 +63,8 @@ export const createBridgeLink = bridge =>
             .map(x => x.directives);
           const definitions = schemas
             .filter(x => !!x.definition)
-            // Filter out @client directives because they can't be parsed by
-            // `buildSchema`. I don't know if any other directives work; if they
-            // don't, this won't fix them. If they do, this won't break them.
+            // Filter out @client directives because they'll be handled
+            // separately below.
             .filter(
               definition =>
                 definition.directives !== "directive @client on FIELD",
@@ -73,8 +73,9 @@ export const createBridgeLink = bridge =>
             buildSchema(`${directives} ${definition}`),
           );
           let directives = built.map(({ _directives }) => _directives);
-          let merged;
-          // local only app
+
+          let mergedSchema;
+
           if (result.data && Object.keys(result.data).length !== 0) {
             // local and remote app
 
@@ -92,19 +93,41 @@ export const createBridgeLink = bridge =>
 
             directives = directives.concat(remoteSchema._directives);
 
-            merged = mergeSchemas({
+            mergedSchema = mergeSchemas({
               schemas: [remoteSchema].concat(built),
             });
           } else {
-            merged = mergeSchemas({ schemas: built });
+            mergedSchema = mergeSchemas({ schemas: built });
           }
 
-          merged._directives = uniqBy(
-            flatten(merged._directives.concat(directives)),
+          // Incorporate client schemas
+
+          const clientSchemas = schemas.filter(
+            ({ directives }) => directives === "directive @client on FIELD",
+          );
+
+          if (clientSchemas.length > 0) {
+            // Add all the directives for all the client schemas! This will produce
+            // duplicates; that's ok because duplicates are filtered below.
+            directives = directives.concat(
+              ...clientSchemas.map(clientSchema =>
+                buildSchema(clientSchema.directives).getDirectives(),
+              ),
+            );
+
+            // Merge all of the client schema definitions into the merged schema.
+            clientSchemas.forEach(({ definition }) => {
+              mergedSchema = extendSchema(mergedSchema, parse(definition));
+            });
+          }
+
+          // Remove directives that share the name (aka remove duplicates)
+          mergedSchema._directives = uniqBy(
+            flatten(mergedSchema._directives.concat(directives)),
             "name",
           );
           try {
-            const newResult = graphql(merged, introAST);
+            const newResult = graphql(mergedSchema, introAST);
             obs.next(newResult);
           } catch (e) {
             obs.error(e.stack);

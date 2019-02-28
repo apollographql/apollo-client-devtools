@@ -2,7 +2,7 @@
   "name": "apollo-client-devtools",
   "description": "Developer tools for Apollo Client, with GraphiQL integration, cache inspection, and query watching.",
   "license": "MIT",
-  "version": "2.1.9",
+  "version": "2.2.0",
   "scripts": {
     "build": "cd shells/webextension && cross-env NODE_ENV=production webpack --progress --hide-modules",
     "dev": "cd shells/dev && webpack-dev-server --inline --hot --no-info",
@@ -45,15 +45,15 @@
   },
   "dependencies": {
     "@material-ui/core": "^3.9.2",
-    "apollo-cache-inmemory": "^1.1.5",
-    "apollo-client": "^2.2.0",
+    "apollo-cache-inmemory": "^1.4.0-alpha.12",
+    "apollo-client": "^2.5.0-rc.3",
     "apollo-link": "^1.0.7",
     "apollo-link-error": "^1.0.3",
-    "apollo-utilities": "^1.0.4",
+    "apollo-utilities": "^1.1.0-alpha.10",
     "arson": "^0.2.5",
     "classnames": "^2.2.5",
     "graphiql": "^0.11.11",
-    "graphql": "^0.11.7",
+    "graphql": "^14.1.1",
     "graphql-syntax-highlighter-react": "^0.3.0",
     "graphql-tag": "^2.6.1",
     "graphql-tools": "^2.18.0",
@@ -63,7 +63,7 @@
     "lodash.uniqby": "^4.7.0",
     "prop-types": "^15.6.0",
     "react": "^16.8.2",
-    "react-apollo": "^2.1.0-beta.0",
+    "react-apollo": "^2.5.0-rc.3",
     "react-dom": "^16.8.2",
     "uuid": "^3.0.1"
   }

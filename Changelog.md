@@ -2,6 +2,14 @@
 
 ## vNext
 
+## 2.2.0
+
+- Include local fields and types in GraphiQL ([#172](https://github.com/apollographql/apollo-client-devtools/issues/172), [#159](https://github.com/apollographql/apollo-client-devtools/issues/159))
+  [@justinanastos](https://github.com/justinanastos) in [#188](https://github.com/apollographql/apollo-client-devtools/pull/188)
+
+- Use Apollo Client v2.5 local state 🎉 ([#apollographql/apollo-client#4361](https://github.com/apollographql/apollo-client/pull/4361))
+  [@cheapsteak](https://github.com/cheapsteak) and [@hwillson](https://github.com/hwillson) in [#166](https://github.com/apollographql/apollo-client-devtools/pull/166)
+
 ## 2.1.9
 
 - Eliminate use of `window.localStorage`, removing the need for 3rd party cookies ([#118](https://github.com/apollographql/apollo-client-devtools/issues/118), [#142](https://github.com/apollographql/apollo-client-devtools/issues/142))
