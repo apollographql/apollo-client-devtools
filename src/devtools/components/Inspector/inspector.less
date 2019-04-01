@@ -111,6 +111,8 @@
   .inspector-body {
     flex: 1;
     display: flex;
+    /* bugfix: scroll does not work on chrome */
+    overflow: auto;
   }
 
   .inspector-sidebar {
