@@ -1,6 +1,10 @@
 # Changelog (started at 2.1.0)
 
-## vNext
+## 2.2.1
+
+- Fixes an issue preventing scrolling from working properly in Chrome 72 and
+  up.  <br/>
+  [@scfoxcode](https://github.com/scfoxcode) in [#193](https://github.com/apollographql/apollo-client-devtools/pull/193)
 
 ## 2.2.0
 
