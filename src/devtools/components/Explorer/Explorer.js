@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import React, { Component } from "react";
 import GraphiQL from "graphiql";
+import GraphiQLExplorer from "graphiql-explorer";
 import uniqBy from "lodash.uniqby";
 import flatten from "lodash.flattendeep";
 import { parse } from "graphql/language/parser";
@@ -159,6 +160,19 @@ export const createBridgeLink = bridge =>
       }),
   );
 
+// Helper to pull out a deeply-nested property where interim properties might be
+// null
+const getIn = (arr, path) => {
+  if (arr == null) {
+    return null;
+  } else {
+    const nextIndex = path[0];
+    const nextItem = arr[nextIndex];
+
+    return path.length === 1 ? nextItem : getIn(nextItem, path.slice(1));
+  }
+};
+
 export class Explorer extends Component {
   static contextType = StorageContext;
 
@@ -182,8 +196,8 @@ export class Explorer extends Component {
     }
   }
 
-  clearDefaultQueryState() {
-    this.setState({ query: undefined, variables: undefined });
+  clearDefaultQueryState(query) {
+    this.setState({ query: query, variables: undefined });
   }
 
   fetcher = ({ query, variables = {} }) =>
@@ -200,49 +214,67 @@ export class Explorer extends Component {
     editor.setValue(prettyText);
   };
 
+  handleToggleExplorer = () => {
+    this.setState({ explorerIsOpen: !this.state.explorerIsOpen });
+  };
+
   render() {
     const { noFetch } = this.state;
     const { theme } = this.props;
 
     const graphiql = (
-      <GraphiQL
-        fetcher={this.fetcher}
-        query={this.state.query}
-        editorTheme={theme === "dark" ? "dracula" : "graphiql"}
-        onEditQuery={() => {
-          this.clearDefaultQueryState();
-        }}
-        onEditVariables={() => {
-          this.clearDefaultQueryState();
-        }}
-        storage={this.context.storage}
-        variables={this.state.variables}
-        ref={r => {
-          this.graphiql = r;
-        }}
-      >
-        <GraphiQL.Toolbar>
-          <GraphiQL.Button
-            onClick={this.handleClickPrettifyButton}
-            label="Prettify"
-          />
-          <label>
-            <input
-              type="checkbox"
-              checked={noFetch}
-              style={{ verticalAlign: "middle" }}
-              onChange={() => {
-                this.setState({
-                  noFetch: !noFetch,
-                  query: undefined,
-                  variables: undefined,
-                });
-              }}
+      <div className="graphiql-container">
+        <GraphiQLExplorer
+          schema={getIn(this.graphiql, ["state", "schema"])}
+          query={this.state.query}
+          onEdit={query => this.clearDefaultQueryState(query)}
+          explorerIsOpen={this.state.explorerIsOpen}
+          onToggleExplorer={this.handleToggleExplorer}
+        />
+        <GraphiQL
+          fetcher={this.fetcher}
+          query={this.state.query}
+          editorTheme={theme === "dark" ? "dracula" : "graphiql"}
+          onEditQuery={query => {
+            this.clearDefaultQueryState(query);
+          }}
+          onEditVariables={() => {
+            this.clearDefaultQueryState();
+          }}
+          storage={this.context.storage}
+          variables={this.state.variables}
+          ref={r => {
+            this.graphiql = r;
+          }}
+        >
+          <GraphiQL.Toolbar>
+            <GraphiQL.Button
+              onClick={this.handleClickPrettifyButton}
+              label="Prettify"
             />
-            Load from cache
-          </label>
-        </GraphiQL.Toolbar>
-      </GraphiQL>
+            <GraphiQL.Button
+              onClick={this.handleToggleExplorer}
+              label="Explorer"
+              title="Toggle Explorer"
+            />
+            <label>
+              <input
+                type="checkbox"
+                checked={noFetch}
+                style={{ verticalAlign: "middle" }}
+                onChange={() => {
+                  this.setState({
+                    noFetch: !noFetch,
+                    query: undefined,
+                    variables: undefined,
+                  });
+                }}
+              />
+              Load from cache
+            </label>
+          </GraphiQL.Toolbar>
+        </GraphiQL>
+      </div>
     );
 
     return <div className="body">{graphiql}</div>;
