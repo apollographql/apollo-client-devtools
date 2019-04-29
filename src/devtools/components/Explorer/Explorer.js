@@ -184,7 +184,6 @@ export class Explorer extends Component {
       context: { noFetch: this.state.noFetch },
     });
 
-    console.log("fetcher result: ", result, typeof result);
     return result;
   };
 
@@ -227,8 +226,6 @@ export class Explorer extends Component {
     const { noFetch, query, schema } = this.state;
 
     const { theme } = this.props;
-
-    console.log("Contxt: ", this.context);
 
     const graphiql = (
       <div className="graphiql-container">
