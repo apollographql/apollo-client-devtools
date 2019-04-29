@@ -7,6 +7,7 @@ import flatten from "lodash.flattendeep";
 import { parse } from "graphql/language/parser";
 import { print } from "graphql/language/printer";
 import {
+  getIntrospectionQuery,
   printIntrospectionSchema,
   buildSchema,
   introspectionQuery,
@@ -160,19 +161,6 @@ export const createBridgeLink = bridge =>
       }),
   );
 
-// Helper to pull out a deeply-nested property where interim properties might be
-// null
-const getIn = (arr, path) => {
-  if (arr == null) {
-    return null;
-  } else {
-    const nextIndex = path[0];
-    const nextItem = arr[nextIndex];
-
-    return path.length === 1 ? nextItem : getIn(nextItem, path.slice(1));
-  }
-};
-
 export class Explorer extends Component {
   static contextType = StorageContext;
 
@@ -183,12 +171,36 @@ export class Explorer extends Component {
       noFetch: false,
       query: this.props.query,
       variables: this.props.variables,
+      schema: null,
     };
 
     this.link = createBridgeLink(this.props.bridge);
   }
 
+  fetcher = ({ query, variables = {} }) => {
+    const result = execute(this.link, {
+      query: parse(query),
+      variables,
+      context: { noFetch: this.state.noFetch },
+    });
+
+    console.log("fetcher result: ", result, typeof result);
+    return result;
+  };
+
   componentDidMount() {
+    this.fetcher({
+      query: getIntrospectionQuery(),
+    }).forEach(result => {
+      this.setState(oldState => {
+        return {
+          schema: buildClientSchema(result.data),
+          query:
+            oldState.query || this.context.storage.getItem("graphiql:query"),
+        };
+      });
+    });
+
     if (this.props.query) {
       if (this.props.automaticallyRunQuery) {
         this.graphiql.handleRunQuery();
@@ -199,13 +211,6 @@ export class Explorer extends Component {
   clearDefaultQueryState(query) {
     this.setState({ query: query, variables: undefined });
   }
-
-  fetcher = ({ query, variables = {} }) =>
-    execute(this.link, {
-      query: parse(query),
-      variables,
-      context: { noFetch: this.state.noFetch },
-    });
 
   handleClickPrettifyButton = event => {
     const editor = this.graphiql.getQueryEditor();
@@ -219,21 +224,25 @@ export class Explorer extends Component {
   };
 
   render() {
-    const { noFetch } = this.state;
+    const { noFetch, query, schema } = this.state;
+
     const { theme } = this.props;
+
+    console.log("Contxt: ", this.context);
 
     const graphiql = (
       <div className="graphiql-container">
         <GraphiQLExplorer
-          schema={getIn(this.graphiql, ["state", "schema"])}
-          query={this.state.query}
+          schema={schema}
+          query={query}
           onEdit={query => this.clearDefaultQueryState(query)}
           explorerIsOpen={this.state.explorerIsOpen}
           onToggleExplorer={this.handleToggleExplorer}
         />
         <GraphiQL
           fetcher={this.fetcher}
-          query={this.state.query}
+          query={query}
+          schema={schema}
           editorTheme={theme === "dark" ? "dracula" : "graphiql"}
           onEditQuery={query => {
             this.clearDefaultQueryState(query);
