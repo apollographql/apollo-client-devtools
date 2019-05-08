@@ -56,5 +56,8 @@ export const checkVersions = async (hook, bridge, storage) => {
           `console.info('Apollo devtools message:', "${cm.message}")`,
         );
       });
+    })
+    .catch(function() {
+      console.warn('Unable to check Apollo Dev Tools versions.')
     });
 };
