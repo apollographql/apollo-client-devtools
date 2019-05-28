@@ -38,6 +38,17 @@ function handshake(e) {
       listeners = [];
     });
 
+    bridge.on("backend:set-connection-nonce", data => {
+      const {connectionNonce} = JSON.parse(data);
+      window.adtConnectionNonce = connectionNonce;
+    });
+
+    bridge.on('backend:get-connection-nonce', () => {
+      const connectionNonce = window.adtConnectionNonce;
+      const jsonData = JSON.stringify({connectionNonce})
+      bridge.send('panel:connection-nonce', jsonData);
+    })
+
     // ensure that ApolloClient is ready before init
     let started = false;
     const init = () => {
