@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import React, { Component } from "react";
 import GraphiQL from "graphiql";
 import GraphiQLExplorer from "graphiql-explorer";
@@ -8,7 +7,6 @@ import { parse } from "graphql/language/parser";
 import { print } from "graphql/language/printer";
 import {
   getIntrospectionQuery,
-  printIntrospectionSchema,
   buildSchema,
   introspectionQuery,
   printSchema,
