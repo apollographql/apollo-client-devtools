@@ -1,4 +1,9 @@
-# Changelog (started at 2.1.0)
+# Changelog
+
+## vNext
+
+- Integrate OneGraph's GraphiQL Explorer.  <br/>
+  [@sgrove](https://github.com/sgrove) in [#199](https://github.com/apollographql/apollo-client-devtools/pull/199)
 
 ## 2.2.1
 
@@ -97,3 +102,7 @@
 - initial local schema support (when using cache)
 - initial subscription support
 - improved dark theme
+
+# < 2.1.0
+
+- We didn't keep a changelog :-(
