@@ -15,15 +15,19 @@ import { buildSchemasFromTypeDefs } from "./typeDefs";
 const apolloClientSchema = {
   directives: "directive @connection(key: String!, filter: [String]) on FIELD",
 };
+
 const schemaLink = () =>
   new ApolloLink((operation, forward) => {
-    return forward(operation).map(result => {
-      let { schemas = [] } = operation.getContext();
-      result.extensions = Object.assign({}, result.extensions, {
-        schemas: schemas.concat([apolloClientSchema]),
-      });
-      return result;
-    });
+    const obs = forward(operation);
+    return obs.map
+      ? obs.map(result => {
+          let { schemas = [] } = operation.getContext();
+          result.extensions = Object.assign({}, result.extensions, {
+            schemas: schemas.concat([apolloClientSchema]),
+          });
+          return result;
+        })
+      : obs;
   });
 
 // Forward all "errors" to next with a good shape for graphiql
