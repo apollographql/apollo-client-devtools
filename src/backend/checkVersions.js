@@ -58,6 +58,6 @@ export const checkVersions = async (hook, bridge, storage) => {
       });
     })
     .catch(function() {
-      console.warn('Unable to check Apollo Dev Tools versions.')
+      console.warn("Unable to verify Apollo devtools version compatibility.");
     });
 };
