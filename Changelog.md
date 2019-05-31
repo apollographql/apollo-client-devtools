@@ -16,7 +16,7 @@
   [@Gongreg](https://github.com/Gongreg) in [#203](https://github.com/apollographql/apollo-client-devtools/pull/203)
 - Fully reload devtools when a page reload happens, to make sure it is
   reconnected to the current Apollo Client instance properly.  <br/>
-  [@hwillson](https://github.com/hwillson) in [#TODO](https://github.com/apollographql/apollo-client-devtools/pull/TODO)
+  [@hwillson](https://github.com/hwillson) in [#205](https://github.com/apollographql/apollo-client-devtools/pull/205)
 
 ## 2.2.1
 
