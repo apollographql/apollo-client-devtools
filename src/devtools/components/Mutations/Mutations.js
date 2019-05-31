@@ -14,9 +14,15 @@ import "../WatchedQueries/WatchedQueries.less";
 
 const mutationLabel = (mutationId, mutation) => {
   const mutationName = getOperationName(
-    parse(mutation.mutationString || mutation.document.loc.source.body),
+    // Apollo Client >= v2.5 includes `mutation.mutationString`. Versions prior
+    // include `mutation.mutation` which is an AST represetation of the
+    // mutation.
+    mutation.mutationString
+      ? parse(mutation.mutationString)
+      : mutation.mutation,
   );
-  if (mutationName === null) {
+
+  if (!mutationName) {
     return mutationId;
   }
   return `${mutationName}`;
@@ -87,14 +93,13 @@ class Mutations extends React.Component {
             )}
           </ol>
         </Sidebar>
-        {selectedId &&
-          mutations[selectedId] && (
-            <WatchedMutation
-              mutationId={selectedId}
-              mutation={mutations[selectedId]}
-              onRun={this.props.onRun}
-            />
-          )}
+        {selectedId && mutations[selectedId] && (
+          <WatchedMutation
+            mutationId={selectedId}
+            mutation={mutations[selectedId]}
+            onRun={this.props.onRun}
+          />
+        )}
       </div>
     );
   }
@@ -186,7 +191,10 @@ class WatchedMutation extends React.Component {
       mutation.metadata.component.displayName;
     const displayName = componentDisplayName || reactComponentDisplayName;
 
-    const mutationString = mutation.mutationString || print(mutation.document);
+    // Apollo Client >= v2.5 includes `mutation.mutationString`. Versions prior
+    // include `mutation.mutation` which is an AST represetation of the
+    // mutation.
+    const mutationString = mutation.mutationString || print(mutation.mutation);
 
     return (
       <div className={classnames("main", { loading: mutation.loading })}>
@@ -225,19 +233,18 @@ class WatchedMutation extends React.Component {
             queryBody={mutationString}
           />
         </LabeledShowHide>
-        {mutation.graphQLErrors &&
-          mutation.graphQLErrors.length > 0 && (
-            <LabeledShowHide
-              label="GraphQL Errors"
-              show={mutation.graphQLErrors && mutation.graphQLErrors.length > 0}
-            >
-              <ul>
-                {mutation.graphQLErrors.map((error, i) => (
-                  <GraphQLError key={i} error={error} />
-                ))}
-              </ul>
-            </LabeledShowHide>
-          )}
+        {mutation.graphQLErrors && mutation.graphQLErrors.length > 0 && (
+          <LabeledShowHide
+            label="GraphQL Errors"
+            show={mutation.graphQLErrors && mutation.graphQLErrors.length > 0}
+          >
+            <ul>
+              {mutation.graphQLErrors.map((error, i) => (
+                <GraphQLError key={i} error={error} />
+              ))}
+            </ul>
+          </LabeledShowHide>
+        )}
         {mutation.networkError && (
           <LabeledShowHide
             label="Network Errors"

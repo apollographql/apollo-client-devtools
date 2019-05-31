@@ -1,6 +1,6 @@
 .dark {
   .mutations {
-    color: #FFF;
+    color: #fff;
 
     .sidebar {
       border-right-color: rgb(61, 61, 61);
@@ -8,14 +8,14 @@
       .mutations-sidebar-title {
         background-color: #2a2a2a;
         border-bottom-color: rgb(61, 61, 61);
-        color: #FFF !important;
+        color: #fff !important;
       }
     }
 
     .main {
       table {
         tr {
-          color: #CCC;
+          color: #ccc;
         }
       }
 
@@ -24,7 +24,7 @@
       }
 
       .GraphqlCodeBlock span.comment {
-        color: #CCC;
+        color: #ccc;
       }
 
       .GraphqlCodeBlock span.number {
@@ -44,7 +44,7 @@
       }
 
       .GraphqlCodeBlock span.punctuation {
-        color: #CCCCCC;
+        color: #cccccc;
       }
 
       .GraphqlCodeBlock span.keyword {
@@ -69,12 +69,12 @@
   .sidebar {
     flex: none;
     width: 200px;
-    border-right: 1px solid #DDD;
+    border-right: 1px solid #ddd;
 
     .mutations-sidebar-title {
       font-weight: bold;
-      background-color: #FBFBFB;
-      border-bottom: 1px solid #CCC;
+      background-color: #fbfbfb;
+      border-bottom: 1px solid #ccc;
       line-height: 33px;
       padding-left: 10px;
 
@@ -92,27 +92,37 @@
         padding: 10px 10px 0;
         font-size: 12px;
         cursor: pointer;
-        transition: .25s;
+        transition: 0.25s;
 
         &:hover {
-          span { color: fade(#333, 60%); }
+          span {
+            color: fade(#333, 60%);
+          }
 
           // support dev-tools dark theme
           .apollo-client-panel.dark & {
-            span { color: fade(#ffffff, 60%); }
+            span {
+              color: fade(#ffffff, 60%);
+            }
           }
         }
 
         &.active {
-          span { color: #22a699; }
+          span {
+            color: #22a699;
+          }
 
           &:hover {
-            span { color: fade(#22a699, 60%); }
+            span {
+              color: fade(#22a699, 60%);
+            }
           }
         }
 
         &.loading {
-          span { color: #AAA; }
+          span {
+            color: #aaa;
+          }
         }
 
         .item-row {
@@ -131,7 +141,6 @@
             height: 16px;
           }
         }
-
       }
     }
   }
@@ -177,9 +186,9 @@
         font-size: 12px;
         font-family: sans-serif;
         margin-left: 10px;
-        color: #AAA;
+        color: #aaa;
         opacity: 0;
-        transition: .25s;
+        transition: 0.25s;
 
         &.show {
           opacity: 1;
@@ -187,7 +196,7 @@
       }
 
       .component-name {
-        color: #8B2BB9;
+        color: #8b2bb9;
         font-weight: normal;
         font-family: monospace;
         margin-left: 10px;
@@ -200,10 +209,10 @@
         margin-left: 10px;
         padding: 2px 5px;
         border-radius: 3px;
-        border: 1px solid #CCC;
+        border: 1px solid #ccc;
 
         &:hover {
-          box-shadow: inset 6px 6px 30px #CCC;
+          box-shadow: inset 6px 6px 30px #ccc;
         }
       }
     }
@@ -215,7 +224,7 @@
     }
 
     .loading {
-      background: #AAA;
+      background: #aaa;
     }
 
     .graphql-error {

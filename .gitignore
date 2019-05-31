@@ -2,3 +2,4 @@ node_modules/
 dist
 !./dist/.gitkeep
 *.zip
+.DS_Store

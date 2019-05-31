@@ -1,6 +1,6 @@
 # Apollo Client Devtools
 
-[Download for Chrome](https://chrome.google.com/webstore/detail/apollo-client-developer-t/jdkknkkbebbapilgoeccciglkfbmbnfm) | [Download for Firefox](https://addons.mozilla.org/en-US/firefox/addon/apollo-developer-tools/)
+[Download for Chrome](https://chrome.google.com/webstore/detail/apollo-client-developer-t/jdkknkkbebbapilgoeccciglkfbmbnfm) | (Download for Firefox temporarily disabled, it was removed from the Firefox store until the usage of `eval` is removed)
 
 This repository contains the Apollo DevTools extension for Chrome & Firefox.
 
@@ -16,9 +16,9 @@ This project is governed by the [Apollo Code of Conduct](https://github.com/apol
 
 The devtools appear as an "Apollo" tab in your Chrome inspector, along side the "Elements" and "Console" tabs. There are currently 3 main features of the devtools:
 
-* GraphiQL: Send queries to your server through the Apollo network interface, or query the Apollo cache to see what data is loaded.
-* Normalized store inspector: Visualize your GraphQL store the way Apollo Client sees it, and search by field names or values.
-* Watched query inspector: View active queries and variables, and locate the associated UI components.
+- GraphiQL: Send queries to your server through the Apollo network interface, or query the Apollo cache to see what data is loaded.
+- Normalized store inspector: Visualize your GraphQL store the way Apollo Client sees it, and search by field names or values.
+- Watched query inspector: View active queries and variables, and locate the associated UI components.
 
 ![GraphiQL Console](/assets/apollo-devtools-graphiql.png)
 
@@ -59,10 +59,10 @@ npm run build
 
 Install the extension in Chrome:
 
-* Open [chrome://extensions](chrome://extensions)
-* Enable the 'Developer Mode' checkbox
-* Click 'Load unpacked extensions...'
-* Select the `apollo-client-devtools/shells/webextension` folder
+- Open [chrome://extensions](chrome://extensions)
+- Enable the 'Developer Mode' checkbox
+- Click 'Load unpacked extensions...'
+- Select the `apollo-client-devtools/shells/webextension` folder
 
 Now, while on any page, open the chrome inspector. If you're inspecting a page that is using Apollo Client, there will be a global `window.__APOLLO_CLIENT__` object on that page. If that object exists, you will see an "Apollo" tab in the inspector menu. This tab will contain the Apollo Client devtools.
 
@@ -93,8 +93,6 @@ _Note: While great for expedited development of layout and CSS, this method does
 
 ### Debugging
 
-If the devtools panel is blank, it may be because you have third party cookies disabled. See [this stackoverflow](https://stackoverflow.com/questions/30481516/iframe-in-chrome-error-failted-to-read-localstorage-from-window-access-den) issue on how to enable them. This affects the devtools because they access `localStorage`, and that settings makes them throw an error when rendering.
-
 If there is an error in the devtools panel, you can inspect it just like you would inspect a normal webpage. Detach the inspector console from the window (if it's not already detached) by clicking the button with three vertical dots in the upper right corner of the console and selecting the detach option. With the detached console in focus, press `opt-cmd-I` again to open an inspector
 for the detached console (inspector inception). In this new inspector, you will be able to inspect elements in the first inspector, including the Apollo dev tools panel.
 
@@ -108,11 +106,11 @@ We will release new versions of the devtools to the Chrome Webstore as we merge 
 
 Release process, for those with permission:
 
-* Commit changes, update the `manifest.json` version number where needed, and tag your version release.
-* Verify that your changes work as expected by loading the extension as an "unpacked extension" locally for each browser.
-* Merge changes and version tag to `master`.
-* Run `npm run zip` to pack all of the builds for submission.
-* Create a new release on the webstores of each extension (and eventually cut a new electron release), uploading the new zip folder.
+- Commit changes, update the `manifest.json` version number where needed, and tag your version release.
+- Verify that your changes work as expected by loading the extension as an "unpacked extension" locally for each browser.
+- Merge changes and version tag to `master`.
+- Run `npm run zip` to pack all of the builds for submission.
+- Create a new release on the webstores of each extension (and eventually cut a new electron release), uploading the new zip folder.
 
 ### Prior Art
 
@@ -120,5 +118,5 @@ Special thanks goes out to the [Vue devtools](https://github.com/vuejs/vue-devto
 
 ## Maintainers
 
-* [@justinanastos](https://github.com/justinanastos) (Apollo)
-* [@cheapsteak](https://github.com/cheapsteak) (Apollo)
+- [@justinanastos](https://github.com/justinanastos) (Apollo)
+- [@cheapsteak](https://github.com/cheapsteak) (Apollo)

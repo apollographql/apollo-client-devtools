@@ -57,7 +57,8 @@ const UpgradeNotice = ({ version }) => (
         target="_blank"
       >
         using the previous version
-      </a>.
+      </a>
+      .
     </h3>
   </Shell>
 );

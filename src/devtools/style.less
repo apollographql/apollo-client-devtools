@@ -2,7 +2,9 @@
   box-sizing: border-box;
 }
 
-html, body, #devtools {
+html,
+body,
+#devtools {
   height: 100%;
   width: 100%;
   padding: 0;
@@ -12,8 +14,10 @@ html, body, #devtools {
   overflow: hidden;
 }
 
-h1, h2, h4 {
-  font-family: "Open Sans",Helvetica,sans-serif;
+h1,
+h2,
+h4 {
+  font-family: "Open Sans", Helvetica, sans-serif;
   font-weight: 600;
   line-height: 1;
 }
@@ -27,8 +31,9 @@ h4 {
 h1 {
   font-size: 2.5em;
 }
-h3, p {
-  font-family: "Source Sans Pro","Helvetica Neue",Helvetica,Arial,sans-serif;
+h3,
+p {
+  font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
   line-height: 140%;
 }
 
@@ -70,7 +75,12 @@ h3 {
   }
 
   .tabs {
-    background-image: linear-gradient(179deg, #2c2f39 2%, #363944 14%, #32353d 100%);
+    background-image: linear-gradient(
+      179deg,
+      #2c2f39 2%,
+      #363944 14%,
+      #32353d 100%
+    );
     color: "#fff";
     flex: none;
     text-align: center;
@@ -84,19 +94,19 @@ h3 {
       display: block;
       width: 100%;
       text-align: center;
-      color: #FFF;
+      color: #fff;
       cursor: pointer;
       text-decoration: none;
 
       &:hover {
         text-decoration: underline;
-        color: fade(#FFFFFF, 80%);
+        color: fade(#ffffff, 80%);
       }
     }
 
     .tab {
       cursor: pointer;
-      color: #FFF;
+      color: #fff;
       font-size: 8px;
       padding: 8px;
 
@@ -124,9 +134,10 @@ h3 {
         }
 
         &:hover {
-          color: #FFF;
-          path, rect {
-            fill: #FFF;
+          color: #fff;
+          path,
+          rect {
+            fill: #fff;
           }
         }
       }
@@ -134,7 +145,8 @@ h3 {
       &.active {
         color: lighten(#22a699, 10%);
         position: relative;
-        path, rect {
+        path,
+        rect {
           fill: lighten(#22a699, 10%);
         }
 
@@ -151,16 +163,18 @@ h3 {
 
         &:hover {
           color: #22a699;
-          path, rect {
+          path,
+          rect {
             fill: #22a699;
           }
         }
       }
 
       &:hover {
-        color: fade(#FFFFFF, 80%);
-        path, rect {
-          fill: fade(#FFFFFF, 80%);
+        color: fade(#ffffff, 80%);
+        path,
+        rect {
+          fill: fade(#ffffff, 80%);
         }
       }
     }
