@@ -4,6 +4,9 @@
 
 - Integrate OneGraph's GraphiQL Explorer.  <br/>
   [@sgrove](https://github.com/sgrove) in [#199](https://github.com/apollographql/apollo-client-devtools/pull/199)
+- Make sure devtools can be used when the transport layer is websockets
+  only.  <br/>
+  [@kamerontanseli](https://github.com/kamerontanseli) in [#163](https://github.com/apollographql/apollo-client-devtools/pull/163) 
 
 ## 2.2.1
 
