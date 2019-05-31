@@ -52,6 +52,7 @@
     "arson": "^0.2.5",
     "classnames": "^2.2.5",
     "graphiql": "^0.11.11",
+    "graphiql-explorer": "^0.3.7",
     "graphql": "^14.1.1",
     "graphql-syntax-highlighter-react": "^0.3.0",
     "graphql-tag": "^2.6.1",

@@ -114,6 +114,7 @@ export default class Panel extends Component {
 
     this.props.bridge.on("broadcast:new", _data => {
       const data = JSON.parse(_data);
+      if (data.counter) this.props.bridge.send("broadcast:ack", data.counter);
       this.setState(({ tabData }) => ({
         tabData: Object.assign({}, tabData, data),
         notFound: false,
