@@ -12,6 +12,8 @@
   [@thomassuckow](https://github.com/thomassuckow) in [#173](https://github.com/apollographql/apollo-client-devtools/pull/173)
 - Gracefully handle a failed version compatibility check.  <br/>
   [@mjlyons](https://github.com/mjlyons) in [#201](https://github.com/apollographql/apollo-client-devtools/pull/201)
+- Increase timeout when checking whether to display the devtools panel.  <br/>
+  [@Gongreg](https://github.com/Gongreg) in [#203](https://github.com/apollographql/apollo-client-devtools/pull/203)
 
 ## 2.2.1
 
