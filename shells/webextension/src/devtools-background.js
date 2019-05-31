@@ -29,8 +29,8 @@ function onPanelHidden() {
 }
 
 function createPanel() {
-  // stop trying if above 10 seconds or already made
-  if (panelCreated || checkCount++ > 10) return;
+  // stop trying if above 120 seconds or already made
+  if (panelCreated || checkCount++ > 120) return;
 
   panelLoaded = false;
   panelShown = false;
