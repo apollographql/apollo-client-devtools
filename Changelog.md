@@ -1,4 +1,17 @@
-# Changelog (started at 2.1.0)
+# Changelog
+
+## vNext
+
+- Integrate OneGraph's GraphiQL Explorer.  <br/>
+  [@sgrove](https://github.com/sgrove) in [#199](https://github.com/apollographql/apollo-client-devtools/pull/199)
+- Make sure devtools can be used when the transport layer is websockets
+  only.  <br/>
+  [@kamerontanseli](https://github.com/kamerontanseli) in [#163](https://github.com/apollographql/apollo-client-devtools/pull/163)
+- Debounce broadcast messages to improve devtools responsiveness and
+  memory usage.  <br/>
+  [@thomassuckow](https://github.com/thomassuckow) in [#173](https://github.com/apollographql/apollo-client-devtools/pull/173)
+- Gracefully handle a failed version compatibility check.  <br/>
+  [@mjlyons](https://github.com/mjlyons) in [#201](https://github.com/apollographql/apollo-client-devtools/pull/201)
 
 ## 2.2.1
 
@@ -97,3 +110,7 @@
 - initial local schema support (when using cache)
 - initial subscription support
 - improved dark theme
+
+# < 2.1.0
+
+- We didn't keep a changelog :-(
