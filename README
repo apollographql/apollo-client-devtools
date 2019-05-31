@@ -1,0 +1,5 @@
+# Apollo Client Devtools
+
+This package is published so that some of its modules can be imported by other devtools.
+
+Please see our [Github Repo](https://github.com/apollographql/apollo-client-devtools) for more information.
