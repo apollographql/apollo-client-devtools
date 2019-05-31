@@ -7,6 +7,9 @@
 - Make sure devtools can be used when the transport layer is websockets
   only.  <br/>
   [@kamerontanseli](https://github.com/kamerontanseli) in [#163](https://github.com/apollographql/apollo-client-devtools/pull/163) 
+- Debounce broadcast messages to improve devtools responsiveness and 
+  memory usage.  <br/>
+  [@thomassuckow](https://github.com/thomassuckow) in [#173](https://github.com/apollographql/apollo-client-devtools/pull/173)
 
 ## 2.2.1
 
