@@ -17,27 +17,19 @@ import gql from "graphql-tag";
 const apolloClientSchema = {
   directives: "directive @connection(key: String!, filter: [String]) on FIELD",
 };
+
 const schemaLink = () =>
   new ApolloLink((operation, forward) => {
-    return new Observable(observer => {
-      const ob = forward(operation);
-      if (ob) {
-        return forward(operation).subscribe(result => {
+    const obs = forward(operation);
+    return obs.map
+      ? obs.map(result => {
           let { schemas = [] } = operation.getContext();
-          try {
-            result.extensions = Object.assign({}, result.extensions, {
-              schemas: schemas.concat([apolloClientSchema]),
-            });
-          } catch (error) {
-            console.error(error);
-          }
-          return observer.next(result);
-        });
-      }
-      return () => {
-        if (ob) ob.unsubscribe();
-      };
-    });
+          result.extensions = Object.assign({}, result.extensions, {
+            schemas: schemas.concat([apolloClientSchema]),
+          });
+          return result;
+        })
+      : obs;
   });
 
 // forward all "errors" to next with a good shape for graphiql
