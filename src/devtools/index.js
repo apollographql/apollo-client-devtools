@@ -12,7 +12,6 @@ export const initApp = shell => {
   shell.connect(bridge => {
     window.bridge = bridge;
     if (isChrome) chrome.runtime.sendMessage("apollo-panel-load");
-
     const app = (
       <BridgeProvider bridge={bridge}>
         <StorageContextProvider storage={shell.storage}>
@@ -33,6 +32,6 @@ export const initDevTools = shell => {
   initApp(shell);
   shell.onReload(() => {
     bridge && bridge.removeAllListeners();
-    initApp(shell);
+    window.location.reload();
   });
 };

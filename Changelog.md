@@ -14,6 +14,9 @@
   [@mjlyons](https://github.com/mjlyons) in [#201](https://github.com/apollographql/apollo-client-devtools/pull/201)
 - Increase timeout when checking whether to display the devtools panel.  <br/>
   [@Gongreg](https://github.com/Gongreg) in [#203](https://github.com/apollographql/apollo-client-devtools/pull/203)
+- Fully reload devtools when a page reload happens, to make sure it is
+  reconnected to the current Apollo Client instance properly.  <br/>
+  [@hwillson](https://github.com/hwillson) in [#TODO](https://github.com/apollographql/apollo-client-devtools/pull/TODO)
 
 ## 2.2.1
 
