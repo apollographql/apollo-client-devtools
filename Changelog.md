@@ -1,6 +1,6 @@
 # Changelog
 
-## vNext
+## 2.2.3
 
 - Integrate OneGraph's GraphiQL Explorer.  <br/>
   [@sgrove](https://github.com/sgrove) in [#199](https://github.com/apollographql/apollo-client-devtools/pull/199)
@@ -18,7 +18,7 @@
   reconnected to the current Apollo Client instance properly.  <br/>
   [@hwillson](https://github.com/hwillson) in [#205](https://github.com/apollographql/apollo-client-devtools/pull/205)
 
-## 2.2.1
+## 2.2.1 & 2.2.2
 
 - Fixes an issue preventing scrolling from working properly in Chrome 72 and
   up.  <br/>
