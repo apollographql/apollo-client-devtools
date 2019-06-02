@@ -111,6 +111,7 @@ Release process, for those with permission:
 - Merge changes and version tag to `master`.
 - Run `npm run zip` to pack all of the builds for submission.
 - Create a new release on the webstores of each extension (and eventually cut a new electron release), uploading the new zip folder.
+- Make sure the version used in `manifest.json` is also used in `package.json`, and publish a new version to npm using `npm publish` in the root of the project.
 
 ### Prior Art
 
