@@ -2,7 +2,6 @@
 // when the Apollo Devtools panel is activated.
 import { initBroadCastEvents } from "./broadcastQueries";
 import { initLinkEvents } from "./links";
-import { checkVersions } from "./checkVersions";
 
 let hook;
 let bridge;
@@ -23,7 +22,6 @@ const connect = () => {
   }
   bridge.log("backend ready.");
   sendBridgeReady();
-  checkVersions(hook, bridge, storage);
 };
 
 export const initBackend = (b, h, s) => {
