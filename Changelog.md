@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.2.5 (2019-09-13)
+
+- More fixes for sidebar scrolling.  <br/>
+  [@sagarhani](https://github.com/sagarhani) in [#225](https://github.com/apollographql/apollo-client-devtools/pull/225)
+
 ## 2.2.4
 
 - Fix to enable scrolling on the explorer sidebar.  <br/>

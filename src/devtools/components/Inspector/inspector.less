@@ -3,6 +3,7 @@
   color: #fff;
 
   .inspector-sidebar {
+    height: 100vh;
     border-right-color: rgb(61, 61, 61);
 
     .inspector-sidebar-title {
@@ -116,8 +117,9 @@
   .inspector-sidebar {
     flex: none;
     width: 200px;
-    overflow: scroll;
+    overflow-y: auto;
     border-right: 1px solid #ddd;
+    height: 100vh;
 
     .inspector-sidebar-title {
       font-weight: bold;
@@ -155,7 +157,7 @@
   }
 
   .inspector-main {
-    height: 100%;
+    height: 100vh;
     flex: 1;
     overflow: scroll;
     font-size: 12px;
