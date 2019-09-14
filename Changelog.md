@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.2.4
+
+- Fix to enable scrolling on the explorer sidebar.  <br/>
+  [@RIP21](https://github.com/RIP21) in [#217](https://github.com/apollographql/apollo-client-devtools/pull/217)
+
 ## 2.2.3
 
 - Integrate OneGraph's GraphiQL Explorer.  <br/>
