@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.0 (TBD)
+
+- In progress.
+
 ## 2.2.5 (2019-09-13)
 
 - More fixes for sidebar scrolling.  <br/>
