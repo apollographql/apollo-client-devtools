@@ -272,7 +272,7 @@ class StoreTreeFieldSet extends React.Component {
 
   keysToDisplay() {
     return Object.keys(this.getStoreObj())
-      .filter(key => key !== "__typename")
+      .filter(key => key !== "__schema" && key !== "__typename")
       .sort();
   }
 
