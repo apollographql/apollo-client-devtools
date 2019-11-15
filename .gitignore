@@ -1,5 +1,3 @@
 node_modules/
-dist
-!./dist/.gitkeep
-*.zip
+dist/
 .DS_Store
