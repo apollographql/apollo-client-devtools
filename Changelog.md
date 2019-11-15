@@ -6,36 +6,36 @@
 
 ## 2.2.5 (2019-09-13)
 
-- More fixes for sidebar scrolling.  <br/>
+- More fixes for sidebar scrolling. <br/>
   [@sagarhani](https://github.com/sagarhani) in [#225](https://github.com/apollographql/apollo-client-devtools/pull/225)
 
 ## 2.2.4
 
-- Fix to enable scrolling on the explorer sidebar.  <br/>
+- Fix to enable scrolling on the explorer sidebar. <br/>
   [@RIP21](https://github.com/RIP21) in [#217](https://github.com/apollographql/apollo-client-devtools/pull/217)
 
 ## 2.2.3
 
-- Integrate OneGraph's GraphiQL Explorer.  <br/>
+- Integrate OneGraph's GraphiQL Explorer. <br/>
   [@sgrove](https://github.com/sgrove) in [#199](https://github.com/apollographql/apollo-client-devtools/pull/199)
 - Make sure devtools can be used when the transport layer is websockets
-  only.  <br/>
+  only. <br/>
   [@kamerontanseli](https://github.com/kamerontanseli) in [#163](https://github.com/apollographql/apollo-client-devtools/pull/163)
 - Debounce broadcast messages to improve devtools responsiveness and
-  memory usage.  <br/>
+  memory usage. <br/>
   [@thomassuckow](https://github.com/thomassuckow) in [#173](https://github.com/apollographql/apollo-client-devtools/pull/173)
-- Gracefully handle a failed version compatibility check.  <br/>
+- Gracefully handle a failed version compatibility check. <br/>
   [@mjlyons](https://github.com/mjlyons) in [#201](https://github.com/apollographql/apollo-client-devtools/pull/201)
-- Increase timeout when checking whether to display the devtools panel.  <br/>
+- Increase timeout when checking whether to display the devtools panel. <br/>
   [@Gongreg](https://github.com/Gongreg) in [#203](https://github.com/apollographql/apollo-client-devtools/pull/203)
 - Fully reload devtools when a page reload happens, to make sure it is
-  reconnected to the current Apollo Client instance properly.  <br/>
+  reconnected to the current Apollo Client instance properly. <br/>
   [@hwillson](https://github.com/hwillson) in [#205](https://github.com/apollographql/apollo-client-devtools/pull/205)
 
 ## 2.2.1 & 2.2.2
 
 - Fixes an issue preventing scrolling from working properly in Chrome 72 and
-  up.  <br/>
+  up. <br/>
   [@scfoxcode](https://github.com/scfoxcode) in [#193](https://github.com/apollographql/apollo-client-devtools/pull/193)
 
 ## 2.2.0
