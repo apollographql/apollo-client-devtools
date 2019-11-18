@@ -5,7 +5,7 @@
   "version": "3.0.0",
   "scripts": {
     "build": "",
-    "dev": "",
+    "dev": "NODE_ENV=development webpack --mode development --config webpack.js --watch",
     "prettier": "prettier --write --config=./.prettierrc \"{,!(node_modules|dist)/**/}*.{ts*,js*,json,md}\"",
     "prepublish": "npm run build"
   },
