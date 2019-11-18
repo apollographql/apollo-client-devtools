@@ -31,12 +31,12 @@ const config = {
     new CopyPlugin([
       {
         from: "./manifest.json",
-        to: ""
+        to: "",
       },
       {
         from: "./icons",
-        to: "icons"
-      }
+        to: "icons",
+      },
     ]),
   ],
   module: {
