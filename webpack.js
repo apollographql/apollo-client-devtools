@@ -32,6 +32,10 @@ const config = {
       {
         from: "./manifest.json",
         to: ""
+      },
+      {
+        from: "./icons",
+        to: "icons"
       }
     ]),
   ],
