@@ -7,6 +7,9 @@ const config = {
   devtool: "cheap-module-source-map",
   entry: {
     app: path.join(__dirname, "./static/index.js"),
+    contentScript: './src/devtools/contentScript.js',
+    background: './src/devtools/background.js',
+    renderer: './src/devtools/renderer.js',
   },
   output: {
     path: path.resolve(__dirname, "./build"),

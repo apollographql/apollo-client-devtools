@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import App from "../app/App";
+import App from "../src/components/App";
 import "./index.css";
 
 chrome.devtools.panels.create("Apollo", "", "index.html", panel => {
