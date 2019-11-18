@@ -1,4 +1,5 @@
 const path = require("path");
+const CopyPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 const config = {
@@ -27,6 +28,12 @@ const config = {
       template: "./static/index.html",
       hash: true,
     }),
+    new CopyPlugin([
+      {
+        from: "./manifest.json",
+        to: ""
+      }
+    ]),
   ],
   module: {
     rules: [
