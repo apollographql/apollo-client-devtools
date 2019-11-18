@@ -9,10 +9,10 @@ const config = {
   },
   output: {
     path: path.resolve(__dirname, "./build"),
-    filename: "[name].js"
+    filename: "[name].js",
   },
   resolve: {
-    extensions: ["*", ".js"]
+    extensions: ["*", ".js"],
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -20,31 +20,31 @@ const config = {
       meta: {
         charset: "utf-8",
         viewport: "width=device-width, initial-scale=1, shrink-to-fit=no",
-        "theme-color": "#000000"
+        "theme-color": "#000000",
       },
       manifest: "manifest.json",
       filename: "index.html",
       template: "./static/index.html",
-      hash: true
-    })
+      hash: true,
+    }),
   ],
   module: {
     rules: [
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        use: ["babel-loader"]
+        use: ["babel-loader"],
       },
       {
         test: /\.css$/,
-        use: ["style-loader", "css-loader"]
+        use: ["style-loader", "css-loader"],
       },
       {
         test: /\.(png|svg|jpg|gif)$/,
-        use: ["file-loader"]
-      }
-    ]
-  }
+        use: ["file-loader"],
+      },
+    ],
+  },
 };
 
 module.exports = config;
