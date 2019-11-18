@@ -12,4 +12,4 @@ function getFiberRoots() {
 
 const fiberRoots = getFiberRoots();
 
-console.log('fiber roots', fiberRoots);
+console.log("fiber roots", fiberRoots);
