@@ -20,11 +20,12 @@ function once(fn, context) {
 
 const injectOnce = once(injectApolloClientDevTools);
 
-/* Listen to React DevTools messages, inject our renderer interface once their global hook has been attached */
+/* Listen to React DevTools messages, inject our renderer interface once their
+ * global hook has been attached */
 window.addEventListener("message", function(evt) {
-  if (evt.source !== window || !evt.data) {
-    return;
-  } else if (
+  if (
+    evt.source === window &&
+    evt.data &&
     evt.data.payload &&
     evt.data.payload.event === "extensionBackendInitialized"
   ) {
