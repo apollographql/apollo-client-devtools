@@ -6,7 +6,7 @@ import "./index.css";
 const activeTheme = chrome.devtools.panels.themeName;
 
 if (activeTheme === 'light') {
-  // using require b/c import can not be syncronously dynamically loaded
+  // using require b/c import can not be synchronously dynamically loaded
   require('./themes/light.css');
 }
 
