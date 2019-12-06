@@ -1,0 +1,23 @@
+.container {
+  background-color: var(--nav-bg);
+  width: 100%;
+  display: flex;
+}
+
+.logo {
+  /* todo, get asset from torres */
+  width: 19px;
+  height: 19px;
+  padding: 13px;
+}
+
+.item {
+  color: var(--nav-item-inactive);
+  padding: 13px;
+}
+
+.item:hover, .active {
+  color: #FFF;
+  border-bottom: 1px solid #FFF;
+  cursor: pointer;
+}

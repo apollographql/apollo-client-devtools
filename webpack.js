@@ -50,8 +50,8 @@ const config = {
         use: ["babel-loader"],
       },
       {
-        test: /\.css$/,
-        use: ["style-loader", "css-loader"],
+        test: /\.css$/i,
+        use: ["style-loader", "css-loader?modules"],
       },
       {
         test: /\.(png|svg|jpg|gif)$/,
