@@ -1,23 +1,32 @@
 .container {
   background-color: var(--nav-bg);
-  width: 100%;
-  display: flex;
 }
 
 .logo {
-  /* todo, get asset from torres */
-  width: 19px;
-  height: 19px;
-  padding: 13px;
+  background: url(./assets/apollo-logo.svg) no-repeat 13px 13px;
+  width: 43px;
+  height: 43px;
 }
 
-.item {
+[data-reach-tab] {
+  outline: none;
+  border: 0;
+}
+
+.tab {
   color: var(--nav-item-inactive);
-  padding: 13px;
+  padding: 13px 13px 0;
 }
 
-.item:hover, .active {
+.tab:hover {
+  cursor: pointer;
+}
+
+.text {
+  padding: 0 0 13px 0;
+}
+
+.tab:hover .text, [data-selected] .text {
   color: #FFF;
   border-bottom: 1px solid #FFF;
-  cursor: pointer;
 }

@@ -4,14 +4,14 @@ import Navigation from './navigation';
 class App extends Component {
   render() {
     /* TODO: figure out how to handle application state. mocking for now. */
-    const mockApplicationState = {
+    const mockClient = {
       numberOfQueries: 6,
       numberOfMutations: 2
     };
 
     return (
       <div>
-        <Navigation client={mockApplicationState} />
+        <Navigation client={mockClient} />
       </div>
     )
   }
