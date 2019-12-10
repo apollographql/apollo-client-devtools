@@ -3,18 +3,23 @@ import ReactDOM from "react-dom";
 import App from "../src/components/App";
 import "./index.css";
 
-const activeTheme = chrome.devtools.panels.themeName;
+const devToolsPanels = chrome.devtools.panels;
+const theme = devToolsPanels.themeName;
 
-if (activeTheme === 'light') {
-  // using require b/c import can not be synchronously dynamically loaded
-  require('./themes/light.css');
+function setTheme(theme) {
+  if (theme === 'default') {
+    // using require b/c import can not be synchronously dynamically loaded
+    require('./themes/light.css');
+  }
+
+  if (theme === 'dark') {
+    require('./themes/dark.css');
+  }
 }
 
-if (activeTheme === 'dark') {
-  require('./themes/dark.css');
-}
+setTheme(theme);
 
-chrome.devtools.panels.create("Apollo", "", "index.html", panel => {
+devToolsPanels.create("Apollo", "", "index.html", panel => {
   /* TODO */
 });
 
