@@ -24,6 +24,9 @@
     "webpack-cli": "^3.3.10"
   },
   "dependencies": {
+    "@reach/tabs": "^0.6.2",
+    "classnames": "^2.2.6",
+    "keymirror": "^0.1.1",
     "react": "^16.12.0",
     "react-dom": "^16.12.0"
   }

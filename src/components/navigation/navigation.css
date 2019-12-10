@@ -1,0 +1,32 @@
+.container {
+  background-color: var(--nav-bg);
+}
+
+.logo {
+  background: url(./assets/apollo-logo.svg) no-repeat 13px 13px;
+  width: 43px;
+  height: 43px;
+}
+
+[data-reach-tab] {
+  outline: none;
+  border: 0;
+}
+
+.tab {
+  color: var(--nav-item-inactive);
+  padding: 13px 13px 0;
+}
+
+.tab:hover {
+  cursor: pointer;
+}
+
+.text {
+  padding: 0 0 13px 0;
+}
+
+.tab:hover .text, [data-selected] .text {
+  color: #FFF;
+  border-bottom: 1px solid #FFF;
+}
