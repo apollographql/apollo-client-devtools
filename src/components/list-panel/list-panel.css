@@ -1,0 +1,38 @@
+.container {
+  padding: 0 12px 12px;
+  height: 100vh;
+}
+
+.search {
+  color: #5a6270;
+  font-size: 13px;
+  padding: 13px 10px 13px 36px; /* TODO, get search icon from torres */
+  border-bottom: 1px solid rgb(48, 53, 42);
+  margin: 0 0 27px 0;
+}
+
+.headline {
+  color: #777f8e;
+  font-size: 11px;
+  margin: 0 0 8px 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.list {
+  padding: 0;
+}
+
+.listItem {
+  list-style-type: none;
+  padding: 12px;
+  font-family: 'Source Code Pro', monospace;
+  font-size: 13px;
+  color: #FFF;
+  border-radius: 4px;
+}
+
+.listItem:hover {
+   background-color: #2f353f;
+   cursor: pointer;
+}
