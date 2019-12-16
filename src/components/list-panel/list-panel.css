@@ -34,7 +34,7 @@
 }
 
 .listItem:hover {
-   background-color: #2f353f;
+   background-color: var(--nav-item-hover);
    cursor: pointer;
 }
 
