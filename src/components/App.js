@@ -10,7 +10,7 @@ class App extends Component {
         'App__AuthQuery': {
           react: true
         },
-        '': {},
+        'Unnamed query': {},
         'CurrentAccountIdQuery': {},
         'UI__accountBillingEmailQuery': {
           react: true

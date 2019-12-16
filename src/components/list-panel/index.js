@@ -15,10 +15,6 @@ function buildListItems(listItems) {
     const unnamedQuery = 'Unnamed query';
     let queryName = key;
 
-    if (key === '') {
-      queryName = unnamedQuery
-    }
-
     return (
       <li className={classnames(styles.listItem, {
         [styles.active]: index === activeListItem,
