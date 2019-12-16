@@ -24,6 +24,7 @@
 }
 
 .listItem {
+  display: flex;
   list-style-type: none;
   padding: 12px;
   font-family: 'Source Code Pro', monospace;
@@ -35,4 +36,24 @@
 .listItem:hover {
    background-color: #2f353f;
    cursor: pointer;
+}
+
+.listItem.active {
+   background-color: #5168c2;
+}
+
+ /* todo get react logo from torres */
+.listItem.react:after {
+  margin-left: auto;
+  content: "*";
+  display: block;
+}
+
+.listItem.error:after {
+  margin-left: auto;
+  content: "\25CF";
+  display: block;
+  color: #f59140;
+  font-size: 18px;
+  line-height: 18px;
 }

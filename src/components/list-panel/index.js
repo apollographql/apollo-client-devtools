@@ -4,6 +4,7 @@ import classnames from 'classnames';
 
 function buildListItems(listItems) {
   const items = Object.keys(listItems);
+  const [activeListItem, setActiveListItem] = useState(0);
 
   if (!items.length) {
     return <li>No items found</li>
@@ -11,10 +12,20 @@ function buildListItems(listItems) {
 
   return items.map((key, index) => {
     const item = listItems[key];
+    const unnamedQuery = 'Unnamed query';
+    let queryName = key;
+
+    if (key === '') {
+      queryName = unnamedQuery
+    }
 
     return (
-      <li className={styles.listItem} key={index}>
-        {key}
+      <li className={classnames(styles.listItem, {
+        [styles.active]: index === activeListItem,
+        [styles.react]: item.react,
+        [styles.error]: queryName === unnamedQuery
+      })} key={index} onClick={() => setActiveListItem(index)}>
+        {queryName}
       </li>
     );
   });

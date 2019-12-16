@@ -7,12 +7,18 @@ class App extends Component {
     /* TODO: figure out how to handle application state. mocking for now. */
     const mockClient = {
       queries: {
-        'App__AuthQuery': {},
-        'Unnamed query': {},
+        'App__AuthQuery': {
+          react: true
+        },
+        '': {},
         'CurrentAccountIdQuery': {},
-        'UI__accountBillingEmailQuery': {},
+        'UI__accountBillingEmailQuery': {
+          react: true
+        },
         'UI__AccountNavQuery': {},
-        'User__PersonalSettingsQuery': {}
+        'User__PersonalSettingsQuery': {
+          react: true
+        }
       },
       mutations: {}
     };
