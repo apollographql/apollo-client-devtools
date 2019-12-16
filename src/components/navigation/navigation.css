@@ -1,16 +1,22 @@
 .container {
   background-color: var(--nav-bg);
+  width: 380px;
 }
 
 .logo {
   background: url(./assets/apollo-logo.svg) no-repeat 13px 13px;
   width: 43px;
   height: 43px;
+  padding: 0;
 }
 
 [data-reach-tab] {
   outline: none;
   border: 0;
+}
+
+[data-reach-tab-list] {
+  border-bottom: 1px solid rgb(48, 53, 42);
 }
 
 .tab {
