@@ -8,7 +8,7 @@ const config = {
   entry: {
     app: path.join(__dirname, "./static/index.js"),
     contentScript: "./src/devtools/contentScript.js",
-    background: "./src/devtools/background.js",
+    background: "./src/devtools/background.ts",
     renderer: "./src/devtools/renderer.js",
   },
   output: {
@@ -16,7 +16,7 @@ const config = {
     filename: "[name].js",
   },
   resolve: {
-    extensions: ["*", ".js"],
+    extensions: ["*", ".js", ".ts", ".tsx"],
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -56,6 +56,11 @@ const config = {
       {
         test: /\.(png|svg|jpg|gif)$/,
         use: ["file-loader"],
+      },
+      {
+        test: /\.tsx?$/,
+        use: "ts-loader",
+        exclude: /node_modules/,
       },
     ],
   },
