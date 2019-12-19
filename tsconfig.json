@@ -5,6 +5,7 @@
     "target": "es5",
     "jsx": "react",
     "allowJs": true,
+    "lib": ["DOM", "ES6", "ES7"],
     "outDir": "./build/"
   }
 }

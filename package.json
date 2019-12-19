@@ -7,7 +7,8 @@
     "build": "",
     "dev": "NODE_ENV=development webpack --mode development --config webpack.js --watch",
     "prettier": "prettier --write --config=./.prettierrc \"{,!(node_modules|dist)/**/}*.{ts*,js*,json,md}\"",
-    "prepublish": "npm run build"
+    "prepublish": "npm run build",
+    "clean": "rimraf build/*"
   },
   "dependencies": {
     "@reach/tabs": "^0.6.2",
@@ -20,12 +21,13 @@
     "@babel/core": "^7.7.2",
     "@babel/preset-env": "^7.7.1",
     "@babel/preset-react": "^7.7.0",
+    "@types/chrome": "0.0.91",
     "babel-loader": "^8.0.6",
     "copy-webpack-plugin": "^5.0.5",
     "css-loader": "^3.2.0",
     "file-loader": "^4.2.0",
-    "html-webpack-plugin": "^3.2.0",
     "prettier": "^1.19.1",
+    "rimraf": "^3.0.0",
     "style-loader": "^1.0.0",
     "ts-loader": "^6.2.1",
     "typescript": "^3.7.3",
