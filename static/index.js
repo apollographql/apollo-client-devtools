@@ -7,13 +7,13 @@ const devToolsPanels = chrome.devtools.panels;
 const theme = devToolsPanels.themeName;
 
 function setTheme(theme) {
-  if (theme === 'default') {
+  if (theme === "default") {
     // using require b/c import can not be synchronously dynamically loaded
-    require('./themes/light.css');
+    require("./themes/light.css");
   }
 
-  if (theme === 'dark') {
-    require('./themes/dark.css');
+  if (theme === "dark") {
+    require("./themes/dark.css");
   }
 }
 

@@ -1,26 +1,26 @@
 import React, { Component } from "react";
-import Navigation from './navigation';
-import Queries from './queries';
+import Navigation from "./navigation";
+import Queries from "./queries";
 
 class App extends Component {
   render() {
     /* TODO: figure out how to handle application state. mocking for now. */
     const mockClient = {
       queries: {
-        'App__AuthQuery': {
-          react: true
+        App__AuthQuery: {
+          react: true,
         },
-        'Unnamed query': {},
-        'CurrentAccountIdQuery': {},
-        'UI__accountBillingEmailQuery': {
-          react: true
+        "Unnamed query": {},
+        CurrentAccountIdQuery: {},
+        UI__accountBillingEmailQuery: {
+          react: true,
         },
-        'UI__AccountNavQuery': {},
-        'User__PersonalSettingsQuery': {
-          react: true
-        }
+        UI__AccountNavQuery: {},
+        User__PersonalSettingsQuery: {
+          react: true,
+        },
       },
-      mutations: {}
+      mutations: {},
     };
 
     const { queries, mutations } = mockClient;
@@ -29,13 +29,16 @@ class App extends Component {
     const numberOfMutations = Object.keys(mutations).length;
 
     return (
-      <Navigation numberOfQueries={numberOfQueries} numberOfMutations={numberOfMutations}>
+      <Navigation
+        numberOfQueries={numberOfQueries}
+        numberOfMutations={numberOfMutations}
+      >
         <div>mock GRAPHIQL panel</div>
         <Queries queries={queries} />
         <div>mock MUTATIONS panel</div>
         <div>mock CACHE panel</div>
       </Navigation>
-  )
+    );
   }
 }
 
