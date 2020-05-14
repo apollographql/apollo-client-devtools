@@ -100,24 +100,37 @@ If you are using Apollo Client 2.0, make sure you are using at least version 2.0
 
 If you're seeing an error that's being caused by the devtools, please open an Issue on this repository with a detailed explanation of the problem and steps that we can take to replicate the error.
 
-### Releasing new Versions
-
-We will release new versions of the devtools to the Chrome Webstore as we merge PRs or add new features.
-
-Release process, for those with permission:
-
-- Commit changes, update the `manifest.json` version number where needed, and tag your version release.
-- Verify that your changes work as expected by loading the extension as an "unpacked extension" locally for each browser.
-- Merge changes and version tag to `master`.
-- Run `npm run zip` to pack all of the builds for submission.
-- Create a new release on the webstores of each extension (and eventually cut a new electron release), uploading the new zip folder.
-- Make sure the version used in `manifest.json` is also used in `package.json`, and publish a new version to npm using `npm publish` in the root of the project.
-
 ### Prior Art
 
 Special thanks goes out to the [Vue devtools](https://github.com/vuejs/vue-devtools) and in particular the help of [Guillaume Chau (@Akryum)](https://github.com/Akryum) who has been an incredible part of the Apollo community. The continued progress of this tool wouldn't be possible without his guidance and help.
 
+## Publishing
+
+Release process, for those with permission:
+
+1. Commit changes, update the `manifest.json` version number where needed, and tag your version release.
+2. Verify that your changes work as expected by loading the extension as an "unpacked extension" locally for each browser.
+3. Merge changes and version tag to `master`.
+4. Run `npm run zip` to pack all of the builds for submission.
+5. Make sure the version used in `manifest.json` is also used in `package.json`, and publish a new version to npm using `npm publish` in the root of the project. We're publishing to npm to allow other projects to have a dependency on devtools.
+6. Create a new release in the Chrome/Firefox web stores (following the instructions for each browser in the sections below), uploading the new zip folder.
+
+### Chrome
+
+TODO
+
+### Firefox
+
+1. Login to the [Firefox developer hub](https://addons.mozilla.org/developers) (user/pass is in our shared password system as "Firefox Developer Account").
+2. Once logged in, click on the Apollo Client Developer Tools "Edit Product Page" link.
+3. Click on the "Upload New Version" link in the top left side menu.
+4. Agree to any new Firefox distribution agreements or policies that might show up.
+5. When the "Submit a New Version" page shows, click on the file upload button in the "Upload Version" section (keeping "Firefox" as the only option checked in the compatible application section).
+6. Choose the `apollo-client-devtools/dist/apollo_client_developer_tools-X.X.X.zip` for upload and submit.
+7. After the file has been validated, continue with the submission.
+
 ## Maintainers
 
-- [@justinanastos](https://github.com/justinanastos) (Apollo)
-- [@cheapsteak](https://github.com/cheapsteak) (Apollo)
+- [@jcreighton](https://github.com/jcreighton) (Apollo)
+- [@benjamn](https://github.com/benjamn) (Apollo)
+- [@hwillson](https://github.com/hwillson) (Apollo)
