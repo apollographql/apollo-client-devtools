@@ -1,6 +1,6 @@
 # Apollo Client Devtools
 
-[Download for Firefox](https://addons.mozilla.org/en-US/firefox/addon/apollo-developer-tools/) | [Download for Chrome](https://chrome.google.com/webstore/detail/apollo-client-developer-t/jdkknkkbebbapilgoeccciglkfbmbnfm)
+[Download for Firefox](https://addons.mozilla.org/firefox/addon/apollo-developer-tools/) | [Download for Chrome](https://chrome.google.com/webstore/detail/apollo-client-developer-t/jdkknkkbebbapilgoeccciglkfbmbnfm)
 
 This repository contains the Apollo DevTools extension for Chrome & Firefox.
 
@@ -34,7 +34,7 @@ View the queries being actively watched on any given page. See when they're load
 
 # Installation
 
-You can install the extension via [Firefox Browser Add-ons](https://addons.mozilla.org/en-US/firefox/addon/apollo-developer-tools/) or the [Chrome Webstore](https://chrome.google.com/webstore/detail/apollo-client-developer-t/jdkknkkbebbapilgoeccciglkfbmbnfm).
+You can install the extension via [Firefox Browser Add-ons](https://addons.mozilla.org/firefox/addon/apollo-developer-tools/) or the [Chrome Webstore](https://chrome.google.com/webstore/detail/apollo-client-developer-t/jdkknkkbebbapilgoeccciglkfbmbnfm).
 If you want to install a local version of the extension instead, skip ahead to the **Developing** section.
 
 ### Configuration
