@@ -1,3 +1,21 @@
+// Apollo Client 2 stores query information in an object, whereas AC3 uses
+// a Map. Devtools are expecting to work with an object, so this function
+// will convert an AC3 query info Map to an object, while also filtering out
+// the query details we don't need.
+function filterQueryInfo(queryInfoMap) {
+  const filteredQueryInfo = {};
+  queryInfoMap.forEach((value, key) => {
+    filteredQueryInfo[key] = {
+      document: value.document,
+      graphQLErrors: value.graphQLErrors,
+      networkError: value.networkError,
+      networkStatus: value.networkStatus,
+      variables: value.variables,
+    };
+  });
+  return filteredQueryInfo;
+}
+
 export const initBroadCastEvents = (hook, bridge) => {
   // Counters for diagnostics
   let counter = 0;
@@ -60,15 +78,24 @@ export const initBroadCastEvents = (hook, bridge) => {
 
   bridge.on("panel:ready", () => {
     const client = hook.ApolloClient;
+
+    const queries =
+      client.queryManager
+        ? client.queryManager.queryStore
+            // Apollo Client 2
+            ? client.queryManager.queryStore.getStore()
+            // Apollo Client 3
+            : filterQueryInfo(client.queryManager.queries)
+        : {};
+
     const initial = {
-      queries: client.queryManager
-        ? client.queryManager.queryStore.getStore()
-        : {},
+      queries,
       mutations: client.queryManager
         ? client.queryManager.mutationStore.getStore()
         : {},
       inspector: client.cache.extract(true),
     };
+
     bridge.send("broadcast:new", JSON.stringify(initial));
   });
 
