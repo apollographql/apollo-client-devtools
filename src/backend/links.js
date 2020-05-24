@@ -4,6 +4,8 @@ import gql from "graphql-tag";
 
 import { buildSchemasFromTypeDefs } from "./typeDefs";
 
+const hasOwn = Object.prototype.hasOwnProperty;
+
 /*
  * Supports dynamic client schemas set on the context;
  * schemas must be an array of the following shape:
@@ -113,7 +115,7 @@ export const initLinkEvents = (hook, bridge) => {
       // is being used.
 
       const supportsApolloClientLocalState =
-        typeof apolloClient.typeDefs !== "undefined";
+        hasOwn.call(apolloClient, "typeDefs");
 
       if (!supportsApolloClientLocalState) {
         // Supports `apollo-link-state`.
@@ -193,7 +195,7 @@ export const initLinkEvents = (hook, bridge) => {
             // When using Apollo Client local state, we'll add the schema
             // manually.
             data.extensions = Object.assign({}, data.extensions, {
-              schemas: schemas.concat([apolloClientSchema]),
+              schemas: [apolloClientSchema],
             });
             bridge.send(`link:next:${key}`, JSON.stringify(data));
           },
