@@ -41,10 +41,12 @@ export default class Inspector extends React.Component {
     const sortedIdsWithoutRoot = unsortedIds
       .filter(id => id !== "ROOT_QUERY" && highlightedIds.indexOf(id) < 0)
       .sort();
+
     const ids =
-      sortedIdsWithoutRoot.length === 0
+      unsortedIds.length === 0
         ? []
         : [...highlightedIds, "ROOT_QUERY", ...sortedIdsWithoutRoot];
+
     const selectedId = this.state.selectedId || ids[0];
     this.setState({
       dataWithOptimistic,
