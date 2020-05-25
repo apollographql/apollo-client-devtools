@@ -383,7 +383,19 @@ const StoreTreeObject = ({ value, highlight, inArray }) => {
     className += " inspector-highlight";
   }
 
-  return <span className={className}>{JSON.stringify(value)}</span>;
+  return (
+    <span className={className}>
+      {
+        value.__typename
+          ? (
+            <pre className="inspector-json">
+              {JSON.stringify(value, undefined, 2)}
+            </pre>
+          )
+          : JSON.stringify(value)
+      }
+    </span>
+  );
 };
 
 // props: data, value
