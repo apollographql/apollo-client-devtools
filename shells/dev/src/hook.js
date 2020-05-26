@@ -1,3 +1,3 @@
-import { installHook } from "src/backend/hook";
+import { installHook } from "src/extension/tab/hook";
 
 installHook(window);

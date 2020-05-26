@@ -1,6 +1,5 @@
 const path = require("path");
 const webpack = require("webpack");
-const alias = require("../alias");
 const UglifyPlugin = require("uglifyjs-webpack-plugin");
 const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
   .BundleAnalyzerPlugin;
@@ -23,19 +22,17 @@ module.exports = {
   devtool:
     process.env.NODE_ENV === "production" ? "source-map" : "eval-source-map",
   entry: {
-    hook: "./src/hook.js",
-    devtools: "./src/devtools.js",
-    background: "./src/background.js",
-    "devtools-background": "./src/devtools-background.js",
-    backend: "./src/backend.js",
-    proxy: "./src/proxy.js",
-    // detector: "./src/detector.js",
+    hook: "./src/extension/tab/install-hook.js",
+    panel: "./src/extension/devtools/panel.js",
+    background: "./src/extension/background/background.js",
+    devtools: "./src/extension/devtools/devtools.js",
+    backend: "./src/extension/tab/backend.js",
+    proxy: "./src/extension/tab/proxy.js",
   },
   output: {
-    path: path.join(__dirname, "dist"),
+    path: path.join(__dirname, "build"),
     filename: "[name].js",
   },
-  resolve: { alias },
   module: {
     loaders: [
       {
