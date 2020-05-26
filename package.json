@@ -4,7 +4,7 @@
   "license": "MIT",
   "version": "2.3.1",
   "scripts": {
-    "build": "cd shells/webextension && cross-env NODE_ENV=production webpack --progress --hide-modules",
+    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",
     "dev": "cd shells/dev && webpack-dev-server --inline --hot --no-info",
     "chrome": "cd shells/webextension && webpack --progress --hide-modules --watch",
     "firefox": "web-ext run -s shells/webextension -a dist -i src",

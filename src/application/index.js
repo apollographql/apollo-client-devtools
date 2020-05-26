@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import React, { Component } from "react";
 import { render } from "react-dom";
 import { StorageContextProvider } from "./context/StorageContextProvider";

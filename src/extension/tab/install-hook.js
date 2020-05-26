@@ -1,5 +1,5 @@
 // This script is injected into every page.
-import { installHook } from "src/backend/hook";
+import { installHook } from "./hook";
 import { version as devToolsVersion } from "../manifest.json";
 
 // inject the hook

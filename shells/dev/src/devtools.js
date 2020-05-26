@@ -1,6 +1,6 @@
-import { initDevTools } from "src/devtools";
+import { initDevTools } from "src/application";
 import Bridge from "src/bridge";
-import { createChromeStorageAdapter } from "./ChromeStorageAdapter";
+import { createChromeStorageAdapter } from "src/ChromeStorageAdapter";
 
 const target = document.getElementById("target");
 const targetWindow = target.contentWindow;

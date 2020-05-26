@@ -1,4 +1,4 @@
-import { initBackend } from "src/backend";
+import { initBackend } from "src/extension/tab";
 import Bridge from "src/bridge";
 
 const bridge = new Bridge({
