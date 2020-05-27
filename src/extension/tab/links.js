@@ -1,6 +1,4 @@
-import { ApolloClient } from "apollo-client";
-import { execute, ApolloLink, Observable, from } from "apollo-link";
-import gql from "graphql-tag";
+import { ApolloClient, gql, execute, ApolloLink, Observable, from } from "@apollo/client";
 
 import { buildSchemasFromTypeDefs } from "./typeDefs";
 
