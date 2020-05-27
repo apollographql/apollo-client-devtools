@@ -41,10 +41,12 @@ export default class Inspector extends React.Component {
     const sortedIdsWithoutRoot = unsortedIds
       .filter(id => id !== "ROOT_QUERY" && highlightedIds.indexOf(id) < 0)
       .sort();
+
     const ids =
-      sortedIdsWithoutRoot.length === 0
+      unsortedIds.length === 0
         ? []
         : [...highlightedIds, "ROOT_QUERY", ...sortedIdsWithoutRoot];
+
     const selectedId = this.state.selectedId || ids[0];
     this.setState({
       dataWithOptimistic,
@@ -381,7 +383,19 @@ const StoreTreeObject = ({ value, highlight, inArray }) => {
     className += " inspector-highlight";
   }
 
-  return <span className={className}>{JSON.stringify(value)}</span>;
+  return (
+    <span className={className}>
+      {
+        value.__typename
+          ? (
+            <pre className="inspector-json">
+              {JSON.stringify(value, undefined, 2)}
+            </pre>
+          )
+          : JSON.stringify(value)
+      }
+    </span>
+  );
 };
 
 // props: data, value
