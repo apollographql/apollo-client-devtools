@@ -43,9 +43,10 @@ function installProxy(tabId) {
   chrome.tabs.executeScript(
     tabId,
     {
-      file: "/dist/proxy.js",
+      file: "./proxy.js",
     },
     function(res) {
+      console.log(res);
       if (!res) {
         ports[tabId].devtools.postMessage("proxy-fail");
       } else {

@@ -16,7 +16,7 @@ import {
 import { mergeSchemas } from "graphql-tools";
 import { execute as graphql } from "graphql/execution";
 import { StorageContext } from "../../context/StorageContext";
-import { Observable, execute, ApolloLink } from "apollo-link";
+import { Observable, execute, ApolloLink } from "@apollo/client";
 
 import { withBridge } from "../bridge";
 

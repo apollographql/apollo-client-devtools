@@ -1,7 +1,14 @@
 {
-  "presets": ["es2015", "react"],
-  "plugins": [
-    "transform-class-properties",
-    "transform-exponentiation-operator"
-  ]
+  "presets": [
+    "@babel/preset-react",
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          "browsers": ["last 2 Chrome versions", "last 2 Firefox versions"]
+        }
+      }
+    ]
+  ],
+  "plugins": ["@babel/plugin-proposal-class-properties", "@babel/plugin-proposal-optional-chaining"]
 }
