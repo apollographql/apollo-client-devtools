@@ -6,6 +6,8 @@ This repository contains the Apollo DevTools extension for Chrome & Firefox.
 
 If you are running Apollo Client 2.0, the dev tools require at least `apollo-client@2.0.0-rc.2` and `react-apollo@2.0.0-beta.0`, and you must be running at least version 2.0.5 of the dev tools themselves.
 
+If you are running Apollo Client 3.0, you must be running at least version 2.3.0 of the dev tools.
+
 The devtools no longer work with Apollo Client 1.0, but upgrading should be relatively easy! If it isn't, please reach out on the [Apollo Spectrum](https://spectrum.chat/apollo)
 
 ### Code of Conduct
@@ -97,6 +99,8 @@ If there is an error in the devtools panel, you can inspect it just like you wou
 for the detached console (inspector inception). In this new inspector, you will be able to inspect elements in the first inspector, including the Apollo dev tools panel.
 
 If you are using Apollo Client 2.0, make sure you are using at least version 2.0.5 of the devtools.
+
+If you are using Apollo Client 3.0, make sure you are using at least version 2.3.0 of the devtools.
 
 If you're seeing an error that's being caused by the devtools, please open an Issue on this repository with a detailed explanation of the problem and steps that we can take to replicate the error.
 

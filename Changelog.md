@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.3.0 (2020-05-28)
+
+- Support for Apollo Client 3 🎉 + fixes local state detection <br/> 
+  [@hwillson](https://github.com/hwillson) in [#263](https://github.com/apollographql/apollo-client-devtools/pull/263)
+
 ## 2.2.5 (2019-09-13)
 
 - More fixes for sidebar scrolling.  <br/>
