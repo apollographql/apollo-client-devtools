@@ -386,7 +386,7 @@ const StoreTreeObject = ({ value, highlight, inArray }) => {
   return (
     <span className={className}>
       {
-        value.__typename
+        (value && value.__typename)
           ? (
             <pre className="inspector-json">
               {JSON.stringify(value, undefined, 2)}
