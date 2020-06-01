@@ -184,6 +184,7 @@ export const initLinkEvents = (hook, bridge) => {
         operationExecution$ = apolloClientReplica.watchQuery({
           query: queryAst,
           variables,
+          fetchPolicy,
         });
       }
 
