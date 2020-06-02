@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.3.1 (2020-06-02)
+
+- Check for value before extracting __typename <br/> [@jcreighton](https://github.com/jcreighton) in [#267](https://github.com/apollographql/apollo-client-devtools/pull/267)
+
+- Fix to disable saving InspectionQuery results in the cache <br/> [@jcreighton](https://github.com/jcreighton) in [#273](https://github.com/apollographql/apollo-client-devtools/pull/273)
+
 ## 2.3.0 (2020-05-28)
 
 - Support for Apollo Client 3 🎉 + fixes local state detection <br/> 
