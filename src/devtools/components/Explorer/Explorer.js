@@ -175,11 +175,11 @@ export class Explorer extends Component {
     this.link = createBridgeLink(this.props.bridge);
   }
 
-  fetcher = ({ query, variables = {} }) => {
+  fetcher = ({ query, variables = {}, noFetch = this.state.noFetch }) => {
     const result = execute(this.link, {
       query: parse(query),
       variables,
-      context: { noFetch: this.state.noFetch },
+      context: { noFetch },
     });
 
     return result;
@@ -188,6 +188,7 @@ export class Explorer extends Component {
   componentDidMount() {
     this.fetcher({
       query: getIntrospectionQuery(),
+      noFetch: false,
     }).forEach(result => {
       this.setState(oldState => {
         return {
