@@ -6,7 +6,6 @@
   "scripts": {
     "build": "npm run clean && webpack --env.NODE_ENV=development --progress --hide-modules",
     "build:prod": "npm run clean && webpack --env.NODE_ENV=production --progress --hide-modules",
-    "chrome": "npm run build",
     "clean": "rm -rf build && mkdir build && rm -rf dist && mkdir dist",
     "firefox": "npm run build && web-ext run --source-dir build",
     "prepublish": "npm run build",
