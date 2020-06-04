@@ -65,7 +65,7 @@ module.exports = (env) => {
             to: path.resolve(__dirname, "build")
           },
           {
-            from: "./src/images",
+            from: "./src/extension/images",
             to: path.resolve(__dirname, "build/images")
           },
           {
