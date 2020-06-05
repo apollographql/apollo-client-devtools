@@ -86,7 +86,7 @@ Now, while on any page, open the inspector. If you're inspecting a page that is 
 
 ### Folder structure
 
-There are two main pieces of the Apollo Devtools: the extension itself and a React application. The extension is the code that communicates with the browser. It's what allows us to search an inspected window for an instance of Apollo Client and to create the Apollo tab in the browser's devtools panel. The React application is what powers the experience what the user clicks on the Apollo tab. 
+There are two main pieces of the Apollo Devtools: the extension itself and a React application. The extension is the code that communicates with the browser. It's what allows us to search an inspected window for an instance of Apollo Client and to create the Apollo tab in the browser's devtools panel. The React application is what powers the experience in the Apollo Devtools panel.
 
 The Apollo Devtools folder structure mirrors this architecture. The source code for extension can be found at `src/extension`. The React application code can be found at `src/application`.
 
