@@ -50,8 +50,8 @@ function createPanel() {
       panelCreated = true;
       chrome.devtools.panels.create(
         "Apollo",
-        "./imgs/logo_devtools.png",
-        "devtools.html",
+        "./images/logo_devtools.png",
+        "panel.html",
         panel => {
           panel.onShown.addListener(onPanelShown);
           panel.onHidden.addListener(onPanelHidden);

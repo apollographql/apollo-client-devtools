@@ -1,14 +1,14 @@
 // this script is called when the Apollo devtools panel
 // is activated
-import wat, { initDevTools } from "src/devtools";
-import Bridge from "src/bridge";
-import { createChromeStorageAdapter } from "./ChromeStorageAdapter";
+import { initDevTools } from "../../application";
+import Bridge from "../../bridge";
+import { createChromeStorageAdapter } from "../../ChromeStorageAdapter";
 
 createChromeStorageAdapter(chrome.storage.local, storage => {
   initDevTools({
     connect(cb) {
       // 1. inject backend code into page
-      injectScript(chrome.runtime.getURL("dist/backend.js"), () => {
+      injectScript(chrome.runtime.getURL("./backend.js"), () => {
         // 2. connect to background to setup proxy
         const port = chrome.runtime.connect({
           name: "" + chrome.devtools.inspectedWindow.tabId,

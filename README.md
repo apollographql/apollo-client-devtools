@@ -51,47 +51,54 @@ If you're seeing the "Apollo" tab but still having issues, skip ahead to the **D
 
 ### Installation
 
-After cloning this repo, compile the extension bundle:
+After cloning this repo, install the required packages:
 
 ```bash
 cd apollo-client-devtools
 npm install
+```
+### Development with Chrome
+
+Build the extension with the following command:
+
+```bash
 npm run build
 ```
-
-Install the extension in Chrome:
+Next, upload the extension to Chrome:
 
 - Open [chrome://extensions](chrome://extensions)
 - Enable the 'Developer Mode' checkbox
 - Click 'Load unpacked extensions...'
-- Select the `apollo-client-devtools/shells/webextension` folder
+- Select the `apollo-client-devtools/` folder
 
-Now, while on any page, open the chrome inspector. If you're inspecting a page that is using Apollo Client, there will be a global `window.__APOLLO_CLIENT__` object on that page. If that object exists, you will see an "Apollo" tab in the inspector menu. This tab will contain the Apollo Client devtools.
+Now, while on any page, open the inspector. If you're inspecting a page that is using Apollo Client, there will be a global `window.__APOLLO_CLIENT__` object on that page. If that object exists, you will see an "Apollo" tab in the inspector menu. This tab will contain the Apollo Client devtools.
+
+### Development with Firefox
+
+To develop extensions with Firefox, we utilize the [web-ext](https://github.com/mozilla/web-ext) command line tool.
+
+Running the below command will build and then temporarily install the extension in Firefox:
+
+```bash
+npm run firefox
+```
+Now, while on any page, open the inspector. If you're inspecting a page that is using Apollo Client, there will be a global `window.__APOLLO_CLIENT__` object on that page. If that object exists, you will see an "Apollo" tab in the inspector menu. This tab will contain the Apollo Client devtools.
 
 ### Folder structure
 
-The extension is built using React and ES6. All the main source code for the devtools exists in the `/src`
-folder, with `devtools/components/Panel.js` being the container component, and `index.js` attatching the
-`Panel` to the document itself. If you're interested in editing the current code or adding a new feature,
-you would do so here.
+There are two main pieces of the Apollo Devtools: the extension itself and a React application. The extension is the code that communicates with the browser. It's what allows us to search an inspected window for an instance of Apollo Client and to create the Apollo tab in the browser's devtools panel. The React application is what powers the experience in the Apollo Devtools panel.
 
-Since the devtools are designed to work in multiple environments, the `/shells` folder is where each environment is setup. The one for chrome and firefox live under `webextension`. Wepback bundles the code from the `/src` into `/shells/webextension/dist` when building for chrome for example. To load the
-extension locally, you would load from this folder. Likewise, to upload the extension to the Chrome Webstore,
-you would upload a zip of this folder.
+The Apollo Devtools folder structure mirrors this architecture. The source code for extension can be found at `src/extension`. The React application code can be found at `src/application`.
 
-The root of the repo contains the .bablerc file, webpack config file, and necessary package.json.
+At the root of the project, there is a .babelrc file, webpack.config.js, and package.json.
+
+For builds, we utilize the `build` folder. After a build, all the files needed to run the Apollo Devtools can be found here. If these files are bundled for development, sourcemaps are provided. When the files are bundled for production, source maps are not provided and the code is minified. We utilize the `dist` folder for distributable zip files.
 
 ### Reloading the Chrome extension
 
-Unfortunately, there is no way to hot-reload a Chrome extension in the inspector while developing it.
+Unfortunately, there is no way to hot-reload an extension in the inspector while developing it.
 
-While actively working on the devtools, you should run `npm run chrome` in the devtools repo. This will have webpack watch your files, and rebundle them automatically whenever you make a change. With `webpack -w` running, you'll simply have to close the chrome inspector and open it again to see your changes in effect (no need to hit reload on the [chrome://extensions](chrome://extensions) page unless you make a change to the extension manifest).
-
-### Developing with hot reload in an app
-
-Working within a specific browser's extension environment can be a less than ideal development experience. To make this better, we have created a local shell with hot reloading to try out features. To run this, run `npm run dev` and go to [the local app](https://localhost:8080).
-
-_Note: While great for expedited development of layout and CSS, this method doesn't allow you to simulate the environment of a chrome extension perfectly. Thus, we recommend you use a combination of both this process and the one described in the previous section while working on the extension. Make sure to test any major changes in the final environment._
+While actively working on the devtools, you should run `npm run build --watch` in the devtools repo. This will have webpack watch your files, and rebundle them automatically whenever you make a change. With `webpack -w` running, you'll simply have to close the chrome inspector and open it again to see your changes in effect (no need to hit reload on the [chrome://extensions](chrome://extensions) page unless you make a change to the extension manifest).
 
 ### Debugging
 
