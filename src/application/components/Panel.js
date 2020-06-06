@@ -227,7 +227,7 @@ export default class Panel extends Component {
             onClick={() => this.switchPane("store")}
           >
             <Cache />
-            <h4>Cache</h4>
+            <h4>Caches</h4>
           </div>
         </Sidebar>
         {body}
