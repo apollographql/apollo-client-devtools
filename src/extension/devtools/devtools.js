@@ -13,7 +13,7 @@ let panelCreated = false;
 let panelShown = false;
 // stop after 10 seconds
 let checkCount = 0;
-let loadCheckInterval; 
+let loadCheckInterval;
 
 // Manage panel visibility
 function onPanelShown() {
