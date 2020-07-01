@@ -4,4 +4,3 @@ build
 !./dist/.gitkeep
 *.zip
 .DS_Store
-.env
