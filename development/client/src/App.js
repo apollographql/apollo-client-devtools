@@ -1,11 +1,11 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   Link
 } from "react-router-dom";
-import { useQuery, useApolloClient } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import ColorSchemeGenerator from './ColorSchemeGenerator';
 import Favorites from './Favorites';
 import ColorLookup from './ColorLookup';
@@ -13,10 +13,7 @@ import { GET_SAVED_COLORS } from './queries';
 import './App.css';
 
 function App() {
-  const inputRef = useRef(null);
   useQuery(GET_SAVED_COLORS);
-  const client = useApolloClient();
-
 
   return (
     <Router>
