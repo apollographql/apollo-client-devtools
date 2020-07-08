@@ -41,11 +41,11 @@ function handshake(e) {
     // ensure that ApolloClient is ready before init
     let started = false;
     const init = () => {
-      if (__APOLLO_DEVTOOLS_GLOBAL_HOOK__.ApolloClient) {
+      if ((window as any).__APOLLO_DEVTOOLS_GLOBAL_HOOK__.ApolloClient) {
         started = true;
         initBackend(
           bridge,
-          window.__APOLLO_DEVTOOLS_GLOBAL_HOOK__,
+          (window as any).__APOLLO_DEVTOOLS_GLOBAL_HOOK__,
           localStorage,
         );
         return;
