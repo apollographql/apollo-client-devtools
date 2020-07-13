@@ -50,17 +50,11 @@ module.exports = (env) => {
       path: path.join(__dirname, "build"),
       filename: "[name].js",
     },
+    resolve: {
+      extensions: [".mjs", ".js", ".ts", ".tsx"]
+    },
     module: {
       rules: [
-          {
-            test: /\.ts(x?)$/,
-            exclude: /node_modules/,
-            use: [
-                {
-                    loader: "ts-loader"
-                }
-            ]
-        },
         {
           test: /\.css$/,
           loader: "style-loader!css-loader",
@@ -70,13 +64,7 @@ module.exports = (env) => {
           loader: "style-loader!css-loader!less-loader",
         },
         {
-          enforce: "pre",
-          test: /\.js$/,
-          exclude: /(node_modules)/,
-          loader: "source-map-loader"
-        },
-        {
-          test: /\.js(x?)$/,
+          test: /\.(ts|js)x?$/,
           exclude: /(node_modules)/,
           use: [
             {
