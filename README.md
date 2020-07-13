@@ -105,6 +105,22 @@ Note that even though the extension is rebuilt and reloaded, a hard refresh is s
 
 Defaults can be found and modified in the WebExtPlugin. You might want to do so if you'd like the targeted browser to open to a different address or to turn on `lintOnBuild`.
 
+### Tests
+
+We use [Jest](https://jestjs.io/) and [React Testing Library](https://testing-library.com/docs/react-testing-library/intro) to write and run our tests.
+
+To run tests for both `src` and `development`, run the following command:
+
+```bash
+npm run test
+```
+
+You can also run with `--watch` to watch and re-run tests automatically:
+
+```bash
+npm run test:watch
+```
+
 ### Folder structure
 
 There are two main pieces of the Apollo Devtools: the extension itself and a React application. The extension is the code that communicates with the browser. It's what allows us to search an inspected window for an instance of Apollo Client and to create the Apollo tab in the browser's devtools panel. The React application is what powers the experience in the Apollo Devtools panel.
