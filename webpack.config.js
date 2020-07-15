@@ -43,7 +43,7 @@ module.exports = (env) => {
       panel: "./src/extension/devtools/panel.js",
       background: "./src/extension/background/background.js",
       devtools: "./src/extension/devtools/devtools.js",
-      backend: "./src/extension/tab/backend.ts",
+      backend: "./src/extension/tab/backend.js",
       proxy: "./src/extension/tab/proxy.js",
     },
     output: {

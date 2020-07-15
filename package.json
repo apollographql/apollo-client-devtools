@@ -32,6 +32,7 @@
     "@babel/preset-typescript": "^7.10.4",
     "@testing-library/jest-dom": "^5.11.0",
     "@testing-library/react": "^10.4.5",
+    "@types/chrome": "0.0.120",
     "@types/jest": "^26.0.4",
     "@types/react": "^16.9.41",
     "@types/react-dom": "^16.9.8",

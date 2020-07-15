@@ -1,72 +1,44 @@
-// this script is called whenever a user opens the chrome devtools
-// on a page. We check to see if Apollo Client exists, and if
-// it does, then we create the Apollo devtools, otherwise we poll each
-// second to see if its been created
-//
-// XXX we should show a better loading state here instead of nothing
-// much like a connector / loading page while data is loaded. Then
-// after a timeout, we can show instructions / docs for setting up
-// AC to work with the devtools
+import Relay from '../../Relay';
 
-let panelLoaded = false;
-let panelCreated = false;
-let panelShown = false;
-// stop after 10 seconds
-let checkCount = 0;
-let loadCheckInterval;
+const devtools = new Relay('devtools');
 
-// Manage panel visibility
-function onPanelShown() {
-  chrome.runtime.sendMessage("apollo-panel-shown");
-  panelShown = true;
-  // XXX for toast notifications
-  // panelLoaded && executePendingAction();
-}
+const port = chrome.runtime.connect({
+  name: 'devtools',
+});
 
-function onPanelHidden() {
-  chrome.runtime.sendMessage("apollo-panel-hidden");
-  panelShown = false;
-}
+devtools.id = chrome.devtools.inspectedWindow.tabId;
 
-function createPanel() {
-  // stop trying if above 120 seconds or already made
-  if (panelCreated || checkCount++ > 120) return;
+devtools.addConnection('background', (message) => {
+  port.postMessage(message);
+});
 
-  panelLoaded = false;
-  panelShown = false;
+port.onMessage.addListener(devtools.broadcast);
 
-  // Other dev tools may not have easy access to Apollo client, so they can set display flag to true manually.
-  chrome.devtools.inspectedWindow.eval(
-    `!!(window.__APOLLO_DEVTOOLS_GLOBAL_HOOK__.ApolloClient || window.__APOLLO_DEVTOOLS_SHOULD_DISPLAY_PANEL__);`,
-    function(result, isException) {
-      // XXX how should we better handle this error?
-      if (isException) console.warn(isException);
+let isPanelCreated = false;
+let isPanelOpen = false;
 
-      // already created or no ApolloClient
-      if (!result || panelCreated) return;
+devtools.listen('create-panel', () => {
+  if (!isPanelCreated) {
+    chrome.devtools.panels.create('Apollo',
+      null,
+      'panel.html',
+      function(panel) {
+        isPanelCreated = true;
 
-      // clear watcher
-      if (loadCheckInterval) clearInterval(loadCheckInterval);
-      panelCreated = true;
-      chrome.devtools.panels.create(
-        "Apollo",
-        "./images/logo_devtools.png",
-        "panel.html",
-        panel => {
-          panel.onShown.addListener(onPanelShown);
-          panel.onHidden.addListener(onPanelHidden);
-        },
-      );
-    },
-  );
-}
+        panel.onShown.addListener(() => {
+          isPanelOpen = true;
+          devtools.send('panel-open', {
+            to: 'background:tab'
+          });
+        });
 
-// Attempt to create Apollo panel on navigations as well
-chrome.devtools.network.onNavigated.addListener(createPanel);
-
-// Attempt to create Apollo panel once per second in case
-// Apollo is loaded after page load
-loadCheckInterval = setInterval(createPanel, 1000);
-
-// Start the first attempt immediately
-createPanel();
+        panel.onHidden.addListener(() => {
+          isPanelOpen = false;
+          devtools.send('panel-closed', {
+            to: 'background:tab'
+          });
+        });
+      }
+    );
+  }
+});
