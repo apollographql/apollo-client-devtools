@@ -1,18 +1,24 @@
 import Relay from '../../Relay';
 
+const inspectedTabId = chrome.devtools.inspectedWindow.tabId;
 const devtools = new Relay('devtools');
 
 const port = chrome.runtime.connect({
-  name: 'devtools',
+  name: `devtools-${inspectedTabId}`,
 });
-
-devtools.id = chrome.devtools.inspectedWindow.tabId;
+port.onMessage.addListener(devtools.broadcast);
 
 devtools.addConnection('background', (message) => {
   port.postMessage(message);
 });
 
-port.onMessage.addListener(devtools.broadcast);
+function sendMessageToTab(message) {
+  devtools.send(message, {
+    to: `background:tab-${inspectedTabId}`
+  });
+}
+
+sendMessageToTab('devtools-initialized');
 
 let isPanelCreated = false;
 let isPanelOpen = false;
@@ -27,18 +33,21 @@ devtools.listen('create-panel', () => {
 
         panel.onShown.addListener(() => {
           isPanelOpen = true;
-          devtools.send('panel-open', {
-            to: 'background:tab'
-          });
+          sendMessageToTab('panel-open');
         });
 
         panel.onHidden.addListener(() => {
           isPanelOpen = false;
-          devtools.send('panel-closed', {
-            to: 'background:tab'
-          });
+          sendMessageToTab('panel-closed');
         });
       }
     );
   }
 });
+
+
+// export default {
+//   ...devtools,
+//   sendMessageToTab,
+//   sendMessageToBackground,
+// }
