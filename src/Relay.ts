@@ -1,6 +1,5 @@
 interface Message {
   to?: string
-  id?: any
   message?:string
   payload?:any
   origin?:string
@@ -9,7 +8,6 @@ interface Message {
 
 type MessageOptions = {
   to?: string
-  id?: any
   payload?:any
   origin?:string
   sender?:string
@@ -48,7 +46,6 @@ class Relay extends EventTarget {
   }
 
   dispatch(message) {
-    console.log('dispatch', message);
     this.dispatchEvent(message);
   }
 
@@ -88,22 +85,16 @@ class Relay extends EventTarget {
         nextDestination = remaining.join(':');
       }
 
-      let optionalId = message?.id ? `:${message.id}` : '';
-
-      if (this.connections.has(`${destination}${optionalId}`)) {
-        event = this.createEvent(`${destination}${optionalId}`);
+      if (this.connections.has(destination)) {
+        event = this.createEvent(destination);
         event.detail.to = nextDestination;
       }
-    }
-
-    if (!message.id && this.id) {
-      event.detail.id = this.id;
     }
 
     event.detail.message = message.message;
     event.detail.origin = sender?.name; 
     event.detail.sender = sender;
-
+    console.log(event.detail);
     this.dispatch(event);
   }
 
@@ -122,5 +113,4 @@ class Relay extends EventTarget {
 export default Relay;
 
 // TODO: Implement payloads
-// TODO: Implement handshake on addConnection
-// TODO: intercept(); Allows you to do something with the message before it goes to its destination
+// MAYBE: intercept(); Allows you to do something with the message before it goes to its destination

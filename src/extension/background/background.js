@@ -1,16 +1,22 @@
 import Relay from '../../Relay';
 
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  sendResponse(sender?.tab?.id);
+});
+
 const background = new Relay('background');
 
 chrome.runtime.onConnect.addListener((port) => {
+  background.addConnection(port.name, message => {
+    port.postMessage(message);
+  });
+  
   port.onMessage.addListener((message, sender) => {
-    const id = message?.id || sender?.tab?.id || port?.sender?.tab?.id;
-    background.addConnection(`${port.name}:${id}`, (event) => {
-      port.postMessage(event);
-    });
-    console.log(message);
-    message.id = id;
-
+    console.log(background.connections);
     background.broadcast(message, sender);
+  });
+
+  port.onDisconnect.addListener(port => {
+    background.removeConnection(port.name);
   });
 });

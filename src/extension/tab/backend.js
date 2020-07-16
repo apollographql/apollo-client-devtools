@@ -1,20 +1,25 @@
-import Relay from '../../Relay';
+import tabRelay from './tabRelay';
 
-const tab = new Relay('tab');
+tabRelay.then(({ tab, id }) => {
+  const port = chrome.runtime.connect({
+    name: tab.name,
+  });
 
-const port = chrome.runtime.connect({
-  name: 'tab',
-});
+  tab.addConnection('background', message => {
+    port.postMessage(message);
+  });
 
-tab.addConnection('background', (message) => {
-  port.postMessage(message);
-});
+  port.onMessage.addListener(tab.broadcast);
 
-tab.send('create-panel', {
-  to: 'background:devtools'
-});
+  tab.listen('devtools-initialized', message => {
+    console.log('devtools-initialized', message);
+    tab.send('create-panel', {
+      to: `background:devtools-${id}`
+    });
+  });
 
-tab.listen('panel-open', (message) => {
-  console.log('panel-open', message);
-  console.log('Panel is open');
+  tab.listen('panel-open', message => {
+    console.log('panel-open', message);
+    console.log('Panel is open');
+  });
 });
