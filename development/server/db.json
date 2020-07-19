@@ -1,3 +1,9 @@
 {
-  "favorites": []
+  "favorites": [
+    {
+      "name": "Emerald",
+      "hex": "#3BD363",
+      "contrast": "#000000"
+    }
+  ]
 }
