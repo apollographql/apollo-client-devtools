@@ -1,15 +1,19 @@
-import tabRelay from './tabRelay';
+import relay from './tabRelay';
+import { initializeHook } from "./hook";
+import { version as devToolsVersion } from "../manifest.json";
 
-tabRelay.then(({ tab, id }) => {
-  const port = chrome.runtime.connect({
-    name: tab.name,
+if (document instanceof HTMLDocument) {
+  const script = document.createElement("script");
+  script.textContent = `;(${initializeHook.toString()})(window, "${devToolsVersion}")`;
+  document.documentElement.appendChild(script);
+  script.parentNode.removeChild(script);
+}
+
+relay.then(({ tab, id }) => {
+  tab.listen('actionHookFired', message => {
+    console.log('actionHookFired', message);
+    // Pass to devtools client
   });
-
-  tab.addConnection('background', message => {
-    port.postMessage(message);
-  });
-
-  port.onMessage.addListener(tab.broadcast);
 
   tab.listen('devtools-initialized', message => {
     console.log('devtools-initialized', message);

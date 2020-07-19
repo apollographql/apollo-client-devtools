@@ -2,14 +2,6 @@ interface Message {
   to?: string
   message?:string
   payload?:any
-  origin?:string
-  sender?:string
-}
-
-type MessageOptions = {
-  to?: string
-  payload?:any
-  origin?:string
   sender?:string
 }
 
@@ -92,8 +84,8 @@ class Relay extends EventTarget {
     }
 
     event.detail.message = message.message;
-    event.detail.origin = sender?.name; 
     event.detail.sender = sender;
+    event.detail.payload = message.payload;
     console.log(event.detail);
     this.dispatch(event);
   }
@@ -105,12 +97,12 @@ class Relay extends EventTarget {
     }
   }
 
-  send(message:string, options:MessageOptions) {
+  send(message:string, options:Message) {
     this.broadcast({ message, ...options }, this.name);
   }
 }
 
 export default Relay;
 
-// TODO: Implement payloads
+// TODO: Payload
 // MAYBE: intercept(); Allows you to do something with the message before it goes to its destination
