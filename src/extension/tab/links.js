@@ -79,7 +79,7 @@ const cacheLink = fetchPolicy =>
 export const initLinkEvents = (hook, bridge) => {
   // Handle incoming requests
   const subscriber = request => {
-    const { query, variables, operationName, key, fetchPolicy } = JSON.parse(
+    const { query, variables, operationName, fetchPolicy } = JSON.parse(
       request,
     );
 
@@ -91,12 +91,12 @@ export const initLinkEvents = (hook, bridge) => {
       const queryAst = gql(query);
       const subscriptionHandlers = {
         next(data) {
-          bridge.send(`link:next:${key}`, JSON.stringify(data));
+          bridge.send(`link:next:${operationName}`, JSON.stringify(data));
         },
         error(err) {
-          bridge.send(`link:error:${key}`, JSON.stringify(err));
+          bridge.send(`link:error:${operationName}`, JSON.stringify(err));
         },
-        complete: () => bridge.send(`link:complete:${key}`),
+        complete: () => bridge.send(`link:complete:${operationName}`),
       };
 
       // Devtools can currently be used with 2 versions of local state
@@ -196,12 +196,12 @@ export const initLinkEvents = (hook, bridge) => {
             data.extensions = Object.assign({}, data.extensions, {
               schemas: [...(schemas || []), apolloClientSchema],
             });
-            bridge.send(`link:next:${key}`, JSON.stringify(data));
+            bridge.send(`link:next:${operationName}`, JSON.stringify(data));
           },
         }),
       );
     } catch (e) {
-      bridge.send(`link:error:${key}`, JSON.stringify(e));
+      bridge.send(`link:error:${operationName}`, JSON.stringify(e));
     }
   };
 
