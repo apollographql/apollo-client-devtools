@@ -50,7 +50,7 @@ class WebExtPlugin {
           this.runner.reloadAllExtensions();
           return;
         }
-        console.log('target', this.target)
+
         await webExt.cmd.run({
           browserConsole: this.browserConsole,
           sourceDir: this.sourceDir,

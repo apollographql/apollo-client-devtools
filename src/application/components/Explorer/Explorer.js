@@ -32,7 +32,6 @@ export const createBridgeLink = bridge =>
   new ApolloLink(
     operation =>
       new Observable(obs => {
-        const key = operation.toKey();
         const { query, operationName, variables } = operation;
         const complete = () => obs.complete();
         const error = err => obs.error(JSON.parse(err));
@@ -135,15 +134,15 @@ export const createBridgeLink = bridge =>
         };
 
         // subscribe to this operation's information
-        bridge.on(`link:next:${key}`, next);
-        bridge.on(`link:error:${key}`, error);
-        bridge.on(`link:complete:${key}`, complete);
+        bridge.on(`link:next:${operationName}`, next);
+        bridge.on(`link:error:${operationName}`, error);
+        bridge.on(`link:complete:${operationName}`, complete);
 
         const payload = JSON.stringify({
           query: print(query),
           operationName,
           variables,
-          key,
+          key: operationName,
           fetchPolicy: operation.getContext().noFetch
             ? "cache-only"
             : "no-cache",
@@ -152,9 +151,9 @@ export const createBridgeLink = bridge =>
         bridge.send("link:operation", payload);
 
         return () => {
-          bridge.removeListener(`link:next:${key}`, next);
-          bridge.removeListener(`link:error:${key}`, error);
-          bridge.removeListener(`link:complete:${key}`, complete);
+          bridge.removeListener(`link:next:${operationName}`, next);
+          bridge.removeListener(`link:error:${operationName}`, error);
+          bridge.removeListener(`link:complete:${operationName}`, complete);
         };
       }),
   );

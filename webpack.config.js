@@ -5,7 +5,7 @@ const WebExtPlugin = require("./WebExtPlugin");
 
 module.exports = (env) => {
   const devOptions = (env.NODE_ENV === "development") ? {
-    "devtool": "source-maps",
+    "devtool": "inline-source-maps",
   } : {};
 
   const plugins = [
@@ -43,12 +43,15 @@ module.exports = (env) => {
       panel: "./src/extension/devtools/panel.js",
       background: "./src/extension/background/background.js",
       devtools: "./src/extension/devtools/devtools.js",
-      backend: "./src/extension/tab/backend.js",
+      backend: "./src/extension/tab/backend.ts",
       proxy: "./src/extension/tab/proxy.js",
     },
     output: {
       path: path.join(__dirname, "build"),
       filename: "[name].js",
+    },
+    resolve: {
+      extensions: [".mjs", ".js", ".ts", ".tsx"]
     },
     module: {
       rules: [
@@ -61,9 +64,13 @@ module.exports = (env) => {
           loader: "style-loader!css-loader!less-loader",
         },
         {
-          test: /\.js$/,
-          loader: "babel-loader",
+          test: /\.(ts|js)x?$/,
           exclude: /(node_modules)/,
+          use: [
+            {
+              loader: "babel-loader"
+            },
+          ],
         },
       ],
     },

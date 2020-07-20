@@ -11,27 +11,10 @@ import Apollo from "./Images/Apollo";
 import GraphQL from "./Images/GraphQL";
 import Cache from "./Images/Store";
 import Queries from "./Images/Queries";
+import Shell from "./Shell";
+import Loading from "./Loading";
 
 import "../style.less";
-
-const Shell = ({ children }) => (
-  <div
-    style={{
-      backgroundImage:
-        "linear-gradient(174deg,#1c2945 0,#2d4d5a 54%,#436a75 81%,#448b8e 100%)",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      position: "absolute",
-      top: 0,
-      bottom: 0,
-      left: 0,
-      right: 0,
-    }}
-  >
-    <div style={{ maxWidth: "50%" }}>{children}</div>
-  </div>
-);
 
 const UpgradeNotice = ({ version }) => (
   <Shell>
@@ -63,12 +46,6 @@ const UpgradeNotice = ({ version }) => (
   </Shell>
 );
 
-const Loading = () => (
-  <Shell>
-    <h2 style={{ color: "white" }}>Connecting to Apollo Client...</h2>
-  </Shell>
-);
-
 const NotFound = () => (
   <Shell>
     <h1 style={{ color: "white" }}>
@@ -91,7 +68,6 @@ const NotFound = () => (
     </h3>
   </Shell>
 );
-
 export default class Panel extends Component {
   constructor(props, context) {
     super(props, context);

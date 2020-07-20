@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import SaveIcon from './SaveIcon';
 import cx from 'classnames';
 import { useMutation } from '@apollo/client';
@@ -53,14 +52,6 @@ const Color = ({
       <span className="color__hexCode">{hexCode}</span>
     </div>
   );
-};
-
-Color.propTypes = {
-  className: PropTypes.string,
-  constrast: PropTypes.string,
-  hexCode: PropTypes.string.isRequired,
-  isSaved: PropTypes.bool,
-  name: PropTypes.string,
 };
 
 export default Color;
