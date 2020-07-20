@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import Color from './Color';
 
 const ColorScheme = ({ colors }) => {
@@ -22,13 +21,6 @@ const ColorScheme = ({ colors }) => {
     </div>
   );
 };
-
-ColorScheme.propTypes = {
-  colors: PropTypes.arrayOf(PropTypes.shape({
-    name: PropTypes.string,
-    hex: PropTypes.string,
-  }))
-}
 
 export default ColorScheme;
 

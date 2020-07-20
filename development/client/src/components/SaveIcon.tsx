@@ -1,5 +1,4 @@
-import * as React from 'react';
-import * as PropTypes from 'prop-types';
+import React from 'react';
 import cx from 'classnames';
 
 export interface Props {
@@ -37,11 +36,6 @@ const SaveIcon = ({ className, isSaved = false }: Props) => {
     </svg>
     )
   );
-};
-
-SaveIcon.propTypes = {
-  className: PropTypes.string,
-  isSaved: PropTypes.bool,
 };
 
 export default SaveIcon;
