@@ -22,6 +22,7 @@ sendMessageToTab('devtools-initialized');
 
 let isPanelCreated = false;
 let isPanelOpen = false;
+let isAppInitialized = false;
 
 devtools.listen('create-panel', () => {
   if (!isPanelCreated) {
@@ -31,12 +32,22 @@ devtools.listen('create-panel', () => {
       function(panel) {
         isPanelCreated = true;
 
-        panel.onShown.addListener(() => {
+        panel.onShown.addListener(window => {
           isPanelOpen = true;
           sendMessageToTab('panel-open');
+          
+          if (!isAppInitialized) {
+            window.devtools.initialize();
+            isAppInitialized = true;
+
+            devtools.listen('action-hook-fired', () => {
+              window.devtools.writeToCache();
+            });
+          }
         });
 
-        panel.onHidden.addListener(() => {
+        panel.onHidden.addListener(window => {
+          console.log('panel.onHidden', window);
           isPanelOpen = false;
           sendMessageToTab('panel-closed');
         });
@@ -44,10 +55,3 @@ devtools.listen('create-panel', () => {
     );
   }
 });
-
-
-// export default {
-//   ...devtools,
-//   sendMessageToTab,
-//   sendMessageToBackground,
-// }

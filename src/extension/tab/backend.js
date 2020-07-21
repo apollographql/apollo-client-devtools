@@ -10,9 +10,12 @@ if (document instanceof HTMLDocument) {
 }
 
 relay.then(({ tab, id }) => {
-  tab.listen('actionHookFired', message => {
+  tab.listen('action-hook-fired', message => {
     console.log('actionHookFired', message);
-    // Pass to devtools client
+
+    tab.send('action-hook-fired', {
+      to: `background:devtools-${id}`
+    });
   });
 
   tab.listen('devtools-initialized', message => {

@@ -1,8 +1,13 @@
-// // this script is called when the Apollo devtools panel
-// // is activated
-// import { initDevTools } from "../../application";
+// this script is called when the Apollo devtools panel
+// is activated
+import { initDevTools, writeToCache } from "../../application";
 // import Bridge from "../../bridge";
 // import { createChromeStorageAdapter } from "../../ChromeStorageAdapter";
+
+window.devtools = {
+  initialize: initDevTools,
+  writeToCache,
+};
 
 // createChromeStorageAdapter(chrome.storage.local, storage => {
 //   initDevTools({
