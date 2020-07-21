@@ -1,36 +1,26 @@
 import React from "react";
 import { render } from "react-dom";
-import { StorageContextProvider } from "./context/StorageContextProvider";
-import Panel from "./components/Panel";
-import { BridgeProvider } from "./components/bridge";
+import { ApolloClient, ApolloProvider, InMemoryCache, ApolloLink } from "@apollo/client";
 
-const isChrome = typeof chrome !== "undefined" && !!chrome.devtools;
-const isDark = isChrome ? chrome.devtools.panels.themeName === "dark" : false;
+const client = new ApolloClient({
+  link: ApolloLink.empty(),
+  cache: new InMemoryCache(),
+});
 
-export const initApp = shell => {
-  shell.connect(bridge => {
-    window.bridge = bridge;
-    if (isChrome) chrome.runtime.sendMessage("apollo-panel-load");
-    const app = (
-      <BridgeProvider bridge={bridge}>
-        <StorageContextProvider storage={shell.storage}>
-          <Panel
-            isChrome={isChrome}
-            bridge={bridge}
-            theme={isDark ? "dark" : "light"}
-          />
-        </StorageContextProvider>
-      </BridgeProvider>
-    );
+const App = () => (<div>Hello, I am the Apollo Client Devtools.</div>);
 
-    render(app, document.getElementById("app"));
-  });
+export const initDevTools = () => {
+  render(
+    <ApolloProvider client={client}>
+      <App />
+    </ApolloProvider>, 
+    document.getElementById("app")
+  );
 };
 
-export const initDevTools = shell => {
-  initApp(shell);
-  shell.onReload(() => {
-    bridge && bridge.removeAllListeners();
-    window.location.reload();
+export const writeToCache = (data, query) => {
+  client.writeQuery({
+    data,
+    query,
   });
 };

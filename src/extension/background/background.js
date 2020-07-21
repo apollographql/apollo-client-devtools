@@ -12,7 +12,6 @@ chrome.runtime.onConnect.addListener((port) => {
   });
   
   port.onMessage.addListener((message, sender) => {
-    console.log(background.connections);
     background.broadcast(message, sender);
   });
 

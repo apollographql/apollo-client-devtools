@@ -27,7 +27,7 @@ function initializeHook(window, devtoolsVersion) {
 
   function handleActionHookForDevtools() {
     window.postMessage({
-      message: 'actionHookFired',
+      message: 'action-hook-fired',
       to: 'tab',
     });
   }
