@@ -46,7 +46,6 @@ class Relay extends EventTarget {
   }
 
   broadcast(message:Message, sender) {
-    console.log(this.name, 'received ', message, ' from ', sender);
     let event = this.createEvent(message.message);
     
     if (message?.to) {
@@ -84,9 +83,8 @@ class Relay extends EventTarget {
     }
 
     event.detail.message = message.message;
-    event.detail.sender = sender;
+    event.detail.sender = sender?.name;
     event.detail.payload = message.payload;
-    console.log(event.detail);
     this.dispatch(event);
   }
 
@@ -103,6 +101,3 @@ class Relay extends EventTarget {
 }
 
 export default Relay;
-
-// TODO: Payload
-// MAYBE: intercept(); Allows you to do something with the message before it goes to its destination
