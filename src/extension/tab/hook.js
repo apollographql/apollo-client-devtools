@@ -2,6 +2,12 @@ function initializeHook(window, devtoolsVersion) {
   const hook = {
     ApolloClient: null,
     version: devtoolsVersion,
+    queries: null,
+    mutations: null,
+    cache: null,
+    getQueries: () => null,
+    getMutations: () => null,
+    getCache: () => null,
   };
 
   Object.defineProperty(window, "__APOLLO_DEVTOOLS_GLOBAL_HOOK__", {
@@ -10,7 +16,17 @@ function initializeHook(window, devtoolsVersion) {
     },
   });
 
-  function handleActionHookForDevtools() {
+  function handleActionHookForDevtools({
+    state: { 
+      queries,
+      mutations,
+    },
+    dataWithOptimisticResults
+  }) {
+    hook.queries = queries;
+    hook.mutations = mutations;
+    hook.cache = dataWithOptimisticResults;
+
     window.postMessage({
       message: 'action-hook-fired',
       to: 'tab:background:devtools',
@@ -26,11 +42,9 @@ function initializeHook(window, devtoolsVersion) {
       if (!!window.__APOLLO_CLIENT__) {
         hook.ApolloClient = window.__APOLLO_CLIENT__;
         hook.ApolloClient.__actionHookForDevTools(handleActionHookForDevtools);
-  
-        window.postMessage({
-          message: 'create-devtools-panel',
-          to: 'tab:background:devtools',
-        });
+        hook.getQueries = () => hook.ApolloClient.queryManager.getQueryStore();
+        hook.getMutations = () => hook.ApolloClient.queryManager.mutationStore.getStore();
+        hook.getCache = () => hook.ApolloClient.cache.extract(true);
   
         clearInterval(interval);
       }
@@ -40,18 +54,32 @@ function initializeHook(window, devtoolsVersion) {
     interval = setInterval(initializeDevtoolsHook, 1000);
   }
 
+  findClient();
+
   window.addEventListener('message', ({ data }) => {
-    console.log(data);
     if (data?.message === 'devtools-initialized') {
-      findClient();
+      if (hook.ApolloClient) {
+        window.postMessage({
+          message: 'create-devtools-panel',
+          to: 'tab:background:devtools',
+          payload: JSON.stringify({
+            queries: hook.getQueries(),
+            mutations: hook.getMutations(),
+            cache: hook.getCache(),
+          }),
+        });
+      }
     }
 
-    if (data?.message === 'request-cache-extract') {
-      const cache = hook.ApolloClient.cache.extract();
+    if (data?.message === 'request-update') {
       window.postMessage({
-        message: 'cache-extracted',
-        to: 'tab',
-        payload: JSON.stringify(cache)
+        message: 'update',
+        to: 'tab:background:devtools',
+        payload: JSON.stringify({
+          queries: hook.getQueries(),
+          mutations: hook.getMutations(),
+          cache: hook.getCache(),
+        }),
       });
     }
   });

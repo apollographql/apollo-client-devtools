@@ -1,13 +1,53 @@
 import React from "react";
 import { render } from "react-dom";
-import { ApolloClient, ApolloProvider, InMemoryCache, ApolloLink } from "@apollo/client";
+import { ApolloClient, ApolloProvider, InMemoryCache, ApolloLink , useQuery, gql } from "@apollo/client";
+// import Panel from './components/Panel';
+
+const cache = new InMemoryCache({
+  typePolicies: {
+    Query: {
+      fields: {
+        queries() {
+          return queriesVar();
+        },
+        mutations() {
+          return mutationsVar();
+        },
+        cache() {
+          return cacheVar();
+        }
+      }
+    }
+  }
+});
+
+const queriesVar = cache.makeVar(null);
+const mutationsVar = cache.makeVar(null);
+const cacheVar = cache.makeVar(null);
 
 const client = new ApolloClient({
   link: ApolloLink.empty(),
-  cache: new InMemoryCache(),
+  cache,
 });
 
-const App = () => (<div>Hello, I am the Apollo Client Devtools.</div>);
+export const writeData = ({ queries, mutations, cache }) => {
+  queriesVar(queries);
+  mutationsVar(mutations);
+  cacheVar(cache);
+};
+
+const GET_CACHE = gql`
+  query GetCache {
+    mutations @client
+    queries @client
+  }
+`;
+
+const App = () => {
+  const { data, loading, error } = useQuery(GET_CACHE);
+  console.log(loading, data, error);
+  return (<div>Hello, I am the Apollo Client Devtools.</div>)
+};
 
 export const initDevTools = () => {
   render(
@@ -16,11 +56,4 @@ export const initDevTools = () => {
     </ApolloProvider>, 
     document.getElementById("app")
   );
-};
-
-export const writeToCache = (data, query) => {
-  client.writeQuery({
-    data,
-    query,
-  });
 };

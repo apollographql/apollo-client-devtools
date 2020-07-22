@@ -30,6 +30,7 @@ export default new Promise(async $export => {
     }
 
     if (event?.data?.to === 'tab:background:devtools') {
+      console.log('tab', event.data);
       tab.broadcast({
         ...event?.data,
         to: `background:devtools-${id}`
