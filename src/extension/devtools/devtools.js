@@ -1,4 +1,11 @@
 import Relay from '../../Relay';
+import { 
+  DEVTOOLS_INITIALIZED, 
+  CREATE_DEVTOOLS_PANEL,
+  ACTION_HOOK_FIRED,
+  CACHE_EXTRACTED,
+  REQUEST_CACHE_EXTRACT,
+} from '../constants';
 
 const inspectedTabId = chrome.devtools.inspectedWindow.tabId;
 const devtools = new Relay('devtools');
@@ -12,44 +19,51 @@ devtools.addConnection('background', (message) => {
   port.postMessage(message);
 });
 
-function sendMessageToTab(message) {
+function sendMessageToTabClient(message) {
   devtools.send(message, {
-    to: `background:tab-${inspectedTabId}`
+    to: `background:tab-${inspectedTabId}:client`
   });
 }
 
-sendMessageToTab('devtools-initialized');
+sendMessageToTabClient(DEVTOOLS_INITIALIZED);
 
 let isPanelCreated = false;
-let isPanelOpen = false;
 let isAppInitialized = false;
 
-devtools.listen('create-panel', () => {
+devtools.listen(CREATE_DEVTOOLS_PANEL, () => {
   if (!isPanelCreated) {
     chrome.devtools.panels.create('Apollo',
       null,
       'panel.html',
       function(panel) {
         isPanelCreated = true;
+        let actionHookListener;
+        let cacheExtractedListener;
 
         panel.onShown.addListener(window => {
-          isPanelOpen = true;
-          sendMessageToTab('panel-open');
-          
+          sendMessageToTabClient('panel-open');
+
           if (!isAppInitialized) {
             window.devtools.initialize();
             isAppInitialized = true;
-
-            devtools.listen('action-hook-fired', () => {
-              window.devtools.writeToCache();
-            });
           }
+
+          actionHookListener = devtools.listen(ACTION_HOOK_FIRED, () => {
+            // Do we want to request the data?
+            sendMessageToTabClient(REQUEST_CACHE_EXTRACT);
+          });
+
+          cacheExtractedListener = devtools.listen(CACHE_EXTRACTED, message => {
+            console.log(message, message?.payload);
+          });
         });
 
-        panel.onHidden.addListener(window => {
-          console.log('panel.onHidden', window);
-          isPanelOpen = false;
-          sendMessageToTab('panel-closed');
+        panel.onHidden.addListener(() => {
+          sendMessageToTabClient('panel-closed');
+
+          // Remove listeners
+          actionHookListener();
+          cacheExtractedListener();
         });
       }
     );
