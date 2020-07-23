@@ -24,13 +24,11 @@ export default new Promise(async $export => {
   port.onMessage.addListener(tab.broadcast);
 
   window.addEventListener('message', event => {
-    console.log(event?.data);
     if (event?.data?.to === 'tab') {
       tab.broadcast(event?.data);
     }
 
     if (event?.data?.to === 'tab:background:devtools') {
-      console.log('tab', event.data);
       tab.broadcast({
         ...event?.data,
         to: `background:devtools-${id}`
