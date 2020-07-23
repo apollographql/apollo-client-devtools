@@ -1,4 +1,3 @@
-import { gql } from '@apollo/client';
 import Relay from '../../Relay';
 import { 
   DEVTOOLS_INITIALIZED, 
@@ -43,18 +42,18 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, ({ detail: { payload } }) => {
 
           if (!isAppInitialized) {
             window.devtools.initialize();
-            window.devtools.writeData({ queries, mutations, cache });
+            window.devtools.writeData({ queries, mutations, cache: JSON.stringify(cache) });
             isAppInitialized = true;
             sendMessageToClient('request-update');
 
             devtools.listen(ACTION_HOOK_FIRED, () => {
-              // Do we want to request the data?
+              // TODO: Decide when we want to request updates.
               sendMessageToClient('request-update');
             });
   
             devtools.listen('update', ({ detail: { payload } }) => {
               const { queries, mutations, cache } = JSON.parse(payload);
-              window.devtools.writeData({ queries, mutations, cache });
+              window.devtools.writeData({ queries, mutations, cache: JSON.stringify(cache) });
             });
           }
         });

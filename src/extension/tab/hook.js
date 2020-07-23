@@ -2,9 +2,6 @@ function initializeHook(window, devtoolsVersion) {
   const hook = {
     ApolloClient: null,
     version: devtoolsVersion,
-    queries: null,
-    mutations: null,
-    cache: null,
     getQueries: () => null,
     getMutations: () => null,
     getCache: () => null,
@@ -16,17 +13,7 @@ function initializeHook(window, devtoolsVersion) {
     },
   });
 
-  function handleActionHookForDevtools({
-    state: { 
-      queries,
-      mutations,
-    },
-    dataWithOptimisticResults
-  }) {
-    hook.queries = queries;
-    hook.mutations = mutations;
-    hook.cache = dataWithOptimisticResults;
-
+  function handleActionHookForDevtools() {
     window.postMessage({
       message: 'action-hook-fired',
       to: 'tab:background:devtools',
@@ -50,10 +37,10 @@ function initializeHook(window, devtoolsVersion) {
       }
     }
     
-    // Attempt to find the client on a 1-second interval for 10 seconds max
     interval = setInterval(initializeDevtoolsHook, 1000);
   }
 
+  // Attempt to find the client on a 1-second interval for 10 seconds max
   findClient();
 
   window.addEventListener('message', ({ data }) => {

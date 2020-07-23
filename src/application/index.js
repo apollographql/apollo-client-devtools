@@ -40,12 +40,12 @@ const GET_CACHE = gql`
   query GetCache {
     mutations @client
     queries @client
+    cache @client
   }
 `;
 
 const App = () => {
   const { data, loading, error } = useQuery(GET_CACHE);
-  console.log(loading, data, error);
   return (<div>Hello, I am the Apollo Client Devtools.</div>)
 };
 
