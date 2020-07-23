@@ -1,6 +1,6 @@
 import React from "react";
 import { render } from "react-dom";
-import { ApolloClient, ApolloProvider, InMemoryCache, ApolloLink , useQuery, gql } from "@apollo/client";
+import { ApolloClient, ApolloProvider, InMemoryCache, ApolloLink , useQuery, gql, makeVar } from "@apollo/client";
 // import Panel from './components/Panel';
 
 const cache = new InMemoryCache({
@@ -21,9 +21,9 @@ const cache = new InMemoryCache({
   }
 });
 
-const queriesVar = cache.makeVar(null);
-const mutationsVar = cache.makeVar(null);
-const cacheVar = cache.makeVar(null);
+const queriesVar = makeVar(null);
+const mutationsVar = makeVar(null);
+const cacheVar = makeVar(null);
 
 const client = new ApolloClient({
   link: ApolloLink.empty(),
