@@ -1,3 +1,64 @@
 {
-  "favorites": []
+  "favorites": [
+    {
+      "name": "Inch Worm",
+      "hex": "#AAD313",
+      "contrast": "#000000"
+    },
+    {
+      "name": "Gold Tips",
+      "hex": "#CCAE14",
+      "contrast": "#000000"
+    },
+    {
+      "name": "Governor Bay",
+      "hex": "#313DC3",
+      "contrast": "#ffffff"
+    },
+    {
+      "name": "Governor Bay",
+      "hex": "#3C34AC",
+      "contrast": "#ffffff"
+    },
+    {
+      "name": "Christi",
+      "hex": "#4EC00A",
+      "contrast": "#000000"
+    },
+    {
+      "name": "Purple Heart",
+      "hex": "#CB22D0",
+      "contrast": "#000000"
+    },
+    {
+      "name": "Plum",
+      "hex": "#A04396",
+      "contrast": "#ffffff"
+    },
+    {
+      "name": "Pueblo",
+      "hex": "#873215",
+      "contrast": "#ffffff"
+    },
+    {
+      "name": "Chambray",
+      "hex": "#37568F",
+      "contrast": "#ffffff"
+    },
+    {
+      "name": "Wine Berry",
+      "hex": "#501B41",
+      "contrast": "#ffffff"
+    },
+    {
+      "name": "Heliotrope",
+      "hex": "#B85BF2",
+      "contrast": "#000000"
+    },
+    {
+      "name": "Mulberry Wood",
+      "hex": "#4E0530",
+      "contrast": "#ffffff"
+    }
+  ]
 }
