@@ -26,7 +26,6 @@ const mutationsVar = makeVar(null);
 const cacheVar = makeVar(null);
 
 const client = new ApolloClient({
-  link: ApolloLink.empty(),
   cache,
 });
 

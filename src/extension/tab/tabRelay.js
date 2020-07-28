@@ -1,20 +1,21 @@
 import Relay from '../../Relay';
+import { REQUEST_TAB_ID } from '../constants';
 
-async function requestId() {
-  const promise = new Promise((resolve) => {
-    chrome.runtime.sendMessage({ message: 'request' }, async function(response) {
+// Inspected tabs are unable to retrieve their id.
+// This request
+function requestId() {
+  return new Promise((resolve) => {
+    chrome.runtime.sendMessage({ message: REQUEST_TAB_ID }, function(response) {
       resolve(response);
     });
   });
-
-  return await promise;
 }
 
 export default new Promise(async $export => {
   const id = await requestId();
-  const tab = new Relay(`tab-${id}`);
+  const tab = new Relay();
   const port = chrome.runtime.connect({
-    name: tab.name,
+    name: `tab-${id}`,
   });
 
   tab.addConnection('background', message => {
