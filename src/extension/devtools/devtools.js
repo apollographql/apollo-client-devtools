@@ -3,10 +3,14 @@ import {
   DEVTOOLS_INITIALIZED, 
   CREATE_DEVTOOLS_PANEL,
   ACTION_HOOK_FIRED,
+  REQUEST_DATA,
+  UPDATE,
+  PANEL_OPEN,
+  PANEL_CLOSED,
 } from '../constants';
 
 const inspectedTabId = chrome.devtools.inspectedWindow.tabId;
-const devtools = new Relay('devtools');
+const devtools = new Relay();
 
 const port = chrome.runtime.connect({
   name: `devtools-${inspectedTabId}`,
@@ -24,7 +28,6 @@ function sendMessageToClient(message) {
 }
 
 sendMessageToClient(DEVTOOLS_INITIALIZED);
-
 let isPanelCreated = false;
 let isAppInitialized = false;
 
@@ -38,28 +41,28 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, ({ detail: { payload } }) => {
         const { queries, mutations, cache } = JSON.parse(payload);
 
         panel.onShown.addListener(window => {
-          sendMessageToClient('panel-open');
+          sendMessageToClient(PANEL_OPEN);
 
           if (!isAppInitialized) {
-            window.devtools.initialize();
-            window.devtools.writeData({ queries, mutations, cache: JSON.stringify(cache) });
+            window.__DEVTOOLS_APPLICATION__.initialize();
+            window.__DEVTOOLS_APPLICATION__.writeData({ queries, mutations, cache: JSON.stringify(cache) });
             isAppInitialized = true;
-            sendMessageToClient('request-update');
+            sendMessageToClient(REQUEST_DATA);
 
             devtools.listen(ACTION_HOOK_FIRED, () => {
               // TODO: Decide when we want to request updates.
-              sendMessageToClient('request-update');
+              sendMessageToClient(REQUEST_DATA);
             });
   
-            devtools.listen('update', ({ detail: { payload } }) => {
+            devtools.listen(UPDATE, ({ detail: { payload } }) => {
               const { queries, mutations, cache } = JSON.parse(payload);
-              window.devtools.writeData({ queries, mutations, cache: JSON.stringify(cache) });
+              window.__DEVTOOLS_APPLICATION__.writeData({ queries, mutations, cache: JSON.stringify(cache) });
             });
           }
         });
 
         panel.onHidden.addListener(() => {
-          sendMessageToClient('panel-closed');
+          sendMessageToClient(PANEL_CLOSED);
         });
       }
     );

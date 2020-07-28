@@ -29,7 +29,7 @@ function initializeHook(window, devtoolsVersion) {
       if (!!window.__APOLLO_CLIENT__) {
         hook.ApolloClient = window.__APOLLO_CLIENT__;
         hook.ApolloClient.__actionHookForDevTools(handleActionHookForDevtools);
-        hook.getQueries = () => hook.ApolloClient.queryManager.queries();
+        hook.getQueries = () => hook.ApolloClient.queryManager.queries;
         hook.getMutations = () => hook.ApolloClient.queryManager.mutationStore.getStore();
         hook.getCache = () => hook.ApolloClient.cache.extract(true);
   

@@ -1,10 +1,14 @@
 import Relay from '../../Relay';
+import { REQUEST_TAB_ID } from '../constants';
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  sendResponse(sender?.tab?.id);
+// This sends the tab id to the inspected tab.
+chrome.runtime.onMessage.addListener(({ message }, sender, sendResponse) => {
+  if (message === REQUEST_TAB_ID) {
+    sendResponse(sender?.tab?.id);
+  }
 });
 
-const background = new Relay('background');
+const background = new Relay();
 
 chrome.runtime.onConnect.addListener((port) => {
   background.addConnection(port.name, message => {

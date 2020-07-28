@@ -1,28 +1,19 @@
 interface Message {
   to?: string
-  message?:string
-  payload?:any
-  sender?:string
+  message?: string
+  payload?: any
 }
 
 class Relay extends EventTarget {
-  id;
-  name;
-  connections = new Map();
+  private connections = new Map<string, (event: CustomEvent<Message>) => ReturnType<EventListener>>();
 
-  constructor(name:string) {
+  constructor() {
     super();
-    this.name = name;
-    this.broadcast = this.broadcast.bind(this);
-    this.send = this.send.bind(this);
-    this.addConnection = this.addConnection.bind(this);
-    this.removeConnection = this.removeConnection.bind(this);
-    this.createEvent = this.createEvent.bind(this);
   }
 
-  addConnection(name:string, fn:EventListener) {
-    function wrappedFn(event:CustomEvent) { 
-      return fn(event.detail); 
+  public addConnection = (name: string, fn: EventListener) => {
+    function wrappedFn(event: CustomEvent<Message>) { 
+      return fn((event as CustomEvent).detail); 
     };
 
     this.addEventListener(name, wrappedFn);
@@ -31,46 +22,31 @@ class Relay extends EventTarget {
     return () => this.removeConnection(name);
   }
 
-  removeConnection(name:string) {
+  public removeConnection = (name: string) => {
     const fn:EventListener = this.connections.get(name);
     this.removeEventListener(name, fn);
     this.connections.delete(name);
   }
 
-  dispatch(message) {
+  private dispatch(message: CustomEvent<Message>) {
     this.dispatchEvent(message);
   }
 
-  createEvent(message:string, detail:Message = {}) {
+  private createEvent(message: string, detail: Message = {}) {
     return new CustomEvent(message, { detail });
   }
 
-  broadcast(message:Message, sender) {
+  public broadcast = (message: Message) => {
     let event = this.createEvent(message.message);
     
     if (message?.to) {
       let destination = message.to;
       event.detail.to = destination;
-      let nextDestination;
-      let remaining;
-
-      // TODO: Handle multiple destinations
-      // If there are multiple destinations
-      // Example: ['background:tab', 'background:devtools'] -> send to both the tab and the devtools
-      if (Array.isArray(destination)) {
-        destination.forEach((to) => this.broadcast(
-          {
-            ...message,
-            to,
-          },
-          sender
-        ));
-
-        return;
-      }
+      let nextDestination: string;
+      let remaining: string[];
       
       // If there are intermediate destinations
-      // Example: 'background:tab:window' -> send the window connection from the tab connection
+      // Example: 'background:tab:window'
       if (destination.includes(':')) {
         [destination, ...remaining] = message.to.split(':');
         nextDestination = remaining.join(':');
@@ -83,20 +59,19 @@ class Relay extends EventTarget {
     }
 
     event.detail.message = message.message;
-    event.detail.sender = sender?.name;
     event.detail.payload = message.payload;
     this.dispatch(event);
   }
 
-  listen(name:string, fn:EventListener) {
+  public listen = (name: string, fn: EventListener) => {
     this.addEventListener(name, fn);
     return () => {
       this.removeEventListener(name, fn);
     }
   }
 
-  send(message:string, options:Message) {
-    this.broadcast({ message, ...options }, this.name);
+  public send = (message: string, options: Message) => {
+    this.broadcast({ message, ...options });
   }
 }
 

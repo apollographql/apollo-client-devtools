@@ -1,6 +1,6 @@
 import { initDevTools, writeData } from "../../application";
 
-window.devtools = {
+window.__DEVTOOLS_APPLICATION__ = {
   initialize: initDevTools,
   writeData,
 };
