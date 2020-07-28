@@ -39,10 +39,10 @@ module.exports = (env) => {
     ...devOptions,
     mode: env.NODE_ENV,
     entry: {
-      panel: "./src/extension/devtools/panel.js",
-      background: "./src/extension/background/background.js",
-      devtools: "./src/extension/devtools/devtools.js",
-      tab: "./src/extension/tab/tab.js",
+      panel: "./src/extension/devtools/panel.ts",
+      background: "./src/extension/background/background.ts",
+      devtools: "./src/extension/devtools/devtools.ts",
+      tab: "./src/extension/tab/tab.ts",
     },
     output: {
       path: path.join(__dirname, "build"),

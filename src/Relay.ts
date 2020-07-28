@@ -4,16 +4,20 @@ interface Message {
   payload?: any
 }
 
+interface CustomEventListener {
+  (evt: CustomEvent): void;
+}
+
 class Relay extends EventTarget {
-  private connections = new Map<string, (event: CustomEvent<Message>) => ReturnType<EventListener>>();
+  private connections = new Map<string, (event: CustomEvent<Message>) => ReturnType<CustomEventListener>>();
 
   constructor() {
     super();
   }
 
-  public addConnection = (name: string, fn: EventListener) => {
+  public addConnection = (name: string, fn: (message: Message) => void) => {
     function wrappedFn(event: CustomEvent<Message>) { 
-      return fn((event as CustomEvent).detail); 
+      return fn(event.detail); 
     };
 
     this.addEventListener(name, wrappedFn);
@@ -23,7 +27,7 @@ class Relay extends EventTarget {
   }
 
   public removeConnection = (name: string) => {
-    const fn:EventListener = this.connections.get(name);
+    const fn = this.connections.get(name);
     this.removeEventListener(name, fn);
     this.connections.delete(name);
   }
@@ -63,7 +67,7 @@ class Relay extends EventTarget {
     this.dispatch(event);
   }
 
-  public listen = (name: string, fn: EventListener) => {
+  public listen = (name: string, fn: CustomEventListener) => {
     this.addEventListener(name, fn);
     return () => {
       this.removeEventListener(name, fn);

@@ -17,11 +17,11 @@ const port = chrome.runtime.connect({
 });
 port.onMessage.addListener(devtools.broadcast);
 
-devtools.addConnection('background', (message) => {
+devtools.addConnection('background', message => {
   port.postMessage(message);
 });
 
-function sendMessageToClient(message) {
+function sendMessageToClient(message: any) {
   devtools.send(message, {
     to: `background:tab-${inspectedTabId}:client`
   });
@@ -44,8 +44,8 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, ({ detail: { payload } }) => {
           sendMessageToClient(PANEL_OPEN);
 
           if (!isAppInitialized) {
-            window.__DEVTOOLS_APPLICATION__.initialize();
-            window.__DEVTOOLS_APPLICATION__.writeData({ queries, mutations, cache: JSON.stringify(cache) });
+            (window as any).__DEVTOOLS_APPLICATION__.initialize();
+            (window as any).__DEVTOOLS_APPLICATION__.writeData({ queries, mutations, cache: JSON.stringify(cache) });
             isAppInitialized = true;
             sendMessageToClient(REQUEST_DATA);
 
@@ -56,7 +56,7 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, ({ detail: { payload } }) => {
   
             devtools.listen(UPDATE, ({ detail: { payload } }) => {
               const { queries, mutations, cache } = JSON.parse(payload);
-              window.__DEVTOOLS_APPLICATION__.writeData({ queries, mutations, cache: JSON.stringify(cache) });
+              (window as any).__DEVTOOLS_APPLICATION__.writeData({ queries, mutations, cache: JSON.stringify(cache) });
             });
           }
         });

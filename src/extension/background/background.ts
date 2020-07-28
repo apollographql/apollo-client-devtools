@@ -10,13 +10,13 @@ chrome.runtime.onMessage.addListener(({ message }, sender, sendResponse) => {
 
 const background = new Relay();
 
-chrome.runtime.onConnect.addListener((port) => {
+chrome.runtime.onConnect.addListener(port => {
   background.addConnection(port.name, message => {
     port.postMessage(message);
   });
   
-  port.onMessage.addListener((message, sender) => {
-    background.broadcast(message, sender);
+  port.onMessage.addListener(message => {
+    background.broadcast(message);
   });
 
   port.onDisconnect.addListener(port => {

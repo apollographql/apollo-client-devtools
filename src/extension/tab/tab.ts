@@ -1,5 +1,5 @@
 // This script is injected into each tab.
-import relay from "./tabRelay";
+import "./tabRelay"; 
 import { initializeHook } from "./hook";
 import { version as devToolsVersion } from "../manifest.json";
 
