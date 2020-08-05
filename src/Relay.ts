@@ -11,10 +11,6 @@ interface CustomEventListener {
 class Relay extends EventTarget {
   private connections = new Map<string, (event: CustomEvent<Message>) => ReturnType<CustomEventListener>>();
 
-  constructor() {
-    super();
-  }
-
   public addConnection = (name: string, fn: (message: Message) => void) => {
     function wrappedFn(event: CustomEvent<Message>) { 
       return fn(event.detail); 
