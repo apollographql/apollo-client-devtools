@@ -1,12 +1,10 @@
 interface Message {
-  to?: string
-  message?: string
-  payload?: any
+  to?: string | undefined
+  message: string
+  payload?: any | undefined
 }
 
-interface CustomEventListener {
-  (evt: CustomEvent): void;
-}
+type CustomEventListener = (event: CustomEvent) => void;
 
 class Relay extends EventTarget {
   private connections = new Map<string, (event: CustomEvent<Message>) => ReturnType<CustomEventListener>>();
@@ -24,16 +22,18 @@ class Relay extends EventTarget {
 
   public removeConnection = (name: string) => {
     const fn = this.connections.get(name);
-    this.removeEventListener(name, fn);
-    this.connections.delete(name);
+    if (fn) {
+      this.removeEventListener(name, fn);
+      this.connections.delete(name);
+    }
   }
 
-  private dispatch(message: CustomEvent<Message>) {
+  private dispatch(message: CustomEvent) {
     this.dispatchEvent(message);
   }
 
-  private createEvent(message: string, detail: Message = {}) {
-    return new CustomEvent(message, { detail });
+  private createEvent(message: string) {
+    return new CustomEvent(message, { detail: {} });
   }
 
   public broadcast = (message: Message) => {
@@ -41,8 +41,8 @@ class Relay extends EventTarget {
     
     if (message?.to) {
       let destination = message.to;
-      event.detail.to = destination;
-      let nextDestination: string;
+      event.detail['to'] = destination;
+      let nextDestination: string | undefined;
       let remaining: string[];
       
       // If there are intermediate destinations
@@ -54,12 +54,12 @@ class Relay extends EventTarget {
 
       if (this.connections.has(destination)) {
         event = this.createEvent(destination);
-        event.detail.to = nextDestination;
+        event.detail['to'] = nextDestination;
       }
     }
 
-    event.detail.message = message.message;
-    event.detail.payload = message.payload;
+    event.detail['message'] = message.message;
+    event.detail['payload'] = message.payload;
     this.dispatch(event);
   }
 
@@ -70,8 +70,8 @@ class Relay extends EventTarget {
     }
   }
 
-  public send = (message: string, options: Message) => {
-    this.broadcast({ message, ...options });
+  public send = (message: string, { to, payload }: Message) => {
+    this.broadcast({ message, to, payload });
   }
 }
 
