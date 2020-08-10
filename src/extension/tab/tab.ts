@@ -12,5 +12,5 @@ if (typeof document === "object" && document instanceof HTMLDocument) {
   const script = document.createElement("script");
   script.textContent = `;(${initializeHook.toString()})(window, "${devToolsVersion}")`;
   document.documentElement.appendChild(script);
-  script.parentNode.removeChild(script);
+  script?.parentNode?.removeChild(script);
 }

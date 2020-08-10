@@ -22,7 +22,8 @@ devtools.addConnection('background', message => {
 });
 
 function sendMessageToClient(message: any) {
-  devtools.send(message, {
+  devtools.send({
+    message,
     to: `background:tab-${inspectedTabId}:client`
   });
 }
@@ -34,7 +35,7 @@ let isAppInitialized = false;
 devtools.listen(CREATE_DEVTOOLS_PANEL, ({ detail: { payload } }) => {
   if (!isPanelCreated) {
     chrome.devtools.panels.create('Apollo',
-      null,
+      'logo_devtools.png',
       'panel.html',
       function(panel) {
         isPanelCreated = true;

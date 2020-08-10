@@ -4,10 +4,11 @@
     "noImplicitAny": false,
     "strictNullChecks": true,
     "esModuleInterop": true,
+    "skipLibCheck": true,
     "module": "commonjs",
     "target": "es6",
     "jsx": "react",
-    "resolveJsonModule": true,
+    "resolveJsonModule": true
   },
   "compileOnSave": true,
   "include": [
