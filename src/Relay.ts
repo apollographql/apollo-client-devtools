@@ -1,7 +1,7 @@
-interface Message {
-  to?: string | undefined
-  message: string
-  payload?: any | undefined
+interface Message<TPayload = any> {
+  to?: string;
+  message: string;
+  payload?: TPayload;
 }
 
 type CustomEventListener = (event: CustomEvent) => void;
@@ -70,8 +70,8 @@ class Relay extends EventTarget {
     }
   }
 
-  public send = (message: string, { to, payload }: Message) => {
-    this.broadcast({ message, to, payload });
+  public send = (messageObj: Message) => {
+    this.broadcast(messageObj);
   }
 }
 

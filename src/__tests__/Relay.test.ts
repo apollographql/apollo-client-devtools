@@ -6,7 +6,8 @@ describe('Relay', () => {
     const callback = jest.fn();
     relay.addConnection('Bedford Ave', callback);
 
-    relay.send('The L train is delayed.', {
+    relay.send({
+      message: 'The L train is delayed.',
       to: 'Bedford Ave',
     });
 
@@ -21,7 +22,8 @@ describe('Relay', () => {
     const callback = jest.fn();
     relay.addConnection('Bedford Ave', callback);
 
-    relay.send('The L train is delayed.', {
+    relay.send({
+      message: 'The L train is delayed.',
       to: 'Bedford Ave:Lorimer St',
     });
 
@@ -36,7 +38,8 @@ describe('Relay', () => {
     const callback = jest.fn();
     relay.addConnection('Bedford Ave', callback);
 
-    relay.send('The L train is delayed.', {
+    relay.send({
+      message: 'The L train is delayed.',
       to: 'Bedford Ave',
     });
 
@@ -47,7 +50,8 @@ describe('Relay', () => {
 
     relay.removeConnection('Bedford Ave');
 
-    relay.send('The L train is still delayed.', {
+    relay.send({
+      message: 'The L train is still delayed.',
       to: 'Bedford Ave',
     });
 
