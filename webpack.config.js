@@ -39,12 +39,10 @@ module.exports = (env) => {
     ...devOptions,
     mode: env.NODE_ENV,
     entry: {
-      hook: "./src/extension/tab/install-hook.js",
-      panel: "./src/extension/devtools/panel.js",
-      background: "./src/extension/background/background.js",
-      devtools: "./src/extension/devtools/devtools.js",
-      backend: "./src/extension/tab/backend.ts",
-      proxy: "./src/extension/tab/proxy.js",
+      panel: "./src/extension/devtools/panel.ts",
+      background: "./src/extension/background/background.ts",
+      devtools: "./src/extension/devtools/devtools.ts",
+      tab: "./src/extension/tab/tab.ts",
     },
     output: {
       path: path.join(__dirname, "build"),
@@ -64,13 +62,14 @@ module.exports = (env) => {
           loader: "style-loader!css-loader!less-loader",
         },
         {
-          test: /\.(ts|js)x?$/,
+          test: /\.(ts)x?$/,
           exclude: /(node_modules)/,
-          use: [
-            {
-              loader: "babel-loader"
-            },
-          ],
+          loader: "ts-loader",
+        },
+        {
+          test: /\.(js)x?$/,
+          exclude: /(node_modules)/,
+          loader: "babel-loader",
         },
       ],
     },

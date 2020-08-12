@@ -19,13 +19,12 @@
   },
   "web_accessible_resources": [
     "panel.html",
-    "devtools.html",
-    "backend.js"
+    "devtools.html"
   ],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["hook.js"],
+      "js": ["tab.js"],
       "run_at": "document_start"
     }
   ],

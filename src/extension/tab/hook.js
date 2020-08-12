@@ -1,67 +1,10 @@
-// IMPORTANT: this script is injected into every page!!!
-
-/**
- * Install the hook on window, which is an event emitter.
- * Note because Chrome content scripts cannot directly modify the window object,
- * we are evaling this function by inserting a script tag. That's why we have
- * to inline the whole event emitter implementation here.
- *
- * special thanks to the Vue devtools for this solution
- */
-
-export function installHook(window, devToolsVersion) {
-  let listeners = {};
-
-  // XXX change how ApolloClient connects to the dev tools
+function initializeHook(window, devtoolsVersion) {
   const hook = {
     ApolloClient: null,
-    actionLog: [],
-    devToolsVersion,
-    on(event, fn) {
-      event = "$" + event;
-      (listeners[event] || (listeners[event] = [])).push(fn);
-    },
-    once(event, fn) {
-      const eventAlias = event;
-      event = "$" + event;
-      function on() {
-        this.off(eventAlias, on);
-        fn.apply(this, arguments);
-      }
-      (listeners[event] || (listeners[event] = [])).push(on);
-    },
-    off(event, fn) {
-      event = "$" + event;
-      if (!arguments.length) {
-        listeners = {};
-      } else {
-        const cbs = listeners[event];
-        if (cbs) {
-          if (!fn) {
-            listeners[event] = null;
-          } else {
-            for (let i = 0, l = cbs.length; i < l; i++) {
-              const cb = cbs[i];
-              if (cb === fn || cb.fn === fn) {
-                cbs.splice(i, 1);
-                break;
-              }
-            }
-          }
-        }
-      }
-    },
-    emit(event) {
-      event = "$" + event;
-      let cbs = listeners[event];
-      if (cbs) {
-        const args = [].slice.call(arguments, 1);
-        cbs = cbs.slice();
-        for (let i = 0, l = cbs.length; i < l; i++) {
-          cbs[i].apply(this, args);
-        }
-      }
-    },
+    version: devtoolsVersion,
+    getQueries: () => null,
+    getMutations: () => null,
+    getCache: () => null,
   };
 
   Object.defineProperty(window, "__APOLLO_DEVTOOLS_GLOBAL_HOOK__", {
@@ -70,28 +13,63 @@ export function installHook(window, devToolsVersion) {
     },
   });
 
-  // XXX this is a patch to back support previous versions of Apollo Client
-  // at somepoint we should remove this.
-  // the newer version has the client connecting to the hook, not the other
-  // way around that it currently does
-  let interval;
-  let count = 0;
+  function handleActionHookForDevtools() {
+    window.postMessage({
+      message: 'action-hook-fired',
+      to: 'tab:background:devtools',
+    });
+  }
+  
   function findClient() {
-    // only try for 10seconds
-    if (count++ > 10) clearInterval(interval);
-    if (!!window.__APOLLO_CLIENT__) {
-      hook.ApolloClient = window.__APOLLO_CLIENT__;
-      hook.ApolloClient.__actionHookForDevTools(
-        ({
-          state: { queries, mutations },
-          dataWithOptimisticResults: inspector,
-        }) => {
-          hook.actionLog.push({ queries, mutations, inspector });
-        },
-      );
-      clearInterval(interval);
+    let interval;
+    let count = 0;
+  
+    function initializeDevtoolsHook() {
+      if (count++ > 10) clearInterval(interval);
+      if (!!window.__APOLLO_CLIENT__) {
+        hook.ApolloClient = window.__APOLLO_CLIENT__;
+        hook.ApolloClient.__actionHookForDevTools(handleActionHookForDevtools);
+        hook.getQueries = () => hook.ApolloClient.queryManager.queries;
+        hook.getMutations = () => hook.ApolloClient.queryManager.mutationStore.getStore();
+        hook.getCache = () => hook.ApolloClient.cache.extract(true);
+  
+        clearInterval(interval);
+      }
     }
+    
+    interval = setInterval(initializeDevtoolsHook, 1000);
   }
 
-  interval = setInterval(findClient, 1000);
+  // Attempt to find the client on a 1-second interval for 10 seconds max
+  findClient();
+
+  window.addEventListener('message', ({ data }) => {
+    if (data?.message === 'devtools-initialized') {
+      if (hook.ApolloClient) {
+        window.postMessage({
+          message: 'create-devtools-panel',
+          to: 'tab:background:devtools',
+          payload: JSON.stringify({
+            queries: hook.getQueries(),
+            mutations: hook.getMutations(),
+            cache: hook.getCache(),
+          }),
+        });
+      }
+    }
+
+    if (data?.message === 'request-update') {
+      window.postMessage({
+        message: 'update',
+        to: 'tab:background:devtools',
+        payload: JSON.stringify({
+          queries: hook.getQueries(),
+          mutations: hook.getMutations(),
+          cache: hook.getCache(),
+        }),
+      });
+    }
+  });
 }
+
+export { initializeHook };

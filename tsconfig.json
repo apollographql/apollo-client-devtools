@@ -2,11 +2,13 @@
   "compilerOptions": {
     "sourceMap": true,
     "noImplicitAny": false,
-    "strictNullChecks": false,
+    "strictNullChecks": true,
     "esModuleInterop": true,
+    "skipLibCheck": true,
     "module": "commonjs",
     "target": "es6",
     "jsx": "react",
+    "resolveJsonModule": true
   },
   "compileOnSave": true,
   "include": [
@@ -16,6 +18,8 @@
   "exclude": [
     "node_modules",
     "dist",
-    "build"
+    "build",
+    "src/**/__tests__/**/*",
+    "development/**/__tests__/**/*"
   ]
 }
