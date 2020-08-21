@@ -1,7 +1,9 @@
+/* eslint-disable */
 const path = require("path");
 const CopyPlugin = require("copy-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const WebExtPlugin = require("./WebExtPlugin");
+/* eslint-enable */
 
 module.exports = (env) => {
   const devOptions = (env.NODE_ENV === "development") ? {
