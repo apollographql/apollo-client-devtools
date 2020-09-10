@@ -7,6 +7,8 @@ import {
   UPDATE,
   PANEL_OPEN,
   PANEL_CLOSED,
+  GRAPHIQL_REQUEST,
+  GRAPHIQL_DATA,
 } from '../constants';
 
 const inspectedTabId = chrome.devtools.inspectedWindow.tabId;
@@ -40,13 +42,23 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, ({ detail: { payload } }) => {
       function(panel) {
         isPanelCreated = true;
         const { queries, mutations, cache } = JSON.parse(payload);
+        let removeGraphiQLListener;
 
         panel.onShown.addListener(window => {
           sendMessageToClient(PANEL_OPEN);
 
           if (!isAppInitialized) {
-            (window as any).__DEVTOOLS_APPLICATION__.initialize();
-            (window as any).__DEVTOOLS_APPLICATION__.writeData({ queries, mutations, cache: JSON.stringify(cache) });
+            const { 
+              __DEVTOOLS_APPLICATION__: {
+                initialize,
+                writeData,
+                receiveGraphiQLRequests,
+                sendResponseToGraphiQL,
+              }
+            } = (window as any);
+
+            initialize();
+            writeData({ queries, mutations, cache: JSON.stringify(cache) });
             isAppInitialized = true;
             sendMessageToClient(REQUEST_DATA);
 
@@ -57,12 +69,32 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, ({ detail: { payload } }) => {
   
             devtools.listen(UPDATE, ({ detail: { payload } }) => {
               const { queries, mutations, cache } = JSON.parse(payload);
-              (window as any).__DEVTOOLS_APPLICATION__.writeData({ queries, mutations, cache: JSON.stringify(cache) });
+              writeData({ queries, mutations, cache: JSON.stringify(cache) });
             });
+
+            // Add connection so client at send to `background:devtools-${inspectedTabId}:graphiql`
+            devtools.addConnection('graphiql', sendResponseToGraphiQL);
+            removeGraphiQLListener = receiveGraphiQLRequests(({ detail }) => {
+              devtools.broadcast(detail);
+            });
+            // Forward all GraphiQL requests to the client
+            devtools.listen(GRAPHIQL_REQUEST, message => {
+              console.log('devtools got the message', message);
+              devtools.send({
+                to: 'graphiql',
+                message: GRAPHIQL_DATA,
+                payload: 'Woof'
+              });
+            });
+            // removeForward = devtools.forward(GRAPHIQL_REQUEST, `background:tab-${inspectedTabId}:client`);
           }
         });
 
         panel.onHidden.addListener(() => {
+          // TODO: Remove UPDATE listener
+          // TODO: Remove ACTION_HOOK_FIRED listener
+          devtools.removeConnection('graphiql');
+          removeGraphiQLListener();
           sendMessageToClient(PANEL_CLOSED);
         });
       }
