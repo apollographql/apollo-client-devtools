@@ -1,3 +1,17 @@
+function filterQueryInfo(queryInfoMap) {
+  const filteredQueryInfo = {};
+  queryInfoMap.forEach((value, key) => {
+    filteredQueryInfo[key] = {
+      document: value.document,
+      graphQLErrors: value.graphQLErrors,
+      networkError: value.networkError,
+      networkStatus: value.networkStatus,
+      variables: value.variables,
+    };
+  });
+  return filteredQueryInfo;
+}
+
 function initializeHook(window, devtoolsVersion) {
   const hook = {
     ApolloClient: null,
