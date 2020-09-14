@@ -1,11 +1,23 @@
 import Relay from '../../Relay';
-import { GRAPHIQL_REQUEST, GRAPHIQL_DATA } from '../../extension/constants';
+import { GRAPHIQL_REQUEST, GRAPHIQL_RESPONSE } from '../../extension/constants';
+import { operationName } from '@apollo/client';
 
 export const graphiQL = new Relay();
 
-graphiQL.listen(GRAPHIQL_DATA, message => {
-  console.log('graphiQL listening...', message);
+graphiQL.listen(GRAPHIQL_RESPONSE, ({ detail: { payload } }) => {
+  console.log('graphiQL listening...', payload);
+  graphiQL.broadcast({
+    message: `graphiql:response:${payload.operationName}`,
+    payload,
+  });
 });
+
+export const listenForResponse = (operationName: string, observer) => {
+  return graphiQL.listen(`graphiql:response:${operationName}`, response => {
+    console.log('listenForResponse', response);
+    observer.complete();
+  });
+};
 
 export const sendGraphiQLRequest = operation => {
   console.log('send to devtools', operation);
@@ -26,9 +38,9 @@ export const receiveGraphiQLRequests = callback => {
 
 export const sendResponseToGraphiQL = ({ payload }) => {
   console.log('devtools sending', payload);
-  (window as any).dispatchEvent(new CustomEvent(GRAPHIQL_DATA, { 
+  (window as any).dispatchEvent(new CustomEvent(GRAPHIQL_RESPONSE, { 
     detail: {
-      message: GRAPHIQL_DATA,
+      message: GRAPHIQL_RESPONSE,
       payload,
     } 
   }));
@@ -36,11 +48,11 @@ export const sendResponseToGraphiQL = ({ payload }) => {
 
 export const receiveGraphiQLResponses = () => {
   console.log('receiveGraphiQLResponses initialized');
-  (window as any).addEventListener(GRAPHIQL_DATA, ({ detail }) => {
+  (window as any).addEventListener(GRAPHIQL_RESPONSE, ({ detail }) => {
     console.log('receiveGraphiQLResponses', detail);
     graphiQL.broadcast(detail);
   });
   return () => {
-    (window as any).removeEventListener(GRAPHIQL_DATA, graphiQL.broadcast);
+    (window as any).removeEventListener(GRAPHIQL_RESPONSE, graphiQL.broadcast);
   };
 };

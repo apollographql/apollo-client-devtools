@@ -9,4 +9,4 @@ export const UPDATE = 'update';
 export const PANEL_OPEN = 'panel-open';
 export const PANEL_CLOSED = 'panel-closed';
 export const GRAPHIQL_REQUEST = 'graphiql-request';
-export const GRAPHIQL_DATA = 'graphiql-data';
+export const GRAPHIQL_RESPONSE = 'graphiql-response';
