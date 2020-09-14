@@ -62,7 +62,7 @@ function initializeHook(window, devtoolsVersion) {
       if (hook.ApolloClient) {
         window.postMessage({
           message: 'create-devtools-panel',
-          to: 'tab:background:devtools',
+          to: 'tab', // Tab Relay forwards this the devtools
           payload: JSON.stringify({
             queries: hook.getQueries(),
             mutations: hook.getMutations(),
@@ -75,7 +75,7 @@ function initializeHook(window, devtoolsVersion) {
     if (data?.message === 'request-update') {
       window.postMessage({
         message: 'update',
-        to: 'tab:background:devtools',
+        to: 'tab', // Tab Relay forwards this the devtools
         payload: JSON.stringify({
           queries: hook.getQueries(),
           mutations: hook.getMutations(),
