@@ -1,10 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import GraphiQL from "graphiql";
-import {
-  getIntrospectionQuery,
-} from "graphql/utilities";
-import { Observable, execute, ApolloLink } from "@apollo/client";
-import { sendGraphiQLRequest, receiveGraphiQLResponses } from './graphiQLRelay';
+import { Observable, gql } from "@apollo/client";
+import { sendGraphiQLRequest, receiveGraphiQLResponses, listenForResponse } from './graphiQLRelay';
 
 import "../../../node_modules/graphiql/graphiql.css";
 
@@ -12,12 +9,6 @@ import "../../../node_modules/graphiql/graphiql.css";
 // "Run in GraphiQL"
 // "Load from cache"
 // Relay
-type Operation = {
-  operationName: string,
-  query: string,
-  variables?: any,
-}
-
 export const Explorer = () => {
   const graphiQLRef = useRef(null);
   const [queryCache, setQueryCache] = useState<boolean>(false);
@@ -30,21 +21,28 @@ export const Explorer = () => {
     <div className="graphiql-container">
       <GraphiQL
         ref={graphiQLRef}
-        fetcher={(operation: Operation) => new Observable(observer => {
-          // const removeListener = Relay.listen()
-          sendGraphiQLRequest(operation);
-          observer.complete();
+        fetcher={({ query, operationName, variables }) => new Observable(observer => {
+          const payload = JSON.stringify({
+            query,
+            operationName,
+            variables,
+            fetchPolicy: queryCache
+              ? "cache-only"
+              : "no-cache",
+          });
+          sendGraphiQLRequest(payload);
+          const removeListener = listenForResponse(operationName, observer);
 
-          return () => {
-            // removeListener();
-          };
+          return removeListener;
         }) as any}
       >
           <GraphiQL.Toolbar>
             <GraphiQL.Button
               label="Prettify"
               title="Prettify"
-              onClick={this.handleClickPrettifyButton}
+              onClick={() => {
+                // TODO: Handle prettify
+              }}
             />
             <label>
               <input

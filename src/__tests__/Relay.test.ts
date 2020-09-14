@@ -92,4 +92,19 @@ describe('Relay', () => {
     const removeEventListener = relay.listen('Train delayed.', callback);
     relay.broadcast({ message: 'Train delayed.' });
   }));
+
+  it('can forward message to a connection', () => new Promise((resolve, reject) => {
+    const message = 'The L train is delayed.';
+
+    const relay = new Relay();
+    relay.addConnection('1st Ave', reject);
+    relay.addConnection('Bedford Ave', resolve);
+
+    relay.forward(message, 'Bedford Ave');
+
+    relay.send({
+      message,
+      to: '1st Avenue',
+    });
+  }));
 });

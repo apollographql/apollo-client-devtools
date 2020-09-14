@@ -83,6 +83,18 @@ function initializeHook(window, devtoolsVersion) {
         }),
       });
     }
+
+    if (data?.message === 'graphiql-request') {
+      console.log('Client received graphiql request', data);
+      // TODO: Send query to hook.ApolloClient & return the response
+      // TODO: Handle mutations
+      // TODO: Handle `cache-only` requests
+      // hook.ApolloClient.watchQuery({
+      //   ...data,
+      // });
+
+      // Oh no, what about gql?
+    }
   });
 }
 
