@@ -1,5 +1,9 @@
 import Relay from '../../Relay';
-import { REQUEST_TAB_ID } from '../constants';
+import { 
+  REQUEST_TAB_ID, 
+  CREATE_DEVTOOLS_PANEL,
+  ACTION_HOOK_FIRED,
+} from '../constants';
 
 // Inspected tabs are unable to retrieve their own ids.
 // This requests the tab's id from the background script.
@@ -29,18 +33,14 @@ export default new Promise(async $export => {
     if (event?.data?.to === 'tab') {
       tab.broadcast(event?.data);
     }
-
-    if (event?.data?.to === 'tab:background:devtools') {
-      tab.broadcast({
-        ...event?.data,
-        to: `background:devtools-${id}`
-      });
-    }
   });
 
   tab.addConnection('client', message => {
     window.postMessage(message, '*');
   });
+
+  tab.forward(CREATE_DEVTOOLS_PANEL, `background:devtools-${id}`);
+  tab.forward(ACTION_HOOK_FIRED, `background:devtools-${id}`);
 
   const module = await Promise.resolve({ tab, id });
   $export(module);
