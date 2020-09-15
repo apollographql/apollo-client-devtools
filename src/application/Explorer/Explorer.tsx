@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import GraphiQL from "graphiql";
-import { Observable, gql } from "@apollo/client";
+import { Observable } from "@apollo/client";
 import { sendGraphiQLRequest, receiveGraphiQLResponses, listenForResponse } from './graphiQLRelay';
 
 import "../../../node_modules/graphiql/graphiql.css";
@@ -9,9 +9,16 @@ import "../../../node_modules/graphiql/graphiql.css";
 // "Run in GraphiQL"
 // "Load from cache"
 // Relay
+enum FetchPolicies {
+  NoCache = 'no-cache',
+  CacheOnly = 'cache-only'
+}
+
+type FetchPolicy = FetchPolicies;
+
 export const Explorer = () => {
   const graphiQLRef = useRef(null);
-  const [queryCache, setQueryCache] = useState<boolean>(false);
+  const [queryCache, setQueryCache] = useState<FetchPolicy>(FetchPolicies.NoCache);
 
   // Subscribe to GraphiQL data responses
   // Returns a cleanup method to useEffect
@@ -22,13 +29,12 @@ export const Explorer = () => {
       <GraphiQL
         ref={graphiQLRef}
         fetcher={({ query, operationName, variables }) => new Observable(observer => {
+          console.log('WE GOTTA QUERY HERE', query);
           const payload = JSON.stringify({
             query,
             operationName,
             variables,
             fetchPolicy: queryCache
-              ? "cache-only"
-              : "no-cache",
           });
           sendGraphiQLRequest(payload);
           const removeListener = listenForResponse(operationName, observer);
@@ -47,8 +53,8 @@ export const Explorer = () => {
             <label>
               <input
                 type="checkbox"
-                checked={queryCache}
-                onChange={() => setQueryCache(!queryCache)}
+                checked={queryCache === FetchPolicies.CacheOnly}
+                onChange={() => setQueryCache(queryCache === FetchPolicies.CacheOnly ? FetchPolicies.NoCache : FetchPolicies.CacheOnly)}
               />
               Load from cache
             </label>

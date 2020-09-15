@@ -19,7 +19,8 @@
   },
   "web_accessible_resources": [
     "panel.html",
-    "devtools.html"
+    "devtools.html",
+    "hook.js"
   ],
   "content_scripts": [
     {

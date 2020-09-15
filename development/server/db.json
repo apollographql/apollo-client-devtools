@@ -1,3 +1,9 @@
 {
-  "favorites": []
+  "favorites": [
+    {
+      "name": "Spectra",
+      "hex": "#32605D",
+      "contrast": "#ffffff"
+    }
+  ]
 }

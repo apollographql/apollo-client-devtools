@@ -9,8 +9,14 @@ import { version as devToolsVersion } from "../manifest.json";
   into the inspected tab.
 */ 
 if (typeof document === "object" && document instanceof HTMLDocument) {
-  const script = document.createElement("script");
-  script.textContent = `;(${initializeHook.toString()})(window, "${devToolsVersion}")`;
-  document.documentElement.appendChild(script);
-  script?.parentNode?.removeChild(script);
+  console.log(chrome.runtime.getURL('hook.js'));
+  const script = document.createElement('script');
+  script.setAttribute("type", "module");
+  script.setAttribute("src", chrome.extension.getURL('hook.js'));
+  const head = document.head || document.getElementsByTagName("head")[0] || document.documentElement;
+  head.insertBefore(script, head.lastChild);
+  // const script = document.createElement("script");
+  // script.textContent = `;(${initializeHook.toString()})(window, "${devToolsVersion}")`;
+  // document.documentElement.appendChild(script);
+  // script?.parentNode?.removeChild(script);
 }
