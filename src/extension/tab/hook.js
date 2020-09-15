@@ -1,18 +1,12 @@
-function filterQueryInfo(queryInfoMap) {
-  const filteredQueryInfo = {};
-  queryInfoMap.forEach((value, key) => {
-    filteredQueryInfo[key] = {
-      document: value.document,
-      graphQLErrors: value.graphQLErrors,
-      networkError: value.networkError,
-      networkStatus: value.networkStatus,
-      variables: value.variables,
-    };
-  });
-  return filteredQueryInfo;
-}
+import { gql, Observable } from "@apollo/client";
+import { 
+  CREATE_DEVTOOLS_PANEL,
+  ACTION_HOOK_FIRED, 
+  GRAPHIQL_RESPONSE,
+  UPDATE,
+} from '../constants';
 
-function initializeHook(window, devtoolsVersion) {
+function initializeHook(devtoolsVersion) {
   const hook = {
     ApolloClient: null,
     version: devtoolsVersion,
@@ -29,8 +23,16 @@ function initializeHook(window, devtoolsVersion) {
 
   function handleActionHookForDevtools() {
     window.postMessage({
-      message: 'action-hook-fired',
-      to: 'tab:background:devtools',
+      message: ACTION_HOOK_FIRED,
+      to: 'tab',
+    });
+  }
+
+  function handleGraphiQlResponse(payload) {
+    window.postMessage({
+      message: GRAPHIQL_RESPONSE,
+      to: 'tab',
+      payload,
     });
   }
   
@@ -61,7 +63,7 @@ function initializeHook(window, devtoolsVersion) {
     if (data?.message === 'devtools-initialized') {
       if (hook.ApolloClient) {
         window.postMessage({
-          message: 'create-devtools-panel',
+          message: CREATE_DEVTOOLS_PANEL,
           to: 'tab', // Tab Relay forwards this the devtools
           payload: JSON.stringify({
             queries: hook.getQueries(),
@@ -74,7 +76,7 @@ function initializeHook(window, devtoolsVersion) {
 
     if (data?.message === 'request-update') {
       window.postMessage({
-        message: 'update',
+        message: UPDATE,
         to: 'tab', // Tab Relay forwards this the devtools
         payload: JSON.stringify({
           queries: hook.getQueries(),
@@ -85,17 +87,28 @@ function initializeHook(window, devtoolsVersion) {
     }
 
     if (data?.message === 'graphiql-request') {
-      console.log('Client received graphiql request', data);
+      console.log('Client received graphiql request', JSON.parse(data.payload));
+      const { query, operationName, fetchPolicy, variables } = JSON.parse(data.payload);
       // TODO: Send query to hook.ApolloClient & return the response
       // TODO: Handle mutations
       // TODO: Handle `cache-only` requests
-      // hook.ApolloClient.watchQuery({
-      //   ...data,
-      // });
+      // TODO: @client?
+      const operation = hook.ApolloClient.watchQuery({
+        query: gql(query),
+        variables,
+        fetchPolicy,
+      });
 
-      // Oh no, what about gql?
+      operation.subscribe(response => {
+        console.log('SUBSCRIBE RESPONSE', response);
+        handleGraphiQlResponse({
+          operationName, 
+          response,
+        });
+      });
     }
   });
 }
 
+initializeHook();
 export { initializeHook };
