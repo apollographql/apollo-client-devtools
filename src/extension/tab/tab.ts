@@ -7,9 +7,9 @@ import "./tabRelay";
   into the inspected tab.
 */ 
 if (typeof document === "object" && document instanceof HTMLDocument) {
-  const script = document.createElement('script');
+  const script = document.createElement("script");
   script.setAttribute("type", "module");
-  script.setAttribute("src", chrome.extension.getURL('hook.js'));
+  script.setAttribute("src", chrome.extension.getURL("hook.js"));
   const head = document.head || document.getElementsByTagName("head")[0] || document.documentElement;
   head.insertBefore(script, head.lastChild);
 }

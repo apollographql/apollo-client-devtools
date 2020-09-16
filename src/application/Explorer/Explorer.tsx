@@ -1,16 +1,24 @@
 import React, { useRef, useState, useEffect } from "react";
 import GraphiQL from "graphiql";
-import { Observable } from "@apollo/client";
+import { Observable , useQuery, gql } from "@apollo/client";
 import { parse } from "graphql/language/parser";
 import { print } from "graphql/language/printer";
-import { sendGraphiQLRequest, receiveGraphiQLResponses, listenForResponse, graphiQL } from './graphiQLRelay';
+import { graphiQLQuery, ColorThemes } from '../index';
+import { sendGraphiQLRequest, receiveGraphiQLResponses, listenForResponse } from './graphiQLRelay';
 
 import "../../../node_modules/graphiql/graphiql.css";
 
-// Get introspection query
-// "Run in GraphiQL"
-// "Load from cache"
-// Relay
+// TODO: Run IntrospectionQuery outside GraphiQL component 
+// TODO: Integrate GraphiQL Explorer
+// TODO: "Run in GraphiQL"
+
+const GET_EXPLORER_DATA = gql`
+  query GetExplorerData {
+    colorTheme @client
+    graphiQLQuery @client
+  }
+`;
+
 enum FetchPolicies {
   NoCache = 'no-cache',
   CacheOnly = 'cache-only'
@@ -22,6 +30,7 @@ export const Explorer = () => {
   const graphiQLRef = useRef<any>(null);
   const [queryCache, setQueryCache] = useState<FetchPolicy>(FetchPolicies.NoCache);
 
+  const { data, loading, error } = useQuery(GET_EXPLORER_DATA);
   // Subscribe to GraphiQL data responses
   // Returns a cleanup method to useEffect
   useEffect(() => receiveGraphiQLResponses());
@@ -33,6 +42,11 @@ export const Explorer = () => {
     editor.setValue(prettyText);
   };
 
+  if (loading || !data || error) {
+    // TODO: Proper loading / error states
+    return null;
+  }
+
   return (
     <div className="graphiql-container">
       <GraphiQL
@@ -42,11 +56,19 @@ export const Explorer = () => {
             query,
             operationName,
             variables,
-            fetchPolicy: queryCache
+            fetchPolicy: operationName === 'IntrospectionQuery' ? FetchPolicies.NoCache : queryCache
           });
           sendGraphiQLRequest(payload);
-          return listenForResponse(operationName, observer);
+          listenForResponse(operationName, payload => {
+            observer.next(payload);
+            observer.complete();
+          });
         }) as any}
+        query={data.graphiQLQuery}
+        editorTheme={data.colorTheme === ColorThemes.Dark ? 'dracula' : 'graphiql'}
+        onEditQuery={query => {
+          graphiQLQuery(query);
+        }}
       >
           <GraphiQL.Toolbar>
             <GraphiQL.Button
