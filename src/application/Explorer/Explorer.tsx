@@ -1,7 +1,9 @@
 import React, { useRef, useState, useEffect } from "react";
 import GraphiQL from "graphiql";
 import { Observable } from "@apollo/client";
-import { sendGraphiQLRequest, receiveGraphiQLResponses, listenForResponse } from './graphiQLRelay';
+import { parse } from "graphql/language/parser";
+import { print } from "graphql/language/printer";
+import { sendGraphiQLRequest, receiveGraphiQLResponses, listenForResponse, graphiQL } from './graphiQLRelay';
 
 import "../../../node_modules/graphiql/graphiql.css";
 
@@ -17,19 +19,25 @@ enum FetchPolicies {
 type FetchPolicy = FetchPolicies;
 
 export const Explorer = () => {
-  const graphiQLRef = useRef(null);
+  const graphiQLRef = useRef<any>(null);
   const [queryCache, setQueryCache] = useState<FetchPolicy>(FetchPolicies.NoCache);
 
   // Subscribe to GraphiQL data responses
   // Returns a cleanup method to useEffect
   useEffect(() => receiveGraphiQLResponses());
 
+  const handleClickPrettifyButton = () => {
+    const editor = graphiQLRef.current?.getQueryEditor();
+    const currentText = editor.getValue();
+    const prettyText = print(parse(currentText));
+    editor.setValue(prettyText);
+  };
+
   return (
     <div className="graphiql-container">
       <GraphiQL
         ref={graphiQLRef}
         fetcher={({ query, operationName, variables }) => new Observable(observer => {
-          console.log('WE GOTTA QUERY HERE', query);
           const payload = JSON.stringify({
             query,
             operationName,
@@ -37,18 +45,14 @@ export const Explorer = () => {
             fetchPolicy: queryCache
           });
           sendGraphiQLRequest(payload);
-          const removeListener = listenForResponse(operationName, observer);
-
-          return removeListener;
+          return listenForResponse(operationName, observer);
         }) as any}
       >
           <GraphiQL.Toolbar>
             <GraphiQL.Button
               label="Prettify"
               title="Prettify"
-              onClick={() => {
-                // TODO: Handle prettify
-              }}
+              onClick={handleClickPrettifyButton}
             />
             <label>
               <input
