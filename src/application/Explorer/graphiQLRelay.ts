@@ -1,19 +1,19 @@
 import Relay from '../../Relay';
 import { GRAPHIQL_REQUEST, GRAPHIQL_RESPONSE } from '../../extension/constants';
 
-export const graphiQL = new Relay();
+const graphiQL = new Relay();
 
 graphiQL.listen(GRAPHIQL_RESPONSE, ({ detail: { payload } }) => {
   graphiQL.broadcast({
     message: `graphiql:response:${payload.operationName}`,
-    payload: payload.response.data,
+    payload: payload.response,
   });
 });
 
-export const listenForResponse = (operationName: string, observer) => {
-  return graphiQL.listen(`graphiql:response:${operationName}`, ({ detail: { payload } }) => {
-    observer.next(payload);
-    observer.complete();
+export const listenForResponse = (operationName: string, cb: (p) => void) => {
+  const removeListener = graphiQL.listen(`graphiql:response:${operationName}`, ({ detail: { payload } }) => {
+    cb(payload);
+    removeListener();
   });
 };
 
