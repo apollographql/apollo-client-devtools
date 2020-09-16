@@ -31,9 +31,7 @@ export default new Promise(async $export => {
   port.onMessage.addListener(tab.broadcast);
 
   window.addEventListener('message', event => {
-    if (event?.data?.to === 'tab') {
-      tab.broadcast(event?.data);
-    }
+    tab.broadcast(event?.data);
   });
 
   tab.addConnection('client', message => {

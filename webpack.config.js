@@ -45,7 +45,7 @@ module.exports = (env) => {
       background: "./src/extension/background/background.ts",
       devtools: "./src/extension/devtools/devtools.ts",
       tab: "./src/extension/tab/tab.ts",
-      hook: "./src/extension/tab/hook.js",
+      hook: "./src/extension/tab/hook.ts",
     },
     output: {
       path: path.join(__dirname, "build"),

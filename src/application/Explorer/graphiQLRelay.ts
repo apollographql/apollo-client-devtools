@@ -1,6 +1,5 @@
 import Relay from '../../Relay';
 import { GRAPHIQL_REQUEST, GRAPHIQL_RESPONSE } from '../../extension/constants';
-import { operationName } from '@apollo/client';
 
 export const graphiQL = new Relay();
 
