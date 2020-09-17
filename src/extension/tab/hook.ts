@@ -95,7 +95,7 @@ function initializeHook() {
     );
   });
 
-  clientRelay.listen(GRAPHIQL_REQUEST, ({ detail: { payload }}) => {
+  clientRelay.listen(GRAPHIQL_REQUEST, ({ payload }) => {
     const { query, operationName, fetchPolicy, variables } = JSON.parse(payload);
 
     const queryAst = gql(query);

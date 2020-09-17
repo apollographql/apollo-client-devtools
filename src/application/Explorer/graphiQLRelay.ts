@@ -3,7 +3,7 @@ import { GRAPHIQL_REQUEST, GRAPHIQL_RESPONSE } from '../../extension/constants';
 
 const graphiQL = new Relay();
 
-graphiQL.listen(GRAPHIQL_RESPONSE, ({ detail: { payload } }) => {
+graphiQL.listen(GRAPHIQL_RESPONSE, ({ payload }) => {
   graphiQL.broadcast({
     message: `graphiql:response:${payload.operationName}`,
     payload: payload.response,
@@ -11,7 +11,7 @@ graphiQL.listen(GRAPHIQL_RESPONSE, ({ detail: { payload } }) => {
 });
 
 export const listenForResponse = (operationName: string, cb: (p) => void) => {
-  const removeListener = graphiQL.listen(`graphiql:response:${operationName}`, ({ detail: { payload } }) => {
+  const removeListener = graphiQL.listen(`graphiql:response:${operationName}`, ({ payload }) => {
     cb(payload);
     removeListener();
   });
