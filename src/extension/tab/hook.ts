@@ -1,6 +1,7 @@
 import { gql, Observable, ApolloClient } from "@apollo/client";
+import { getMainDefinition } from "@apollo/client/utilities";
 import { version as devtoolsVersion } from "../manifest.json";
-import Relay from '../../Relay';
+import Relay from "../../Relay";
 import { 
   DEVTOOLS_INITIALIZED,
   CREATE_DEVTOOLS_PANEL,
@@ -9,7 +10,7 @@ import {
   GRAPHIQL_RESPONSE,
   REQUEST_DATA,
   UPDATE,
-} from '../constants';
+} from "../constants";
 
 declare global {
   type TCache = any;
@@ -36,7 +37,7 @@ function initializeHook() {
     getCache: () => {},
   };
 
-  Object.defineProperty(window, "__APOLLO_DEVTOOLS_GLOBAL_HOOK__", {
+  Object.defineProperty(window, '__APOLLO_DEVTOOLS_GLOBAL_HOOK__', {
     get() {
       return hook;
     },
@@ -95,20 +96,31 @@ function initializeHook() {
   });
 
   clientRelay.listen(GRAPHIQL_REQUEST, ({ detail: { payload }}) => {
-    console.log('Client received graphiql request', JSON.parse(payload));
     const { query, operationName, fetchPolicy, variables } = JSON.parse(payload);
-    // TODO: Send query to hook.ApolloClient & return the response
-    // TODO: Handle mutations
-    // TODO: Handle `cache-only` requests
-    // TODO: @client?
-    const operation = hook.ApolloClient!.watchQuery({
-      query: gql(query),
-      variables,
-      fetchPolicy,
-    });
+
+    const queryAst = gql(query);
+    const definition = getMainDefinition(queryAst);
+
+    const operation = (() => {
+      if (definition.kind === 'OperationDefinition' && definition.operation === 'mutation') {
+        return new Observable(observer => {
+          hook.ApolloClient!.mutate({
+              mutation: queryAst,
+              variables,
+          }).then(result => {
+            observer.next(result);
+          });
+        });
+      } else {
+        return hook.ApolloClient!.watchQuery({
+          query: queryAst,
+          variables,
+          fetchPolicy,
+        });
+      }
+    })();
 
     operation.subscribe(response => {
-      console.log('SUBSCRIBE RESPONSE', response);
       handleGraphiQlResponse({
         operationName, 
         response,
