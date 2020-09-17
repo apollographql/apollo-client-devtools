@@ -34,7 +34,7 @@ sendMessageToClient(DEVTOOLS_INITIALIZED);
 let isPanelCreated = false;
 let isAppInitialized = false;
 
-devtools.listen(CREATE_DEVTOOLS_PANEL, ({ detail: { payload } }) => {
+devtools.listen(CREATE_DEVTOOLS_PANEL, ({ payload }) => {
   if (!isPanelCreated) {
     chrome.devtools.panels.create('Apollo',
       'logo_devtools.png',
@@ -67,7 +67,7 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, ({ detail: { payload } }) => {
               sendMessageToClient(REQUEST_DATA);
             });
   
-            devtools.listen(UPDATE, ({ detail: { payload } }) => {
+            devtools.listen(UPDATE, ({ payload }) => {
               const { queries, mutations, cache } = JSON.parse(payload);
               writeData({ queries, mutations, cache: JSON.stringify(cache) });
             });
