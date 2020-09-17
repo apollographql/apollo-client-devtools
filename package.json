@@ -63,6 +63,7 @@
     "@emotion/core": "^10.0.35",
     "classnames": "^2.2.6",
     "graphiql": "^1.0.3",
+    "graphiql-explorer": "^0.6.2",
     "graphql": "^15.3.0",
     "graphql-syntax-highlighter-react": "^0.4.0",
     "graphql-tools": "^4.0.6",
