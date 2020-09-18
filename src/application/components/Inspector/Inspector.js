@@ -3,7 +3,6 @@ import React from "react";
 import { Sidebar } from "../Sidebar";
 import classnames from "classnames";
 import flattenDeep from "lodash.flattendeep";
-import "./inspector.less";
 
 export default class Inspector extends React.Component {
   static childContextTypes = {

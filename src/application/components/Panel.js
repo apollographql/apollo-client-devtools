@@ -14,8 +14,6 @@ import Queries from "./Images/Queries";
 import Shell from "./Shell";
 import Loading from "./Loading";
 
-import "../style.less";
-
 const UpgradeNotice = ({ version }) => (
   <Shell>
     <h1 style={{ color: "white" }}>Your Apollo Client needs updating!</h1>

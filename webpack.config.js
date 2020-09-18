@@ -60,10 +60,6 @@ module.exports = (env) => {
           loader: "style-loader!css-loader",
         },
         {
-          test: /\.less$/,
-          loader: "style-loader!css-loader!less-loader",
-        },
-        {
           test: /\.(ts)x?$/,
           exclude: /(node_modules)/,
           loader: "ts-loader",
