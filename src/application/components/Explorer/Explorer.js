@@ -20,9 +20,6 @@ import { Observable, execute, ApolloLink } from "@apollo/client";
 
 import { withBridge } from "../bridge";
 
-import "./graphiql.less";
-import "./graphiql-overrides.less";
-
 let id = 0;
 
 const introAST = parse(introspectionQuery);

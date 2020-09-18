@@ -10,8 +10,6 @@ import { GraphqlCodeBlock } from "graphql-syntax-highlighter-react";
 import { Sidebar } from "../Sidebar";
 import Warning from "../Images/Warning";
 
-import "./WatchedQueries.less";
-
 const queryLabel = (queryId, query) => {
   let queryName;
 

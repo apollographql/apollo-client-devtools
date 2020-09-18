@@ -10,8 +10,6 @@ import { GraphqlCodeBlock } from "graphql-syntax-highlighter-react";
 import { Sidebar } from "../Sidebar";
 import Warning from "../Images/Warning";
 
-import "../WatchedQueries/WatchedQueries.less";
-
 const mutationLabel = (mutationId, mutation) => {
   const mutationName = getOperationName(
     // Apollo Client >= v2.5 includes `mutation.mutationString`. Versions prior

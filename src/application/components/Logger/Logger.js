@@ -4,7 +4,6 @@ import { Sidebar } from "../Sidebar";
 import classnames from "classnames";
 import { parse } from "graphql/language/parser";
 import { GraphqlCodeBlock } from "graphql-syntax-highlighter-react";
-import "./Logger.less";
 
 const queryLabel = action => {
   let label = "";
