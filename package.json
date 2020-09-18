@@ -61,6 +61,8 @@
   },
   "dependencies": {
     "@apollo/client": "latest",
+    "@apollo/space-kit": "^7.14.1",
+    "@emotion/core": "^10.0.35",
     "classnames": "^2.2.6",
     "graphiql": "^0.17.5",
     "graphiql-explorer": "^0.6.2",
