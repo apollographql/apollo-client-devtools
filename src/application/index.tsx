@@ -3,6 +3,8 @@ import { jsx } from "@emotion/core";
 import React from "react";
 import { render } from "react-dom";
 import { ApolloClient, ApolloProvider, InMemoryCache, ApolloLink , useQuery, gql, makeVar } from "@apollo/client";
+import "@apollo/space-kit/reset.css";
+import { AlertBanner } from "@apollo/space-kit/AlertBanner";
 
 // import Panel from './components/Panel';
 
@@ -49,12 +51,9 @@ const GET_CACHE = gql`
 const App = () => {
   const { data, loading, error } = useQuery(GET_CACHE);
   return (
-    <div css={{
-      padding: '10px',
-      color: 'grey'
-    }}>
+    <AlertBanner type="info" css={{ margin: '10px' }}>
       Hello, I am the Apollo Client Devtools.
-    </div>
+    </AlertBanner>
   )
 };
 
