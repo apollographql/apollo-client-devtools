@@ -1,6 +1,9 @@
+/** @jsx jsx */
+import { jsx } from "@emotion/core";
 import React from "react";
 import { render } from "react-dom";
 import { ApolloClient, ApolloProvider, InMemoryCache, ApolloLink , useQuery, gql, makeVar } from "@apollo/client";
+
 // import Panel from './components/Panel';
 
 const cache = new InMemoryCache({
@@ -45,14 +48,21 @@ const GET_CACHE = gql`
 
 const App = () => {
   const { data, loading, error } = useQuery(GET_CACHE);
-  return (<div>Hello, I am the Apollo Client Devtools.</div>)
+  return (
+    <div css={{
+      padding: '10px',
+      color: 'grey'
+    }}>
+      Hello, I am the Apollo Client Devtools.
+    </div>
+  )
 };
 
 export const initDevTools = () => {
   render(
     <ApolloProvider client={client}>
       <App />
-    </ApolloProvider>, 
+    </ApolloProvider>,
     document.getElementById("app")
   );
 };
