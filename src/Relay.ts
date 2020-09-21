@@ -4,7 +4,7 @@ interface MessageObj<TPayload = any> {
   payload?: TPayload;
 }
 
-type CustomEventListener = (message: MessageObj) => void;
+type CustomEventListener<T = any> = (message: MessageObj<T>) => void;
 
 class Relay extends EventTarget {
   private connections = new Map<string, (event: CustomEvent<MessageObj>) => ReturnType<CustomEventListener>>();
@@ -63,8 +63,8 @@ class Relay extends EventTarget {
     this.dispatch(event);
   }
 
-  public listen = (name: string, fn: CustomEventListener) => {
-    function wrappedFn(event: CustomEvent<MessageObj>) { 
+  public listen = <T = any>(name: string, fn: CustomEventListener<T>) => {
+    function wrappedFn(event: CustomEvent<MessageObj<T>>) { 
       return fn(event.detail); 
     };
 

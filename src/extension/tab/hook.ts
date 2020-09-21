@@ -2,6 +2,7 @@ import { gql, Observable, ApolloClient } from "@apollo/client";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { version as devtoolsVersion } from "../manifest.json";
 import Relay from "../../Relay";
+import { GraphiQLResponse, QueryResult } from '../../types';
 import { 
   DEVTOOLS_INITIALIZED,
   CREATE_DEVTOOLS_PANEL,
@@ -67,7 +68,7 @@ function initializeHook() {
     sendMessageToTab(ACTION_HOOK_FIRED);
   }
 
-  function handleGraphiQlResponse(payload) {
+  function handleGraphiQlResponse(payload: GraphiQLResponse) {
     sendMessageToTab(GRAPHIQL_RESPONSE, payload);
   }
 
@@ -120,7 +121,7 @@ function initializeHook() {
       }
     })();
 
-    operation.subscribe(response => {
+    operation.subscribe((response: QueryResult) => {
       handleGraphiQlResponse({
         operationName, 
         response,

@@ -1,17 +1,20 @@
 import Relay from '../../Relay';
+import { GraphiQLResponse, QueryResult } from '../../types';
 import { GRAPHIQL_REQUEST, GRAPHIQL_RESPONSE } from '../../extension/constants';
 
 const graphiQL = new Relay();
 
-graphiQL.listen(GRAPHIQL_RESPONSE, ({ payload }) => {
-  graphiQL.broadcast({
-    message: `graphiql:response:${payload.operationName}`,
-    payload: payload.response,
-  });
+graphiQL.listen<GraphiQLResponse>(GRAPHIQL_RESPONSE, ({ payload }) => {
+  if (payload) {
+    graphiQL.broadcast({
+      message: `graphiql:response:${payload.operationName}`,
+      payload: payload.response,
+    });
+  }
 });
 
 export const listenForResponse = (operationName: string, cb: (p) => void) => {
-  const removeListener = graphiQL.listen(`graphiql:response:${operationName}`, ({ payload }) => {
+  const removeListener = graphiQL.listen<QueryResult>(`graphiql:response:${operationName}`, ({ payload }) => {
     cb(payload);
     removeListener();
   });
