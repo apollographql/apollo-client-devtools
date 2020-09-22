@@ -46,7 +46,7 @@ const cacheVar = makeVar(null);
 export const colorTheme = makeVar<ColorTheme>(ColorThemes.Light);
 export const graphiQLQuery = makeVar<string>('');
 
-const client = new ApolloClient({
+export const client = new ApolloClient({
   cache,
 });
 

@@ -68,8 +68,7 @@ describe('Relay', () => {
     relay.listen('Train delayed.', resolve);
     relay.broadcast({ message: 'Train delayed.' });
   }).then(result => {
-    const customEvent = new CustomEvent('Train delayed.', { detail: {} });
-    expect(result).toEqual(customEvent);
+    expect(result).toEqual({ message: 'Train delayed.', payload: undefined });
   }));
 
   it('returns a removeEventListener function', () => new Promise((resolve, reject) => {
@@ -77,7 +76,7 @@ describe('Relay', () => {
     const callback = jest.fn(result => {
       try {
         expect(callback).toBeCalledTimes(1);
-        expect(result).toEqual(new CustomEvent('Train delayed.', { detail: {} }));
+        expect(result).toEqual({ message: 'Train delayed.', payload: undefined });
         removeEventListener();
         // A second broadcast will cause a test failure if the listener has not been removed.
         relay.broadcast({ message: 'Train delayed.' });

@@ -39,6 +39,7 @@ export const Explorer = () => {
       variables,
       fetchPolicy,
     });
+
     sendGraphiQLRequest(payload);
     listenForResponse(operationName, payload => {
       observer.next(payload);
@@ -108,6 +109,7 @@ export const Explorer = () => {
             <label>
               <input
                 type="checkbox"
+                name="loadFromCache"
                 checked={queryCache === FetchPolicies.CacheOnly}
                 onChange={() => setQueryCache(queryCache === FetchPolicies.CacheOnly ? FetchPolicies.NoCache : FetchPolicies.CacheOnly)}
               />

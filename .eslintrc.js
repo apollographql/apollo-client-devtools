@@ -3,6 +3,8 @@ module.exports = {
   parser: '@typescript-eslint/parser',
   plugins: [
     '@typescript-eslint',
+    'testing-library',
+    'jest-dom',
   ],
   extends: [
     'eslint:recommended',
