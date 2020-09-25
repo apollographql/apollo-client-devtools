@@ -1,10 +1,14 @@
 /** @jsx jsx */
+import { useState } from "react";
 import { jsx } from "@emotion/core";
+import { ThemeProvider } from "emotion-theming";
 import { render } from "react-dom";
 import { ApolloClient, ApolloProvider, InMemoryCache, useQuery, gql, makeVar } from "@apollo/client";
 import "@apollo/space-kit/reset.css";
+import { colors } from "@apollo/space-kit/colors";
 
-// import Panel from './components/Panel';
+import { Screens } from './Layouts/Navigation';
+import { Queries } from './Queries/Queries';
 import { Explorer } from './Explorer/Explorer';
 
 export enum ColorTheme {
@@ -52,17 +56,45 @@ export const writeData = ({ queries, mutations, cache }) => {
   cacheVar(cache);
 };
 
-const GET_CACHE = gql`
-  query GetCache {
-    mutations @client
-    queries @client
-    cache @client
+const GET_THEME = gql`
+  query GetTheme {
+    colorTheme @client
   }
 `;
 
+const themes = {
+  [ColorTheme.Light]: {
+    primary: colors.indigo.darkest
+  },
+  [ColorTheme.Dark]: {
+    primary: colors.black.base
+  },
+};
+
+const screens = {
+  explorer: Explorer,
+  queries: Queries,
+  mutations: () => (<div>Mutations</div>),
+  cache: () => (<div>Cache</div>),
+};
+
 const App = () => {
-  useQuery(GET_CACHE);
-  return (<Explorer />)
+  const { data = { colorTheme: ColorTheme.Light } } = useQuery(GET_THEME);
+  const [selectedNavItem, setSelectedNavItem] = useState<Screens>(Screens.Queries);
+  const Screen = screens[selectedNavItem] as any;
+
+  return (
+    <ThemeProvider theme={themes[data.colorTheme]}>
+      <Screen
+        navigationProps={{ 
+          queriesCount: 0,
+          mutationsCount: 100000,
+          selected: selectedNavItem,
+          onNavigate: setSelectedNavItem,
+        }}
+      />
+    </ThemeProvider>
+  )
 };
 
 export const initDevTools = () => {
