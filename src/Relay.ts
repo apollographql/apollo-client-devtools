@@ -1,10 +1,4 @@
-interface MessageObj<TPayload = any> {
-  to?: string;
-  message: string;
-  payload?: TPayload;
-}
-
-type CustomEventListener<T = any> = (message: MessageObj<T>) => void;
+import { CustomEventListener, MessageObj } from './types';
 
 class Relay extends EventTarget {
   private connections = new Map<string, (event: CustomEvent<MessageObj>) => ReturnType<CustomEventListener>>();
