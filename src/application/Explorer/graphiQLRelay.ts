@@ -1,5 +1,5 @@
 import Relay from '../../Relay';
-import { GraphiQLResponse, QueryResult } from '../../types';
+import { GraphiQLResponse, QueryResult, MessageObj } from '../../types';
 import { GRAPHIQL_REQUEST, GRAPHIQL_RESPONSE } from '../../extension/constants';
 
 const graphiQL = new Relay();
@@ -21,7 +21,7 @@ export const listenForResponse = (operationName: string, cb: (p) => void) => {
 };
 
 export const sendGraphiQLRequest = operation => {
-  (window as any).dispatchEvent(new CustomEvent(GRAPHIQL_REQUEST, { 
+  window.dispatchEvent(new CustomEvent(GRAPHIQL_REQUEST, { 
     detail: {
       message: GRAPHIQL_REQUEST,
       payload: operation,
@@ -30,14 +30,14 @@ export const sendGraphiQLRequest = operation => {
 };
 
 export const receiveGraphiQLRequests = callback => {
-  (window as any).addEventListener(GRAPHIQL_REQUEST, callback);
+  window.addEventListener(GRAPHIQL_REQUEST, callback);
   return () => {
-    (window as any).removeEventListener(GRAPHIQL_REQUEST, callback);
+    window.removeEventListener(GRAPHIQL_REQUEST, callback);
   };
 };
 
 export const sendResponseToGraphiQL = ({ payload }) => {
-  (window as any).dispatchEvent(new CustomEvent(GRAPHIQL_RESPONSE, { 
+  window.dispatchEvent(new CustomEvent(GRAPHIQL_RESPONSE, { 
     detail: {
       message: GRAPHIQL_RESPONSE,
       payload,
@@ -46,10 +46,13 @@ export const sendResponseToGraphiQL = ({ payload }) => {
 };
 
 export const receiveGraphiQLResponses = () => {
-  (window as any).addEventListener(GRAPHIQL_RESPONSE, ({ detail }) => {
+  const handleResponse = ({ detail }: CustomEvent<MessageObj>) => {
     graphiQL.broadcast(detail);
-  });
+  };
+
+  window.addEventListener(GRAPHIQL_RESPONSE, handleResponse);
+
   return () => {
-    (window as any).removeEventListener(GRAPHIQL_RESPONSE, graphiQL.broadcast);
+    window.removeEventListener(GRAPHIQL_RESPONSE, handleResponse);
   };
 };

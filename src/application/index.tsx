@@ -1,20 +1,16 @@
 /** @jsx jsx */
 import { jsx } from "@emotion/core";
-import React from "react";
 import { render } from "react-dom";
 import { ApolloClient, ApolloProvider, InMemoryCache, useQuery, gql, makeVar } from "@apollo/client";
 import "@apollo/space-kit/reset.css";
-import { AlertBanner } from "@apollo/space-kit/AlertBanner";
 
 // import Panel from './components/Panel';
 import { Explorer } from './Explorer/Explorer';
 
-export enum ColorThemes {
+export enum ColorTheme {
   Light = 'light',
   Dark = 'dark'
 }
-
-type ColorTheme = ColorThemes;
 
 const cache = new InMemoryCache({
   typePolicies: {
@@ -43,7 +39,7 @@ const cache = new InMemoryCache({
 const queriesVar = makeVar(null);
 const mutationsVar = makeVar(null);
 const cacheVar = makeVar(null);
-export const colorTheme = makeVar<ColorTheme>(ColorThemes.Light);
+export const colorTheme = makeVar<ColorTheme>(ColorTheme.Light);
 export const graphiQLQuery = makeVar<string>('');
 
 export const client = new ApolloClient({

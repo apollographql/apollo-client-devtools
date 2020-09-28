@@ -103,7 +103,7 @@ describe('Relay', () => {
 
     relay.send({
       message,
-      to: '1st Avenue',
+      to: '1st Ave',
     });
   }));
 });
