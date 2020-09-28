@@ -1,0 +1,32 @@
+version: 2.1
+orbs:
+  node: circleci/node@4.0.1
+
+jobs:
+  lint:
+    executor:
+      name: node/default
+      tag: 'current'
+    steps:
+      - checkout
+      - node/install-packages
+      - run:
+          command: |
+            npm run build
+            npm run lint
+  test:
+    executor:
+      name: node/default
+      tag: 'current'
+    steps:
+      - checkout
+      - node/install-packages
+      - run:
+          command: npm run test
+
+workflows:
+  lint-and-test:
+    jobs:
+      # Linting is disabled until old devtools code is removed
+      #- lint
+      - test
