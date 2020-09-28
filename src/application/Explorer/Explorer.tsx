@@ -6,7 +6,7 @@ import { getIntrospectionQuery, buildClientSchema } from "graphql/utilities";
 import { parse } from "graphql/language/parser";
 import { print } from "graphql/language/printer";
 import GraphiQLExplorer from "graphiql-explorer";
-import { graphiQLQuery, ColorThemes } from '../index';
+import { graphiQLQuery, ColorTheme } from '../index';
 import { sendGraphiQLRequest, receiveGraphiQLResponses, listenForResponse } from './graphiQLRelay';
 
 import "../../../node_modules/graphiql/graphiql.css";
@@ -91,7 +91,7 @@ export const Explorer = () => {
         fetcher={executeOperation as any}
         schema={schema}
         query={data.graphiQLQuery}
-        editorTheme={data.colorTheme === ColorThemes.Dark ? 'dracula' : 'graphiql'}
+        editorTheme={data.colorTheme === ColorTheme.Dark ? 'dracula' : 'graphiql'}
         onEditQuery={query => graphiQLQuery(query)}
       >
           <GraphiQL.Toolbar>
