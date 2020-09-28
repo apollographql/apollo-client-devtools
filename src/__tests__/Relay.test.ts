@@ -93,17 +93,35 @@ describe('Relay', () => {
   }));
 
   it('can forward message to a connection', () => new Promise((resolve, reject) => {
-    const message = 'The L train is delayed.';
+    const TRAIN_DELAYED = 'Train delayed.';
 
-    const relay = new Relay();
-    relay.addConnection('1st Ave', reject);
-    relay.addConnection('Bedford Ave', resolve);
+    const L = new Relay();
+    const G = new Relay();
+    const A = new Relay();
 
-    relay.forward(message, 'Bedford Ave');
+    L.addConnection('G', message => G.broadcast(message));
+    G.addConnection('A', message => A.broadcast(message));
 
-    relay.send({
-      message,
-      to: '1st Ave',
+    A.listen(TRAIN_DELAYED, message => {
+      try {
+        expect(message).toEqual({
+          message: TRAIN_DELAYED,
+          to: undefined,
+          payload: 'delay',
+        });
+
+        resolve();
+      } catch(e) { 
+        reject(e); 
+      }
+    });
+
+    G.forward(TRAIN_DELAYED, 'A');
+
+    L.send({
+      message: TRAIN_DELAYED,
+      to: 'G',
+      payload: 'delay',
     });
   }));
 });
