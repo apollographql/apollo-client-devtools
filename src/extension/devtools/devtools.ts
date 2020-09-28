@@ -7,6 +7,8 @@ import {
   UPDATE,
   PANEL_OPEN,
   PANEL_CLOSED,
+  GRAPHIQL_REQUEST,
+  GRAPHIQL_RESPONSE,
 } from '../constants';
 
 const inspectedTabId = chrome.devtools.inspectedWindow.tabId;
@@ -32,7 +34,7 @@ sendMessageToClient(DEVTOOLS_INITIALIZED);
 let isPanelCreated = false;
 let isAppInitialized = false;
 
-devtools.listen(CREATE_DEVTOOLS_PANEL, ({ detail: { payload } }) => {
+devtools.listen(CREATE_DEVTOOLS_PANEL, ({ payload }) => {
   if (!isPanelCreated) {
     chrome.devtools.panels.create('Apollo',
       'logo_devtools.png',
@@ -40,13 +42,23 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, ({ detail: { payload } }) => {
       function(panel) {
         isPanelCreated = true;
         const { queries, mutations, cache } = JSON.parse(payload);
+        let removeGraphiQLListener;
 
         panel.onShown.addListener(window => {
           sendMessageToClient(PANEL_OPEN);
 
           if (!isAppInitialized) {
-            (window as any).__DEVTOOLS_APPLICATION__.initialize();
-            (window as any).__DEVTOOLS_APPLICATION__.writeData({ queries, mutations, cache: JSON.stringify(cache) });
+            const { 
+              __DEVTOOLS_APPLICATION__: {
+                initialize,
+                writeData,
+                receiveGraphiQLRequests,
+                sendResponseToGraphiQL,
+              }
+            } = (window as any);
+
+            initialize();
+            writeData({ queries, mutations, cache: JSON.stringify(cache) });
             isAppInitialized = true;
             sendMessageToClient(REQUEST_DATA);
 
@@ -55,14 +67,28 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, ({ detail: { payload } }) => {
               sendMessageToClient(REQUEST_DATA);
             });
   
-            devtools.listen(UPDATE, ({ detail: { payload } }) => {
+            devtools.listen(UPDATE, ({ payload }) => {
               const { queries, mutations, cache } = JSON.parse(payload);
-              (window as any).__DEVTOOLS_APPLICATION__.writeData({ queries, mutations, cache: JSON.stringify(cache) });
+              writeData({ queries, mutations, cache: JSON.stringify(cache) });
             });
+
+            // Add connection so client at send to `background:devtools-${inspectedTabId}:graphiql`
+            devtools.addConnection('graphiql', sendResponseToGraphiQL);
+            removeGraphiQLListener = receiveGraphiQLRequests(({ detail }) => {
+              devtools.broadcast(detail);
+            });
+
+            // Forward all GraphiQL requests to the client
+            devtools.forward(GRAPHIQL_REQUEST, `background:tab-${inspectedTabId}:client`);
           }
         });
 
         panel.onHidden.addListener(() => {
+          // TODO: Remove UPDATE listener
+          // TODO: Remove ACTION_HOOK_FIRED listener
+          // TODO: Remove devtools.forward(GRAPHIQL_REQUEST)
+          devtools.removeConnection('graphiql');
+          removeGraphiQLListener();
           sendMessageToClient(PANEL_CLOSED);
         });
       }

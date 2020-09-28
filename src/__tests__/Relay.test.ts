@@ -68,8 +68,7 @@ describe('Relay', () => {
     relay.listen('Train delayed.', resolve);
     relay.broadcast({ message: 'Train delayed.' });
   }).then(result => {
-    const customEvent = new CustomEvent('Train delayed.', { detail: {} });
-    expect(result).toEqual(customEvent);
+    expect(result).toEqual({ message: 'Train delayed.', payload: undefined });
   }));
 
   it('returns a removeEventListener function', () => new Promise((resolve, reject) => {
@@ -77,7 +76,7 @@ describe('Relay', () => {
     const callback = jest.fn(result => {
       try {
         expect(callback).toBeCalledTimes(1);
-        expect(result).toEqual(new CustomEvent('Train delayed.', { detail: {} }));
+        expect(result).toEqual({ message: 'Train delayed.', payload: undefined });
         removeEventListener();
         // A second broadcast will cause a test failure if the listener has not been removed.
         relay.broadcast({ message: 'Train delayed.' });
@@ -91,5 +90,38 @@ describe('Relay', () => {
 
     const removeEventListener = relay.listen('Train delayed.', callback);
     relay.broadcast({ message: 'Train delayed.' });
+  }));
+
+  it('can forward message to a connection', () => new Promise((resolve, reject) => {
+    const TRAIN_DELAYED = 'Train delayed.';
+
+    const L = new Relay();
+    const G = new Relay();
+    const A = new Relay();
+
+    L.addConnection('G', message => G.broadcast(message));
+    G.addConnection('A', message => A.broadcast(message));
+
+    A.listen(TRAIN_DELAYED, message => {
+      try {
+        expect(message).toEqual({
+          message: TRAIN_DELAYED,
+          to: undefined,
+          payload: 'delay',
+        });
+
+        resolve();
+      } catch(e) { 
+        reject(e); 
+      }
+    });
+
+    G.forward(TRAIN_DELAYED, 'A');
+
+    L.send({
+      message: TRAIN_DELAYED,
+      to: 'G',
+      payload: 'delay',
+    });
   }));
 });

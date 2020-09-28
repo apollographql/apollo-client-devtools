@@ -1,7 +1,5 @@
 // This script is injected into each tab.
 import "./tabRelay"; 
-import { initializeHook } from "./hook";
-import { version as devToolsVersion } from "../manifest.json";
 
 /* 
   Content scripts are unable to modify the window object directly. 
@@ -10,7 +8,8 @@ import { version as devToolsVersion } from "../manifest.json";
 */ 
 if (typeof document === "object" && document instanceof HTMLDocument) {
   const script = document.createElement("script");
-  script.textContent = `;(${initializeHook.toString()})(window, "${devToolsVersion}")`;
-  document.documentElement.appendChild(script);
-  script?.parentNode?.removeChild(script);
+  script.setAttribute("type", "module");
+  script.setAttribute("src", chrome.extension.getURL("hook.js"));
+  const head = document.head || document.getElementsByTagName("head")[0] || document.documentElement;
+  head.insertBefore(script, head.lastChild);
 }

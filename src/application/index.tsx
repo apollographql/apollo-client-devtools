@@ -1,12 +1,16 @@
 /** @jsx jsx */
 import { jsx } from "@emotion/core";
-import React from "react";
 import { render } from "react-dom";
-import { ApolloClient, ApolloProvider, InMemoryCache, ApolloLink , useQuery, gql, makeVar } from "@apollo/client";
+import { ApolloClient, ApolloProvider, InMemoryCache, useQuery, gql, makeVar } from "@apollo/client";
 import "@apollo/space-kit/reset.css";
-import { AlertBanner } from "@apollo/space-kit/AlertBanner";
 
 // import Panel from './components/Panel';
+import { Explorer } from './Explorer/Explorer';
+
+export enum ColorTheme {
+  Light = 'light',
+  Dark = 'dark'
+}
 
 const cache = new InMemoryCache({
   typePolicies: {
@@ -20,7 +24,13 @@ const cache = new InMemoryCache({
         },
         cache() {
           return cacheVar();
-        }
+        },
+        colorTheme() {
+          return colorTheme();
+        },
+        graphiQLQuery() {
+          return graphiQLQuery();
+        },
       }
     }
   }
@@ -29,8 +39,10 @@ const cache = new InMemoryCache({
 const queriesVar = makeVar(null);
 const mutationsVar = makeVar(null);
 const cacheVar = makeVar(null);
+export const colorTheme = makeVar<ColorTheme>(ColorTheme.Light);
+export const graphiQLQuery = makeVar<string>('');
 
-const client = new ApolloClient({
+export const client = new ApolloClient({
   cache,
 });
 
@@ -49,12 +61,8 @@ const GET_CACHE = gql`
 `;
 
 const App = () => {
-  const { data, loading, error } = useQuery(GET_CACHE);
-  return (
-    <AlertBanner type="info" css={{ margin: '10px' }}>
-      Hello, I am the Apollo Client Devtools.
-    </AlertBanner>
-  )
+  useQuery(GET_CACHE);
+  return (<Explorer />)
 };
 
 export const initDevTools = () => {

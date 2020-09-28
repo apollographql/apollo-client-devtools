@@ -1,16 +1,10 @@
-interface Message<TPayload = any> {
-  to?: string;
-  message: string;
-  payload?: TPayload;
-}
-
-type CustomEventListener = (event: CustomEvent) => void;
+import { CustomEventListener, MessageObj } from './types';
 
 class Relay extends EventTarget {
-  private connections = new Map<string, (event: CustomEvent<Message>) => ReturnType<CustomEventListener>>();
+  private connections = new Map<string, (event: CustomEvent<MessageObj>) => ReturnType<CustomEventListener>>();
 
-  public addConnection = (name: string, fn: (message: Message) => void) => {
-    function wrappedFn(event: CustomEvent<Message>) { 
+  public addConnection = (name: string, fn: (message: MessageObj) => void) => {
+    function wrappedFn(event: CustomEvent<MessageObj>) { 
       return fn(event.detail); 
     };
 
@@ -36,7 +30,7 @@ class Relay extends EventTarget {
     return new CustomEvent(message, { detail: {} });
   }
 
-  public broadcast = (message: Message) => {
+  public broadcast = (message: MessageObj) => {
     let event = this.createEvent(message.message);
     
     if (message?.to) {
@@ -63,15 +57,28 @@ class Relay extends EventTarget {
     this.dispatch(event);
   }
 
-  public listen = (name: string, fn: CustomEventListener) => {
-    this.addEventListener(name, fn);
+  public listen = <T = any>(name: string, fn: CustomEventListener<T>) => {
+    function wrappedFn(event: CustomEvent<MessageObj<T>>) { 
+      return fn(event.detail); 
+    };
+
+    this.addEventListener(name, wrappedFn);
     return () => {
-      this.removeEventListener(name, fn);
+      this.removeEventListener(name, wrappedFn);
     }
   }
 
-  public send = (messageObj: Message) => {
+  public send = (messageObj: MessageObj) => {
     this.broadcast(messageObj);
+  }
+
+  public forward = (message: string, newRecipient: string)  => {
+    return this.listen(message, messageObj => {
+      this.broadcast({
+        ...messageObj,
+        to: newRecipient,
+      });
+    });
   }
 }
 
