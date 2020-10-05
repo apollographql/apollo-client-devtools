@@ -1,14 +1,14 @@
 /** @jsx jsx */
-import { useState } from "react";
 import { jsx } from "@emotion/core";
 import { ThemeProvider } from "emotion-theming";
 import { render } from "react-dom";
-import { ApolloClient, ApolloProvider, InMemoryCache, useQuery, gql, makeVar } from "@apollo/client";
+import { ApolloClient, ApolloProvider, InMemoryCache, useReactiveVar, makeVar } from "@apollo/client";
 import "@apollo/space-kit/reset.css";
 import { colors } from "@apollo/space-kit/colors";
 
-import { Screens } from './Layouts/Navigation';
+import { currentScreen, Screens } from './Layouts/Navigation';
 import { Queries } from './Queries/Queries';
+import { Mutations } from './Mutations/Mutations';
 import { Explorer } from './Explorer/Explorer';
 
 export enum ColorTheme {
@@ -28,9 +28,6 @@ const cache = new InMemoryCache({
         },
         cache() {
           return cacheVar();
-        },
-        colorTheme() {
-          return colorTheme();
         },
         graphiQLQuery() {
           return graphiQLQuery();
@@ -56,13 +53,7 @@ export const writeData = ({ queries, mutations, cache }) => {
   cacheVar(cache);
 };
 
-const GET_THEME = gql`
-  query GetTheme {
-    colorTheme @client
-  }
-`;
-
-const themes = {
+export const themes: Record<ColorTheme, Record<string, string>> = {
   [ColorTheme.Light]: {
     primary: colors.indigo.darkest
   },
@@ -72,25 +63,23 @@ const themes = {
 };
 
 const screens = {
-  explorer: Explorer,
-  queries: Queries,
-  mutations: () => (<div>Mutations</div>),
-  cache: () => (<div>Cache</div>),
+  [Screens.Explorer]: Explorer,
+  [Screens.Queries]: Queries,
+  [Screens.Mutations]: Mutations,
+  [Screens.Cache]: () => <div>Cache</div>
 };
 
 const App = () => {
-  const { data = { colorTheme: ColorTheme.Light } } = useQuery(GET_THEME);
-  const [selectedNavItem, setSelectedNavItem] = useState<Screens>(Screens.Queries);
-  const Screen = screens[selectedNavItem] as any;
+  const theme = useReactiveVar<ColorTheme>(colorTheme);
+  const selected = useReactiveVar<Screens>(currentScreen);
+  const Screen = screens[selected];
 
   return (
-    <ThemeProvider theme={themes[data.colorTheme]}>
+    <ThemeProvider theme={themes[theme]}>
       <Screen
         navigationProps={{ 
           queriesCount: 0,
           mutationsCount: 100000,
-          selected: selectedNavItem,
-          onNavigate: setSelectedNavItem,
         }}
       />
     </ThemeProvider>
