@@ -33,7 +33,7 @@ jest.mock('../graphiQLRelay', () => ({
 }));
 
 describe('<Explorer />', () => {
-  let navigationProps = { queriesCount: 0, mutationsCount: 0 };
+  const navigationProps = { queriesCount: 0, mutationsCount: 0 };
   test('it renders a header', () => {
     const { getByTestId } = renderWithApolloClient(<Explorer navigationProps={navigationProps} />);
     const header = getByTestId('header');
@@ -53,7 +53,7 @@ describe('<Explorer />', () => {
     const button = getByText('Explorer');
     const explorer = container.querySelector('.docExplorerWrap');
     expect(explorer).not.toBeVisible();
-    user.click(button);
+    user.click(button as HTMLElement);
     expect(explorer).toBeVisible();
   });
 
