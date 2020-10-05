@@ -46,16 +46,17 @@ const SidebarLayout: React.FC<SidebarLayoutProps> & SidebarLayoutComposition = (
   navigationProps,
   children,
 }) => {
-  const { selected, queriesCount, mutationsCount, onNavigate } = navigationProps;
+  const { queriesCount, mutationsCount } = navigationProps;
 
   return (
-    <div css={layout}>
+    <div 
+      data-testid="layout" 
+      css={layout}
+    >
       <Navigation
         css={navigation}
-        selected={selected}
         queriesCount={queriesCount}
         mutationsCount={mutationsCount}
-        onNavigate={onNavigate}
       />
       {children}
     </div>
@@ -70,13 +71,14 @@ const Sidebar = ({ children }) => {
         sidebar, 
         { backgroundColor: theme.primary },
       ]}
+      data-testid="sidebar"
     >
       {children}
     </div>
   );
 };
-const Header = ({ children }) => (<div css={header}>{children}</div>);
-const Main = ({ children }) => (<div css={main}>{children}</div>);
+const Header = ({ children }) => (<div css={header} data-testid="header">{children}</div>);
+const Main = ({ children }) => (<div css={main} data-testid="main">{children}</div>);
 
 SidebarLayout.Sidebar = Sidebar;
 SidebarLayout.Header = Header;

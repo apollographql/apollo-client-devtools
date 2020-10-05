@@ -1,5 +1,6 @@
 /** @jsx jsx */
 import React from "react";
+import { makeVar, useReactiveVar } from "@apollo/client";
 import { jsx, css } from "@emotion/core";
 import { useTheme } from "emotion-theming";
 import { rem } from "polished";
@@ -19,10 +20,8 @@ type NavButtonProps = {
 };
 
 export type NavigationProps = {
-  selected: Screens,
   queriesCount: number,
   mutationsCount: number,
-  onNavigate: any,
 };
 
 const navigation = css`
@@ -87,9 +86,13 @@ const border = css`
   border-right: ${rem(1)} solid rgba(255, 255, 255, .3);
 `;
 
-export const Navigation: React.FC<NavigationProps> = ({ selected, queriesCount, mutationsCount, onNavigate }) => {
+export const currentScreen = makeVar<Screens>(Screens.Queries);
+
+export const Navigation: React.FC<NavigationProps> = ({ queriesCount, mutationsCount }) => {
+  const selected = useReactiveVar<Screens>(currentScreen);
   const theme = useTheme<any>();
   const isSelected = (NavButton: Screens) => selected === NavButton;
+  const onNavigate = (screen: Screens) => currentScreen(screen);
 
   return (
     <nav 
