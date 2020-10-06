@@ -6,11 +6,11 @@ import { client, themes, ColorTheme } from './index';
 
 export const renderWithApolloClient = (
   ui, 
-  { providerProps, ...renderOptions } = { providerProps: {} }
+  { providerProps, theme, ...renderOptions } = { providerProps: {}, theme: ColorTheme.Light }
 ) => {
   return render(
     <ApolloProvider client={client} {...providerProps}>
-      <ThemeProvider theme={themes[ColorTheme.Light]}>
+      <ThemeProvider theme={themes[theme]}>
         {ui}
       </ThemeProvider>
     </ApolloProvider>,
