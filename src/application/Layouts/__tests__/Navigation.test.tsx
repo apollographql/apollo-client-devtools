@@ -29,8 +29,9 @@ describe('<Navigation />', () => {
   it('can select a navigation item', () => {
     const { container } = renderWithApolloClient(<Navigation {...props} />);
     const buttons = container.querySelectorAll('button');
-    expect(buttons[1]).not.toHaveStyleRule('color', colors.silver.lighter);
-    user.click(buttons[1]);
-    expect(buttons[1]).toHaveStyleRule('color', colors.silver.lighter);
+    const lastButton = buttons[buttons.length - 1];
+    expect(lastButton).not.toHaveStyleRule('color', colors.silver.lighter);
+    user.click(lastButton);
+    expect(lastButton).toHaveStyleRule('color', colors.silver.lighter);
   }); 
 });
