@@ -1,3 +1,9 @@
 {
-  "favorites": []
+  "favorites": [
+    {
+      "name": "Mantis",
+      "hex": "#51C053",
+      "contrast": "#000000"
+    }
+  ]
 }
