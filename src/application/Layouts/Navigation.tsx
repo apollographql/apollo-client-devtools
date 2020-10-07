@@ -32,11 +32,12 @@ const navigation = css`
 
 const selectedNavButton = css`
   color: ${colors.silver.lighter};
-  box-shadow: 0 ${rem(-2)} 0 0 ${colors.silver.lighter} inset;
+  box-shadow: 0 ${rem(-1)} 0 0 ${colors.silver.lighter} inset;
 `;
 
 const navButton = css`
   appearance: none;
+  height: ${rem(56)};
   margin: 0 ${rem(16)};
   padding: ${rem(16)} 0 ${rem(20)};
   font-size: ${rem(13)};
