@@ -2,7 +2,8 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { ApolloProvider } from "@apollo/client";
 import { ThemeProvider } from "emotion-theming";
-import { client, themes, ColorTheme } from './index';
+import { client } from './index';
+import { themes, ColorTheme } from './theme';
 
 export const renderWithApolloClient = (
   ui, 
