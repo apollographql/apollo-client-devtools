@@ -24,7 +24,7 @@ declare global {
 type Hook = {
   ApolloClient: ApolloClient<TCache> | undefined;
   version: string;
-  getQueries: () => void;
+  getQueries: () => Map<string, any> | void;
   getMutations: () => void;
   getCache: () => void;
 }
@@ -54,7 +54,39 @@ function initializeHook() {
     clientRelay.broadcast(data);
   });
 
+  type QueryInfo = {
+    document: any;
+    source: any,
+    variables: any;
+    lastWrittenResult: any;
+    lastWrittenVars: any;
+  }
+
   // TODO: Handshake to get the tab id?
+  function getQueries(): QueryInfo[] {
+    const queryMap = hook.getQueries();
+    let queries: QueryInfo[] = [];
+
+    if (queryMap) {
+      queries = [...queryMap.values()].map(({ 
+        document, 
+        variables,
+        lastWrittenResult,
+        lastWrittenVars,
+        diff,
+      }) => ({
+          document,
+          source: document?.loc?.source, 
+          variables,
+          lastWrittenResult,
+          lastWrittenVars,
+          diff,
+        })
+      )
+    }
+
+    return queries;
+  }
 
   function sendMessageToTab<TPayload>(message: string, payload?: TPayload) {
     clientRelay.send({
@@ -74,10 +106,11 @@ function initializeHook() {
 
   clientRelay.listen(DEVTOOLS_INITIALIZED, () => {
     if (hook.ApolloClient) {
+
       // Tab Relay forwards this the devtools
       sendMessageToTab(CREATE_DEVTOOLS_PANEL, 
         JSON.stringify({
-          queries: hook.getQueries(),
+          queries: getQueries(),
           mutations: hook.getMutations(),
           cache: hook.getCache(),
         })
@@ -89,7 +122,7 @@ function initializeHook() {
     // Tab Relay forwards this the devtools
     sendMessageToTab(UPDATE, 
       JSON.stringify({
-        queries: hook.getQueries(),
+        queries: getQueries(),
         mutations: hook.getMutations(),
         cache: hook.getCache(),
       })

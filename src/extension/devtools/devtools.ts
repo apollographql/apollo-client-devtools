@@ -8,7 +8,6 @@ import {
   PANEL_OPEN,
   PANEL_CLOSED,
   GRAPHIQL_REQUEST,
-  GRAPHIQL_RESPONSE,
 } from '../constants';
 
 const inspectedTabId = chrome.devtools.inspectedWindow.tabId;
@@ -66,7 +65,7 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, ({ payload }) => {
               // TODO: Decide when we want to request updates.
               sendMessageToClient(REQUEST_DATA);
             });
-  
+
             devtools.listen(UPDATE, ({ payload }) => {
               const { queries, mutations, cache } = JSON.parse(payload);
               writeData({ queries, mutations, cache: JSON.stringify(cache) });
