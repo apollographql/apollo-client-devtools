@@ -24,18 +24,18 @@ export type NavigationProps = {
   mutationsCount: number,
 };
 
-const navigation = css`
+const navigationStyles = css`
   display: flex;
   align-items: center;
   box-shadow: 0 ${rem(-1)} 0 0 rgba(255, 255, 255, .3) inset;
 `;
 
-const selectedNavButton = css`
+const selectedNavButtonStyles = css`
   color: ${colors.silver.lighter};
   box-shadow: 0 ${rem(-1)} 0 0 ${colors.silver.lighter} inset;
 `;
 
-const navButton = css`
+const navButtonStyles = css`
   appearance: none;
   height: ${rem(56)};
   margin: 0 ${rem(16)};
@@ -58,8 +58,8 @@ const NavButton: React.FC<NavButtonProps>  = ({ isSelected, onClick, children })
   return (
     <button
       css={[
-        navButton, 
-        isSelected && selectedNavButton,
+        navButtonStyles, 
+        isSelected && selectedNavButtonStyles,
       ]}
       onClick={onClick}
     >
@@ -68,7 +68,7 @@ const NavButton: React.FC<NavButtonProps>  = ({ isSelected, onClick, children })
   );
 }
 
-const list = css` 
+const listStyles = css` 
   display: flex;
   align-items: center;
   margin: 0 ${rem(16)};
@@ -76,14 +76,14 @@ const list = css`
   list-style: none;
 `;
 
-const logo = css`
+const logoStyles = css`
   width: ${rem(24)};
   height: auto;
   margin: 0 ${rem(16)};
   color: ${colors.silver.lighter};
 `;
 
-const border = css`
+const borderStyles = css`
   border-right: ${rem(1)} solid rgba(255, 255, 255, .3);
 `;
 
@@ -98,13 +98,13 @@ export const Navigation: React.FC<NavigationProps> = ({ queriesCount, mutationsC
   return (
     <nav 
       css={[
-        navigation, 
+        navigationStyles, 
         { backgroundColor: theme.primary }
       ]}>
-      <div css={border}>
-        <ApolloLogo css={logo} />
+      <div css={borderStyles}>
+        <ApolloLogo css={logoStyles} />
       </div>
-      <ul css={list}>
+      <ul css={listStyles}>
         <li>
           <NavButton 
             isSelected={isSelected(Screens.Explorer)}

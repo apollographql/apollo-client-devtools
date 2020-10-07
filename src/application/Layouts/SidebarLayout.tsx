@@ -15,7 +15,7 @@ interface SidebarLayoutComposition {
   Main: React.FC;
 }
 
-const layout = css`
+const layoutStyles = css`
   display: grid;
   grid-template-columns: minmax(${rem(460)}, max-content) auto;
   grid-template-rows: ${rem(56)} auto;
@@ -24,22 +24,22 @@ const layout = css`
     "sidebar main main main"
 `;
 
-const sidebar = css`
+const sidebarStyles = css`
   grid-area: sidebar;
   height: calc(100vh - ${rem(56)});
   padding: ${rem(16)};
 `;
 
-const navigation = css`
+const navigationStyles = css`
   grid-area: nav;
 `;
 
-const main = css`
+const mainStyles = css`
   grid-area: main;
   padding: ${rem(44)};
 `;
 
-const header = css`
+const headerStyles = css`
   grid-area: header;
   display: flex;
   margin: 0 ${rem(24)} 0 ${rem(16)};
@@ -54,10 +54,10 @@ const SidebarLayout: React.FC<SidebarLayoutProps> & SidebarLayoutComposition = (
   return (
     <div 
       data-testid="layout" 
-      css={layout}
+      css={layoutStyles}
     >
       <Navigation
-        css={navigation}
+        css={navigationStyles}
         queriesCount={queriesCount}
         mutationsCount={mutationsCount}
       />
@@ -71,7 +71,7 @@ const Sidebar = ({ children }) => {
   return (
     <div 
       css={[
-        sidebar, 
+        sidebarStyles, 
         { backgroundColor: theme.primary },
       ]}
       data-testid="sidebar"
@@ -80,8 +80,8 @@ const Sidebar = ({ children }) => {
     </div>
   );
 };
-const Header = ({ children }) => (<div css={header} data-testid="header">{children}</div>);
-const Main = ({ children }) => (<div css={main} data-testid="main">{children}</div>);
+const Header = ({ children }) => (<div css={headerStyles} data-testid="header">{children}</div>);
+const Main = ({ children }) => (<div css={mainStyles} data-testid="main">{children}</div>);
 
 SidebarLayout.Sidebar = Sidebar;
 SidebarLayout.Header = Header;
