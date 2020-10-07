@@ -28,7 +28,7 @@ const navigation = css`
 
 const main = css`
   grid-area: main;
-  height: calc(100vh - ${rem(49)});
+  height: calc(100vh - ${rem(56)});
 `;
 
 const header = css`

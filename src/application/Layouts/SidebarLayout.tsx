@@ -18,6 +18,7 @@ interface SidebarLayoutComposition {
 const layout = css`
   display: grid;
   grid-template-columns: minmax(${rem(460)}, max-content) auto;
+  grid-template-rows: ${rem(56)} auto;
   grid-template-areas:
     "nav header header header"
     "sidebar main main main"
@@ -25,7 +26,7 @@ const layout = css`
 
 const sidebar = css`
   grid-area: sidebar;
-  height: calc(100vh - ${rem(49)});
+  height: calc(100vh - ${rem(56)});
   padding: ${rem(16)};
 `;
 
@@ -40,6 +41,8 @@ const main = css`
 
 const header = css`
   grid-area: header;
+  display: flex;
+  margin: 0 ${rem(24)} 0 ${rem(16)};
 `;
 
 const SidebarLayout: React.FC<SidebarLayoutProps> & SidebarLayoutComposition = ({

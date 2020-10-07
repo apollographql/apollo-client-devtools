@@ -4,17 +4,12 @@ import { ThemeProvider } from "emotion-theming";
 import { render } from "react-dom";
 import { ApolloClient, ApolloProvider, InMemoryCache, useReactiveVar, makeVar } from "@apollo/client";
 import "@apollo/space-kit/reset.css";
-import { colors } from "@apollo/space-kit/colors";
 
+import { themes, ColorTheme } from './theme';
 import { currentScreen, Screens } from './Layouts/Navigation';
 import { Queries } from './Queries/Queries';
 import { Mutations } from './Mutations/Mutations';
 import { Explorer } from './Explorer/Explorer';
-
-export enum ColorTheme {
-  Light = 'light',
-  Dark = 'dark'
-}
 
 const cache = new InMemoryCache({
   typePolicies: {
@@ -51,15 +46,6 @@ export const writeData = ({ queries, mutations, cache }) => {
   queriesVar(queries);
   mutationsVar(mutations);
   cacheVar(cache);
-};
-
-export const themes: Record<ColorTheme, Record<string, string>> = {
-  [ColorTheme.Light]: {
-    primary: colors.indigo.darkest
-  },
-  [ColorTheme.Dark]: {
-    primary: colors.black.base
-  },
 };
 
 const screens = {

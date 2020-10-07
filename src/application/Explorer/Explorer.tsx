@@ -7,7 +7,8 @@ import { parse } from "graphql/language/parser";
 import { print } from "graphql/language/printer";
 import GraphiQLExplorer from "graphiql-explorer";
 import { Button } from "@apollo/space-kit/Button";
-import { graphiQLQuery, ColorTheme, colorTheme } from '../index';
+import { graphiQLQuery, colorTheme } from '../index';
+import { ColorTheme } from '../theme';
 import { sendGraphiQLRequest, receiveGraphiQLResponses, listenForResponse } from './graphiQLRelay';
 import { FullWidthLayout } from '../Layouts/FullWidthLayout';
 
