@@ -33,25 +33,28 @@ jest.mock('../graphiQLRelay', () => ({
 }));
 
 describe('<Explorer />', () => {
-  test('it renders a toolbar', () => {
-    const { getByRole } = renderWithApolloClient(<Explorer />);
-    const toolbar = getByRole('toolbar');
-    const { getByTitle, getByLabelText } = within(toolbar);
+  const navigationProps = { queriesCount: 0, mutationsCount: 0 };
+  test('it renders a header', () => {
+    const { getByTestId } = renderWithApolloClient(<Explorer navigationProps={navigationProps} />);
+    const header = getByTestId('header');
+    const { getByText, getByLabelText } = within(header);
   
-    expect(toolbar).toBeInTheDocument();
-    expect(getByTitle('Prettify')).toBeInTheDocument();
-    expect(getByTitle('Toggle Explorer')).toBeInTheDocument();
+    expect(header).toBeInTheDocument();
+    expect(getByText('Prettify')).toBeInTheDocument();
+    expect(getByText('Explorer')).toBeInTheDocument();
     expect(getByLabelText('Load from cache')).toBeInTheDocument();
   });
 
   test('it can toggle the GraphiQLExplorer component', () => {
-    const { getAllByText } = renderWithApolloClient(<Explorer />);
+    const { container, getByTestId } = renderWithApolloClient(<Explorer navigationProps={navigationProps} />);
+    const header = getByTestId('header');
+    const { getByText } = within(header);
 
-    // Retrieves both GraphiQL Explorer and the toolbar's Explorer button
-    const [explorer, button] = getAllByText('Explorer');
-    expect(explorer.closest('.docExplorerWrap')).not.toBeVisible();
-    user.click(button);
-    expect(explorer.closest('.docExplorerWrap')).toBeVisible();
+    const button = getByText('Explorer');
+    const explorer = container.querySelector('.docExplorerWrap');
+    expect(explorer).not.toBeVisible();
+    user.click(button as HTMLElement);
+    expect(explorer).toBeVisible();
   });
 
   test('it retrieves a schema from an IntrospectionQuery', async () => {
@@ -59,7 +62,7 @@ describe('<Explorer />', () => {
       graphql(schemaWithMocks, getIntrospectionQuery()).then((result) => cb(result));
     }), );
 
-    const { getByText } = renderWithApolloClient(<Explorer />);
+    const { getByText } = renderWithApolloClient(<Explorer navigationProps={navigationProps} />);
     const NoSchemaError = getByText('No Schema Available');
     expect(NoSchemaError).toBeInTheDocument();
 

@@ -1,16 +1,15 @@
 /** @jsx jsx */
 import { jsx } from "@emotion/core";
+import { ThemeProvider } from "emotion-theming";
 import { render } from "react-dom";
-import { ApolloClient, ApolloProvider, InMemoryCache, useQuery, gql, makeVar } from "@apollo/client";
+import { ApolloClient, ApolloProvider, InMemoryCache, useReactiveVar, makeVar } from "@apollo/client";
 import "@apollo/space-kit/reset.css";
 
-// import Panel from './components/Panel';
+import { themes, ColorTheme } from './theme';
+import { currentScreen, Screens } from './Layouts/Navigation';
+import { Queries } from './Queries/Queries';
+import { Mutations } from './Mutations/Mutations';
 import { Explorer } from './Explorer/Explorer';
-
-export enum ColorTheme {
-  Light = 'light',
-  Dark = 'dark'
-}
 
 const cache = new InMemoryCache({
   typePolicies: {
@@ -24,9 +23,6 @@ const cache = new InMemoryCache({
         },
         cache() {
           return cacheVar();
-        },
-        colorTheme() {
-          return colorTheme();
         },
         graphiQLQuery() {
           return graphiQLQuery();
@@ -52,17 +48,28 @@ export const writeData = ({ queries, mutations, cache }) => {
   cacheVar(cache);
 };
 
-const GET_CACHE = gql`
-  query GetCache {
-    mutations @client
-    queries @client
-    cache @client
-  }
-`;
+const screens = {
+  [Screens.Explorer]: Explorer,
+  [Screens.Queries]: Queries,
+  [Screens.Mutations]: Mutations,
+  [Screens.Cache]: () => <div>Cache</div>
+};
 
 const App = () => {
-  useQuery(GET_CACHE);
-  return (<Explorer />)
+  const theme = useReactiveVar<ColorTheme>(colorTheme);
+  const selected = useReactiveVar<Screens>(currentScreen);
+  const Screen = screens[selected];
+
+  return (
+    <ThemeProvider theme={themes[theme]}>
+      <Screen
+        navigationProps={{ 
+          queriesCount: 0,
+          mutationsCount: 100000,
+        }}
+      />
+    </ThemeProvider>
+  )
 };
 
 export const initDevTools = () => {
