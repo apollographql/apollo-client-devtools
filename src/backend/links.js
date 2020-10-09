@@ -196,7 +196,7 @@ export const initLinkEvents = (hook, bridge) => {
             // When using Apollo Client local state, we'll add the schema
             // manually.
             data.extensions = Object.assign({}, data.extensions, {
-              schemas: [apolloClientSchema],
+              schemas: [...schemas, apolloClientSchema],
             });
             bridge.send(`link:next:${key}`, JSON.stringify(data));
           },
