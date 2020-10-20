@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import { useRef } from "react";
+import { useState } from "react";
 import { jsx, css } from "@emotion/core";
 import { rem } from "polished";
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@reach/tabs";
@@ -8,7 +8,8 @@ import { colors } from "@apollo/space-kit/colors";
 import { GraphqlCodeBlock } from "graphql-syntax-highlighter-react";
 import JSONTree from "react-json-tree";
 import { IconCopy } from "@apollo/space-kit/icons/IconCopy";
-import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import stringifyObject from "stringify-object";
 
 const queryViewStyles = css`
   display: grid;
@@ -80,15 +81,21 @@ const queryDataMain = css`
   font-size: ${rem(15)};
 `;
 
+enum QueryTabs {
+  Variables,
+  CachedData
+}
+
 export const QueryViewer = ({ queryString = '', variables = {}, cachedData = {} }) => {
-  const {} = useRef();
-  
+  const [currentTab, setCurrentTab] = useState<QueryTabs>(QueryTabs.Variables);
+  const copyCurrentTab = `${stringifyObject(currentTab === QueryTabs.Variables ? variables : cachedData)}`;
+
   return (
     <div css={queryViewStyles}>
       <h4 css={queryStringHeader}>
         Query String 
         <CopyToClipboard text={queryString}>
-          <IconCopy css={copyIconStyle} />
+          <IconCopy css={copyIconStyle} data-testid="copy-query-string" />
         </CopyToClipboard> 
       </h4>
       <GraphqlCodeBlock
@@ -96,12 +103,12 @@ export const QueryViewer = ({ queryString = '', variables = {}, cachedData = {} 
         css={queryStringMain}
         queryBody={queryString}
       />
-      <Tabs>
+      <Tabs onChange={index => setCurrentTab(index)}>
         <TabList css={queryDataHeader}>
           <Tab>Variables</Tab>
           <Tab>Cached Data</Tab>
-          <CopyToClipboard text={variables}>
-            <IconCopy css={copyIconStyle} />
+          <CopyToClipboard text={copyCurrentTab}>
+            <IconCopy css={copyIconStyle} data-testid="copy-query-data" />
           </CopyToClipboard> 
         </TabList>
         <TabPanels css={queryDataMain}>

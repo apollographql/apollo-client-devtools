@@ -85,6 +85,7 @@
     "react-copy-to-clipboard": "^5.0.2",
     "react-dom": "^16.13.1",
     "react-json-tree": "^0.13.0",
+    "stringify-object": "^3.3.0",
     "ts-loader": "^8.0.2",
     "uuid": "^8.1.0"
   }
