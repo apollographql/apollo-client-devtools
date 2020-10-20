@@ -62,15 +62,17 @@ const listStyles = css`
 const GET_WATCHED_QUERIES = gql`
   query GetWatchedQueries {
     watchedQueries @client {
-      id
-      name
+      queries {
+        id
+        name
+      }
     }
   }
 `;
 
 const GET_WATCHED_QUERY = gql`
-  query GetWatchedQuery($cat: ID!) {
-    watchedQuery(id: $cat) @client {
+  query GetWatchedQuery($id: ID!) {
+    watchedQuery(id: $id) @client {
       id
       name
       queryString
@@ -108,7 +110,7 @@ export const Queries = ({ navigationProps }) => {
           selectedColor={theme.sidebarSelected}
           hoverColor={theme.sidebarHover}
         >
-          {data?.watchedQueries?.map(({ name = 'Unnamed', id }) => {
+          {data?.watchedQueries?.queries.map(({ name = 'Unnamed', id }) => {
             return (
               <ListItem 
                 key={`${name}-${id}`}
