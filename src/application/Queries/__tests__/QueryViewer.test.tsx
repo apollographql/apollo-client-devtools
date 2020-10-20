@@ -48,10 +48,10 @@ describe('<QueryViewer />', () => {
   });
 
   test('renders the query data', () => {
-    const { getByText, getByRole, debug } = renderWithApolloClient(
+    const { getByText, getByRole } = renderWithApolloClient(
       <QueryViewer {...props} />
     );
-    debug();
+
     expect(getByText('Variables')).toBeInTheDocument();
     const variablesPanel = getByRole('tabpanel');
     expect(within(variablesPanel).getByText(content => content.includes(props.variables.hex))).toBeInTheDocument();

@@ -2,7 +2,7 @@
 import { jsx } from "@emotion/core";
 import { ThemeProvider } from "emotion-theming";
 import { render } from "react-dom";
-import { ApolloClient, ApolloProvider, InMemoryCache, useReactiveVar, makeVar, gql } from "@apollo/client";
+import { ApolloClient, ApolloProvider, InMemoryCache, useReactiveVar, makeVar, gql, useQuery } from "@apollo/client";
 import { getOperationName } from "@apollo/client/utilities";
 import "@apollo/space-kit/reset.css";
 
@@ -48,10 +48,13 @@ export const client = new ApolloClient({
 const GET_QUERIES = gql`
   query GetQueries {
     watchedQueries @client {
-      name
-      queryString
-      variables
-      cachedData
+      queries {
+        name
+        queryString
+        variables
+        cachedData
+      }
+      count
     }
   }
 `;
@@ -75,7 +78,11 @@ function getQueryData(query, key) {
 export const writeData = ({ queries, mutations, cache }) => {
   client.writeQuery({
     query: GET_QUERIES,
-    data: { watchedQueries: queries.map((q, i) => getQueryData(q, i)) } ,
+    // data: { watchedQueries: queries.map((q, i) => getQueryData(q, i)) },
+    data: { watchedQueries: {
+      queries: queries.map((q, i) => getQueryData(q, i)),
+      count: queries.length,
+    }},
   });
 
   mutationsVar(mutations);
@@ -89,7 +96,16 @@ const screens = {
   [Screens.Cache]: () => <div>Cache</div>
 };
 
+const GET_QUERIES_COUNT = gql`
+  query GetQueriesCount {
+    watchedQueries @client {
+      count
+    }
+  }
+`;
+
 const App = () => {
+  const { data } = useQuery(GET_QUERIES_COUNT );
   const theme = useReactiveVar<ColorTheme>(colorTheme);
   const selected = useReactiveVar<Screens>(currentScreen);
   const Screen = screens[selected];
@@ -98,8 +114,8 @@ const App = () => {
     <ThemeProvider theme={themes[theme]}>
       <Screen
         navigationProps={{ 
-          queriesCount: 0,
-          mutationsCount: 100000,
+          queriesCount: data?.watchedQueries?.count,
+          mutationsCount: 0,
         }}
       />
     </ThemeProvider>
