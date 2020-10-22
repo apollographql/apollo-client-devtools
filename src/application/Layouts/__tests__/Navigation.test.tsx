@@ -3,7 +3,7 @@ import { waitFor } from '@testing-library/react';
 import user from '@testing-library/user-event';
 import { matchers } from 'jest-emotion';
 import { colors } from "@apollo/space-kit/colors";
-import { renderWithApolloClient } from '../../renderWithApolloClient';
+import { renderWithApolloClient } from '../../utilities/testing/renderWithApolloClient';
 import { Navigation } from '../Navigation';
 
 expect.extend(matchers);

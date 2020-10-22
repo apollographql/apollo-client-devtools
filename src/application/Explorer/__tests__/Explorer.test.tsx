@@ -1,13 +1,13 @@
 import React from 'react';
 import { within, waitForElementToBeRemoved } from '@testing-library/react';
 import user from '@testing-library/user-event';
-import { renderWithApolloClient } from '../../renderWithApolloClient';
+import { renderWithApolloClient } from '../../utilities/testing/renderWithApolloClient';
 import { Explorer } from '../Explorer';
 import { listenForResponse } from '../graphiQLRelay';
 
 import { graphql } from 'graphql';
 import { getIntrospectionQuery } from "graphql/utilities";
-import { schemaWithMocks } from '../../fakeGraphQL';
+import { schemaWithMocks } from '../../utilities/testing/fakeGraphQL';
 
 // Required to prevent an error in CodeMirror
 document.createRange = () => {
