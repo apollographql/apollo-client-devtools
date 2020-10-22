@@ -1,13 +1,22 @@
 import React from 'react';
-import { renderWithApolloClient } from '../../renderWithApolloClient';
+import { renderWithApolloClient } from '../../utilities/testing/renderWithApolloClient';
 import { Queries } from '../Queries';
 
-describe('<Queries />', () => {
-  it('renders the query string', () => {
-    // const { container, getByText } = renderWithApolloClient(
-    //   <Queries navigationProps={{}} />
-    // );
+jest.mock('../QueryViewer', () => ({
+  QueryViewer: () => null, 
+}));
 
-    expect(false).toBeFalsy();
+describe('<Queries />', () => {
+  const navigationProps = {
+    queriesCount: 1,
+    mutationsCount: 2,
+  };
+
+  it('renders the query string', () => {
+    const { getByText } = renderWithApolloClient(
+      <Queries navigationProps={navigationProps} />
+    );
+
+    expect(getByText('Unnamed')).toBeInTheDocument();
   });
 });

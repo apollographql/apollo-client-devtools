@@ -1,5 +1,5 @@
 import React from 'react';
-import { renderWithApolloClient } from '../../renderWithApolloClient';
+import { renderWithApolloClient } from '../../utilities/testing/renderWithApolloClient';
 import { SidebarLayout } from '../SidebarLayout';
 
 describe('<SidebarLayout />', () => {
