@@ -13,7 +13,7 @@ import stringifyObject from "stringify-object";
 
 const queryViewStyles = css`
   display: grid;
-  grid-template-columns: minmax(${rem(600)}, max-content) auto;
+  grid-template-columns: minmax(${rem(600)}, auto) minmax(${rem(360)}, auto);
   grid-template-rows: ${rem(32)} auto;
   grid-column-gap: ${rem(24)};
   grid-template-areas:
