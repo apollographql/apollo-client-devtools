@@ -2,7 +2,7 @@
   "name": "apollo-client-devtools",
   "description": "Developer tools for Apollo Client, with GraphiQL integration, cache inspection, and query watching.",
   "license": "MIT",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "scripts": {
     "build": "cd shells/webextension && cross-env NODE_ENV=production webpack --progress --hide-modules",
     "dev": "cd shells/dev && webpack-dev-server --inline --hot --no-info",
