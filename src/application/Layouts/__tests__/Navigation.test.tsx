@@ -1,5 +1,4 @@
 import React from 'react';
-import { waitFor } from '@testing-library/react';
 import user from '@testing-library/user-event';
 import { matchers } from 'jest-emotion';
 import { colors } from "@apollo/space-kit/colors";

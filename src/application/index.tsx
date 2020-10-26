@@ -14,6 +14,13 @@ import { Explorer } from './Explorer/Explorer';
 
 const cache = new InMemoryCache({
   typePolicies: {
+    WatchedQuery: {
+      fields: {
+        name(_) {
+          return _ ?? 'Unnamed';
+        }
+      }
+    },
     Query: {
       fields: {
         watchedQuery(_, { toReference, variables }) {
@@ -45,7 +52,7 @@ export const client = new ApolloClient({
   cache,
 });
 
-const GET_QUERIES = gql`
+export const GET_QUERIES = gql`
   query GetQueries {
     watchedQueries @client {
       queries {
@@ -78,7 +85,6 @@ function getQueryData(query, key) {
 export const writeData = ({ queries, mutations, cache }) => {
   client.writeQuery({
     query: GET_QUERIES,
-    // data: { watchedQueries: queries.map((q, i) => getQueryData(q, i)) },
     data: { watchedQueries: {
       queries: queries.map((q, i) => getQueryData(q, i)),
       count: queries.length,
