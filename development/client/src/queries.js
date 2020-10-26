@@ -58,7 +58,7 @@ export const GET_COLOR_SCHEME = gql`
 `;
 
 export const GET_SAVED_COLORS = gql`
-  query {
+  query GetSavedColors {
     favoritedColors {
       ...colorFields
     }
