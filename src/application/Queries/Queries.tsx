@@ -110,7 +110,7 @@ export const Queries = ({ navigationProps }) => {
           selectedColor={theme.sidebarSelected}
           hoverColor={theme.sidebarHover}
         >
-          {data?.watchedQueries?.queries.map(({ name = 'Unnamed', id }) => {
+          {data?.watchedQueries?.queries.map(({ name, id }) => {
             return (
               <ListItem 
                 key={`${name}-${id}`}
