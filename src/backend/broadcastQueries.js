@@ -17,6 +17,8 @@ function filterQueryInfo(queryInfoMap) {
 }
 
 export const initBroadCastEvents = (hook, bridge) => {
+  let client = null;
+  
   // Counters for diagnostics
   let counter = 0;
 
@@ -77,7 +79,7 @@ export const initBroadCastEvents = (hook, bridge) => {
   });
 
   bridge.on("panel:ready", () => {
-    const client = hook.ApolloClient;
+    client = hook.ApolloClient;
 
     const queries =
       client.queryManager
@@ -88,11 +90,18 @@ export const initBroadCastEvents = (hook, bridge) => {
             : filterQueryInfo(client.queryManager.queries)
         : {};
 
+    const mutations =
+      client.queryManager
+        ? (client.queryManager.mutationStore && client.queryManager.mutationStore.getStore)
+            // Apollo Client 2 to 3.2
+            ? client.queryManager.mutationStore.getStore()
+            // Apollo Client 3.3+
+            : client.queryManager.mutationStore
+        : {};
+
     const initial = {
       queries,
-      mutations: client.queryManager
-        ? client.queryManager.mutationStore.getStore()
-        : {},
+      mutations,
       inspector: client.cache.extract(true),
     };
 
