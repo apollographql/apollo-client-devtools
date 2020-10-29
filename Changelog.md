@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.3.2 (2020-10-29)
+
+- Fix for local schema discovery <br/> [@micmro]() in [#286](https://github.com/apollographql/apollo-client-devtools/pull/286)
+
+- Compatability with Apollo Client 3.3+ <br/> [@jcreighton]() in [#302](https://github.com/apollographql/apollo-client-devtools/pull/302)
+
+- Fix queries not updating <br/> [@jcreighton]() in [#302](https://github.com/apollographql/apollo-client-devtools/pull/302)
+
 ## 2.3.1 (2020-06-02)
 
 - Check for value before extracting __typename <br/> [@jcreighton](https://github.com/jcreighton) in [#267](https://github.com/apollographql/apollo-client-devtools/pull/267)
