@@ -27,7 +27,7 @@ const queryLabel = (queryId, query) => {
   // If we haven't been able to find the query name, make one last
   // attempt to parse and pull it from the source of a document
   // (if it exsts).
-  if (!queryName && query.document.loc.source) {
+  if (!queryName && query.document && query.document.loc && query.document.loc.source && query.document.loc.source.body) {
     queryName = getOperationName(parse(query.document.loc.source.body));
   }
 
