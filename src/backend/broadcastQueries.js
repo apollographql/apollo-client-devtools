@@ -16,9 +16,41 @@ function filterQueryInfo(queryInfoMap) {
   return filteredQueryInfo;
 }
 
+function getQueries(client) {
+  if (!client || !client.queryManager) {
+    return () => {};
+  }
+
+  // Apollo Client 2
+  if (client.queryManager.queryStore) {
+    if (client.queryManager.queryStore.getStore) {
+      return () => client.queryManager.queryStore.getStore();
+    }
+  // Apollo Client 3
+  } else if (client.queryManager.queries) {
+    return () => filterQueryInfo(client.queryManager.queries);
+  }
+}
+
+function getMutations(client) {
+  if (!client || !client.queryManager) {
+    return () => {};
+  }
+
+  // Apollo Client 2 to 3.2
+  if (client.queryManager.mutationStore && client.queryManager.mutationStore.getStore) {
+    return () => client.queryManager.mutationStore.getStore();
+  } else {
+  // Apollo Client 3.3+
+    return () => client.queryManager.mutationStore;
+  }
+}
+
 export const initBroadCastEvents = (hook, bridge) => {
   let client = null;
-  
+  let queries = () => {};
+  let mutations = () => {};
+
   // Counters for diagnostics
   let counter = 0;
 
@@ -55,14 +87,14 @@ export const initBroadCastEvents = (hook, bridge) => {
   }
 
   let logger = ({
-    state: { queries, mutations },
+    _,
     dataWithOptimisticResults: inspector,
   }) => {
     counter++;
     enqueued = {
       counter,
-      queries,
-      mutations,
+      queries: queries(),
+      mutations: mutations(),
       inspector,
     };
     if (acknowledged) {
@@ -81,27 +113,12 @@ export const initBroadCastEvents = (hook, bridge) => {
   bridge.on("panel:ready", () => {
     client = hook.ApolloClient;
 
-    const queries =
-      client.queryManager
-        ? client.queryManager.queryStore
-            // Apollo Client 2
-            ? client.queryManager.queryStore.getStore()
-            // Apollo Client 3
-            : filterQueryInfo(client.queryManager.queries)
-        : {};
-
-    const mutations =
-      client.queryManager
-        ? (client.queryManager.mutationStore && client.queryManager.mutationStore.getStore)
-            // Apollo Client 2 to 3.2
-            ? client.queryManager.mutationStore.getStore()
-            // Apollo Client 3.3+
-            : client.queryManager.mutationStore
-        : {};
+    queries = getQueries(client);
+    mutations = getMutations(client);
 
     const initial = {
-      queries,
-      mutations,
+      queries: queries(),
+      mutations: mutations(),
       inspector: client.cache.extract(true),
     };
 
