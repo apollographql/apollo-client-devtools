@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.3.3 (2020-10-30)
+
+- Fix for undefined schemas error <br/> [@jcreighton]() in [#307](https://github.com/apollographql/apollo-client-devtools/pull/307)
+
 ## 2.3.2 (2020-10-29)
 
 - Fix for local schema discovery <br/> [@micmro]() in [#286](https://github.com/apollographql/apollo-client-devtools/pull/286)
