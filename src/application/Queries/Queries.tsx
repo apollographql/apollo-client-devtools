@@ -8,6 +8,7 @@ import { List } from "@apollo/space-kit/List";
 import { ListItem } from "@apollo/space-kit/ListItem";
 import { IconRun } from "@apollo/space-kit/icons/IconRun";
 import { colors } from "@apollo/space-kit/colors";
+import { Theme } from "../theme";
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { QueryViewer } from "./QueryViewer";
 
@@ -84,7 +85,7 @@ const GET_WATCHED_QUERY = gql`
 
 export const Queries = ({ navigationProps }) => {
   const [selected, setSelected] = useState<number>(0);
-  const theme = useTheme<any>();
+  const theme = useTheme<Theme>();
   const { data } = useQuery(GET_WATCHED_QUERIES);
   const { data: watchedQueryData } = useQuery(GET_WATCHED_QUERY, { 
     variables: { id: selected },

@@ -1,3 +1,4 @@
+import { DocumentNode, Source } from "graphql";
 import { gql, Observable, ApolloClient } from "@apollo/client";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { version as devtoolsVersion } from "../manifest.json";
@@ -21,10 +22,18 @@ declare global {
   }
 }
 
+type QueryInfo = {
+  document: DocumentNode;
+  source?: Source,
+  variables?: Record<string, any>;
+  lastWrittenResult?: Record<string, any>;
+  lastWrittenVars?: Record<string, any>;
+}
+
 type Hook = {
   ApolloClient: ApolloClient<TCache> | undefined;
   version: string;
-  getQueries: () => Map<string, any> | void;
+  getQueries: () => Map<string, QueryInfo> | void;
   getMutations: () => void;
   getCache: () => void;
 }
@@ -54,14 +63,6 @@ function initializeHook() {
     clientRelay.broadcast(data);
   });
 
-  type QueryInfo = {
-    document: any;
-    source: any,
-    variables: any;
-    lastWrittenResult: any;
-    lastWrittenVars: any;
-  }
-
   // TODO: Handshake to get the tab id?
   function getQueries(): QueryInfo[] {
     const queryMap = hook.getQueries();
@@ -73,14 +74,12 @@ function initializeHook() {
         variables,
         lastWrittenResult,
         lastWrittenVars,
-        diff,
       }) => ({
           document,
           source: document?.loc?.source, 
           variables,
           lastWrittenResult,
           lastWrittenVars,
-          diff,
         })
       )
     }
