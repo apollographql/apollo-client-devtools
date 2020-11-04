@@ -2,7 +2,8 @@
 import { jsx } from "@emotion/core";
 import { ThemeProvider } from "emotion-theming";
 import { render } from "react-dom";
-import { ApolloClient, ApolloProvider, InMemoryCache, useReactiveVar, makeVar } from "@apollo/client";
+import { ApolloClient, ApolloProvider, InMemoryCache, useReactiveVar, makeVar, gql, useQuery } from "@apollo/client";
+import { getOperationName } from "@apollo/client/utilities";
 import "@apollo/space-kit/reset.css";
 
 import { themes, ColorTheme } from './theme';
@@ -13,10 +14,20 @@ import { Explorer } from './Explorer/Explorer';
 
 const cache = new InMemoryCache({
   typePolicies: {
+    WatchedQuery: {
+      fields: {
+        name(_) {
+          return _ ?? 'Unnamed';
+        }
+      }
+    },
     Query: {
       fields: {
-        queries() {
-          return queriesVar();
+        watchedQuery(_, { toReference, variables }) {
+          return toReference({
+            __typename: 'WatchedQuery',
+            id: variables?.id,
+          });
         },
         mutations() {
           return mutationsVar();
@@ -32,7 +43,6 @@ const cache = new InMemoryCache({
   }
 });
 
-const queriesVar = makeVar(null);
 const mutationsVar = makeVar(null);
 const cacheVar = makeVar(null);
 export const colorTheme = makeVar<ColorTheme>(ColorTheme.Light);
@@ -42,8 +52,45 @@ export const client = new ApolloClient({
   cache,
 });
 
+export const GET_QUERIES = gql`
+  query GetQueries {
+    watchedQueries @client {
+      queries {
+        name
+        queryString
+        variables
+        cachedData
+      }
+      count
+    }
+  }
+`;
+
+function getQueryData(query, key) {
+  if (!query) return;
+  console.log(query);
+  // TODO: The current designs do not account for non-cached data.
+  // We need a workaround to show that data + we should surface
+  // the FetchPolicy.
+  return {
+    id: key,
+    __typename: 'WatchedQuery',
+    name: getOperationName(query?.document),
+    queryString: query?.source?.body,
+    variables: query.lastWrittenVars,
+    cachedData: query.lastWrittenResult,
+  }
+}
+
 export const writeData = ({ queries, mutations, cache }) => {
-  queriesVar(queries);
+  client.writeQuery({
+    query: GET_QUERIES,
+    data: { watchedQueries: {
+      queries: queries.map((q, i) => getQueryData(q, i)),
+      count: queries.length,
+    }},
+  });
+
   mutationsVar(mutations);
   cacheVar(cache);
 };
@@ -55,7 +102,16 @@ const screens = {
   [Screens.Cache]: () => <div>Cache</div>
 };
 
+const GET_QUERIES_COUNT = gql`
+  query GetQueriesCount {
+    watchedQueries @client {
+      count
+    }
+  }
+`;
+
 const App = () => {
+  const { data } = useQuery(GET_QUERIES_COUNT );
   const theme = useReactiveVar<ColorTheme>(colorTheme);
   const selected = useReactiveVar<Screens>(currentScreen);
   const Screen = screens[selected];
@@ -64,8 +120,8 @@ const App = () => {
     <ThemeProvider theme={themes[theme]}>
       <Screen
         navigationProps={{ 
-          queriesCount: 0,
-          mutationsCount: 100000,
+          queriesCount: data?.watchedQueries?.count,
+          mutationsCount: 0,
         }}
       />
     </ThemeProvider>

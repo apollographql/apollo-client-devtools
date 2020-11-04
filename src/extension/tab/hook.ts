@@ -1,3 +1,4 @@
+import { DocumentNode, Source } from "graphql";
 import { gql, Observable, ApolloClient } from "@apollo/client";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { version as devtoolsVersion } from "../manifest.json";
@@ -21,10 +22,18 @@ declare global {
   }
 }
 
+type QueryInfo = {
+  document: DocumentNode;
+  source?: Source,
+  variables?: Record<string, any>;
+  lastWrittenResult?: Record<string, any>;
+  lastWrittenVars?: Record<string, any>;
+}
+
 type Hook = {
   ApolloClient: ApolloClient<TCache> | undefined;
   version: string;
-  getQueries: () => void;
+  getQueries: () => Map<string, QueryInfo> | void;
   getMutations: () => void;
   getCache: () => void;
 }
@@ -55,6 +64,28 @@ function initializeHook() {
   });
 
   // TODO: Handshake to get the tab id?
+  function getQueries(): QueryInfo[] {
+    const queryMap = hook.getQueries();
+    let queries: QueryInfo[] = [];
+
+    if (queryMap) {
+      queries = [...queryMap.values()].map(({ 
+        document, 
+        variables,
+        lastWrittenResult,
+        lastWrittenVars,
+      }) => ({
+          document,
+          source: document?.loc?.source, 
+          variables,
+          lastWrittenResult,
+          lastWrittenVars,
+        })
+      )
+    }
+
+    return queries;
+  }
 
   function sendMessageToTab<TPayload>(message: string, payload?: TPayload) {
     clientRelay.send({
@@ -74,10 +105,11 @@ function initializeHook() {
 
   clientRelay.listen(DEVTOOLS_INITIALIZED, () => {
     if (hook.ApolloClient) {
+
       // Tab Relay forwards this the devtools
       sendMessageToTab(CREATE_DEVTOOLS_PANEL, 
         JSON.stringify({
-          queries: hook.getQueries(),
+          queries: getQueries(),
           mutations: hook.getMutations(),
           cache: hook.getCache(),
         })
@@ -89,7 +121,7 @@ function initializeHook() {
     // Tab Relay forwards this the devtools
     sendMessageToTab(UPDATE, 
       JSON.stringify({
-        queries: hook.getQueries(),
+        queries: getQueries(),
         mutations: hook.getMutations(),
         cache: hook.getCache(),
       })
