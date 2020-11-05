@@ -6,16 +6,11 @@
     <style>
       html,
       body {
-        height: 100%;
-        width: 100%;
+        overflow: hidden;
       }
-      #container {
-        display: flex;
-        height: 100%;
-        width: 100%;
-      }
-      #app {
-        width: 100%;
+      #devtools {
+        width: 100vw;
+        height: 100vh;
       }
     </style>
     <link
@@ -28,8 +23,7 @@
     />
   </head>
   <body>
-    <div id="container">
-      <div id="app"></div>
+    <div id="devtools">
     </div>
     <script src="/panel.js"></script>
   </body>

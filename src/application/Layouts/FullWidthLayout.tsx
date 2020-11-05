@@ -1,6 +1,5 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/core";
-import { useTheme } from "emotion-theming";
 import { rem } from "polished";
 import { Navigation, NavigationProps } from "./Navigation";
 
