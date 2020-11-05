@@ -19,7 +19,14 @@ const cache = new InMemoryCache({
         name(_) {
           return _ ?? 'Unnamed';
         }
-      }
+      },
+    },
+    Mutation: {
+      fields: {
+        name(_) {
+          return _ ?? 'Unnamed';
+        }
+      },
     },
     Query: {
       fields: {
@@ -29,8 +36,11 @@ const cache = new InMemoryCache({
             id: variables?.id,
           });
         },
-        mutations() {
-          return mutationsVar();
+        mutation(_, { toReference, variables }) {
+          return toReference({
+            __typename: 'Mutation',
+            id: variables?.id,
+          });
         },
         cache() {
           return cacheVar();
@@ -43,7 +53,6 @@ const cache = new InMemoryCache({
   }
 });
 
-const mutationsVar = makeVar(null);
 const cacheVar = makeVar(null);
 export const colorTheme = makeVar<ColorTheme>(ColorTheme.Light);
 export const graphiQLQuery = makeVar<string>('');
@@ -66,9 +75,21 @@ export const GET_QUERIES = gql`
   }
 `;
 
-function getQueryData(query, key) {
+export const GET_MUTATIONS = gql`
+  query GetMutations {
+    mutationLog @client {
+      mutations {
+        name
+        mutationString
+        variables
+      }
+      count
+    }
+  }
+`;
+
+function getQueryData(query, key: number) {
   if (!query) return;
-  console.log(query);
   // TODO: The current designs do not account for non-cached data.
   // We need a workaround to show that data + we should surface
   // the FetchPolicy.
@@ -77,21 +98,44 @@ function getQueryData(query, key) {
     __typename: 'WatchedQuery',
     name: getOperationName(query?.document),
     queryString: query?.source?.body,
-    variables: query.lastWrittenVars,
-    cachedData: query.lastWrittenResult,
+    variables: query.variables,
+    cachedData: query.cachedData,
   }
 }
+
+function getMutationData(mutation, key: number) {
+  if (!mutation) return;
+  console.log(mutation);
+  return {
+    id: key,
+    __typename: 'Mutation',
+    name: getOperationName(mutation?.document),
+    mutationString: mutation?.source?.body,
+    variables: mutation.variables,
+  }
+}
+
 
 export const writeData = ({ queries, mutations, cache }) => {
   client.writeQuery({
     query: GET_QUERIES,
-    data: { watchedQueries: {
-      queries: queries.map((q, i) => getQueryData(q, i)),
-      count: queries.length,
-    }},
+    data: { 
+      watchedQueries: {
+        queries: queries.map((q, i: number) => getQueryData(q, i)),
+        count: queries.length,
+      }
+    },
   });
 
-  mutationsVar(mutations);
+  client.writeQuery({
+    query: GET_MUTATIONS,
+    data: { 
+      mutationLog: {
+        mutations: mutations.map((m, i: number) => getMutationData(m, i)),
+        count: mutations.length,
+      }
+    },
+  });
   cacheVar(cache);
 };
 
@@ -102,16 +146,19 @@ const screens = {
   [Screens.Cache]: () => <div>Cache</div>
 };
 
-const GET_QUERIES_COUNT = gql`
-  query GetQueriesCount {
+const GET_OPERATION_COUNTS = gql`
+  query GetOperationCounts {
     watchedQueries @client {
+      count
+    }
+    mutationLog @client {
       count
     }
   }
 `;
 
 const App = () => {
-  const { data } = useQuery(GET_QUERIES_COUNT );
+  const { data } = useQuery(GET_OPERATION_COUNTS);
   const theme = useReactiveVar<ColorTheme>(colorTheme);
   const selected = useReactiveVar<Screens>(currentScreen);
   const Screen = screens[selected];
@@ -121,7 +168,7 @@ const App = () => {
       <Screen
         navigationProps={{ 
           queriesCount: data?.watchedQueries?.count,
-          mutationsCount: 0,
+          mutationsCount: data?.mutationLog?.count,
         }}
       />
     </ThemeProvider>
@@ -133,6 +180,6 @@ export const initDevTools = () => {
     <ApolloProvider client={client}>
       <App />
     </ApolloProvider>,
-    document.getElementById("app")
+    document.getElementById("devtools")
   );
 };

@@ -4,6 +4,7 @@ import {
   CREATE_DEVTOOLS_PANEL,
   ACTION_HOOK_FIRED,
   GRAPHIQL_RESPONSE,
+  UPDATE,
 } from '../constants';
 
 // Inspected tabs are unable to retrieve their own ids.
@@ -40,6 +41,7 @@ export default new Promise(async $export => {
 
   tab.forward(CREATE_DEVTOOLS_PANEL, `background:devtools-${id}`);
   tab.forward(ACTION_HOOK_FIRED, `background:devtools-${id}`);
+  tab.forward(UPDATE, `background:devtools-${id}`);
   tab.forward(GRAPHIQL_RESPONSE, `background:devtools-${id}:graphiql`);
 
   const module = await Promise.resolve({ tab, id });

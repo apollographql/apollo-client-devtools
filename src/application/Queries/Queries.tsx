@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { jsx, css } from "@emotion/core";
 import { useTheme } from "emotion-theming";
 import { rem } from "polished";
@@ -12,7 +12,7 @@ import { Theme } from "../theme";
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { QueryViewer } from "./QueryViewer";
 
-const sidebarHeadingStyles = css`
+export const sidebarHeadingStyles = css`
   margin-left: ${rem(12)};
   text-transform: uppercase;
   font-size: ${rem(13)};
@@ -21,12 +21,12 @@ const sidebarHeadingStyles = css`
   color: rgba(255, 255, 255, .3);
 `;
 
-const h1Styles = css`
+export const h1Styles = css`
   font-family: monospace;
   font-weight: normal;
 `;
 
-const operationNameStyles = css`
+export const operationNameStyles = css`
   margin: ${rem(3)} 0 0 ${rem(8)};
   font-family: "Source Sans Pro", sans-serif;
   color: ${colors.grey.light};
@@ -34,7 +34,7 @@ const operationNameStyles = css`
   font-size: ${rem(13)};
 `;
 
-const runButtonStyles = css`
+export const runButtonStyles = css`
   appearance: none;
   display: flex;
   align-items: center;
@@ -50,7 +50,7 @@ const runButtonStyles = css`
   }
 `;
 
-const listStyles = css`
+export const listStyles = css`
   font-family: monospace;
   color: ${colors.silver.lighter};
 
@@ -97,12 +97,16 @@ export const Queries = ({ navigationProps }) => {
       navigationProps={navigationProps}
     >
       <SidebarLayout.Header>
-        <h1 css={h1Styles}>{watchedQueryData?.watchedQuery.name}</h1>
-        <span css={operationNameStyles}>Query</span>
-        <button css={runButtonStyles}>
-          <IconRun />
-          <span>Run in GraphiQL</span>
-        </button>
+        {watchedQueryData?.watchedQuery && (
+          <Fragment>
+            <h1 css={h1Styles}>{watchedQueryData?.watchedQuery.name}</h1>
+            <span css={operationNameStyles}>Query</span>
+            <button css={runButtonStyles}>
+              <IconRun />
+              <span>Run in GraphiQL</span>
+            </button>
+          </Fragment>
+        )}
       </SidebarLayout.Header>
       <SidebarLayout.Sidebar>
         <h3 css={sidebarHeadingStyles}>Active Queries ({navigationProps.queriesCount})</h3>
@@ -125,11 +129,13 @@ export const Queries = ({ navigationProps }) => {
         </List>
       </SidebarLayout.Sidebar>
       <SidebarLayout.Main>
+        {watchedQueryData?.watchedQuery && (
           <QueryViewer
             queryString={watchedQueryData?.watchedQuery.queryString}
             variables={watchedQueryData?.watchedQuery.variables}
             cachedData={watchedQueryData?.watchedQuery.cachedData}
           />
+        )}
       </SidebarLayout.Main>
     </SidebarLayout>
   );
