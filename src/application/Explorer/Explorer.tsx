@@ -1,29 +1,25 @@
 import React, { useRef, useState, useEffect } from "react";
 import GraphiQL from "graphiql";
-import { Observable, useQuery, useReactiveVar, gql, FetchResult } from "@apollo/client";
+import { Observable, useQuery, makeVar, useReactiveVar, gql, FetchResult } from "@apollo/client";
 import type { GraphQLSchema, IntrospectionQuery } from "graphql";
 import { getIntrospectionQuery, buildClientSchema } from "graphql/utilities";
 import { parse } from "graphql/language/parser";
 import { print } from "graphql/language/printer";
 import GraphiQLExplorer from "graphiql-explorer";
 import { Button } from "@apollo/space-kit/Button";
-import { graphiQLQuery, colorTheme } from '../index';
+import { colorTheme } from '../index';
 import { ColorTheme } from '../theme';
 import { sendGraphiQLRequest, receiveGraphiQLResponses, listenForResponse } from './graphiQLRelay';
 import { FullWidthLayout } from '../Layouts/FullWidthLayout';
 
 import "../../../node_modules/graphiql/graphiql.css";
 
-const GET_EXPLORER_DATA = gql`
-  query GetExplorerData {
-    graphiQLQuery @client
-  }
-`;
-
 enum FetchPolicy {
   NoCache = 'no-cache',
   CacheOnly = 'cache-only'
 }
+
+export const graphiQLQuery = makeVar<string>('');
 
 export const Explorer = ({ navigationProps }) => {
   const graphiQLRef = useRef<GraphiQL>(null);
@@ -31,8 +27,8 @@ export const Explorer = ({ navigationProps }) => {
   const [isExplorerOpen, setIsExplorerOpen] = useState<boolean>(false);
   const [queryCache, setQueryCache] = useState<FetchPolicy>(FetchPolicy.NoCache);
 
-  const { data, loading, error } = useQuery(GET_EXPLORER_DATA);
   const theme = useReactiveVar(colorTheme);
+  const query = useReactiveVar(graphiQLQuery);
 
   const executeOperation = ({ query, operationName, variables, fetchPolicy = queryCache }) => new Observable<FetchResult>(observer => {
     const payload = JSON.stringify({
@@ -75,11 +71,6 @@ export const Explorer = ({ navigationProps }) => {
 
   const handleToggleExplorer = () => setIsExplorerOpen(!isExplorerOpen);
 
-  if (loading || !data || error) {
-    // TODO: Proper loading / error states
-    return null;
-  }
-
   return (
     <FullWidthLayout navigationProps={navigationProps}>
       <FullWidthLayout.Header>
@@ -108,8 +99,8 @@ export const Explorer = ({ navigationProps }) => {
       <FullWidthLayout.Main>
         <GraphiQLExplorer
           schema={schema}
-          query={data.graphiQLQuery}
-          onEdit={query => graphiQLQuery(query)}
+          query={query}
+          onEdit={newQuery => graphiQLQuery(newQuery)}
           explorerIsOpen={isExplorerOpen}
           onToggleExplorer={handleToggleExplorer}
         />
@@ -117,9 +108,9 @@ export const Explorer = ({ navigationProps }) => {
           ref={graphiQLRef}
           fetcher={executeOperation as any}
           schema={schema}
-          query={data.graphiQLQuery}
+          query={query}
           editorTheme={theme === ColorTheme.Dark ? 'dracula' : 'graphiql'}
-          onEditQuery={query => graphiQLQuery(query)}
+          onEditQuery={newQuery => graphiQLQuery(newQuery)}
         >
           <GraphiQL.Toolbar />
         </GraphiQL>

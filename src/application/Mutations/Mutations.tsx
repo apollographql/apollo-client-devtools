@@ -8,11 +8,11 @@ import { ListItem } from "@apollo/space-kit/ListItem";
 import { IconRun } from "@apollo/space-kit/icons/IconRun";
 import { Theme } from "../theme";
 import { SidebarLayout } from "../Layouts/SidebarLayout";
+import { RunInGraphiQLButton } from "../Queries/RunInGraphiQLButton";
 import { 
   sidebarHeadingStyles, 
   h1Styles, 
   operationNameStyles,
-  runButtonStyles,
   listStyles,
 } from '../Queries/Queries';
 import { MutationViewer } from './MutationViewer';
@@ -57,10 +57,9 @@ export const Mutations = ({ navigationProps }) => {
           <Fragment>
             <h1 css={h1Styles}>{selectedMutationData?.mutation.name}</h1>
             <span css={operationNameStyles}>Mutation</span>
-            <button css={runButtonStyles}>
-              <IconRun />
-              <span>Run in GraphiQL</span>
-            </button>
+            <RunInGraphiQLButton 
+              operation={selectedMutationData?.mutation?.mutationString}
+            />
           </Fragment>
         )}
       </SidebarLayout.Header>

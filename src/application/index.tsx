@@ -44,10 +44,7 @@ const cache = new InMemoryCache({
         },
         cache() {
           return cacheVar();
-        },
-        graphiQLQuery() {
-          return graphiQLQuery();
-        },
+        }
       }
     }
   }
@@ -55,7 +52,6 @@ const cache = new InMemoryCache({
 
 const cacheVar = makeVar(null);
 export const colorTheme = makeVar<ColorTheme>(ColorTheme.Light);
-export const graphiQLQuery = makeVar<string>('');
 
 export const client = new ApolloClient({
   cache,
@@ -105,7 +101,7 @@ function getQueryData(query, key: number) {
 
 function getMutationData(mutation, key: number) {
   if (!mutation) return;
-  console.log(mutation);
+
   return {
     id: key,
     __typename: 'Mutation',
