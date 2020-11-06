@@ -6,10 +6,10 @@ import { rem } from "polished";
 import { gql, useQuery } from "@apollo/client";
 import { List } from "@apollo/space-kit/List";
 import { ListItem } from "@apollo/space-kit/ListItem";
-import { IconRun } from "@apollo/space-kit/icons/IconRun";
 import { colors } from "@apollo/space-kit/colors";
 import { Theme } from "../theme";
 import { SidebarLayout } from "../Layouts/SidebarLayout";
+import { RunInGraphiQLButton } from "./RunInGraphiQLButton";
 import { QueryViewer } from "./QueryViewer";
 
 export const sidebarHeadingStyles = css`
@@ -32,22 +32,6 @@ export const operationNameStyles = css`
   color: ${colors.grey.light};
   text-transform: uppercase;
   font-size: ${rem(13)};
-`;
-
-export const runButtonStyles = css`
-  appearance: none;
-  display: flex;
-  align-items: center;
-  margin: 0 0 0 auto;
-  border: none;
-  font-size: ${rem(15)};
-  background-color: transparent;
-  cursor: pointer;
-
-  > svg {
-    width: ${rem(16)};
-    margin-right: ${rem(8)};
-  }
 `;
 
 export const listStyles = css`
@@ -101,10 +85,9 @@ export const Queries = ({ navigationProps }) => {
           <Fragment>
             <h1 css={h1Styles}>{watchedQueryData?.watchedQuery.name}</h1>
             <span css={operationNameStyles}>Query</span>
-            <button css={runButtonStyles}>
-              <IconRun />
-              <span>Run in GraphiQL</span>
-            </button>
+            <RunInGraphiQLButton 
+              operation={watchedQueryData?.watchedQuery.queryString} 
+            />
           </Fragment>
         )}
       </SidebarLayout.Header>
