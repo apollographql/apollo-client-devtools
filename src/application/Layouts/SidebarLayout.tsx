@@ -29,6 +29,7 @@ const sidebarStyles = css`
   grid-area: sidebar;
   height: calc(100vh - ${rem(56)});
   padding: ${rem(16)};
+  overflow-y: scroll;
 `;
 
 const navigationStyles = css`

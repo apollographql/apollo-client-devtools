@@ -26,15 +26,14 @@ type QueryInfo = {
   document: DocumentNode;
   source?: Source,
   variables?: Record<string, any>;
-  lastWrittenResult?: Record<string, any>;
-  lastWrittenVars?: Record<string, any>;
+  diff?: Record<string, any>;
 }
 
 type Hook = {
   ApolloClient: ApolloClient<TCache> | undefined;
   version: string;
   getQueries: () => Map<string, QueryInfo> | void;
-  getMutations: () => void;
+  getMutations: () => ({});
   getCache: () => void;
 }
 
@@ -43,7 +42,7 @@ function initializeHook() {
     ApolloClient: undefined,
     version: devtoolsVersion,
     getQueries: () => {},
-    getMutations: () => {},
+    getMutations: () => ({}),
     getCache: () => {},
   };
 
@@ -72,19 +71,35 @@ function initializeHook() {
       queries = [...queryMap.values()].map(({ 
         document, 
         variables,
-        lastWrittenResult,
-        lastWrittenVars,
+        diff,
       }) => ({
           document,
           source: document?.loc?.source, 
           variables,
-          lastWrittenResult,
-          lastWrittenVars,
+          cachedData: diff?.result,
         })
       )
     }
 
     return queries;
+  }
+
+  function getMutations(): QueryInfo[] {
+    const mutationsObj = hook.getMutations();
+    const keys = Object.keys(mutationsObj);
+
+    if (keys.length === 0) {
+      return [];
+    }
+
+    return keys.map(key => {
+      const { mutation, variables } = mutationsObj[key];
+      return {
+        document: mutation,
+        variables,
+        source: mutation?.loc?.source, 
+      }
+    });
   }
 
   function sendMessageToTab<TPayload>(message: string, payload?: TPayload) {
@@ -110,7 +125,7 @@ function initializeHook() {
       sendMessageToTab(CREATE_DEVTOOLS_PANEL, 
         JSON.stringify({
           queries: getQueries(),
-          mutations: hook.getMutations(),
+          mutations: getMutations(),
           cache: hook.getCache(),
         })
       );
@@ -122,7 +137,7 @@ function initializeHook() {
     sendMessageToTab(UPDATE, 
       JSON.stringify({
         queries: getQueries(),
-        mutations: hook.getMutations(),
+        mutations: getMutations(),
         cache: hook.getCache(),
       })
     );

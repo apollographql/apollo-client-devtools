@@ -11,9 +11,9 @@ import { IconCopy } from "@apollo/space-kit/icons/IconCopy";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import stringifyObject from "stringify-object";
 
-const queryViewStyles = css`
+export const queryViewStyles = css`
   display: grid;
-  grid-template-columns: minmax(${rem(600)}, auto) minmax(${rem(360)}, auto);
+  grid-template-columns: minmax(${rem(600)}, auto) ${rem(460)};
   grid-template-rows: ${rem(32)} auto;
   grid-column-gap: ${rem(24)};
   grid-template-areas:
@@ -22,13 +22,13 @@ const queryViewStyles = css`
   margin-top: ${rem(24)};
 `;
 
-const headerStyles = css`
+export const headerStyles = css`
   font-size: ${rem(16)};
   font-weight: 600;
   border-bottom: ${rem(1)} solid ${colors.silver.darker};
 `;
 
-const copyIconStyle = css`
+export const copyIconStyle = css`
   height: ${rem(16)};
   color: ${colors.silver.darker};
   cursor: pointer;
@@ -38,7 +38,7 @@ const copyIconStyle = css`
   }
 `;
 
-const queryStringHeader = css`
+export const queryStringHeader = css`
   grid-area: queryStringHeader; 
   display: flex;
   justify-content: space-between;
@@ -68,25 +68,35 @@ const queryDataHeader = css`
   }
 `;
 
-const queryStringMain = css`
+const calculatedHeight = `height: calc(100vh - ${rem(176)});`;
+export const queryStringMain = css`
   grid-area: queryStringMain;
+  ${calculatedHeight}
   margin-top: ${rem(24)};
   font-size: ${rem(15)};
+  overflow: scroll;
 `;
 
-const queryDataMain = css`
+export const queryDataMain = css`
   grid-area: queryDataMain;
+  ${calculatedHeight}
   margin-top: ${rem(24)};
   font-family: "Source Code Pro", monospace;
   font-size: ${rem(15)};
+  overflow: scroll;
 `;
+interface QueryViewerProps {
+  queryString: string
+  variables: Record<string, any>
+  cachedData: Record<string, any>
+} 
 
 enum QueryTabs {
   Variables,
   CachedData
 }
 
-export const QueryViewer = ({ queryString = '', variables = {}, cachedData = {} }) => {
+export const QueryViewer = ({ queryString = '', variables = {}, cachedData = {} }: QueryViewerProps) => {
   const [currentTab, setCurrentTab] = useState<QueryTabs>(QueryTabs.Variables);
   const copyCurrentTab = `${stringifyObject(currentTab === QueryTabs.Variables ? variables : cachedData)}`;
 
