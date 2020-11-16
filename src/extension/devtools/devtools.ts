@@ -2,12 +2,12 @@ import Relay from '../../Relay';
 import { 
   DEVTOOLS_INITIALIZED, 
   CREATE_DEVTOOLS_PANEL,
-  ACTION_HOOK_FIRED,
   REQUEST_DATA,
   UPDATE,
   PANEL_OPEN,
   PANEL_CLOSED,
   GRAPHIQL_REQUEST,
+  RELOAD,
 } from '../constants';
 
 const inspectedTabId = chrome.devtools.inspectedWindow.tabId;
@@ -32,6 +32,10 @@ function sendMessageToClient(message: any) {
 sendMessageToClient(DEVTOOLS_INITIALIZED);
 let isPanelCreated = false;
 let isAppInitialized = false;
+let removeUpdateListener;
+let removeReloadListener;
+let removeGraphiQLForward;
+let intervalId;
 
 devtools.listen(CREATE_DEVTOOLS_PANEL, ({ payload }) => {
   if (!isPanelCreated) {
@@ -59,14 +63,11 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, ({ payload }) => {
             initialize();
             writeData({ queries, mutations, cache: JSON.stringify(cache) });
             isAppInitialized = true;
+
             sendMessageToClient(REQUEST_DATA);
-
-            devtools.listen(ACTION_HOOK_FIRED, () => {
-              // TODO: Decide when we want to request updates.
-              sendMessageToClient(REQUEST_DATA);
-            });
-
-            devtools.listen(UPDATE, ({ payload }) => {
+            intervalId = setInterval(sendMessageToClient, 500, REQUEST_DATA);
+            
+            removeUpdateListener = devtools.listen(UPDATE, ({ payload }) => {
               const { queries, mutations, cache } = JSON.parse(payload);
               writeData({ queries, mutations, cache: JSON.stringify(cache) });
             });
@@ -78,16 +79,24 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, ({ payload }) => {
             });
 
             // Forward all GraphiQL requests to the client
-            devtools.forward(GRAPHIQL_REQUEST, `background:tab-${inspectedTabId}:client`);
+            removeGraphiQLForward = devtools.forward(GRAPHIQL_REQUEST, `background:tab-${inspectedTabId}:client`);
+
+            removeReloadListener = devtools.listen(RELOAD, () => {
+              // TODO: Handle reload with UI to indicate reload
+              console.log(RELOAD);
+            });
           }
         });
 
         panel.onHidden.addListener(() => {
-          // TODO: Remove UPDATE listener
-          // TODO: Remove ACTION_HOOK_FIRED listener
-          // TODO: Remove devtools.forward(GRAPHIQL_REQUEST)
-          devtools.removeConnection('graphiql');
+          isPanelCreated = false;
+          isAppInitialized = false;
+          clearInterval(intervalId);
+          removeGraphiQLForward();
+          removeUpdateListener();
+          removeReloadListener();
           removeGraphiQLListener();
+          devtools.removeConnection('graphiql');
           sendMessageToClient(PANEL_CLOSED);
         });
       }

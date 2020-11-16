@@ -23,3 +23,12 @@ chrome.runtime.onConnect.addListener(port => {
     background.removeConnection(port.name);
   });
 });
+
+// chrome.tabs.onUpdated.addListener(function (tabId, changeInfo) {
+//   if (changeInfo.status == 'loading') {
+//     background.broadcast({
+//       message: 'LOADING',
+//       to: `devtools-${tabId}`,
+//     });
+//   }
+// });
