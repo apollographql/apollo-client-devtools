@@ -23,7 +23,8 @@
     "test:watch": "jest --watch",
     "zip": "npm run prezip && npm run zip:chrome && npm run zip:firefox",
     "zip:chrome": "zip -r -FS dist/chrome.zip build",
-    "zip:firefox": "web-ext build --source-dir build --artifacts-dir dist --overwrite-dest"
+    "zip:firefox": "web-ext build --source-dir build --artifacts-dir dist --overwrite-dest",
+    "postinstall": "cd node_modules/graphiql-forked/packages/graphiql && npm install --production"
   },
   "devDependencies": {
     "@babel/core": "^7.10.0",
@@ -72,8 +73,8 @@
     "@reach/tabs": "^0.11.2",
     "classnames": "^2.2.6",
     "emotion-theming": "^10.0.27",
-    "graphiql": "^1.0.3",
     "graphiql-explorer": "^0.6.2",
+    "graphiql-forked": "https://github.com/apollographql/graphiql",
     "graphql": "^15.3.0",
     "graphql-syntax-highlighter-react": "^0.4.0",
     "lodash.flattendeep": "^4.4.0",
