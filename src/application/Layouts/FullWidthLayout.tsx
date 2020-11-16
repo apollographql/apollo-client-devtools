@@ -55,8 +55,8 @@ const FullWidthLayout: React.FC<FullWidthLayoutProps> & FullWidthLayoutCompositi
   );
 };
 
-const Header = ({ children }) => (<div css={headerStyles} data-testid="header">{children}</div>);
-const Main = ({ children }) => (<div css={mainStyles} data-testid="main">{children}</div>);
+const Header = ({ children, className }) => (<div className={className} css={headerStyles} data-testid="header">{children}</div>);
+const Main = ({ children, className }) => (<div css={mainStyles} data-testid="main">{children}</div>);
 
 FullWidthLayout.Header = Header;
 FullWidthLayout.Main = Main;

@@ -200,15 +200,20 @@ export const App = () => {
   )
 };
 
-export const initDevTools = () => {
+const AppProvider = () => {
   const theme = useReactiveVar<ColorTheme>(colorTheme);
 
-  render(
+  return (
     <ApolloProvider client={client}>
       <ThemeProvider theme={themes[theme]}>
         <App />
       </ThemeProvider>
-    </ApolloProvider>,
+    </ApolloProvider>
+  );
+};
+
+export const initDevTools = () => {
+  render(<AppProvider />,
     document.getElementById("devtools")
   );
 };
