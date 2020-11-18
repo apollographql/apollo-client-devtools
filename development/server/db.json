@@ -1,3 +1,29 @@
 {
-  "favorites": []
+  "favorites": [
+    {
+      "name": "Lima",
+      "hex": "#4CCC18",
+      "contrast": "#000000"
+    },
+    {
+      "name": "Alien Armpit",
+      "hex": "#87EB0C",
+      "contrast": "#000000"
+    },
+    {
+      "name": "Flax Smoke",
+      "hex": "#7F8561",
+      "contrast": "#000000"
+    },
+    {
+      "name": "Rose Pearl",
+      "hex": "#EC2E7C",
+      "contrast": "#000000"
+    },
+    {
+      "name": "Salmon Pearl",
+      "hex": "#EE333A",
+      "contrast": "#000000"
+    }
+  ]
 }

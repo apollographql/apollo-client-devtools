@@ -10,7 +10,8 @@ import { themes, ColorTheme } from './theme';
 import { currentScreen, Screens } from './Layouts/Navigation';
 import { Queries } from './Queries/Queries';
 import { Mutations } from './Mutations/Mutations';
-import { Explorer } from './Explorer/Explorer';
+import { Explorer, resetGraphiQLVars } from './Explorer/Explorer';
+import { useEffect } from "react";
 
 const cache = new InMemoryCache({
   typePolicies: {
@@ -30,16 +31,24 @@ const cache = new InMemoryCache({
     },
     Query: {
       fields: {
-        watchedQuery(_, { toReference, variables }) {
-          return toReference({
-            __typename: 'WatchedQuery',
-            id: variables?.id,
-          });
+        watchedQueries(_ = { queries: [], count: 0 }) {
+          return _;
         },
-        mutation(_, { toReference, variables }) {
+        mutationLog(_ = { mutations: [], count: 0 }) {
+          return _;
+        },
+        watchedQuery(_, { toReference, args, canRead }) {
+          const ref = toReference({
+            __typename: 'WatchedQuery',
+            id: args?.id,
+          });
+          
+          return canRead(ref) ? ref : _;
+        },
+        mutation(_, { toReference, args }) {
           return toReference({
             __typename: 'Mutation',
-            id: variables?.id,
+            id: args?.id,
           });
         },
         cache() {
@@ -50,6 +59,7 @@ const cache = new InMemoryCache({
   }
 });
 
+export const reloadStatus = makeVar<boolean>(false);
 const cacheVar = makeVar(null);
 export const colorTheme = makeVar<ColorTheme>(ColorTheme.Light);
 
@@ -135,6 +145,16 @@ export const writeData = ({ queries, mutations, cache }) => {
   cacheVar(cache);
 };
 
+export const handleReload = () => {
+  reloadStatus(true);
+};
+
+export const handleReloadComplete = () => {
+  reloadStatus(false);
+  client.resetStore();
+  resetGraphiQLVars();
+};
+
 const screens = {
   [Screens.Explorer]: Explorer,
   [Screens.Queries]: Queries,
@@ -157,7 +177,19 @@ const App = () => {
   const { data } = useQuery(GET_OPERATION_COUNTS);
   const theme = useReactiveVar<ColorTheme>(colorTheme);
   const selected = useReactiveVar<Screens>(currentScreen);
-  const Screen = screens[selected];
+  const reloading = useReactiveVar<boolean>(reloadStatus);
+  let Screen = screens[selected];
+
+  // During a reload, reset the current screen to Queries.
+  useEffect(() => {
+    if (reloading) {
+      currentScreen(Screens.Queries);
+    }
+  }, [reloading]);
+
+  if (reloading) {
+    return null;
+  }
 
   return (
     <ThemeProvider theme={themes[theme]}>

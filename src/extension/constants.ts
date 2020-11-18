@@ -1,3 +1,4 @@
+export const CLIENT_FOUND = 'client-found';
 export const REQUEST_TAB_ID = 'request-tab-id';
 export const DEVTOOLS_INITIALIZED = 'devtools-initialized';
 export const FIND_APOLLO_CLIENT = 'find-apollo-client';
@@ -10,4 +11,5 @@ export const PANEL_OPEN = 'panel-open';
 export const PANEL_CLOSED = 'panel-closed';
 export const GRAPHIQL_REQUEST = 'graphiql-request';
 export const GRAPHIQL_RESPONSE = 'graphiql-response';
-export const RELOAD = 'reload';
+export const RELOADING_TAB = 'reloading-tab';
+export const RELOAD_TAB_COMPLETE = 'reload-tab-complete';

@@ -1,11 +1,13 @@
 import Relay from '../../Relay';
 import { 
+  CLIENT_FOUND,
   REQUEST_TAB_ID, 
   CREATE_DEVTOOLS_PANEL,
   ACTION_HOOK_FIRED,
   GRAPHIQL_RESPONSE,
   UPDATE,
-  RELOAD,
+  RELOADING_TAB,
+  RELOAD_TAB_COMPLETE,
 } from '../constants';
 
 // Inspected tabs are unable to retrieve their own ids.
@@ -37,15 +39,17 @@ export default new Promise(async $export => {
   });
 
   tab.addConnection('client', message => {
-    console.log(message);
     window.postMessage(message, '*');
   });
 
-  tab.forward(CREATE_DEVTOOLS_PANEL, `background:devtools-${id}`);
-  tab.forward(ACTION_HOOK_FIRED, `background:devtools-${id}`);
-  tab.forward(UPDATE, `background:devtools-${id}`);
-  tab.forward(RELOAD, `background:devtools-${id}`);
-  tab.forward(GRAPHIQL_RESPONSE, `background:devtools-${id}:graphiql`);
+  const devtools = `background:devtools-${id}`;
+  tab.forward(CLIENT_FOUND, devtools);
+  tab.forward(CREATE_DEVTOOLS_PANEL, devtools);
+  tab.forward(ACTION_HOOK_FIRED, devtools);
+  tab.forward(UPDATE, devtools);
+  tab.forward(RELOADING_TAB, devtools);
+  tab.forward(RELOAD_TAB_COMPLETE, devtools);
+  tab.forward(GRAPHIQL_RESPONSE, `${devtools}:graphiql`);
 
   const module = await Promise.resolve({ tab, id });
   $export(module);

@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { jsx, css } from "@emotion/core";
 import { useTheme } from "emotion-theming";
 import { rem } from "polished";
@@ -75,7 +75,7 @@ export const Queries = ({ navigationProps }) => {
     variables: { id: selected },
     returnPartialData: true,
   });
-
+  
   return (
     <SidebarLayout 
       navigationProps={navigationProps}
