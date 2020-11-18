@@ -7,7 +7,8 @@ import {
   PANEL_OPEN,
   PANEL_CLOSED,
   GRAPHIQL_REQUEST,
-  RELOAD,
+  RELOADING_TAB,
+  RELOAD_TAB_COMPLETE,
 } from '../constants';
 
 const inspectedTabId = chrome.devtools.inspectedWindow.tabId;
@@ -29,13 +30,16 @@ function sendMessageToClient(message: any) {
   });
 }
 
+function startRequestInterval(ms = 500) {
+  sendMessageToClient(REQUEST_DATA);
+  const id = setInterval(sendMessageToClient, ms, REQUEST_DATA);
+  return () => clearInterval(id);
+}
+
 sendMessageToClient(DEVTOOLS_INITIALIZED);
+
 let isPanelCreated = false;
 let isAppInitialized = false;
-let removeUpdateListener;
-let removeReloadListener;
-let removeGraphiQLForward;
-let intervalId;
 
 devtools.listen(CREATE_DEVTOOLS_PANEL, ({ payload }) => {
   if (!isPanelCreated) {
@@ -45,53 +49,64 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, ({ payload }) => {
       function(panel) {
         isPanelCreated = true;
         const { queries, mutations, cache } = JSON.parse(payload);
+        let removeUpdateListener;
+        let removeGraphiQLForward;
+        let removeReloadListener;
+        let clearRequestInterval;
         let removeGraphiQLListener;
 
         panel.onShown.addListener(window => {
           sendMessageToClient(PANEL_OPEN);
 
-          if (!isAppInitialized) {
-            const { 
-              __DEVTOOLS_APPLICATION__: {
-                initialize,
-                writeData,
-                receiveGraphiQLRequests,
-                sendResponseToGraphiQL,
-              }
-            } = (window as any);
+          const { 
+            __DEVTOOLS_APPLICATION__: {
+              initialize,
+              writeData,
+              receiveGraphiQLRequests,
+              sendResponseToGraphiQL,
+              handleReload,
+              handleReloadComplete,
+            }
+          } = (window as any);
 
+          if (!isAppInitialized) {
             initialize();
             writeData({ queries, mutations, cache: JSON.stringify(cache) });
             isAppInitialized = true;
-
-            sendMessageToClient(REQUEST_DATA);
-            intervalId = setInterval(sendMessageToClient, 500, REQUEST_DATA);
-            
-            removeUpdateListener = devtools.listen(UPDATE, ({ payload }) => {
-              const { queries, mutations, cache } = JSON.parse(payload);
-              writeData({ queries, mutations, cache: JSON.stringify(cache) });
-            });
-
-            // Add connection so client at send to `background:devtools-${inspectedTabId}:graphiql`
-            devtools.addConnection('graphiql', sendResponseToGraphiQL);
-            removeGraphiQLListener = receiveGraphiQLRequests(({ detail }) => {
-              devtools.broadcast(detail);
-            });
-
-            // Forward all GraphiQL requests to the client
-            removeGraphiQLForward = devtools.forward(GRAPHIQL_REQUEST, `background:tab-${inspectedTabId}:client`);
-
-            removeReloadListener = devtools.listen(RELOAD, () => {
-              // TODO: Handle reload with UI to indicate reload
-              console.log(RELOAD);
-            });
           }
+
+          clearRequestInterval = startRequestInterval();
+          
+          removeUpdateListener = devtools.listen(UPDATE, ({ payload }) => {
+            const { queries, mutations, cache } = JSON.parse(payload);
+            writeData({ queries, mutations, cache: JSON.stringify(cache) });
+          });
+
+          // Add connection so client can send to `background:devtools-${inspectedTabId}:graphiql`
+          devtools.addConnection('graphiql', sendResponseToGraphiQL);
+          removeGraphiQLListener = receiveGraphiQLRequests(({ detail }) => {
+            devtools.broadcast(detail);
+          });
+
+          // Forward all GraphiQL requests to the client
+          removeGraphiQLForward = devtools.forward(GRAPHIQL_REQUEST, `background:tab-${inspectedTabId}:client`);
+
+          // Listen for tab reload from background
+          removeReloadListener = devtools.listen(RELOADING_TAB, () => {
+            handleReload();
+            clearRequestInterval();
+
+            const removeListener = devtools.listen(RELOAD_TAB_COMPLETE, () => {
+              clearRequestInterval = startRequestInterval();
+              handleReloadComplete();
+              removeListener();
+            });
+          });
         });
 
         panel.onHidden.addListener(() => {
           isPanelCreated = false;
-          isAppInitialized = false;
-          clearInterval(intervalId);
+          clearRequestInterval();
           removeGraphiQLForward();
           removeUpdateListener();
           removeReloadListener();

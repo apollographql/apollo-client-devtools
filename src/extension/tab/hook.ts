@@ -5,6 +5,7 @@ import Relay from "../../Relay";
 import { QueryInfo, getQueries, getMutations } from "./helpers";
 import { GraphiQLResponse, QueryResult } from '../../types';
 import { 
+  CLIENT_FOUND,
   DEVTOOLS_INITIALIZED,
   CREATE_DEVTOOLS_PANEL,
   ACTION_HOOK_FIRED, 
@@ -12,7 +13,8 @@ import {
   GRAPHIQL_RESPONSE,
   REQUEST_DATA,
   UPDATE,
-  RELOAD,
+  RELOADING_TAB,
+  RELOAD_TAB_COMPLETE,
 } from "../constants";
 
 declare global {
@@ -64,11 +66,14 @@ function initializeHook() {
     });
   }
 
-  window.addEventListener('load', () => {
-    sendMessageToTab(RELOAD);
-  });
+  // Listen for tab refreshes
+  window.onbeforeunload = () => {
+    sendMessageToTab(RELOADING_TAB);
+  };
 
-  // TODO: Handshake to get the tab id?
+  window.onload = () => {
+    sendMessageToTab(RELOAD_TAB_COMPLETE, { ApolloClient: !!hook.ApolloClient });
+  };
 
   function handleActionHookForDevtools() {
     sendMessageToTab(ACTION_HOOK_FIRED);
@@ -150,6 +155,7 @@ function initializeHook() {
         hook.getCache = () => hook.ApolloClient!.cache.extract(true);
   
         clearInterval(interval);
+        sendMessageToTab(CLIENT_FOUND);
       }
     }
     

@@ -7,7 +7,7 @@ import { Navigation, NavigationProps } from "./Navigation";
 
 interface SidebarLayoutProps {
   navigationProps: NavigationProps
-  children: any;
+  children: any;  
 };
 
 interface SidebarLayoutComposition {
