@@ -1,4 +1,5 @@
 /** @jsx jsx */
+import { useEffect } from "react";
 import { jsx } from "@emotion/core";
 import { ThemeProvider } from "emotion-theming";
 import { render } from "react-dom";
@@ -11,7 +12,6 @@ import { currentScreen, Screens } from './Layouts/Navigation';
 import { Queries } from './Queries/Queries';
 import { Mutations } from './Mutations/Mutations';
 import { Explorer, resetGraphiQLVars } from './Explorer/Explorer';
-import { useEffect } from "react";
 
 const cache = new InMemoryCache({
   typePolicies: {
