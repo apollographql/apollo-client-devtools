@@ -173,40 +173,41 @@ const GET_OPERATION_COUNTS = gql`
   }
 `;
 
-const App = () => {
+export const App = () => {
   const { data } = useQuery(GET_OPERATION_COUNTS);
-  const theme = useReactiveVar<ColorTheme>(colorTheme);
   const selected = useReactiveVar<Screens>(currentScreen);
   const reloading = useReactiveVar<boolean>(reloadStatus);
   let Screen = screens[selected];
 
   // During a reload, reset the current screen to Queries.
   useEffect(() => {
-    if (reloading) {
+    if (reloading && selected !== Screens.Queries) {
       currentScreen(Screens.Queries);
     }
   }, [reloading]);
 
   if (reloading) {
-    return null;
+    return <div></div>;
   }
 
-  return (
-    <ThemeProvider theme={themes[theme]}>
-      <Screen
-        navigationProps={{ 
-          queriesCount: data?.watchedQueries?.count,
-          mutationsCount: data?.mutationLog?.count,
-        }}
-      />
-    </ThemeProvider>
+  return (  
+    <Screen
+      navigationProps={{ 
+        queriesCount: data?.watchedQueries?.count,
+        mutationsCount: data?.mutationLog?.count,
+      }}
+    />
   )
 };
 
 export const initDevTools = () => {
+  const theme = useReactiveVar<ColorTheme>(colorTheme);
+
   render(
     <ApolloProvider client={client}>
-      <App />
+      <ThemeProvider theme={themes[theme]}>
+        <App />
+      </ThemeProvider>
     </ApolloProvider>,
     document.getElementById("devtools")
   );
