@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useState } from "react";
 import { jsx, css } from "@emotion/core";
 import { useTheme } from "emotion-theming";
 import { rem } from "polished";
