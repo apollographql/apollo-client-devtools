@@ -19,6 +19,7 @@
     "prepublishOnly": "npm run build",
     "prezip": "npm run clean && npm run build:prod",
     "test": "jest",
+    "test:circleci": "jest --maxWorkers=2",
     "test:watch": "jest --watch",
     "zip": "npm run prezip && npm run zip:chrome && npm run zip:firefox",
     "zip:chrome": "zip -r -FS dist/chrome.zip build",
