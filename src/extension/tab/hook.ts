@@ -1,10 +1,11 @@
-import { DocumentNode, Source } from "graphql";
 import { gql, Observable, ApolloClient } from "@apollo/client";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { version as devtoolsVersion } from "../manifest.json";
 import Relay from "../../Relay";
+import { QueryInfo, getQueries, getMutations } from "./helpers";
 import { GraphiQLResponse, QueryResult } from '../../types';
 import { 
+  CLIENT_FOUND,
   DEVTOOLS_INITIALIZED,
   CREATE_DEVTOOLS_PANEL,
   ACTION_HOOK_FIRED, 
@@ -12,6 +13,8 @@ import {
   GRAPHIQL_RESPONSE,
   REQUEST_DATA,
   UPDATE,
+  RELOADING_TAB,
+  RELOAD_TAB_COMPLETE,
 } from "../constants";
 
 declare global {
@@ -22,18 +25,11 @@ declare global {
   }
 }
 
-type QueryInfo = {
-  document: DocumentNode;
-  source?: Source,
-  variables?: Record<string, any>;
-  diff?: Record<string, any>;
-}
-
 type Hook = {
   ApolloClient: ApolloClient<TCache> | undefined;
   version: string;
-  getQueries: () => Map<string, QueryInfo> | void;
-  getMutations: () => ({});
+  getQueries: () => QueryInfo[];
+  getMutations: () => QueryInfo[];
   getCache: () => void;
 }
 
@@ -41,8 +37,8 @@ function initializeHook() {
   const hook: Hook = {
     ApolloClient: undefined,
     version: devtoolsVersion,
-    getQueries: () => {},
-    getMutations: () => ({}),
+    getQueries: () => ([]),
+    getMutations: () => ([]),
     getCache: () => {},
   };
 
@@ -62,46 +58,6 @@ function initializeHook() {
     clientRelay.broadcast(data);
   });
 
-  // TODO: Handshake to get the tab id?
-  function getQueries(): QueryInfo[] {
-    const queryMap = hook.getQueries();
-    let queries: QueryInfo[] = [];
-
-    if (queryMap) {
-      queries = [...queryMap.values()].map(({ 
-        document, 
-        variables,
-        diff,
-      }) => ({
-          document,
-          source: document?.loc?.source, 
-          variables,
-          cachedData: diff?.result,
-        })
-      )
-    }
-
-    return queries;
-  }
-
-  function getMutations(): QueryInfo[] {
-    const mutationsObj = hook.getMutations();
-    const keys = Object.keys(mutationsObj);
-
-    if (keys.length === 0) {
-      return [];
-    }
-
-    return keys.map(key => {
-      const { mutation, variables } = mutationsObj[key];
-      return {
-        document: mutation,
-        variables,
-        source: mutation?.loc?.source, 
-      }
-    });
-  }
-
   function sendMessageToTab<TPayload>(message: string, payload?: TPayload) {
     clientRelay.send({
       to: 'tab',
@@ -109,6 +65,15 @@ function initializeHook() {
       payload,
     });
   }
+
+  // Listen for tab refreshes
+  window.onbeforeunload = () => {
+    sendMessageToTab(RELOADING_TAB);
+  };
+
+  window.onload = () => {
+    sendMessageToTab(RELOAD_TAB_COMPLETE, { ApolloClient: !!hook.ApolloClient });
+  };
 
   function handleActionHookForDevtools() {
     sendMessageToTab(ACTION_HOOK_FIRED);
@@ -124,8 +89,8 @@ function initializeHook() {
       // Tab Relay forwards this the devtools
       sendMessageToTab(CREATE_DEVTOOLS_PANEL, 
         JSON.stringify({
-          queries: getQueries(),
-          mutations: getMutations(),
+          queries: hook.getQueries(),
+          mutations: hook.getMutations(),
           cache: hook.getCache(),
         })
       );
@@ -136,8 +101,8 @@ function initializeHook() {
     // Tab Relay forwards this the devtools
     sendMessageToTab(UPDATE, 
       JSON.stringify({
-        queries: getQueries(),
-        mutations: getMutations(),
+        queries: hook.getQueries(),
+        mutations: hook.getMutations(),
         cache: hook.getCache(),
       })
     );
@@ -185,11 +150,12 @@ function initializeHook() {
       if (!!window.__APOLLO_CLIENT__) {
         hook.ApolloClient = window.__APOLLO_CLIENT__;
         hook.ApolloClient.__actionHookForDevTools(handleActionHookForDevtools);
-        hook.getQueries = () => (hook.ApolloClient as any).queryManager.queries;
-        hook.getMutations = () => (hook.ApolloClient as any).queryManager.mutationStore.getStore();
+        hook.getQueries = () => getQueries((hook.ApolloClient as any).queryManager.queries);
+        hook.getMutations = () => getMutations((hook.ApolloClient as any).queryManager.mutationStore.getStore());
         hook.getCache = () => hook.ApolloClient!.cache.extract(true);
   
         clearInterval(interval);
+        sendMessageToTab(CLIENT_FOUND);
       }
     }
     

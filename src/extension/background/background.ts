@@ -1,5 +1,7 @@
 import Relay from '../../Relay';
-import { REQUEST_TAB_ID } from '../constants';
+import { 
+  REQUEST_TAB_ID, 
+} from '../constants';
 
 // This sends the tab id to the inspected tab.
 chrome.runtime.onMessage.addListener(({ message }, sender, sendResponse) => {

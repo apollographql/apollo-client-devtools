@@ -1,4 +1,4 @@
-import { initDevTools, writeData } from "../../application";
+import { initDevTools, writeData, handleReload, handleReloadComplete } from "../../application";
 import { receiveGraphiQLRequests, sendResponseToGraphiQL } from "../../application/Explorer/graphiQLRelay";
 
 (window as any).__DEVTOOLS_APPLICATION__ = {
@@ -6,4 +6,6 @@ import { receiveGraphiQLRequests, sendResponseToGraphiQL } from "../../applicati
   writeData,
   receiveGraphiQLRequests,
   sendResponseToGraphiQL,
+  handleReload,
+  handleReloadComplete,
 };

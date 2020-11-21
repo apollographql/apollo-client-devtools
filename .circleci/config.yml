@@ -22,7 +22,7 @@ jobs:
       - checkout
       - node/install-packages
       - run:
-          command: npm run test
+          command: npm run test:circleci
 
 workflows:
   lint-and-test:

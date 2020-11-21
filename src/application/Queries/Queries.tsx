@@ -75,7 +75,7 @@ export const Queries = ({ navigationProps }) => {
     variables: { id: selected },
     returnPartialData: true,
   });
-
+  
   return (
     <SidebarLayout 
       navigationProps={navigationProps}
