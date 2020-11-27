@@ -1,5 +1,6 @@
 /** @jsx jsx */
-import { jsx, css } from "@emotion/core";
+import { ReactNode } from "react";
+import { jsx, css, SerializedStyles } from "@emotion/core";
 import { useTheme } from "emotion-theming";
 import { rem } from "polished";
 import { colors } from "@apollo/space-kit/colors";
@@ -7,11 +8,16 @@ import { Navigation, NavigationProps } from "./Navigation";
 
 interface SidebarLayoutProps {
   navigationProps: NavigationProps
-  children: any;  
+  children: any;
 };
 
+interface SidebarProps {
+  cssOverride?: SerializedStyles
+  children: ReactNode;
+}
+
 interface SidebarLayoutComposition {
-  Sidebar: React.FC;
+  Sidebar: React.FC<SidebarProps>;
   Header: React.FC;
   Main: React.FC;
 }
@@ -56,8 +62,8 @@ const SidebarLayout: React.FC<SidebarLayoutProps> & SidebarLayoutComposition = (
   const { queriesCount, mutationsCount } = navigationProps;
 
   return (
-    <div 
-      data-testid="layout" 
+    <div
+      data-testid="layout"
       css={layoutStyles}
     >
       <Navigation
@@ -70,13 +76,14 @@ const SidebarLayout: React.FC<SidebarLayoutProps> & SidebarLayoutComposition = (
   );
 };
 
-const Sidebar = ({ children }) => {
+const Sidebar = ({ cssOverride, children }) => {
   const theme = useTheme<any>();
   return (
-    <div 
+    <div
       css={[
-        sidebarStyles, 
+        sidebarStyles,
         { backgroundColor: theme.primary },
+        cssOverride
       ]}
       data-testid="sidebar"
     >
