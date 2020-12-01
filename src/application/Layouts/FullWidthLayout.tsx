@@ -6,6 +6,7 @@ import { Navigation, NavigationProps } from "./Navigation";
 interface FullWidthLayoutProps {
   navigationProps: NavigationProps
   children: any;
+  className?: string;
 };
 
 interface FullWidthLayoutComposition {
@@ -37,12 +38,14 @@ const headerStyles = css`
 const FullWidthLayout: React.FC<FullWidthLayoutProps> & FullWidthLayoutComposition = ({
   navigationProps,
   children,
+  className,
 }) => {
   const { queriesCount, mutationsCount } = navigationProps;
 
   return (
     <div 
       data-testid="layout" 
+      className={className}
       css={layoutStyles}
     >
       <Navigation
@@ -56,7 +59,7 @@ const FullWidthLayout: React.FC<FullWidthLayoutProps> & FullWidthLayoutCompositi
 };
 
 const Header = ({ children, className }) => (<div className={className} css={headerStyles} data-testid="header">{children}</div>);
-const Main = ({ children, className }) => (<div css={mainStyles} data-testid="main">{children}</div>);
+const Main = ({ children, className }) => (<div className={className} css={mainStyles} data-testid="main">{children}</div>);
 
 FullWidthLayout.Header = Header;
 FullWidthLayout.Main = Main;
