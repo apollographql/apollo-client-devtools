@@ -51,8 +51,14 @@ const buttonContainerStyles = css`
 `;
 
 const buttonStyles = css`
+  font-weight: normal;
   font-size: ${rem(16)};
   color: ${colors.white};
+
+  &:hover {
+    background-color: ${colors.blilet.base};
+    color: ${colors.white};
+  }
 `;
 
 const runButtonStyles = css`
@@ -62,24 +68,27 @@ const runButtonStyles = css`
   border: none;
   border-radius: ${rem(4)};
   background-color: transparent;
+  cursor: pointer;
 
   svg {
     fill: currentColor;
   }
 
   &:hover {
-    background-color: ${colors.white};
-    color: ${colors.grey.base};
+    background-color: ${colors.blilet.base};
   }
 `;
 
 const docsButtonStyles = css`
+  ${buttonStyles}
   min-width: ${rem(60)};
   margin: 0 0 0 auto;
-  color: ${colors.white};
 `;
 
 const labelStyles = css`
+  display: inline-flex;
+  align-items: center;
+  margin: 0 0 0 ${rem(36)};
   font-size: ${rem(16)};
   color: ${colors.white};
 `;
@@ -88,12 +97,12 @@ const checkboxStyles = css`
   appearance: none;
   width: ${rem(20)};
   height: ${rem(20)};
-  margin: 0 ${rem(16)} 0 ${rem(36)};
+  margin-right: ${rem(16)};
   border-radius: ${rem(4)};
   background-color: ${colors.white};
 
   &:checked {
-    background-color: ${colors.blue.base};
+    background-color: ${colors.blilet.base};
   }
 `;
 
@@ -223,18 +232,18 @@ export const Explorer = ({ navigationProps }) => {
                     </Button>
                   </div>
                   <div css={borderStyles}></div>
-                  <input
-                    id="loadFromCache"
-                    css={checkboxStyles}
-                    type="checkbox"
-                    name="loadFromCache"
-                    checked={queryCache === FetchPolicy.CacheOnly}
-                    onChange={() => setQueryCache(queryCache === FetchPolicy.CacheOnly ? FetchPolicy.NoCache : FetchPolicy.CacheOnly)}
-                  />
                   <label 
                     htmlFor="loadFromCache"
                     css={labelStyles}
                   >
+                    <input
+                      id="loadFromCache"
+                      css={checkboxStyles}
+                      type="checkbox"
+                      name="loadFromCache"
+                      checked={queryCache === FetchPolicy.CacheOnly}
+                      onChange={() => setQueryCache(queryCache === FetchPolicy.CacheOnly ? FetchPolicy.NoCache : FetchPolicy.CacheOnly)}
+                    />
                     Load from cache
                   </label>
                   <Button
