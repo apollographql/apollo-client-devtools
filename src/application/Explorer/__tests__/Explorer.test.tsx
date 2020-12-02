@@ -1,5 +1,5 @@
 import React from 'react';
-import { within, waitForElementToBeRemoved } from '@testing-library/react';
+import { within, waitForElementToBeRemoved, screen } from '@testing-library/react';
 import user from '@testing-library/user-event';
 import { renderWithApolloClient } from '../../utilities/testing/renderWithApolloClient';
 import { Explorer } from '../Explorer';
@@ -43,6 +43,7 @@ describe('<Explorer />', () => {
     expect(getByText('Prettify')).toBeInTheDocument();
     expect(getByText('Explorer')).toBeInTheDocument();
     expect(getByLabelText('Load from cache')).toBeInTheDocument();
+    expect(getByText('Docs')).toBeInTheDocument();
   });
 
   test('it can toggle the GraphiQLExplorer component', () => {
@@ -55,6 +56,17 @@ describe('<Explorer />', () => {
     expect(explorer).not.toBeVisible();
     user.click(button as HTMLElement);
     expect(explorer).toBeVisible();
+  });
+
+  test('it can toggle the DocExplorer component', () => {
+    const { getByTestId, getByText } = renderWithApolloClient(<Explorer navigationProps={navigationProps} />);
+    const header = getByTestId('header');
+    const { getByText: getByTextInHeader } = within(header);
+    const button = getByTextInHeader('Docs');
+
+    expect(screen.queryByText('DocExplorer')).not.toBeInTheDocument;
+    user.click(button as HTMLElement);
+    expect(screen.queryByText('DocExplorer')).toBeInTheDocument;
   });
 
   test('it retrieves a schema from an IntrospectionQuery', async () => {
