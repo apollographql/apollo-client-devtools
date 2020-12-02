@@ -199,9 +199,9 @@ export const Explorer = ({ navigationProps }) => {
           query={query}
           editorTheme={color === ColorTheme.Dark ? 'dracula' : 'graphiql'}
           onEditQuery={newQuery => graphiQLQuery(newQuery)}
-          render={({ Logo, ExecuteButton, GraphiQLEditor, DocExplorer }) => {
+          render={({ ExecuteButton, GraphiQLEditor, DocExplorer }) => {
             return (
-              <Fragment>           
+              <Fragment>   
                 <FullWidthLayout.Header 
                   css={[
                     headerStyles, 
