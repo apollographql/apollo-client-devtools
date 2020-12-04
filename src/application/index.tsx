@@ -7,7 +7,12 @@ import { ApolloClient, ApolloProvider, InMemoryCache, useReactiveVar, makeVar, g
 import { getOperationName } from "@apollo/client/utilities";
 import "@apollo/space-kit/reset.css";
 
-import { themes, ColorTheme } from './theme';
+import { 
+  themes, 
+  ColorTheme, 
+  getPreferredTheme,
+  listenForThemeChange,
+ } from './theme';
 import { currentScreen, Screens } from './Layouts/Navigation';
 import { Queries } from './Queries/Queries';
 import { Mutations } from './Mutations/Mutations';
@@ -61,8 +66,7 @@ const cache = new InMemoryCache({
 
 export const reloadStatus = makeVar<boolean>(false);
 const cacheVar = makeVar(null);
-export const colorTheme = makeVar<ColorTheme>(ColorTheme.Light);
-
+export const colorTheme = makeVar<ColorTheme>(getPreferredTheme());
 export const client = new ApolloClient({
   cache,
 });
@@ -202,6 +206,7 @@ export const App = () => {
 
 const AppProvider = () => {
   const theme = useReactiveVar<ColorTheme>(colorTheme);
+  useEffect(() => listenForThemeChange((newColorTheme) => colorTheme(newColorTheme)));
 
   return (
     <ApolloProvider client={client}>
