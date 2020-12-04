@@ -12,13 +12,13 @@ import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { RunInGraphiQLButton } from "./RunInGraphiQLButton";
 import { QueryViewer } from "./QueryViewer";
 
-export const sidebarHeadingStyles = css`
+export const sidebarHeadingStyles = (theme: Theme) => css`
   margin-left: ${rem(12)};
   text-transform: uppercase;
   font-size: ${rem(13)};
   font-weight: normal;
   letter-spacing: ${rem(1)};
-  color: rgba(255, 255, 255, .3);
+  color: ${theme.whiteTransparent};
 `;
 
 export const h1Styles = css`

@@ -33,11 +33,13 @@ export const resetGraphiQLVars = () => {
   graphiQLSchema(undefined);
 };
 
-const headerStyles = css`
+const headerStyles = (theme: Theme) => css`
   display: flex;
   align-items: center;
   padding: 0 ${rem(16)};
   border-bottom: ${rem(1)} solid;
+  background-color: ${theme.primary},
+  border-color: ${theme.primary},
 `;
 
 const mainStyles = css`
@@ -203,13 +205,7 @@ export const Explorer = ({ navigationProps }) => {
             return (
               <Fragment>   
                 <FullWidthLayout.Header 
-                  css={[
-                    headerStyles, 
-                    { 
-                      backgroundColor: theme.primary,
-                      borderColor: theme.primary,
-                    }
-                  ]}
+                  css={headerStyles(theme)}
                 >
                   <div css={borderStyles}></div>
                   <div css={buttonContainerStyles}>
