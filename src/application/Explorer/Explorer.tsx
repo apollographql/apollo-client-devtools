@@ -265,7 +265,7 @@ export const Explorer = ({ navigationProps }) => {
                     explorerIsOpen={isExplorerOpen}
                     onToggleExplorer={handleToggleExplorer}
                   />
-                  <GraphiQLEditor />
+                  {GraphiQLEditor}
                   {isDocsOpen && <DocExplorer onToggleDocs={handleToggleDocs} />}
                 </FullWidthLayout.Main>
               </Fragment>
