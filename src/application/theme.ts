@@ -7,18 +7,18 @@ export enum ColorTheme {
 }
 
 const shared = {
-  sidebarSelected: colors.indigo.base,
+  sidebarSelected: colors.blilet.base,
 };
 
 export const themes: Record<ColorTheme, Record<string, ShadedColor>> = {
   [ColorTheme.Light]: {
-    primary: colors.indigo.darkest,
-    sidebarHover: lighten(0.2, colors.indigo.darkest) as ShadedColor,
+    primary: colors.blilet.darker,
+    sidebarHover: colors.blilet.darkest,
     ...shared,
   },
   [ColorTheme.Dark]: {
     primary: colors.black.base,
-    sidebarHover: lighten(0.2, colors.black.base) as ShadedColor,
+    sidebarHover: colors.midnight.darker,
     ...shared,
   },
 };

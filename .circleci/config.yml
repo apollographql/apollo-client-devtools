@@ -9,7 +9,9 @@ jobs:
       tag: 'current'
     steps:
       - checkout
-      - node/install-packages
+      - node/install-packages:
+          cache-path: ~/project/node_modules
+          override-ci-command: npx -p npm@6 npm ci
       - run:
           command: |
             npm run build
@@ -20,7 +22,9 @@ jobs:
       tag: 'current'
     steps:
       - checkout
-      - node/install-packages
+      - node/install-packages:
+          cache-path: ~/project/node_modules
+          override-ci-command: npx -p npm@6 npm ci
       - run:
           command: npm run test:circleci
 
