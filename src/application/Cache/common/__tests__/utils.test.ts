@@ -76,16 +76,6 @@ describe("Utility tests", () => {
   });
 
   describe("#convertCacheJsonIntoObject", () => {
-    it("should throw if no cache data is provided", () => {
-      expect(() => {
-        convertCacheJsonIntoObject(undefined);
-      }).toThrow("Missing cache JSON data");
-
-      expect(() => {
-        convertCacheJsonIntoObject(null);
-      }).toThrow("Missing cache JSON data");
-    });
-
     it("should return an empty object if the cache JSON is empty", () => {
       expect(convertCacheJsonIntoObject(JSON.stringify({}))).toEqual({});
     });
