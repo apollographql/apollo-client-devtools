@@ -59,7 +59,7 @@ describe('<Explorer />', () => {
   });
 
   test('it can toggle the DocExplorer component', () => {
-    const { getByTestId, getByText } = renderWithApolloClient(<Explorer navigationProps={navigationProps} />);
+    const { getByTestId } = renderWithApolloClient(<Explorer navigationProps={navigationProps} />);
     const header = getByTestId('header');
     const { getByText: getByTextInHeader } = within(header);
     const button = getByTextInHeader('Docs');

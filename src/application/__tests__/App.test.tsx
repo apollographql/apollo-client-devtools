@@ -2,7 +2,7 @@ import React from 'react';
 import { waitFor } from '@testing-library/react';
 import { renderWithApolloClient } from '../utilities/testing/renderWithApolloClient';
 import { currentScreen, Screens } from '../Layouts/Navigation';
-import { App, reloadStatus } from '../index';
+import { App, reloadStatus } from '../App';
 
 jest.mock('../Queries/Queries', () => ({
   Queries: ({ navigationProps }) => (<div>Queries ({navigationProps.queriesCount})</div>), 
