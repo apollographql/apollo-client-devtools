@@ -95,22 +95,44 @@ export const GET_MUTATIONS = gql`
   }
 `;
 
-function getQueryData(query, key: number) {
+interface Query {
+  id: number;
+  name: string | null;
+  variables: object;
+}
+
+type WatchedQuery = Query & {
+  __typename: 'WatchedQuery';
+  queryString: string;
+  cachedData: object;
+}
+
+type Mutation = Query & {
+  __typename: 'Mutation';
+  mutationString: string;
+}
+
+export function getQueryData(query, key: number): WatchedQuery | undefined {
   if (!query) return;
   // TODO: The current designs do not account for non-cached data.
   // We need a workaround to show that data + we should surface
   // the FetchPolicy.
+  const name = getOperationName(query?.document);
+  if (name === 'IntrospectionQuery') {
+    return;
+  }
+
   return {
     id: key,
     __typename: 'WatchedQuery',
-    name: getOperationName(query?.document),
+    name,
     queryString: query?.source?.body,
     variables: query.variables,
     cachedData: query.cachedData,
   }
 }
 
-function getMutationData(mutation, key: number) {
+export function getMutationData(mutation, key: number): Mutation | undefined {
   if (!mutation) return;
 
   return {
@@ -123,22 +145,26 @@ function getMutationData(mutation, key: number) {
 }
 
 export const writeData = ({ queries, mutations, cache }) => {
+  const filteredQueries: WatchedQuery[] = queries.map((q, i: number) => getQueryData(q, i)).filter(Boolean);
+
   client.writeQuery({
     query: GET_QUERIES,
     data: { 
       watchedQueries: {
-        queries: queries.map((q, i: number) => getQueryData(q, i)),
-        count: queries.length,
+        queries: filteredQueries,
+        count: filteredQueries.length,
       }
     },
   });
 
+  const mappedMutations: Mutation[] = mutations.map((m, i: number) => getMutationData(m, i));
+  
   client.writeQuery({
     query: GET_MUTATIONS,
     data: { 
       mutationLog: {
-        mutations: mutations.map((m, i: number) => getMutationData(m, i)),
-        count: mutations.length,
+        mutations: mappedMutations,
+        count: mappedMutations.length,
       }
     },
   });
