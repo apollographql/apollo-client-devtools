@@ -4,7 +4,7 @@ import { getPreferredTheme, listenForThemeChange, ColorTheme, Mode } from '../th
 const matchMedia = matchMediaMock();
 
 describe('getPreferredTheme', () => {
-  test('renders the selected screen', () => {
+  test('returns the preferred theme', () => {
     expect(getPreferredTheme()).toEqual(ColorTheme.Light);
     matchMedia.useMediaQuery(Mode.Dark);
     expect(getPreferredTheme()).toEqual(ColorTheme.Dark);
@@ -12,7 +12,7 @@ describe('getPreferredTheme', () => {
 });
 
 describe('listenForThemeChange', () => {
-  test('renders the selected screen', async () => {
+  test('fires the callback on theme change', async () => {
     const cb = jest.fn();
     listenForThemeChange(cb);
     matchMedia.useMediaQuery(Mode.Dark);
