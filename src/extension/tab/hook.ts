@@ -151,7 +151,11 @@ function initializeHook() {
         hook.ApolloClient = window.__APOLLO_CLIENT__;
         hook.ApolloClient.__actionHookForDevTools(handleActionHookForDevtools);
         hook.getQueries = () => getQueries((hook.ApolloClient as any).queryManager.queries);
-        hook.getMutations = () => getMutations((hook.ApolloClient as any).queryManager.mutationStore.getStore());
+        hook.getMutations = () => getMutations(
+          // Apollo Client 3.0 - 3.2
+          (hook.ApolloClient as any).queryManager.mutationStore?.getStore() ?? 
+          // Apollo Client 3.3
+          (hook.ApolloClient as any).queryManager.mutationStore);
         hook.getCache = () => hook.ApolloClient!.cache.extract(true);
   
         clearInterval(interval);
