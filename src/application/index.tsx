@@ -3,15 +3,18 @@ import { useEffect } from "react";
 import { jsx } from "@emotion/core";
 import { ThemeProvider } from "emotion-theming";
 import { render } from "react-dom";
-import { ApolloClient, ApolloProvider, InMemoryCache, useReactiveVar, makeVar, gql, useQuery } from "@apollo/client";
+import { ApolloClient, ApolloProvider, InMemoryCache, useReactiveVar, makeVar, gql } from "@apollo/client";
 import { getOperationName } from "@apollo/client/utilities";
 import "@apollo/space-kit/reset.css";
 
-import { themes, ColorTheme } from './theme';
-import { currentScreen, Screens } from './Layouts/Navigation';
-import { Queries } from './Queries/Queries';
-import { Mutations } from './Mutations/Mutations';
-import { Explorer, resetGraphiQLVars } from './Explorer/Explorer';
+import { 
+  themes, 
+  ColorTheme, 
+  getPreferredTheme,
+  listenForThemeChange,
+ } from './theme';
+import { App, reloadStatus } from './App';
+import { resetGraphiQLVars } from './Explorer/Explorer';
 
 const cache = new InMemoryCache({
   typePolicies: {
@@ -59,10 +62,8 @@ const cache = new InMemoryCache({
   }
 });
 
-export const reloadStatus = makeVar<boolean>(false);
 const cacheVar = makeVar(null);
-export const colorTheme = makeVar<ColorTheme>(ColorTheme.Light);
-
+export const colorTheme = makeVar<ColorTheme>(getPreferredTheme());
 export const client = new ApolloClient({
   cache,
 });
@@ -121,7 +122,6 @@ function getMutationData(mutation, key: number) {
   }
 }
 
-
 export const writeData = ({ queries, mutations, cache }) => {
   client.writeQuery({
     query: GET_QUERIES,
@@ -155,53 +155,9 @@ export const handleReloadComplete = () => {
   resetGraphiQLVars();
 };
 
-const screens = {
-  [Screens.Explorer]: Explorer,
-  [Screens.Queries]: Queries,
-  [Screens.Mutations]: Mutations,
-  [Screens.Cache]: () => <div>Cache</div>
-};
-
-const GET_OPERATION_COUNTS = gql`
-  query GetOperationCounts {
-    watchedQueries @client {
-      count
-    }
-    mutationLog @client {
-      count
-    }
-  }
-`;
-
-export const App = () => {
-  const { data } = useQuery(GET_OPERATION_COUNTS);
-  const selected = useReactiveVar<Screens>(currentScreen);
-  const reloading = useReactiveVar<boolean>(reloadStatus);
-  let Screen = screens[selected];
-
-  // During a reload, reset the current screen to Queries.
-  useEffect(() => {
-    if (reloading && selected !== Screens.Queries) {
-      currentScreen(Screens.Queries);
-    }
-  }, [reloading]);
-
-  if (reloading) {
-    return <div></div>;
-  }
-
-  return (  
-    <Screen
-      navigationProps={{ 
-        queriesCount: data?.watchedQueries?.count,
-        mutationsCount: data?.mutationLog?.count,
-      }}
-    />
-  )
-};
-
-const AppProvider = () => {
+export const AppProvider = () => {
   const theme = useReactiveVar<ColorTheme>(colorTheme);
+  useEffect(() => listenForThemeChange((newColorTheme) => colorTheme(newColorTheme)));
 
   return (
     <ApolloProvider client={client}>

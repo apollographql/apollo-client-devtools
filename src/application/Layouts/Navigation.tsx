@@ -6,6 +6,7 @@ import { useTheme } from "emotion-theming";
 import { rem } from "polished";
 import { colors } from "@apollo/space-kit/colors";
 import { ApolloLogo } from "@apollo/space-kit/icons/ApolloLogo";
+import { Theme } from '../theme';
 
 export enum Screens {
   Cache = 'cache',
@@ -35,7 +36,7 @@ const selectedNavButtonStyles = css`
   box-shadow: 0 ${rem(-1)} 0 0 ${colors.silver.lighter} inset;
 `;
 
-const navButtonStyles = css`
+const navButtonStyles = (theme: Theme) => css`
   appearance: none;
   height: ${rem(56)};
   margin: 0 ${rem(16)};
@@ -43,7 +44,7 @@ const navButtonStyles = css`
   font-size: ${rem(13)};
   border: none;
   background-color: transparent;
-  color: rgba(255, 255, 255, .3);
+  color: ${theme.whiteTransparent};
   text-transform: uppercase;
   cursor: pointer;
 
@@ -58,7 +59,7 @@ const NavButton: React.FC<NavButtonProps>  = ({ isSelected, onClick, children })
   return (
     <button
       css={[
-        navButtonStyles, 
+        navButtonStyles(theme), 
         isSelected && selectedNavButtonStyles,
       ]}
       onClick={onClick}
@@ -83,15 +84,15 @@ const logoStyles = css`
   color: ${colors.silver.lighter};
 `;
 
-const borderStyles = css`
-  border-right: ${rem(1)} solid rgba(255, 255, 255, .3);
+const borderStyles = (theme: Theme) => css`
+  border-right: ${rem(1)} solid ${theme.whiteTransparent};
 `;
 
 export const currentScreen = makeVar<Screens>(Screens.Queries);
 
 export const Navigation: React.FC<NavigationProps> = ({ queriesCount, mutationsCount }) => {
   const selected = useReactiveVar<Screens>(currentScreen);
-  const theme = useTheme<any>();
+  const theme = useTheme<Theme>();
   const isSelected = (NavButton: Screens) => selected === NavButton;
   const onNavigate = (screen: Screens) => currentScreen(screen);
 
@@ -101,7 +102,7 @@ export const Navigation: React.FC<NavigationProps> = ({ queriesCount, mutationsC
         navigationStyles, 
         { backgroundColor: theme.primary }
       ]}>
-      <div css={borderStyles}>
+      <div css={borderStyles(theme)}>
         <ApolloLogo css={logoStyles} />
       </div>
       <ul css={listStyles}>

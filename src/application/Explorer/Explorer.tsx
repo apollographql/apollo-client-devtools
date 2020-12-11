@@ -33,11 +33,13 @@ export const resetGraphiQLVars = () => {
   graphiQLSchema(undefined);
 };
 
-const headerStyles = css`
+const headerStyles = (theme: Theme) => css`
   display: flex;
   align-items: center;
   padding: 0 ${rem(16)};
   border-bottom: ${rem(1)} solid;
+  background-color: ${theme.primary};
+  border-color: ${theme.primary};
 `;
 
 const mainStyles = css`
@@ -112,10 +114,10 @@ const logoStyles = css`
   right: ${rem(16)};
 `;
 
-const borderStyles = css`
+const borderStyles = (theme: Theme) => css`
   width: ${rem(1)};
   height: ${rem(26)};
-  border-right: ${rem(1)} solid rgba(255, 255, 255, .3);
+  border-right: ${rem(1)} ${theme.whiteTransparent};
 `;
 
 export const Explorer = ({ navigationProps }) => {
@@ -203,15 +205,9 @@ export const Explorer = ({ navigationProps }) => {
             return (
               <Fragment>   
                 <FullWidthLayout.Header 
-                  css={[
-                    headerStyles, 
-                    { 
-                      backgroundColor: theme.primary,
-                      borderColor: theme.primary,
-                    }
-                  ]}
+                  css={headerStyles(theme)}
                 >
-                  <div css={borderStyles}></div>
+                  <div css={borderStyles(theme)}></div>
                   <div css={buttonContainerStyles}>
                     <ExecuteButton css={[buttonStyles, runButtonStyles]} />
                     <Button
@@ -231,7 +227,7 @@ export const Explorer = ({ navigationProps }) => {
                       Explorer
                     </Button>
                   </div>
-                  <div css={borderStyles}></div>
+                  <div css={borderStyles(theme)}></div>
                   <label 
                     htmlFor="loadFromCache"
                     css={labelStyles}
