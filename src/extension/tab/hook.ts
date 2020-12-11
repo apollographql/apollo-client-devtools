@@ -4,11 +4,11 @@ import { version as devtoolsVersion } from "../manifest.json";
 import Relay from "../../Relay";
 import { QueryInfo, getQueries, getMutations } from "./helpers";
 import { GraphiQLResponse, QueryResult } from '../../types';
-import { 
+import {
   CLIENT_FOUND,
   DEVTOOLS_INITIALIZED,
   CREATE_DEVTOOLS_PANEL,
-  ACTION_HOOK_FIRED, 
+  ACTION_HOOK_FIRED,
   GRAPHIQL_REQUEST,
   GRAPHIQL_RESPONSE,
   REQUEST_DATA,
@@ -87,7 +87,7 @@ function initializeHook() {
     if (hook.ApolloClient) {
 
       // Tab Relay forwards this the devtools
-      sendMessageToTab(CREATE_DEVTOOLS_PANEL, 
+      sendMessageToTab(CREATE_DEVTOOLS_PANEL,
         JSON.stringify({
           queries: hook.getQueries(),
           mutations: hook.getMutations(),
@@ -99,7 +99,7 @@ function initializeHook() {
 
   clientRelay.listen(REQUEST_DATA, () => {
     // Tab Relay forwards this the devtools
-    sendMessageToTab(UPDATE, 
+    sendMessageToTab(UPDATE,
       JSON.stringify({
         queries: hook.getQueries(),
         mutations: hook.getMutations(),
@@ -135,7 +135,7 @@ function initializeHook() {
 
     operation.subscribe((response: QueryResult) => {
       handleGraphiQlResponse({
-        operationName, 
+        operationName,
         response,
       });
     });
@@ -144,7 +144,7 @@ function initializeHook() {
   function findClient() {
     let interval;
     let count = 0;
-  
+
     function initializeDevtoolsHook() {
       if (count++ > 10) clearInterval(interval);
       if (!!window.__APOLLO_CLIENT__) {
@@ -153,16 +153,16 @@ function initializeHook() {
         hook.getQueries = () => getQueries((hook.ApolloClient as any).queryManager.queries);
         hook.getMutations = () => getMutations(
           // Apollo Client 3.0 - 3.2
-          (hook.ApolloClient as any).queryManager.mutationStore?.getStore() ?? 
+          (hook.ApolloClient as any).queryManager.mutationStore?.getStore() ??
           // Apollo Client 3.3
           (hook.ApolloClient as any).queryManager.mutationStore);
         hook.getCache = () => hook.ApolloClient!.cache.extract(true);
-  
+
         clearInterval(interval);
         sendMessageToTab(CLIENT_FOUND);
       }
     }
-    
+
     interval = setInterval(initializeDevtoolsHook, 1000);
   }
 
