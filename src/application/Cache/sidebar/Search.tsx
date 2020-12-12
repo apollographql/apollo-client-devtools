@@ -29,13 +29,12 @@ const textFieldStyles = css`
   }
 `;
 
-export function Search({
-  data,
-  setSearchResults,
-}: {
+interface SearchProps {
   data: Record<string, any>;
   setSearchResults: (results: Record<string, any>) => void;
-}) {
+}
+
+export const Search: React.FC<SearchProps> = ({ data, setSearchResults }) => {
   function performSearch(event) {
     const keywords = event.target.value;
     if (keywords.trim() === "") {
@@ -62,4 +61,4 @@ export function Search({
       size="small"
     />
   );
-}
+};
