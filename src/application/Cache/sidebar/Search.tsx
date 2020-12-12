@@ -5,17 +5,19 @@ import { TextField } from "@apollo/space-kit/TextField";
 import { colors } from "@apollo/space-kit/colors";
 import { jsx, css } from "@emotion/core";
 import { rem } from "polished";
+import { useTheme } from "emotion-theming";
 
 import { objectFilter } from "../common/utils";
+import { Theme } from "../../theme";
 
-const searchIconStyles = {
+const searchIconStyles = (theme: Theme) => ({
   height: 16,
   width: 16,
-  color: "rgba(255, 255, 255, .3)",
-};
+  color: theme.whiteTransparent,
+});
 
-const textFieldStyles = css`
-  border-bottom: ${rem(1)} solid rgba(255, 255, 255, 0.3);
+const textFieldStyles = (theme: Theme) => css`
+  border-bottom: ${rem(1)} solid ${theme.whiteTransparent};
   margin-bottom: ${rem(20)};
 
   input {
@@ -24,7 +26,7 @@ const textFieldStyles = css`
     color: ${colors.grey.lighter};
 
     ::placeholder {
-      color: rgba(255, 255, 255, 0.3);
+      color: ${theme.whiteTransparent};
     }
   }
 `;
@@ -35,6 +37,8 @@ interface SearchProps {
 }
 
 export const Search: React.FC<SearchProps> = ({ data, setSearchResults }) => {
+  const theme = useTheme<Theme>();
+
   function performSearch(event) {
     const keywords = event.target.value;
     if (keywords.trim() === "") {
@@ -53,8 +57,8 @@ export const Search: React.FC<SearchProps> = ({ data, setSearchResults }) => {
 
   return (
     <TextField
-      css={textFieldStyles}
-      icon={<IconSearch style={searchIconStyles} />}
+      css={textFieldStyles(theme)}
+      icon={<IconSearch style={searchIconStyles(theme)} />}
       className="search-input"
       placeholder="Search queries"
       onChange={performSearch}
