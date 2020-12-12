@@ -12,8 +12,8 @@ interface SidebarLayoutProps {
 };
 
 interface SidebarProps {
-  cssOverride?: SerializedStyles
   children: ReactNode;
+  className?: string;
 }
 
 interface SidebarLayoutComposition {
@@ -77,14 +77,14 @@ const SidebarLayout: React.FC<SidebarLayoutProps> & SidebarLayoutComposition = (
   );
 };
 
-const Sidebar = ({ cssOverride, children }) => {
+const Sidebar = ({ children, className }) => {
   const theme = useTheme<any>();
   return (
     <div
+      className={className}
       css={[
         sidebarStyles,
         { backgroundColor: theme.primary },
-        cssOverride
       ]}
       data-testid="sidebar"
     >
