@@ -43,7 +43,7 @@ export function Cache({ navigationProps }) {
       <Header>
         <h1 css={h1Styles}>{cacheId || undefined}</h1>
       </Header>
-      <Sidebar cssOverride={sidebarStyles}>
+      <Sidebar css={sidebarStyles}>
         <Search data={parsedData} setSearchResults={setSearchResults} />
         {loading ? (
           <Loading />
