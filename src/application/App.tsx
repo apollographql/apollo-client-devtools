@@ -4,6 +4,7 @@ import { currentScreen, Screens } from './Layouts/Navigation';
 import { Queries } from './Queries/Queries';
 import { Mutations } from './Mutations/Mutations';
 import { Explorer } from './Explorer/Explorer';
+import { Cache } from "./Cache/Cache";
 
 export const reloadStatus = makeVar<boolean>(false);
 
@@ -11,7 +12,7 @@ const screens = {
   [Screens.Explorer]: Explorer,
   [Screens.Queries]: Queries,
   [Screens.Mutations]: Mutations,
-  [Screens.Cache]: () => <div>Cache</div>
+  [Screens.Cache]: Cache,
 };
 
 const GET_OPERATION_COUNTS = gql`
@@ -42,9 +43,9 @@ export const App = () => {
     return <div></div>;
   }
 
-  return (  
+  return (
     <Screen
-      navigationProps={{ 
+      navigationProps={{
         queriesCount: data?.watchedQueries?.count,
         mutationsCount: data?.mutationLog?.count,
       }}

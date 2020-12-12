@@ -7,9 +7,9 @@ import { ApolloClient, ApolloProvider, InMemoryCache, useReactiveVar, makeVar, g
 import { getOperationName } from "@apollo/client/utilities";
 import "@apollo/space-kit/reset.css";
 
-import { 
-  themes, 
-  ColorTheme, 
+import {
+  themes,
+  ColorTheme,
   getPreferredTheme,
   listenForThemeChange,
  } from './theme';
@@ -45,7 +45,7 @@ const cache = new InMemoryCache({
             __typename: 'WatchedQuery',
             id: args?.id,
           });
-          
+
           return canRead(ref) ? ref : _;
         },
         mutation(_, { toReference, args }) {
@@ -149,7 +149,7 @@ export const writeData = ({ queries, mutations, cache }) => {
 
   client.writeQuery({
     query: GET_QUERIES,
-    data: { 
+    data: {
       watchedQueries: {
         queries: filteredQueries,
         count: filteredQueries.length,
@@ -161,7 +161,7 @@ export const writeData = ({ queries, mutations, cache }) => {
   
   client.writeQuery({
     query: GET_MUTATIONS,
-    data: { 
+    data: {
       mutationLog: {
         mutations: mappedMutations,
         count: mappedMutations.length,
