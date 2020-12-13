@@ -43,6 +43,8 @@ const selectedStyles = css`
 `;
 
 export function EntityView({ cacheId, data, searchResults }) {
+  if (!data) return null;
+
   const searchResult = searchResults[cacheId];
   return (
     <div css={cacheStyles}>
