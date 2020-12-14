@@ -86,16 +86,13 @@ export const initBroadCastEvents = (hook, bridge) => {
     }
   }
 
-  let logger = ({
-    _,
-    dataWithOptimisticResults: inspector,
-  }) => {
+  let logger = () => {
     counter++;
     enqueued = {
       counter,
       queries: queries(),
       mutations: mutations(),
-      inspector,
+      inspector: client.cache.extract(true),
     };
     if (acknowledged) {
       scheduleBroadcast();
@@ -107,6 +104,8 @@ export const initBroadCastEvents = (hook, bridge) => {
     acknowledged = true;
     if (enqueued) {
       scheduleBroadcast();
+    } else {
+      setTimeout(logger, 500);
     }
   });
 
