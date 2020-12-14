@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.3.4 (2020-12-14)
+
+- Add interval to check for updates; resolves non-updating cache issue <br/> [@jcreighton]() in [#321](https://github.com/apollographql/apollo-client-devtools/pull/321)
+
 ## 2.3.3 (2020-10-30)
 
 - Fix for undefined schemas error <br/> [@jcreighton]() in [#307](https://github.com/apollographql/apollo-client-devtools/pull/307)
