@@ -1,5 +1,6 @@
 {
   "version": "3.0.0",
+  "version_name": "3.0.0 beta",
   "author": "Apollo",
   "name": "Apollo Client Developer Tools",
   "short_name": "Apollo DevTools",
@@ -11,7 +12,7 @@
   },
   "page_action": {},
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
-  "permissions": ["storage", "tabs", "http://*/*", "https://*/*"],
+  "permissions": ["http://*/*", "https://*/*"],
   "devtools_page": "devtools.html",
   "background": {
     "scripts": ["background.js"],
