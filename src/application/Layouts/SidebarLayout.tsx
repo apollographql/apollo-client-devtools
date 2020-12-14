@@ -36,7 +36,6 @@ const sidebarStyles = css`
   height: calc(100vh - ${rem(56)});
   padding: ${rem(16)};
   overflow-y: scroll;
-  width: ${rem(460)};
 `;
 
 const navigationStyles = css`
