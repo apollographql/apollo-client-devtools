@@ -1,7 +1,9 @@
 /** @jsx jsx */
-import React, { useState } from "react";
+import React, { Fragment, useState } from "react";
 import { jsx, css } from "@emotion/core";
 import { gql, useQuery } from "@apollo/client";
+import { rem } from "polished";
+import { useTheme } from "emotion-theming";
 
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { Search } from "./sidebar/Search";
@@ -9,6 +11,7 @@ import { EntityList } from "./sidebar/EntityList";
 import { EntityView } from "./main/EntityView";
 import { Loading } from "./common/Loading";
 import { convertCacheJsonIntoObject } from "./common/utils";
+import { Theme } from "../theme";
 
 const { Header, Sidebar, Main } = SidebarLayout;
 
@@ -21,6 +24,16 @@ const h1Styles = css`
   font-weight: normal;
 `;
 
+const noDataStyles = (theme: Theme) => css`
+  margin-left: ${rem(12)};
+  text-transform: uppercase;
+  font-size: ${rem(13)};
+  font-weight: normal;
+  letter-spacing: ${rem(1)};
+  color: ${theme.whiteTransparent};
+  padding-top: ${rem(16)};
+`;
+
 const GET_CACHE = gql`
   query GetCache {
     cache @client
@@ -28,6 +41,7 @@ const GET_CACHE = gql`
 `;
 
 export function Cache({ navigationProps }) {
+  const theme = useTheme<Theme>();
   const [searchResults, setSearchResults] = useState({});
   const [cacheId, setCacheId] = useState<string>("ROOT_QUERY");
 
@@ -38,22 +52,28 @@ export function Cache({ navigationProps }) {
     parsedData = convertCacheJsonIntoObject(data.cache);
   }
 
+  const dataExists = parsedData && Object.keys(parsedData).length > 0;
+
   return (
     <SidebarLayout navigationProps={navigationProps}>
       <Header>
-        <h1 css={h1Styles}>{cacheId || undefined}</h1>
+        {dataExists ? <h1 css={h1Styles}>{cacheId || undefined}</h1> : null}
       </Header>
       <Sidebar css={sidebarStyles}>
-        <Search data={parsedData} setSearchResults={setSearchResults} />
         {loading ? (
           <Loading />
+        ) : dataExists ? (
+          <Fragment>
+            <Search data={parsedData} setSearchResults={setSearchResults} />
+            <EntityList
+              data={parsedData}
+              cacheId={cacheId}
+              setCacheId={setCacheId}
+              searchResults={searchResults}
+            />
+          </Fragment>
         ) : (
-          <EntityList
-            data={parsedData}
-            cacheId={cacheId}
-            setCacheId={setCacheId}
-            searchResults={searchResults}
-          />
+          <h3 css={noDataStyles(theme)}>No cache data</h3>
         )}
       </Sidebar>
       <Main>
