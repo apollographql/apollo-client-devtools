@@ -46,6 +46,7 @@ function initializeHook() {
     get() {
       return hook;
     },
+    configurable: true,
   });
 
   const clientRelay = new Relay();
