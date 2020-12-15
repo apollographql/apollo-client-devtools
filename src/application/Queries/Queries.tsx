@@ -1,24 +1,23 @@
 /** @jsx jsx */
 import { Fragment, useState } from "react";
 import { jsx, css } from "@emotion/core";
-import { useTheme } from "emotion-theming";
 import { rem } from "polished";
 import { gql, useQuery } from "@apollo/client";
 import { List } from "@apollo/space-kit/List";
 import { ListItem } from "@apollo/space-kit/ListItem";
 import { colors } from "@apollo/space-kit/colors";
-import { Theme } from "../theme";
+import { useTheme } from "../theme";
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { RunInGraphiQLButton } from "./RunInGraphiQLButton";
 import { QueryViewer } from "./QueryViewer";
 
-export const sidebarHeadingStyles = (theme: Theme) => css`
+export const sidebarHeadingStyles = css`
   margin-left: ${rem(12)};
   text-transform: uppercase;
   font-size: ${rem(13)};
   font-weight: normal;
   letter-spacing: ${rem(1)};
-  color: ${theme.whiteTransparent};
+  color: var(--whiteTransparent);
 `;
 
 export const h1Styles = css`
@@ -69,7 +68,7 @@ const GET_WATCHED_QUERY = gql`
 
 export const Queries = ({ navigationProps }) => {
   const [selected, setSelected] = useState<number>(0);
-  const theme = useTheme<Theme>();
+  const theme = useTheme();
   const { data } = useQuery(GET_WATCHED_QUERIES);
   const { data: watchedQueryData } = useQuery(GET_WATCHED_QUERY, { 
     variables: { id: selected },

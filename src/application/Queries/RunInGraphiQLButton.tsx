@@ -1,7 +1,6 @@
 /** @jsx jsx */
 import { IconRun } from "@apollo/space-kit/icons/IconRun";
 import { jsx, css } from "@emotion/core";
-import { useTheme } from "emotion-theming";
 import { rem } from "polished";
 import { graphiQLQuery } from '../Explorer/Explorer';
 import { currentScreen, Screens } from "../Layouts/Navigation";
@@ -17,6 +16,7 @@ export const buttonStyles = css`
   margin: 0 0 0 auto;
   border: none;
   font-size: ${rem(15)};
+  color: var(--textPrimary);
   background-color: transparent;
   cursor: pointer;
 

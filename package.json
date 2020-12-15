@@ -73,7 +73,6 @@
     "@emotion/core": "^10.0.35",
     "@reach/tabs": "^0.11.2",
     "classnames": "^2.2.6",
-    "emotion-theming": "^10.0.27",
     "event-target-shim": "^5.0.1",
     "graphiql-explorer": "^0.6.2",
     "graphiql-forked": "https://github.com/apollographql/graphiql",

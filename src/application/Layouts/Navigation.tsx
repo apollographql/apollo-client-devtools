@@ -2,11 +2,9 @@
 import React from "react";
 import { makeVar, useReactiveVar } from "@apollo/client";
 import { jsx, css } from "@emotion/core";
-import { useTheme } from "emotion-theming";
 import { rem } from "polished";
 import { colors } from "@apollo/space-kit/colors";
 import { ApolloLogo } from "@apollo/space-kit/icons/ApolloLogo";
-import { Theme } from '../theme';
 
 export enum Screens {
   Cache = 'cache',
@@ -29,6 +27,7 @@ const navigationStyles = css`
   display: flex;
   align-items: center;
   box-shadow: 0 ${rem(-1)} 0 0 rgba(255, 255, 255, .3) inset;
+  background-color: var(--primary);
 `;
 
 const selectedNavButtonStyles = css`
@@ -36,7 +35,7 @@ const selectedNavButtonStyles = css`
   box-shadow: 0 ${rem(-1)} 0 0 ${colors.silver.lighter} inset;
 `;
 
-const navButtonStyles = (theme: Theme) => css`
+const navButtonStyles = css`
   appearance: none;
   height: ${rem(56)};
   margin: 0 ${rem(16)};
@@ -44,7 +43,7 @@ const navButtonStyles = (theme: Theme) => css`
   font-size: ${rem(13)};
   border: none;
   background-color: transparent;
-  color: ${theme.whiteTransparent};
+  color: var(--whiteTransparent);
   text-transform: uppercase;
   cursor: pointer;
 
@@ -53,21 +52,17 @@ const navButtonStyles = (theme: Theme) => css`
   }
 `;
 
-const NavButton: React.FC<NavButtonProps>  = ({ isSelected, onClick, children }) => {
-  const theme = useTheme<any>();
-
-  return (
-    <button
-      css={[
-        navButtonStyles(theme), 
-        isSelected && selectedNavButtonStyles,
-      ]}
-      onClick={onClick}
-    >
-      {children}
-    </button>
-  );
-}
+const NavButton: React.FC<NavButtonProps>  = ({ isSelected, onClick, children }) => (
+  <button
+    css={[
+      navButtonStyles, 
+      isSelected && selectedNavButtonStyles,
+    ]}
+    onClick={onClick}
+  >
+    {children}
+  </button>
+);
 
 const listStyles = css` 
   display: flex;
@@ -84,25 +79,21 @@ const logoStyles = css`
   color: ${colors.silver.lighter};
 `;
 
-const borderStyles = (theme: Theme) => css`
-  border-right: ${rem(1)} solid ${theme.whiteTransparent};
+const borderStyles = css`
+  border-right: ${rem(1)} solid var(--whiteTransparent);
 `;
 
 export const currentScreen = makeVar<Screens>(Screens.Queries);
 
 export const Navigation: React.FC<NavigationProps> = ({ queriesCount, mutationsCount }) => {
   const selected = useReactiveVar<Screens>(currentScreen);
-  const theme = useTheme<Theme>();
   const isSelected = (NavButton: Screens) => selected === NavButton;
   const onNavigate = (screen: Screens) => currentScreen(screen);
 
   return (
     <nav 
-      css={[
-        navigationStyles, 
-        { backgroundColor: theme.primary }
-      ]}>
-      <div css={borderStyles(theme)}>
+      css={navigationStyles}>
+      <div css={borderStyles}>
         <ApolloLogo css={logoStyles} />
       </div>
       <ul css={listStyles}>

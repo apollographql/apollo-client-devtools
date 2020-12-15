@@ -1,9 +1,8 @@
 /** @jsx jsx */
-import React, { Fragment, useState } from "react";
+import { Fragment, useState } from "react";
 import { jsx, css } from "@emotion/core";
 import { gql, useQuery } from "@apollo/client";
 import { rem } from "polished";
-import { useTheme } from "emotion-theming";
 
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { Search } from "./sidebar/Search";
@@ -11,7 +10,6 @@ import { EntityList } from "./sidebar/EntityList";
 import { EntityView } from "./main/EntityView";
 import { Loading } from "./common/Loading";
 import { convertCacheJsonIntoObject } from "./common/utils";
-import { Theme } from "../theme";
 
 const { Header, Sidebar, Main } = SidebarLayout;
 
@@ -24,13 +22,13 @@ const h1Styles = css`
   font-weight: normal;
 `;
 
-const noDataStyles = (theme: Theme) => css`
+const noDataStyles = css`
   margin-left: ${rem(12)};
   text-transform: uppercase;
   font-size: ${rem(13)};
   font-weight: normal;
   letter-spacing: ${rem(1)};
-  color: ${theme.whiteTransparent};
+  color: var(--whiteTransparent);
   padding-top: ${rem(16)};
 `;
 
@@ -41,7 +39,6 @@ const GET_CACHE = gql`
 `;
 
 export function Cache({ navigationProps }) {
-  const theme = useTheme<Theme>();
   const [searchResults, setSearchResults] = useState({});
   const [cacheId, setCacheId] = useState<string>("ROOT_QUERY");
 
@@ -73,7 +70,7 @@ export function Cache({ navigationProps }) {
             />
           </Fragment>
         ) : (
-          <h3 css={noDataStyles(theme)}>No cache data</h3>
+          <h3 css={noDataStyles}>No cache data</h3>
         )}
       </Sidebar>
       <Main>
