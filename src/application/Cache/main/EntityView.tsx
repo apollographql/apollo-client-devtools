@@ -1,9 +1,8 @@
 /** @jsx jsx */
-import React from "react";
 import { jsx, css } from "@emotion/core";
 import JSONTree from "react-json-tree";
 import { rem } from "polished";
-import { treeTheme } from "../../theme";
+import { useTreeTheme } from "../../theme";
 
 const cacheStyles = css`
   font-family: "Source Code Pro", monospace;
@@ -21,6 +20,8 @@ const selectedStyles = css`
 
 export function EntityView({ cacheId, data, searchResults }) {
   if (!data) return null;
+
+  const treeTheme = useTreeTheme();
 
   const searchResult = searchResults[cacheId];
   return (
