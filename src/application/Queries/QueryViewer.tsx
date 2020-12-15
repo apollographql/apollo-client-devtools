@@ -10,6 +10,7 @@ import JSONTree from "react-json-tree";
 import { IconCopy } from "@apollo/space-kit/icons/IconCopy";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import stringifyObject from "stringify-object";
+import { treeTheme } from "../theme";
 
 export const queryViewStyles = css`
   display: grid;
@@ -123,10 +124,16 @@ export const QueryViewer = ({ queryString = '', variables = {}, cachedData = {} 
         </TabList>
         <TabPanels css={queryDataMain}>
           <TabPanel>
-            <JSONTree data={variables} />
+            <JSONTree 
+              data={variables} 
+              theme={treeTheme}
+            />
           </TabPanel>
           <TabPanel>
-            <JSONTree data={cachedData} />
+            <JSONTree 
+              data={cachedData} 
+              theme={treeTheme}
+            />
           </TabPanel>
         </TabPanels>
       </Tabs>
