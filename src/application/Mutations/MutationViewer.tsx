@@ -6,6 +6,7 @@ import JSONTree from "react-json-tree";
 import { IconCopy } from "@apollo/space-kit/icons/IconCopy";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import stringifyObject from "stringify-object";
+import { treeTheme } from "../theme";
 import { 
   queryViewStyles, 
   headerStyles, 
@@ -55,7 +56,10 @@ export const MutationViewer = ({ mutationString = '', variables = {} }: Mutation
         </CopyToClipboard> 
       </div>
       <div css={queryDataMain}>
-        <JSONTree data={variables} />
+        <JSONTree 
+          data={variables}
+          theme={treeTheme}
+        />
       </div>
     </div>
   </div>
