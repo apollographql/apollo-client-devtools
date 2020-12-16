@@ -1,16 +1,14 @@
 /** @jsx jsx */
 import { useEffect } from "react";
 import { jsx } from "@emotion/core";
-import { ThemeProvider } from "emotion-theming";
 import { render } from "react-dom";
 import { ApolloClient, ApolloProvider, InMemoryCache, useReactiveVar, makeVar, gql } from "@apollo/client";
 import { getOperationName } from "@apollo/client/utilities";
+import { Theme } from "./ThemeVars";
 import "@apollo/space-kit/reset.css";
 
 import {
-  themes,
-  ColorTheme,
-  getPreferredTheme,
+  colorTheme,
   listenForThemeChange,
  } from './theme';
 import { App, reloadStatus } from './App';
@@ -63,7 +61,6 @@ const cache = new InMemoryCache({
 });
 
 const cacheVar = makeVar(null);
-export const colorTheme = makeVar<ColorTheme>(getPreferredTheme());
 export const client = new ApolloClient({
   cache,
 });
@@ -182,14 +179,12 @@ export const handleReloadComplete = () => {
 };
 
 export const AppProvider = () => {
-  const theme = useReactiveVar<ColorTheme>(colorTheme);
   useEffect(() => listenForThemeChange((newColorTheme) => colorTheme(newColorTheme)));
 
   return (
     <ApolloProvider client={client}>
-      <ThemeProvider theme={themes[theme]}>
-        <App />
-      </ThemeProvider>
+      <App />
+      <Theme />
     </ApolloProvider>
   );
 };

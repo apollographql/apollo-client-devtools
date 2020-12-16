@@ -10,6 +10,7 @@ import JSONTree from "react-json-tree";
 import { IconCopy } from "@apollo/space-kit/icons/IconCopy";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import stringifyObject from "stringify-object";
+import { useTreeTheme } from "../theme";
 
 export const queryViewStyles = css`
   display: grid;
@@ -25,7 +26,7 @@ export const queryViewStyles = css`
 export const headerStyles = css`
   font-size: ${rem(16)};
   font-weight: 600;
-  border-bottom: ${rem(1)} solid ${colors.silver.darker};
+  border-bottom: ${rem(1)} solid var(--mainBorder);
 `;
 
 export const copyIconStyle = css`
@@ -34,7 +35,7 @@ export const copyIconStyle = css`
   cursor: pointer;
 
   &:hover {
-    color: ${colors.black.base};
+    color: var(--textPrimary);
   }
 `;
 
@@ -58,8 +59,8 @@ const queryDataHeader = css`
   }
 
   button[data-selected] {
-    color: ${colors.black.base};
-    border-bottom: ${rem(1)} solid ${colors.black.base};
+    color: var(--textPrimary);
+    border-bottom: ${rem(1)} solid var(--textPrimary);
   }
 
   svg {
@@ -99,7 +100,8 @@ enum QueryTabs {
 export const QueryViewer = ({ queryString = '', variables = {}, cachedData = {} }: QueryViewerProps) => {
   const [currentTab, setCurrentTab] = useState<QueryTabs>(QueryTabs.Variables);
   const copyCurrentTab = `${stringifyObject(currentTab === QueryTabs.Variables ? variables : cachedData)}`;
-
+  const treeTheme = useTreeTheme();
+  
   return (
     <div css={queryViewStyles}>
       <h4 css={queryStringHeader}>
@@ -123,10 +125,18 @@ export const QueryViewer = ({ queryString = '', variables = {}, cachedData = {} 
         </TabList>
         <TabPanels css={queryDataMain}>
           <TabPanel>
-            <JSONTree data={variables} />
+            <JSONTree 
+              data={variables} 
+              theme={treeTheme}
+              invertTheme={false}
+            />
           </TabPanel>
           <TabPanel>
-            <JSONTree data={cachedData} />
+            <JSONTree 
+              data={cachedData} 
+              theme={treeTheme}
+              invertTheme={false}
+            />
           </TabPanel>
         </TabPanels>
       </Tabs>

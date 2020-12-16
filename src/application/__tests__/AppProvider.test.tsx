@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import matchMediaMock from '../utilities/testing/matchMedia';
-import { Mode } from '../theme';
-import { AppProvider, colorTheme , getQueryData, getMutationData } from '../index';
+import { Mode, colorTheme } from '../theme';
+import { AppProvider, getQueryData, getMutationData } from '../index';
 
 const matchMedia = matchMediaMock();
 

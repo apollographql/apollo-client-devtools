@@ -1,12 +1,10 @@
 /** @jsx jsx */
 import { Fragment, useState } from "react";
 import { jsx } from "@emotion/core";
-import { useTheme } from "emotion-theming";
 import { gql, useQuery } from "@apollo/client";
 import { List } from "@apollo/space-kit/List";
 import { ListItem } from "@apollo/space-kit/ListItem";
-import { IconRun } from "@apollo/space-kit/icons/IconRun";
-import { Theme } from "../theme";
+import { useTheme } from "../theme";
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { RunInGraphiQLButton } from "../Queries/RunInGraphiQLButton";
 import { 
@@ -41,7 +39,7 @@ const GET_SELECTED_MUTATION= gql`
 
 export const Mutations = ({ navigationProps }) => {
   const [selected, setSelected] = useState<number>(0);
-  const theme = useTheme<Theme>();
+  const theme = useTheme();
   const { data } = useQuery(GET_MUTATIONS);
   const { data: selectedMutationData } = useQuery(GET_SELECTED_MUTATION, { 
     variables: { id: selected },

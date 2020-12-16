@@ -1,6 +1,5 @@
 /** @jsx jsx */
 import { jsx, css } from "@emotion/core";
-import { useTheme } from "emotion-theming";
 import { rem } from "polished";
 import { colors } from "@apollo/space-kit/colors";
 import { useRef, useState, useEffect, Fragment } from "react";
@@ -13,8 +12,7 @@ import { parse } from "graphql/language/parser";
 import { print } from "graphql/language/printer";
 import GraphiQLExplorer from "graphiql-explorer";
 import { Button } from "@apollo/space-kit/Button";
-import { colorTheme } from '../index';
-import { ColorTheme, Theme } from '../theme';
+import { useTheme, ColorTheme, colorTheme } from '../theme';
 import { sendGraphiQLRequest, receiveGraphiQLResponses, listenForResponse } from './graphiQLRelay';
 import { FullWidthLayout } from '../Layouts/FullWidthLayout';
 
@@ -33,13 +31,13 @@ export const resetGraphiQLVars = () => {
   graphiQLSchema(undefined);
 };
 
-const headerStyles = (theme: Theme) => css`
+const headerStyles = css`
   display: flex;
   align-items: center;
   padding: 0 ${rem(16)};
   border-bottom: ${rem(1)} solid;
-  background-color: ${theme.primary};
-  border-color: ${theme.primary};
+  background-color: var(--primary);
+  border-color: var(--primary);
 `;
 
 const mainStyles = css`
@@ -114,10 +112,10 @@ const logoStyles = css`
   right: ${rem(16)};
 `;
 
-const borderStyles = (theme: Theme) => css`
+const borderStyles = css`
   width: ${rem(1)};
   height: ${rem(26)};
-  border-right: ${rem(1)} ${theme.whiteTransparent};
+  border-right: ${rem(1)} var(--whiteTransparent);
 `;
 
 export const Explorer = ({ navigationProps }) => {
@@ -130,7 +128,7 @@ export const Explorer = ({ navigationProps }) => {
   const color = useReactiveVar(colorTheme);
   const query = useReactiveVar(graphiQLQuery);
 
-  const theme = useTheme<Theme>();
+  const theme = useTheme();
 
   const executeOperation = ({ 
     query, 
@@ -205,9 +203,9 @@ export const Explorer = ({ navigationProps }) => {
             return (
               <Fragment>   
                 <FullWidthLayout.Header 
-                  css={headerStyles(theme)}
+                  css={headerStyles}
                 >
-                  <div css={borderStyles(theme)}></div>
+                  <div css={borderStyles}></div>
                   <div css={buttonContainerStyles}>
                     <ExecuteButton css={[buttonStyles, runButtonStyles]} />
                     <Button
@@ -227,7 +225,7 @@ export const Explorer = ({ navigationProps }) => {
                       Explorer
                     </Button>
                   </div>
-                  <div css={borderStyles(theme)}></div>
+                  <div css={borderStyles}></div>
                   <label 
                     htmlFor="loadFromCache"
                     css={labelStyles}
