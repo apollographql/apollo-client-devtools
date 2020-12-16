@@ -61,6 +61,7 @@
     "rimraf": "^3.0.2",
     "style-loader": "^1.2.1",
     "terser-webpack-plugin": "^3.0.2",
+    "ts-loader": "^8.0.2",
     "ts-jest": "^26.1.1",
     "typescript": "^3.9.7",
     "web-ext": "^4.2.0",
@@ -72,24 +73,16 @@
     "@apollo/space-kit": "^7.21.0",
     "@emotion/core": "^10.0.35",
     "@reach/tabs": "^0.11.2",
-    "classnames": "^2.2.6",
     "event-target-shim": "^5.0.1",
     "graphiql-explorer": "^0.6.2",
     "graphiql-forked": "https://github.com/apollographql/graphiql",
     "graphql": "^15.3.0",
     "graphql-syntax-highlighter-react": "^0.4.0",
-    "lodash.flattendeep": "^4.4.0",
-    "lodash.pickby": "^4.6.0",
-    "lodash.sortby": "^4.7.0",
-    "lodash.uniqby": "^4.7.0",
     "polished": "^3.6.7",
-    "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-copy-to-clipboard": "^5.0.2",
     "react-dom": "^16.13.1",
     "react-json-tree": "^0.13.0",
-    "stringify-object": "^3.3.0",
-    "ts-loader": "^8.0.2",
-    "uuid": "^8.1.0"
+    "stringify-object": "^3.3.0"
   }
 }
