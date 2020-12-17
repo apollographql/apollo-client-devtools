@@ -72,9 +72,9 @@ function initializeHook() {
     sendMessageToTab(RELOADING_TAB);
   };
 
-  window.onload = () => {
+  window.addEventListener('load', () => {
     sendMessageToTab(RELOAD_TAB_COMPLETE, { ApolloClient: !!hook.ApolloClient });
-  };
+  });
 
   function handleActionHookForDevtools() {
     sendMessageToTab(ACTION_HOOK_FIRED);
