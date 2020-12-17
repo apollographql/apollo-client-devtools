@@ -74,13 +74,15 @@ export const Queries = ({ navigationProps }) => {
     variables: { id: selected },
     returnPartialData: true,
   });
+
+  const shouldRender = !!data?.watchedQueries?.queries;
   
   return (
     <SidebarLayout 
       navigationProps={navigationProps}
     >
       <SidebarLayout.Header>
-        {watchedQueryData?.watchedQuery && (
+        {shouldRender && (
           <Fragment>
             <h1 css={h1Styles}>{watchedQueryData?.watchedQuery.name}</h1>
             <span css={operationNameStyles}>Query</span>
@@ -111,7 +113,7 @@ export const Queries = ({ navigationProps }) => {
         </List>
       </SidebarLayout.Sidebar>
       <SidebarLayout.Main>
-        {watchedQueryData?.watchedQuery && (
+        {shouldRender && (
           <QueryViewer
             queryString={watchedQueryData?.watchedQuery.queryString}
             variables={watchedQueryData?.watchedQuery.variables}
