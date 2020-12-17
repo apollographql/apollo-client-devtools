@@ -87,6 +87,7 @@ export const initBroadCastEvents = (hook, bridge) => {
   }
 
   let logger = () => {
+    if (!client) return;
     counter++;
     enqueued = {
       counter,
