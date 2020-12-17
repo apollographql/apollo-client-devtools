@@ -13,7 +13,7 @@ class EventTarget {
     }
 
     const listeners = this.listeners.get(eventType);
-    listeners.add(callback);
+    listeners!.add(callback);
   }
 
   removeEventListener(eventType: string, callback) {
@@ -21,16 +21,16 @@ class EventTarget {
 
     if (isRegistered) {
       const listeners = this.listeners.get(eventType);
-      listeners.delete(callback);
+      listeners!.delete(callback);
     }
   }
 
-  dispatchEvent(event: CustomEvent<MessageObj>) {
+  dispatchEvent(event: CustomEvent) {
     const isRegistered = this.listeners.has(event?.type);
 
     if (isRegistered) {
       const listeners = this.listeners.get(event.type);
-      listeners.forEach(listener => listener(event));
+      listeners!.forEach(listener => listener(event));
     }
   }
 }
