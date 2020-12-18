@@ -28,6 +28,10 @@ describe('<Queries />', () => {
     mutationsCount: 0,
   };
 
+  beforeEach(() => {
+    client.clearStore();
+  });
+
   test('queries render in the sidebar', async () => {
     client.writeQuery({
       query: GET_QUERIES,
@@ -74,5 +78,14 @@ describe('<Queries />', () => {
     await waitFor(() => {
       expect(within(header).getByText('GetColors')).toBeInTheDocument();
     });
+  });
+
+  test('it renders an empty state', () => {
+    const { getByTestId } = renderWithApolloClient(
+      <Queries navigationProps={navigationProps} />
+    );
+    
+    expect(getByTestId('header')).toBeEmptyDOMElement();
+    expect(getByTestId('main')).toBeEmptyDOMElement();
   });
 });

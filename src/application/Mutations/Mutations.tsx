@@ -46,7 +46,7 @@ export const Mutations = ({ navigationProps }) => {
     returnPartialData: true,
   });
 
-  const shouldRender = !!data?.mutationLog?.mutations.length;
+  const shouldRender = !!data?.mutationLog?.mutations?.length;
 
   return (
     <SidebarLayout 

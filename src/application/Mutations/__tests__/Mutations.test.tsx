@@ -28,6 +28,10 @@ describe('<Mutations />', () => {
     mutationsCount: 2,
   };
 
+  beforeEach(() => {
+    client.clearStore();
+  });
+
   test('queries render in the sidebar', async () => {
     client.writeQuery({
       query: GET_MUTATIONS,
@@ -74,5 +78,14 @@ describe('<Mutations />', () => {
     await waitFor(() => {
       expect(within(header).getByText('AddColorToFavorites')).toBeInTheDocument();
     });
+  });
+
+  test('it renders an empty state', () => {
+    const { getByTestId } = renderWithApolloClient(
+      <Mutations navigationProps={navigationProps} />
+    );
+    
+    expect(getByTestId('header')).toBeEmptyDOMElement();
+    expect(getByTestId('main')).toBeEmptyDOMElement();
   });
 });

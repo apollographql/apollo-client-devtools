@@ -75,7 +75,7 @@ export const Queries = ({ navigationProps }) => {
     returnPartialData: true,
   });
 
-  const shouldRender = !!data?.watchedQueries?.queries;
+  const shouldRender = !!data?.watchedQueries?.queries?.length;
   
   return (
     <SidebarLayout 
