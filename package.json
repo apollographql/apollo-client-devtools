@@ -73,7 +73,6 @@
     "@apollo/space-kit": "^7.21.0",
     "@emotion/core": "^10.0.35",
     "@reach/tabs": "^0.11.2",
-    "event-target-shim": "^5.0.1",
     "graphiql-explorer": "^0.6.2",
     "graphiql-forked": "https://github.com/apollographql/graphiql",
     "graphql": "^15.3.0",

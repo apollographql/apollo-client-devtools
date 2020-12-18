@@ -1,8 +1,8 @@
 /* 
   The native EventTarget interface is not useable in content scripts in Firefox. 
-  We import and extend from a shim to use the functionality we need.
+  We import and extend from this simplified class to use the EventTarget functionality we need.
 */
-import { EventTarget } from 'event-target-shim';
+import EventTarget from './extension/EventTarget';
 import { CustomEventListener, MessageObj } from './types';
 class Relay extends EventTarget {
   private connections = new Map<string, (event: CustomEvent<MessageObj>) => ReturnType<CustomEventListener>>();
@@ -26,11 +26,7 @@ class Relay extends EventTarget {
     }
   }
 
-  private dispatch(message: CustomEvent) {
-    this.dispatchEvent(message);
-  }
-
-  private createEvent(message: string) {
+  private createEvent = (message: string) => {
     return new CustomEvent(message, { detail: {} });
   }
 
@@ -58,7 +54,7 @@ class Relay extends EventTarget {
 
     event.detail['message'] = message.message;
     event.detail['payload'] = message.payload;
-    this.dispatch(event);
+    this.dispatchEvent(event);
   }
 
   public listen = <T = any>(name: string, fn: CustomEventListener<T>) => {
