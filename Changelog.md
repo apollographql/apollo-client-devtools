@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.3.5 (2020-12-18)
+
+- Guard against uninitialized client race condition <br /> [@jeffhertzler]() in [#329](https://github.com/apollographql/apollo-client-devtools/pull/329)
 ## 2.3.4 (2020-12-14)
 
 - Add interval to check for updates; resolves non-updating cache issue <br/> [@jcreighton]() in [#321](https://github.com/apollographql/apollo-client-devtools/pull/321)
