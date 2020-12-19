@@ -46,12 +46,14 @@ export const Mutations = ({ navigationProps }) => {
     returnPartialData: true,
   });
 
+  const shouldRender = !!data?.mutationLog?.mutations?.length;
+
   return (
     <SidebarLayout 
       navigationProps={navigationProps}
     >
       <SidebarLayout.Header>
-        {selectedMutationData?.mutation && (
+        {shouldRender && (
           <Fragment>
             <h1 css={h1Styles}>{selectedMutationData?.mutation.name}</h1>
             <span css={operationNameStyles}>Mutation</span>
@@ -82,7 +84,7 @@ export const Mutations = ({ navigationProps }) => {
         </List>
       </SidebarLayout.Sidebar>
       <SidebarLayout.Main>
-      {selectedMutationData?.mutation && (
+      {shouldRender && (
         <MutationViewer 
           mutationString={selectedMutationData?.mutation?.mutationString}
           variables={selectedMutationData?.mutation?.variables}
