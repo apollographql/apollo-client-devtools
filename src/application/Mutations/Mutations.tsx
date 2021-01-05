@@ -55,7 +55,7 @@ export const Mutations = ({ navigationProps }) => {
       <SidebarLayout.Header>
         {shouldRender && (
           <Fragment>
-            <h1 css={h1Styles}>{selectedMutationData?.mutation.name}</h1>
+            <h1 css={h1Styles}>{selectedMutationData?.mutation?.name}</h1>
             <span css={operationNameStyles}>Mutation</span>
             <RunInGraphiQLButton 
               operation={selectedMutationData?.mutation?.mutationString}

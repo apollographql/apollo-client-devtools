@@ -84,10 +84,10 @@ export const Queries = ({ navigationProps }) => {
       <SidebarLayout.Header>
         {shouldRender && (
           <Fragment>
-            <h1 css={h1Styles}>{watchedQueryData?.watchedQuery.name}</h1>
+            <h1 css={h1Styles}>{watchedQueryData?.watchedQuery?.name}</h1>
             <span css={operationNameStyles}>Query</span>
             <RunInGraphiQLButton 
-              operation={watchedQueryData?.watchedQuery.queryString} 
+              operation={watchedQueryData?.watchedQuery?.queryString} 
             />
           </Fragment>
         )}
@@ -115,9 +115,9 @@ export const Queries = ({ navigationProps }) => {
       <SidebarLayout.Main>
         {shouldRender && (
           <QueryViewer
-            queryString={watchedQueryData?.watchedQuery.queryString}
-            variables={watchedQueryData?.watchedQuery.variables}
-            cachedData={watchedQueryData?.watchedQuery.cachedData}
+            queryString={watchedQueryData?.watchedQuery?.queryString}
+            variables={watchedQueryData?.watchedQuery?.variables}
+            cachedData={watchedQueryData?.watchedQuery?.cachedData}
           />
         )}
       </SidebarLayout.Main>
