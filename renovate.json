@@ -1,0 +1,5 @@
+{
+  "extends": [
+    "apollo-open-source"
+  ]
+}
