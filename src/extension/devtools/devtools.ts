@@ -1,6 +1,6 @@
 import Relay from '../../Relay';
-import { 
-  DEVTOOLS_INITIALIZED, 
+import {
+  DEVTOOLS_INITIALIZED,
   CREATE_DEVTOOLS_PANEL,
   REQUEST_DATA,
   UPDATE,
@@ -19,8 +19,12 @@ const port = chrome.runtime.connect({
 });
 port.onMessage.addListener(devtools.broadcast);
 
-devtools.addConnection('background', message => {
-  port.postMessage(message);
+devtools.addConnection("background", (message) => {
+  try {
+    port.postMessage(message);
+  } catch (error) {
+    devtools.removeConnection("background");
+  }
 });
 
 function sendMessageToClient(message: any) {
@@ -58,7 +62,7 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, ({ payload }) => {
         panel.onShown.addListener(window => {
           sendMessageToClient(PANEL_OPEN);
 
-          const { 
+          const {
             __DEVTOOLS_APPLICATION__: {
               initialize,
               writeData,
@@ -76,7 +80,7 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, ({ payload }) => {
           }
 
           clearRequestInterval = startRequestInterval();
-          
+
           removeUpdateListener = devtools.listen(UPDATE, ({ payload }) => {
             const { queries, mutations, cache } = JSON.parse(payload);
             writeData({ queries, mutations, cache: JSON.stringify(cache) });
