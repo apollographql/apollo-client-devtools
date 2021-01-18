@@ -1,4 +1,4 @@
-import Relay from '../../Relay';
+import Relay from "../../Relay";
 import {
   DEVTOOLS_INITIALIZED,
   CREATE_DEVTOOLS_PANEL,
@@ -9,7 +9,7 @@ import {
   GRAPHIQL_REQUEST,
   RELOADING_TAB,
   RELOAD_TAB_COMPLETE,
-} from '../constants';
+} from "../constants";
 
 const inspectedTabId = chrome.devtools.inspectedWindow.tabId;
 const devtools = new Relay();
@@ -30,7 +30,7 @@ devtools.addConnection("background", (message) => {
 function sendMessageToClient(message: any) {
   devtools.send({
     message,
-    to: `background:tab-${inspectedTabId}:client`
+    to: `background:tab-${inspectedTabId}:client`,
   });
 }
 
@@ -47,10 +47,11 @@ let isAppInitialized = false;
 
 devtools.listen(CREATE_DEVTOOLS_PANEL, ({ payload }) => {
   if (!isPanelCreated) {
-    chrome.devtools.panels.create('Apollo',
-      'logo_devtools.png',
-      'panel.html',
-      function(panel) {
+    chrome.devtools.panels.create(
+      "Apollo",
+      "logo_devtools.png",
+      "panel.html",
+      function (panel) {
         isPanelCreated = true;
         const { queries, mutations, cache } = JSON.parse(payload);
         let removeUpdateListener;
@@ -59,7 +60,7 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, ({ payload }) => {
         let clearRequestInterval;
         let removeGraphiQLListener;
 
-        panel.onShown.addListener(window => {
+        panel.onShown.addListener((window) => {
           sendMessageToClient(PANEL_OPEN);
 
           const {
@@ -70,8 +71,8 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, ({ payload }) => {
               sendResponseToGraphiQL,
               handleReload,
               handleReloadComplete,
-            }
-          } = (window as any);
+            },
+          } = window as any;
 
           if (!isAppInitialized) {
             initialize();
@@ -87,13 +88,16 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, ({ payload }) => {
           });
 
           // Add connection so client can send to `background:devtools-${inspectedTabId}:graphiql`
-          devtools.addConnection('graphiql', sendResponseToGraphiQL);
+          devtools.addConnection("graphiql", sendResponseToGraphiQL);
           removeGraphiQLListener = receiveGraphiQLRequests(({ detail }) => {
             devtools.broadcast(detail);
           });
 
           // Forward all GraphiQL requests to the client
-          removeGraphiQLForward = devtools.forward(GRAPHIQL_REQUEST, `background:tab-${inspectedTabId}:client`);
+          removeGraphiQLForward = devtools.forward(
+            GRAPHIQL_REQUEST,
+            `background:tab-${inspectedTabId}:client`
+          );
 
           // Listen for tab reload from background
           removeReloadListener = devtools.listen(RELOADING_TAB, () => {
@@ -115,7 +119,7 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, ({ payload }) => {
           removeUpdateListener();
           removeReloadListener();
           removeGraphiQLListener();
-          devtools.removeConnection('graphiql');
+          devtools.removeConnection("graphiql");
           sendMessageToClient(PANEL_CLOSED);
         });
       }
