@@ -70,30 +70,30 @@ export const Queries = ({ navigationProps }) => {
   const [selected, setSelected] = useState<number>(0);
   const theme = useTheme();
   const { data } = useQuery(GET_WATCHED_QUERIES);
-  const { data: watchedQueryData } = useQuery(GET_WATCHED_QUERY, { 
+  const { data: watchedQueryData } = useQuery(GET_WATCHED_QUERY, {
     variables: { id: selected },
     returnPartialData: true,
   });
 
   const shouldRender = !!data?.watchedQueries?.queries?.length;
-  
+
   return (
-    <SidebarLayout 
-      navigationProps={navigationProps}
-    >
+    <SidebarLayout navigationProps={navigationProps}>
       <SidebarLayout.Header>
         {shouldRender && (
           <Fragment>
-            <h1 css={h1Styles}>{watchedQueryData?.watchedQuery.name}</h1>
+            <h1 css={h1Styles}>{watchedQueryData?.watchedQuery?.name}</h1>
             <span css={operationNameStyles}>Query</span>
-            <RunInGraphiQLButton 
-              operation={watchedQueryData?.watchedQuery.queryString} 
+            <RunInGraphiQLButton
+              operation={watchedQueryData?.watchedQuery?.queryString}
             />
           </Fragment>
         )}
       </SidebarLayout.Header>
       <SidebarLayout.Sidebar>
-        <h3 css={sidebarHeadingStyles}>Active Queries ({navigationProps.queriesCount})</h3>
+        <h3 css={sidebarHeadingStyles}>
+          Active Queries ({navigationProps.queriesCount})
+        </h3>
         <List
           css={listStyles}
           selectedColor={theme.sidebarSelected}
@@ -101,7 +101,7 @@ export const Queries = ({ navigationProps }) => {
         >
           {data?.watchedQueries?.queries.map(({ name, id }) => {
             return (
-              <ListItem 
+              <ListItem
                 key={`${name}-${id}`}
                 onClick={() => setSelected(id)}
                 selected={selected === id}
@@ -115,13 +115,12 @@ export const Queries = ({ navigationProps }) => {
       <SidebarLayout.Main>
         {shouldRender && (
           <QueryViewer
-            queryString={watchedQueryData?.watchedQuery.queryString}
-            variables={watchedQueryData?.watchedQuery.variables}
-            cachedData={watchedQueryData?.watchedQuery.cachedData}
+            queryString={watchedQueryData?.watchedQuery?.queryString}
+            variables={watchedQueryData?.watchedQuery?.variables}
+            cachedData={watchedQueryData?.watchedQuery?.cachedData}
           />
         )}
       </SidebarLayout.Main>
     </SidebarLayout>
   );
 };
-
