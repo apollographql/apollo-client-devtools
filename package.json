@@ -72,7 +72,7 @@
     "@apollo/client": "latest",
     "@apollo/space-kit": "^7.21.0",
     "@emotion/core": "^10.0.35",
-    "@reach/tabs": "^0.12.0",
+    "@reach/tabs": "^0.13.0",
     "graphiql-explorer": "^0.6.2",
     "graphiql-forked": "https://github.com/apollographql/graphiql",
     "graphql": "^15.3.0",
