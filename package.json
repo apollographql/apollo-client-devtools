@@ -70,7 +70,7 @@
   },
   "dependencies": {
     "@apollo/client": "latest",
-    "@apollo/space-kit": "^7.21.0",
+    "@apollo/space-kit": "^8.0.0",
     "@emotion/core": "^10.0.35",
     "@reach/tabs": "^0.13.0",
     "graphiql-explorer": "^0.6.2",
