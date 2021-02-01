@@ -39,7 +39,7 @@ const navButtonStyles = css`
   appearance: none;
   height: ${rem(56)};
   margin: 0 ${rem(16)};
-  padding: ${rem(16)} 0 ${rem(20)};
+  padding: ${rem(16)} 0;
   font-size: ${rem(13)};
   border: none;
   background-color: transparent;

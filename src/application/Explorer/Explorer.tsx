@@ -71,6 +71,7 @@ const buttonStyles = css`
   font-weight: normal;
   font-size: ${rem(16)};
   color: ${colors.white};
+  margin-bottom: ${rem(2)};
 
   &:hover {
     background-color: ${colors.blilet.base};
@@ -86,6 +87,7 @@ const runButtonStyles = css`
   border-radius: ${rem(4)};
   background-color: transparent;
   cursor: pointer;
+  margin-bottom: 0;
 
   svg {
     fill: currentColor;
@@ -108,19 +110,11 @@ const labelStyles = css`
   margin: 0 0 0 ${rem(36)};
   font-size: ${rem(16)};
   color: ${colors.white};
+  line-height: ${rem(17)};
 `;
 
 const checkboxStyles = css`
-  appearance: none;
-  width: ${rem(20)};
-  height: ${rem(20)};
-  margin-right: ${rem(16)};
-  border-radius: ${rem(4)};
-  background-color: ${colors.white};
-
-  &:checked {
-    background-color: ${colors.blilet.base};
-  }
+  margin-right: ${rem(10)};
 `;
 
 const logoStyles = css`
