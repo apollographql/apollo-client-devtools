@@ -51,14 +51,6 @@ const headerStyles = css`
 
 const mainStyles = css`
   display: flex;
-
-  .docExplorerWrap > .doc-explorer-title-bar > .doc-explorer-title {
-    font-size: 0;
-    &:after {
-      font-size: ${rem(16)};
-      content: "Build";
-    }
-  }
 `;
 
 const buttonContainerStyles = css`
@@ -101,7 +93,7 @@ const runButtonStyles = css`
 const docsButtonStyles = css`
   ${buttonStyles}
   min-width: ${rem(60)};
-  margin: 0 0 0 auto;
+  margin: 0 0 ${rem(2)} auto;
 `;
 
 const labelStyles = css`
@@ -130,12 +122,21 @@ const borderStyles = css`
 `;
 
 const explorerStyles = css`
-  .doc-explorer-title {
-    font-size: 0;
-    &:after {
-      font-size: ${rem(16)};
-      content: "Build";
-    }
+  .graphiql-explorer-root > div {
+    overflow: auto !important;
+  }
+
+  .graphiql-explorer-root > div > div {
+    outline: none;
+  }
+
+  .graphiql-operation-title-bar {
+    margin-top: ${rem(10)};
+  }
+
+  .docExplorerWrap {
+    box-shadow: none;
+    border-right: 1px solid #ddd;
   }
 `;
 
@@ -276,6 +277,7 @@ export const Explorer = ({ navigationProps }) => {
               <FullWidthLayout.Main css={mainStyles}>
                 <div css={explorerStyles}>
                   <GraphiQLExplorer
+                    title="Build"
                     schema={schema}
                     query={query}
                     onEdit={(newQuery) => graphiQLQuery(newQuery)}
