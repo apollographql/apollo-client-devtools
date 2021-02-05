@@ -7,39 +7,39 @@ import { colors } from "@apollo/space-kit/colors";
 import { ApolloLogo } from "@apollo/space-kit/icons/ApolloLogo";
 
 export enum Screens {
-  Cache = 'cache',
-  Queries = 'queries',
-  Mutations = 'mutations',
-  Explorer = 'explorer',
-};
+  Cache = "cache",
+  Queries = "queries",
+  Mutations = "mutations",
+  Explorer = "explorer",
+}
 
 type NavButtonProps = {
-  isSelected: boolean,
-  onClick: any,
+  isSelected: boolean;
+  onClick: any;
 };
 
 export type NavigationProps = {
-  queriesCount: number,
-  mutationsCount: number,
+  queriesCount: number;
+  mutationsCount: number;
 };
 
 const navigationStyles = css`
   display: flex;
   align-items: center;
-  box-shadow: 0 ${rem(-1)} 0 0 rgba(255, 255, 255, .3) inset;
+  box-shadow: 0 ${rem(-1)} 0 0 rgba(255, 255, 255, 0.3) inset;
   background-color: var(--primary);
 `;
 
 const selectedNavButtonStyles = css`
   color: ${colors.silver.lighter};
-  box-shadow: 0 ${rem(-1)} 0 0 ${colors.silver.lighter} inset;
+  box-shadow: 0 ${rem(-2)} 0 0 ${colors.silver.lighter} inset;
 `;
 
 const navButtonStyles = css`
   appearance: none;
   height: ${rem(56)};
   margin: 0 ${rem(16)};
-  padding: ${rem(16)} 0 ${rem(20)};
+  padding: ${rem(16)} 0;
   font-size: ${rem(13)};
   border: none;
   background-color: transparent;
@@ -50,21 +50,26 @@ const navButtonStyles = css`
   &:hover {
     color: ${colors.silver.lighter};
   }
+
+  &:focus {
+    outline: none;
+  }
 `;
 
-const NavButton: React.FC<NavButtonProps>  = ({ isSelected, onClick, children }) => (
+const NavButton: React.FC<NavButtonProps> = ({
+  isSelected,
+  onClick,
+  children,
+}) => (
   <button
-    css={[
-      navButtonStyles, 
-      isSelected && selectedNavButtonStyles,
-    ]}
+    css={[navButtonStyles, isSelected && selectedNavButtonStyles]}
     onClick={onClick}
   >
     {children}
   </button>
 );
 
-const listStyles = css` 
+const listStyles = css`
   display: flex;
   align-items: center;
   margin: 0 ${rem(16)};
@@ -85,20 +90,22 @@ const borderStyles = css`
 
 export const currentScreen = makeVar<Screens>(Screens.Queries);
 
-export const Navigation: React.FC<NavigationProps> = ({ queriesCount, mutationsCount }) => {
+export const Navigation: React.FC<NavigationProps> = ({
+  queriesCount,
+  mutationsCount,
+}) => {
   const selected = useReactiveVar<Screens>(currentScreen);
   const isSelected = (NavButton: Screens) => selected === NavButton;
   const onNavigate = (screen: Screens) => currentScreen(screen);
 
   return (
-    <nav 
-      css={navigationStyles}>
+    <nav css={navigationStyles}>
       <div css={borderStyles}>
         <ApolloLogo css={logoStyles} />
       </div>
       <ul css={listStyles}>
         <li>
-          <NavButton 
+          <NavButton
             isSelected={isSelected(Screens.Explorer)}
             onClick={() => onNavigate(Screens.Explorer)}
           >
@@ -106,7 +113,7 @@ export const Navigation: React.FC<NavigationProps> = ({ queriesCount, mutationsC
           </NavButton>
         </li>
         <li>
-          <NavButton 
+          <NavButton
             isSelected={isSelected(Screens.Queries)}
             onClick={() => onNavigate(Screens.Queries)}
           >
@@ -114,7 +121,7 @@ export const Navigation: React.FC<NavigationProps> = ({ queriesCount, mutationsC
           </NavButton>
         </li>
         <li>
-          <NavButton 
+          <NavButton
             isSelected={isSelected(Screens.Mutations)}
             onClick={() => onNavigate(Screens.Mutations)}
           >
@@ -122,7 +129,7 @@ export const Navigation: React.FC<NavigationProps> = ({ queriesCount, mutationsC
           </NavButton>
         </li>
         <li>
-          <NavButton 
+          <NavButton
             isSelected={isSelected(Screens.Cache)}
             onClick={() => onNavigate(Screens.Cache)}
           >
