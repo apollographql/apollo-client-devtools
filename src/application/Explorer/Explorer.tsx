@@ -64,8 +64,11 @@ const buttonStyles = css`
   font-size: ${rem(16)};
   color: ${colors.white};
   margin-bottom: ${rem(2)};
+  margin-right: ${rem(10)};
 
-  &:hover {
+  &:hover,
+  &:active,
+  &:focus {
     background-color: ${colors.blilet.base};
     color: ${colors.white};
   }
@@ -132,13 +135,53 @@ const explorerStyles = css`
 
   .graphiql-operation-title-bar {
     margin-top: ${rem(10)};
+    line-height: ${rem(30)};
+    padding-bottom: 0 !important;
+
+    button {
+      outline: none;
+    }
+
+    input {
+      border: 1px solid rgb(221, 221, 221) !important;
+      box-shadow: none;
+      padding: 5px;
+      width: ${rem(200)} !important;
+    }
   }
 
   .docExplorerWrap {
     box-shadow: none;
     border-right: 1px solid #ddd;
   }
+
+  .graphiql-explorer-actions {
+    select {
+      margin-left: ${rem(5)};
+      outline: none;
+      border-color: #ccc;
+    }
+    button {
+      outline: none;
+    }
+  }
+
+  .toolbar-button {
+    height: 20px !important;
+    font-size: ${rem(20)};
+  }
 `;
+
+const explorerActionButtonStyles = {
+  actionButtonStyle: {
+    padding: `0 0 0 ${rem(5)}`,
+    margin: 0,
+    backgroundColor: "white",
+    border: "none",
+    fontSize: rem(20),
+    display: "inline-block",
+  },
+};
 
 export const Explorer = ({ navigationProps }) => {
   const graphiQLRef = useRef<GraphiQL>(null);
@@ -280,9 +323,25 @@ export const Explorer = ({ navigationProps }) => {
                     title="Build"
                     schema={schema}
                     query={query}
-                    onEdit={(newQuery) => graphiQLQuery(newQuery)}
+                    onEdit={(newQuery) => {
+                      // Before passing a query to graphiql to be run, we'll
+                      // make sure it doesn't include an empty top level
+                      // selection set. If it does and graphiql tries to run
+                      // it, graphiql-explorer (3rd party plugin) functionality
+                      // will break. This means new graphiql-explorer
+                      // started queries will always be valid queries, including
+                      // `__typename` at a minimum.
+                      const queryWithoutNewlines = newQuery.replace("\n", "");
+                      const cleanQuery =
+                        !!queryWithoutNewlines &&
+                        !queryWithoutNewlines.includes("{")
+                          ? `${queryWithoutNewlines} {\n  __typename\n}`
+                          : newQuery;
+                      graphiQLQuery(cleanQuery);
+                    }}
                     explorerIsOpen={isExplorerOpen}
                     onToggleExplorer={handleToggleExplorer}
+                    styles={explorerActionButtonStyles}
                   />
                 </div>
                 {GraphiQLEditor}
