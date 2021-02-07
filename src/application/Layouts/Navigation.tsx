@@ -77,6 +77,10 @@ const listStyles = css`
   list-style: none;
 `;
 
+const logoLinkStyles = css`
+  display: block;
+`;
+
 const logoStyles = css`
   width: ${rem(24)};
   height: auto;
@@ -101,7 +105,14 @@ export const Navigation: React.FC<NavigationProps> = ({
   return (
     <nav css={navigationStyles}>
       <div css={borderStyles}>
-        <ApolloLogo css={logoStyles} />
+        <a
+          href="https://go.apollo.dev/c/docs"
+          target="_blank"
+          title="Apollo Client developer documentation"
+          css={logoLinkStyles}
+        >
+          <ApolloLogo css={logoStyles} />
+        </a>
       </div>
       <ul css={listStyles}>
         <li>
