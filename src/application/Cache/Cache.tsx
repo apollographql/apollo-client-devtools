@@ -1,8 +1,10 @@
 /** @jsx jsx */
+
 import { Fragment, useState } from "react";
 import { jsx, css } from "@emotion/core";
 import { gql, useQuery } from "@apollo/client";
 import { rem } from "polished";
+import { colors } from "@apollo/space-kit/colors";
 
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { Search } from "./sidebar/Search";
@@ -11,15 +13,20 @@ import { EntityView } from "./main/EntityView";
 import { Loading } from "./common/Loading";
 import { convertCacheJsonIntoObject } from "./common/utils";
 
-const { Header, Sidebar, Main } = SidebarLayout;
-
-const sidebarStyles = css`
-  padding-top: 0;
-`;
+const { Header, Sidebar, Main, Content } = SidebarLayout;
 
 const h1Styles = css`
   font-family: monospace;
   font-weight: normal;
+  font-size: ${rem(20)};
+`;
+
+const headerLabelStyles = css`
+  margin: ${rem(3)} 0 0 ${rem(8)};
+  font-family: "Source Sans Pro", sans-serif;
+  color: ${colors.grey.light};
+  text-transform: uppercase;
+  font-size: ${rem(11)};
 `;
 
 const noDataStyles = css`
@@ -53,10 +60,7 @@ export function Cache({ navigationProps }) {
 
   return (
     <SidebarLayout navigationProps={navigationProps}>
-      <Header>
-        {dataExists ? <h1 css={h1Styles}>{cacheId || undefined}</h1> : null}
-      </Header>
-      <Sidebar css={sidebarStyles}>
+      <Sidebar navigationProps={navigationProps}>
         {loading ? (
           <Loading />
         ) : dataExists ? (
@@ -73,17 +77,27 @@ export function Cache({ navigationProps }) {
           <h3 css={noDataStyles}>No cache data</h3>
         )}
       </Sidebar>
-      <Main>
-        {loading ? (
-          <Loading />
-        ) : (
-          <EntityView
-            cacheId={cacheId}
-            data={parsedData[cacheId]}
-            searchResults={searchResults}
-          />
-        )}
-      </Main>
+      <Content>
+        <Header>
+          {dataExists ? (
+            <Fragment>
+              <h1 css={h1Styles}>{cacheId || undefined}</h1>
+              <span css={headerLabelStyles}>CACHE ID</span>
+            </Fragment>
+          ) : null}
+        </Header>
+        <Main>
+          {loading ? (
+            <Loading />
+          ) : (
+            <EntityView
+              cacheId={cacheId}
+              data={parsedData[cacheId]}
+              searchResults={searchResults}
+            />
+          )}
+        </Main>
+      </Content>
     </SidebarLayout>
   );
 }

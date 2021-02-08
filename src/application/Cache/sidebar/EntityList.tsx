@@ -14,8 +14,8 @@ const listStyles = css`
   color: ${colors.silver.lighter};
 
   > div {
-    height: ${rem(36)};
-    font-size: ${rem(15)};
+    height: ${rem(32)};
+    font-size: ${rem(13)};
   }
 `;
 

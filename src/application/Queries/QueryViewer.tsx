@@ -1,30 +1,33 @@
 /** @jsx jsx */
+
 import { useState } from "react";
 import { jsx, css } from "@emotion/core";
 import { rem } from "polished";
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@reach/tabs";
-import "@reach/tabs/styles.css";
 import { colors } from "@apollo/space-kit/colors";
 import { GraphqlCodeBlock } from "graphql-syntax-highlighter-react";
 import JSONTree from "react-json-tree";
 import { IconCopy } from "@apollo/space-kit/icons/IconCopy";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import stringifyObject from "stringify-object";
+
 import { useTreeTheme } from "../theme";
+
+import "@reach/tabs/styles.css";
 
 export const queryViewStyles = css`
   display: grid;
-  grid-template-columns: minmax(${rem(600)}, auto) ${rem(460)};
-  grid-template-rows: ${rem(32)} auto;
+  grid-template-columns: minmax(12rem, 2fr) minmax(12rem, 1fr);
+  grid-template-rows: 1.75rem auto;
   grid-column-gap: ${rem(24)};
   grid-template-areas:
     "queryStringHeader queryDataHeader"
     "queryStringMain queryDataMain";
-  margin-top: ${rem(24)};
+  padding-top: ${rem(10)};
 `;
 
 export const headerStyles = css`
-  font-size: ${rem(16)};
+  font-size: ${rem(14)};
   font-weight: 600;
   border-bottom: ${rem(1)} solid var(--mainBorder);
 `;
@@ -40,7 +43,7 @@ export const copyIconStyle = css`
 `;
 
 export const queryStringHeader = css`
-  grid-area: queryStringHeader; 
+  grid-area: queryStringHeader;
   display: flex;
   justify-content: space-between;
   margin: 0;
@@ -48,14 +51,16 @@ export const queryStringHeader = css`
 `;
 
 const queryDataHeader = css`
-  grid-area: queryDataHeader; 
+  grid-area: queryDataHeader;
   height: 100%;
   background-color: transparent;
   ${headerStyles}
   color: ${colors.grey.lighter};
 
   button {
-    padding-bottom: ${rem(24)};
+    padding-top: 0;
+    padding-bottom: 1.7rem;
+    outline: none;
   }
 
   button[data-selected] {
@@ -69,74 +74,81 @@ const queryDataHeader = css`
   }
 `;
 
-const calculatedHeight = `height: calc(100vh - ${rem(176)});`;
 export const queryStringMain = css`
   grid-area: queryStringMain;
-  ${calculatedHeight}
-  margin-top: ${rem(24)};
-  font-size: ${rem(15)};
-  overflow: scroll;
+  margin-top: 1rem;
+  font-size: ${rem(13)};
+  height: 100%;
+  overflow-y: hidden;
 `;
 
 export const queryDataMain = css`
   grid-area: queryDataMain;
-  ${calculatedHeight}
-  margin-top: ${rem(24)};
+  margin-top: 1rem;
+  padding-bottom: 1rem;
   font-family: "Source Code Pro", monospace;
-  font-size: ${rem(15)};
-  overflow: scroll;
+  font-size: ${rem(13)};
 `;
+
+const tabPanelStyles = css`
+  outline: none;
+  > ul {
+    margin-top: 0 !important;
+    > li {
+      padding-top: 0 !important;
+    }
+  }
+`;
+
 interface QueryViewerProps {
-  queryString: string
-  variables: Record<string, any>
-  cachedData: Record<string, any>
-} 
+  queryString: string;
+  variables: Record<string, any>;
+  cachedData: Record<string, any>;
+}
 
 enum QueryTabs {
   Variables,
-  CachedData
+  CachedData,
 }
 
-export const QueryViewer = ({ queryString = '', variables = {}, cachedData = {} }: QueryViewerProps) => {
+export const QueryViewer = ({
+  queryString = "",
+  variables = {},
+  cachedData = {},
+}: QueryViewerProps) => {
   const [currentTab, setCurrentTab] = useState<QueryTabs>(QueryTabs.Variables);
-  const copyCurrentTab = `${stringifyObject(currentTab === QueryTabs.Variables ? variables : cachedData)}`;
+  const copyCurrentTab = `${stringifyObject(
+    currentTab === QueryTabs.Variables ? variables : cachedData
+  )}`;
   const treeTheme = useTreeTheme();
-  
+
   return (
     <div css={queryViewStyles}>
       <h4 css={queryStringHeader}>
-        Query String 
+        Query String
         <CopyToClipboard text={queryString}>
           <IconCopy css={copyIconStyle} data-testid="copy-query-string" />
-        </CopyToClipboard> 
+        </CopyToClipboard>
       </h4>
       <GraphqlCodeBlock
         className="GraphqlCodeBlock"
         css={queryStringMain}
         queryBody={queryString}
       />
-      <Tabs onChange={index => setCurrentTab(index)}>
+      <Tabs onChange={(index) => setCurrentTab(index)}>
         <TabList css={queryDataHeader}>
           <Tab>Variables</Tab>
           <Tab>Cached Data</Tab>
           <CopyToClipboard text={copyCurrentTab}>
             <IconCopy css={copyIconStyle} data-testid="copy-query-data" />
-          </CopyToClipboard> 
+          </CopyToClipboard>
         </TabList>
         <TabPanels css={queryDataMain}>
-          <TabPanel>
-            <JSONTree 
-              data={variables} 
-              theme={treeTheme}
-              invertTheme={false}
-            />
+          <TabPanel css={tabPanelStyles}>
+            <JSONTree data={variables} theme={treeTheme} invertTheme={false} />
           </TabPanel>
-          <TabPanel>
-            <JSONTree 
-              data={cachedData} 
-              theme={treeTheme}
-              invertTheme={false}
-            />
+          <TabPanel css={tabPanelStyles}>
+            <JSONTree data={cachedData} theme={treeTheme} invertTheme={false} />
           </TabPanel>
         </TabPanels>
       </Tabs>
