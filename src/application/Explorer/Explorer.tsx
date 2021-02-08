@@ -1,4 +1,5 @@
 /** @jsx jsx */
+
 import { jsx, css } from "@emotion/core";
 import { rem } from "polished";
 import { colors } from "@apollo/space-kit/colors";
@@ -17,6 +18,7 @@ import { parse } from "graphql/language/parser";
 import { print } from "graphql/language/printer";
 import GraphiQLExplorer from "graphiql-explorer";
 import { Button } from "@apollo/space-kit/Button";
+
 import { useTheme, ColorTheme, colorTheme } from "../theme";
 import {
   sendGraphiQLRequest,
@@ -56,15 +58,14 @@ const mainStyles = css`
 const buttonContainerStyles = css`
   display: inline-flex;
   justify-content: space-around;
-  margin: 0 ${rem(16)};
 `;
 
 const buttonStyles = css`
   font-weight: normal;
-  font-size: ${rem(16)};
+  font-size: ${rem(14)};
   color: ${colors.white};
-  margin-bottom: ${rem(2)};
   margin-right: ${rem(10)};
+  min-width: inherit;
 
   &:hover,
   &:active,
@@ -96,26 +97,20 @@ const runButtonStyles = css`
 const docsButtonStyles = css`
   ${buttonStyles}
   min-width: ${rem(60)};
-  margin: 0 0 ${rem(2)} auto;
+  margin: 0 0 0 auto;
 `;
 
 const labelStyles = css`
   display: inline-flex;
   align-items: center;
-  margin: 0 0 0 ${rem(36)};
-  font-size: ${rem(16)};
+  margin: 0 0 0 1rem;
+  font-size: ${rem(14)};
   color: ${colors.white};
   line-height: ${rem(17)};
 `;
 
 const checkboxStyles = css`
   margin-right: ${rem(10)};
-`;
-
-const logoStyles = css`
-  position: absolute;
-  bottom: ${rem(16)};
-  right: ${rem(16)};
 `;
 
 const borderStyles = css`
@@ -167,8 +162,25 @@ const explorerStyles = css`
   }
 
   .toolbar-button {
-    height: 20px !important;
-    font-size: ${rem(20)};
+    outline: none;
+  }
+
+  .graphiql-explorer-node {
+    margin-left: 0.2rem;
+    .toolbar-button {
+      font-size: ${rem(14)} !important;
+    }
+  }
+
+  .doc-explorer-title {
+    padding: 0;
+  }
+
+  .doc-explorer-contents {
+    top: 0;
+    position: relative;
+    overflow-y: auto !important;
+    padding-bottom: 1.2rem !important;
   }
 `;
 
@@ -194,8 +206,6 @@ export const Explorer = ({ navigationProps }) => {
 
   const color = useReactiveVar(colorTheme);
   const query = useReactiveVar(graphiQLQuery);
-
-  const theme = useTheme();
 
   const executeOperation = ({
     query,

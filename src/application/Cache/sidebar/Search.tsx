@@ -17,7 +17,16 @@ const searchIconStyles = (theme: Theme) => ({
 
 const textFieldStyles = css`
   border-bottom: ${rem(1)} solid var(--whiteTransparent);
-  margin-bottom: ${rem(20)};
+  margin-bottom: ${rem(10)};
+
+  > label > div {
+    margin-top: ${rem(4)};
+  }
+
+  > div {
+    margin-top: ${rem(4)};
+    margin-bottom: ${rem(4)};
+  }
 
   input {
     background: none;

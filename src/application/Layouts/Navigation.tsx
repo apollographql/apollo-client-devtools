@@ -24,10 +24,12 @@ export type NavigationProps = {
 };
 
 const navigationStyles = css`
+  grid-area: nav;
   display: flex;
   align-items: center;
   box-shadow: 0 ${rem(-1)} 0 0 rgba(255, 255, 255, 0.3) inset;
   background-color: var(--primary);
+  height: 2.5rem;
 `;
 
 const selectedNavButtonStyles = css`
@@ -37,9 +39,8 @@ const selectedNavButtonStyles = css`
 
 const navButtonStyles = css`
   appearance: none;
-  height: ${rem(56)};
-  margin: 0 ${rem(16)};
-  padding: ${rem(16)} 0;
+  margin: 0 ${rem(10)};
+  padding: ${rem(12)} 0;
   font-size: ${rem(13)};
   border: none;
   background-color: transparent;
@@ -56,23 +57,10 @@ const navButtonStyles = css`
   }
 `;
 
-const NavButton: React.FC<NavButtonProps> = ({
-  isSelected,
-  onClick,
-  children,
-}) => (
-  <button
-    css={[navButtonStyles, isSelected && selectedNavButtonStyles]}
-    onClick={onClick}
-  >
-    {children}
-  </button>
-);
-
 const listStyles = css`
   display: flex;
   align-items: center;
-  margin: 0 ${rem(16)};
+  margin: 0 ${rem(5)};
   padding: 0;
   list-style: none;
 `;
@@ -91,6 +79,19 @@ const logoStyles = css`
 const borderStyles = css`
   border-right: ${rem(1)} solid var(--whiteTransparent);
 `;
+
+const NavButton: React.FC<NavButtonProps> = ({
+  isSelected,
+  onClick,
+  children,
+}) => (
+  <button
+    css={[navButtonStyles, isSelected && selectedNavButtonStyles]}
+    onClick={onClick}
+  >
+    {children}
+  </button>
+);
 
 export const currentScreen = makeVar<Screens>(Screens.Queries);
 

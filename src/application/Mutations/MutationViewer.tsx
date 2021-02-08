@@ -1,28 +1,29 @@
 /** @jsx jsx */
+
 import { jsx, css } from "@emotion/core";
-import { colors } from "@apollo/space-kit/colors";
 import { GraphqlCodeBlock } from "graphql-syntax-highlighter-react";
 import JSONTree from "react-json-tree";
 import { IconCopy } from "@apollo/space-kit/icons/IconCopy";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import stringifyObject from "stringify-object";
+
 import { useTreeTheme } from "../theme";
-import { 
-  queryViewStyles, 
-  headerStyles, 
-  copyIconStyle, 
+import {
+  queryViewStyles,
+  headerStyles,
+  copyIconStyle,
   queryStringHeader,
   queryStringMain,
   queryDataMain,
-} from '../Queries/QueryViewer';
+} from "../Queries/QueryViewer";
 
 interface MutationViewerProps {
-  mutationString: string
-  variables: Record<string, any>
+  mutationString: string;
+  variables: Record<string, any>;
 }
 
 const queryDataHeader = css`
-  grid-area: queryDataHeader; 
+  grid-area: queryDataHeader;
   display: flex;
   height: 100%;
   background-color: transparent;
@@ -35,16 +36,19 @@ const queryDataHeader = css`
   }
 `;
 
-export const MutationViewer = ({ mutationString = '', variables = {} }: MutationViewerProps) => {
+export const MutationViewer = ({
+  mutationString = "",
+  variables = {},
+}: MutationViewerProps) => {
   const treeTheme = useTreeTheme();
 
   return (
     <div css={queryViewStyles}>
       <h4 css={queryStringHeader}>
-        Mutation String 
+        Mutation String
         <CopyToClipboard text={mutationString}>
           <IconCopy css={copyIconStyle} data-testid="copy-mutation-string" />
-        </CopyToClipboard> 
+        </CopyToClipboard>
       </h4>
       <GraphqlCodeBlock
         className="GraphqlCodeBlock"
@@ -55,17 +59,16 @@ export const MutationViewer = ({ mutationString = '', variables = {} }: Mutation
         <div css={queryDataHeader}>
           <span>Variables</span>
           <CopyToClipboard text={stringifyObject(variables)}>
-            <IconCopy css={copyIconStyle} data-testid="copy-mutation-variables" />
-          </CopyToClipboard> 
+            <IconCopy
+              css={copyIconStyle}
+              data-testid="copy-mutation-variables"
+            />
+          </CopyToClipboard>
         </div>
         <div css={queryDataMain}>
-          <JSONTree 
-            data={variables}
-            theme={treeTheme}
-            invertTheme={false}
-          />
+          <JSONTree data={variables} theme={treeTheme} invertTheme={false} />
         </div>
       </div>
     </div>
   );
-}
+};

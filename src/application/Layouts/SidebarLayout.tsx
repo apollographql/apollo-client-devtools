@@ -1,101 +1,118 @@
 /** @jsx jsx */
+
 import { ReactNode } from "react";
 import { jsx, css } from "@emotion/core";
 import { rem } from "polished";
-import { colors } from "@apollo/space-kit/colors";
+
 import { Navigation, NavigationProps } from "./Navigation";
 
 interface SidebarLayoutProps {
-  navigationProps: NavigationProps
+  navigationProps: NavigationProps;
   children: any;
-};
+}
 
 interface SidebarProps {
+  navigationProps: NavigationProps;
   children: ReactNode;
   className?: string;
 }
 
 interface SidebarLayoutComposition {
   Sidebar: React.FC<SidebarProps>;
+  Content: React.FC;
   Header: React.FC;
   Main: React.FC;
 }
 
 const layoutStyles = css`
   display: grid;
-  grid-template-columns: minmax(${rem(460)}, max-content) auto;
-  grid-template-rows: ${rem(56)} auto;
-  grid-template-areas:
-    "nav header header header"
-    "sidebar main main main"
+  grid-template-columns: 26rem auto;
+  grid-template-areas: "sidebar content";
 `;
 
 const sidebarStyles = css`
   grid-area: sidebar;
-  height: calc(100vh - ${rem(56)});
-  padding: ${rem(16)};
+  grid-template-areas:
+    "nav"
+    "list";
+  height: 100vh;
   background-color: var(--primary);
-  overflow-y: scroll;
+  overflow-y: auto;
 `;
 
-const navigationStyles = css`
-  grid-area: nav;
-  background-color: var(--primary);
+const listStyles = css`
+  grid-area: list;
+  padding: 0 1rem;
 `;
 
-const mainStyles = css`
-  grid-area: main;
-  padding: ${rem(16)} ${rem(32)};
-  background-color: var(--main);
-  border-left: ${rem(1)} solid var(--mainBorder);
-  color: var(--textPrimary);
+const contentStyles = css`
+  grid-area: content;
+  grid-template-areas:
+    "header"
+    "main";
+  height: 100vh;
+  overflow: auto;
 `;
 
 const headerStyles = css`
   grid-area: header;
   display: flex;
   align-items: center;
-  padding: 0 ${rem(24)} 0 ${rem(32)};
+  padding: 0 1rem;
   border-left: ${rem(1)} solid var(--mainBorder);
   border-bottom: ${rem(1)} solid var(--mainBorder);
   background-color: var(--main);
   color: var(--textPrimary);
+  height: 2.5rem;
 `;
 
-const SidebarLayout: React.FC<SidebarLayoutProps> & SidebarLayoutComposition = ({
-  navigationProps,
-  children,
-}) => {
-  const { queriesCount, mutationsCount } = navigationProps;
+const mainStyles = css`
+  grid-area: main;
+  padding: 0 1rem 2rem;
+  background-color: var(--main);
+  border-left: ${rem(1)} solid var(--mainBorder);
+  color: var(--textPrimary);
+`;
 
+const SidebarLayout: React.FC<SidebarLayoutProps> &
+  SidebarLayoutComposition = ({ children }) => {
   return (
-    <div
-      data-testid="layout"
-      css={layoutStyles}
-    >
-      <Navigation
-        css={navigationStyles}
-        queriesCount={queriesCount}
-        mutationsCount={mutationsCount}
-      />
+    <div data-testid="layout" css={layoutStyles}>
       {children}
     </div>
   );
 };
 
-const Sidebar = ({ children, className }) => (
-  <div
-    className={className}
-    css={sidebarStyles}
-    data-testid="sidebar"
-  >
+const Sidebar = ({ navigationProps, children, className }) => (
+  <div className={className} css={sidebarStyles} data-testid="sidebar">
+    <Navigation
+      queriesCount={navigationProps.queriesCount}
+      mutationsCount={navigationProps.mutationsCount}
+    />
+    <div css={listStyles}>{children}</div>
+  </div>
+);
+
+const Content = ({ children }) => (
+  <div css={contentStyles} data-testid="content">
     {children}
   </div>
 );
-const Header = ({ children }) => (<div css={headerStyles} data-testid="header">{children}</div>);
-const Main = ({ children }) => (<div css={mainStyles} data-testid="main">{children}</div>);
+
+const Header = ({ children }) => (
+  <div css={headerStyles} data-testid="header">
+    {children}
+  </div>
+);
+
+const Main = ({ children }) => (
+  <div css={mainStyles} data-testid="main">
+    {children}
+  </div>
+);
 
 SidebarLayout.Sidebar = Sidebar;
+SidebarLayout.Content = Content;
 SidebarLayout.Header = Header;
 SidebarLayout.Main = Main;
 
