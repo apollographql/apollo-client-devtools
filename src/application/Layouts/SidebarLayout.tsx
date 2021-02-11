@@ -26,7 +26,7 @@ interface SidebarLayoutComposition {
 
 const layoutStyles = css`
   display: grid;
-  grid-template-columns: 26rem auto;
+  grid-template-columns: 27rem auto;
   grid-template-areas: "sidebar content";
 `;
 

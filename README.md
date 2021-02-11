@@ -18,7 +18,7 @@ The Apollo Client Browser Devtools appear as an "Apollo" tab in your web browser
 - **Mutation inspector:** View fired mutations, variables, and re-run individual mutations.
 - **Cache inspector:** Visualize the Apollo Client cache and search through it by field names and/or values.
 
-![Apollo Client Browser Devtools](./assets/ac-browser-devtools-3.jpg)
+![Apollo Client Browser Devtools](./assets/ac-browser-devtools-3.png)
 
 ## Installation
 
@@ -61,7 +61,7 @@ Navigate to `localhost:3000` to view the application. To view the API schema, na
 
 ### Development with web-ext & WebExtWebpackPlugin
 
-For cross-browser development, we rely on the [web-ext](https://github.com/mozilla/web-ext) command line tool and a modified version of the [WebExtWebpackPlugin](https://github.com/hiikezoe/web-ext-webpack-plugin) that hooks into the build process. 
+For cross-browser development, we rely on the [web-ext](https://github.com/mozilla/web-ext) command line tool and a modified version of the [WebExtWebpackPlugin](https://github.com/hiikezoe/web-ext-webpack-plugin) that hooks into the build process.
 
 To develop with Firefox, run the following command:
 
@@ -109,7 +109,7 @@ npm run test:watch
 
 There are two main pieces of the Apollo Client Browser Devtools: the extension itself and a React application. The extension is the code that communicates with the browser. It allows us to search an inspected window for an instance of Apollo Client and to create the Apollo tab in the browser's devtools panel. The React application powers the experience in the devtools panel.
 
-The devtools folder structure mirrors this architecture. The source code for the extension can be found in  `src/extension`. The React application code can be found in `src/application`.
+The devtools folder structure mirrors this architecture. The source code for the extension can be found in `src/extension`. The React application code can be found in `src/application`.
 
 At the root of the project, there is a `.babelrc` file, `webpack.config.js`, and `package.json`.
 
