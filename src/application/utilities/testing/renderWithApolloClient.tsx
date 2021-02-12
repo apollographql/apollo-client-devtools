@@ -1,10 +1,11 @@
-import React from 'react';
-import { render } from '@testing-library/react';
+import React from "react";
+import { render } from "@testing-library/react";
 import { ApolloProvider } from "@apollo/client";
-import { client } from '../../index';
+
+import { client } from "../../index";
 
 export const renderWithApolloClient = (
-  ui, 
+  ui,
   { providerProps, ...renderOptions } = { providerProps: {} }
 ) => {
   return render(
@@ -13,4 +14,4 @@ export const renderWithApolloClient = (
     </ApolloProvider>,
     renderOptions
   );
-}
+};

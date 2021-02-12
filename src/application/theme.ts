@@ -3,13 +3,13 @@ import { makeVar, useReactiveVar } from "@apollo/client";
 import { colors, ShadedColor } from "@apollo/space-kit/colors";
 
 export enum ColorTheme {
-  Light = 'light',
-  Dark = 'dark'
+  Light = "light",
+  Dark = "dark",
 }
 
 export enum Mode {
-  Light = '(prefers-color-scheme: light)',
-  Dark = '(prefers-color-scheme: dark)'
+  Light = "(prefers-color-scheme: light)",
+  Dark = "(prefers-color-scheme: dark)",
 }
 
 export function getPreferredTheme(): ColorTheme {
@@ -20,19 +20,21 @@ export function getPreferredTheme(): ColorTheme {
   return ColorTheme.Light;
 }
 
-export function listenForThemeChange(callback: (colorTheme: ColorTheme) => void) {
+export function listenForThemeChange(
+  callback: (colorTheme: ColorTheme) => void
+) {
   const checkMediaQuery = (event: MediaQueryListEvent): ColorTheme => {
     if (event.matches) {
       return ColorTheme.Dark;
-    } 
+    }
 
     return ColorTheme.Light;
   };
 
   const cb = (event: MediaQueryListEvent) => callback(checkMediaQuery(event));
-  window.matchMedia(Mode.Dark).addEventListener('change', cb);
+  window.matchMedia(Mode.Dark).addEventListener("change", cb);
 
-  return () => window.matchMedia(Mode.Dark).removeEventListener('change', cb);
+  return () => window.matchMedia(Mode.Dark).removeEventListener("change", cb);
 }
 
 const shared = {
@@ -100,7 +102,7 @@ export const treeTheme: Record<ColorTheme, Record<string, ShadedColor>> = {
   },
 };
 
-export type Theme = (typeof themes)[keyof typeof themes];
+export type Theme = typeof themes[keyof typeof themes];
 export const colorTheme = makeVar<ColorTheme>(getPreferredTheme());
 export const isDarkMode = (theme: ColorTheme): boolean => {
   return theme === ColorTheme.Dark;
@@ -109,7 +111,7 @@ export const isDarkMode = (theme: ColorTheme): boolean => {
 export const useTheme = (): Theme => {
   const theme = useReactiveVar(colorTheme);
   return themes[theme];
-}
+};
 
 export const useTreeTheme = () => {
   const theme = useReactiveVar(colorTheme);
@@ -118,5 +120,5 @@ export const useTreeTheme = () => {
     scheme: "apollo",
     author: "Apollo (community@apollographql.com)",
     ...treeTheme[theme],
-  }
+  };
 };
