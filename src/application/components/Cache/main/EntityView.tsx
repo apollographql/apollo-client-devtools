@@ -7,7 +7,7 @@ import { rem } from "polished";
 import { useTreeTheme } from "../../../theme";
 
 const cacheStyles = css`
-  margin-top: 1rem;
+  padding-top: 1rem;
   font-family: "Source Code Pro", monospace;
   font-size: ${rem(13)};
 
