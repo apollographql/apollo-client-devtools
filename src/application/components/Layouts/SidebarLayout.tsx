@@ -38,6 +38,7 @@ const sidebarStyles = css`
   height: 100vh;
   background-color: var(--primary);
   overflow-y: auto;
+  border-right: ${rem(1)} solid var(--mainBorder);
 `;
 
 const listStyles = css`
@@ -59,7 +60,6 @@ const headerStyles = css`
   display: flex;
   align-items: center;
   padding: 0 1rem;
-  border-left: ${rem(1)} solid var(--mainBorder);
   border-bottom: ${rem(1)} solid var(--mainBorder);
   background-color: var(--main);
   color: var(--textPrimary);
@@ -70,7 +70,6 @@ const mainStyles = css`
   grid-area: main;
   padding: 0 1rem 2rem;
   background-color: var(--main);
-  border-left: ${rem(1)} solid var(--mainBorder);
   color: var(--textPrimary);
 `;
 
