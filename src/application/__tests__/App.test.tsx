@@ -5,17 +5,17 @@ import { renderWithApolloClient } from "../utilities/testing/renderWithApolloCli
 import { currentScreen, Screens } from "../components/Layouts/Navigation";
 import { App, reloadStatus } from "../App";
 
-jest.mock("../Queries/Queries", () => ({
+jest.mock("../components/Queries/Queries", () => ({
   Queries: ({ navigationProps }) => (
     <div>Queries ({navigationProps.queriesCount})</div>
   ),
 }));
-jest.mock("../Mutations/Mutations", () => ({
+jest.mock("../components/Mutations/Mutations", () => ({
   Mutations: ({ navigationProps }) => (
     <div>Mutations ({navigationProps.mutationsCount})</div>
   ),
 }));
-jest.mock("../Explorer/Explorer", () => ({
+jest.mock("../components/Explorer/Explorer", () => ({
   Explorer: () => <div>Build</div>,
 }));
 

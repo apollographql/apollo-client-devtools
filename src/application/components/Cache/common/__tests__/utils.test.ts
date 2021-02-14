@@ -14,17 +14,17 @@ describe("Utility tests", () => {
       expect(getRootCacheIds({})).toEqual([]);
     });
 
-    it("should return an array of root cache IDs from cache data", () => {
+    it("should return an ascending sorted array of root cache IDs from cache data", () => {
       const data = {
-        "Result:1": {
-          id: 1,
-          __typename: "Result",
-          name: "Result 1",
-        },
         "Result:2": {
           id: 2,
           __typename: "Result",
           name: "Result 2",
+        },
+        "Result:1": {
+          id: 1,
+          __typename: "Result",
+          name: "Result 1",
         },
       };
       const cacheIds = getRootCacheIds(data);

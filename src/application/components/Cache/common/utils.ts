@@ -1,24 +1,19 @@
 // Return an alphabetically sorted list of all root cache ID's. ROOT_QUERY,
 // ROOT_MUTATION, and ROOT_SUBSCRIPTION will be listed first (if they exist).
 export function getRootCacheIds(data = {}) {
-  const sortedCacheIds: string[] = [];
+  const sortedRootIds: string[] = [];
 
   ["ROOT_QUERY", "ROOT_MUTATION", "ROOT_SUBSCRIPTION"].forEach((id) => {
     if (data[id]) {
-      sortedCacheIds.push(id);
+      sortedRootIds.push(id);
     }
   });
 
-  Object.keys(data)
+  const sortedNonRootIds = Object.keys(data)
     .filter((id) => !id.startsWith("ROOT_"))
-    .sort((first, second) => {
-      if (first > second) return 1;
-      if (second < first) return -1;
-      return 0;
-    })
-    .forEach((id) => sortedCacheIds.push(id));
+    .sort();
 
-  return sortedCacheIds;
+  return [...sortedRootIds, ...sortedNonRootIds];
 }
 
 // Is the passed in parameter an Object.
