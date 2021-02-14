@@ -1,10 +1,11 @@
 import React, { useEffect } from "react";
 import { useReactiveVar, gql, useQuery, makeVar } from "@apollo/client";
-import { currentScreen, Screens } from './Layouts/Navigation';
-import { Queries } from './Queries/Queries';
-import { Mutations } from './Mutations/Mutations';
-import { Explorer } from './Explorer/Explorer';
-import { Cache } from "./Cache/Cache";
+
+import { currentScreen, Screens } from "./components/Layouts/Navigation";
+import { Queries } from "./components/Queries/Queries";
+import { Mutations } from "./components/Mutations/Mutations";
+import { Explorer } from "./components/Explorer/Explorer";
+import { Cache } from "./components/Cache/Cache";
 
 export const reloadStatus = makeVar<boolean>(false);
 
@@ -50,5 +51,5 @@ export const App = () => {
         mutationsCount: data?.mutationLog?.count,
       }}
     />
-  )
+  );
 };
