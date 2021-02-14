@@ -11,7 +11,6 @@ import { Search } from "./sidebar/Search";
 import { EntityList } from "./sidebar/EntityList";
 import { EntityView } from "./main/EntityView";
 import { Loading } from "./common/Loading";
-import { convertCacheJsonIntoObject } from "./common/utils";
 
 const { Header, Sidebar, Main, Content } = SidebarLayout;
 
@@ -53,7 +52,7 @@ export function Cache({ navigationProps }) {
 
   let parsedData: Record<string, any> = {};
   if (!loading && data && data.cache) {
-    parsedData = convertCacheJsonIntoObject(data.cache);
+    parsedData = JSON.parse(data.cache);
   }
 
   const dataExists = parsedData && Object.keys(parsedData).length > 0;
