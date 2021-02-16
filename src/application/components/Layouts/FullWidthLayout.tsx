@@ -25,7 +25,7 @@ const layoutStyles = css`
 
 const mainStyles = css`
   grid-area: main;
-  height: 100vh;
+  height: calc(100vh - 2.5rem);
 `;
 
 const headerStyles = css`
