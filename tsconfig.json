@@ -11,10 +11,7 @@
     "resolveJsonModule": true
   },
   "compileOnSave": true,
-  "include": [
-    "src/**/*",
-    "development/**/*"
-  ],
+  "include": ["src/**/*", "development/**/*"],
   "exclude": [
     "node_modules",
     "dist",

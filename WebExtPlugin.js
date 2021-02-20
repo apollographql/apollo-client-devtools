@@ -1,21 +1,21 @@
 // Original source: https://github.com/hiikezoe/web-ext-webpack-plugin/blob/master/web-ext-webpack-plugin.js
 
-const webExt = require('web-ext').default;
+const webExt = require("web-ext");
 
-const pluginName = 'WebExtPlugin';
+const pluginName = "WebExtPlugin";
 
 class WebExtPlugin {
   constructor({
-    sourceDir = 'build',
+    sourceDir = "build",
     browserConsole = true,
-    startUrl = 'localhost:3000',
+    startUrl = "localhost:3000",
     target,
     lintOnBuild = false,
   } = {}) {
     this.runner = null;
     this.watchMode = false;
-    this.browserConsole = browserConsole,
-    this.sourceDir = `${process.cwd()}/${sourceDir}`;
+    (this.browserConsole = browserConsole),
+      (this.sourceDir = `${process.cwd()}/${sourceDir}`);
     this.startUrl = startUrl;
     this.target = target;
     this.lintOnBuild = lintOnBuild;
@@ -29,17 +29,20 @@ class WebExtPlugin {
     const afterEmit = async (compilation) => {
       try {
         if (this.lintOnBuild) {
-          await webExt.cmd.lint({
-            boring: false,
-            metadata: false,
-            output: 'text',
-            pretty: false,
-            sourceDir: this.sourceDir,
-            verbose: false,
-            warningsAsErrors: true,
-          }, {
-            shouldExitProgram: false,
-          });
+          await webExt.cmd.lint(
+            {
+              boring: false,
+              metadata: false,
+              output: "text",
+              pretty: false,
+              sourceDir: this.sourceDir,
+              verbose: false,
+              warningsAsErrors: true,
+            },
+            {
+              shouldExitProgram: false,
+            }
+          );
         }
 
         if (!this.watchMode) {
@@ -51,13 +54,18 @@ class WebExtPlugin {
           return;
         }
 
-        await webExt.cmd.run({
-          browserConsole: this.browserConsole,
-          sourceDir: this.sourceDir,
-          startUrl: this.startUrl,
-          noReload: true,
-          target: this.target,
-        }, { }).then((runner) => this.runner = runner);
+        await webExt.cmd
+          .run(
+            {
+              browserConsole: this.browserConsole,
+              sourceDir: this.sourceDir,
+              startUrl: this.startUrl,
+              noReload: true,
+              target: this.target,
+            },
+            {}
+          )
+          .then((runner) => (this.runner = runner));
 
         if (!this.runner) {
           return;

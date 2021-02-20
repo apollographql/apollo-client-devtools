@@ -1,7 +1,7 @@
 /** @jsx jsx */
 
 import { Fragment, useState } from "react";
-import { jsx } from "@emotion/core";
+import { jsx } from "@emotion/react";
 import { gql, useQuery } from "@apollo/client";
 import { List } from "@apollo/space-kit/List";
 import { ListItem } from "@apollo/space-kit/ListItem";

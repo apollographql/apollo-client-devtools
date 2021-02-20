@@ -6,29 +6,32 @@ const WebExtPlugin = require("./WebExtPlugin");
 /* eslint-enable */
 
 module.exports = (env) => {
-  const devOptions = (env.NODE_ENV === "development") ? {
-    "devtool": "inline-source-maps",
-  } : {};
+  const devOptions =
+    env.NODE_ENV === "development"
+      ? {
+          devtool: "inline-source-map",
+        }
+      : {};
 
   const plugins = [
     new CopyPlugin({
       patterns: [
         {
           from: "./src/extension/devtools/panel.html",
-          to: path.resolve(__dirname, "build")
+          to: path.resolve(__dirname, "build"),
         },
         {
           from: "./src/extension/devtools/devtools.html",
-          to: path.resolve(__dirname, "build")
+          to: path.resolve(__dirname, "build"),
         },
         {
           from: "./src/extension/images",
-          to: path.resolve(__dirname, "build/images")
+          to: path.resolve(__dirname, "build/images"),
         },
         {
           from: "./src/extension/manifest.json",
-          to: path.resolve(__dirname, "build")
-        }
+          to: path.resolve(__dirname, "build"),
+        },
       ],
     }),
   ];
@@ -54,33 +57,38 @@ module.exports = (env) => {
     resolve: {
       extensions: [".mjs", ".js", ".ts", ".tsx", ".css"],
       alias: {
-        "@forked/graphiql": path.resolve(__dirname, "node_modules/graphiql-forked/packages/graphiql/dist/index.js"),
-        "@forked/graphiql-css": path.resolve(__dirname, "node_modules/graphiql-forked/packages/graphiql/graphiql.css")
-      }
+        "@forked/graphiql": path.resolve(
+          __dirname,
+          "node_modules/graphiql-forked/packages/graphiql/dist/index.js"
+        ),
+        "@forked/graphiql-css": path.resolve(
+          __dirname,
+          "node_modules/graphiql-forked/packages/graphiql/graphiql.css"
+        ),
+      },
     },
     module: {
       rules: [
         {
           test: /\.css$/,
-          loader: "style-loader!css-loader",
+          use: ["style-loader", "css-loader"],
+        },
+        {
+          test: /\.m?js/,
+          resolve: {
+            fullySpecified: false,
+          },
         },
         {
           test: /\.(ts)x?$/,
-          exclude: /(node_modules)/,
           loader: "ts-loader",
-        },
-        {
-          test: /\.(js)x?$/,
-          exclude: /(node_modules)/,
-          loader: "babel-loader",
         },
       ],
     },
     optimization: {
-      minimize: (env.NODE_ENV === "production"),
+      minimize: env.NODE_ENV === "production",
       minimizer: [
         new TerserPlugin({
-          sourceMap: (env.NODE_ENV === "development"),
           terserOptions: {
             output: {
               comments: false,

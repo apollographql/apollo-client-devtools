@@ -1,7 +1,7 @@
 /** @jsx jsx */
 
 import { useState } from "react";
-import { jsx, css } from "@emotion/core";
+import { jsx, css } from "@emotion/react";
 import { rem } from "polished";
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@reach/tabs";
 import { colors } from "@apollo/space-kit/colors";

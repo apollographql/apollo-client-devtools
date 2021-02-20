@@ -1,6 +1,7 @@
 /** @jsx jsx */
 
-import { jsx, css } from "@emotion/core";
+import React from "react";
+import { jsx, css } from "@emotion/react";
 import { rem } from "polished";
 import { colors } from "@apollo/space-kit/colors";
 import { useRef, useState, useEffect, Fragment } from "react";
