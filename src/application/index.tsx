@@ -1,7 +1,8 @@
 /** @jsx jsx */
 
+import React from "react";
 import { useEffect } from "react";
-import { jsx } from "@emotion/core";
+import { jsx } from "@emotion/react";
 import { render } from "react-dom";
 import {
   ApolloClient,

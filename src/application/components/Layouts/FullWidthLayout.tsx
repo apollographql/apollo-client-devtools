@@ -1,6 +1,7 @@
 /** @jsx jsx */
 
-import { jsx, css } from "@emotion/core";
+import React from "react";
+import { jsx, css } from "@emotion/react";
 
 import { Navigation, NavigationProps } from "./Navigation";
 

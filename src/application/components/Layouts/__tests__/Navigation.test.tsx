@@ -1,6 +1,6 @@
 import React from "react";
 import user from "@testing-library/user-event";
-import { matchers } from "jest-emotion";
+import { matchers } from "@emotion/jest";
 import { colors } from "@apollo/space-kit/colors";
 
 import { renderWithApolloClient } from "../../../utilities/testing/renderWithApolloClient";

@@ -1,7 +1,7 @@
 /** @jsx jsx */
 
 import React from "react";
-import { jsx, css } from "@emotion/core";
+import { jsx, css } from "@emotion/react";
 import { List } from "@apollo/space-kit/List";
 import { ListItem } from "@apollo/space-kit/ListItem";
 import { colors } from "@apollo/space-kit/colors";

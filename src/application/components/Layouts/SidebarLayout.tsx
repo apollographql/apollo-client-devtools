@@ -1,7 +1,7 @@
 /** @jsx jsx */
 
 import { ReactNode } from "react";
-import { jsx, css } from "@emotion/core";
+import { jsx, css } from "@emotion/react";
 import { rem } from "polished";
 
 import { Navigation, NavigationProps } from "./Navigation";

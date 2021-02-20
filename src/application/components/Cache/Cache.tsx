@@ -1,7 +1,7 @@
 /** @jsx jsx */
 
 import { Fragment, useState } from "react";
-import { jsx, css } from "@emotion/core";
+import { jsx, css } from "@emotion/react";
 import { gql, useQuery } from "@apollo/client";
 import { rem } from "polished";
 import { colors } from "@apollo/space-kit/colors";

@@ -1,7 +1,7 @@
 /** @jsx jsx */
 
 import { IconRun } from "@apollo/space-kit/icons/IconRun";
-import { jsx, css } from "@emotion/core";
+import { jsx, css } from "@emotion/react";
 import { rem } from "polished";
 
 import { graphiQLQuery } from "../Explorer/Explorer";
