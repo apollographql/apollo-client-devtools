@@ -111,8 +111,6 @@ There are two main pieces of the Apollo Client Browser Devtools: the extension i
 
 The devtools folder structure mirrors this architecture. The source code for the extension can be found in `src/extension`. The React application code can be found in `src/application`.
 
-At the root of the project, there is a `.babelrc` file, `webpack.config.js`, and `package.json`.
-
 For builds, we use the `build` folder. After a build, all of the files needed to run the devtools can be found here. If these files are bundled for development, source maps are provided. When these files are bundled for production, source maps are not provided and the code is minified. We use the `dist` folder for distributable zip files.
 
 ### Debugging
