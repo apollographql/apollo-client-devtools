@@ -1,8 +1,5 @@
 module.exports = {
   preset: "ts-jest",
-  transform: {
-    "^.+\\.tsx?$": "babel-jest",
-  },
   setupFilesAfterEnv: ["./test.setup.ts"],
   testPathIgnorePatterns: [
     "<rootDir>/build",
