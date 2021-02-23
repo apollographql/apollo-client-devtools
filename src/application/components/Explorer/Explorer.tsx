@@ -59,6 +59,48 @@ const mainStyles = css`
 const buttonContainerStyles = css`
   display: inline-flex;
   justify-content: space-around;
+
+  .execute-options {
+    background-color: var(--primary);
+    color: ${colors.white};
+    border: 1px solid var(--mainBorder);
+    border-radius: ${rem(4)};
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    line-height: 1.5;
+    position: absolute;
+    top: 45px;
+    margin-right: 155px;
+    z-index: 5;
+
+    li {
+      padding: ${rem(10)};
+      cursor: pointer;
+
+      &:hover,
+      &:active,
+      &:focus {
+        background-color: ${colors.blilet.base};
+        color: ${colors.white};
+
+        &:first-of-type{
+          border-top-left-radius: ${rem(4)};
+          border-top-right-radius: ${rem(4)};
+        }
+
+        &:last-of-type{
+          border-bottom-left-radius: ${rem(4)};
+          border-bottom-right-radius: ${rem(4)};
+        }
+
+      }
+    }
+
+    li + li {
+      border-top: 1px solid var(--mainBorder);
+    }
+  }
 `;
 
 const buttonStyles = css`
@@ -182,6 +224,10 @@ const explorerStyles = css`
     position: relative;
     overflow-y: auto !important;
     padding-bottom: 1.2rem !important;
+  }
+
+  .CodeMirror {
+    calc(100% - 30px);
   }
 `;
 

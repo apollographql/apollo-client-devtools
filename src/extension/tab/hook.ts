@@ -1,4 +1,5 @@
 import { gql, Observable, ApolloClient } from "@apollo/client";
+import { OperationDefinitionNode } from "graphql/language";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { version as devtoolsVersion } from "../manifest.json";
 import Relay from "../../Relay";
@@ -113,13 +114,33 @@ function initializeHook() {
     const { query, operationName, fetchPolicy, variables } = JSON.parse(payload);
 
     const queryAst = gql(query);
-    const definition = getMainDefinition(queryAst);
+
+    const clonedQueryAst = JSON.parse(JSON.stringify(queryAst));
+
+    const filteredDefinitions = clonedQueryAst.definitions.reduce(
+      (acumm: any, curr: OperationDefinitionNode) => {
+        if (
+          (curr.kind === 'OperationDefinition' &&
+            curr.name?.value === operationName) ||
+            curr.kind !== 'OperationDefinition'
+        ) {
+          acumm.push(curr);
+        }
+
+        return acumm;
+      },
+      [],
+    );
+
+    clonedQueryAst.definitions = filteredDefinitions;
+
+    const definition = getMainDefinition(clonedQueryAst);
 
     const operation = (() => {
       if (definition.kind === 'OperationDefinition' && definition.operation === 'mutation') {
         return new Observable(observer => {
           hook.ApolloClient!.mutate({
-              mutation: queryAst,
+              mutation: clonedQueryAst,
               variables,
           }).then(result => {
             observer.next(result);
@@ -127,7 +148,7 @@ function initializeHook() {
         });
       } else {
         return hook.ApolloClient!.watchQuery({
-          query: queryAst,
+          query: clonedQueryAst,
           variables,
           fetchPolicy,
         });
@@ -153,7 +174,7 @@ function initializeHook() {
         hook.ApolloClient.__actionHookForDevTools(handleActionHookForDevtools);
         hook.getQueries = () => getQueries((hook.ApolloClient as any).queryManager.queries);
         hook.getMutations = () => getMutations(
-          (hook.ApolloClient as any).queryManager.mutationStore?.getStore ? 
+          (hook.ApolloClient as any).queryManager.mutationStore?.getStore ?
           // Apollo Client 3.0 - 3.2
           (hook.ApolloClient as any).queryManager.mutationStore?.getStore() :
           // Apollo Client 3.3
