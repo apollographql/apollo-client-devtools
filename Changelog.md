@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.0 (2020-03-02)
+
+- Apollo Client Devtools 3.0 is a ground up behind the scenes re-write that is focused on modernizing the codebase, making it easier to maintain and add new features to moving forward. It includes a new UI that aligns more closely with other Apollo tools like [Apollo Studio](https://www.apollographql.com/studio/develop/), and numerous integration/performance enhancements to better communicate with Apollo Client. The specific changes in this release are too numerous to list here, and are mostly internal, but for those interested in the details the majority of the changes can be seen in [#292](https://github.com/apollographql/apollo-client-devtools/pull/292).
+
 ## 2.3.5 (2020-12-18)
 
 - Guard against uninitialized client race condition <br /> [@jeffhertzler]() in [#329](https://github.com/apollographql/apollo-client-devtools/pull/329)
