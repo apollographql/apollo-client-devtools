@@ -127,16 +127,20 @@ If you're seeing an error that's being caused by the devtools, please open an is
 
 Release process, for those with permission:
 
-1. Commit changes, update the `manifest.json` version number where needed, and tag your version release.
-2. Verify that your changes work as expected by loading the extension as an "unpacked extension" locally for each browser.
-3. Merge changes and version tag to `master`.
+1. Verify that your changes work as expected by loading the extension as an "unpacked extension" locally for each browser.
+2. Update the `./package.json` and `./src/extension/manifest.json` version numbers.
+3. Commit changes and tag your version as a github release.
 4. Run `npm run zip` to pack all of the builds for submission.
-5. Make sure the version used in `manifest.json` is also used in `package.json`, and publish a new version to npm using `npm publish` in the root of the project. We're publishing to npm to allow other projects to have a dependency on devtools.
-6. Create a new release in the Chrome/Firefox web stores (following the instructions for each browser in the sections below), uploading the new zip folder.
+5. Publish a new version to npm using `npm publish` in the root of the project. We're publishing to npm to allow other projects to have a dependency on devtools.
+6. Create a new release in the Chrome/Firefox web stores (following the instructions for each browser in the sections below), uploading the zip bundle.
 
 ### Chrome
 
-These steps will be added shortly.
+1. Login to the [Chrome webstore](https://chrome.google.com/webstore/user/purchases?authuser=1) and access the Developer Dashboard.
+2. Select the `Apollo Client Devtools` extension to update.
+3. Click on `Package` then `Upload new package`.
+4. Select the `./dist/chrome.zip` file for upload.
+5. Click on "Submit for review".
 
 ### Firefox
 
