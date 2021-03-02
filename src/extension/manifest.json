@@ -1,10 +1,8 @@
 {
   "version": "3.0.0",
-  "version_name": "3.0.0 beta",
   "author": "Apollo",
-  "name": "Apollo Client Developer Tools",
-  "short_name": "Apollo DevTools",
-  "description": "GraphQL debugging tools for Apollo Client in the Chrome developer console.",
+  "name": "Apollo Client Devtools",
+  "description": "GraphQL debugging tools for Apollo Client.",
   "icons": {
     "16": "images/logo64.png",
     "48": "images/logo128.png",
@@ -18,11 +16,7 @@
     "scripts": ["background.js"],
     "persistent": false
   },
-  "web_accessible_resources": [
-    "panel.html",
-    "devtools.html",
-    "hook.js"
-  ],
+  "web_accessible_resources": ["panel.html", "devtools.html", "hook.js"],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
