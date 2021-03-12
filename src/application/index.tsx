@@ -12,6 +12,7 @@ import {
   gql,
 } from "@apollo/client";
 import { getOperationName } from "@apollo/client/utilities";
+import { print } from "graphql/language/printer";
 
 import { Theme } from "./ThemeVars";
 import { colorTheme, listenForThemeChange } from "./theme";
@@ -129,7 +130,7 @@ export function getQueryData(query, key: number): WatchedQuery | undefined {
     id: key,
     __typename: "WatchedQuery",
     name,
-    queryString: query?.source?.body,
+    queryString: query?.source?.body || print(query.document),
     variables: query.variables,
     cachedData: query.cachedData,
   };
