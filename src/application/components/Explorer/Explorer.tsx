@@ -84,16 +84,15 @@ const buttonContainerStyles = css`
         background-color: ${colors.blilet.base};
         color: ${colors.white};
 
-        &:first-of-type{
+        &:first-of-type {
           border-top-left-radius: ${rem(4)};
           border-top-right-radius: ${rem(4)};
         }
 
-        &:last-of-type{
+        &:last-of-type {
           border-bottom-left-radius: ${rem(4)};
           border-bottom-right-radius: ${rem(4)};
         }
-
       }
     }
 
@@ -254,13 +253,13 @@ export const Explorer = ({ navigationProps }) => {
   const color = useReactiveVar(colorTheme);
   const query = useReactiveVar(graphiQLQuery);
 
-  const executeOperation = ({
+  function executeOperation({
     query,
     operationName,
     variables,
     fetchPolicy = queryCache,
-  }) =>
-    new Observable<FetchResult>((observer) => {
+  }) {
+    return new Observable<FetchResult>((observer) => {
       const payload = JSON.stringify({
         query,
         operationName,
@@ -274,6 +273,7 @@ export const Explorer = ({ navigationProps }) => {
         observer.complete();
       });
     });
+  }
 
   // Subscribe to GraphiQL data responses
   // Returns a cleanup method to useEffect
@@ -304,21 +304,13 @@ export const Explorer = ({ navigationProps }) => {
   const handleToggleExplorer = () => setIsExplorerOpen(!isExplorerOpen);
   const handleToggleDocs = () => setIsDocsOpen(!isDocsOpen);
 
+  console.log(schema);
+
   return (
     <FullWidthLayout navigationProps={navigationProps}>
       <GraphiQL
         ref={graphiQLRef}
-        fetcher={
-          ((args) => {
-            // Ignore IntrospectionQuery from GraphiQL to prevent redundant introspections
-            // We duplicate this call above so GraphiQLExplorer can access the schema
-            if (args.operationName === "IntrospectionQuery") {
-              return Promise.resolve({});
-            }
-
-            return executeOperation(args);
-          }) as any
-        }
+        fetcher={(args) => executeOperation(args)}
         schema={schema}
         query={query}
         editorTheme={color === ColorTheme.Dark ? "dracula" : "graphiql"}
