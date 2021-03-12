@@ -268,8 +268,8 @@ export const Explorer = ({ navigationProps }) => {
       });
 
       sendGraphiQLRequest(payload);
-      listenForResponse(operationName, (payload) => {
-        observer.next(payload);
+      listenForResponse(operationName, (response) => {
+        observer.next(response);
         observer.complete();
       });
     });
@@ -303,8 +303,6 @@ export const Explorer = ({ navigationProps }) => {
 
   const handleToggleExplorer = () => setIsExplorerOpen(!isExplorerOpen);
   const handleToggleDocs = () => setIsDocsOpen(!isDocsOpen);
-
-  console.log(schema);
 
   return (
     <FullWidthLayout navigationProps={navigationProps}>
