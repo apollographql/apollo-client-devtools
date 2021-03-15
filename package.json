@@ -2,7 +2,7 @@
   "name": "apollo-client-devtools",
   "description": "Developer tools for Apollo Client, with GraphiQL integration, cache inspection, and query watching.",
   "license": "MIT",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "scripts": {
     "install:client": "npm install --prefix development/client",
     "install:server": "npm install --prefix development/server",
