@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.0.2 (2021-03-17)
+
+- Update the `@apollo/client` dep to make sure >= 0.7.0 of `ts-invariant` is
+  used, to pull in a fix that makes sure `window.process` remains writable. <br/>
+  [@hwillson](https://github.com/hwillson) in [#463](https://github.com/apollographql/apollo-client-devtools/pull/463)
+
 ## 3.0.1 (2021-03-15)
 
 - Update the `@apollo/client` dep to make sure >= 0.6.2 of `ts-invariant` is
