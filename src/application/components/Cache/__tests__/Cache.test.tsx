@@ -3,7 +3,7 @@ import { within, waitFor, fireEvent } from "@testing-library/react";
 
 import { Cache } from "../Cache";
 import { renderWithApolloClient } from "../../../utilities/testing/renderWithApolloClient";
-import { writeData } from "../../../index";
+import { client, writeData } from "../../../index";
 
 const CACHE_DATA = {
   "Result:1": {
@@ -57,6 +57,8 @@ describe("Cache component tests", () => {
 
   describe("With cache data", () => {
     beforeEach(() => {
+      client.resetStore();
+
       writeData({
         queries: [],
         mutations: [],
