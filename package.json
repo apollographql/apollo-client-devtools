@@ -27,7 +27,7 @@
     "postinstall": "cd node_modules/graphiql-forked/packages/graphiql && npm install --production"
   },
   "dependencies": {
-    "@apollo/client": "latest",
+    "@apollo/client": "^3.4.0-beta.15",
     "@apollo/space-kit": "^9.0.1-canary.317.8374.0",
     "@emotion/cache": "^11.1.3",
     "@emotion/react": "^11.1.5",
