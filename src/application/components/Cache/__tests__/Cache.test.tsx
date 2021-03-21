@@ -20,6 +20,9 @@ const CACHE_DATA = {
     __typename: "Query",
     search: {
       __typename: "Results",
+      count: 2,
+      success: true,
+      error: null,
       results: [
         {
           __ref: "Result:1",
@@ -93,12 +96,19 @@ describe("Cache component tests", () => {
         <Cache navigationProps={{}} />
       );
       const main = getByTestId("main");
-      return waitFor(() => {
-        expect(within(main).getByText("ROOT_QUERY")).toBeInTheDocument();
-        expect(within(main).getByText("__typename:")).toBeInTheDocument();
-        expect(within(main).getByText("Query")).toBeInTheDocument();
-        expect(within(main).getByText("search:")).toBeInTheDocument();
-      });
+      expect(within(main).getByText("ROOT_QUERY")).toBeInTheDocument();
+      expect(within(main).getByText("__typename:")).toBeInTheDocument();
+      expect(within(main).getByText('"Query"')).toBeInTheDocument();
+      expect(within(main).getByText("search:")).toBeInTheDocument();
+
+      fireEvent.click(within(main).getByText("▶"));
+
+      expect(within(main).getByText("count:")).toBeInTheDocument();
+      expect(within(main).getByText("2")).toBeInTheDocument();
+      expect(within(main).getByText("success:")).toBeInTheDocument();
+      expect(within(main).getByText("true")).toBeInTheDocument();
+      expect(within(main).getByText("error:")).toBeInTheDocument();
+      expect(within(main).getByText("null")).toBeInTheDocument();
     });
   });
 
@@ -155,11 +165,11 @@ describe("Cache component tests", () => {
         expect(within(main).getByText("__typename:")).not.toHaveStyle(
           selectedMainStyles
         );
-        expect(within(main).getByText("Result")).not.toHaveStyle(
+        expect(within(main).getByText('"Result"')).not.toHaveStyle(
           selectedMainStyles
         );
         expect(within(main).getByText("name:")).toHaveStyle(selectedMainStyles);
-        expect(within(main).getByText("Result 2")).toHaveStyle(
+        expect(within(main).getByText('"Result 2"')).toHaveStyle(
           selectedMainStyles
         );
       });

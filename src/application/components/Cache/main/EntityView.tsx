@@ -39,10 +39,10 @@ export function EntityView({ cacheId, data, searchResults }) {
           const matchFound = searchResult && !!searchResult[key];
           return <span css={matchFound ? selectedStyles : void 0}>{key}:</span>;
         }}
-        valueRenderer={(_, value, key) => {
+        valueRenderer={(valueAsString, value, key) => {
           const matchFound = searchResult && searchResult[key] === value;
           return (
-            <span css={matchFound ? selectedStyles : void 0}>{value}</span>
+            <span css={matchFound ? selectedStyles : void 0}>{valueAsString}</span>
           );
         }}
       />

@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.0.3 (TBD)
+
+- Make sure null and boolean values are rendered properly in the Cache tree. <br/>
+  [@alexTayanovsky](https://github.com/alexTayanovsky) in [#446](https://github.com/apollographql/apollo-client-devtools/pull/446)
+
 ## 3.0.2 (2021-03-17)
 
 - Update the `@apollo/client` dep to make sure >= 0.7.0 of `ts-invariant` is
