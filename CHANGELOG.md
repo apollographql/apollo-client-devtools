@@ -1,12 +1,25 @@
 # Changelog
 
-## 3.0.0 (2020-03-02)
+## 3.0.2 (2021-03-17)
+
+- Update the `@apollo/client` dep to make sure >= 0.7.0 of `ts-invariant` is
+  used, to pull in a fix that makes sure `window.process` remains writable. <br/>
+  [@hwillson](https://github.com/hwillson) in [#463](https://github.com/apollographql/apollo-client-devtools/pull/463)
+
+## 3.0.1 (2021-03-15)
+
+- Update the `@apollo/client` dep to make sure >= 0.6.2 of `ts-invariant` is
+  used, to pull in a fix that makes sure `window.process` remains writable. <br/>
+  [@hwillson](https://github.com/hwillson) in [#460](https://github.com/apollographql/apollo-client-devtools/pull/460)
+
+## 3.0.0 (2021-03-02)
 
 - Apollo Client Devtools 3.0 is a ground up behind the scenes re-write that is focused on modernizing the codebase, making it easier to maintain and add new features to moving forward. It includes a new UI that aligns more closely with other Apollo tools like [Apollo Studio](https://www.apollographql.com/studio/develop/), and numerous integration/performance enhancements to better communicate with Apollo Client. The specific changes in this release are too numerous to list here, and are mostly internal, but for those interested in the details the majority of the changes can be seen in [#292](https://github.com/apollographql/apollo-client-devtools/pull/292).
 
 ## 2.3.5 (2020-12-18)
 
 - Guard against uninitialized client race condition <br /> [@jeffhertzler]() in [#329](https://github.com/apollographql/apollo-client-devtools/pull/329)
+
 ## 2.3.4 (2020-12-14)
 
 - Add interval to check for updates; resolves non-updating cache issue <br/> [@jcreighton]() in [#321](https://github.com/apollographql/apollo-client-devtools/pull/321)
@@ -25,47 +38,47 @@
 
 ## 2.3.1 (2020-06-02)
 
-- Check for value before extracting __typename <br/> [@jcreighton](https://github.com/jcreighton) in [#267](https://github.com/apollographql/apollo-client-devtools/pull/267)
+- Check for value before extracting \_\_typename <br/> [@jcreighton](https://github.com/jcreighton) in [#267](https://github.com/apollographql/apollo-client-devtools/pull/267)
 
 - Fix to disable saving InspectionQuery results in the cache <br/> [@jcreighton](https://github.com/jcreighton) in [#273](https://github.com/apollographql/apollo-client-devtools/pull/273)
 
 ## 2.3.0 (2020-05-28)
 
-- Support for Apollo Client 3 🎉 + fixes local state detection <br/> 
+- Support for Apollo Client 3 🎉 + fixes local state detection <br/>
   [@hwillson](https://github.com/hwillson) in [#263](https://github.com/apollographql/apollo-client-devtools/pull/263)
 
 ## 2.2.5 (2019-09-13)
 
-- More fixes for sidebar scrolling.  <br/>
+- More fixes for sidebar scrolling. <br/>
   [@sagarhani](https://github.com/sagarhani) in [#225](https://github.com/apollographql/apollo-client-devtools/pull/225)
 
 ## 2.2.4
 
-- Fix to enable scrolling on the explorer sidebar.  <br/>
+- Fix to enable scrolling on the explorer sidebar. <br/>
   [@RIP21](https://github.com/RIP21) in [#217](https://github.com/apollographql/apollo-client-devtools/pull/217)
 
 ## 2.2.3
 
-- Integrate OneGraph's GraphiQL Explorer.  <br/>
+- Integrate OneGraph's GraphiQL Explorer. <br/>
   [@sgrove](https://github.com/sgrove) in [#199](https://github.com/apollographql/apollo-client-devtools/pull/199)
 - Make sure devtools can be used when the transport layer is websockets
-  only.  <br/>
+  only. <br/>
   [@kamerontanseli](https://github.com/kamerontanseli) in [#163](https://github.com/apollographql/apollo-client-devtools/pull/163)
 - Debounce broadcast messages to improve devtools responsiveness and
-  memory usage.  <br/>
+  memory usage. <br/>
   [@thomassuckow](https://github.com/thomassuckow) in [#173](https://github.com/apollographql/apollo-client-devtools/pull/173)
-- Gracefully handle a failed version compatibility check.  <br/>
+- Gracefully handle a failed version compatibility check. <br/>
   [@mjlyons](https://github.com/mjlyons) in [#201](https://github.com/apollographql/apollo-client-devtools/pull/201)
-- Increase timeout when checking whether to display the devtools panel.  <br/>
+- Increase timeout when checking whether to display the devtools panel. <br/>
   [@Gongreg](https://github.com/Gongreg) in [#203](https://github.com/apollographql/apollo-client-devtools/pull/203)
 - Fully reload devtools when a page reload happens, to make sure it is
-  reconnected to the current Apollo Client instance properly.  <br/>
+  reconnected to the current Apollo Client instance properly. <br/>
   [@hwillson](https://github.com/hwillson) in [#205](https://github.com/apollographql/apollo-client-devtools/pull/205)
 
 ## 2.2.1 & 2.2.2
 
 - Fixes an issue preventing scrolling from working properly in Chrome 72 and
-  up.  <br/>
+  up. <br/>
   [@scfoxcode](https://github.com/scfoxcode) in [#193](https://github.com/apollographql/apollo-client-devtools/pull/193)
 
 ## 2.2.0
