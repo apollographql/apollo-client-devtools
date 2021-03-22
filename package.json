@@ -32,7 +32,7 @@
     "@emotion/cache": "^11.1.3",
     "@emotion/react": "^11.1.5",
     "@reach/tabs": "^0.13.0",
-    "framer-motion": "^3.6.2",
+    "framer-motion": "^4.0.0",
     "graphiql-explorer": "^0.6.2",
     "graphiql-forked": "https://github.com/apollographql/graphiql",
     "graphql": "^15.5.0",
