@@ -7,7 +7,7 @@
     "start": "npm run clean && node index.js"
   },
   "dependencies": {
-    "apollo-datasource-rest": "^0.10.0",
+    "apollo-datasource-rest": "^0.11.0",
     "apollo-server": "^2.14.3",
     "graphql": "^15.1.0",
     "lowdb": "^1.0.0"
