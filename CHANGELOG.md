@@ -4,6 +4,8 @@
 
 - Make sure null and boolean values are rendered properly in the Cache tree. <br/>
   [@alexTayanovsky](https://github.com/alexTayanovsky) in [#446](https://github.com/apollographql/apollo-client-devtools/pull/446)
+- Delay the loading / initialization of Apollo Client on each browser tab until it is really needed. <br/>
+  [@hwillson](https://github.com/apollographql/apollo-client-devtools) in [#479](https://github.com/apollographql/apollo-client-devtools/pull/479)
 
 ## 3.0.2 (2021-03-17)
 
