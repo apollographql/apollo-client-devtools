@@ -1,9 +1,20 @@
-import { gql, Observable, ApolloClient } from "@apollo/client";
+import type { ApolloClient } from "@apollo/client";
+
+// Note that we are intentionally not using Apollo Client's gql and
+// Observable exports, as we don't want Apollo Client and its dependencies
+// to be loaded into each browser tab, when this hook triggered.
+import gql from "graphql-tag";
+import Observable from "zen-observable";
 import { OperationDefinitionNode } from "graphql/language";
-import { getMainDefinition } from "@apollo/client/utilities";
+
 import { version as devtoolsVersion } from "../manifest.json";
 import Relay from "../../Relay";
-import { QueryInfo, getQueries, getMutations } from "./helpers";
+import {
+  QueryInfo,
+  getQueries,
+  getMutations,
+  getMainDefinition,
+} from "./helpers";
 import { GraphiQLResponse, QueryResult } from '../../types';
 import {
   CLIENT_FOUND,

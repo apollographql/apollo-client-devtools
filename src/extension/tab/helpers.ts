@@ -1,4 +1,9 @@
-import { DocumentNode, Source } from "graphql";
+import {
+  DocumentNode,
+  Source,
+  OperationDefinitionNode,
+  FragmentDefinitionNode,
+} from "graphql/language";
 
 export type QueryInfo = {
   document: DocumentNode;
@@ -11,13 +16,13 @@ export function getQueries(queryMap): QueryInfo[] {
   let queries: QueryInfo[] = [];
 
   if (queryMap) {
-    queries = [...queryMap.values()].map(({ 
-      document, 
+    queries = [...queryMap.values()].map(({
+      document,
       variables,
       diff,
     }) => ({
         document,
-        source: document?.loc?.source, 
+        source: document?.loc?.source,
         variables,
         cachedData: diff?.result,
       })
@@ -39,7 +44,39 @@ export function getMutations(mutationsObj): QueryInfo[] {
     return {
       document: mutation,
       variables,
-      source: mutation?.loc?.source, 
+      source: mutation?.loc?.source,
     }
   });
+}
+
+export function getMainDefinition(
+  queryDoc: DocumentNode
+): OperationDefinitionNode | FragmentDefinitionNode {
+  let fragmentDefinition;
+
+  for (let definition of queryDoc.definitions) {
+    if (definition.kind === "OperationDefinition") {
+      const operation = (definition as OperationDefinitionNode).operation;
+      if (
+        operation === "query" ||
+        operation === "mutation" ||
+        operation === "subscription"
+      ) {
+        return definition as OperationDefinitionNode;
+      }
+    }
+    if (definition.kind === "FragmentDefinition" && !fragmentDefinition) {
+      // we do this because we want to allow multiple fragment definitions
+      // to precede an operation definition.
+      fragmentDefinition = definition as FragmentDefinitionNode;
+    }
+  }
+
+  if (fragmentDefinition) {
+    return fragmentDefinition;
+  }
+
+  throw new Error(
+    "Expected a parsed GraphQL query with a query, mutation, subscription, or a fragment."
+  );
 }
