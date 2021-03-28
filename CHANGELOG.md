@@ -5,7 +5,9 @@
 - Make sure null and boolean values are rendered properly in the Cache tree. <br/>
   [@alexTayanovsky](https://github.com/alexTayanovsky) in [#446](https://github.com/apollographql/apollo-client-devtools/pull/446)
 - Delay the loading / initialization of Apollo Client on each browser tab until it is really needed. <br/>
-  [@hwillson](https://github.com/apollographql/apollo-client-devtools) in [#479](https://github.com/apollographql/apollo-client-devtools/pull/479)
+  [@hwillson](https://github.com/hwillson) in [#479](https://github.com/apollographql/apollo-client-devtools/pull/479)
+- Make sure variables are copied to the GraphiQL panel when using the "Run in GraphiQL" button. <br/>
+  [@hwillson](https://github.com/hwillson) in [#491](https://github.com/apollographql/apollo-client-devtools/pull/491)
 
 ## 3.0.2 (2021-03-17)
 
