@@ -4,11 +4,12 @@ import { IconRun } from "@apollo/space-kit/icons/IconRun";
 import { jsx, css } from "@emotion/react";
 import { rem } from "polished";
 
-import { graphiQLQuery } from "../Explorer/Explorer";
+import { graphiQLOperation } from "../Explorer/Explorer";
 import { currentScreen, Screens } from "../Layouts/Navigation";
 
 interface RunInGraphiQLButtonProps {
   operation: string;
+  variables?: Record<string, any>;
 }
 
 export const buttonStyles = css`
@@ -31,11 +32,12 @@ export const buttonStyles = css`
 
 export const RunInGraphiQLButton = ({
   operation,
+  variables,
 }: RunInGraphiQLButtonProps) => (
   <button
     css={buttonStyles}
     onClick={() => {
-      graphiQLQuery(operation);
+      graphiQLOperation({ operation, variables });
       currentScreen(Screens.Explorer);
     }}
   >

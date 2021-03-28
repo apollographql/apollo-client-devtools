@@ -82,6 +82,7 @@ export const Mutations = ({ navigationProps }) => {
               <span css={operationNameStyles}>Mutation</span>
               <RunInGraphiQLButton
                 operation={selectedMutationData?.mutation?.mutationString}
+                variables={selectedMutationData?.mutation?.variables}
               />
             </Fragment>
           )}

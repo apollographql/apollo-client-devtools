@@ -113,6 +113,7 @@ export const Queries = ({ navigationProps }) => {
               <span css={operationNameStyles}>Query</span>
               <RunInGraphiQLButton
                 operation={watchedQueryData?.watchedQuery?.queryString}
+                variables={watchedQueryData?.watchedQuery?.variables}
               />
             </Fragment>
           )}

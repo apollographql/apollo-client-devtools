@@ -2,12 +2,12 @@ import React from "react";
 import { render } from "@testing-library/react";
 import user from "@testing-library/user-event";
 
-import { graphiQLQuery } from "../../Explorer/Explorer";
+import { graphiQLOperation } from "../../Explorer/Explorer";
 import { currentScreen } from "../../Layouts/Navigation";
 import { RunInGraphiQLButton } from "../RunInGraphiQLButton";
 
 jest.mock("../../Explorer/Explorer", () => ({
-  graphiQLQuery: jest.fn(),
+  graphiQLOperation: jest.fn(),
 }));
 
 jest.mock("../../Layouts/Navigation", () => ({
@@ -18,8 +18,8 @@ jest.mock("../../Layouts/Navigation", () => ({
 describe("<RunInGraphiQLButton />", () => {
   const props = {
     operation: `
-      query GetSavedColors {
-        favoritedColors {
+      query GetSavedColors($filter: String!) {
+        favoritedColors(filter: $filter) {
           ...colorFields
         }
       }
@@ -30,15 +30,20 @@ describe("<RunInGraphiQLButton />", () => {
         contrast
       }
     `,
+    variables: {
+      filter: "red",
+    },
   };
 
-  test("saves the operation and navigates to the Explorer panel", () => {
+  it("should save the operation + variables and navigate to the Explorer panel", () => {
     const { getByText } = render(<RunInGraphiQLButton {...props} />);
-
     const button = getByText("Run in GraphiQL");
     expect(button).toBeInTheDocument();
     user.click(button);
-    expect(graphiQLQuery).toHaveBeenCalledWith(props.operation);
+    expect(graphiQLOperation).toHaveBeenCalledWith({
+      operation: props.operation,
+      variables: props.variables,
+    });
     expect(currentScreen).toHaveBeenCalledWith("explorer");
   });
 });

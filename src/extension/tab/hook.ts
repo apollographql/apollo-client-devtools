@@ -15,7 +15,7 @@ import {
   getMutations,
   getMainDefinition,
 } from "./helpers";
-import { GraphiQLResponse, QueryResult } from '../../types';
+import { GraphiQLResponse, QueryResult } from "../../types";
 import {
   CLIENT_FOUND,
   DEVTOOLS_INITIALIZED,
@@ -33,7 +33,7 @@ declare global {
   type TCache = any;
 
   interface Window {
-    __APOLLO_CLIENT__: ApolloClient<TCache>
+    __APOLLO_CLIENT__: ApolloClient<TCache>;
   }
 }
 
@@ -43,18 +43,18 @@ type Hook = {
   getQueries: () => QueryInfo[];
   getMutations: () => QueryInfo[];
   getCache: () => void;
-}
+};
 
 function initializeHook() {
   const hook: Hook = {
     ApolloClient: undefined,
     version: devtoolsVersion,
-    getQueries: () => ([]),
-    getMutations: () => ([]),
+    getQueries: () => [],
+    getMutations: () => [],
     getCache: () => {},
   };
 
-  Object.defineProperty(window, '__APOLLO_DEVTOOLS_GLOBAL_HOOK__', {
+  Object.defineProperty(window, "__APOLLO_DEVTOOLS_GLOBAL_HOOK__", {
     get() {
       return hook;
     },
@@ -63,17 +63,17 @@ function initializeHook() {
 
   const clientRelay = new Relay();
 
-  clientRelay.addConnection('tab', message => {
-    window.postMessage(message, '*');
+  clientRelay.addConnection("tab", (message) => {
+    window.postMessage(message, "*");
   });
 
-  window.addEventListener('message', ({ data }) => {
+  window.addEventListener("message", ({ data }) => {
     clientRelay.broadcast(data);
   });
 
   function sendMessageToTab<TPayload>(message: string, payload?: TPayload) {
     clientRelay.send({
-      to: 'tab',
+      to: "tab",
       message,
       payload,
     });
@@ -84,8 +84,10 @@ function initializeHook() {
     sendMessageToTab(RELOADING_TAB);
   };
 
-  window.addEventListener('load', () => {
-    sendMessageToTab(RELOAD_TAB_COMPLETE, { ApolloClient: !!hook.ApolloClient });
+  window.addEventListener("load", () => {
+    sendMessageToTab(RELOAD_TAB_COMPLETE, {
+      ApolloClient: !!hook.ApolloClient,
+    });
   });
 
   function handleActionHookForDevtools() {
@@ -98,9 +100,9 @@ function initializeHook() {
 
   clientRelay.listen(DEVTOOLS_INITIALIZED, () => {
     if (hook.ApolloClient) {
-
       // Tab Relay forwards this the devtools
-      sendMessageToTab(CREATE_DEVTOOLS_PANEL,
+      sendMessageToTab(
+        CREATE_DEVTOOLS_PANEL,
         JSON.stringify({
           queries: hook.getQueries(),
           mutations: hook.getMutations(),
@@ -112,7 +114,8 @@ function initializeHook() {
 
   clientRelay.listen(REQUEST_DATA, () => {
     // Tab Relay forwards this the devtools
-    sendMessageToTab(UPDATE,
+    sendMessageToTab(
+      UPDATE,
       JSON.stringify({
         queries: hook.getQueries(),
         mutations: hook.getMutations(),
@@ -122,7 +125,12 @@ function initializeHook() {
   });
 
   clientRelay.listen(GRAPHIQL_REQUEST, ({ payload }) => {
-    const { query, operationName, fetchPolicy, variables } = JSON.parse(payload);
+    const {
+      operation: query,
+      operationName,
+      fetchPolicy,
+      variables,
+    } = JSON.parse(payload);
 
     const queryAst = gql(query);
 
@@ -131,16 +139,16 @@ function initializeHook() {
     const filteredDefinitions = clonedQueryAst.definitions.reduce(
       (acumm: any, curr: OperationDefinitionNode) => {
         if (
-          (curr.kind === 'OperationDefinition' &&
+          (curr.kind === "OperationDefinition" &&
             curr.name?.value === operationName) ||
-            curr.kind !== 'OperationDefinition'
+          curr.kind !== "OperationDefinition"
         ) {
           acumm.push(curr);
         }
 
         return acumm;
       },
-      [],
+      []
     );
 
     clonedQueryAst.definitions = filteredDefinitions;
@@ -148,14 +156,19 @@ function initializeHook() {
     const definition = getMainDefinition(clonedQueryAst);
 
     const operation = (() => {
-      if (definition.kind === 'OperationDefinition' && definition.operation === 'mutation') {
-        return new Observable(observer => {
-          hook.ApolloClient!.mutate({
+      if (
+        definition.kind === "OperationDefinition" &&
+        definition.operation === "mutation"
+      ) {
+        return new Observable((observer) => {
+          hook
+            .ApolloClient!.mutate({
               mutation: clonedQueryAst,
               variables,
-          }).then(result => {
-            observer.next(result);
-          });
+            })
+            .then((result) => {
+              observer.next(result);
+            });
         });
       } else {
         return hook.ApolloClient!.watchQuery({
@@ -183,13 +196,16 @@ function initializeHook() {
       if (!!window.__APOLLO_CLIENT__) {
         hook.ApolloClient = window.__APOLLO_CLIENT__;
         hook.ApolloClient.__actionHookForDevTools(handleActionHookForDevtools);
-        hook.getQueries = () => getQueries((hook.ApolloClient as any).queryManager.queries);
-        hook.getMutations = () => getMutations(
-          (hook.ApolloClient as any).queryManager.mutationStore?.getStore ?
-          // Apollo Client 3.0 - 3.2
-          (hook.ApolloClient as any).queryManager.mutationStore?.getStore() :
-          // Apollo Client 3.3
-          (hook.ApolloClient as any).queryManager.mutationStore);
+        hook.getQueries = () =>
+          getQueries((hook.ApolloClient as any).queryManager.queries);
+        hook.getMutations = () =>
+          getMutations(
+            (hook.ApolloClient as any).queryManager.mutationStore?.getStore
+              ? // Apollo Client 3.0 - 3.2
+                (hook.ApolloClient as any).queryManager.mutationStore?.getStore()
+              : // Apollo Client 3.3
+                (hook.ApolloClient as any).queryManager.mutationStore
+          );
         hook.getCache = () => hook.ApolloClient!.cache.extract(true);
 
         clearInterval(interval);

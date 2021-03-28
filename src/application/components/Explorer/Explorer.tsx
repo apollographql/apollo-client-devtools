@@ -35,11 +35,16 @@ enum FetchPolicy {
   CacheOnly = "cache-only",
 }
 
-export const graphiQLQuery = makeVar<string>("");
+interface GraphiQLOperation {
+  operation: string;
+  variables?: Record<string, any>;
+}
+
+export const graphiQLOperation = makeVar<GraphiQLOperation>({ operation: "" });
 export const graphiQLSchema = makeVar<GraphQLSchema | undefined>(undefined);
 
 export const resetGraphiQLVars = () => {
-  graphiQLQuery("");
+  graphiQLOperation({ operation: "" });
   graphiQLSchema(undefined);
 };
 
@@ -241,6 +246,29 @@ const explorerActionButtonStyles = {
   },
 };
 
+function executeOperation({
+  operation,
+  operationName,
+  variables,
+  fetchPolicy,
+}) {
+  return new Observable<FetchResult>((observer) => {
+    const payload = JSON.stringify({
+      operation,
+      operationName,
+      variables,
+      fetchPolicy,
+    });
+
+    sendGraphiQLRequest(payload);
+
+    listenForResponse(operationName, (response) => {
+      observer.next(response);
+      observer.complete();
+    });
+  });
+}
+
 export const Explorer = ({ navigationProps }) => {
   const graphiQLRef = useRef<GraphiQL>(null);
   const schema = useReactiveVar(graphiQLSchema);
@@ -251,29 +279,7 @@ export const Explorer = ({ navigationProps }) => {
   );
 
   const color = useReactiveVar(colorTheme);
-  const query = useReactiveVar(graphiQLQuery);
-
-  function executeOperation({
-    query,
-    operationName,
-    variables,
-    fetchPolicy = queryCache,
-  }) {
-    return new Observable<FetchResult>((observer) => {
-      const payload = JSON.stringify({
-        query,
-        operationName,
-        variables,
-        fetchPolicy,
-      });
-
-      sendGraphiQLRequest(payload);
-      listenForResponse(operationName, (response) => {
-        observer.next(response);
-        observer.complete();
-      });
-    });
-  }
+  const { operation, variables } = useReactiveVar(graphiQLOperation);
 
   // Subscribe to GraphiQL data responses
   // Returns a cleanup method to useEffect
@@ -282,7 +288,7 @@ export const Explorer = ({ navigationProps }) => {
   useEffect(() => {
     if (!schema) {
       const observer = executeOperation({
-        query: getIntrospectionQuery(),
+        operation: getIntrospectionQuery(),
         operationName: "IntrospectionQuery",
         variables: null,
         fetchPolicy: FetchPolicy.NoCache,
@@ -308,11 +314,21 @@ export const Explorer = ({ navigationProps }) => {
     <FullWidthLayout navigationProps={navigationProps}>
       <GraphiQL
         ref={graphiQLRef}
-        fetcher={(args) => executeOperation(args)}
+        fetcher={({ query: operation, operationName, variables }) =>
+          executeOperation({
+            operation,
+            operationName,
+            variables,
+            fetchPolicy: queryCache,
+          })
+        }
         schema={schema}
-        query={query}
+        query={!!operation ? print(parse(operation)) : operation}
+        variables={JSON.stringify(variables)}
         editorTheme={color === ColorTheme.Dark ? "dracula" : "graphiql"}
-        onEditQuery={(newQuery) => graphiQLQuery(newQuery)}
+        onEditQuery={(newQuery) =>
+          graphiQLOperation({ operation: newQuery, variables })
+        }
         render={({ ExecuteButton, GraphiQLEditor, DocExplorer }) => {
           return (
             <Fragment>
@@ -369,7 +385,7 @@ export const Explorer = ({ navigationProps }) => {
                   <GraphiQLExplorer
                     title="Build"
                     schema={schema}
-                    query={query}
+                    query={operation}
                     onEdit={(newQuery) => {
                       // Before passing a query to graphiql to be run, we'll
                       // make sure it doesn't include an empty top level
@@ -384,7 +400,7 @@ export const Explorer = ({ navigationProps }) => {
                         !queryWithoutNewlines.includes("{")
                           ? `${queryWithoutNewlines} {\n  __typename\n}`
                           : newQuery;
-                      graphiQLQuery(cleanQuery);
+                      graphiQLOperation({ operation: cleanQuery, variables });
                     }}
                     explorerIsOpen={isExplorerOpen}
                     onToggleExplorer={handleToggleExplorer}
