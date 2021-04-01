@@ -121,7 +121,7 @@ export function getQueryData(query, key: number): WatchedQuery | undefined {
   // TODO: The current designs do not account for non-cached data.
   // We need a workaround to show that data + we should surface
   // the FetchPolicy.
-  const name = getOperationName(query?.document);
+  const name = query?.document && getOperationName(query?.document);
   if (name === "IntrospectionQuery") {
     return;
   }
