@@ -8,6 +8,8 @@
   [@hwillson](https://github.com/hwillson) in [#479](https://github.com/apollographql/apollo-client-devtools/pull/479)
 - Make sure variables are copied to the GraphiQL panel when using the "Run in GraphiQL" button. <br/>
   [@hwillson](https://github.com/hwillson) in [#491](https://github.com/apollographql/apollo-client-devtools/pull/491)
+- Make sure queries missing document details aren't attempted to be used. <br/>
+  [@yrambler2001](https://github.com/yrambler2001) in [#500](https://github.com/apollographql/apollo-client-devtools/pull/500)
 
 ## 3.0.2 (2021-03-17)
 
