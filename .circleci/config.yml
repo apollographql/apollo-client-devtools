@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  node: circleci/node@4.2.0
+  node: circleci/node@4.2.1
 
 jobs:
   lint:
