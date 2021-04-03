@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.0.3 (TBD)
+## 3.0.3 (2021-04-03)
 
 - Make sure null and boolean values are rendered properly in the Cache tree. <br/>
   [@alexTayanovsky](https://github.com/alexTayanovsky) in [#446](https://github.com/apollographql/apollo-client-devtools/pull/446)
