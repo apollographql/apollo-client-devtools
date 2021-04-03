@@ -117,7 +117,7 @@ type Mutation = Query & {
 };
 
 export function getQueryData(query, key: number): WatchedQuery | undefined {
-  if (!query) return;
+  if (!query || !query.document) return;
   // TODO: The current designs do not account for non-cached data.
   // We need a workaround to show that data + we should surface
   // the FetchPolicy.
