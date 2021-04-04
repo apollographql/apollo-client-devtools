@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.0.4 (2021-04-04)
+
+- Fix an issue where removing a field in graphiql caused a panel crash. <br/>
+  [@hwillson](https://github.com/hwillson) in [#508](https://github.com/apollographql/apollo-client-devtools/pull/508)
+
 ## 3.0.3 (2021-04-03)
 
 - Make sure null and boolean values are rendered properly in the Cache tree. <br/>
