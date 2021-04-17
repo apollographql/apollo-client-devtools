@@ -73,7 +73,7 @@
     "terser-webpack-plugin": "5.1.1",
     "ts-jest": "26.5.5",
     "ts-loader": "8.1.0",
-    "typescript": "4.1.5",
+    "typescript": "4.2.4",
     "web-ext": "5.5.0",
     "webpack": "5.31.2",
     "webpack-cli": "4.6.0"
