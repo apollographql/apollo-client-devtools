@@ -71,7 +71,7 @@
     "rimraf": "3.0.2",
     "style-loader": "2.0.0",
     "terser-webpack-plugin": "5.1.1",
-    "ts-jest": "26.5.4",
+    "ts-jest": "26.5.5",
     "ts-loader": "8.1.0",
     "typescript": "4.1.5",
     "web-ext": "5.5.0",
