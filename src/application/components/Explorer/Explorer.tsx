@@ -269,20 +269,6 @@ function executeOperation({
   });
 }
 
-function prettifyOperation(operation) {
-  let newOp;
-  if (operation) {
-    try {
-      newOp = print(parse(operation));
-    } catch (error) {
-      newOp = operation;
-    }
-  } else {
-    newOp = operation;
-  }
-  return newOp;
-}
-
 export const Explorer = ({ navigationProps }) => {
   const graphiQLRef = useRef<GraphiQL>(null);
   const schema = useReactiveVar(graphiQLSchema);
@@ -337,7 +323,7 @@ export const Explorer = ({ navigationProps }) => {
           })
         }
         schema={schema}
-        query={prettifyOperation(operation)}
+        query={operation}
         variables={JSON.stringify(variables)}
         editorTheme={color === ColorTheme.Dark ? "dracula" : "graphiql"}
         onEditQuery={(newQuery) =>
