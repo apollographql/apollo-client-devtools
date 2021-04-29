@@ -1,10 +1,5 @@
 # Changelog
 
-## 3.0.5 (TBD)
-
-- Fix issues caused by auto-prettying graphiql operations, which can lead to the cursor jumping around in the graphiql editor. <br/>
-  [@hwillson](https://github.com/hwillson) in [#TODO](https://github.com/apollographql/apollo-client-devtools/pull/TODO)
-
 ## 3.0.4 (2021-04-04)
 
 - Fix an issue where removing a field in graphiql caused a panel crash. <br/>
