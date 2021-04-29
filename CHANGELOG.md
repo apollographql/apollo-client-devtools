@@ -4,6 +4,8 @@
 
 - Fix issues caused by auto-prettying graphiql operations, which can lead to the cursor jumping around in the graphiql editor. <br/>
   [@hwillson](https://github.com/hwillson) in [#541](https://github.com/apollographql/apollo-client-devtools/pull/541)
+- Make sure fragment imports are properly resolved. <br/>
+  [@hwillson](https://github.com/hwillson) in [#542](https://github.com/apollographql/apollo-client-devtools/pull/542)
 
 ## 3.0.4 (2021-04-04)
 

@@ -1,5 +1,6 @@
 import React from "react";
 import { render, waitFor } from "@testing-library/react";
+import { gql } from "@apollo/client";
 
 import matchMediaMock from "../utilities/testing/matchMedia";
 import { Mode, colorTheme } from "../theme";
@@ -28,18 +29,16 @@ describe("<AppProvider />", () => {
 
     beforeEach(() => {
       queryData = {
-        document: {
-          definitions: [
-            {
-              kind: "OperationDefinition",
-              name: {
-                value: "GetColorByHex",
-              },
-            },
-          ],
-        },
+        document: gql`
+          query GetColorByHex {
+            someQuery {
+              id
+              __typename
+            }
+          }
+        `,
         source: {
-          body: "query-string",
+          body: "some source",
         },
         variables: {
           color: "#ee82ee",
@@ -56,7 +55,8 @@ describe("<AppProvider />", () => {
         id: 0,
         __typename: "WatchedQuery",
         name: "GetColorByHex",
-        queryString: "query-string",
+        queryString:
+          "query GetColorByHex {\n  someQuery {\n    id\n    __typename\n  }\n}\n",
         variables: {
           color: "#ee82ee",
         },
@@ -82,6 +82,7 @@ describe("<AppProvider />", () => {
       expect(data).toBeUndefined();
     });
   });
+
   describe("getMutationData", () => {
     let mutationData;
 

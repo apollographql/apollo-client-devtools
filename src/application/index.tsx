@@ -130,7 +130,7 @@ export function getQueryData(query, key: number): WatchedQuery | undefined {
     id: key,
     __typename: "WatchedQuery",
     name,
-    queryString: query?.source?.body || print(query.document),
+    queryString: print(query.document),
     variables: query.variables,
     cachedData: query.cachedData,
   };
