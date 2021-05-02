@@ -136,6 +136,15 @@ Release process, for those with permission:
 
 ### Chrome
 
+#### Testing locally
+
+1. In your Chrome URL bar, go to: `chrome://extensions/`
+2. Click on `Load unpacked`.
+3. Add the `apollo-client-devtools/build` directory.
+4. The add-on should now be installed.
+
+#### Submit for review
+
 1. Login to the [Chrome webstore](https://chrome.google.com/webstore/user/purchases?authuser=1) and access the Developer Dashboard.
 2. Select the `Apollo Client Devtools` extension to update.
 3. Click on `Package` then `Upload new package`.
@@ -143,6 +152,15 @@ Release process, for those with permission:
 5. Click on "Submit for review".
 
 ### Firefox
+
+#### Testing locally
+
+1. In your Firefox URL bar, go to: `about:debugging#/runtime/this-firefox`
+2. Click on `Load Temporary Add-on`.
+3. Add the `apollo-client-devtools/dist/apollo_client_developer_tools-X.X.X.zip` file.
+4. The add-on should now be installed.
+
+#### Submit for review
 
 1. Login to the [Firefox developer hub](https://addons.mozilla.org/developers) (user/pass is in our shared password system as "Firefox Developer Account").
 2. Once logged in, click on the Apollo Client Developer Tools "Edit Product Page" link.
