@@ -60,7 +60,7 @@
     "@typescript-eslint/eslint-plugin": "4.28.3",
     "@typescript-eslint/parser": "4.28.3",
     "copy-webpack-plugin": "7.0.0",
-    "css-loader": "5.2.6",
+    "css-loader": "5.2.7",
     "eslint": "7.30.0",
     "eslint-plugin-react": "7.24.0",
     "eslint-plugin-react-hooks": "4.2.0",
