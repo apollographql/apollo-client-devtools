@@ -136,7 +136,7 @@ export const Explorer = ({ navigationProps }) => {
         operation: getIntrospectionQuery(),
         operationName: "IntrospectionQuery",
         variables: null,
-        fetchPolicy: FetchPolicy.NoCache,
+        fetchPolicy: queryCache,
       });
 
       observer.subscribe((response) => {
@@ -148,8 +148,41 @@ export const Explorer = ({ navigationProps }) => {
         }, EMBEDDABLE_EXPLORER_URL);
       });
     }
-  }, [schema, embeddedExplorerIFrame]);
+  }, [schema, embeddedExplorerIFrame, queryCache]);
 
+  useEffect(() => {
+    if(schema && embeddedExplorerIFrame) {
+      const onPostMessageReceived = (event:MessageEvent<{
+        name: string,
+        operation: string,
+        operationName: string,
+        variables: string,
+        headers:string
+      }>) => {
+        // Network request communications will come from the explorer
+        // in the form ExplorerRequest:id
+        if(event.data.name.startsWith('ExplorerRequest:')) {
+          const currentOperationId = event.data.name.split(':')[1]
+          const observer = executeOperation({
+            operation: event.data.operation,
+            operationName: event.data.operationName,
+            variables: event.data.variables,
+            fetchPolicy: FetchPolicy.NoCache,
+          });
+
+          observer.subscribe((response) => {
+            embeddedExplorerIFrame.contentWindow?.postMessage({
+              name: `ExplorerResponse:${currentOperationId}`,
+              response: response
+            }, EMBEDDABLE_EXPLORER_URL);
+          });
+        }
+      }
+      window.addEventListener('message', onPostMessageReceived);
+
+      return () => window.removeEventListener('message', onPostMessageReceived);
+    }
+  }, [schema, embeddedExplorerIFrame])
 
   return (
     <FullWidthLayout navigationProps={navigationProps}>
@@ -163,8 +196,8 @@ export const Explorer = ({ navigationProps }) => {
               name="loadFromCache"
               checked={queryCache === FetchPolicy.CacheOnly}
               onChange={() =>
-                setQueryCache(
-                  queryCache === FetchPolicy.CacheOnly
+                setQueryCache((prev) =>
+                  prev === FetchPolicy.CacheOnly
                     ? FetchPolicy.NoCache
                     : FetchPolicy.CacheOnly
                 )
