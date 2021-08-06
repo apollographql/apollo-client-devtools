@@ -20,6 +20,7 @@ import {
   listenForResponse,
 } from "./graphiQLRelay";
 import { FullWidthLayout } from "../Layouts/FullWidthLayout";
+import { EMBEDDABLE_EXPLORER_URL } from "../../../extension/constants";
 
 enum FetchPolicy {
   NoCache = "no-cache",
@@ -43,9 +44,8 @@ const headerStyles = css`
   display: flex;
   align-items: center;
   padding: 0 ${rem(16)};
-  border-bottom: ${rem(1)} solid;
   background-color: var(--primary);
-  border-color: var(--primary);
+  box-shadow: 0 ${rem(-1)} 0 0 rgba(255, 255, 255, 0.3) inset;
 `;
 
 const mainStyles = css`
@@ -69,6 +69,12 @@ const borderStyles = css`
   width: ${rem(1)};
   height: ${rem(26)};
   border-right: ${rem(1)} var(--whiteTransparent);
+`;
+
+const iFrameStyles = css`
+  width: 100vw;
+  height: 100%;
+  border: none;
 `;
 
 function executeOperation({
@@ -100,8 +106,8 @@ export const Explorer = ({ navigationProps }) => {
     FetchPolicy.NoCache
   );
 
+  // TODO: (Maya) send theme via query params to embedded explorer 
   const color = useReactiveVar(colorTheme);
-  const { operation, variables } = useReactiveVar(graphiQLOperation);
 
   // Subscribe to GraphiQL data responses
   // Returns a cleanup method to useEffect
@@ -145,6 +151,7 @@ export const Explorer = ({ navigationProps }) => {
           </label>
         </FullWidthLayout.Header>
         <FullWidthLayout.Main css={mainStyles}>
+          <iframe id="embedded-explorer" css={iFrameStyles} src={EMBEDDABLE_EXPLORER_URL}/>
         </FullWidthLayout.Main>
     </FullWidthLayout>
   );
