@@ -101,7 +101,8 @@ function executeOperation({
 }
 
 export const Explorer = ({ navigationProps }) => {
-  const schema = useReactiveVar(graphiQLSchema);
+  const [schema, setSchema] = useState<IntrospectionQuery | null>(null)
+  const [embeddedExplorerIFrame, setEmbeddedExplorerIFrame] = useState<HTMLIFrameElement | null>(null);
   const [queryCache, setQueryCache] = useState<FetchPolicy>(
     FetchPolicy.NoCache
   );
@@ -113,8 +114,24 @@ export const Explorer = ({ navigationProps }) => {
   // Returns a cleanup method to useEffect
   useEffect(() => receiveGraphiQLResponses());
 
+  // Set embedded explorer iframe if loaded
   useEffect(() => {
-    if (!schema) {
+    const iframe = document.getElementById('embedded-explorer') as HTMLIFrameElement;
+    const onPostMessageReceived = (event:MessageEvent<{
+      name: string,
+    }>) => {
+      // Embedded Explorer sends us a PM when it has loaded
+      if(event.data.name === 'ExplorerLoaded') {
+        setEmbeddedExplorerIFrame(iframe);
+      }
+    }
+    window.addEventListener('message', onPostMessageReceived);
+
+    return () => window.removeEventListener('message', onPostMessageReceived);
+  }, [])
+
+  useEffect(() => {
+    if (!schema && embeddedExplorerIFrame) {
       const observer = executeOperation({
         operation: getIntrospectionQuery(),
         operationName: "IntrospectionQuery",
@@ -123,10 +140,16 @@ export const Explorer = ({ navigationProps }) => {
       });
 
       observer.subscribe((response) => {
-        graphiQLSchema(buildClientSchema(response.data as IntrospectionQuery));
+        setSchema(response.data as IntrospectionQuery)
+        // send introspected schema to embedded explorer
+        embeddedExplorerIFrame.contentWindow?.postMessage({
+          name: 'IntrospectionSchema',
+          schema: response.data
+        }, EMBEDDABLE_EXPLORER_URL);
       });
     }
-  }, [schema]);
+  }, [schema, embeddedExplorerIFrame]);
+
 
   return (
     <FullWidthLayout navigationProps={navigationProps}>
