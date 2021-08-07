@@ -31,7 +31,7 @@
     "@apollo/space-kit": "^9.0.1-canary.317.8374.0",
     "@emotion/cache": "^11.1.3",
     "@emotion/react": "^11.1.5",
-    "@reach/tabs": "^0.15.0",
+    "@reach/tabs": "^0.16.0",
     "framer-motion": "^3.6.2",
     "graphiql-explorer": "^0.6.2",
     "graphiql-forked": "https://github.com/apollographql/graphiql",
