@@ -32,6 +32,10 @@ The "Apollo" tab will appear in your web browser inspector if a global `window._
 
 If you are seeing the "Apollo" tab but are still having issues, skip ahead to the [Debugging](#Debugging) section.
 
+#### Custom headers
+
+For custom headers you set in the 'Headers' tab in the Explorer to be passed through correctly, the Apollo Links that you have set up in your app must forward through the previous headers. [See the documentation on how to do this for for information.](https://www.apollographql.com/docs/react/api/link/introduction/#composing-a-link-chain)
+
 ## Developing
 
 ### Installation
