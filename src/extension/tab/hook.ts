@@ -1,4 +1,5 @@
 import type { ApolloClient, ApolloError } from "@apollo/client";
+import { ApolloLink, from, HttpLink } from "@apollo/client";
 
 // Note that we are intentionally not using Apollo Client's gql and
 // Observable exports, as we don't want Apollo Client and its dependencies
@@ -130,7 +131,27 @@ function initializeHook() {
       operationName,
       fetchPolicy,
       variables,
+      customHeaders,
     } = JSON.parse(payload);
+
+    const customHeadersMiddleWare = new ApolloLink((operation, forward) => {
+      operation.setContext(function test({ headers = {} }) {
+        return {
+          headers: {
+            ...headers,
+            ...customHeaders,
+          },
+        };
+      });
+
+      return forward(operation);
+    });
+
+    const additiveHeadersLink = hook.ApolloClient?.link
+      ? from([customHeadersMiddleWare, hook.ApolloClient.link])
+      : from([customHeadersMiddleWare, new HttpLink()]);
+
+    hook.ApolloClient?.setLink(additiveHeadersLink);
 
     const queryAst = gql(query);
 

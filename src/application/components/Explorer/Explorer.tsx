@@ -82,6 +82,13 @@ function executeOperation({
   operationName,
   variables,
   fetchPolicy,
+  customHeaders,
+}: {
+  operation: string,
+  operationName: string,
+  variables: string | null,
+  fetchPolicy: FetchPolicy,
+  customHeaders?: Record<string, string>,
 }) {
   return new Observable<FetchResult>((observer) => {
     const payload = JSON.stringify({
@@ -89,6 +96,7 @@ function executeOperation({
       operationName,
       variables,
       fetchPolicy,
+      customHeaders,
     });
 
     sendGraphiQLRequest(payload);
@@ -162,7 +170,7 @@ export const Explorer = ({ navigationProps }: {
         operation: string,
         operationName: string,
         variables: string,
-        headers:string
+        headers: Record<string, string>,
       }>) => {
         // Network request communications will come from the explorer
         // in the form ExplorerRequest:id
@@ -173,6 +181,7 @@ export const Explorer = ({ navigationProps }: {
             operationName: event.data.operationName,
             variables: event.data.variables,
             fetchPolicy: FetchPolicy.NoCache,
+            customHeaders: event.data.headers,
           });
 
           observer.subscribe((response) => {
