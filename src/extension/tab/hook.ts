@@ -1,4 +1,4 @@
-import type { ApolloClient } from "@apollo/client";
+import type { ApolloClient, ApolloError } from "@apollo/client";
 
 // Note that we are intentionally not using Apollo Client's gql and
 // Observable exports, as we don't want Apollo Client and its dependencies
@@ -179,12 +179,30 @@ function initializeHook() {
       }
     })();
 
-    operation.subscribe((response: QueryResult) => {
-      handleGraphiQlResponse({
-        operationName,
-        response,
-      });
-    });
+    operation.subscribe(
+      (response: QueryResult) => {
+        handleGraphiQlResponse({
+          operationName,
+          response,
+        });
+      },
+      (error: ApolloError) => {
+        handleGraphiQlResponse({
+          operationName,
+          response: {
+            errors: error.graphQLErrors.length
+              ? error.graphQLErrors
+              : error.networkError && "result" in error.networkError
+              ? error.networkError?.result.errors
+              : [],
+            error: error,
+            data: null,
+            loading: false,
+            networkStatus: 8,
+          },
+        });
+      }
+    );
   });
 
   function findClient() {
@@ -202,7 +220,9 @@ function initializeHook() {
           getMutations(
             (hook.ApolloClient as any).queryManager.mutationStore?.getStore
               ? // Apollo Client 3.0 - 3.2
-                (hook.ApolloClient as any).queryManager.mutationStore?.getStore()
+                (
+                  hook.ApolloClient as any
+                ).queryManager.mutationStore?.getStore()
               : // Apollo Client 3.3
                 (hook.ApolloClient as any).queryManager.mutationStore
           );
