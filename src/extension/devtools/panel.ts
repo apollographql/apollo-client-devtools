@@ -7,7 +7,7 @@ import {
 import {
   receiveExplorerRequests,
   sendResponseToExplorer,
-} from "../../application/components/Explorer/graphiQLRelay";
+} from "../../application/components/Explorer/explorerRelay";
 
 (window as any).__DEVTOOLS_APPLICATION__ = {
   initialize: initDevTools,

@@ -11,7 +11,7 @@ import { getIntrospectionQuery } from "graphql/utilities";
 import { renderWithApolloClient } from "../../../utilities/testing/renderWithApolloClient";
 import { schemaWithMocks } from "../../../utilities/testing/fakeGraphQL";
 import { Explorer } from "../Explorer";
-import { listenForResponse } from "../graphiQLRelay";
+import { listenForResponse } from "../explorerRelay";
 
 // Required to prevent an error in CodeMirror
 document.createRange = () => {
@@ -30,7 +30,7 @@ document.createRange = () => {
   return range;
 };
 
-jest.mock("../graphiQLRelay", () => ({
+jest.mock("../explorerRelay", () => ({
   sendExplorerRequest: jest.fn(),
   receiveExplorerResponses: jest.fn(),
   listenForResponse: jest.fn(),
