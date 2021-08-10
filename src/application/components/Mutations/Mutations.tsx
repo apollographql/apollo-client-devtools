@@ -39,7 +39,12 @@ const GET_SELECTED_MUTATION = gql`
   }
 `;
 
-export const Mutations = ({ navigationProps }) => {
+export const Mutations = ({ navigationProps }: {
+  navigationProps: {
+    queriesCount: number,
+    mutationsCount: number,
+  }
+}) => {
   const [selected, setSelected] = useState<number>(0);
   const theme = useTheme();
   const { data } = useQuery(GET_MUTATIONS);
