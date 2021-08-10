@@ -16,14 +16,14 @@ import {
   getMutations,
   getMainDefinition,
 } from "./helpers";
-import { GraphiQLResponse, QueryResult } from "../../types";
+import { ExplorerResponse, QueryResult } from "../../types";
 import {
   CLIENT_FOUND,
   DEVTOOLS_INITIALIZED,
   CREATE_DEVTOOLS_PANEL,
   ACTION_HOOK_FIRED,
-  GRAPHIQL_REQUEST,
-  GRAPHIQL_RESPONSE,
+  EXPLORER_REQUEST,
+  EXPLORER_RESPONSE,
   REQUEST_DATA,
   UPDATE,
   RELOADING_TAB,
@@ -95,8 +95,8 @@ function initializeHook() {
     sendMessageToTab(ACTION_HOOK_FIRED);
   }
 
-  function handleGraphiQlResponse(payload: GraphiQLResponse) {
-    sendMessageToTab(GRAPHIQL_RESPONSE, payload);
+  function handleExplorerResponse(payload: ExplorerResponse) {
+    sendMessageToTab(EXPLORER_RESPONSE, payload);
   }
 
   clientRelay.listen(DEVTOOLS_INITIALIZED, () => {
@@ -125,7 +125,7 @@ function initializeHook() {
     );
   });
 
-  clientRelay.listen(GRAPHIQL_REQUEST, ({ payload }) => {
+  clientRelay.listen(EXPLORER_REQUEST, ({ payload }) => {
     const {
       operation: query,
       operationName,
@@ -200,13 +200,13 @@ function initializeHook() {
 
     operation?.subscribe(
       (response: QueryResult) => {
-        handleGraphiQlResponse({
+        handleExplorerResponse({
           operationName,
           response,
         });
       },
       (error: ApolloError) => {
-        handleGraphiQlResponse({
+        handleExplorerResponse({
           operationName,
           response: {
             errors: error.graphQLErrors.length

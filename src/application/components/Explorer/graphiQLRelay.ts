@@ -1,15 +1,15 @@
 import Relay from "../../../Relay";
-import { GraphiQLResponse, QueryResult, MessageObj } from "../../../types";
+import { ExplorerResponse, QueryResult, MessageObj } from "../../../types";
 import {
-  GRAPHIQL_REQUEST,
-  GRAPHIQL_RESPONSE,
+  EXPLORER_RESPONSE,
+  EXPLORER_REQUEST,
 } from "../../../extension/constants";
 
-const graphiQL = new Relay();
+const explorer = new Relay();
 
-graphiQL.listen<GraphiQLResponse>(GRAPHIQL_RESPONSE, ({ payload }) => {
+explorer.listen<ExplorerResponse>(EXPLORER_RESPONSE, ({ payload }) => {
   if (payload) {
-    graphiQL.broadcast({
+    explorer.broadcast({
       message: `graphiql:response:${payload.operationName}`,
       payload: payload.response,
     });
@@ -20,7 +20,7 @@ export const listenForResponse = (
   operationName: string,
   cb: (p) => void
 ): void => {
-  const removeListener = graphiQL.listen<QueryResult>(
+  const removeListener = explorer.listen<QueryResult>(
     `graphiql:response:${operationName}`,
     ({ payload }) => {
       cb(payload);
@@ -29,47 +29,47 @@ export const listenForResponse = (
   );
 };
 
-export const sendGraphiQLRequest = (operation: string): void => {
+export const sendExplorerRequest = (operation: string): void => {
   window.dispatchEvent(
-    new CustomEvent(GRAPHIQL_REQUEST, {
+    new CustomEvent(EXPLORER_REQUEST, {
       detail: {
-        message: GRAPHIQL_REQUEST,
+        message: EXPLORER_REQUEST,
         payload: operation,
       },
     })
   );
 };
 
-export const receiveGraphiQLRequests = (callback: () => void): (() => void) => {
-  window.addEventListener(GRAPHIQL_REQUEST, callback);
+export const receiveExplorerRequests = (callback: () => void): (() => void) => {
+  window.addEventListener(EXPLORER_REQUEST, callback);
   return () => {
-    window.removeEventListener(GRAPHIQL_REQUEST, callback);
+    window.removeEventListener(EXPLORER_REQUEST, callback);
   };
 };
 
-export const sendResponseToGraphiQL = ({
+export const sendResponseToExplorer = ({
   payload,
 }: {
   payload: string;
 }): void => {
   window.dispatchEvent(
-    new CustomEvent(GRAPHIQL_RESPONSE, {
+    new CustomEvent(EXPLORER_RESPONSE, {
       detail: {
-        message: GRAPHIQL_RESPONSE,
+        message: EXPLORER_RESPONSE,
         payload,
       },
     })
   );
 };
 
-export const receiveGraphiQLResponses = (): (() => void) => {
+export const receiveExplorerResponses = (): (() => void) => {
   const handleResponse = ({ detail }: CustomEvent<MessageObj>) => {
-    graphiQL.broadcast(detail);
+    explorer.broadcast(detail);
   };
 
-  window.addEventListener(GRAPHIQL_RESPONSE, handleResponse);
+  window.addEventListener(EXPLORER_RESPONSE, handleResponse);
 
   return () => {
-    window.removeEventListener(GRAPHIQL_RESPONSE, handleResponse);
+    window.removeEventListener(EXPLORER_RESPONSE, handleResponse);
   };
 };

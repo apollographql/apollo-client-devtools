@@ -14,8 +14,8 @@ import type { IntrospectionQuery } from "graphql";
 import { getIntrospectionQuery } from "graphql/utilities";
 import { colorTheme } from "../../theme";
 import {
-  receiveGraphiQLResponses,
-  sendGraphiQLRequest,
+  receiveExplorerResponses,
+  sendExplorerRequest,
   listenForResponse,
 } from "./graphiQLRelay";
 import { FullWidthLayout } from "../Layouts/FullWidthLayout";
@@ -85,7 +85,7 @@ function executeOperation({
       customHeaders,
     });
 
-    sendGraphiQLRequest(payload);
+    sendExplorerRequest(payload);
 
     listenForResponse(operationName, (response) => {
       observer.next(response);
@@ -116,7 +116,7 @@ export const Explorer = ({ navigationProps, embeddedExplorerProps }: {
 
   // Subscribe to Explorer data responses
   // Returns a cleanup method to useEffect
-  useEffect(() => receiveGraphiQLResponses());
+  useEffect(() => receiveExplorerResponses());
 
   // Set embedded explorer iframe if loaded
   useEffect(() => {

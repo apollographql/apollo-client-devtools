@@ -6,7 +6,7 @@ import {
   UPDATE,
   PANEL_OPEN,
   PANEL_CLOSED,
-  GRAPHIQL_REQUEST,
+  EXPLORER_REQUEST,
   RELOADING_TAB,
   RELOAD_TAB_COMPLETE,
 } from "../constants";
@@ -55,10 +55,10 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, ({ payload }) => {
         isPanelCreated = true;
         const { queries, mutations, cache } = JSON.parse(payload);
         let removeUpdateListener;
-        let removeGraphiQLForward;
+        let removeExplorerForward;
         let removeReloadListener;
         let clearRequestInterval;
-        let removeGraphiQLListener;
+        let removeExplorerListener;
 
         panel.onShown.addListener((window) => {
           sendMessageToClient(PANEL_OPEN);
@@ -67,8 +67,8 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, ({ payload }) => {
             __DEVTOOLS_APPLICATION__: {
               initialize,
               writeData,
-              receiveGraphiQLRequests,
-              sendResponseToGraphiQL,
+              receiveExplorerRequests,
+              sendResponseToExplorer,
               handleReload,
               handleReloadComplete,
             },
@@ -88,14 +88,14 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, ({ payload }) => {
           });
 
           // Add connection so client can send to `background:devtools-${inspectedTabId}:graphiql`
-          devtools.addConnection("graphiql", sendResponseToGraphiQL);
-          removeGraphiQLListener = receiveGraphiQLRequests(({ detail }) => {
+          devtools.addConnection("graphiql", sendResponseToExplorer);
+          removeExplorerListener = receiveExplorerRequests(({ detail }) => {
             devtools.broadcast(detail);
           });
 
-          // Forward all GraphiQL requests to the client
-          removeGraphiQLForward = devtools.forward(
-            GRAPHIQL_REQUEST,
+          // Forward all Explorer requests to the client
+          removeExplorerForward = devtools.forward(
+            EXPLORER_REQUEST,
             `background:tab-${inspectedTabId}:client`
           );
 
@@ -115,10 +115,10 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, ({ payload }) => {
         panel.onHidden.addListener(() => {
           isPanelCreated = false;
           clearRequestInterval();
-          removeGraphiQLForward();
+          removeExplorerForward();
           removeUpdateListener();
           removeReloadListener();
-          removeGraphiQLListener();
+          removeExplorerListener();
           devtools.removeConnection("graphiql");
           sendMessageToClient(PANEL_CLOSED);
         });
