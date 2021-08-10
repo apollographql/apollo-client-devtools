@@ -17,7 +17,7 @@ import {
   receiveExplorerResponses,
   sendExplorerRequest,
   listenForResponse,
-} from "./graphiQLRelay";
+} from "./explorerRelay";
 import { FullWidthLayout } from "../Layouts/FullWidthLayout";
 import { EMBEDDABLE_EXPLORER_URL } from "../../../extension/constants";
 
