@@ -7,16 +7,15 @@ import { colors } from "@apollo/space-kit/colors";
 import { useState, useEffect } from "react";
 import {
   Observable,
-  makeVar,
   useReactiveVar,
   FetchResult,
 } from "@apollo/client";
-import type { GraphQLSchema, IntrospectionQuery } from "graphql";
+import type { IntrospectionQuery } from "graphql";
 import { getIntrospectionQuery } from "graphql/utilities";
 import { colorTheme } from "../../theme";
 import {
-  sendGraphiQLRequest,
   receiveGraphiQLResponses,
+  sendGraphiQLRequest,
   listenForResponse,
 } from "./graphiQLRelay";
 import { FullWidthLayout } from "../Layouts/FullWidthLayout";
@@ -26,19 +25,6 @@ enum FetchPolicy {
   NoCache = "no-cache",
   CacheOnly = "cache-only",
 }
-
-interface GraphiQLOperation {
-  operation: string;
-  variables?: Record<string, any>;
-}
-
-export const graphiQLOperation = makeVar<GraphiQLOperation>({ operation: "" });
-export const graphiQLSchema = makeVar<GraphQLSchema | undefined>(undefined);
-
-export const resetGraphiQLVars = (): void => {
-  graphiQLOperation({ operation: "" });
-  graphiQLSchema(undefined);
-};
 
 const headerStyles = css`
   display: flex;
@@ -108,22 +94,27 @@ function executeOperation({
   });
 }
 
-export const Explorer = ({ navigationProps }: {
+export const Explorer = ({ navigationProps, embeddedExplorerProps }: {
   navigationProps: {
     queriesCount: number,
     mutationsCount: number,
   }
+  embeddedExplorerProps: {
+    embeddedExplorerIFrame: HTMLIFrameElement | null,
+    setEmbeddedExplorerIFrame: (iframe: HTMLIFrameElement) => void,
+  }
 }): jsx.JSX.Element => {
   const [schema, setSchema] = useState<IntrospectionQuery | null>(null)
-  const [embeddedExplorerIFrame, setEmbeddedExplorerIFrame] = useState<HTMLIFrameElement | null>(null);
   const [queryCache, setQueryCache] = useState<FetchPolicy>(
     FetchPolicy.NoCache
   );
 
+  const { embeddedExplorerIFrame, setEmbeddedExplorerIFrame } = embeddedExplorerProps;
+
   // TODO: (Maya) send theme via query params to embedded explorer 
   const color = useReactiveVar(colorTheme);
 
-  // Subscribe to GraphiQL data responses
+  // Subscribe to Explorer data responses
   // Returns a cleanup method to useEffect
   useEffect(() => receiveGraphiQLResponses());
 
@@ -141,7 +132,7 @@ export const Explorer = ({ navigationProps }: {
     window.addEventListener('message', onPostMessageReceived);
 
     return () => window.removeEventListener('message', onPostMessageReceived);
-  }, [])
+  }, [setEmbeddedExplorerIFrame])
 
   useEffect(() => {
     if (!schema && embeddedExplorerIFrame) {

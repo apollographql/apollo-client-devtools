@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useReactiveVar, gql, useQuery, makeVar } from "@apollo/client";
 
 import { currentScreen, Screens } from "./components/Layouts/Navigation";
@@ -31,6 +31,8 @@ export const App = (): JSX.Element => {
   const { data } = useQuery(GET_OPERATION_COUNTS);
   const selected = useReactiveVar<Screens>(currentScreen);
   const reloading = useReactiveVar<boolean>(reloadStatus);
+  const [embeddedExplorerIFrame, setEmbeddedExplorerIFrame] = useState<HTMLIFrameElement | null>(null);
+
   const Screen = screens[selected];
 
   // During a reload, reset the current screen to Queries.
@@ -52,6 +54,10 @@ export const App = (): JSX.Element => {
             queriesCount: data?.watchedQueries?.count,
             mutationsCount: data?.mutationLog?.count,
           }}
+          embeddedExplorerProps={{
+            embeddedExplorerIFrame,
+            setEmbeddedExplorerIFrame
+          }}
         />
       }
       {
@@ -64,6 +70,10 @@ export const App = (): JSX.Element => {
         navigationProps={{
           queriesCount: data?.watchedQueries?.count,
           mutationsCount: data?.mutationLog?.count,
+        }}
+        embeddedExplorerProps={{
+          embeddedExplorerIFrame,
+          setEmbeddedExplorerIFrame,
         }}
       />
     </>

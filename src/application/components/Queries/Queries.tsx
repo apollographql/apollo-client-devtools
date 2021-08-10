@@ -10,7 +10,7 @@ import { colors } from "@apollo/space-kit/colors";
 
 import { useTheme } from "../../theme";
 import { SidebarLayout } from "../Layouts/SidebarLayout";
-import { RunInGraphiQLButton } from "./RunInGraphiQLButton";
+import { RunInExplorerButton } from "./RunInExplorerButton";
 import { QueryViewer } from "./QueryViewer";
 
 export const sidebarHeadingStyles = css`
@@ -70,10 +70,13 @@ const GET_WATCHED_QUERY = gql`
   }
 `;
 
-export const Queries = ({ navigationProps }: {
+export const Queries = ({ navigationProps, embeddedExplorerProps }: {
   navigationProps: {
     queriesCount: number,
     mutationsCount: number,
+  },
+  embeddedExplorerProps: {
+    embeddedExplorerIFrame: HTMLIFrameElement | null,
   }
 }): jsx.JSX.Element => {
   const [selected, setSelected] = useState<number>(0);
@@ -116,9 +119,10 @@ export const Queries = ({ navigationProps }: {
             <Fragment>
               <h1 css={h1Styles}>{watchedQueryData?.watchedQuery?.name}</h1>
               <span css={operationNameStyles}>Query</span>
-              <RunInGraphiQLButton
+              <RunInExplorerButton
                 operation={watchedQueryData?.watchedQuery?.queryString}
                 variables={watchedQueryData?.watchedQuery?.variables}
+                embeddedExplorerIFrame={embeddedExplorerProps.embeddedExplorerIFrame}
               />
             </Fragment>
           )}
