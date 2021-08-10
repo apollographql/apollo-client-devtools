@@ -44,7 +44,12 @@ const GET_CACHE = gql`
   }
 `;
 
-export function Cache({ navigationProps }) {
+export function Cache({ navigationProps }: {
+  navigationProps: {
+    queriesCount: number,
+    mutationsCount: number,
+  }
+}) {
   const [searchResults, setSearchResults] = useState({});
   const [cacheId, setCacheId] = useState<string>("ROOT_QUERY");
 

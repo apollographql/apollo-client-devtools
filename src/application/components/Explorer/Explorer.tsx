@@ -100,7 +100,12 @@ function executeOperation({
   });
 }
 
-export const Explorer = ({ navigationProps }) => {
+export const Explorer = ({ navigationProps }: {
+  navigationProps: {
+    queriesCount: number,
+    mutationsCount: number,
+  }
+}) => {
   const [schema, setSchema] = useState<IntrospectionQuery | null>(null)
   const [embeddedExplorerIFrame, setEmbeddedExplorerIFrame] = useState<HTMLIFrameElement | null>(null);
   const [queryCache, setQueryCache] = useState<FetchPolicy>(

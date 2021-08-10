@@ -70,7 +70,12 @@ const GET_WATCHED_QUERY = gql`
   }
 `;
 
-export const Queries = ({ navigationProps }) => {
+export const Queries = ({ navigationProps }: {
+  navigationProps: {
+    queriesCount: number,
+    mutationsCount: number,
+  }
+}) => {
   const [selected, setSelected] = useState<number>(0);
   const theme = useTheme();
   const { data } = useQuery(GET_WATCHED_QUERIES);
