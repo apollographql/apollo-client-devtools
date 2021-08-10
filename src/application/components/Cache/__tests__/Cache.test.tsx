@@ -35,11 +35,16 @@ const CACHE_DATA = {
   },
 };
 
+const navigationProps = {
+  queriesCount: 2,
+  mutationsCount: 0,
+};
+
 describe("Cache component tests", () => {
   describe("No cache data", () => {
     it("should show no cache data message in sidebar", () => {
       const { getByTestId } = renderWithApolloClient(
-        <Cache navigationProps={{}} />
+        <Cache navigationProps={navigationProps} />
       );
       const sidebar = getByTestId("sidebar");
       return waitFor(() => {
@@ -49,7 +54,7 @@ describe("Cache component tests", () => {
 
     it("should leave the header blank instead of trying to show a cache ID", () => {
       const { getByTestId } = renderWithApolloClient(
-        <Cache navigationProps={{}} />
+        <Cache navigationProps={navigationProps} />
       );
       const header = getByTestId("header");
       return waitFor(() => {
@@ -71,7 +76,7 @@ describe("Cache component tests", () => {
 
     it("should show list of root cache ids in the sidebar", () => {
       const { getByTestId } = renderWithApolloClient(
-        <Cache navigationProps={{}} />
+        <Cache navigationProps={navigationProps} />
       );
       const sidebar = getByTestId("sidebar");
       return waitFor(() => {
@@ -83,7 +88,7 @@ describe("Cache component tests", () => {
 
     it("should show sidebar selected/active cache ID in the header", () => {
       const { getByTestId } = renderWithApolloClient(
-        <Cache navigationProps={{}} />
+        <Cache navigationProps={navigationProps} />
       );
       const header = getByTestId("header");
       return waitFor(() => {
@@ -93,7 +98,7 @@ describe("Cache component tests", () => {
 
     it("should show data for the sidebar selected/active cache ID in main ", () => {
       const { getByTestId } = renderWithApolloClient(
-        <Cache navigationProps={{}} />
+        <Cache navigationProps={navigationProps} />
       );
       const main = getByTestId("main");
       expect(within(main).getByText("ROOT_QUERY")).toBeInTheDocument();
@@ -126,7 +131,7 @@ describe("Cache component tests", () => {
 
     it("should highlight sidebar cache ID's if a match is found", () => {
       const { getByPlaceholderText, getByTestId } = renderWithApolloClient(
-        <Cache navigationProps={{}} />
+        <Cache navigationProps={navigationProps} />
       );
 
       const searchInput = getByPlaceholderText("Search queries");
@@ -147,7 +152,7 @@ describe("Cache component tests", () => {
 
     it("should highlight object keys/values if a match is found", () => {
       const { getByPlaceholderText, getByTestId } = renderWithApolloClient(
-        <Cache navigationProps={{}} />
+        <Cache navigationProps={navigationProps} />
       );
 
       const searchInput = getByPlaceholderText("Search queries");

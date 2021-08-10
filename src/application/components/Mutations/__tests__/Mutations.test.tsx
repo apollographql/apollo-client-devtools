@@ -45,7 +45,7 @@ describe("<Mutations />", () => {
     });
 
     const { getByTestId } = renderWithApolloClient(
-      <Mutations navigationProps={navigationProps} />
+      <Mutations navigationProps={navigationProps} embeddedExplorerProps={{ embeddedExplorerIFrame: null }}/>
     );
 
     const sidebar = getByTestId("sidebar");
@@ -74,7 +74,7 @@ describe("<Mutations />", () => {
     });
 
     const { getByTestId } = renderWithApolloClient(
-      <Mutations navigationProps={navigationProps} />
+      <Mutations navigationProps={navigationProps} embeddedExplorerProps={{ embeddedExplorerIFrame: null }}/>
     );
 
     const header = getByTestId("header");
@@ -91,7 +91,7 @@ describe("<Mutations />", () => {
 
   test("it renders an empty state", () => {
     const { getByTestId } = renderWithApolloClient(
-      <Mutations navigationProps={navigationProps} />
+      <Mutations navigationProps={navigationProps} embeddedExplorerProps={{ embeddedExplorerIFrame: null }}/>
     );
 
     expect(getByTestId("header")).toBeEmptyDOMElement();

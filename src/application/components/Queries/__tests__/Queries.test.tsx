@@ -45,7 +45,7 @@ describe("<Queries />", () => {
     });
 
     const { getByTestId } = renderWithApolloClient(
-      <Queries navigationProps={navigationProps} />
+      <Queries navigationProps={navigationProps} embeddedExplorerProps={{ embeddedExplorerIFrame: null }}/>
     );
 
     const sidebar = getByTestId("sidebar");
@@ -72,7 +72,7 @@ describe("<Queries />", () => {
     });
 
     const { getByTestId } = renderWithApolloClient(
-      <Queries navigationProps={navigationProps} />
+      <Queries navigationProps={navigationProps} embeddedExplorerProps={{ embeddedExplorerIFrame: null }}/>
     );
 
     const header = getByTestId("header");
@@ -87,7 +87,7 @@ describe("<Queries />", () => {
 
   test("it renders an empty state", () => {
     const { getByTestId } = renderWithApolloClient(
-      <Queries navigationProps={navigationProps} />
+      <Queries navigationProps={navigationProps} embeddedExplorerProps={{ embeddedExplorerIFrame: null }}/>
     );
 
     expect(getByTestId("header")).toBeEmptyDOMElement();
