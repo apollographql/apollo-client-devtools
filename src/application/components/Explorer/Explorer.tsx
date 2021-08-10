@@ -173,8 +173,9 @@ export const Explorer = ({ navigationProps }: {
         headers: Record<string, string>,
       }>) => {
         // Network request communications will come from the explorer
-        // in the form ExplorerRequest:id
-        if(event.data.name.startsWith('ExplorerRequest:')) {
+        // in the form ExplorerRequest:id for queries and mutations
+        // and in the form ExplorerSubscriptionRequest:id for subscriptions
+        if(event.data.name.startsWith('ExplorerRequest:') || event.data.name.startsWith('ExplorerSubscriptionRequest:')) {
           const currentOperationId = event.data.name.split(':')[1]
           const observer = executeOperation({
             operation: event.data.operation,
@@ -186,7 +187,9 @@ export const Explorer = ({ navigationProps }: {
 
           observer.subscribe((response) => {
             embeddedExplorerIFrame.contentWindow?.postMessage({
-              name: `ExplorerResponse:${currentOperationId}`,
+              name: event.data.name.startsWith('ExplorerRequest:') ?
+                `ExplorerResponse:${currentOperationId}` :
+                `ExplorerSubscriptionResponse:${currentOperationId}`,
               response: response
             }, EMBEDDABLE_EXPLORER_URL);
           });
