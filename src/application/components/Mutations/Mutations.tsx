@@ -8,7 +8,7 @@ import { ListItem } from "@apollo/space-kit/ListItem";
 
 import { useTheme } from "../../theme";
 import { SidebarLayout } from "../Layouts/SidebarLayout";
-import { RunInGraphiQLButton } from "../Queries/RunInGraphiQLButton";
+import { RunInExplorerButton } from "../Queries/RunInExplorerButton";
 import {
   sidebarHeadingStyles,
   h1Styles,
@@ -39,10 +39,13 @@ const GET_SELECTED_MUTATION = gql`
   }
 `;
 
-export const Mutations = ({ navigationProps }: {
+export const Mutations = ({ navigationProps, embeddedExplorerProps }: {
   navigationProps: {
     queriesCount: number,
     mutationsCount: number,
+  },
+  embeddedExplorerProps: {
+    embeddedExplorerIFrame: HTMLIFrameElement | null,
   }
 }): jsx.JSX.Element => {
   const [selected, setSelected] = useState<number>(0);
@@ -85,9 +88,10 @@ export const Mutations = ({ navigationProps }: {
             <Fragment>
               <h1 css={h1Styles}>{selectedMutationData?.mutation.name}</h1>
               <span css={operationNameStyles}>Mutation</span>
-              <RunInGraphiQLButton
+              <RunInExplorerButton
                 operation={selectedMutationData?.mutation?.mutationString}
                 variables={selectedMutationData?.mutation?.variables}
+                embeddedExplorerIFrame={embeddedExplorerProps.embeddedExplorerIFrame}
               />
             </Fragment>
           )}
