@@ -12,7 +12,7 @@ import {
   FetchResult,
 } from "@apollo/client";
 import type { GraphQLSchema, IntrospectionQuery } from "graphql";
-import { getIntrospectionQuery, buildClientSchema } from "graphql/utilities";
+import { getIntrospectionQuery } from "graphql/utilities";
 import { colorTheme } from "../../theme";
 import {
   sendGraphiQLRequest,
@@ -35,7 +35,7 @@ interface GraphiQLOperation {
 export const graphiQLOperation = makeVar<GraphiQLOperation>({ operation: "" });
 export const graphiQLSchema = makeVar<GraphQLSchema | undefined>(undefined);
 
-export const resetGraphiQLVars = () => {
+export const resetGraphiQLVars = (): void => {
   graphiQLOperation({ operation: "" });
   graphiQLSchema(undefined);
 };
@@ -105,7 +105,7 @@ export const Explorer = ({ navigationProps }: {
     queriesCount: number,
     mutationsCount: number,
   }
-}) => {
+}): jsx.JSX.Element => {
   const [schema, setSchema] = useState<IntrospectionQuery | null>(null)
   const [embeddedExplorerIFrame, setEmbeddedExplorerIFrame] = useState<HTMLIFrameElement | null>(null);
   const [queryCache, setQueryCache] = useState<FetchPolicy>(

@@ -16,7 +16,10 @@ graphiQL.listen<GraphiQLResponse>(GRAPHIQL_RESPONSE, ({ payload }) => {
   }
 });
 
-export const listenForResponse = (operationName: string, cb: (p) => void) => {
+export const listenForResponse = (
+  operationName: string,
+  cb: (p) => void
+): void => {
   const removeListener = graphiQL.listen<QueryResult>(
     `graphiql:response:${operationName}`,
     ({ payload }) => {
@@ -26,7 +29,7 @@ export const listenForResponse = (operationName: string, cb: (p) => void) => {
   );
 };
 
-export const sendGraphiQLRequest = (operation) => {
+export const sendGraphiQLRequest = (operation: string): void => {
   window.dispatchEvent(
     new CustomEvent(GRAPHIQL_REQUEST, {
       detail: {
@@ -37,14 +40,18 @@ export const sendGraphiQLRequest = (operation) => {
   );
 };
 
-export const receiveGraphiQLRequests = (callback) => {
+export const receiveGraphiQLRequests = (callback: () => void): (() => void) => {
   window.addEventListener(GRAPHIQL_REQUEST, callback);
   return () => {
     window.removeEventListener(GRAPHIQL_REQUEST, callback);
   };
 };
 
-export const sendResponseToGraphiQL = ({ payload }) => {
+export const sendResponseToGraphiQL = ({
+  payload,
+}: {
+  payload: string;
+}): void => {
   window.dispatchEvent(
     new CustomEvent(GRAPHIQL_RESPONSE, {
       detail: {
@@ -55,7 +62,7 @@ export const sendResponseToGraphiQL = ({ payload }) => {
   );
 };
 
-export const receiveGraphiQLResponses = () => {
+export const receiveGraphiQLResponses = (): (() => void) => {
   const handleResponse = ({ detail }: CustomEvent<MessageObj>) => {
     graphiQL.broadcast(detail);
   };

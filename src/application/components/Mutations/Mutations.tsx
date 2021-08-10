@@ -44,7 +44,7 @@ export const Mutations = ({ navigationProps }: {
     queriesCount: number,
     mutationsCount: number,
   }
-}) => {
+}): jsx.JSX.Element => {
   const [selected, setSelected] = useState<number>(0);
   const theme = useTheme();
   const { data } = useQuery(GET_MUTATIONS);

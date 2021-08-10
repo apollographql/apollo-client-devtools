@@ -1,4 +1,11 @@
-import { ApolloClient, gql, execute, ApolloLink, Observable, from } from "@apollo/client";
+import {
+  ApolloClient,
+  gql,
+  execute,
+  ApolloLink,
+  Observable,
+  from,
+} from "@apollo/client";
 
 import { buildSchemasFromTypeDefs } from "./typeDefs";
 
@@ -20,7 +27,7 @@ const schemaLink = () =>
   new ApolloLink((operation, forward) => {
     const obs = forward(operation);
     return obs.map
-      ? obs.map(result => {
+      ? obs.map((result) => {
           let { schemas = [] } = operation.getContext();
           result.extensions = Object.assign({}, result.extensions, {
             schemas: schemas.concat([apolloClientSchema]),
@@ -33,12 +40,12 @@ const schemaLink = () =>
 // Forward all "errors" to next with a good shape for graphiql
 const errorLink = () =>
   new ApolloLink((operation, forward) => {
-    return new Observable(observer => {
+    return new Observable((observer) => {
       let sub;
       try {
         sub = forward(operation).subscribe({
           next: observer.next.bind(observer),
-          error: networkError => {
+          error: (networkError) => {
             observer.next({
               errors: [
                 {
@@ -62,7 +69,7 @@ const errorLink = () =>
     });
   });
 
-const cacheLink = fetchPolicy =>
+const cacheLink = (fetchPolicy) =>
   new ApolloLink((operation, forward) => {
     if (fetchPolicy === "no-cache") return forward(operation);
 
@@ -78,10 +85,9 @@ const cacheLink = fetchPolicy =>
 
 export const initLinkEvents = (hook, bridge) => {
   // Handle incoming requests
-  const subscriber = request => {
-    const { query, variables, operationName, fetchPolicy } = JSON.parse(
-      request,
-    );
+  const subscriber = (request) => {
+    const { query, variables, operationName, fetchPolicy } =
+      JSON.parse(request);
 
     try {
       const apolloClient = hook.ApolloClient;
@@ -112,8 +118,10 @@ export const initLinkEvents = (hook, bridge) => {
       // ApolloClient instance, as if so, this means Apollo Client local state
       // is being used.
 
-      const supportsApolloClientLocalState =
-        hasOwn.call(apolloClient, "typeDefs");
+      const supportsApolloClientLocalState = hasOwn.call(
+        apolloClient,
+        "typeDefs"
+      );
 
       if (!supportsApolloClientLocalState) {
         // Supports `apollo-link-state`.
@@ -168,13 +176,13 @@ export const initLinkEvents = (hook, bridge) => {
         queryAst.definitions.length > 0 &&
         queryAst.definitions[0].operation === "mutation"
       ) {
-        operationExecution$ = new Observable(observer => {
+        operationExecution$ = new Observable((observer) => {
           apolloClientReplica
             .mutate({
               mutation: queryAst,
               variables,
             })
-            .then(result => {
+            .then((result) => {
               observer.next(result);
             });
         });
@@ -198,7 +206,7 @@ export const initLinkEvents = (hook, bridge) => {
             });
             bridge.send(`link:next:${operationName}`, JSON.stringify(data));
           },
-        }),
+        })
       );
     } catch (e) {
       bridge.send(`link:error:${operationName}`, JSON.stringify(e));
