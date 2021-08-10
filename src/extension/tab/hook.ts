@@ -161,17 +161,15 @@ function initializeHook() {
         definition.operation === "mutation"
       ) {
         return new Observable((observer) => {
-          hook
-            .ApolloClient!.mutate({
-              mutation: clonedQueryAst,
-              variables,
-            })
-            .then((result) => {
-              observer.next(result);
-            });
+          hook.ApolloClient?.mutate({
+            mutation: clonedQueryAst,
+            variables,
+          }).then((result) => {
+            observer.next(result);
+          });
         });
       } else {
-        return hook.ApolloClient!.watchQuery({
+        return hook.ApolloClient?.watchQuery({
           query: clonedQueryAst,
           variables,
           fetchPolicy,
@@ -179,7 +177,7 @@ function initializeHook() {
       }
     })();
 
-    operation.subscribe(
+    operation?.subscribe(
       (response: QueryResult) => {
         handleGraphiQlResponse({
           operationName,
@@ -211,7 +209,7 @@ function initializeHook() {
 
     function initializeDevtoolsHook() {
       if (count++ > 10) clearInterval(interval);
-      if (!!window.__APOLLO_CLIENT__) {
+      if (window.__APOLLO_CLIENT__) {
         hook.ApolloClient = window.__APOLLO_CLIENT__;
         hook.ApolloClient.__actionHookForDevTools(handleActionHookForDevtools);
         hook.getQueries = () =>
@@ -226,7 +224,7 @@ function initializeHook() {
               : // Apollo Client 3.3
                 (hook.ApolloClient as any).queryManager.mutationStore
           );
-        hook.getCache = () => hook.ApolloClient!.cache.extract(true);
+        hook.getCache = () => hook.ApolloClient?.cache.extract(true);
 
         clearInterval(interval);
         sendMessageToTab(CLIENT_FOUND);

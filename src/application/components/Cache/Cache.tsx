@@ -49,7 +49,7 @@ export function Cache({ navigationProps }: {
     queriesCount: number,
     mutationsCount: number,
   }
-}) {
+}): jsx.JSX.Element {
   const [searchResults, setSearchResults] = useState({});
   const [cacheId, setCacheId] = useState<string>("ROOT_QUERY");
 

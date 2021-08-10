@@ -27,7 +27,7 @@ const GET_OPERATION_COUNTS = gql`
   }
 `;
 
-export const App = () => {
+export const App = (): JSX.Element => {
   const { data } = useQuery(GET_OPERATION_COUNTS);
   const selected = useReactiveVar<Screens>(currentScreen);
   const reloading = useReactiveVar<boolean>(reloadStatus);
