@@ -17,7 +17,6 @@ import { print } from "graphql/language/printer";
 import { Theme } from "./ThemeVars";
 import { colorTheme, listenForThemeChange } from "./theme";
 import { App, reloadStatus } from "./App";
-import { resetGraphiQLVars } from "./components/Explorer/Explorer";
 
 import "@apollo/space-kit/reset.css";
 
@@ -186,7 +185,6 @@ export const handleReload = () => {
 export const handleReloadComplete = () => {
   reloadStatus(false);
   client.resetStore();
-  resetGraphiQLVars();
 };
 
 export const AppProvider = () => {

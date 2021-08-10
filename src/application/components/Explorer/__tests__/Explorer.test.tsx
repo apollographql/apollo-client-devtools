@@ -31,8 +31,8 @@ document.createRange = () => {
 };
 
 jest.mock("../graphiQLRelay", () => ({
-  sendGraphiQLRequest: jest.fn(),
-  receiveGraphiQLResponses: jest.fn(),
+  sendExplorerRequest: jest.fn(),
+  receiveExplorerResponses: jest.fn(),
   listenForResponse: jest.fn(),
 }));
 
