@@ -154,7 +154,7 @@ export const Explorer = ({ navigationProps, embeddedExplorerProps }: {
   }, [schema, embeddedExplorerIFrame]);
 
   useEffect(() => {
-    if(schema && embeddedExplorerIFrame) {
+    if(embeddedExplorerIFrame) {
       const onPostMessageReceived = (event:MessageEvent<{
         name: string,
         operation: string,
@@ -189,7 +189,7 @@ export const Explorer = ({ navigationProps, embeddedExplorerProps }: {
 
       return () => window.removeEventListener('message', onPostMessageReceived);
     }
-  }, [schema, embeddedExplorerIFrame, queryCache])
+  }, [embeddedExplorerIFrame, queryCache])
 
   return (
     <FullWidthLayout navigationProps={navigationProps}>
