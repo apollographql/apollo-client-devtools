@@ -1,11 +1,8 @@
 # Changelog
 
-## 3.1.5 (2021-08-10)
+## 4.0.0 (TBD)
 
-_Replace Graphiql with Apollo Studio Explorer_
-
-- Now, Apollo Client Dev Tools users can query their schema using the Apollo Studio Explorer instead of Graphiql
-- Apollo Studio Explorer gives users the opportunity to craft their query from organized documentation and maintains all of the features of Graphiql.
+- TODO
 
 ## 3.0.5 (2021-04-29)
 
