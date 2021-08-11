@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.0.0 (TBD)
+
+- TODO
+
 ## 3.0.5 (2021-04-29)
 
 - Fix issues caused by auto-prettying graphiql operations, which can lead to the cursor jumping around in the graphiql editor. <br/>
