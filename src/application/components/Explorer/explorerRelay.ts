@@ -3,6 +3,7 @@ import { ExplorerResponse, QueryResult, MessageObj } from "../../../types";
 import {
   EXPLORER_RESPONSE,
   EXPLORER_REQUEST,
+  SUBSCRIPTION_TERMINATION,
 } from "../../../extension/constants";
 
 const explorer = new Relay();
@@ -18,14 +19,35 @@ explorer.listen<ExplorerResponse>(EXPLORER_RESPONSE, ({ payload }) => {
 
 export const listenForResponse = (
   operationName: string,
+  isSubscription: boolean,
   cb: (p) => void
 ): void => {
   const removeListener = explorer.listen<QueryResult>(
     `graphiql:response:${operationName}`,
     ({ payload }) => {
       cb(payload);
-      removeListener();
+      // Queries and Mutation can be closed after a single response comes back,
+      // but we need to listen until we are told to stop for Subscriptions
+      if (!isSubscription) {
+        removeListener();
+      } else {
+        explorer.listen(SUBSCRIPTION_TERMINATION, () => {
+          removeListener();
+        });
+      }
     }
+  );
+};
+
+export const sendSubscriptionTerminationRequest = (): void => {
+  console.log("Sending subscription termination");
+  window.dispatchEvent(
+    new CustomEvent(SUBSCRIPTION_TERMINATION, {
+      detail: {
+        message: SUBSCRIPTION_TERMINATION,
+        payload: undefined,
+      },
+    })
   );
 };
 
@@ -44,6 +66,15 @@ export const receiveExplorerRequests = (callback: () => void): (() => void) => {
   window.addEventListener(EXPLORER_REQUEST, callback);
   return () => {
     window.removeEventListener(EXPLORER_REQUEST, callback);
+  };
+};
+
+export const receiveSubscriptionTerminationRequest = (
+  callback: () => void
+): (() => void) => {
+  window.addEventListener(SUBSCRIPTION_TERMINATION, callback);
+  return () => {
+    window.removeEventListener(SUBSCRIPTION_TERMINATION, callback);
   };
 };
 

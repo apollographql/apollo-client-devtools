@@ -9,6 +9,7 @@ import {
   EXPLORER_REQUEST,
   RELOADING_TAB,
   RELOAD_TAB_COMPLETE,
+  SUBSCRIPTION_TERMINATION,
 } from "../constants";
 
 const inspectedTabId = chrome.devtools.inspectedWindow.tabId;
@@ -45,6 +46,10 @@ sendMessageToClient(DEVTOOLS_INITIALIZED);
 let isPanelCreated = false;
 let isAppInitialized = false;
 
+devtools.addConnection(SUBSCRIPTION_TERMINATION, () => {
+  sendMessageToClient(SUBSCRIPTION_TERMINATION);
+});
+
 devtools.listen(CREATE_DEVTOOLS_PANEL, ({ payload }) => {
   if (!isPanelCreated) {
     chrome.devtools.panels.create(
@@ -56,6 +61,7 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, ({ payload }) => {
         const { queries, mutations, cache } = JSON.parse(payload);
         let removeUpdateListener;
         let removeExplorerForward;
+        let removeSubscriptionTerminationListener;
         let removeReloadListener;
         let clearRequestInterval;
         let removeExplorerListener;
@@ -68,6 +74,7 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, ({ payload }) => {
               initialize,
               writeData,
               receiveExplorerRequests,
+              receiveSubscriptionTerminationRequest,
               sendResponseToExplorer,
               handleReload,
               handleReloadComplete,
@@ -93,6 +100,11 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, ({ payload }) => {
             devtools.broadcast(detail);
           });
 
+          removeSubscriptionTerminationListener =
+            receiveSubscriptionTerminationRequest(({ detail }) => {
+              devtools.broadcast(detail);
+            });
+
           // Forward all Explorer requests to the client
           removeExplorerForward = devtools.forward(
             EXPLORER_REQUEST,
@@ -116,6 +128,7 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, ({ payload }) => {
           isPanelCreated = false;
           clearRequestInterval();
           removeExplorerForward();
+          removeSubscriptionTerminationListener();
           removeUpdateListener();
           removeReloadListener();
           removeExplorerListener();

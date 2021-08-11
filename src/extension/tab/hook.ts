@@ -27,6 +27,7 @@ import {
   UPDATE,
   RELOADING_TAB,
   RELOAD_TAB_COMPLETE,
+  SUBSCRIPTION_TERMINATION,
 } from "../constants";
 
 declare global {
@@ -177,7 +178,7 @@ function initializeHook() {
       }
     })();
 
-    operation?.subscribe(
+    const operationObservable = operation?.subscribe(
       (response: QueryResult) => {
         handleExplorerResponse({
           operationName,
@@ -201,6 +202,15 @@ function initializeHook() {
         });
       }
     );
+
+    if (
+      definition.kind === "OperationDefinition" &&
+      definition.operation === "subscription"
+    ) {
+      clientRelay.listen(SUBSCRIPTION_TERMINATION, () => {
+        operationObservable?.unsubscribe();
+      });
+    }
   });
 
   function findClient() {
