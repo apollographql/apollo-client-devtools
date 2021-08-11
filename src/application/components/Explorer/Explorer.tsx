@@ -68,13 +68,6 @@ function executeOperation({
   operationName,
   variables,
   fetchPolicy,
-  customHeaders,
-}: {
-  operation: string,
-  operationName: string,
-  variables: string | null,
-  fetchPolicy: FetchPolicy,
-  customHeaders?: Record<string, string>,
 }) {
   return new Observable<FetchResult>((observer) => {
     const payload = JSON.stringify({
@@ -82,7 +75,6 @@ function executeOperation({
       operationName,
       variables,
       fetchPolicy,
-      customHeaders,
     });
 
     sendExplorerRequest(payload);
@@ -160,7 +152,7 @@ export const Explorer = ({ navigationProps, embeddedExplorerProps }: {
         operation: string,
         operationName: string,
         variables: string,
-        headers: Record<string, string>,
+        headers:string
       }>) => {
         // Network request communications will come from the explorer
         // in the form ExplorerRequest:id for queries and mutations
@@ -171,8 +163,7 @@ export const Explorer = ({ navigationProps, embeddedExplorerProps }: {
             operation: event.data.operation,
             operationName: event.data.operationName,
             variables: event.data.variables,
-            fetchPolicy: queryCache,
-            customHeaders: event.data.headers,
+            fetchPolicy: FetchPolicy.NoCache,
           });
 
           observer.subscribe((response) => {
