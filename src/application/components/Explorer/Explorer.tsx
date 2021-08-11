@@ -140,7 +140,7 @@ export const Explorer = ({ navigationProps, embeddedExplorerProps }: {
         operation: getIntrospectionQuery(),
         operationName: "IntrospectionQuery",
         variables: null,
-        fetchPolicy: queryCache,
+        fetchPolicy: FetchPolicy.NoCache,
       });
 
       observer.subscribe((response) => {
@@ -152,7 +152,7 @@ export const Explorer = ({ navigationProps, embeddedExplorerProps }: {
         }, EMBEDDABLE_EXPLORER_URL);
       });
     }
-  }, [schema, embeddedExplorerIFrame, queryCache]);
+  }, [schema, embeddedExplorerIFrame]);
 
   useEffect(() => {
     if(schema && embeddedExplorerIFrame) {
@@ -172,7 +172,7 @@ export const Explorer = ({ navigationProps, embeddedExplorerProps }: {
             operation: event.data.operation,
             operationName: event.data.operationName,
             variables: event.data.variables,
-            fetchPolicy: FetchPolicy.NoCache,
+            fetchPolicy: queryCache,
             customHeaders: event.data.headers,
           });
 
@@ -190,7 +190,7 @@ export const Explorer = ({ navigationProps, embeddedExplorerProps }: {
 
       return () => window.removeEventListener('message', onPostMessageReceived);
     }
-  }, [schema, embeddedExplorerIFrame])
+  }, [schema, embeddedExplorerIFrame, queryCache])
 
   return (
     <FullWidthLayout navigationProps={navigationProps}>
