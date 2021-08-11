@@ -20,6 +20,7 @@ import {
 } from "./explorerRelay";
 import { FullWidthLayout } from "../Layouts/FullWidthLayout";
 import { EMBEDDABLE_EXPLORER_URL } from "../../../extension/constants";
+import { QueryResult } from "../../../types";
 
 enum FetchPolicy {
   NoCache = "no-cache",
@@ -134,13 +135,22 @@ export const Explorer = ({ navigationProps, embeddedExplorerProps }: {
         fetchPolicy: FetchPolicy.NoCache,
       });
 
-      observer.subscribe((response) => {
-        setSchema(response.data as IntrospectionQuery)
-        // send introspected schema to embedded explorer
-        embeddedExplorerIFrame.contentWindow?.postMessage({
-          name: 'IntrospectionSchema',
-          schema: response.data
-        }, EMBEDDABLE_EXPLORER_URL);
+      observer.subscribe((response: QueryResult) => {
+        if(response.networkStatus === 8) {
+          embeddedExplorerIFrame.contentWindow?.postMessage({
+            name: 'IntrospectionError',
+            schema: response.data,
+            errors: response.errors,
+            error: response.error?.message,
+          }, EMBEDDABLE_EXPLORER_URL);
+        } else {
+          setSchema(response.data as IntrospectionQuery)
+          // send introspected schema to embedded explorer
+          embeddedExplorerIFrame.contentWindow?.postMessage({
+            name: 'IntrospectionSchema',
+            schema: response.data
+          }, EMBEDDABLE_EXPLORER_URL);
+        }
       });
     }
   }, [schema, embeddedExplorerIFrame]);
