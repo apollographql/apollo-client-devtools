@@ -6,6 +6,7 @@ import {
 } from "../../application";
 import {
   receiveExplorerRequests,
+  receiveSubscriptionTerminationRequest,
   sendResponseToExplorer,
 } from "../../application/components/Explorer/explorerRelay";
 
@@ -13,6 +14,7 @@ import {
   initialize: initDevTools,
   writeData,
   receiveExplorerRequests,
+  receiveSubscriptionTerminationRequest,
   sendResponseToExplorer,
   handleReload,
   handleReloadComplete,
