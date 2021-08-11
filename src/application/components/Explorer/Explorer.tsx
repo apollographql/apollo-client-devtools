@@ -111,7 +111,6 @@ export const Explorer = ({ navigationProps, embeddedExplorerProps }: {
 
   const { embeddedExplorerIFrame, setEmbeddedExplorerIFrame } = embeddedExplorerProps;
 
-  // TODO: (Maya) send theme via query params to embedded explorer 
   const color = useReactiveVar(colorTheme);
 
   // Subscribe to Explorer data responses
@@ -215,7 +214,7 @@ export const Explorer = ({ navigationProps, embeddedExplorerProps }: {
           </label>
         </FullWidthLayout.Header>
         <FullWidthLayout.Main css={mainStyles}>
-          <iframe id="embedded-explorer" css={iFrameStyles} src={EMBEDDABLE_EXPLORER_URL}/>
+          <iframe id="embedded-explorer" css={iFrameStyles} src={`${EMBEDDABLE_EXPLORER_URL}?showHeadersAndEnvVars=false&theme=${color}`}/>
         </FullWidthLayout.Main>
     </FullWidthLayout>
   );

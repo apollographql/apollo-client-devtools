@@ -14,4 +14,4 @@ export const EXPLORER_RESPONSE = "graphiql-response";
 export const RELOADING_TAB = "reloading-tab";
 export const RELOAD_TAB_COMPLETE = "reload-tab-complete";
 export const EMBEDDABLE_EXPLORER_URL =
-  "https://explorer.embed.apollographql.com?showHeadersAndEnvVars=false";
+  "https://explorer.embed.apollographql.com";
