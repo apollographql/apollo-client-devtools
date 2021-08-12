@@ -40,7 +40,6 @@ export const listenForResponse = (
 };
 
 export const sendSubscriptionTerminationRequest = (): void => {
-  console.log("Sending subscription termination");
   window.dispatchEvent(
     new CustomEvent(SUBSCRIPTION_TERMINATION, {
       detail: {
