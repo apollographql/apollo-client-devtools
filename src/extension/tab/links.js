@@ -37,7 +37,7 @@ const schemaLink = () =>
       : obs;
   });
 
-// Forward all "errors" to next with a good shape for graphiql
+// Forward all "errors" to next with a good shape for Explorer
 const errorLink = () =>
   new ApolloLink((operation, forward) => {
     return new Observable((observer) => {
