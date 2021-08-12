@@ -1,4 +1,4 @@
-import type { ApolloClient, ApolloError } from "@apollo/client";
+import { ApolloClient, ApolloError, NetworkStatus } from "@apollo/client";
 
 // Note that we are intentionally not using Apollo Client's gql and
 // Observable exports, as we don't want Apollo Client and its dependencies
@@ -196,7 +196,7 @@ function initializeHook() {
             error: error,
             data: null,
             loading: false,
-            networkStatus: 8,
+            networkStatus: NetworkStatus.error,
           },
         });
       }

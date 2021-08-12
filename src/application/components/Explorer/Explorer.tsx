@@ -9,6 +9,7 @@ import {
   Observable,
   useReactiveVar,
   FetchResult,
+  NetworkStatus,
 } from "@apollo/client";
 import type { IntrospectionQuery } from "graphql";
 import { getIntrospectionQuery } from "graphql/utilities";
@@ -136,7 +137,7 @@ export const Explorer = ({ navigationProps, embeddedExplorerProps }: {
       });
 
       observer.subscribe((response: QueryResult) => {
-        if(response.networkStatus === 8) {
+        if(response.networkStatus === NetworkStatus.error) {
           embeddedExplorerIFrame.contentWindow?.postMessage({
             name: 'IntrospectionError',
             schema: response.data,
