@@ -10,7 +10,7 @@ const explorer = new Relay();
 explorer.listen<ExplorerResponse>(EXPLORER_RESPONSE, ({ payload }) => {
   if (payload) {
     explorer.broadcast({
-      message: `graphiql:response:${payload.operationName}`,
+      message: `explorer:response:${payload.operationName}`,
       payload: payload.response,
     });
   }
@@ -21,7 +21,7 @@ export const listenForResponse = (
   cb: (p) => void
 ): void => {
   const removeListener = explorer.listen<QueryResult>(
-    `graphiql:response:${operationName}`,
+    `explorer:response:${operationName}`,
     ({ payload }) => {
       cb(payload);
       removeListener();

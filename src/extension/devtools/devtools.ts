@@ -87,8 +87,8 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, ({ payload }) => {
             writeData({ queries, mutations, cache: JSON.stringify(cache) });
           });
 
-          // Add connection so client can send to `background:devtools-${inspectedTabId}:graphiql`
-          devtools.addConnection("graphiql", sendResponseToExplorer);
+          // Add connection so client can send to `background:devtools-${inspectedTabId}:explorer`
+          devtools.addConnection("explorer", sendResponseToExplorer);
           removeExplorerListener = receiveExplorerRequests(({ detail }) => {
             devtools.broadcast(detail);
           });
@@ -119,7 +119,7 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, ({ payload }) => {
           removeUpdateListener();
           removeReloadListener();
           removeExplorerListener();
-          devtools.removeConnection("graphiql");
+          devtools.removeConnection("explorer");
           sendMessageToClient(PANEL_CLOSED);
         });
       }

@@ -49,7 +49,7 @@ export default new Promise(async ($export) => {
   tab.forward(UPDATE, devtools);
   tab.forward(RELOADING_TAB, devtools);
   tab.forward(RELOAD_TAB_COMPLETE, devtools);
-  tab.forward(EXPLORER_RESPONSE, `${devtools}:graphiql`);
+  tab.forward(EXPLORER_RESPONSE, `${devtools}:explorer`);
 
   const module = await Promise.resolve({ tab, id });
   $export(module);
