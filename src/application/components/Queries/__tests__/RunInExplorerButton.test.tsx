@@ -5,10 +5,6 @@ import user from "@testing-library/user-event";
 import { currentScreen } from "../../Layouts/Navigation";
 import { RunInExplorerButton } from '../RunInExplorerButton'
 
-jest.mock("../../Explorer/Explorer", () => ({
-  graphiQLOperation: jest.fn(),
-}));
-
 jest.mock("../../Layouts/Navigation", () => ({
   currentScreen: jest.fn(),
   Screens: { Explorer: "explorer" },
