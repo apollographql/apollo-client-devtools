@@ -18,10 +18,11 @@ import {
   receiveExplorerResponses,
   sendExplorerRequest,
   listenForResponse,
+  sendSubscriptionTerminationRequest,
 } from "./explorerRelay";
 import { FullWidthLayout } from "../Layouts/FullWidthLayout";
-import { EMBEDDABLE_EXPLORER_URL } from "../../../extension/constants";
 import { QueryResult } from "../../../types";
+import { EMBEDDABLE_EXPLORER_URL, SUBSCRIPTION_TERMINATION } from "../../../extension/constants";
 
 enum FetchPolicy {
   NoCache = "no-cache",
@@ -70,6 +71,13 @@ function executeOperation({
   operationName,
   variables,
   fetchPolicy,
+  isSubscription,
+}: {
+  operation: string,
+  operationName: string,
+  variables: string | null,
+  fetchPolicy: FetchPolicy,
+  isSubscription: boolean,
 }) {
   return new Observable<FetchResult>((observer) => {
     const payload = JSON.stringify({
@@ -81,9 +89,22 @@ function executeOperation({
 
     sendExplorerRequest(payload);
 
-    listenForResponse(operationName, (response) => {
+    listenForResponse(operationName, isSubscription, (response) => {
       observer.next(response);
-      observer.complete();
+      if(isSubscription) {
+        const checkForSubscriptionTermination = (event: MessageEvent) => {
+          if(event.data.name.startsWith(SUBSCRIPTION_TERMINATION)) {
+            sendSubscriptionTerminationRequest();
+            observer.complete();
+            window.removeEventListener('message', checkForSubscriptionTermination);
+          }
+        }
+
+        window.addEventListener('message', checkForSubscriptionTermination);
+      }
+      else {
+        observer.complete();
+      }
     });
   });
 }
@@ -133,6 +154,7 @@ export const Explorer = ({ navigationProps, embeddedExplorerProps }: {
         operation: getIntrospectionQuery(),
         operationName: "IntrospectionQuery",
         variables: null,
+        isSubscription: false,
         fetchPolicy: FetchPolicy.NoCache,
       });
 
@@ -165,21 +187,21 @@ export const Explorer = ({ navigationProps, embeddedExplorerProps }: {
         variables: string,
         headers:string
       }>) => {
-        // Network request communications will come from the explorer
-        // in the form ExplorerRequest:id for queries and mutations
-        // and in the form ExplorerSubscriptionRequest:id for subscriptions
-        if(event.data.name.startsWith('ExplorerRequest:') || event.data.name.startsWith('ExplorerSubscriptionRequest:')) {
-          const currentOperationId = event.data.name.split(':')[1]
-          const observer = executeOperation({
+        const isQueryOrMutation = event.data.name.startsWith('ExplorerRequest:');
+        const isSubscription = event.data.name.startsWith('ExplorerSubscriptionRequest:');
+        const currentOperationId = event.data.name.split(':')[1]
+        if(isQueryOrMutation || isSubscription) {
+          const observer =  executeOperation({
             operation: event.data.operation,
             operationName: event.data.operationName,
             variables: event.data.variables,
-            fetchPolicy: FetchPolicy.NoCache,
+            fetchPolicy: queryCache,
+            isSubscription,
           });
 
           observer.subscribe((response) => {
             embeddedExplorerIFrame.contentWindow?.postMessage({
-              name: event.data.name.startsWith('ExplorerRequest:') ?
+              name: isQueryOrMutation ?
                 `ExplorerResponse:${currentOperationId}` :
                 `ExplorerSubscriptionResponse:${currentOperationId}`,
               response: response
