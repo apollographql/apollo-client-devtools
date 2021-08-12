@@ -1,6 +1,6 @@
 {
   "name": "apollo-client-devtools",
-  "description": "Developer tools for Apollo Client, with GraphiQL integration, cache inspection, and query watching.",
+  "description": "Developer tools for Apollo Client, with Studio Explorer integration, cache inspection, and query watching.",
   "license": "MIT",
   "version": "3.0.5",
   "scripts": {
@@ -23,8 +23,7 @@
     "test:watch": "jest --watch",
     "zip": "npm run prezip && npm run zip:chrome && npm run zip:firefox",
     "zip:chrome": "zip -r -FS dist/chrome.zip build",
-    "zip:firefox": "web-ext build --source-dir build --artifacts-dir dist --overwrite-dest",
-    "postinstall": "cd node_modules/graphiql-forked/packages/graphiql && npm install --production"
+    "zip:firefox": "web-ext build --source-dir build --artifacts-dir dist --overwrite-dest"
   },
   "dependencies": {
     "@apollo/client": "^3.3.13",
@@ -33,8 +32,6 @@
     "@emotion/react": "^11.1.5",
     "@reach/tabs": "^0.16.0",
     "framer-motion": "^3.6.2",
-    "graphiql-explorer": "^0.6.2",
-    "graphiql-forked": "https://github.com/apollographql/graphiql",
     "graphql": "^15.5.0",
     "graphql-syntax-highlighter-react": "^0.4.0",
     "graphql-tag": "^2.11.0",
@@ -62,6 +59,7 @@
     "copy-webpack-plugin": "7.0.0",
     "css-loader": "5.2.7",
     "eslint": "7.32.0",
+    "eslint-plugin-jest-dom": "^3.9.0",
     "eslint-plugin-react": "7.24.0",
     "eslint-plugin-react-hooks": "4.2.0",
     "eslint-plugin-testing-library": "4.10.1",

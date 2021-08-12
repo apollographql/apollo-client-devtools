@@ -122,7 +122,7 @@ export const Navigation: React.FC<NavigationProps> = ({
             isSelected={isSelected(Screens.Explorer)}
             onClick={() => onNavigate(Screens.Explorer)}
           >
-            GraphiQL
+            Explorer
           </NavButton>
         </li>
         <li>

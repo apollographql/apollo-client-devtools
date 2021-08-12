@@ -4,7 +4,7 @@ import { ApolloQueryResult } from "@apollo/client";
 
 export type QueryResult = ApolloQueryResult<any>;
 
-export interface GraphiQLResponse {
+export interface ExplorerResponse {
   operationName: string;
   response: QueryResult;
 }
