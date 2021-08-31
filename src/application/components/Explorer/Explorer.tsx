@@ -22,7 +22,7 @@ import {
 } from "./explorerRelay";
 import { FullWidthLayout } from "../Layouts/FullWidthLayout";
 import { QueryResult } from "../../../types";
-import { EMBEDDABLE_EXPLORER_URL, SUBSCRIPTION_TERMINATION } from "../../../extension/constants";
+import { EMBEDDABLE_EXPLORER_URL, EXPLORER_SUBSCRIPTION_TERMINATION } from "../../../extension/constants";
 
 enum FetchPolicy {
   NoCache = "no-cache",
@@ -66,6 +66,11 @@ const iFrameStyles = css`
   border: none;
 `;
 
+export type JSONPrimitive = boolean | null | string | number;
+export type JSONObject = { [key in string]?: JSONValue };
+export type JSONValue = JSONPrimitive | JSONValue[] | JSONObject;
+
+
 function executeOperation({
   operation,
   operationName,
@@ -74,10 +79,10 @@ function executeOperation({
   isSubscription,
 }: {
   operation: string,
-  operationName: string,
-  variables: string | null,
+  operationName?: string,
+  variables?: JSONValue,
   fetchPolicy: FetchPolicy,
-  isSubscription: boolean,
+  isSubscription?: boolean,
 }) {
   return new Observable<FetchResult>((observer) => {
     const payload = JSON.stringify({
@@ -89,11 +94,11 @@ function executeOperation({
 
     sendExplorerRequest(payload);
 
-    listenForResponse(operationName, isSubscription, (response) => {
+    listenForResponse((response) => {
       observer.next(response);
       if(isSubscription) {
         const checkForSubscriptionTermination = (event: MessageEvent) => {
-          if(event.data.name.startsWith(SUBSCRIPTION_TERMINATION)) {
+          if(event.data.name.startsWith(EXPLORER_SUBSCRIPTION_TERMINATION)) {
             sendSubscriptionTerminationRequest();
             observer.complete();
             window.removeEventListener('message', checkForSubscriptionTermination);
@@ -105,7 +110,7 @@ function executeOperation({
       else {
         observer.complete();
       }
-    });
+    }, operationName, !!isSubscription,);
   });
 }
 
@@ -181,16 +186,16 @@ export const Explorer = ({ navigationProps, embeddedExplorerProps }: {
   useEffect(() => {
     if(embeddedExplorerIFrame) {
       const onPostMessageReceived = (event:MessageEvent<{
-        name: string,
-        operation: string,
-        operationName: string,
-        variables: string,
-        headers:string
+        name?: string,
+        operation?: string,
+        operationName?: string,
+        variables?: string,
+        headers?:string
       }>) => {
-        const isQueryOrMutation = event.data.name.startsWith('ExplorerRequest:');
-        const isSubscription = event.data.name.startsWith('ExplorerSubscriptionRequest:');
-        const currentOperationId = event.data.name.split(':')[1]
-        if(isQueryOrMutation || isSubscription) {
+        const isQueryOrMutation = event.data.name?.startsWith('ExplorerRequest:');
+        const isSubscription = event.data.name?.startsWith('ExplorerSubscriptionRequest:');
+        const currentOperationId = event.data.name?.split(':')[1]
+        if((isQueryOrMutation || isSubscription) && event.data.operation) {
           const observer =  executeOperation({
             operation: event.data.operation,
             operationName: event.data.operationName,
