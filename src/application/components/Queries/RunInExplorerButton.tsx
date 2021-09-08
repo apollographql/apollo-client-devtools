@@ -4,6 +4,7 @@ import { IconRun } from "@apollo/space-kit/icons/IconRun";
 import { jsx, css } from "@emotion/react";
 import { rem } from "polished";
 import { EMBEDDABLE_EXPLORER_URL } from "../../../extension/constants";
+import { SET_OPERATION } from "../Explorer/Explorer";
 
 import { currentScreen, Screens } from "../Layouts/Navigation";
 
@@ -42,7 +43,7 @@ export const RunInExplorerButton = ({
       onClick={() => {
         // send a post message to the embedded explorer to fill the operation
         embeddedExplorerIFrame.contentWindow?.postMessage({
-          name: 'SetOperation',
+          name: SET_OPERATION,
           operation,
           variables: JSON.stringify(variables),
         }, EMBEDDABLE_EXPLORER_URL);
