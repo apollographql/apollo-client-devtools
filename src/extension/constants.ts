@@ -15,4 +15,5 @@ export const RELOADING_TAB = "reloading-tab";
 export const RELOAD_TAB_COMPLETE = "reload-tab-complete";
 export const EMBEDDABLE_EXPLORER_URL =
   "https://explorer.embed.apollographql.com";
-export const SUBSCRIPTION_TERMINATION = "ExplorerSubscriptionTermination";
+export const EXPLORER_SUBSCRIPTION_TERMINATION =
+  "ExplorerSubscriptionTermination";

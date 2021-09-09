@@ -27,7 +27,7 @@ import {
   UPDATE,
   RELOADING_TAB,
   RELOAD_TAB_COMPLETE,
-  SUBSCRIPTION_TERMINATION,
+  EXPLORER_SUBSCRIPTION_TERMINATION,
 } from "../constants";
 
 declare global {
@@ -207,7 +207,7 @@ function initializeHook() {
       definition.kind === "OperationDefinition" &&
       definition.operation === "subscription"
     ) {
-      clientRelay.listen(SUBSCRIPTION_TERMINATION, () => {
+      clientRelay.listen(EXPLORER_SUBSCRIPTION_TERMINATION, () => {
         operationObservable?.unsubscribe();
       });
     }

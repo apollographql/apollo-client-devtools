@@ -3,7 +3,7 @@ import { ExplorerResponse, QueryResult, MessageObj } from "../../../types";
 import {
   EXPLORER_RESPONSE,
   EXPLORER_REQUEST,
-  SUBSCRIPTION_TERMINATION,
+  EXPLORER_SUBSCRIPTION_TERMINATION,
 } from "../../../extension/constants";
 
 const explorer = new Relay();
@@ -18,9 +18,9 @@ explorer.listen<ExplorerResponse>(EXPLORER_RESPONSE, ({ payload }) => {
 });
 
 export const listenForResponse = (
-  operationName: string,
-  isSubscription: boolean,
-  cb: (p) => void
+  cb: (p) => void,
+  operationName?: string,
+  isSubscription?: boolean
 ): void => {
   const removeListener = explorer.listen<QueryResult>(
     `explorer:response:${operationName}`,
@@ -31,7 +31,7 @@ export const listenForResponse = (
       if (!isSubscription) {
         removeListener();
       } else {
-        explorer.listen(SUBSCRIPTION_TERMINATION, () => {
+        explorer.listen(EXPLORER_SUBSCRIPTION_TERMINATION, () => {
           removeListener();
         });
       }
@@ -41,9 +41,9 @@ export const listenForResponse = (
 
 export const sendSubscriptionTerminationRequest = (): void => {
   window.dispatchEvent(
-    new CustomEvent(SUBSCRIPTION_TERMINATION, {
+    new CustomEvent(EXPLORER_SUBSCRIPTION_TERMINATION, {
       detail: {
-        message: SUBSCRIPTION_TERMINATION,
+        message: EXPLORER_SUBSCRIPTION_TERMINATION,
         payload: undefined,
       },
     })
@@ -71,9 +71,9 @@ export const receiveExplorerRequests = (callback: () => void): (() => void) => {
 export const receiveSubscriptionTerminationRequest = (
   callback: () => void
 ): (() => void) => {
-  window.addEventListener(SUBSCRIPTION_TERMINATION, callback);
+  window.addEventListener(EXPLORER_SUBSCRIPTION_TERMINATION, callback);
   return () => {
-    window.removeEventListener(SUBSCRIPTION_TERMINATION, callback);
+    window.removeEventListener(EXPLORER_SUBSCRIPTION_TERMINATION, callback);
   };
 };
 

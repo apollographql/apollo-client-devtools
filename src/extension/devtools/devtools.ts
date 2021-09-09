@@ -9,7 +9,7 @@ import {
   EXPLORER_REQUEST,
   RELOADING_TAB,
   RELOAD_TAB_COMPLETE,
-  SUBSCRIPTION_TERMINATION,
+  EXPLORER_SUBSCRIPTION_TERMINATION,
 } from "../constants";
 
 const inspectedTabId = chrome.devtools.inspectedWindow.tabId;
@@ -46,8 +46,8 @@ sendMessageToClient(DEVTOOLS_INITIALIZED);
 let isPanelCreated = false;
 let isAppInitialized = false;
 
-devtools.addConnection(SUBSCRIPTION_TERMINATION, () => {
-  sendMessageToClient(SUBSCRIPTION_TERMINATION);
+devtools.addConnection(EXPLORER_SUBSCRIPTION_TERMINATION, () => {
+  sendMessageToClient(EXPLORER_SUBSCRIPTION_TERMINATION);
 });
 
 devtools.listen(CREATE_DEVTOOLS_PANEL, ({ payload }) => {
