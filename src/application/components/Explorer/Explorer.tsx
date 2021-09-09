@@ -70,6 +70,16 @@ export type JSONPrimitive = boolean | null | string | number;
 export type JSONObject = { [key in string]?: JSONValue };
 export type JSONValue = JSONPrimitive | JSONValue[] | JSONObject;
 
+const EXPLORER_LISTENING_FOR_SCHEMA = 'ExplorerListeningForSchema';
+const EXPLORER_LISTENING_FOR_STATE = 'ExplorerListeningForState';
+const EXPLORER_REQUEST = 'ExplorerRequest';
+const EXPLORER_RESPONSE = 'ExplorerResponse';
+const EXPLORER_SUBSCRIPTION_REQUEST = 'ExplorerSubscriptionRequest';
+const EXPLORER_SUBSCRIPTION_RESPONSE = 'ExplorerSubscriptionResponse';
+export const SET_OPERATION = 'SetOperation';
+const SCHEMA_ERROR = 'SchemaError';
+const SCHEMA_RESPONSE = 'SchemaResponse';
+
 
 function executeOperation({
   operation,
@@ -143,8 +153,8 @@ export const Explorer = ({ navigationProps, embeddedExplorerProps }: {
     const onPostMessageReceived = (event:MessageEvent<{
       name: string,
     }>) => {
-      // Embedded Explorer sends us a PM when it has loaded
-      if(event.data.name === 'ExplorerLoaded') {
+      // Embedded Explorer sends us a PM when it is ready for a schema
+      if(event.data.name === EXPLORER_LISTENING_FOR_SCHEMA) {
         setEmbeddedExplorerIFrame(iframe);
       }
     }
@@ -166,7 +176,7 @@ export const Explorer = ({ navigationProps, embeddedExplorerProps }: {
       observer.subscribe((response: QueryResult) => {
         if(response.networkStatus === NetworkStatus.error) {
           embeddedExplorerIFrame.contentWindow?.postMessage({
-            name: 'IntrospectionError',
+            name: SCHEMA_ERROR,
             schema: response.data,
             errors: response.errors,
             error: response.error?.message,
@@ -175,7 +185,7 @@ export const Explorer = ({ navigationProps, embeddedExplorerProps }: {
           setSchema(response.data as IntrospectionQuery)
           // send introspected schema to embedded explorer
           embeddedExplorerIFrame.contentWindow?.postMessage({
-            name: 'IntrospectionSchema',
+            name: SCHEMA_RESPONSE,
             schema: response.data
           }, EMBEDDABLE_EXPLORER_URL);
         }
@@ -188,13 +198,14 @@ export const Explorer = ({ navigationProps, embeddedExplorerProps }: {
       const onPostMessageReceived = (event:MessageEvent<{
         name?: string,
         operation?: string,
+        operationId?: string,
         operationName?: string,
         variables?: string,
         headers?:string
       }>) => {
-        const isQueryOrMutation = event.data.name?.startsWith('ExplorerRequest:');
-        const isSubscription = event.data.name?.startsWith('ExplorerSubscriptionRequest:');
-        const currentOperationId = event.data.name?.split(':')[1]
+        const isQueryOrMutation = event.data.name === EXPLORER_REQUEST;
+        const isSubscription = event.data.name === EXPLORER_SUBSCRIPTION_REQUEST;
+        const currentOperationId = event.data.operationId;
         if((isQueryOrMutation || isSubscription) && event.data.operation) {
           const observer =  executeOperation({
             operation: event.data.operation,
@@ -207,8 +218,9 @@ export const Explorer = ({ navigationProps, embeddedExplorerProps }: {
           observer.subscribe((response) => {
             embeddedExplorerIFrame.contentWindow?.postMessage({
               name: isQueryOrMutation ?
-                `ExplorerResponse:${currentOperationId}` :
-                `ExplorerSubscriptionResponse:${currentOperationId}`,
+                EXPLORER_RESPONSE :
+                EXPLORER_SUBSCRIPTION_RESPONSE,
+              operationId: currentOperationId,
               response: response
             }, EMBEDDABLE_EXPLORER_URL);
           });
@@ -243,7 +255,7 @@ export const Explorer = ({ navigationProps, embeddedExplorerProps }: {
           </label>
         </FullWidthLayout.Header>
         <FullWidthLayout.Main css={mainStyles}>
-          <iframe id="embedded-explorer" css={iFrameStyles} src={`${EMBEDDABLE_EXPLORER_URL}?showHeadersAndEnvVars=false&theme=${color}`}/>
+          <iframe id="embedded-explorer" css={iFrameStyles} src={`${EMBEDDABLE_EXPLORER_URL}?postMessageOperations=true&showHeadersAndEnvVars=false&theme=${color}`}/>
         </FullWidthLayout.Main>
     </FullWidthLayout>
   );
