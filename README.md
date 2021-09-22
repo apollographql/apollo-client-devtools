@@ -113,15 +113,15 @@ The devtools folder structure mirrors this architecture. The source code for the
 
 For builds, we use the `build` folder. After a build, all of the files needed to run the devtools can be found here. If these files are bundled for development, source maps are provided. When these files are bundled for production, source maps are not provided and the code is minified. We use the `dist` folder for distributable zip files.
 
-#### Application Structure
+### Application Structure
 
 The Apollo Client Devtools project is split up by Screens. In the navigation of the Apollo Client Devtools you can select from Explorer, Queries, Mutations and Cache. Each of these Screens has their own React component and is wrapped in a Layout component.
 
-##### Explorer:
+#### Explorer:
 
 The Explorer is an Embedded iframe that renders Apollo Studio's Explorer. The Explorer accepts [post messages](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage) from the dev tools to populate the schema and to communicate network requests and responses. All network requests are done in this app via the parent page's Apollo Client instance. Documentation for all of the configurable properties of the Embedded Explorer can be found in the [studio docs](https://www.apollographql.com/docs/studio/sharing-graphs/#embedding-the-explorer).
 
-##### Communication between client & tab
+#### Communication between client & tab
 
 **`hook.ts`** is where we hook into the Apollo Client instance of the parent page and execute operations. In `initializeHook` we set up a communication between the client page and the Apollo Client Devtools tab via an instance of `Relay.ts` using postMessage. The hook sends the tab information from the parent page, such as the queries, mutations & the cache info on this page (from the Apollo Client instance), responses that come back from Devtools-triggered network requests, and when the page is reloading.
 
@@ -131,7 +131,7 @@ The Explorer is an Embedded iframe that renders Apollo Studio's Explorer. The Ex
 
 **`explorerRelay.ts`** is a file with a bunch of exported functions that are specific to the Explorer network communications for executed operations. `devtools.ts` uses the functions as callbacks for its incoming messages, and `Explorer.tsx` uses the functions to dispatch network requests & accept responses to display in the embedded Explorer.
 
-###### Explorer network communication
+#### Explorer network communication
 
 When requests are trigger by the user from Explorer, `sendExplorerRequest` in `explorerRelay.ts` dispatches an `EXPLORER_REQUEST` event which is picked up in `devtools.ts` and forwarded to the client. In `hook.ts` the `EXPLORER_REQUEST` message is listened for, and an operation is executed. When a response for this network request is recieved by the client, `EXPLORER_RESPONSE` is sent to the tab by the client in `hook.ts`. This message is forwarded in `tabRelay.ts` to the devtools, which calls `sendResponseToExplorer` which is picked up by `receiveExplorerResponses` called in `Explorer.tsx`.
 
