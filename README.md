@@ -115,7 +115,11 @@ For builds, we use the `build` folder. After a build, all of the files needed to
 
 ### Debugging
 
-If there is an error in the devtools panel, you can inspect it just like you would inspect a normal webpage. Detach the inspector console from the window (if it's not already detached) by clicking the button with three vertical dots in the upper right corner of the console and selecting the detach option. With the detached console in focus, press `opt-cmd-I` again to open an inspector for the detached console (inspector inception). In this new inspector you will be able to inspect elements in the first inspector, including the devtools panel.
+If there is an error in the devtools panel, you can inspect it just like you would inspect a normal webpage.
+
+In Chrome, detach the inspector console from the window (if it's not already detached) by clicking the button with three vertical dots in the upper right corner of the console and selecting the detach option. With the detached console in focus, press `opt-cmd-I` again to open an inspector for the detached console (inspector inception). In this new inspector you will be able to inspect elements in the first inspector, including the devtools panel.
+
+In Firefox, go to `about:debugging`, click on `This Firefox`, find the Apollo Devtool extension and click `Inspect`.
 
 If you are using Apollo Client 2.0, make sure you are using at least version 2.0.5 of the devtools.
 
