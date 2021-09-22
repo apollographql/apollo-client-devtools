@@ -113,6 +113,14 @@ The devtools folder structure mirrors this architecture. The source code for the
 
 For builds, we use the `build` folder. After a build, all of the files needed to run the devtools can be found here. If these files are bundled for development, source maps are provided. When these files are bundled for production, source maps are not provided and the code is minified. We use the `dist` folder for distributable zip files.
 
+#### Application Structure
+
+The Apollo Client Devtools project is split up by Screens. In the navigation of the Apollo Client Devtools you can select from Explorer, Queries, Mutations and Cache. Each of these Screens has their own React component and is wrapped in a Layout component.
+
+##### Explorer:
+
+The Explorer is an Embedded iframe that renders Apollo Studio's Explorer. The Explorer accepts [post messages](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage) from the dev tools to populate the schema and to communicate network requests and responses. All network requests are done in this app via the parent page's Apollo Client instance. Documentation for all of the configurable properties of the Embedded Explorer can be found in the [studio docs](https://www.apollographql.com/docs/studio/sharing-graphs/#embedding-the-explorer).
+
 ### Debugging
 
 If there is an error in the devtools panel, you can inspect it just like you would inspect a normal webpage.
