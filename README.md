@@ -133,7 +133,7 @@ The Explorer is an Embedded iframe that renders Apollo Studio's Explorer. The Ex
 
 #### Explorer network communication
 
-When requests are trigger by the user from Explorer, `sendExplorerRequest` in `explorerRelay.ts` dispatches an `EXPLORER_REQUEST` event which is picked up in `devtools.ts` and forwarded to the client. In `hook.ts` the `EXPLORER_REQUEST` message is listened for, and an operation is executed. When a response for this network request is recieved by the client, `EXPLORER_RESPONSE` is sent to the tab by the client in `hook.ts`. This message is forwarded in `tabRelay.ts` to the devtools, which calls `sendResponseToExplorer` which is picked up by `receiveExplorerResponses` called in `Explorer.tsx`.
+When requests are triggered by the user from Explorer, `sendExplorerRequest` in `explorerRelay.ts` dispatches an `EXPLORER_REQUEST` event which is picked up in `devtools.ts` and forwarded to the client. In `hook.ts` the `EXPLORER_REQUEST` message is listened for, and an operation is executed. When a response for this network request is recieved by the client, `EXPLORER_RESPONSE` is sent to the tab by the client in `hook.ts`. This message is forwarded in `tabRelay.ts` to the devtools, which calls `sendResponseToExplorer` which is picked up by `receiveExplorerResponses` called in `Explorer.tsx`.
 
 ### Debugging
 
