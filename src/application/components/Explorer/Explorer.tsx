@@ -255,7 +255,7 @@ export const Explorer = ({ navigationProps, embeddedExplorerProps }: {
           </label>
         </FullWidthLayout.Header>
         <FullWidthLayout.Main css={mainStyles}>
-          <iframe id="embedded-explorer" css={iFrameStyles} src={`${EMBEDDABLE_EXPLORER_URL}?postMessageOperations=true&showHeadersAndEnvVars=false&theme=${color}`}/>
+          <iframe id="embedded-explorer" css={iFrameStyles} src={`${EMBEDDABLE_EXPLORER_URL}?sendRequestsFrom=parent&shouldPersistState=true&showHeadersAndEnvVars=false&theme=${color}`}/>
         </FullWidthLayout.Main>
     </FullWidthLayout>
   );
