@@ -1,4 +1,4 @@
-import type { ApolloClient } from "@apollo/client";
+import { ApolloClient, ApolloError, NetworkStatus } from "@apollo/client";
 
 // Note that we are intentionally not using Apollo Client's gql and
 // Observable exports, as we don't want Apollo Client and its dependencies
@@ -15,18 +15,19 @@ import {
   getMutations,
   getMainDefinition,
 } from "./helpers";
-import { GraphiQLResponse, QueryResult } from "../../types";
+import { ExplorerResponse, QueryResult } from "../../types";
 import {
   CLIENT_FOUND,
   DEVTOOLS_INITIALIZED,
   CREATE_DEVTOOLS_PANEL,
   ACTION_HOOK_FIRED,
-  GRAPHIQL_REQUEST,
-  GRAPHIQL_RESPONSE,
+  EXPLORER_REQUEST,
+  EXPLORER_RESPONSE,
   REQUEST_DATA,
   UPDATE,
   RELOADING_TAB,
   RELOAD_TAB_COMPLETE,
+  EXPLORER_SUBSCRIPTION_TERMINATION,
 } from "../constants";
 
 declare global {
@@ -94,8 +95,8 @@ function initializeHook() {
     sendMessageToTab(ACTION_HOOK_FIRED);
   }
 
-  function handleGraphiQlResponse(payload: GraphiQLResponse) {
-    sendMessageToTab(GRAPHIQL_RESPONSE, payload);
+  function handleExplorerResponse(payload: ExplorerResponse) {
+    sendMessageToTab(EXPLORER_RESPONSE, payload);
   }
 
   clientRelay.listen(DEVTOOLS_INITIALIZED, () => {
@@ -124,7 +125,7 @@ function initializeHook() {
     );
   });
 
-  clientRelay.listen(GRAPHIQL_REQUEST, ({ payload }) => {
+  clientRelay.listen(EXPLORER_REQUEST, ({ payload }) => {
     const {
       operation: query,
       operationName,
@@ -161,17 +162,15 @@ function initializeHook() {
         definition.operation === "mutation"
       ) {
         return new Observable((observer) => {
-          hook
-            .ApolloClient!.mutate({
-              mutation: clonedQueryAst,
-              variables,
-            })
-            .then((result) => {
-              observer.next(result);
-            });
+          hook.ApolloClient?.mutate({
+            mutation: clonedQueryAst,
+            variables,
+          }).then((result) => {
+            observer.next(result);
+          });
         });
       } else {
-        return hook.ApolloClient!.watchQuery({
+        return hook.ApolloClient?.watchQuery({
           query: clonedQueryAst,
           variables,
           fetchPolicy,
@@ -179,12 +178,39 @@ function initializeHook() {
       }
     })();
 
-    operation.subscribe((response: QueryResult) => {
-      handleGraphiQlResponse({
-        operationName,
-        response,
+    const operationObservable = operation?.subscribe(
+      (response: QueryResult) => {
+        handleExplorerResponse({
+          operationName,
+          response,
+        });
+      },
+      (error: ApolloError) => {
+        handleExplorerResponse({
+          operationName,
+          response: {
+            errors: error.graphQLErrors.length
+              ? error.graphQLErrors
+              : error.networkError && "result" in error.networkError
+              ? error.networkError?.result.errors
+              : [],
+            error: error,
+            data: null,
+            loading: false,
+            networkStatus: NetworkStatus.error,
+          },
+        });
+      }
+    );
+
+    if (
+      definition.kind === "OperationDefinition" &&
+      definition.operation === "subscription"
+    ) {
+      clientRelay.listen(EXPLORER_SUBSCRIPTION_TERMINATION, () => {
+        operationObservable?.unsubscribe();
       });
-    });
+    }
   });
 
   function findClient() {
@@ -193,7 +219,7 @@ function initializeHook() {
 
     function initializeDevtoolsHook() {
       if (count++ > 10) clearInterval(interval);
-      if (!!window.__APOLLO_CLIENT__) {
+      if (window.__APOLLO_CLIENT__) {
         hook.ApolloClient = window.__APOLLO_CLIENT__;
         hook.ApolloClient.__actionHookForDevTools(handleActionHookForDevtools);
         hook.getQueries = () =>
@@ -202,11 +228,13 @@ function initializeHook() {
           getMutations(
             (hook.ApolloClient as any).queryManager.mutationStore?.getStore
               ? // Apollo Client 3.0 - 3.2
-                (hook.ApolloClient as any).queryManager.mutationStore?.getStore()
+                (
+                  hook.ApolloClient as any
+                ).queryManager.mutationStore?.getStore()
               : // Apollo Client 3.3
                 (hook.ApolloClient as any).queryManager.mutationStore
           );
-        hook.getCache = () => hook.ApolloClient!.cache.extract(true);
+        hook.getCache = () => hook.ApolloClient?.cache.extract(true);
 
         clearInterval(interval);
         sendMessageToTab(CLIENT_FOUND);

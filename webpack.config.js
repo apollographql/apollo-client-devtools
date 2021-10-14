@@ -56,16 +56,6 @@ module.exports = (env) => {
     },
     resolve: {
       extensions: [".mjs", ".js", ".ts", ".tsx", ".css"],
-      alias: {
-        "@forked/graphiql": path.resolve(
-          __dirname,
-          "node_modules/graphiql-forked/packages/graphiql/dist/index.js"
-        ),
-        "@forked/graphiql-css": path.resolve(
-          __dirname,
-          "node_modules/graphiql-forked/packages/graphiql/graphiql.css"
-        ),
-      },
     },
     module: {
       rules: [

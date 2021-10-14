@@ -4,147 +4,41 @@ import React from "react";
 import { jsx, css } from "@emotion/react";
 import { rem } from "polished";
 import { colors } from "@apollo/space-kit/colors";
-import { useRef, useState, useEffect, Fragment } from "react";
-// @ts-ignore
-import GraphiQL from "@forked/graphiql";
+import { useState, useEffect } from "react";
 import {
   Observable,
-  makeVar,
   useReactiveVar,
   FetchResult,
+  NetworkStatus,
 } from "@apollo/client";
-import type { GraphQLSchema, IntrospectionQuery } from "graphql";
-import { getIntrospectionQuery, buildClientSchema } from "graphql/utilities";
-import { parse } from "graphql/language/parser";
-import { print } from "graphql/language/printer";
-import GraphiQLExplorer from "graphiql-explorer";
-import { Button } from "@apollo/space-kit/Button";
-
-import { ColorTheme, colorTheme } from "../../theme";
+import type { IntrospectionQuery } from "graphql";
+import { getIntrospectionQuery } from "graphql/utilities";
+import { colorTheme } from "../../theme";
 import {
-  sendGraphiQLRequest,
-  receiveGraphiQLResponses,
+  receiveExplorerResponses,
+  sendExplorerRequest,
   listenForResponse,
-} from "./graphiQLRelay";
+  sendSubscriptionTerminationRequest,
+} from "./explorerRelay";
 import { FullWidthLayout } from "../Layouts/FullWidthLayout";
-
-import "@forked/graphiql-css";
+import { QueryResult } from "../../../types";
+import { EMBEDDABLE_EXPLORER_URL, EXPLORER_SUBSCRIPTION_TERMINATION } from "../../../extension/constants";
 
 enum FetchPolicy {
   NoCache = "no-cache",
   CacheOnly = "cache-only",
 }
 
-interface GraphiQLOperation {
-  operation: string;
-  variables?: Record<string, any>;
-}
-
-export const graphiQLOperation = makeVar<GraphiQLOperation>({ operation: "" });
-export const graphiQLSchema = makeVar<GraphQLSchema | undefined>(undefined);
-
-export const resetGraphiQLVars = () => {
-  graphiQLOperation({ operation: "" });
-  graphiQLSchema(undefined);
-};
-
 const headerStyles = css`
   display: flex;
   align-items: center;
   padding: 0 ${rem(16)};
-  border-bottom: ${rem(1)} solid;
   background-color: var(--primary);
-  border-color: var(--primary);
+  box-shadow: 0 ${rem(-1)} 0 0 rgba(255, 255, 255, 0.3) inset;
 `;
 
 const mainStyles = css`
   display: flex;
-`;
-
-const buttonContainerStyles = css`
-  display: inline-flex;
-  justify-content: space-around;
-
-  .execute-options {
-    background-color: var(--primary);
-    color: ${colors.white};
-    border: 1px solid var(--mainBorder);
-    border-radius: ${rem(4)};
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    line-height: 1.5;
-    position: absolute;
-    top: 45px;
-    margin-right: 155px;
-    z-index: 5;
-
-    li {
-      padding: ${rem(10)};
-      cursor: pointer;
-
-      &:hover,
-      &:active,
-      &:focus {
-        background-color: ${colors.blilet.base};
-        color: ${colors.white};
-
-        &:first-of-type {
-          border-top-left-radius: ${rem(4)};
-          border-top-right-radius: ${rem(4)};
-        }
-
-        &:last-of-type {
-          border-bottom-left-radius: ${rem(4)};
-          border-bottom-right-radius: ${rem(4)};
-        }
-      }
-    }
-
-    li + li {
-      border-top: 1px solid var(--mainBorder);
-    }
-  }
-`;
-
-const buttonStyles = css`
-  font-weight: normal;
-  font-size: ${rem(14)};
-  color: ${colors.white};
-  margin-right: ${rem(10)};
-  min-width: inherit;
-
-  &:hover,
-  &:active,
-  &:focus {
-    background-color: ${colors.blilet.base};
-    color: ${colors.white};
-  }
-`;
-
-const runButtonStyles = css`
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  border: none;
-  border-radius: ${rem(4)};
-  background-color: transparent;
-  cursor: pointer;
-  margin-bottom: 0;
-
-  svg {
-    fill: currentColor;
-  }
-
-  &:hover {
-    background-color: ${colors.blilet.base};
-  }
-`;
-
-const docsButtonStyles = css`
-  ${buttonStyles}
-  min-width: ${rem(60)};
-  margin: 0 0 0 auto;
 `;
 
 const labelStyles = css`
@@ -166,91 +60,39 @@ const borderStyles = css`
   border-right: ${rem(1)} var(--whiteTransparent);
 `;
 
-const explorerStyles = css`
-  .graphiql-explorer-root > div {
-    overflow: auto !important;
-  }
-
-  .graphiql-explorer-root > div > div {
-    outline: none;
-  }
-
-  .graphiql-operation-title-bar {
-    margin-top: ${rem(10)};
-    line-height: ${rem(30)};
-    padding-bottom: 0 !important;
-
-    button {
-      outline: none;
-    }
-
-    input {
-      border: 1px solid rgb(221, 221, 221) !important;
-      box-shadow: none;
-      padding: 5px;
-      width: ${rem(200)} !important;
-    }
-  }
-
-  .docExplorerWrap {
-    box-shadow: none;
-    border-right: 1px solid #ddd;
-  }
-
-  .graphiql-explorer-actions {
-    select {
-      margin-left: ${rem(5)};
-      outline: none;
-      border-color: #ccc;
-    }
-    button {
-      outline: none;
-    }
-  }
-
-  .toolbar-button {
-    outline: none;
-  }
-
-  .graphiql-explorer-node {
-    margin-left: 0.2rem;
-    .toolbar-button {
-      font-size: ${rem(14)} !important;
-    }
-  }
-
-  .doc-explorer-title {
-    padding: 0;
-  }
-
-  .doc-explorer-contents {
-    top: 0;
-    position: relative;
-    overflow-y: auto !important;
-    padding-bottom: 1.2rem !important;
-  }
-
-  .CodeMirror {
-    calc(100% - 30px);
-  }
+const iFrameStyles = css`
+  width: 100vw;
+  height: 100%;
+  border: none;
 `;
 
-const explorerActionButtonStyles = {
-  actionButtonStyle: {
-    padding: `0 0 0 ${rem(5)}`,
-    margin: 0,
-    backgroundColor: "white",
-    border: "none",
-    fontSize: rem(20),
-    display: "inline-block",
-  },
-};
+export type JSONPrimitive = boolean | null | string | number;
+export type JSONObject = { [key in string]?: JSONValue };
+export type JSONValue = JSONPrimitive | JSONValue[] | JSONObject;
+
+const EXPLORER_LISTENING_FOR_SCHEMA = 'ExplorerListeningForSchema';
+const EXPLORER_LISTENING_FOR_STATE = 'ExplorerListeningForState';
+const EXPLORER_REQUEST = 'ExplorerRequest';
+const EXPLORER_RESPONSE = 'ExplorerResponse';
+const EXPLORER_SUBSCRIPTION_REQUEST = 'ExplorerSubscriptionRequest';
+const EXPLORER_SUBSCRIPTION_RESPONSE = 'ExplorerSubscriptionResponse';
+export const SET_OPERATION = 'SetOperation';
+const SCHEMA_ERROR = 'SchemaError';
+const SCHEMA_RESPONSE = 'SchemaResponse';
+
 
 function executeOperation({
   operation,
   operationName,
   variables,
   fetchPolicy,
+  isSubscription,
+}: {
+  operation: string,
+  operationName?: string,
+  variables?: JSONValue,
+  fetchPolicy: FetchPolicy,
+  isSubscription?: boolean,
 }) {
   return new Observable<FetchResult>((observer) => {
     const payload = JSON.stringify({
@@ -260,160 +102,161 @@ function executeOperation({
       fetchPolicy,
     });
 
-    sendGraphiQLRequest(payload);
+    sendExplorerRequest(payload);
 
-    listenForResponse(operationName, (response) => {
+    listenForResponse((response) => {
       observer.next(response);
-      observer.complete();
-    });
+      if(isSubscription) {
+        const checkForSubscriptionTermination = (event: MessageEvent) => {
+          if(event.data.name.startsWith(EXPLORER_SUBSCRIPTION_TERMINATION)) {
+            sendSubscriptionTerminationRequest();
+            observer.complete();
+            window.removeEventListener('message', checkForSubscriptionTermination);
+          }
+        }
+
+        window.addEventListener('message', checkForSubscriptionTermination);
+      }
+      else {
+        observer.complete();
+      }
+    }, operationName, !!isSubscription,);
   });
 }
 
-export const Explorer = ({ navigationProps }) => {
-  const graphiQLRef = useRef<GraphiQL>(null);
-  const schema = useReactiveVar(graphiQLSchema);
-  const [isExplorerOpen, setIsExplorerOpen] = useState<boolean>(false);
-  const [isDocsOpen, setIsDocsOpen] = useState<boolean>(false);
+export const Explorer = ({ navigationProps, embeddedExplorerProps }: {
+  navigationProps: {
+    queriesCount: number,
+    mutationsCount: number,
+  }
+  embeddedExplorerProps: {
+    embeddedExplorerIFrame: HTMLIFrameElement | null,
+    setEmbeddedExplorerIFrame: (iframe: HTMLIFrameElement) => void,
+  }
+}): jsx.JSX.Element => {
+  const [schema, setSchema] = useState<IntrospectionQuery | null>(null)
   const [queryCache, setQueryCache] = useState<FetchPolicy>(
     FetchPolicy.NoCache
   );
 
-  const color = useReactiveVar(colorTheme);
-  const { operation, variables } = useReactiveVar(graphiQLOperation);
+  const { embeddedExplorerIFrame, setEmbeddedExplorerIFrame } = embeddedExplorerProps;
 
-  // Subscribe to GraphiQL data responses
+  const color = useReactiveVar(colorTheme);
+
+  // Subscribe to Explorer data responses
   // Returns a cleanup method to useEffect
-  useEffect(() => receiveGraphiQLResponses());
+  useEffect(() => receiveExplorerResponses());
+
+  // Set embedded explorer iframe if loaded
+  useEffect(() => {
+    const iframe = document.getElementById('embedded-explorer') as HTMLIFrameElement;
+    const onPostMessageReceived = (event:MessageEvent<{
+      name: string,
+    }>) => {
+      // Embedded Explorer sends us a PM when it is ready for a schema
+      if(event.data.name === EXPLORER_LISTENING_FOR_SCHEMA) {
+        setEmbeddedExplorerIFrame(iframe);
+      }
+    }
+    window.addEventListener('message', onPostMessageReceived);
+
+    return () => window.removeEventListener('message', onPostMessageReceived);
+  }, [setEmbeddedExplorerIFrame])
 
   useEffect(() => {
-    if (!schema) {
+    if (!schema && embeddedExplorerIFrame) {
       const observer = executeOperation({
         operation: getIntrospectionQuery(),
         operationName: "IntrospectionQuery",
         variables: null,
+        isSubscription: false,
         fetchPolicy: FetchPolicy.NoCache,
       });
 
-      observer.subscribe((response) => {
-        graphiQLSchema(buildClientSchema(response.data as IntrospectionQuery));
+      observer.subscribe((response: QueryResult) => {
+        if(response.networkStatus === NetworkStatus.error) {
+          embeddedExplorerIFrame.contentWindow?.postMessage({
+            name: SCHEMA_ERROR,
+            schema: response.data,
+            errors: response.errors,
+            error: response.error?.message,
+          }, EMBEDDABLE_EXPLORER_URL);
+        } else {
+          setSchema(response.data as IntrospectionQuery)
+          // send introspected schema to embedded explorer
+          embeddedExplorerIFrame.contentWindow?.postMessage({
+            name: SCHEMA_RESPONSE,
+            schema: response.data
+          }, EMBEDDABLE_EXPLORER_URL);
+        }
       });
     }
-  }, [schema]);
+  }, [schema, embeddedExplorerIFrame]);
 
-  const handleClickPrettifyButton = () => {
-    const editor = graphiQLRef.current?.getQueryEditor();
-    const currentText = editor.getValue();
-    const prettyText = print(parse(currentText));
-    editor.setValue(prettyText);
-  };
+  useEffect(() => {
+    if(embeddedExplorerIFrame) {
+      const onPostMessageReceived = (event:MessageEvent<{
+        name?: string,
+        operation?: string,
+        operationId?: string,
+        operationName?: string,
+        variables?: string,
+        headers?:string
+      }>) => {
+        const isQueryOrMutation = event.data.name === EXPLORER_REQUEST;
+        const isSubscription = event.data.name === EXPLORER_SUBSCRIPTION_REQUEST;
+        const currentOperationId = event.data.operationId;
+        if((isQueryOrMutation || isSubscription) && event.data.operation) {
+          const observer =  executeOperation({
+            operation: event.data.operation,
+            operationName: event.data.operationName,
+            variables: event.data.variables,
+            fetchPolicy: queryCache,
+            isSubscription,
+          });
 
-  const handleToggleExplorer = () => setIsExplorerOpen(!isExplorerOpen);
-  const handleToggleDocs = () => setIsDocsOpen(!isDocsOpen);
+          observer.subscribe((response) => {
+            embeddedExplorerIFrame.contentWindow?.postMessage({
+              name: isQueryOrMutation ?
+                EXPLORER_RESPONSE :
+                EXPLORER_SUBSCRIPTION_RESPONSE,
+              operationId: currentOperationId,
+              response: response
+            }, EMBEDDABLE_EXPLORER_URL);
+          });
+        }
+      }
+      window.addEventListener('message', onPostMessageReceived);
+
+      return () => window.removeEventListener('message', onPostMessageReceived);
+    }
+  }, [embeddedExplorerIFrame, queryCache])
 
   return (
     <FullWidthLayout navigationProps={navigationProps}>
-      <GraphiQL
-        ref={graphiQLRef}
-        fetcher={({ query: operation, operationName, variables }) =>
-          executeOperation({
-            operation,
-            operationName,
-            variables,
-            fetchPolicy: queryCache,
-          })
-        }
-        schema={schema}
-        query={operation}
-        variables={JSON.stringify(variables)}
-        editorTheme={color === ColorTheme.Dark ? "dracula" : "graphiql"}
-        onEditQuery={(newQuery) =>
-          graphiQLOperation({ operation: newQuery, variables })
-        }
-        render={({ ExecuteButton, GraphiQLEditor, DocExplorer }) => {
-          return (
-            <Fragment>
-              <FullWidthLayout.Header css={headerStyles}>
-                <div css={borderStyles}></div>
-                <div css={buttonContainerStyles}>
-                  <ExecuteButton css={[buttonStyles, runButtonStyles]} />
-                  <Button
-                    css={buttonStyles}
-                    title="Prettify"
-                    feel="flat"
-                    onClick={handleClickPrettifyButton}
-                  >
-                    Prettify
-                  </Button>
-                  <Button
-                    css={buttonStyles}
-                    title="Toggle Explorer"
-                    feel="flat"
-                    onClick={handleToggleExplorer}
-                  >
-                    Build
-                  </Button>
-                </div>
-                <div css={borderStyles}></div>
-                <label htmlFor="loadFromCache" css={labelStyles}>
-                  <input
-                    id="loadFromCache"
-                    css={checkboxStyles}
-                    type="checkbox"
-                    name="loadFromCache"
-                    checked={queryCache === FetchPolicy.CacheOnly}
-                    onChange={() =>
-                      setQueryCache(
-                        queryCache === FetchPolicy.CacheOnly
-                          ? FetchPolicy.NoCache
-                          : FetchPolicy.CacheOnly
-                      )
-                    }
-                  />
-                  Load from cache
-                </label>
-                <Button
-                  css={docsButtonStyles}
-                  title="Open Document Explorer"
-                  feel="flat"
-                  onClick={handleToggleDocs}
-                >
-                  Docs
-                </Button>
-              </FullWidthLayout.Header>
-              <FullWidthLayout.Main css={mainStyles}>
-                <div css={explorerStyles}>
-                  <GraphiQLExplorer
-                    title="Build"
-                    schema={schema}
-                    query={operation}
-                    onEdit={(newQuery) => {
-                      // Before passing a query to graphiql to be run, we'll
-                      // make sure it doesn't include an empty top level
-                      // selection set. If it does and graphiql tries to run
-                      // it, graphiql-explorer (3rd party plugin) functionality
-                      // will break. This means new graphiql-explorer
-                      // started queries will always be valid queries, including
-                      // `__typename` at a minimum.
-                      const queryWithoutNewlines = newQuery.replace("\n", "");
-                      const cleanQuery =
-                        !!queryWithoutNewlines &&
-                        !queryWithoutNewlines.includes("{")
-                          ? `${queryWithoutNewlines} {\n  __typename\n}`
-                          : newQuery;
-                      graphiQLOperation({ operation: cleanQuery, variables });
-                    }}
-                    explorerIsOpen={isExplorerOpen}
-                    onToggleExplorer={handleToggleExplorer}
-                    styles={explorerActionButtonStyles}
-                  />
-                </div>
-                {GraphiQLEditor}
-                {isDocsOpen && <DocExplorer onToggleDocs={handleToggleDocs} />}
-              </FullWidthLayout.Main>
-            </Fragment>
-          );
-        }}
-      />
+        <FullWidthLayout.Header css={headerStyles}>
+          <div css={borderStyles}></div>
+          <label htmlFor="loadFromCache" css={labelStyles}>
+            <input
+              id="loadFromCache"
+              css={checkboxStyles}
+              type="checkbox"
+              name="loadFromCache"
+              checked={queryCache === FetchPolicy.CacheOnly}
+              onChange={() =>
+                setQueryCache((prev) =>
+                  prev === FetchPolicy.CacheOnly
+                    ? FetchPolicy.NoCache
+                    : FetchPolicy.CacheOnly
+                )
+              }
+            />
+            Load from cache
+          </label>
+        </FullWidthLayout.Header>
+        <FullWidthLayout.Main css={mainStyles}>
+          <iframe id="embedded-explorer" css={iFrameStyles} src={`${EMBEDDABLE_EXPLORER_URL}?sendRequestsFrom=parent&shouldPersistState=false&showHeadersAndEnvVars=false&theme=${color}`}/>
+        </FullWidthLayout.Main>
     </FullWidthLayout>
   );
 };

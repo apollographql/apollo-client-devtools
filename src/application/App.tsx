@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useReactiveVar, gql, useQuery, makeVar } from "@apollo/client";
 
 import { currentScreen, Screens } from "./components/Layouts/Navigation";
@@ -27,29 +27,55 @@ const GET_OPERATION_COUNTS = gql`
   }
 `;
 
-export const App = () => {
+export const App = (): JSX.Element => {
   const { data } = useQuery(GET_OPERATION_COUNTS);
   const selected = useReactiveVar<Screens>(currentScreen);
   const reloading = useReactiveVar<boolean>(reloadStatus);
-  let Screen = screens[selected];
+  const [embeddedExplorerIFrame, setEmbeddedExplorerIFrame] = useState<HTMLIFrameElement | null>(null);
+
+  const Screen = screens[selected];
 
   // During a reload, reset the current screen to Queries.
   useEffect(() => {
     if (reloading && selected !== Screens.Queries) {
       currentScreen(Screens.Queries);
     }
-  }, [reloading]);
+  }, [reloading, selected]);
 
   if (reloading) {
     return <div></div>;
   }
 
   return (
-    <Screen
-      navigationProps={{
-        queriesCount: data?.watchedQueries?.count,
-        mutationsCount: data?.mutationLog?.count,
-      }}
-    />
+    <>
+      {selected !== Screens.Explorer &&
+        <Screen
+          navigationProps={{
+            queriesCount: data?.watchedQueries?.count,
+            mutationsCount: data?.mutationLog?.count,
+          }}
+          embeddedExplorerProps={{
+            embeddedExplorerIFrame,
+            setEmbeddedExplorerIFrame
+          }}
+        />
+      }
+      {
+        /**
+         * We need to keep the iframe inside of the `Explorer` loaded at all times
+         * so that we don't reload the iframe when we come to this tab
+         */
+      }
+      <Explorer
+        navigationProps={{
+          queriesCount: data?.watchedQueries?.count,
+          mutationsCount: data?.mutationLog?.count,
+        }}
+        embeddedExplorerProps={{
+          embeddedExplorerIFrame,
+          setEmbeddedExplorerIFrame,
+        }}
+      />
+    </>
   );
 };

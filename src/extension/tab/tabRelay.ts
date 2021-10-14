@@ -1,45 +1,45 @@
-import Relay from '../../Relay';
-import { 
+import Relay from "../../Relay";
+import {
   CLIENT_FOUND,
-  REQUEST_TAB_ID, 
+  REQUEST_TAB_ID,
   CREATE_DEVTOOLS_PANEL,
   ACTION_HOOK_FIRED,
-  GRAPHIQL_RESPONSE,
+  EXPLORER_RESPONSE,
   UPDATE,
   RELOADING_TAB,
   RELOAD_TAB_COMPLETE,
-} from '../constants';
+} from "../constants";
 
 // Inspected tabs are unable to retrieve their own ids.
 // This requests the tab's id from the background script.
 // Once it resolves, we can create the tab's Relay.
-function requestId(){
-  return new Promise(resolve => {
-    chrome.runtime.sendMessage({ message: REQUEST_TAB_ID }, function(id) {
+function requestId() {
+  return new Promise((resolve) => {
+    chrome.runtime.sendMessage({ message: REQUEST_TAB_ID }, function (id) {
       resolve(id);
     });
   });
 }
 
-export default new Promise(async $export => {
+export default new Promise(async ($export) => {
   const id = await requestId();
   const tab = new Relay();
   const port = chrome.runtime.connect({
     name: `tab-${id}`,
   });
 
-  tab.addConnection('background', message => {
+  tab.addConnection("background", (message) => {
     port.postMessage(message);
   });
 
   port.onMessage.addListener(tab.broadcast);
 
-  window.addEventListener('message', event => {
+  window.addEventListener("message", (event) => {
     tab.broadcast(event?.data);
   });
 
-  tab.addConnection('client', message => {
-    window.postMessage(message, '*');
+  tab.addConnection("client", (message) => {
+    window.postMessage(message, "*");
   });
 
   const devtools = `background:devtools-${id}`;
@@ -49,7 +49,7 @@ export default new Promise(async $export => {
   tab.forward(UPDATE, devtools);
   tab.forward(RELOADING_TAB, devtools);
   tab.forward(RELOAD_TAB_COMPLETE, devtools);
-  tab.forward(GRAPHIQL_RESPONSE, `${devtools}:graphiql`);
+  tab.forward(EXPLORER_RESPONSE, `${devtools}:explorer`);
 
   const module = await Promise.resolve({ tab, id });
   $export(module);

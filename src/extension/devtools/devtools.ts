@@ -6,9 +6,10 @@ import {
   UPDATE,
   PANEL_OPEN,
   PANEL_CLOSED,
-  GRAPHIQL_REQUEST,
+  EXPLORER_REQUEST,
   RELOADING_TAB,
   RELOAD_TAB_COMPLETE,
+  EXPLORER_SUBSCRIPTION_TERMINATION,
 } from "../constants";
 
 const inspectedTabId = chrome.devtools.inspectedWindow.tabId;
@@ -45,6 +46,10 @@ sendMessageToClient(DEVTOOLS_INITIALIZED);
 let isPanelCreated = false;
 let isAppInitialized = false;
 
+devtools.addConnection(EXPLORER_SUBSCRIPTION_TERMINATION, () => {
+  sendMessageToClient(EXPLORER_SUBSCRIPTION_TERMINATION);
+});
+
 devtools.listen(CREATE_DEVTOOLS_PANEL, ({ payload }) => {
   if (!isPanelCreated) {
     chrome.devtools.panels.create(
@@ -55,10 +60,11 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, ({ payload }) => {
         isPanelCreated = true;
         const { queries, mutations, cache } = JSON.parse(payload);
         let removeUpdateListener;
-        let removeGraphiQLForward;
+        let removeExplorerForward;
+        let removeSubscriptionTerminationListener;
         let removeReloadListener;
         let clearRequestInterval;
-        let removeGraphiQLListener;
+        let removeExplorerListener;
 
         panel.onShown.addListener((window) => {
           sendMessageToClient(PANEL_OPEN);
@@ -67,8 +73,9 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, ({ payload }) => {
             __DEVTOOLS_APPLICATION__: {
               initialize,
               writeData,
-              receiveGraphiQLRequests,
-              sendResponseToGraphiQL,
+              receiveExplorerRequests,
+              receiveSubscriptionTerminationRequest,
+              sendResponseToExplorer,
               handleReload,
               handleReloadComplete,
             },
@@ -87,15 +94,20 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, ({ payload }) => {
             writeData({ queries, mutations, cache: JSON.stringify(cache) });
           });
 
-          // Add connection so client can send to `background:devtools-${inspectedTabId}:graphiql`
-          devtools.addConnection("graphiql", sendResponseToGraphiQL);
-          removeGraphiQLListener = receiveGraphiQLRequests(({ detail }) => {
+          // Add connection so client can send to `background:devtools-${inspectedTabId}:explorer`
+          devtools.addConnection("explorer", sendResponseToExplorer);
+          removeExplorerListener = receiveExplorerRequests(({ detail }) => {
             devtools.broadcast(detail);
           });
 
-          // Forward all GraphiQL requests to the client
-          removeGraphiQLForward = devtools.forward(
-            GRAPHIQL_REQUEST,
+          removeSubscriptionTerminationListener =
+            receiveSubscriptionTerminationRequest(({ detail }) => {
+              devtools.broadcast(detail);
+            });
+
+          // Forward all Explorer requests to the client
+          removeExplorerForward = devtools.forward(
+            EXPLORER_REQUEST,
             `background:tab-${inspectedTabId}:client`
           );
 
@@ -115,11 +127,12 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, ({ payload }) => {
         panel.onHidden.addListener(() => {
           isPanelCreated = false;
           clearRequestInterval();
-          removeGraphiQLForward();
+          removeExplorerForward();
+          removeSubscriptionTerminationListener();
           removeUpdateListener();
           removeReloadListener();
-          removeGraphiQLListener();
-          devtools.removeConnection("graphiql");
+          removeExplorerListener();
+          devtools.removeConnection("explorer");
           sendMessageToClient(PANEL_CLOSED);
         });
       }

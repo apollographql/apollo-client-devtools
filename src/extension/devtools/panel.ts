@@ -5,15 +5,17 @@ import {
   handleReloadComplete,
 } from "../../application";
 import {
-  receiveGraphiQLRequests,
-  sendResponseToGraphiQL,
-} from "../../application/components/Explorer/graphiQLRelay";
+  receiveExplorerRequests,
+  receiveSubscriptionTerminationRequest,
+  sendResponseToExplorer,
+} from "../../application/components/Explorer/explorerRelay";
 
 (window as any).__DEVTOOLS_APPLICATION__ = {
   initialize: initDevTools,
   writeData,
-  receiveGraphiQLRequests,
-  sendResponseToGraphiQL,
+  receiveExplorerRequests,
+  receiveSubscriptionTerminationRequest,
+  sendResponseToExplorer,
   handleReload,
   handleReloadComplete,
 };

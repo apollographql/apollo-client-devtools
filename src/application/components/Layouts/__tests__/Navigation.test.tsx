@@ -20,7 +20,7 @@ describe("<Navigation />", () => {
 
   it("renders the navigation items", () => {
     const { getByText } = renderWithApolloClient(<Navigation {...props} />);
-    expect(getByText("GraphiQL")).toBeInTheDocument();
+    expect(getByText("Explorer")).toBeInTheDocument();
     expect(getByText(`Queries (${props.queriesCount})`)).toBeInTheDocument();
     expect(getByText(`Mutations (${props.queriesCount})`)).toBeInTheDocument();
     expect(getByText("Cache")).toBeInTheDocument();
