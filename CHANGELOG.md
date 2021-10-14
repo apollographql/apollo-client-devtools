@@ -2,7 +2,8 @@
 
 ## 4.0.0 (TBD)
 
-- TODO
+- This release introduces a significant functionality change: [GraphiQL](https://github.com/graphql/graphiql) and [GraphiQL Explorer](https://github.com/OneGraph/graphiql-explorer) have been removed and replaced with an embedded version of [Apollo Studio's Explorer](https://www.apollographql.com/studio/develop). This means many of the more advanced features of Apollo Studio's Explorer are now available to run against your application's defined GraphQL endpoint, all from the comfort of a browser devtools panel. This change does not require you to have a Studio account and all existing GraphiQL / GraphiQL Explorer functionality has been replicated.
+  [@mayakoneval](https://github.com/mayakoneval) in [#660](https://github.com/apollographql/apollo-client-devtools/pull/660)
 
 ## 3.0.5 (2021-04-29)
 
