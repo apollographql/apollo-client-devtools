@@ -156,8 +156,8 @@ Release process, for those with permission:
 1. Verify that your changes work as expected by loading the extension as an "unpacked extension" locally for each browser.
 2. Update the `./package.json` and `./src/extension/manifest.json` version numbers.
 3. Commit changes and tag your version as a github release.
-4. Run `npm run zip` to pack all of the builds for submission.
-5. Publish a new version to npm using `npm publish` in the root of the project. We're publishing to npm to allow other projects to have a dependency on devtools.
+4. Publish a new version to npm using `npm publish` in the root of the project. We're publishing to npm to allow other projects to have a dependency on devtools.
+5. Run `npm run zip` to pack all of the builds for submission.
 6. Create a new release in the Chrome/Firefox web stores (following the instructions for each browser in the sections below), uploading the zip bundle.
 
 ### Chrome
