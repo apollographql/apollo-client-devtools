@@ -81,9 +81,9 @@ function initializeHook() {
   }
 
   // Listen for tab refreshes
-  window.onbeforeunload = () => {
+  window.addEventListener("pagehide", () => {
     sendMessageToTab(RELOADING_TAB);
-  };
+  });
 
   window.addEventListener("load", () => {
     sendMessageToTab(RELOAD_TAB_COMPLETE, {
