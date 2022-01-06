@@ -53,6 +53,7 @@ const contentStyles = css`
     "main";
   height: 100vh;
   overflow: auto;
+  background-color: var(--main);
 `;
 
 const headerStyles = css`
