@@ -4,8 +4,8 @@ import { jsx, css } from "@emotion/react";
 import { GraphqlCodeBlock } from "graphql-syntax-highlighter-react";
 import JSONTree from "react-json-tree";
 import { IconCopy } from "@apollo/space-kit/icons/IconCopy";
+
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import stringifyObject from "stringify-object";
 
 import { useTreeTheme } from "../../theme";
 import {
@@ -58,7 +58,7 @@ export const MutationViewer = ({
       <div>
         <div css={queryDataHeader}>
           <span>Variables</span>
-          <CopyToClipboard text={stringifyObject(variables)}>
+          <CopyToClipboard text={JSON.stringify(variables)}>
             <IconCopy
               css={copyIconStyle}
               data-testid="copy-mutation-variables"

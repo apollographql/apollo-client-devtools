@@ -117,11 +117,10 @@ export const QueryViewer = ({
   cachedData = {},
 }: QueryViewerProps) => {
   const [currentTab, setCurrentTab] = useState<QueryTabs>(QueryTabs.Variables);
-  const copyCurrentTab = `${stringifyObject(
+  const copyCurrentTab = `${JSON.stringify(
     currentTab === QueryTabs.Variables ? variables : cachedData
   )}`;
   const treeTheme = useTreeTheme();
-
   return (
     <div css={queryViewStyles}>
       <h4 css={queryStringHeader}>
