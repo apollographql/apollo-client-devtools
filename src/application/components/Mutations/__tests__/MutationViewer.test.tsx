@@ -71,7 +71,7 @@ describe("<MutationViewer />", () => {
     user.click(copyButton);
     expect(window.prompt).toBeCalledWith(
       "Copy to clipboard: Ctrl+C, Enter",
-      stringifyObject(props.variables)
+      JSON.stringify(props.variables)
     );
   });
 });

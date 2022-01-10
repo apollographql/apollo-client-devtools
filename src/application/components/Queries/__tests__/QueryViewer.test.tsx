@@ -1,7 +1,6 @@
 import React from "react";
 import { within } from "@testing-library/react";
 import user from "@testing-library/user-event";
-import stringifyObject from "stringify-object";
 
 import { renderWithApolloClient } from "../../../utilities/testing/renderWithApolloClient";
 import { QueryViewer } from "../QueryViewer";
@@ -82,7 +81,7 @@ describe("<QueryViewer />", () => {
     user.click(queryString);
     expect(window.prompt).toBeCalledWith(
       "Copy to clipboard: Ctrl+C, Enter",
-      stringifyObject(props.variables)
+      JSON.stringify(props.variables)
     );
 
     const cachedDataTab = getByText("Cached Data");
@@ -90,7 +89,7 @@ describe("<QueryViewer />", () => {
     user.click(queryString);
     expect(window.prompt).toBeCalledWith(
       "Copy to clipboard: Ctrl+C, Enter",
-      stringifyObject(props.cachedData)
+      JSON.stringify(props.cachedData)
     );
   });
 });
