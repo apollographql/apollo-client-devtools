@@ -44,7 +44,7 @@
     "zen-observable": "^0.8.15"
   },
   "devDependencies": {
-    "@emotion/jest": "11.7.1",
+    "@emotion/jest": "11.8.0",
     "@graphql-tools/mock": "8.5.1",
     "@graphql-tools/schema": "7.1.5",
     "@testing-library/jest-dom": "5.16.2",
