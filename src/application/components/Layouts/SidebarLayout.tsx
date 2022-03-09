@@ -72,6 +72,7 @@ const mainStyles = css`
   padding: 0 1rem 2rem;
   background-color: var(--main);
   color: var(--textPrimary);
+  height: calc(100vh - 2.5rem);
 `;
 
 const SidebarLayout: React.FC<SidebarLayoutProps> &
