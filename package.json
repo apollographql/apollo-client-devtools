@@ -53,7 +53,7 @@
     "@types/chrome": "0.0.185",
     "@types/jest": "26.0.24",
     "@types/react": "17.0.45",
-    "@types/react-dom": "17.0.16",
+    "@types/react-dom": "17.0.17",
     "@typescript-eslint/eslint-plugin": "4.33.0",
     "@typescript-eslint/parser": "4.33.0",
     "copy-webpack-plugin": "7.0.0",
