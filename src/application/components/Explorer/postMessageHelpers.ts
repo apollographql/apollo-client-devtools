@@ -13,8 +13,8 @@ export const EXPLORER_SUBSCRIPTION_RESPONSE = "ExplorerSubscriptionResponse";
 export const SET_OPERATION = "SetOperation";
 export const SCHEMA_ERROR = "SchemaError";
 export const SCHEMA_RESPONSE = "SchemaResponse";
-export const DEV_TOOLS_ASK_FOR_GRAPH_REF_AND_AUTHENTICATE =
-  "DevTools_AskForGraphRefAndAuthenticate";
+export const DEV_TOOLS_AUTHENTICATE_WITH_GRAPHREF =
+  "DevTools_AuthenticateWithGraphRef";
 
 export const EMBEDDABLE_EXPLORER_URL = "https://embed.apollo.local:3000";
 // "https://explorer.embed.apollographql.com";
@@ -76,7 +76,8 @@ export type OutgoingMessageEvent =
       partialToken: string;
     }
   | {
-      name: "DevTools_AskForGraphRefAndAuthenticate";
+      name: "DevTools_AuthenticateWithGraphRef";
+      graphRef: string;
     };
 
 export type ExplorerRequest = MessageEvent<{
@@ -129,11 +130,6 @@ type SetPartialAuthenticationTokenForParent = MessageEvent<{
   graphRef: string;
 }>;
 
-type DevToolsGraphRefAuthenticated = MessageEvent<{
-  name: "DevTools_GraphRefAuthenticated";
-  graphRef: "graphRef";
-}>;
-
 export type IncomingMessageEvent =
   | ExplorerRequest
   | ExplorerSubscriptionRequest
@@ -141,8 +137,7 @@ export type IncomingMessageEvent =
   | ExplorerListening
   | ExplorerListeningForPartialToken
   | ExplorerIntrospectionQueryWithHeaders
-  | SetPartialAuthenticationTokenForParent
-  | DevToolsGraphRefAuthenticated;
+  | SetPartialAuthenticationTokenForParent;
 
 export const postMessageToEmbed = ({
   embeddedExplorerIFrame,
