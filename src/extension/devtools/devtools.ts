@@ -1,3 +1,4 @@
+import { EXPLORER_SUBSCRIPTION_TERMINATION } from "../../application/components/Explorer/postMessageHelpers";
 import Relay from "../../Relay";
 import {
   DEVTOOLS_INITIALIZED,
@@ -9,7 +10,6 @@ import {
   EXPLORER_REQUEST,
   RELOADING_TAB,
   RELOAD_TAB_COMPLETE,
-  EXPLORER_SUBSCRIPTION_TERMINATION,
 } from "../constants";
 
 const inspectedTabId = chrome.devtools.inspectedWindow.tabId;

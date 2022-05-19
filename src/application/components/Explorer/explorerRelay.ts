@@ -3,8 +3,8 @@ import { ExplorerResponse, QueryResult, MessageObj } from "../../../types";
 import {
   EXPLORER_RESPONSE,
   EXPLORER_REQUEST,
-  EXPLORER_SUBSCRIPTION_TERMINATION,
 } from "../../../extension/constants";
+import { EXPLORER_SUBSCRIPTION_TERMINATION } from "./postMessageHelpers";
 
 const explorer = new Relay();
 

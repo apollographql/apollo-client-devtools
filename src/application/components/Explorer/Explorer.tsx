@@ -22,7 +22,20 @@ import {
 } from "./explorerRelay";
 import { FullWidthLayout } from "../Layouts/FullWidthLayout";
 import { QueryResult } from "../../../types";
-import { EMBEDDABLE_EXPLORER_URL, EXPLORER_SUBSCRIPTION_TERMINATION } from "../../../extension/constants";
+import {
+  postMessageToEmbed,
+  EMBEDDABLE_EXPLORER_URL,
+  EXPLORER_LISTENING_FOR_SCHEMA,
+  EXPLORER_REQUEST,
+  EXPLORER_RESPONSE,
+  EXPLORER_SUBSCRIPTION_REQUEST,
+  EXPLORER_SUBSCRIPTION_RESPONSE,
+  EXPLORER_SUBSCRIPTION_TERMINATION,
+  JSONValue,
+  SCHEMA_ERROR,
+  SCHEMA_RESPONSE,
+  IncomingMessageEvent,
+} from "./postMessageHelpers";
 
 enum FetchPolicy {
   NoCache = "no-cache",
@@ -66,21 +79,6 @@ const iFrameStyles = css`
   border: none;
 `;
 
-export type JSONPrimitive = boolean | null | string | number;
-export type JSONObject = { [key in string]?: JSONValue };
-export type JSONValue = JSONPrimitive | JSONValue[] | JSONObject;
-
-const EXPLORER_LISTENING_FOR_SCHEMA = 'ExplorerListeningForSchema';
-const EXPLORER_LISTENING_FOR_STATE = 'ExplorerListeningForState';
-const EXPLORER_REQUEST = 'ExplorerRequest';
-const EXPLORER_RESPONSE = 'ExplorerResponse';
-const EXPLORER_SUBSCRIPTION_REQUEST = 'ExplorerSubscriptionRequest';
-const EXPLORER_SUBSCRIPTION_RESPONSE = 'ExplorerSubscriptionResponse';
-export const SET_OPERATION = 'SetOperation';
-const SCHEMA_ERROR = 'SchemaError';
-const SCHEMA_RESPONSE = 'SchemaResponse';
-
-
 function executeOperation({
   operation,
   operationName,
@@ -88,11 +86,11 @@ function executeOperation({
   fetchPolicy,
   isSubscription,
 }: {
-  operation: string,
-  operationName?: string,
-  variables?: JSONValue,
-  fetchPolicy: FetchPolicy,
-  isSubscription?: boolean,
+  operation: string;
+  operationName?: string;
+  variables?: JSONValue;
+  fetchPolicy: FetchPolicy;
+  isSubscription?: boolean;
 }) {
   return new Observable<FetchResult>((observer) => {
     const payload = JSON.stringify({
@@ -104,42 +102,52 @@ function executeOperation({
 
     sendExplorerRequest(payload);
 
-    listenForResponse((response) => {
-      observer.next(response);
-      if(isSubscription) {
-        const checkForSubscriptionTermination = (event: MessageEvent) => {
-          if(event.data.name.startsWith(EXPLORER_SUBSCRIPTION_TERMINATION)) {
-            sendSubscriptionTerminationRequest();
-            observer.complete();
-            window.removeEventListener('message', checkForSubscriptionTermination);
-          }
-        }
+    listenForResponse(
+      (response) => {
+        observer.next(response);
+        if (isSubscription) {
+          const checkForSubscriptionTermination = (event: MessageEvent) => {
+            if (event.data.name.startsWith(EXPLORER_SUBSCRIPTION_TERMINATION)) {
+              sendSubscriptionTerminationRequest();
+              observer.complete();
+              window.removeEventListener(
+                "message",
+                checkForSubscriptionTermination
+              );
+            }
+          };
 
-        window.addEventListener('message', checkForSubscriptionTermination);
-      }
-      else {
-        observer.complete();
-      }
-    }, operationName, !!isSubscription,);
+          window.addEventListener("message", checkForSubscriptionTermination);
+        } else {
+          observer.complete();
+        }
+      },
+      operationName,
+      !!isSubscription
+    );
   });
 }
 
-export const Explorer = ({ navigationProps, embeddedExplorerProps }: {
+export const Explorer = ({
+  navigationProps,
+  embeddedExplorerProps,
+}: {
   navigationProps: {
-    queriesCount: number,
-    mutationsCount: number,
-  }
+    queriesCount: number;
+    mutationsCount: number;
+  };
   embeddedExplorerProps: {
-    embeddedExplorerIFrame: HTMLIFrameElement | null,
-    setEmbeddedExplorerIFrame: (iframe: HTMLIFrameElement) => void,
-  }
+    embeddedExplorerIFrame: HTMLIFrameElement | null;
+    setEmbeddedExplorerIFrame: (iframe: HTMLIFrameElement) => void;
+  };
 }): jsx.JSX.Element => {
-  const [schema, setSchema] = useState<IntrospectionQuery | null>(null)
+  const [schema, setSchema] = useState<IntrospectionQuery | null>(null);
   const [queryCache, setQueryCache] = useState<FetchPolicy>(
     FetchPolicy.NoCache
   );
 
-  const { embeddedExplorerIFrame, setEmbeddedExplorerIFrame } = embeddedExplorerProps;
+  const { embeddedExplorerIFrame, setEmbeddedExplorerIFrame } =
+    embeddedExplorerProps;
 
   const color = useReactiveVar(colorTheme);
 
@@ -149,19 +157,23 @@ export const Explorer = ({ navigationProps, embeddedExplorerProps }: {
 
   // Set embedded explorer iframe if loaded
   useEffect(() => {
-    const iframe = document.getElementById('embedded-explorer') as HTMLIFrameElement;
-    const onPostMessageReceived = (event:MessageEvent<{
-      name: string,
-    }>) => {
+    const iframe = document.getElementById(
+      "embedded-explorer"
+    ) as HTMLIFrameElement;
+    const onPostMessageReceived = (
+      event: MessageEvent<{
+        name: string;
+      }>
+    ) => {
       // Embedded Explorer sends us a PM when it is ready for a schema
-      if(event.data.name === EXPLORER_LISTENING_FOR_SCHEMA) {
+      if (event.data.name === EXPLORER_LISTENING_FOR_SCHEMA) {
         setEmbeddedExplorerIFrame(iframe);
       }
-    }
-    window.addEventListener('message', onPostMessageReceived);
+    };
+    window.addEventListener("message", onPostMessageReceived);
 
-    return () => window.removeEventListener('message', onPostMessageReceived);
-  }, [setEmbeddedExplorerIFrame])
+    return () => window.removeEventListener("message", onPostMessageReceived);
+  }, [setEmbeddedExplorerIFrame]);
 
   useEffect(() => {
     if (!schema && embeddedExplorerIFrame) {
@@ -174,64 +186,65 @@ export const Explorer = ({ navigationProps, embeddedExplorerProps }: {
       });
 
       observer.subscribe((response: QueryResult) => {
-        if(response.networkStatus === NetworkStatus.error) {
-          embeddedExplorerIFrame.contentWindow?.postMessage({
-            name: SCHEMA_ERROR,
-            schema: response.data,
-            errors: response.errors,
-            error: response.error?.message,
-          }, EMBEDDABLE_EXPLORER_URL);
+        if (response.networkStatus === NetworkStatus.error) {
+          postMessageToEmbed({
+            embeddedExplorerIFrame,
+            message: {
+              name: SCHEMA_ERROR,
+              errors: response.errors,
+              error: response.error?.message,
+            },
+          });
         } else {
-          setSchema(response.data as IntrospectionQuery)
+          setSchema(response.data as IntrospectionQuery);
           // send introspected schema to embedded explorer
-          embeddedExplorerIFrame.contentWindow?.postMessage({
-            name: SCHEMA_RESPONSE,
-            schema: response.data
-          }, EMBEDDABLE_EXPLORER_URL);
+          postMessageToEmbed({
+            embeddedExplorerIFrame,
+            message: {
+              name: SCHEMA_RESPONSE,
+              schema: response.data,
+            },
+          });
         }
       });
     }
   }, [schema, embeddedExplorerIFrame]);
 
   useEffect(() => {
-    if(embeddedExplorerIFrame) {
-      const onPostMessageReceived = (event:MessageEvent<{
-        name?: string,
-        operation?: string,
-        operationId?: string,
-        operationName?: string,
-        variables?: string,
-        headers?:string
-      }>) => {
+    if (embeddedExplorerIFrame) {
+      const onPostMessageReceived = (event: IncomingMessageEvent) => {
         const isQueryOrMutation = event.data.name === EXPLORER_REQUEST;
-        const isSubscription = event.data.name === EXPLORER_SUBSCRIPTION_REQUEST;
-        const currentOperationId = event.data.operationId;
-        if((isQueryOrMutation || isSubscription) && event.data.operation) {
-          const observer =  executeOperation({
+        const isSubscription =
+          event.data.name === EXPLORER_SUBSCRIPTION_REQUEST;
+        if ((isQueryOrMutation || isSubscription) && event.data.operation) {
+          const observer = executeOperation({
             operation: event.data.operation,
             operationName: event.data.operationName,
             variables: event.data.variables,
             fetchPolicy: queryCache,
             isSubscription,
           });
+          const currentOperationId = event.data.operationId;
 
           observer.subscribe((response) => {
-            embeddedExplorerIFrame.contentWindow?.postMessage({
-              name: isQueryOrMutation ?
-                EXPLORER_RESPONSE :
-                EXPLORER_SUBSCRIPTION_RESPONSE,
-              operationId: currentOperationId,
-              response: response
-            }, EMBEDDABLE_EXPLORER_URL);
+            postMessageToEmbed({
+              embeddedExplorerIFrame,
+              message: {
+                name: isQueryOrMutation
+                  ? EXPLORER_RESPONSE
+                  : EXPLORER_SUBSCRIPTION_RESPONSE,
+                operationId: currentOperationId,
+                response: response,
+              },
+            });
           });
         }
-      }
-      window.addEventListener('message', onPostMessageReceived);
+      };
+      window.addEventListener("message", onPostMessageReceived);
 
-      return () => window.removeEventListener('message', onPostMessageReceived);
+      return () => window.removeEventListener("message", onPostMessageReceived);
     }
-  }, [embeddedExplorerIFrame, queryCache])
-
+  }, [embeddedExplorerIFrame, queryCache]);
 
   return (
     <FullWidthLayout navigationProps={navigationProps}>
