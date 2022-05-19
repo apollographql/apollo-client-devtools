@@ -1,6 +1,6 @@
 /** @jsx jsx */
 
-import React from "react";
+import React, { useMemo } from "react";
 import { jsx, css } from "@emotion/react";
 import { rem } from "polished";
 import { colors } from "@apollo/space-kit/colors";
@@ -36,6 +36,12 @@ import {
   SCHEMA_RESPONSE,
   IncomingMessageEvent,
 } from "./postMessageHelpers";
+import {
+  EXPLORER_LISTENING_FOR_HANDSHAKE,
+  handleAuthenticationPostMessage,
+  sendHandshakeToEmbed,
+} from "./postMessageAuthHelpers";
+import { GraphRefModal } from "./GraphRefModal";
 
 enum FetchPolicy {
   NoCache = "no-cache",
@@ -141,6 +147,9 @@ export const Explorer = ({
     setEmbeddedExplorerIFrame: (iframe: HTMLIFrameElement) => void;
   };
 }): jsx.JSX.Element => {
+  const [graphRef, setGraphRef] = useState<string>();
+  const [showGraphRefModal, setShowGraphRefModal] = useState(false);
+
   const [schema, setSchema] = useState<IntrospectionQuery | null>(null);
   const [queryCache, setQueryCache] = useState<FetchPolicy>(
     FetchPolicy.NoCache
@@ -160,20 +169,27 @@ export const Explorer = ({
     const iframe = document.getElementById(
       "embedded-explorer"
     ) as HTMLIFrameElement;
-    const onPostMessageReceived = (
-      event: MessageEvent<{
-        name: string;
-      }>
-    ) => {
+    const onPostMessageReceived = (event: IncomingMessageEvent) => {
       // Embedded Explorer sends us a PM when it is ready for a schema
       if (event.data.name === EXPLORER_LISTENING_FOR_SCHEMA) {
         setEmbeddedExplorerIFrame(iframe);
       }
+      if (event.data.name === EXPLORER_LISTENING_FOR_HANDSHAKE) {
+        sendHandshakeToEmbed({
+          embeddedExplorerIFrame: iframe,
+          graphRef,
+        });
+      }
+      handleAuthenticationPostMessage({
+        embeddedExplorerIFrame: iframe,
+        event,
+        setGraphRef,
+      });
     };
     window.addEventListener("message", onPostMessageReceived);
 
     return () => window.removeEventListener("message", onPostMessageReceived);
-  }, [setEmbeddedExplorerIFrame]);
+  }, [graphRef, setEmbeddedExplorerIFrame]);
 
   useEffect(() => {
     if (!schema && embeddedExplorerIFrame) {
@@ -186,6 +202,12 @@ export const Explorer = ({
       });
 
       observer.subscribe((response: QueryResult) => {
+        // If we have errors in the response it means we assume this was a graphql
+        // response which means we did hit a graphql endpoint but introspection
+        // was specifically disabled
+        if (response.errors) {
+          setShowGraphRefModal(true);
+        }
         if (response.networkStatus === NetworkStatus.error) {
           postMessageToEmbed({
             embeddedExplorerIFrame,
@@ -244,7 +266,15 @@ export const Explorer = ({
 
       return () => window.removeEventListener("message", onPostMessageReceived);
     }
-  }, [embeddedExplorerIFrame, queryCache]);
+  }, [embeddedExplorerIFrame, graphRef, queryCache]);
+
+  const embedIframeSrcString = useMemo(
+    () =>
+      `${EMBEDDABLE_EXPLORER_URL}?sendRequestsFrom=parent&shouldPersistState=false&showHeadersAndEnvVars=false&shouldShowGlobalHeader=false&theme=${color}${
+        graphRef ? `&graphRef=${graphRef}` : ""
+      }`,
+    [color, graphRef]
+  );
 
   return (
     <FullWidthLayout navigationProps={navigationProps}>
@@ -272,8 +302,14 @@ export const Explorer = ({
         <iframe
           id="embedded-explorer"
           css={iFrameStyles}
-          src={`${EMBEDDABLE_EXPLORER_URL}?sendRequestsFrom=parent&shouldPersistState=false&showHeadersAndEnvVars=false&shouldShowGlobalHeader=false&theme=${color}`}
+          src={embedIframeSrcString}
         />
+        {showGraphRefModal && embeddedExplorerIFrame && (
+          <GraphRefModal
+            embeddedExplorerIFrame={embeddedExplorerIFrame}
+            onClose={() => setShowGraphRefModal(false)}
+          />
+        )}
       </FullWidthLayout.Main>
     </FullWidthLayout>
   );
