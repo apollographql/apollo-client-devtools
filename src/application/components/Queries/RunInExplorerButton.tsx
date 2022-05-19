@@ -3,9 +3,10 @@
 import { IconRun } from "@apollo/space-kit/icons/IconRun";
 import { jsx, css } from "@emotion/react";
 import { rem } from "polished";
-import { EMBEDDABLE_EXPLORER_URL } from "../../../extension/constants";
-import { SET_OPERATION } from "../Explorer/Explorer";
-
+import {
+  postMessageToEmbed,
+  SET_OPERATION,
+} from "../Explorer/postMessageHelpers";
 import { currentScreen, Screens } from "../Layouts/Navigation";
 
 interface RunInExplorerButtonProps {
@@ -37,20 +38,26 @@ export const RunInExplorerButton = ({
   variables,
   embeddedExplorerIFrame,
 }: RunInExplorerButtonProps): jsx.JSX.Element | null => {
-  return embeddedExplorerIFrame &&
-    <button
-      css={buttonStyles}
-      onClick={() => {
-        // send a post message to the embedded explorer to fill the operation
-        embeddedExplorerIFrame.contentWindow?.postMessage({
-          name: SET_OPERATION,
-          operation,
-          variables: JSON.stringify(variables),
-        }, EMBEDDABLE_EXPLORER_URL);
-        currentScreen(Screens.Explorer);
-      }}
-    >
-      <IconRun />
-      <span>Run in Explorer</span>
-    </button>
+  return (
+    embeddedExplorerIFrame && (
+      <button
+        css={buttonStyles}
+        onClick={() => {
+          // send a post message to the embedded explorer to fill the operation
+          postMessageToEmbed({
+            message: {
+              name: SET_OPERATION,
+              operation,
+              variables: JSON.stringify(variables),
+            },
+            embeddedExplorerIFrame,
+          });
+          currentScreen(Screens.Explorer);
+        }}
+      >
+        <IconRun />
+        <span>Run in Explorer</span>
+      </button>
+    )
+  );
 };
