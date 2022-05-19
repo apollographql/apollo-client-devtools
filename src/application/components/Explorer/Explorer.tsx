@@ -232,31 +232,36 @@ export const Explorer = ({ navigationProps, embeddedExplorerProps }: {
     }
   }, [embeddedExplorerIFrame, queryCache])
 
+
   return (
     <FullWidthLayout navigationProps={navigationProps}>
-        <FullWidthLayout.Header css={headerStyles}>
-          <div css={borderStyles}></div>
-          <label htmlFor="loadFromCache" css={labelStyles}>
-            <input
-              id="loadFromCache"
-              css={checkboxStyles}
-              type="checkbox"
-              name="loadFromCache"
-              checked={queryCache === FetchPolicy.CacheOnly}
-              onChange={() =>
-                setQueryCache((prev) =>
-                  prev === FetchPolicy.CacheOnly
-                    ? FetchPolicy.NoCache
-                    : FetchPolicy.CacheOnly
-                )
-              }
-            />
-            Load from cache
-          </label>
-        </FullWidthLayout.Header>
-        <FullWidthLayout.Main css={mainStyles}>
-          <iframe id="embedded-explorer" css={iFrameStyles} src={`${EMBEDDABLE_EXPLORER_URL}?sendRequestsFrom=parent&shouldPersistState=false&showHeadersAndEnvVars=false&theme=${color}`}/>
-        </FullWidthLayout.Main>
+      <FullWidthLayout.Header css={headerStyles}>
+        <div css={borderStyles}></div>
+        <label htmlFor="loadFromCache" css={labelStyles}>
+          <input
+            id="loadFromCache"
+            css={checkboxStyles}
+            type="checkbox"
+            name="loadFromCache"
+            checked={queryCache === FetchPolicy.CacheOnly}
+            onChange={() =>
+              setQueryCache((prev) =>
+                prev === FetchPolicy.CacheOnly
+                  ? FetchPolicy.NoCache
+                  : FetchPolicy.CacheOnly
+              )
+            }
+          />
+          Load from cache
+        </label>
+      </FullWidthLayout.Header>
+      <FullWidthLayout.Main css={mainStyles}>
+        <iframe
+          id="embedded-explorer"
+          css={iFrameStyles}
+          src={`${EMBEDDABLE_EXPLORER_URL}?sendRequestsFrom=parent&shouldPersistState=false&showHeadersAndEnvVars=false&shouldShowGlobalHeader=false&theme=${color}`}
+        />
+      </FullWidthLayout.Main>
     </FullWidthLayout>
   );
 };
