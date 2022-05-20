@@ -21,7 +21,7 @@ export const GraphRefModal = ({
   wasTriggeredByIntrospection,
 }: {
   onClose: () => void;
-  graphRef: string;
+  graphRef: string | undefined;
   setGraphRef: (graphRef: string) => void;
   setNewGraphRefLoading: (newValue: boolean) => void;
   newGraphRefLoading: boolean;
