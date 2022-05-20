@@ -165,9 +165,11 @@ const setGraphRefFromLocalStorage = (graphRef: string) => {
 };
 
 export const Explorer = ({
+  isVisible,
   navigationProps,
   embeddedExplorerProps,
 }: {
+  isVisible: boolean;
   navigationProps: {
     queriesCount: number;
     mutationsCount: number;
@@ -181,6 +183,7 @@ export const Explorer = ({
   const [showGraphRefModal, setShowGraphRefModal] = useState<
     false | "triggeredByIntrospection" | "triggeredManually"
   >(false);
+  const showGraphRefModalAndIsVisible = isVisible && showGraphRefModal;
   const [newGraphRefLoading, setNewGraphRefLoading] = useState(false);
 
   // set local storage whenever local state changes
@@ -249,11 +252,11 @@ export const Explorer = ({
         // was specifically disabled
         if (response.errors) {
           // if you can't introspect the schema, default to the last used
-          // graph ref, otherwise, trigger the embed to asl the user
+          // graph ref, otherwise, trigger the embed to ask the user
           // for their graph ref, and allow them to authenticate
           const graphRefFromLocalStorage = getGraphRefFromLocalStorage();
           if (graphRefFromLocalStorage) {
-            setGraphRefFromLocalStorage(graphRefFromLocalStorage);
+            setGraphRef(graphRefFromLocalStorage);
           } else {
             setShowGraphRefModal("triggeredByIntrospection");
           }
@@ -364,7 +367,7 @@ export const Explorer = ({
           css={iFrameStyles}
           src={embedIframeSrcString}
         />
-        {showGraphRefModal && embeddedExplorerIFrame && (
+        {showGraphRefModalAndIsVisible && embeddedExplorerIFrame && (
           <GraphRefModal
             graphRef={graphRef}
             setGraphRef={setGraphRef}
