@@ -50,6 +50,7 @@ export const App = (): JSX.Element => {
     <>
       {selected !== Screens.Explorer && (
         <Screen
+          isVisible={undefined}
           navigationProps={{
             queriesCount: data?.watchedQueries?.count,
             mutationsCount: data?.mutationLog?.count,
