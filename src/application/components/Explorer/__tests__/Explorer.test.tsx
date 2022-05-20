@@ -36,12 +36,16 @@ jest.mock("../explorerRelay", () => ({
 const EmbeddedExplorerWrapper = () => {
   const navigationProps = { queriesCount: 0, mutationsCount: 0 };
   const [embeddedExplorerIFrame, setEmbeddedExplorerIFrame] = useState<HTMLIFrameElement | null>(null);
-  return <Explorer 
-            navigationProps={navigationProps} 
-            embeddedExplorerProps={{
-              embeddedExplorerIFrame,
-              setEmbeddedExplorerIFrame,
-            }}/>
+  return (
+    <Explorer
+      isVisible={true}
+      navigationProps={navigationProps}
+      embeddedExplorerProps={{
+        embeddedExplorerIFrame,
+        setEmbeddedExplorerIFrame,
+      }}
+    />
+  );
 }
 
 describe("<Explorer />", () => {

@@ -169,7 +169,7 @@ export const Explorer = ({
   navigationProps,
   embeddedExplorerProps,
 }: {
-  isVisible: boolean;
+  isVisible: boolean | undefined;
   navigationProps: {
     queriesCount: number;
     mutationsCount: number;
