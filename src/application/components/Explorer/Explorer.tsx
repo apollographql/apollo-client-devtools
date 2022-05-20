@@ -180,7 +180,9 @@ export const Explorer = ({
   const [graphRef, setGraphRef] = useState<string>(() =>
     getGraphRefFromLocalStorage()
   );
-  const [showGraphRefModal, setShowGraphRefModal] = useState(false);
+  const [showGraphRefModal, setShowGraphRefModal] = useState<
+    false | "triggeredByIntrospection" | "triggeredManually"
+  >(false);
   const [newGraphRefLoading, setNewGraphRefLoading] = useState(false);
 
   // set local storage whenever local state changes
@@ -255,7 +257,7 @@ export const Explorer = ({
           if (graphRefFromLocalStorage) {
             setGraphRefFromLocalStorage(graphRefFromLocalStorage);
           } else {
-            setShowGraphRefModal(true);
+            setShowGraphRefModal("triggeredByIntrospection");
           }
         }
         if (response.networkStatus === NetworkStatus.error) {
@@ -351,7 +353,7 @@ export const Explorer = ({
           <button
             css={authorizeButtonStyles}
             onClick={() => {
-              setShowGraphRefModal(true);
+              setShowGraphRefModal("triggeredManually");
             }}
           >
             Choose a different Studio graph
@@ -372,6 +374,9 @@ export const Explorer = ({
             onClose={() => setShowGraphRefModal(false)}
             setNewGraphRefLoading={setNewGraphRefLoading}
             newGraphRefLoading={newGraphRefLoading}
+            wasTriggeredByIntrospection={
+              showGraphRefModal === "triggeredByIntrospection"
+            }
           />
         )}
       </FullWidthLayout.Main>
