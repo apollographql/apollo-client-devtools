@@ -45,6 +45,7 @@
   },
   "devDependencies": {
     "@emotion/jest": "11.9.1",
+    "@emotion/core": "^10.1.1",
     "@graphql-tools/mock": "8.6.9",
     "@graphql-tools/schema": "7.1.5",
     "@testing-library/jest-dom": "5.16.4",

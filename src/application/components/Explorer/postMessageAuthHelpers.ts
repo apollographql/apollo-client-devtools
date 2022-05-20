@@ -7,14 +7,32 @@ export const EXPLORER_LISTENING_FOR_PARTIAL_TOKEN =
 export const PARTIAL_AUTHENTICATION_TOKEN_RESPONSE =
   "PartialAuthenticationTokenResponse";
 
+export const hasGraphRefBeenAuthenticated = (graphRef: string): boolean => {
+  const partialEmbedApiKeysString = window.localStorage.getItem(
+    "apolloStudioEmbeddedExplorerEncodedApiKey"
+  );
+  const partialEmbedApiKeys = partialEmbedApiKeysString
+    ? JSON.parse(partialEmbedApiKeysString)
+    : {};
+  return Object.keys(partialEmbedApiKeys).some((key) => {
+    const splitKey = key.split(":");
+    const keyGraphRef = splitKey[splitKey.length - 1];
+    return keyGraphRef === graphRef;
+  });
+};
+
 export const handleAuthenticationPostMessage = ({
   event,
   embeddedExplorerIFrame,
   setGraphRef,
+  closeGraphRefModal,
+  onAuthHandshakeReceived,
 }: {
   event: IncomingMessageEvent;
   embeddedExplorerIFrame: HTMLIFrameElement;
   setGraphRef: (graphRef: string) => void;
+  closeGraphRefModal: () => void;
+  onAuthHandshakeReceived: () => void;
 }): void => {
   const { data } = event;
   // When the embed authenticates, save the partial token in local storage
@@ -31,6 +49,7 @@ export const handleAuthenticationPostMessage = ({
       JSON.stringify(partialEmbedApiKeys)
     );
     setGraphRef(data.graphRef);
+    closeGraphRefModal();
   }
 
   if (
@@ -44,6 +63,7 @@ export const handleAuthenticationPostMessage = ({
       ? JSON.parse(partialEmbedApiKeysString)
       : {};
     if (partialEmbedApiKeys && partialEmbedApiKeys[data.localStorageKey]) {
+      onAuthHandshakeReceived();
       postMessageToEmbed({
         embeddedExplorerIFrame,
         message: {

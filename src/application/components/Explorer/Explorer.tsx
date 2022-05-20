@@ -181,6 +181,7 @@ export const Explorer = ({
     getGraphRefFromLocalStorage()
   );
   const [showGraphRefModal, setShowGraphRefModal] = useState(false);
+  const [newGraphRefLoading, setNewGraphRefLoading] = useState(false);
 
   // set local storage whenever local state changes
   useEffect(() => {
@@ -214,10 +215,17 @@ export const Explorer = ({
           graphRef,
         });
       }
+      const onAuthHandshakeReceived = () => {
+        // if there was a graph ref change, we have now loaded the auth details from the explorer
+        setNewGraphRefLoading(false);
+        setShowGraphRefModal(false);
+      };
       handleAuthenticationPostMessage({
         embeddedExplorerIFrame: iframe,
         event,
         setGraphRef,
+        closeGraphRefModal: () => setShowGraphRefModal(false),
+        onAuthHandshakeReceived,
       });
     };
     window.addEventListener("message", onPostMessageReceived);
@@ -358,8 +366,12 @@ export const Explorer = ({
         />
         {showGraphRefModal && embeddedExplorerIFrame && (
           <GraphRefModal
+            graphRef={graphRef}
+            setGraphRef={setGraphRef}
             embeddedExplorerIFrame={embeddedExplorerIFrame}
             onClose={() => setShowGraphRefModal(false)}
+            setNewGraphRefLoading={setNewGraphRefLoading}
+            newGraphRefLoading={newGraphRefLoading}
           />
         )}
       </FullWidthLayout.Main>
