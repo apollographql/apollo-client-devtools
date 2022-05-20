@@ -25,7 +25,6 @@ import { QueryResult } from "../../../types";
 import {
   postMessageToEmbed,
   EMBEDDABLE_EXPLORER_URL,
-  EXPLORER_LISTENING_FOR_SCHEMA,
   EXPLORER_REQUEST,
   EXPLORER_RESPONSE,
   EXPLORER_SUBSCRIPTION_REQUEST,
@@ -143,6 +142,28 @@ function executeOperation({
   });
 }
 
+const getGraphRefFromLocalStorage = () => {
+  const graphRefsByParentHostnameString =
+    window.localStorage.getItem("explorerGraphRefs");
+  const graphRefsByParentHostname = graphRefsByParentHostnameString
+    ? JSON.parse(graphRefsByParentHostnameString)
+    : {};
+  return graphRefsByParentHostname["temp-key"];
+};
+
+const setGraphRefFromLocalStorage = (graphRef: string) => {
+  const graphRefsByParentHostnameString =
+    window.localStorage.getItem("explorerGraphRefs");
+  const graphRefsByParentHostname = graphRefsByParentHostnameString
+    ? JSON.parse(graphRefsByParentHostnameString)
+    : {};
+  graphRefsByParentHostname["temp-key"] = graphRef;
+  window.localStorage.setItem(
+    "explorerGraphRefs",
+    JSON.stringify(graphRefsByParentHostname)
+  );
+};
+
 export const Explorer = ({
   navigationProps,
   embeddedExplorerProps,
@@ -156,8 +177,15 @@ export const Explorer = ({
     setEmbeddedExplorerIFrame: (iframe: HTMLIFrameElement) => void;
   };
 }): jsx.JSX.Element => {
-  const [graphRef, setGraphRef] = useState<string>();
+  const [graphRef, setGraphRef] = useState<string>(() =>
+    getGraphRefFromLocalStorage()
+  );
   const [showGraphRefModal, setShowGraphRefModal] = useState(false);
+
+  // set local storage whenever local state changes
+  useEffect(() => {
+    setGraphRefFromLocalStorage(graphRef);
+  }, [graphRef]);
 
   const [schema, setSchema] = useState<IntrospectionQuery | null>(null);
   const [queryCache, setQueryCache] = useState<FetchPolicy>(
@@ -179,11 +207,8 @@ export const Explorer = ({
       "embedded-explorer"
     ) as HTMLIFrameElement;
     const onPostMessageReceived = (event: IncomingMessageEvent) => {
-      // Embedded Explorer sends us a PM when it is ready for a schema
-      if (event.data.name === EXPLORER_LISTENING_FOR_SCHEMA) {
-        setEmbeddedExplorerIFrame(iframe);
-      }
       if (event.data.name === EXPLORER_LISTENING_FOR_HANDSHAKE) {
+        setEmbeddedExplorerIFrame(iframe);
         sendHandshakeToEmbed({
           embeddedExplorerIFrame: iframe,
           graphRef,
@@ -215,7 +240,15 @@ export const Explorer = ({
         // response which means we did hit a graphql endpoint but introspection
         // was specifically disabled
         if (response.errors) {
-          setShowGraphRefModal(true);
+          // if you can't introspect the schema, default to the last used
+          // graph ref, otherwise, trigger the embed to asl the user
+          // for their graph ref, and allow them to authenticate
+          const graphRefFromLocalStorage = getGraphRefFromLocalStorage();
+          if (graphRefFromLocalStorage) {
+            setGraphRefFromLocalStorage(graphRefFromLocalStorage);
+          } else {
+            setShowGraphRefModal(true);
+          }
         }
         if (response.networkStatus === NetworkStatus.error) {
           postMessageToEmbed({
