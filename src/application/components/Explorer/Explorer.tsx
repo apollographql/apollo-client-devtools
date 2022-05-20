@@ -323,7 +323,7 @@ export const Explorer = ({
 
   const embedIframeSrcString = useMemo(
     () =>
-      `${EMBEDDABLE_EXPLORER_URL}?sendRequestsFrom=parent&shouldPersistState=false&showHeadersAndEnvVars=false&shouldShowGlobalHeader=false&theme=${color}${
+      `${EMBEDDABLE_EXPLORER_URL}?sendRequestsFrom=parent&shouldPersistState=false&showHeadersAndEnvVars=false&shouldShowGlobalHeader=false&parentSupportsSubscriptions=true&theme=${color}${
         graphRef ? `&graphRef=${graphRef}` : ""
       }`,
     [color, graphRef]
