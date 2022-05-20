@@ -63,7 +63,7 @@ const mainStyles = css`
 const labelStyles = css`
   display: inline-flex;
   align-items: center;
-  margin: 0 0 0 1rem;
+  margin: 0 2rem 0 0;
   font-size: ${rem(14)};
   color: ${colors.white};
   line-height: ${rem(17)};
@@ -83,6 +83,15 @@ const iFrameStyles = css`
   width: 100vw;
   height: 100%;
   border: none;
+`;
+
+const authorizeButtonStyles = css`
+  width: 175px;
+  height: 25px;
+  cursor: pointer;
+  border: none;
+  border-radius: 2px;
+  color: ${colors.grey.darker};
 `;
 
 function executeOperation({
@@ -297,6 +306,16 @@ export const Explorer = ({
           />
           Load from cache
         </label>
+        {embeddedExplorerIFrame && graphRef && (
+          <button
+            css={authorizeButtonStyles}
+            onClick={() => {
+              setShowGraphRefModal(true);
+            }}
+          >
+            Choose a different Studio graph
+          </button>
+        )}
       </FullWidthLayout.Header>
       <FullWidthLayout.Main css={mainStyles}>
         <iframe
