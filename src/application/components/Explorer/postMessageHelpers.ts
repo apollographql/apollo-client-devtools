@@ -16,8 +16,8 @@ export const SCHEMA_RESPONSE = "SchemaResponse";
 export const DEV_TOOLS_AUTHENTICATE_WITH_GRAPHREF =
   "DevTools_AuthenticateWithGraphRef";
 
-export const EMBEDDABLE_EXPLORER_URL = "https://embed.apollo.local:3000";
-// "https://explorer.embed.apollographql.com";
+export const EMBEDDABLE_EXPLORER_URL =
+  "https://explorer.embed.apollographql.com";
 export const EXPLORER_SUBSCRIPTION_TERMINATION =
   "ExplorerSubscriptionTermination";
 
