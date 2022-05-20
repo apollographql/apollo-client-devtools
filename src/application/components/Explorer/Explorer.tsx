@@ -177,9 +177,7 @@ export const Explorer = ({
     setEmbeddedExplorerIFrame: (iframe: HTMLIFrameElement) => void;
   };
 }): jsx.JSX.Element => {
-  const [graphRef, setGraphRef] = useState<string>(() =>
-    getGraphRefFromLocalStorage()
-  );
+  const [graphRef, setGraphRef] = useState<string>();
   const [showGraphRefModal, setShowGraphRefModal] = useState<
     false | "triggeredByIntrospection" | "triggeredManually"
   >(false);
@@ -187,7 +185,7 @@ export const Explorer = ({
 
   // set local storage whenever local state changes
   useEffect(() => {
-    setGraphRefFromLocalStorage(graphRef);
+    if (graphRef) setGraphRefFromLocalStorage(graphRef);
   }, [graphRef]);
 
   const [schema, setSchema] = useState<IntrospectionQuery | null>(null);
