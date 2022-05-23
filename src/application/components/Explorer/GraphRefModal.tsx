@@ -123,6 +123,7 @@ export const GraphRefModal = ({
                         Graph id
                       </div>
                       <input
+                        autoFocus={true}
                         value={graphId}
                         css={{
                           padding: "1rem",
