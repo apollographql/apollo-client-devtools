@@ -202,9 +202,9 @@ This project is governed by the [Apollo Code of Conduct](https://www.apollograph
 
 ## Maintainers
 
-- [@jcreighton](https://github.com/jcreighton) (Apollo)
-- [@benjamn](https://github.com/benjamn) (Apollo)
-- [@hwillson](https://github.com/hwillson) (Apollo)
+- [@mayakoneval](https://github.com/mayakoneval) (Apollo)
+- [@jephuff](https://github.com/jephuff) (Apollo)
+- [@cheapsteak](https://github.com/cheapsteak) (Apollo)
 
 ## Who is Apollo?
 
