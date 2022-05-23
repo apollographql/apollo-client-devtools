@@ -181,7 +181,7 @@ export const Explorer = ({
 }): jsx.JSX.Element => {
   const [graphRef, setGraphRef] = useState<string>();
   const [showGraphRefModal, setShowGraphRefModal] = useState<
-    false | "triggeredByIntrospection" | "triggeredManually"
+    false | "triggeredByIntrospectionFailure" | "triggeredManually"
   >(false);
   const showGraphRefModalAndIsVisible = isVisible && showGraphRefModal;
   const [newGraphRefLoading, setNewGraphRefLoading] = useState(false);
@@ -258,7 +258,7 @@ export const Explorer = ({
           if (graphRefFromLocalStorage) {
             setGraphRef(graphRefFromLocalStorage);
           } else {
-            setShowGraphRefModal("triggeredByIntrospection");
+            setShowGraphRefModal("triggeredByIntrospectionFailure");
           }
         }
         if (response.networkStatus === NetworkStatus.error) {
@@ -375,8 +375,8 @@ export const Explorer = ({
             onClose={() => setShowGraphRefModal(false)}
             setNewGraphRefLoading={setNewGraphRefLoading}
             newGraphRefLoading={newGraphRefLoading}
-            wasTriggeredByIntrospection={
-              showGraphRefModal === "triggeredByIntrospection"
+            wasTriggeredByIntrospectionFailure={
+              showGraphRefModal === "triggeredByIntrospectionFailure"
             }
           />
         )}

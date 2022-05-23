@@ -18,7 +18,7 @@ export const GraphRefModal = ({
   setNewGraphRefLoading,
   newGraphRefLoading,
   embeddedExplorerIFrame,
-  wasTriggeredByIntrospection,
+  wasTriggeredByIntrospectionFailure,
 }: {
   onClose: () => void;
   graphRef: string | undefined;
@@ -26,7 +26,7 @@ export const GraphRefModal = ({
   setNewGraphRefLoading: (newValue: boolean) => void;
   newGraphRefLoading: boolean;
   embeddedExplorerIFrame: HTMLIFrameElement;
-  wasTriggeredByIntrospection: boolean;
+  wasTriggeredByIntrospectionFailure: boolean;
 }): React.ReactElement => {
   const [graphId, setGraphId] = useState<string>();
   const [graphVariant, setGraphVariant] = useState<string>();
@@ -85,7 +85,7 @@ export const GraphRefModal = ({
                     fontSize: 18,
                   }}
                 >
-                  {wasTriggeredByIntrospection
+                  {wasTriggeredByIntrospectionFailure
                     ? "We could not introspect your schema."
                     : "Choose another graph to populate the Explorer."}
                 </div>
@@ -98,7 +98,7 @@ export const GraphRefModal = ({
                     textAlign: "left",
                   }}
                 >
-                  {wasTriggeredByIntrospection
+                  {wasTriggeredByIntrospectionFailure
                     ? "Would you like to use a schema registered in Apollo Studio to populate Explorer? "
                     : ""}
                   To continue, log in and authorize to use your Studio account.
