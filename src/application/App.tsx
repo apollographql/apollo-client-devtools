@@ -48,25 +48,25 @@ export const App = (): JSX.Element => {
 
   return (
     <>
-      {selected !== Screens.Explorer &&
+      {selected !== Screens.Explorer && (
         <Screen
+          isVisible={undefined}
           navigationProps={{
             queriesCount: data?.watchedQueries?.count,
             mutationsCount: data?.mutationLog?.count,
           }}
           embeddedExplorerProps={{
             embeddedExplorerIFrame,
-            setEmbeddedExplorerIFrame
+            setEmbeddedExplorerIFrame,
           }}
         />
-      }
-      {
-        /**
-         * We need to keep the iframe inside of the `Explorer` loaded at all times
-         * so that we don't reload the iframe when we come to this tab
-         */
-      }
+      )}
+      {/**
+       * We need to keep the iframe inside of the `Explorer` loaded at all times
+       * so that we don't reload the iframe when we come to this tab
+       */}
       <Explorer
+        isVisible={selected === Screens.Explorer}
         navigationProps={{
           queriesCount: data?.watchedQueries?.count,
           mutationsCount: data?.mutationLog?.count,

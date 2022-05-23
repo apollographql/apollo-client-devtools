@@ -27,8 +27,8 @@ import {
   UPDATE,
   RELOADING_TAB,
   RELOAD_TAB_COMPLETE,
-  EXPLORER_SUBSCRIPTION_TERMINATION,
 } from "../constants";
+import { EXPLORER_SUBSCRIPTION_TERMINATION } from "../../application/components/Explorer/postMessageHelpers";
 
 declare global {
   type TCache = any;
