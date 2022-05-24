@@ -85,12 +85,13 @@ const iFrameStyles = css`
 `;
 
 const authorizeButtonStyles = css`
-  width: 175px;
+  width: 185px;
   height: 25px;
   cursor: pointer;
   border: none;
   border-radius: 2px;
   color: ${colors.grey.darker};
+  font-size: 13px;
 `;
 
 function executeOperation({
@@ -143,25 +144,11 @@ function executeOperation({
 }
 
 const getGraphRefFromLocalStorage = () => {
-  const graphRefsByParentHostnameString =
-    window.localStorage.getItem("explorerGraphRefs");
-  const graphRefsByParentHostname = graphRefsByParentHostnameString
-    ? JSON.parse(graphRefsByParentHostnameString)
-    : {};
-  return graphRefsByParentHostname["temp-key"];
+  return window.localStorage.getItem("explorerGraphRef");
 };
 
 const setGraphRefFromLocalStorage = (graphRef: string) => {
-  const graphRefsByParentHostnameString =
-    window.localStorage.getItem("explorerGraphRefs");
-  const graphRefsByParentHostname = graphRefsByParentHostnameString
-    ? JSON.parse(graphRefsByParentHostnameString)
-    : {};
-  graphRefsByParentHostname["temp-key"] = graphRef;
-  window.localStorage.setItem(
-    "explorerGraphRefs",
-    JSON.stringify(graphRefsByParentHostname)
-  );
+  window.localStorage.setItem("explorerGraphRef", graphRef);
 };
 
 export const Explorer = ({
