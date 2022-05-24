@@ -144,25 +144,11 @@ function executeOperation({
 }
 
 const getGraphRefFromLocalStorage = () => {
-  const graphRefsByParentHostnameString =
-    window.localStorage.getItem("explorerGraphRefs");
-  const graphRefsByParentHostname = graphRefsByParentHostnameString
-    ? JSON.parse(graphRefsByParentHostnameString)
-    : {};
-  return graphRefsByParentHostname["temp-key"];
+  return window.localStorage.getItem("explorerGraphRef");
 };
 
 const setGraphRefFromLocalStorage = (graphRef: string) => {
-  const graphRefsByParentHostnameString =
-    window.localStorage.getItem("explorerGraphRefs");
-  const graphRefsByParentHostname = graphRefsByParentHostnameString
-    ? JSON.parse(graphRefsByParentHostnameString)
-    : {};
-  graphRefsByParentHostname["temp-key"] = graphRef;
-  window.localStorage.setItem(
-    "explorerGraphRefs",
-    JSON.stringify(graphRefsByParentHostname)
-  );
+  window.localStorage.setItem("explorerGraphRef", graphRef);
 };
 
 export const Explorer = ({
