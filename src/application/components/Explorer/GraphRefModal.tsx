@@ -48,7 +48,7 @@ export const GraphRefModal = ({
           height: 400,
           position: "absolute",
           margin: "auto",
-          top: "150px",
+          top: "20%",
           left: "calc(50% - 250px)",
           display: "flex",
           backgroundColor: "white",
