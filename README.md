@@ -186,6 +186,14 @@ Release process, for those with permission:
 3. Add the `apollo-client-devtools/dist/apollo_client_developer_tools-X.X.X.zip` file.
 4. The add-on should now be installed.
 
+**NOTE: you need to add this to the manifest to be able to test the auth flow in the embedded Explorer:**
+```
+  "cross_origin_opener_policy": {
+    "value": "same-origin-allow-popups"
+  },
+```
+This is because firefox won't set `window.opener` for `embed.apollo.local` / `localhost:4000`
+
 #### Submit for review
 
 1. Login to the [Firefox developer hub](https://addons.mozilla.org/developers) (user/pass is in our shared password system as "Firefox Developer Account").
