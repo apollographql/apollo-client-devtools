@@ -98,11 +98,20 @@ export const GraphRefModal = ({
                     textAlign: "left",
                   }}
                 >
-                  {wasTriggeredByIntrospectionFailure
-                    ? "Would you like to use a schema registered in Apollo Studio to populate Explorer? "
-                    : ""}
-                  To continue, log in and authorize to use your Studio account.
+                  <span>
+                    {wasTriggeredByIntrospectionFailure
+                      ? "Would you like to use a schema registered in Apollo Studio to populate Explorer? "
+                      : ""}
+                    To continue, log in and authorize to use your Studio
+                    account.
+                    <span css={{ fontWeight: 600 }}>
+                      {" "}
+                      You must enable popups on your browser to use this
+                      feature.
+                    </span>
+                  </span>
                 </p>
+
                 <div
                   css={{
                     display: "flex",
