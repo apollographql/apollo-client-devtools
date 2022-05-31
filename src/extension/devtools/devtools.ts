@@ -41,8 +41,6 @@ function startRequestInterval(ms = 500) {
   return () => clearInterval(id);
 }
 
-sendMessageToClient(DEVTOOLS_INITIALIZED);
-
 let isPanelCreated = false;
 let isAppInitialized = false;
 
@@ -139,3 +137,5 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, ({ payload }) => {
     );
   }
 });
+
+sendMessageToClient(DEVTOOLS_INITIALIZED);
