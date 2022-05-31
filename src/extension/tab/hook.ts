@@ -114,6 +114,9 @@ function initializeHook() {
   clientRelay.listen(DEVTOOLS_INITIALIZED, () => {
     if (hook.ApolloClient) {
       sendHookDataToDevTools(CREATE_DEVTOOLS_PANEL);
+    } else {
+      // try finding client again, if it's found findClient will send the CREATE_DEVTOOLS_PANEL event
+      findClient()
     }
   });
 
