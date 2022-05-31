@@ -99,31 +99,25 @@ function initializeHook() {
     sendMessageToTab(EXPLORER_RESPONSE, payload);
   }
 
-  clientRelay.listen(DEVTOOLS_INITIALIZED, () => {
-    if (hook.ApolloClient) {
-      // Tab Relay forwards this the devtools
-      sendMessageToTab(
-        CREATE_DEVTOOLS_PANEL,
-        JSON.stringify({
-          queries: hook.getQueries(),
-          mutations: hook.getMutations(),
-          cache: hook.getCache(),
-        })
-      );
-    }
-  });
-
-  clientRelay.listen(REQUEST_DATA, () => {
+  function sendHookDataToDevTools(eventName: typeof CREATE_DEVTOOLS_PANEL | typeof UPDATE) {
     // Tab Relay forwards this the devtools
     sendMessageToTab(
-      UPDATE,
+      eventName,
       JSON.stringify({
         queries: hook.getQueries(),
         mutations: hook.getMutations(),
         cache: hook.getCache(),
       })
     );
+  }
+
+  clientRelay.listen(DEVTOOLS_INITIALIZED, () => {
+    if (hook.ApolloClient) {
+      sendHookDataToDevTools(CREATE_DEVTOOLS_PANEL);
+    }
   });
+
+  clientRelay.listen(REQUEST_DATA, () => sendHookDataToDevTools(UPDATE));
 
   clientRelay.listen(EXPLORER_REQUEST, ({ payload }) => {
     const {
