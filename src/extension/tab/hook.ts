@@ -242,6 +242,7 @@ function initializeHook() {
     }
 
     interval = setInterval(initializeDevtoolsHook, 1000);
+    initializeDevtoolsHook() // call immediately to reduce lag if devtools are already available
   }
 
   // Attempt to find the client on a 1-second interval for 10 seconds max
