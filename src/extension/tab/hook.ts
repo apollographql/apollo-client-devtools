@@ -213,6 +213,9 @@ function initializeHook() {
     }
   });
 
+  /**
+   * Attempt to find the client on a 1-second interval for 10 seconds max
+   */
   function findClient() {
     let interval;
     let count = 0;
@@ -245,7 +248,6 @@ function initializeHook() {
     initializeDevtoolsHook() // call immediately to reduce lag if devtools are already available
   }
 
-  // Attempt to find the client on a 1-second interval for 10 seconds max
   findClient();
 }
 
