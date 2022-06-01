@@ -99,31 +99,28 @@ function initializeHook() {
     sendMessageToTab(EXPLORER_RESPONSE, payload);
   }
 
-  clientRelay.listen(DEVTOOLS_INITIALIZED, () => {
-    if (hook.ApolloClient) {
-      // Tab Relay forwards this the devtools
-      sendMessageToTab(
-        CREATE_DEVTOOLS_PANEL,
-        JSON.stringify({
-          queries: hook.getQueries(),
-          mutations: hook.getMutations(),
-          cache: hook.getCache(),
-        })
-      );
-    }
-  });
-
-  clientRelay.listen(REQUEST_DATA, () => {
+  function sendHookDataToDevTools(eventName: typeof CREATE_DEVTOOLS_PANEL | typeof UPDATE) {
     // Tab Relay forwards this the devtools
     sendMessageToTab(
-      UPDATE,
+      eventName,
       JSON.stringify({
         queries: hook.getQueries(),
         mutations: hook.getMutations(),
         cache: hook.getCache(),
       })
     );
+  }
+
+  clientRelay.listen(DEVTOOLS_INITIALIZED, () => {
+    if (hook.ApolloClient) {
+      sendHookDataToDevTools(CREATE_DEVTOOLS_PANEL);
+    } else {
+      // try finding client again, if it's found findClient will send the CREATE_DEVTOOLS_PANEL event
+      findClient()
+    }
   });
+
+  clientRelay.listen(REQUEST_DATA, () => sendHookDataToDevTools(UPDATE));
 
   clientRelay.listen(EXPLORER_REQUEST, ({ payload }) => {
     const {
@@ -213,6 +210,9 @@ function initializeHook() {
     }
   });
 
+  /**
+   * Attempt to find the client on a 1-second interval for 10 seconds max
+   */
   function findClient() {
     let interval;
     let count = 0;
@@ -238,13 +238,16 @@ function initializeHook() {
 
         clearInterval(interval);
         sendMessageToTab(CLIENT_FOUND);
+        // incase initial update was missed because the client wasn't ready, send the create devtools event.
+        // devtools checks to see if it's already created, so this won't create duplicate tabs
+        sendHookDataToDevTools(CREATE_DEVTOOLS_PANEL);
       }
     }
 
     interval = setInterval(initializeDevtoolsHook, 1000);
+    initializeDevtoolsHook() // call immediately to reduce lag if devtools are already available
   }
 
-  // Attempt to find the client on a 1-second interval for 10 seconds max
   findClient();
 }
 
