@@ -34,7 +34,7 @@ declare global {
   type TCache = any;
 
   interface Window {
-    __APOLLO_CLIENT__: ApolloClient<TCache>;
+    __APOLLO_CLIENT__?: ApolloClient<TCache>;
   }
 }
 
@@ -45,6 +45,36 @@ type Hook = {
   getMutations: () => QueryInfo[];
   getCache: () => void;
 };
+
+/**
+ * Look through the window and any available iframes to find a client instance
+ * in an __APOLLO_CLIENT__ property.
+ */
+export function findClient(): ApolloClient<any> | undefined {
+  let currentWindow: Window | undefined = window;
+
+  // Account for nested iframes by doing a breadth-first-search through
+  // all iframes, and all iframes contained within those iframes, and so on.
+  const windowsQueue: Window[] = [];
+  do {
+    if (currentWindow.__APOLLO_CLIENT__) {
+      return currentWindow.__APOLLO_CLIENT__;
+    }
+
+    const iframesInDocument = currentWindow.document.getElementsByTagName('iframe');
+    for (const iframe of iframesInDocument) {
+      // Check for contentDocument to ensure we have access to it; i.e. same-origin policy
+      if (iframe.contentWindow && iframe.contentDocument) {
+        windowsQueue.unshift(iframe.contentWindow);
+      }
+    }
+
+    currentWindow = windowsQueue.shift();
+  }
+  while (currentWindow);
+
+  return undefined;
+}
 
 function initializeHook() {
   const hook: Hook = {
@@ -213,14 +243,15 @@ function initializeHook() {
     }
   });
 
-  function findClient() {
+  function findAndRegisterClient() {
     let interval;
     let count = 0;
 
     function initializeDevtoolsHook() {
       if (count++ > 10) clearInterval(interval);
-      if (window.__APOLLO_CLIENT__) {
-        hook.ApolloClient = window.__APOLLO_CLIENT__;
+      const foundClient = findClient();
+      if (foundClient) {
+        hook.ApolloClient = foundClient;
         hook.ApolloClient.__actionHookForDevTools(handleActionHookForDevtools);
         hook.getQueries = () =>
           getQueries((hook.ApolloClient as any).queryManager.queries);
@@ -231,7 +262,7 @@ function initializeHook() {
                 (
                   hook.ApolloClient as any
                 ).queryManager.mutationStore?.getStore()
-              : // Apollo Client 3.3
+                : // Apollo Client 3.3
                 (hook.ApolloClient as any).queryManager.mutationStore
           );
         hook.getCache = () => hook.ApolloClient?.cache.extract(true);
@@ -245,7 +276,7 @@ function initializeHook() {
   }
 
   // Attempt to find the client on a 1-second interval for 10 seconds max
-  findClient();
+  findAndRegisterClient();
 }
 
 initializeHook();
