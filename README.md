@@ -186,14 +186,6 @@ Release process, for those with permission:
 3. Add the `apollo-client-devtools/dist/apollo_client_developer_tools-X.X.X.zip` file.
 4. The add-on should now be installed.
 
-**NOTE: you need to add this to the manifest to be able to test the auth flow in the embedded Explorer:**
-```
-  "cross_origin_opener_policy": {
-    "value": "same-origin-allow-popups"
-  },
-```
-This is because firefox won't set `window.opener` for `embed.apollo.local` / `localhost:4000`
-
 #### Submit for review
 
 1. Login to the [Firefox developer hub](https://addons.mozilla.org/developers) (user/pass is in our shared password system as "Firefox Developer Account").
@@ -201,7 +193,7 @@ This is because firefox won't set `window.opener` for `embed.apollo.local` / `lo
 3. Click on the "Upload New Version" link in the top left side menu.
 4. Agree to any new Firefox distribution agreements or policies that might show up.
 5. When the "Submit a New Version" page shows, click on the file upload button in the "Upload Version" section (keeping "Firefox" as the only option checked in the compatible application section).
-6. Choose the `apollo-client-devtools/dist/apollo_client_developer_tools-X.X.X.zip` for upload and submit.
+6. Choose the `apollo-client-devtools/dist/apollo_client_developer_tools-X.X.X.zip` for upload and submit. **NOTE: when uploading to Firefox, you also must include the source code. A zipped version of the `apollo-client-devtools` repo will do**
 7. After the file has been validated, continue with the submission.
 
 ## Code of Conduct
