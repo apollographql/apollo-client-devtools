@@ -19,12 +19,12 @@ export function getQueries(queryMap): QueryInfo[] {
     queries = [...queryMap.values()].map(({
       document,
       variables,
-      diff,
+      lastDiff,
     }) => ({
         document,
         source: document?.loc?.source,
         variables,
-        cachedData: diff?.result,
+        cachedData: lastDiff?.diff?.result,
       })
     )
   }
