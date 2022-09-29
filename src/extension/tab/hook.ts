@@ -12,6 +12,7 @@ import Relay from "../../Relay";
 import {
   QueryInfo,
   getQueries,
+  getQueriesLegacy,
   getMutations,
   getMainDefinition,
 } from "./helpers";
@@ -222,8 +223,13 @@ function initializeHook() {
       if (window.__APOLLO_CLIENT__) {
         hook.ApolloClient = window.__APOLLO_CLIENT__;
         hook.ApolloClient.__actionHookForDevTools(handleActionHookForDevtools);
-        hook.getQueries = () =>
-          getQueries((hook.ApolloClient as any).queryManager.getObservableQueries("active"))
+        hook.getQueries = () =>{
+          if((hook.ApolloClient as any).queryManager.getObservableQueries){
+            return getQueries((hook.ApolloClient as any).queryManager.getObservableQueries("active"));
+          } else {
+            return getQueriesLegacy((hook.ApolloClient as any).queryManager.queries);
+          }
+        }
         hook.getMutations = () =>
           getMutations(
             (hook.ApolloClient as any).queryManager.mutationStore?.getStore

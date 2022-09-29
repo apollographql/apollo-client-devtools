@@ -17,6 +17,7 @@ type ObservableQuery = {
   queryInfo: QueryInfo
 }
 
+// Transform the map of observable queries into a list of QueryInfo objects usable by DevTools
 export function getQueries(observableQueries: ObservableQuery[]): QueryInfo[] {
   const queries: QueryInfo[] = [];
   if (observableQueries) {
@@ -32,6 +33,25 @@ export function getQueries(observableQueries: ObservableQuery[]): QueryInfo[] {
   }
   return queries;
 }
+
+// Version of getQueries compatible with Apollo Client versions < 3.4.0
+export function getQueriesLegacy(queryMap: any): QueryInfo[] {
+    let queries: QueryInfo[] = [];
+    if (queryMap) {
+      queries = [...queryMap.values()].map(({
+        document,
+        variables,
+        diff,
+      }) => ({
+          document,
+          source: document?.loc?.source,
+          variables,
+          cachedData: diff?.result,
+        })
+      )
+    }
+    return queries;
+  }
 
 export function getMutations(mutationsObj): QueryInfo[] {
   const keys = Object.keys(mutationsObj);
