@@ -10,27 +10,48 @@ export type QueryInfo = {
   source?: Source,
   variables?: Record<string, any>;
   diff?: Record<string, any>;
+  cachedData?: any; // Not a member of the actual Apollo Client QueryInfo type
 }
 
-export function getQueries(queryMap): QueryInfo[] {
-  let queries: QueryInfo[] = [];
+type ObservableQuery = {
+  queryInfo: QueryInfo
+}
 
-  if (queryMap) {
-    queries = [...queryMap.values()].map(({
-      document,
-      variables,
-      diff,
-    }) => ({
-        document,
+// Transform the map of observable queries into a list of QueryInfo objects usable by DevTools
+export function getQueries(observableQueries: ObservableQuery[]): QueryInfo[] {
+  const queries: QueryInfo[] = [];
+  if (observableQueries) {
+    observableQueries.forEach((observableQuery)=>{
+      const {document, variables, diff} = observableQuery.queryInfo;
+      queries.push({ 
+        document, 
         source: document?.loc?.source,
         variables,
         cachedData: diff?.result,
-      })
-    )
+      });
+    })
   }
-
   return queries;
 }
+
+// Version of getQueries compatible with Apollo Client versions < 3.4.0
+export function getQueriesLegacy(queryMap: any): QueryInfo[] {
+    let queries: QueryInfo[] = [];
+    if (queryMap) {
+      queries = [...queryMap.values()].map(({
+        document,
+        variables,
+        diff,
+      }) => ({
+          document,
+          source: document?.loc?.source,
+          variables,
+          cachedData: diff?.result,
+        })
+      )
+    }
+    return queries;
+  }
 
 export function getMutations(mutationsObj): QueryInfo[] {
   const keys = Object.keys(mutationsObj);
