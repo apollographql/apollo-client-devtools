@@ -2,12 +2,9 @@
 // a Map. Devtools are expecting to work with an object, so this function
 // will convert an AC3 query info Map to an object, while also filtering out
 // the query details we don't need.
-function filterQueryInfo(queryInfoMap, useObservableQueries) {
+function filterQueryInfo(queryInfoMap) {
   const filteredQueryInfo = {};
   queryInfoMap.forEach((value, key) => {
-    if (useObservableQueries){
-      value = value.queryInfo;
-    }
     filteredQueryInfo[key] = {
       document: value.document,
       graphQLErrors: value.graphQLErrors,
@@ -29,14 +26,9 @@ function getQueries(client) {
     if (client.queryManager.queryStore.getStore) {
       return () => client.queryManager.queryStore.getStore();
     }
-  } 
-  // Apollo Client < 3.4.0
-  else if (client.queryManager.queries) {
-    return () => filterQueryInfo(client.queryManager.queries, false);
-  }
-  // Apollo Client >= 3.4.0
-  else if (client.queryManager.getObservableQueries) {
-    return () => filterQueryInfo(client.queryManager.getObservableQueries("active"), true);
+  // Apollo Client 3
+  } else if (client.queryManager.queries) {
+    return () => filterQueryInfo(client.queryManager.queries);
   }
 }
 
