@@ -223,7 +223,7 @@ function initializeHook() {
         hook.ApolloClient = window.__APOLLO_CLIENT__;
         hook.ApolloClient.__actionHookForDevTools(handleActionHookForDevtools);
         hook.getQueries = () =>
-          getQueries((hook.ApolloClient as any).queryManager.queries);
+          getQueries((hook.ApolloClient as any).queryManager.getObservableQueries("active"))
         hook.getMutations = () =>
           getMutations(
             (hook.ApolloClient as any).queryManager.mutationStore?.getStore

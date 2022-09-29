@@ -10,25 +10,26 @@ export type QueryInfo = {
   source?: Source,
   variables?: Record<string, any>;
   diff?: Record<string, any>;
+  cachedData?: any; // Not a member of the actual Apollo Client QueryInfo type
 }
 
-export function getQueries(queryMap): QueryInfo[] {
-  let queries: QueryInfo[] = [];
+type ObservableQuery = {
+  queryInfo: QueryInfo
+}
 
-  if (queryMap) {
-    queries = [...queryMap.values()].map(({
-      document,
-      variables,
-      diff,
-    }) => ({
-        document,
+export function getQueries(observableQueries: ObservableQuery[]): QueryInfo[] {
+  const queries: QueryInfo[] = [];
+  if (observableQueries) {
+    observableQueries.forEach((observableQuery)=>{
+      const {document, variables, diff} = observableQuery.queryInfo;
+      queries.push({ 
+        document, 
         source: document?.loc?.source,
         variables,
         cachedData: diff?.result,
-      })
-    )
+      });
+    })
   }
-
   return queries;
 }
 
