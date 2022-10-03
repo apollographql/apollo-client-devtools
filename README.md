@@ -193,7 +193,7 @@ Release process, for those with permission:
 3. Click on the "Upload New Version" link in the top left side menu.
 4. Agree to any new Firefox distribution agreements or policies that might show up.
 5. When the "Submit a New Version" page shows, click on the file upload button in the "Upload Version" section (keeping "Firefox" as the only option checked in the compatible application section).
-6. Choose the `apollo-client-devtools/dist/apollo_client_developer_tools-X.X.X.zip` for upload and submit. **NOTE: when uploading to Firefox, you also must include the source code. A zipped version of the `apollo-client-devtools` repo will do**
+6. Choose the `apollo-client-devtools/dist/apollo_client_developer_tools-X.X.X.zip` for upload and submit. **NOTE: when uploading to Firefox, you also must include the source code. A zipped version of the `apollo-client-devtools` repo with the built files, node_modules, tests & development folder deleted will do**
 7. After the file has been validated, continue with the submission.
 
 ## Code of Conduct
