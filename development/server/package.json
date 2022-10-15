@@ -10,6 +10,6 @@
     "apollo-datasource-rest": "^0.15.0",
     "apollo-server": "^2.14.3",
     "graphql": "^15.1.0",
-    "lowdb": "^1.0.0"
+    "lowdb": "^3.0.0"
   }
 }
