@@ -5,7 +5,9 @@ import { jsx, css } from "@emotion/react";
 import { rem } from "polished";
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@reach/tabs";
 import { colors } from "@apollo/space-kit/colors";
-import { GraphqlCodeBlock } from "graphql-syntax-highlighter-react";
+import { GraphQLCodeBlock } from "react-graphql-syntax-highlighter";
+import 'react-graphql-syntax-highlighter/dist/style';
+
 import JSONTree from "react-json-tree";
 import { IconCopy } from "@apollo/space-kit/icons/IconCopy";
 import { CopyToClipboard } from "react-copy-to-clipboard";
@@ -129,10 +131,10 @@ export const QueryViewer = ({
           <IconCopy css={copyIconStyle} data-testid="copy-query-string" />
         </CopyToClipboard>
       </h4>
-      <GraphqlCodeBlock
+      <GraphQLCodeBlock
         className="GraphqlCodeBlock"
         css={queryStringMain}
-        queryBody={queryString}
+        src={queryString}
       />
       <Tabs onChange={(index) => setCurrentTab(index)}>
         <TabList css={queryDataHeader}>
