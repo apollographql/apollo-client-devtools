@@ -53,7 +53,6 @@ export const MutationViewer = ({
         </CopyToClipboard>
       </h4>
       <GraphQLCodeBlock
-        className="GraphqlCodeBlock"
         css={queryStringMain}
         src={mutationString}
       />

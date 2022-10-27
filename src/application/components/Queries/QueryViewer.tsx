@@ -132,7 +132,6 @@ export const QueryViewer = ({
         </CopyToClipboard>
       </h4>
       <GraphQLCodeBlock
-        className="GraphqlCodeBlock"
         css={queryStringMain}
         src={queryString}
       />
