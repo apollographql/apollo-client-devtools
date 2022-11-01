@@ -20,6 +20,23 @@ The Apollo Client Browser Devtools appear as an "Apollo" tab in your web browser
 
 ![Apollo Client Browser Devtools](./assets/ac-browser-devtools-3.png)
 
+## Apollo Maintainers
+
+- [@benjamn](https://github.com/benjamn)
+- [@alessbell](https://github.com/alessbell)
+- [@bignimbus](https://github.com/bignimbus)
+- [@jpvajda](https://github.com/jpvajda)
+- [@mrdoombringer](https://github.com/mrdoombringer)
+- [@jerelmiller](https://github.com/jerelmiller)
+
+## Apollo Client version support
+
+> if you are using an older version of Apollo Client and have issues with our Client Browser Devtools we recommend you upgrade to the latest version of Apollo Client.
+
+- We provide active support for the most current release of [Apollo Client](https://github.com/apollographql/apollo-client) for use with our Client Browser DevTools.
+- We do our best to support older `3.x` versions of [Apollo Client](https://github.com/apollographql/apollo-client/releases) for use with our Client Browser DevTools.
+- We do not offer support of `2.x` versions of [Apollo Client](https://github.com/apollographql/apollo-client/releases) for use with our Client Browser DevTools.
+
 ## Installation
 
 You can install the extension via [Firefox Browser Add-ons](https://addons.mozilla.org/firefox/addon/apollo-developer-tools/) or the [Chrome Webstore](https://chrome.google.com/webstore/detail/apollo-client-developer-t/jdkknkkbebbapilgoeccciglkfbmbnfm). If you want to install a local version of the extension instead, skip ahead to the [Developing](#Developing) section.
@@ -117,7 +134,7 @@ For builds, we use the `build` folder. After a build, all of the files needed to
 
 The Apollo Client Devtools project is split up by Screens. In the navigation of the Apollo Client Devtools you can select from Explorer, Queries, Mutations and Cache. Each of these Screens has their own React component and is wrapped in a Layout component.
 
-#### Explorer:
+#### Explorer
 
 The Explorer is an Embedded iframe that renders Apollo Studio's Explorer. The Explorer accepts [post messages](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage) from the dev tools to populate the schema and to communicate network requests and responses. All network requests are done in this app via the parent page's Apollo Client instance. Documentation for all of the configurable properties of the Embedded Explorer can be found in the [studio docs](https://www.apollographql.com/docs/studio/sharing-graphs/#embedding-the-explorer).
 
@@ -210,10 +227,10 @@ This project is governed by the [Apollo Code of Conduct](https://www.apollograph
 
 [Apollo](https://apollographql.com/) builds open-source software and a graph platform to unify GraphQL across your apps and services. We help you ship faster with:
 
-* [Apollo Studio](https://www.apollographql.com/studio/develop/) – A free, end-to-end platform for managing your GraphQL lifecycle. Track your GraphQL schemas in a hosted registry to create a source of truth for everything in your graph. Studio provides an IDE (Apollo Explorer) so you can explore data, collaborate on queries, observe usage, and safely make schema changes.
-* [Apollo Federation](https://www.apollographql.com/apollo-federation) – The industry-standard open architecture for building a distributed graph. Use Apollo’s gateway to compose a unified graph from multiple subgraphs, determine a query plan, and route requests across your services.
-* [Apollo Client](https://www.apollographql.com/apollo-client/) – The most popular GraphQL client for the web. Apollo also builds and maintains [Apollo iOS](https://github.com/apollographql/apollo-ios) and [Apollo Android](https://github.com/apollographql/apollo-android).
-* [Apollo Server](https://www.apollographql.com/docs/apollo-server/) – A production-ready JavaScript GraphQL server that connects to any microservice, API, or database. Compatible with all popular JavaScript frameworks and deployable in serverless environments.
+- [Apollo Studio](https://www.apollographql.com/studio/develop/) – A free, end-to-end platform for managing your GraphQL lifecycle. Track your GraphQL schemas in a hosted registry to create a source of truth for everything in your graph. Studio provides an IDE (Apollo Explorer) so you can explore data, collaborate on queries, observe usage, and safely make schema changes.
+- [Apollo Federation](https://www.apollographql.com/apollo-federation) – The industry-standard open architecture for building a distributed graph. Use Apollo’s gateway to compose a unified graph from multiple subgraphs, determine a query plan, and route requests across your services.
+- [Apollo Client](https://www.apollographql.com/apollo-client/) – The most popular GraphQL client for the web. Apollo also builds and maintains [Apollo iOS](https://github.com/apollographql/apollo-ios) and [Apollo Android](https://github.com/apollographql/apollo-android).
+- [Apollo Server](https://www.apollographql.com/docs/apollo-server/) – A production-ready JavaScript GraphQL server that connects to any microservice, API, or database. Compatible with all popular JavaScript frameworks and deployable in serverless environments.
 
 ## Learn how to build with Apollo
 
