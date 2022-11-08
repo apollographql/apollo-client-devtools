@@ -20,7 +20,7 @@ The Apollo Client Browser Devtools appear as an "Apollo" tab in your web browser
 
 ![Apollo Client Browser Devtools](./assets/ac-browser-devtools-3.png)
 
-## Apollo Maintainers
+## Maintainers
 
 - [@benjamn](https://github.com/benjamn)
 - [@alessbell](https://github.com/alessbell)
