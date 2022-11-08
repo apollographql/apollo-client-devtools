@@ -33,7 +33,7 @@ The Apollo Client Browser Devtools appear as an "Apollo" tab in your web browser
 
 > if you are using an older version of Apollo Client and have issues with our Client Browser Devtools we recommend you upgrade to the latest version of Apollo Client.
 
-- We provide active support for the most current release of [Apollo Client](https://github.com/apollographql/apollo-client) for use with our Client Browser DevTools.
+- We provide active support for the current minor release of [Apollo Client](https://github.com/apollographql/apollo-client) for use with our Client Browser DevTools.
 - We do our best to support older `3.x` versions of [Apollo Client](https://github.com/apollographql/apollo-client/releases) for use with our Client Browser DevTools.
 - We do not offer support of `2.x` versions of [Apollo Client](https://github.com/apollographql/apollo-client/releases) for use with our Client Browser DevTools.
 
