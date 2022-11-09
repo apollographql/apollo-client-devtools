@@ -6,7 +6,7 @@ import { rem } from "polished";
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@reach/tabs";
 import { colors } from "@apollo/space-kit/colors";
 import { GraphQLCodeBlock } from "react-graphql-syntax-highlighter";
-import 'react-graphql-syntax-highlighter/dist/style';
+import 'react-graphql-syntax-highlighter/dist/style.css';
 
 import JSONTree from "react-json-tree";
 import { IconCopy } from "@apollo/space-kit/icons/IconCopy";
