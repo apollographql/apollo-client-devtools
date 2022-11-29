@@ -22,7 +22,9 @@ export function getQueries(observableQueries: ObservableQuery[]): QueryInfo[] {
   const queries: QueryInfo[] = [];
   if (observableQueries) {
     observableQueries.forEach((observableQuery)=>{
-      const {document, variables, diff} = observableQuery.queryInfo;
+      const {document, variables} = observableQuery.queryInfo;
+      const diff = (observableQuery.queryInfo as any).getDiff();
+
       queries.push({ 
         document, 
         source: document?.loc?.source,
