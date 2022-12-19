@@ -22,12 +22,13 @@ The Apollo Client Browser Devtools appear as an "Apollo" tab in your web browser
 
 ## Maintainers
 
-- [@benjamn](https://github.com/benjamn)
-- [@alessbell](https://github.com/alessbell)
-- [@bignimbus](https://github.com/bignimbus)
-- [@jpvajda](https://github.com/jpvajda)
-- [@mrdoombringer](https://github.com/mrdoombringer)
-- [@jerelmiller](https://github.com/jerelmiller)
+|Name|Username|
+|---|---|
+|Ben Newman|[@benjamn](https://github.com/benjamn)|
+|Alessia Bellisario|[@alessbell](https://github.com/alessbell)|
+|Jeff Auriemma|[@bignimbus](https://github.com/bignimbus)|
+|Hugh Willson|[@hwillson](https://github.com/hwillson)|
+|Jerel Miller|[@jerelmiller](https://github.com/jerelmiller)|
 
 ## Apollo Client version support
 
