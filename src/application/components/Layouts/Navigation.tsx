@@ -7,13 +7,7 @@ import { rem } from "polished";
 import { colors } from "@apollo/space-kit/colors";
 import { ApolloLogo } from "@apollo/space-kit/icons/ApolloLogo";
 import { clients, currentClient } from "../..";
-
-export enum Screens {
-  Cache = "cache",
-  Queries = "queries",
-  Mutations = "mutations",
-  Explorer = "explorer",
-}
+import { Screens } from "./screens";
 
 type NavButtonProps = {
   isSelected: boolean;

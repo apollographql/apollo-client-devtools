@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useReactiveVar, gql, useQuery, makeVar } from "@apollo/client";
 
-import { currentScreen, Screens } from "./components/Layouts/Navigation";
+import { currentScreen } from "./components/Layouts/Navigation";
+import { Screens } from "./components/Layouts/screens";
 import { Queries } from "./components/Queries/Queries";
 import { Mutations } from "./components/Mutations/Mutations";
 import { Explorer } from "./components/Explorer/Explorer";
@@ -69,8 +70,8 @@ export const App = (): JSX.Element => {
         <Screen
           isVisible={undefined}
           navigationProps={{
-            queriesCount: data?.client?.watchedQueries?.count,
-            mutationsCount: data?.client?.mutationLog?.count,
+            queriesCount: data?.client?.watchedQueries?.count ?? 0,
+            mutationsCount: data?.client?.mutationLog?.count ?? 0,
           }}
           embeddedExplorerProps={{
             embeddedExplorerIFrame,

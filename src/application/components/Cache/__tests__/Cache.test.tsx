@@ -3,7 +3,7 @@ import { within, waitFor, fireEvent } from "@testing-library/react";
 
 import { Cache } from "../Cache";
 import { renderWithApolloClient } from "../../../utilities/testing/renderWithApolloClient";
-import { client, writeData } from "../../../index";
+import { client, currentClient, writeData } from "../../../index";
 
 const CACHE_DATA = {
   "Result:1": {
@@ -65,13 +65,18 @@ describe("Cache component tests", () => {
 
   describe("With cache data", () => {
     beforeEach(() => {
-      client.resetStore();
-
+      const clientId = "client-1";
+      currentClient(clientId);
       writeData({
+        id: clientId,
         queries: [],
         mutations: [],
         cache: JSON.stringify(CACHE_DATA),
       });
+    });
+
+    afterEach(() => {
+      client.resetStore();
     });
 
     it("should show list of root cache ids in the sidebar", () => {
@@ -122,7 +127,10 @@ describe("Cache component tests", () => {
     const selectedMainStyles = "background-color: yellow";
 
     beforeEach(() => {
+      const clientId = "client-1";
+      currentClient(clientId);
       writeData({
+        id: clientId,
         queries: [],
         mutations: [],
         cache: JSON.stringify(CACHE_DATA),
