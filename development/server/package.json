@@ -4,12 +4,15 @@
   "private": true,
   "scripts": {
     "clean": "rm db.json && touch db.json",
-    "start": "npm run clean && node index.js"
+    "start": "npm run clean && nodemon --watch './**/*.js' index.js"
   },
   "dependencies": {
     "@apollo/datasource-rest": "^5.0.1",
     "@apollo/server": "^4.3.0",
     "graphql": "^16.6.0",
     "lowdb": "^1.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
   }
 }
