@@ -1,11 +1,14 @@
 /* eslint-disable */
-const path = require("path");
-const CopyPlugin = require("copy-webpack-plugin");
-const TerserPlugin = require("terser-webpack-plugin");
-const WebExtPlugin = require("./WebExtPlugin");
+import path from 'path';
+import url from 'url';
+import CopyPlugin from 'copy-webpack-plugin';
+import TerserPlugin from 'terser-webpack-plugin';
+import WebExtPlugin from './WebExtPlugin.js';
 /* eslint-enable */
 
-module.exports = (env) => {
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+
+export default (env) => {
   const devOptions =
     env.NODE_ENV === "development"
       ? {
