@@ -1,10 +1,8 @@
-/* eslint-disable */
 import path from 'path';
 import url from 'url';
 import CopyPlugin from 'copy-webpack-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
 import WebExtPlugin from 'web-ext-plugin';
-/* eslint-enable */
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
