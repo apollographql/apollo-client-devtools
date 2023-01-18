@@ -98,6 +98,7 @@ export function Cache({ navigationProps }: {
               cacheId={cacheId}
               data={parsedData[cacheId]}
               searchResults={searchResults}
+              setCacheId={setCacheId}
             />
           )}
         </Main>
