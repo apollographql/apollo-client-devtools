@@ -1,8 +1,9 @@
-const { ApolloServer, gql } = require('apollo-server');
+const { ApolloServer } = require('@apollo/server');
+const { startStandaloneServer } = require('@apollo/server/standalone');
 const ColorAPI = require('./api/color');
 const db = require('./db');
 
-const typeDefs = gql`
+const typeDefs = `#graphql
   enum Mode {
     MONOCHROME
     MONOCHROME_DARK
@@ -103,15 +104,22 @@ const resolvers = {
   },
 };
 
-const server = new ApolloServer({ 
-  typeDefs, 
-  resolvers, 
-  dataSources: () => ({
-    colorAPI: new ColorAPI(),
-    db,
-  })
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
 });
 
-server.listen().then(({ url }) => {
+startStandaloneServer(server, {
+  context: () => {
+    const { cache } = server;
+
+    return {
+      dataSources: {
+        colorAPI: new ColorAPI({ cache }),
+        db,
+      },
+    };
+  },
+}).then(({ url }) => {
   console.log(`🚀  Server ready at ${url}`);
 });
