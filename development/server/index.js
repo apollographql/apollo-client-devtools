@@ -74,8 +74,7 @@ const resolvers = {
   Query: {
     random: () => ({}),
     color: async (_source, { hex }, { dataSources }) => {
-      const data = await dataSources.colorAPI.identifyColor({ hex });
-      return data;
+      return dataSources.colorAPI.identifyColor({ hex });
     },
     scheme: async (_source, { hex, mode, count }, { dataSources }) => {
       return dataSources.colorAPI.getColorScheme({ hex, mode, count });
