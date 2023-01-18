@@ -3,7 +3,7 @@ import path from 'path';
 import url from 'url';
 import CopyPlugin from 'copy-webpack-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
-import WebExtPlugin from './WebExtPlugin.js';
+import WebExtPlugin from 'web-ext-plugin';
 /* eslint-enable */
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
@@ -40,7 +40,15 @@ export default (env) => {
   ];
 
   if (env.NODE_ENV === "development") {
-    plugins.push(new WebExtPlugin({ target: env.TARGET }));
+    plugins.push(
+      new WebExtPlugin({ 
+        browserConsole: true,
+        runLint: false,
+        sourceDir: path.resolve(__dirname, 'build'),
+        startUrl: 'http://localhost:3000',
+        target: env.TARGET,
+      })
+    );
   }
 
   return {
