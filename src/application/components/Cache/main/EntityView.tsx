@@ -21,7 +21,7 @@ const selectedStyles = css`
   background-color: yellow;
 `;
 
-export function EntityView({ cacheId, data, searchResults }) {
+export function EntityView({ cacheId, data, searchResults, setCacheId }) {
   const treeTheme = useTreeTheme();
 
   if (!data) return null;
@@ -41,8 +41,26 @@ export function EntityView({ cacheId, data, searchResults }) {
         }}
         valueRenderer={(valueAsString, value, key) => {
           const matchFound = searchResult && searchResult[key] === value;
+
           return (
-            <span css={matchFound ? selectedStyles : void 0}>{valueAsString}</span>
+            <span 
+              css={css`
+                ${matchFound ? selectedStyles : void 0}
+                ${key === '__ref' && css`
+                  &:hover {
+                    text-decoration: underline;
+                    cursor: pointer;
+                  }
+                `}
+              `} 
+              onClick={() => {
+                if (key === '__ref') {
+                  setCacheId(value)
+                }
+              }}
+            >
+              {valueAsString}
+            </span>
           );
         }}
       />
