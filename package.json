@@ -33,20 +33,20 @@
     "@reach/tabs": "^0.18.0",
     "framer-motion": "^3.6.2",
     "graphql": "^15.5.0",
-    "react-graphql-syntax-highlighter": "^0.0.4",
     "graphql-tag": "^2.11.0",
     "polished": "^4.1.1",
     "react": "^17.0.1",
     "react-copy-to-clipboard": "^5.0.3",
     "react-dom": "^17.0.1",
+    "react-graphql-syntax-highlighter": "^0.0.4",
     "react-json-tree": "^0.15.0",
     "stringify-object": "^3.3.0",
     "zen-observable": "^0.10.0"
   },
   "devDependencies": {
+    "@emotion/core": "10.3.1",
     "@emotion/jest": "11.10.5",
     "@graphql-tools/mock": "8.7.15",
-    "@emotion/core": "10.3.1",
     "@graphql-tools/schema": "7.1.5",
     "@testing-library/jest-dom": "5.16.5",
     "@testing-library/react": "11.2.7",
@@ -73,7 +73,8 @@
     "ts-jest": "26.5.6",
     "ts-loader": "8.4.0",
     "typescript": "4.9.4",
-    "web-ext": "5.5.0",
+    "web-ext": "7.4.0",
+    "web-ext-plugin": "^2.7.0",
     "webpack": "5.75.0",
     "webpack-cli": "4.10.0"
   }
