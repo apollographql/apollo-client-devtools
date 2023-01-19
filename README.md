@@ -218,12 +218,6 @@ Release process, for those with permission:
 
 This project is governed by the [Apollo Code of Conduct](https://www.apollographql.com/docs/community/code-of-conduct/).
 
-## Maintainers
-
-- [@mayakoneval](https://github.com/mayakoneval) (Apollo)
-- [@jephuff](https://github.com/jephuff) (Apollo)
-- [@cheapsteak](https://github.com/cheapsteak) (Apollo)
-
 ## Who is Apollo?
 
 [Apollo](https://apollographql.com/) builds open-source software and a graph platform to unify GraphQL across your apps and services. We help you ship faster with:
