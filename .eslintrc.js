@@ -19,5 +19,12 @@ module.exports = {
   },
   rules: {
     'react/prop-types': 0,
-  }
+    // https://emotion.sh/docs/eslint-plugin-react
+    'react/no-unknown-property': ['error', { ignore: ['css'] }],
+  },
+  settings: {
+    react: {
+      version: 'detect',
+    },
+  },
 };
