@@ -19,7 +19,8 @@
     {
       "matches": ["<all_urls>"],
       "js": ["tab.js"],
-      "run_at": "document_start"
+      "run_at": "document_start",
+      "all_frames": true
     }
   ],
   "manifest_version": 2

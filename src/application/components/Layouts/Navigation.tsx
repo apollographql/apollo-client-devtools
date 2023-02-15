@@ -6,6 +6,7 @@ import { jsx, css } from "@emotion/react";
 import { rem } from "polished";
 import { colors } from "@apollo/space-kit/colors";
 import { ApolloLogo } from "@apollo/space-kit/icons/ApolloLogo";
+import { clients, currentClient } from "../..";
 
 export enum Screens {
   Cache = "cache",
@@ -101,8 +102,14 @@ export const Navigation: React.FC<NavigationProps> = ({
   mutationsCount,
 }) => {
   const selected = useReactiveVar<Screens>(currentScreen);
+  const allClients = useReactiveVar(clients)
+  const selectedClient = useReactiveVar(currentClient);
+
   const isSelected = (NavButton: Screens) => selected === NavButton;
   const onNavigate = (screen: Screens) => currentScreen(screen);
+  const handleClientChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    currentClient(event.target.value)
+  }
 
   return (
     <nav css={navigationStyles}>
@@ -149,6 +156,17 @@ export const Navigation: React.FC<NavigationProps> = ({
             Cache
           </NavButton>
         </li>
+        {allClients.length > 1 && (
+          <li>
+            <select value={selectedClient ?? allClients[0]} onChange={handleClientChange}>
+              {allClients.map((client) => (
+                <option value={client} key={client}>
+                  {client}
+                </option>
+              ))}
+            </select>
+          </li>
+        )}
       </ul>
     </nav>
   );

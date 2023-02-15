@@ -6,7 +6,7 @@ import { ApolloClient, ApolloError, NetworkStatus } from "@apollo/client";
 import gql from "graphql-tag";
 import Observable from "zen-observable";
 import { OperationDefinitionNode } from "graphql/language";
-
+import cuid from "cuid"
 import { version as devtoolsVersion } from "../manifest.json";
 import Relay from "../../Relay";
 import {
@@ -46,6 +46,8 @@ type Hook = {
   getMutations: () => QueryInfo[];
   getCache: () => void;
 };
+
+const apolloClientId = cuid();
 
 function initializeHook() {
   const hook: Hook = {
@@ -105,6 +107,7 @@ function initializeHook() {
     sendMessageToTab(
       eventName,
       JSON.stringify({
+        id: apolloClientId,
         queries: hook.getQueries(),
         mutations: hook.getMutations(),
         cache: hook.getCache(),

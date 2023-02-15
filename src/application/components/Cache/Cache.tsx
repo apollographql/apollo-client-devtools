@@ -2,7 +2,7 @@
 
 import { Fragment, useState } from "react";
 import { jsx, css } from "@emotion/react";
-import { gql, useQuery } from "@apollo/client";
+import { gql, useQuery, useReactiveVar } from "@apollo/client";
 import { rem } from "polished";
 import { colors } from "@apollo/space-kit/colors";
 
@@ -11,6 +11,7 @@ import { Search } from "./sidebar/Search";
 import { EntityList } from "./sidebar/EntityList";
 import { EntityView } from "./main/EntityView";
 import { Loading } from "./common/Loading";
+import { currentClient } from "../..";
 
 const { Header, Sidebar, Main, Content } = SidebarLayout;
 
@@ -39,8 +40,10 @@ const noDataStyles = css`
 `;
 
 const GET_CACHE = gql`
-  query GetCache {
-    cache @client
+  query GetCache($clientId: ID!) {
+    client(id: $clientId) @client {
+      cache
+    }
   }
 `;
 
@@ -52,12 +55,17 @@ export function Cache({ navigationProps }: {
 }): jsx.JSX.Element {
   const [searchResults, setSearchResults] = useState({});
   const [cacheId, setCacheId] = useState<string>("ROOT_QUERY");
+  const selectedClient = useReactiveVar(currentClient);
 
-  const { loading, data } = useQuery(GET_CACHE);
+  const { loading, data } = useQuery(GET_CACHE, {
+    variables: {
+      clientId: selectedClient
+    }
+  });
 
   let parsedData: Record<string, any> = {};
-  if (!loading && data && data.cache) {
-    parsedData = JSON.parse(data.cache);
+  if (!loading && data && data?.client?.cache) {
+    parsedData = JSON.parse(data.client.cache);
   }
 
   const dataExists = parsedData && Object.keys(parsedData).length > 0;

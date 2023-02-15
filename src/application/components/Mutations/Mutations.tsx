@@ -2,7 +2,7 @@
 
 import { Fragment, useState } from "react";
 import { jsx } from "@emotion/react";
-import { gql, useQuery } from "@apollo/client";
+import { gql, useQuery, useReactiveVar } from "@apollo/client";
 import { List } from "@apollo/space-kit/List";
 import { ListItem } from "@apollo/space-kit/ListItem";
 
@@ -16,25 +16,30 @@ import {
   listStyles,
 } from "../Queries/Queries";
 import { MutationViewer } from "./MutationViewer";
+import { currentClient } from "../..";
 
 const GET_MUTATIONS = gql`
-  query GetMutations {
-    mutationLog @client {
-      mutations {
-        id
-        name
+  query GetMutations($clientId: ID!) {
+    client(id: $clientId) {
+      mutationLog {
+        mutations {
+          id
+          name
+        }
       }
     }
   }
 `;
 
 const GET_SELECTED_MUTATION = gql`
-  query GetSelectedMutation($id: ID!) {
-    mutation(id: $id) @client {
-      id
-      name
-      mutationString
-      variables
+  query GetSelectedMutation($clientId: ID!, $id: ID!) {
+    client(id: $clientId) {
+      mutation(id: $id) @client {
+        id
+        name
+        mutationString
+        variables
+      }
     }
   }
 `;
@@ -49,14 +54,19 @@ export const Mutations = ({ navigationProps, embeddedExplorerProps }: {
   }
 }): jsx.JSX.Element => {
   const [selected, setSelected] = useState<number>(0);
+  const selectedClient = useReactiveVar(currentClient)
   const theme = useTheme();
-  const { data } = useQuery(GET_MUTATIONS);
+  const { data } = useQuery(GET_MUTATIONS, {
+    variables: {
+      clientId: selectedClient
+    }
+  });
   const { data: selectedMutationData } = useQuery(GET_SELECTED_MUTATION, {
-    variables: { id: selected },
+    variables: { clientId: selectedClient, id: selected },
     returnPartialData: true,
   });
 
-  const shouldRender = !!data?.mutationLog?.mutations?.length;
+  const shouldRender = !!data?.client?.mutationLog?.mutations?.length;
 
   return (
     <SidebarLayout navigationProps={navigationProps}>
@@ -69,7 +79,7 @@ export const Mutations = ({ navigationProps, embeddedExplorerProps }: {
           selectedColor={theme.sidebarSelected}
           hoverColor={theme.sidebarHover}
         >
-          {data?.mutationLog?.mutations.map(({ name, id }) => {
+          {data?.client?.mutationLog?.mutations.map(({ name, id }) => {
             return (
               <ListItem
                 key={`${name}-${id}`}
@@ -86,11 +96,11 @@ export const Mutations = ({ navigationProps, embeddedExplorerProps }: {
         <SidebarLayout.Header>
           {shouldRender && (
             <Fragment>
-              <h1 css={h1Styles}>{selectedMutationData?.mutation.name}</h1>
+              <h1 css={h1Styles}>{selectedMutationData?.client?.mutation?.name}</h1>
               <span css={operationNameStyles}>Mutation</span>
               <RunInExplorerButton
-                operation={selectedMutationData?.mutation?.mutationString}
-                variables={selectedMutationData?.mutation?.variables}
+                operation={selectedMutationData?.client?.mutation?.mutationString}
+                variables={selectedMutationData?.client?.mutation?.variables}
                 embeddedExplorerIFrame={embeddedExplorerProps.embeddedExplorerIFrame}
               />
             </Fragment>
@@ -99,8 +109,8 @@ export const Mutations = ({ navigationProps, embeddedExplorerProps }: {
         <SidebarLayout.Main>
           {shouldRender && (
             <MutationViewer
-              mutationString={selectedMutationData?.mutation?.mutationString}
-              variables={selectedMutationData?.mutation?.variables}
+              mutationString={selectedMutationData?.client?.mutation?.mutationString}
+              variables={selectedMutationData?.client?.mutation?.variables}
             />
           )}
         </SidebarLayout.Main>

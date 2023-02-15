@@ -1,6 +1,6 @@
 import Relay from '../../Relay';
-import { 
-  REQUEST_TAB_ID, 
+import {
+  REQUEST_TAB_ID,
 } from '../constants';
 
 // This sends the tab id to the inspected tab.
@@ -14,9 +14,18 @@ const background = new Relay();
 
 chrome.runtime.onConnect.addListener(port => {
   background.addConnection(port.name, message => {
-    port.postMessage(message);
+    try {
+      port.postMessage(message);
+    } catch {
+      /*
+      * With multiple frames, we receive a onDisconnect event twice,
+      * resulting in stale ports. Without the try/catch, we drop
+      * legitimate messages as well.
+      */
+      console.error('Error sending message to ' + port.name)
+    }
   });
-  
+
   port.onMessage.addListener(message => {
     background.broadcast(message);
   });

@@ -1,9 +1,10 @@
 /** @jsx jsx */
 
+import React, { useEffect } from "react"
 import { Fragment, useState } from "react";
 import { jsx, css } from "@emotion/react";
 import { rem } from "polished";
-import { gql, useQuery } from "@apollo/client";
+import { gql, useApolloClient, useQuery, makeVar, useReactiveVar } from "@apollo/client";
 import { List } from "@apollo/space-kit/List";
 import { ListItem } from "@apollo/space-kit/ListItem";
 import { colors } from "@apollo/space-kit/colors";
@@ -12,6 +13,7 @@ import { useTheme } from "../../theme";
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { RunInExplorerButton } from "./RunInExplorerButton";
 import { QueryViewer } from "./QueryViewer";
+import { clients, currentClient } from "../..";
 
 export const sidebarHeadingStyles = css`
   margin-left: ${rem(12)};
@@ -48,24 +50,30 @@ export const listStyles = css`
 `;
 
 const GET_WATCHED_QUERIES = gql`
-  query GetWatchedQueries {
-    watchedQueries @client {
-      queries {
-        id
-        name
+  query GetWatchedQueries($clientId: ID!) {
+    client(id: $clientId) @client {
+      watchedQueries @client {
+        queries {
+          id
+          name
+        }
       }
     }
   }
 `;
 
 const GET_WATCHED_QUERY = gql`
-  query GetWatchedQuery($id: ID!) {
-    watchedQuery(id: $id) @client {
-      id
-      name
-      queryString
-      variables
-      cachedData
+  query GetWatchedQuery($clientId: ID!, $id: ID!) {
+    client(id: $clientId) @client {
+      watchedQuery(id: $id) {
+        count
+        id
+        name
+        queryString
+        variables
+        cachedData
+        clientId
+      }
     }
   }
 `;
@@ -79,15 +87,25 @@ export const Queries = ({ navigationProps, embeddedExplorerProps }: {
     embeddedExplorerIFrame: HTMLIFrameElement | null,
   }
 }): jsx.JSX.Element => {
+  const selectedClient = useReactiveVar(currentClient)
   const [selected, setSelected] = useState<number>(0);
   const theme = useTheme();
-  const { data } = useQuery(GET_WATCHED_QUERIES);
+
+  const { data } = useQuery(GET_WATCHED_QUERIES, {
+    variables: {
+      clientId: selectedClient
+    },
+  });
+
   const { data: watchedQueryData } = useQuery(GET_WATCHED_QUERY, {
-    variables: { id: selected },
+    variables: {
+      clientId: selectedClient,
+      id: selected
+    },
     returnPartialData: true,
   });
 
-  const shouldRender = !!data?.watchedQueries?.queries?.length;
+  const shouldRender = !!data?.client?.watchedQueries?.queries?.length;
 
   return (
     <SidebarLayout navigationProps={navigationProps}>
@@ -100,7 +118,7 @@ export const Queries = ({ navigationProps, embeddedExplorerProps }: {
           selectedColor={theme.sidebarSelected}
           hoverColor={theme.sidebarHover}
         >
-          {data?.watchedQueries?.queries.map(({ name, id }) => {
+          {data?.client?.watchedQueries?.queries.map(({ name, id }) => {
             return (
               <ListItem
                 key={`${name}-${id}`}
@@ -117,11 +135,11 @@ export const Queries = ({ navigationProps, embeddedExplorerProps }: {
         <SidebarLayout.Header>
           {shouldRender && (
             <Fragment>
-              <h1 css={h1Styles}>{watchedQueryData?.watchedQuery?.name}</h1>
+              <h1 css={h1Styles}>{watchedQueryData?.client?.watchedQuery?.name}</h1>
               <span css={operationNameStyles}>Query</span>
               <RunInExplorerButton
-                operation={watchedQueryData?.watchedQuery?.queryString}
-                variables={watchedQueryData?.watchedQuery?.variables}
+                operation={watchedQueryData?.client?.watchedQuery?.queryString}
+                variables={watchedQueryData?.client?.watchedQuery?.variables}
                 embeddedExplorerIFrame={embeddedExplorerProps.embeddedExplorerIFrame}
               />
             </Fragment>
@@ -130,9 +148,9 @@ export const Queries = ({ navigationProps, embeddedExplorerProps }: {
         <SidebarLayout.Main>
           {shouldRender && (
             <QueryViewer
-              queryString={watchedQueryData?.watchedQuery?.queryString}
-              variables={watchedQueryData?.watchedQuery?.variables}
-              cachedData={watchedQueryData?.watchedQuery?.cachedData}
+              queryString={watchedQueryData?.client?.watchedQuery?.queryString}
+              variables={watchedQueryData?.client?.watchedQuery?.variables}
+              cachedData={watchedQueryData?.client?.watchedQuery?.cachedData}
             />
           )}
         </SidebarLayout.Main>
