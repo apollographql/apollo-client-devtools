@@ -39,7 +39,7 @@
     "react-copy-to-clipboard": "^5.0.3",
     "react-dom": "^17.0.1",
     "react-graphql-syntax-highlighter": "^0.0.4",
-    "react-json-tree": "^0.15.0",
+    "react-json-tree": "^0.18.0",
     "stringify-object": "^3.3.0",
     "zen-observable": "^0.10.0"
   },
