@@ -4,9 +4,8 @@ import { useState } from "react";
 import { jsx, css } from "@emotion/react";
 import { rem } from "polished";
 import { colors } from "@apollo/space-kit/colors";
-import { GraphQLCodeBlock } from "react-graphql-syntax-highlighter";
+import SyntaxHighlighter from '../SyntaxHighlighter';
 import * as Tabs from '@radix-ui/react-tabs';
-import 'react-graphql-syntax-highlighter/dist/style.css';
 
 import JSONTree from "react-json-tree";
 import { IconCopy } from "@apollo/space-kit/icons/IconCopy";
@@ -139,9 +138,10 @@ export const QueryViewer = ({
           <IconCopy css={copyIconStyle} data-testid="copy-query-string" />
         </CopyToClipboard>
       </h4>
-      <GraphQLCodeBlock
-        css={queryStringMain}
-        src={queryString}
+      <SyntaxHighlighter 
+        css={queryStringMain} 
+        language="graphql" 
+        code={queryString} 
       />
       <Tabs.Root 
         value={currentTab} 
