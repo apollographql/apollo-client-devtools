@@ -1,6 +1,5 @@
 import React from "react";
 import user from "@testing-library/user-event";
-import stringifyObject from "stringify-object";
 
 import { renderWithApolloClient } from "../../../utilities/testing/renderWithApolloClient";
 import { MutationViewer } from "../MutationViewer";

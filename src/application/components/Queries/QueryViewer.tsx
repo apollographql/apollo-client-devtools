@@ -11,7 +11,6 @@ import 'react-graphql-syntax-highlighter/dist/style.css';
 import JSONTree from "react-json-tree";
 import { IconCopy } from "@apollo/space-kit/icons/IconCopy";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import stringifyObject from "stringify-object";
 
 import { useTreeTheme } from "../../theme";
 
