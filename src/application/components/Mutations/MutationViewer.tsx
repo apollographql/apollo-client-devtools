@@ -1,9 +1,6 @@
 /** @jsx jsx */
 
 import { jsx, css } from "@emotion/react";
-import { GraphQLCodeBlock } from "react-graphql-syntax-highlighter";
-import 'react-graphql-syntax-highlighter/dist/style.css';
-
 import { JSONTree } from "react-json-tree";
 import { IconCopy } from "@apollo/space-kit/icons/IconCopy";
 
@@ -18,6 +15,7 @@ import {
   queryStringMain,
   queryDataMain,
 } from "../Queries/QueryViewer";
+import SyntaxHighlighter from "../SyntaxHighlighter";
 
 interface MutationViewerProps {
   mutationString: string;
@@ -52,9 +50,10 @@ export const MutationViewer = ({
           <IconCopy css={copyIconStyle} data-testid="copy-mutation-string" />
         </CopyToClipboard>
       </h4>
-      <GraphQLCodeBlock
+      <SyntaxHighlighter
         css={queryStringMain}
-        src={mutationString}
+        code={mutationString}
+        language="graphql"
       />
       <div>
         <div css={queryDataHeader}>
