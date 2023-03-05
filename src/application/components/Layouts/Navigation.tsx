@@ -72,7 +72,7 @@ const logoLinkStyles = css`
 
 const logoStyles = css`
   width: ${rem(24)};
-  height: auto;
+  height: auto !important;
   margin: 0 ${rem(16)};
   color: ${colors.silver.lighter};
 `;
