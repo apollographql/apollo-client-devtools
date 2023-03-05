@@ -26,7 +26,7 @@
     "zip:firefox": "web-ext build --source-dir build --artifacts-dir dist --overwrite-dest"
   },
   "dependencies": {
-    "@apollo/client": "^3.7.4",
+    "@apollo/client": "^3.7.10",
     "@apollo/space-kit": "^9.11.0",
     "@emotion/react": "^11.10.6",
     "@radix-ui/react-tabs": "^1.0.2",
