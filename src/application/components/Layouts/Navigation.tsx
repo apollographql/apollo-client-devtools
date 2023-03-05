@@ -112,6 +112,7 @@ export const Navigation: React.FC<NavigationProps> = ({
           target="_blank"
           title="Apollo Client developer documentation"
           css={logoLinkStyles}
+          rel="noreferrer"
         >
           <ApolloLogo css={logoStyles} />
         </a>
