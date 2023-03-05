@@ -28,7 +28,7 @@
   "dependencies": {
     "@apollo/client": "^3.7.4",
     "@apollo/space-kit": "^9.11.0",
-    "@emotion/react": "^11.1.5",
+    "@emotion/react": "^11.10.6",
     "@reach/tabs": "^0.18.0",
     "framer-motion": "^3.6.2",
     "graphql": "^15.5.0",
