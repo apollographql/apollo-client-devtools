@@ -1,9 +1,8 @@
 /** @jsx jsx */
 
-import React from "react";
 import { useEffect } from "react";
 import { jsx } from "@emotion/react";
-import { render } from "react-dom";
+import { createRoot } from 'react-dom/client';
 import {
   ApolloClient,
   ApolloProvider,
@@ -201,5 +200,7 @@ export const AppProvider = () => {
 };
 
 export const initDevTools = () => {
-  render(<AppProvider />, document.getElementById("devtools"));
+  const root = createRoot(document.getElementById('devtools') as HTMLElement);
+
+  root.render(<AppProvider />);
 };
