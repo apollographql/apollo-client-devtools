@@ -7,7 +7,7 @@ import { colors } from "@apollo/space-kit/colors";
 import SyntaxHighlighter from '../SyntaxHighlighter';
 import * as Tabs from '@radix-ui/react-tabs';
 
-import JSONTree from "react-json-tree";
+import { JSONTree } from "react-json-tree";
 import { IconCopy } from "@apollo/space-kit/icons/IconCopy";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 

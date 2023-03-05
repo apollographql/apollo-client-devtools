@@ -1,7 +1,7 @@
 /** @jsx jsx */
 
 import { jsx, css } from "@emotion/react";
-import JSONTree from "react-json-tree";
+import { JSONTree } from "react-json-tree";
 import { rem } from "polished";
 
 import { useTreeTheme } from "../../../theme";
