@@ -1,8 +1,6 @@
-/** @jsx jsx */
-
-import React from "react";
+import React, { ReactNode } from "react";
 import { makeVar, useReactiveVar } from "@apollo/client";
-import { jsx, css } from "@emotion/react";
+import { css } from "@emotion/react";
 import { rem } from "polished";
 import { colors } from "@apollo/space-kit/colors";
 import { ApolloLogo } from "@apollo/space-kit/icons/ApolloLogo";
@@ -15,6 +13,7 @@ export enum Screens {
 }
 
 type NavButtonProps = {
+  children: ReactNode;
   isSelected: boolean;
   onClick: any;
 };
@@ -72,7 +71,7 @@ const logoLinkStyles = css`
 
 const logoStyles = css`
   width: ${rem(24)};
-  height: auto;
+  height: auto !important;
   margin: 0 ${rem(16)};
   color: ${colors.silver.lighter};
 `;
@@ -81,11 +80,11 @@ const borderStyles = css`
   border-right: ${rem(1)} solid var(--whiteTransparent);
 `;
 
-const NavButton: React.FC<NavButtonProps> = ({
+const NavButton = ({
   isSelected,
   onClick,
   children,
-}) => (
+}: NavButtonProps) => (
   <button
     css={[navButtonStyles, isSelected && selectedNavButtonStyles]}
     onClick={onClick}
@@ -112,6 +111,7 @@ export const Navigation: React.FC<NavigationProps> = ({
           target="_blank"
           title="Apollo Client developer documentation"
           css={logoLinkStyles}
+          rel="noreferrer"
         >
           <ApolloLogo css={logoStyles} />
         </a>

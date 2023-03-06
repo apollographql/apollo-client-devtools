@@ -1,7 +1,5 @@
-/** @jsx jsx */
-
 import { Fragment, useState } from "react";
-import { jsx, css } from "@emotion/react";
+import { css } from "@emotion/react";
 import { rem } from "polished";
 import { gql, useQuery } from "@apollo/client";
 import { List } from "@apollo/space-kit/List";
@@ -78,7 +76,7 @@ export const Queries = ({ navigationProps, embeddedExplorerProps }: {
   embeddedExplorerProps: {
     embeddedExplorerIFrame: HTMLIFrameElement | null,
   }
-}): jsx.JSX.Element => {
+}): JSX.Element => {
   const [selected, setSelected] = useState<number>(0);
   const theme = useTheme();
   const { data } = useQuery(GET_WATCHED_QUERIES);

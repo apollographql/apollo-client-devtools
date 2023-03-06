@@ -1,6 +1,5 @@
 import React from "react";
-import { within } from "@testing-library/react";
-import user from "@testing-library/user-event";
+import { act, screen, within } from "@testing-library/react";
 
 import { renderWithApolloClient } from "../../../utilities/testing/renderWithApolloClient";
 import { QueryViewer } from "../QueryViewer";
@@ -28,43 +27,41 @@ describe("<QueryViewer />", () => {
   };
 
   test("renders the query string", () => {
-    const { getByText, getAllByText } = renderWithApolloClient(
-      <QueryViewer {...props} />
-    );
+    renderWithApolloClient(<QueryViewer {...props} />);
 
-    expect(getByText("Query String")).toBeInTheDocument();
-    expect(getByText("GetSavedColors")).toBeInTheDocument();
-    expect(getAllByText("colorFields").length).toEqual(2);
+    expect(screen.getByText("Query String")).toBeInTheDocument();
+    expect(screen.getByText("GetSavedColors")).toBeInTheDocument();
+    expect(screen.getAllByText("colorFields").length).toEqual(2);
   });
 
-  test("can copy the query string", () => {
-    const { getByTestId } = renderWithApolloClient(<QueryViewer {...props} />);
+  test("can copy the query string", async () => {
+    const { user } = renderWithApolloClient(<QueryViewer {...props} />);
 
-    const queryString = getByTestId("copy-query-string");
-    user.click(queryString);
+    const queryString = screen.getByTestId("copy-query-string");
+    await user.click(queryString);
     expect(window.prompt).toBeCalledWith(
       "Copy to clipboard: Ctrl+C, Enter",
       props.queryString
     );
   });
 
-  test("renders the query data", () => {
-    const { getByText, getByRole } = renderWithApolloClient(
-      <QueryViewer {...props} />
-    );
+  test("renders the query data", async () => {
+    const { user } = renderWithApolloClient(<QueryViewer {...props} />);
 
-    expect(getByText("Variables")).toBeInTheDocument();
-    const variablesPanel = getByRole("tabpanel");
+    expect(screen.getByText("Variables")).toBeInTheDocument();
+    const variablesPanel = screen.getByRole("tabpanel");
     expect(
       within(variablesPanel).getByText((content) =>
         content.includes(props.variables.hex)
       )
     ).toBeInTheDocument();
 
-    const cachedDataTab = getByText("Cached Data");
+    const cachedDataTab = screen.getByText("Cached Data");
     expect(cachedDataTab).toBeInTheDocument();
-    user.click(cachedDataTab);
-    const cachedDataPanel = getByRole("tabpanel");
+    // TODO: Determine why this needs to be wrapped in act since user.click 
+    // should already be wrapped in act
+    await act(() => user.click(cachedDataTab));
+    const cachedDataPanel = screen.getByRole("tabpanel");
     expect(
       within(cachedDataPanel).getByText((content) =>
         content.includes(props.cachedData.color)
@@ -72,21 +69,20 @@ describe("<QueryViewer />", () => {
     ).toBeInTheDocument();
   });
 
-  test("can copy the query data", () => {
-    const { getByTestId, getByText } = renderWithApolloClient(
-      <QueryViewer {...props} />
-    );
+  test("can copy the query data", async () => {
+    const { user } = renderWithApolloClient(<QueryViewer {...props} />);
 
-    const queryString = getByTestId("copy-query-data");
-    user.click(queryString);
+    const copyButton = screen.getByTestId("copy-query-data");
+    await act(() => user.click(copyButton));
     expect(window.prompt).toBeCalledWith(
       "Copy to clipboard: Ctrl+C, Enter",
       JSON.stringify(props.variables)
     );
 
-    const cachedDataTab = getByText("Cached Data");
-    user.click(cachedDataTab);
-    user.click(queryString);
+    const cachedDataTab = screen.getByText("Cached Data");
+
+    await act(() => user.click(cachedDataTab));
+    await act(() => user.click(copyButton));
     expect(window.prompt).toBeCalledWith(
       "Copy to clipboard: Ctrl+C, Enter",
       JSON.stringify(props.cachedData)

@@ -1,7 +1,5 @@
-/** @jsx jsx */
-
 import { IconRun } from "@apollo/space-kit/icons/IconRun";
-import { jsx, css } from "@emotion/react";
+import { css } from "@emotion/react";
 import { rem } from "polished";
 import {
   postMessageToEmbed,
@@ -37,7 +35,7 @@ export const RunInExplorerButton = ({
   operation,
   variables,
   embeddedExplorerIFrame,
-}: RunInExplorerButtonProps): jsx.JSX.Element | null => {
+}: RunInExplorerButtonProps): JSX.Element | null => {
   return (
     embeddedExplorerIFrame && (
       <button

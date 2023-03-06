@@ -1,27 +1,18 @@
-/** @jsx jsx */
-
 import { ReactNode } from "react";
-import { jsx, css } from "@emotion/react";
+import { css } from "@emotion/react";
 import { rem } from "polished";
 
 import { Navigation, NavigationProps } from "./Navigation";
 
 interface SidebarLayoutProps {
   navigationProps: NavigationProps;
-  children: any;
+  children: ReactNode;
 }
 
 interface SidebarProps {
   navigationProps: NavigationProps;
   children: ReactNode;
   className?: string;
-}
-
-interface SidebarLayoutComposition {
-  Sidebar: React.FC<SidebarProps>;
-  Content: React.FC;
-  Header: React.FC;
-  Main: React.FC;
 }
 
 const layoutStyles = css`
@@ -74,8 +65,7 @@ const mainStyles = css`
   color: var(--textPrimary);
 `;
 
-const SidebarLayout: React.FC<SidebarLayoutProps> &
-  SidebarLayoutComposition = ({ children }) => {
+const SidebarLayout = ({ children }: SidebarLayoutProps) => {
   return (
     <div data-testid="layout" css={layoutStyles}>
       {children}
@@ -83,7 +73,7 @@ const SidebarLayout: React.FC<SidebarLayoutProps> &
   );
 };
 
-const Sidebar = ({ navigationProps, children, className }) => (
+const Sidebar = ({ navigationProps, children, className }: SidebarProps) => (
   <div className={className} css={sidebarStyles} data-testid="sidebar">
     <Navigation
       queriesCount={navigationProps.queriesCount}
@@ -93,19 +83,31 @@ const Sidebar = ({ navigationProps, children, className }) => (
   </div>
 );
 
-const Content = ({ children }) => (
+interface ContentProps {
+  children?: ReactNode
+}
+
+const Content = ({ children }: ContentProps) => (
   <div css={contentStyles} data-testid="content">
     {children}
   </div>
 );
 
-const Header = ({ children }) => (
+interface HeaderProps {
+  children?: ReactNode
+}
+
+const Header = ({ children }: HeaderProps) => (
   <div css={headerStyles} data-testid="header">
     {children}
   </div>
 );
 
-const Main = ({ children }) => (
+interface MainProps {
+  children?: ReactNode
+}
+
+const Main = ({ children }: MainProps) => (
   <div css={mainStyles} data-testid="main">
     {children}
   </div>

@@ -1,6 +1,5 @@
 import React from "react";
-import { within, waitFor } from "@testing-library/react";
-import user from "@testing-library/user-event";
+import { act, screen, within, waitFor } from "@testing-library/react";
 
 import { renderWithApolloClient } from "../../../utilities/testing/renderWithApolloClient";
 import { client, GET_MUTATIONS } from "../../../index";
@@ -44,11 +43,11 @@ describe("<Mutations />", () => {
       },
     });
 
-    const { getByTestId } = renderWithApolloClient(
+    renderWithApolloClient(
       <Mutations navigationProps={navigationProps} embeddedExplorerProps={{ embeddedExplorerIFrame: null }}/>
     );
 
-    const sidebar = getByTestId("sidebar");
+    const sidebar = screen.getByTestId("sidebar");
     await waitFor(() => {
       expect(
         within(sidebar).queryAllByText(
@@ -73,15 +72,17 @@ describe("<Mutations />", () => {
       },
     });
 
-    const { getByTestId } = renderWithApolloClient(
+    const { user } = renderWithApolloClient(
       <Mutations navigationProps={navigationProps} embeddedExplorerProps={{ embeddedExplorerIFrame: null }}/>
     );
 
-    const header = getByTestId("header");
+    const header = screen.getByTestId("header");
     expect(within(header).getByText("Unnamed")).toBeInTheDocument();
 
-    const sidebar = getByTestId("sidebar");
-    user.click(within(sidebar).getByText("AddColorToFavorites"));
+    const sidebar = screen.getByTestId("sidebar");
+    await act(() => 
+      user.click(within(sidebar).getByText("AddColorToFavorites"))
+    );
     await waitFor(() => {
       expect(
         within(header).getByText("AddColorToFavorites")
@@ -90,11 +91,11 @@ describe("<Mutations />", () => {
   });
 
   test("it renders an empty state", () => {
-    const { getByTestId } = renderWithApolloClient(
+    renderWithApolloClient(
       <Mutations navigationProps={navigationProps} embeddedExplorerProps={{ embeddedExplorerIFrame: null }}/>
     );
 
-    expect(getByTestId("header")).toBeEmptyDOMElement();
-    expect(getByTestId("main")).toBeEmptyDOMElement();
+    expect(screen.getByTestId("header")).toBeEmptyDOMElement();
+    expect(screen.getByTestId("main")).toBeEmptyDOMElement();
   });
 });
