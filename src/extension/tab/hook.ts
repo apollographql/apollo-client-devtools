@@ -216,13 +216,14 @@ function initializeHook() {
 
   /**
    * Attempt to find the client on a 1-second interval for 10 seconds max
+   * Note: Increasing limit to 40 seconds to account for slow loads
    */
   function findClient() {
     let interval;
     let count = 0;
 
     function initializeDevtoolsHook() {
-      if (count++ > 10) clearInterval(interval);
+      if (count++ > 40) clearInterval(interval);
       if (window.__APOLLO_CLIENT__) {
         hook.ApolloClient = window.__APOLLO_CLIENT__;
         hook.ApolloClient.__actionHookForDevTools(handleActionHookForDevtools);
