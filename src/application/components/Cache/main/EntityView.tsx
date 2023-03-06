@@ -3,6 +3,7 @@ import { JSONTree } from "react-json-tree";
 import { rem } from "polished";
 
 import { useTreeTheme } from "../../../theme";
+import { ReactNode } from "react";
 
 const cacheStyles = css`
   padding-top: 1rem;
@@ -37,7 +38,7 @@ export function EntityView({ cacheId, data, searchResults, setCacheId }) {
           const matchFound = searchResult && !!searchResult[key];
           return <span css={matchFound ? selectedStyles : void 0}>{key}:</span>;
         }}
-        valueRenderer={(valueAsString, value, key) => {
+        valueRenderer={(valueAsString: ReactNode, value, key) => {
           const matchFound = searchResult && searchResult[key] === value;
 
           return (

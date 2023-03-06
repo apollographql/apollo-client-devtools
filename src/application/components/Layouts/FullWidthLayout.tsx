@@ -1,17 +1,12 @@
-import React from "react";
+import { ReactNode } from "react";
 import { css } from "@emotion/react";
 
 import { Navigation, NavigationProps } from "./Navigation";
 
 interface FullWidthLayoutProps {
   navigationProps: NavigationProps;
-  children: any;
+  children: ReactNode;
   className?: string;
-}
-
-interface FullWidthLayoutComposition {
-  Header: React.FC;
-  Main: React.FC;
 }
 
 const layoutStyles = css`
@@ -31,8 +26,7 @@ const headerStyles = css`
   grid-area: header;
 `;
 
-const FullWidthLayout: React.FC<FullWidthLayoutProps> &
-  FullWidthLayoutComposition = ({ navigationProps, children, className }) => {
+const FullWidthLayout = ({ navigationProps, children, className }: FullWidthLayoutProps) => {
   const { queriesCount, mutationsCount } = navigationProps;
 
   return (
@@ -43,13 +37,23 @@ const FullWidthLayout: React.FC<FullWidthLayoutProps> &
   );
 };
 
-const Header = ({ children, className }) => (
+interface HeaderProps {
+  className?: string
+  children?: ReactNode
+}
+
+const Header = ({ children, className }: HeaderProps) => (
   <div className={className} css={headerStyles} data-testid="header">
     {children}
   </div>
 );
 
-const Main = ({ children, className }) => (
+interface MainProps {
+  className?: string
+  children?: ReactNode
+}
+
+const Main = ({ children, className }: MainProps) => (
   <div className={className} css={mainStyles} data-testid="main">
     {children}
   </div>

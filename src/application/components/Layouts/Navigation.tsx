@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { makeVar, useReactiveVar } from "@apollo/client";
 import { css } from "@emotion/react";
 import { rem } from "polished";
@@ -13,6 +13,7 @@ export enum Screens {
 }
 
 type NavButtonProps = {
+  children: ReactNode;
   isSelected: boolean;
   onClick: any;
 };
@@ -79,11 +80,11 @@ const borderStyles = css`
   border-right: ${rem(1)} solid var(--whiteTransparent);
 `;
 
-const NavButton: React.FC<NavButtonProps> = ({
+const NavButton = ({
   isSelected,
   onClick,
   children,
-}) => (
+}: NavButtonProps) => (
   <button
     css={[navButtonStyles, isSelected && selectedNavButtonStyles]}
     onClick={onClick}
