@@ -1,11 +1,11 @@
-import React from "react";
+import { ReactElement } from 'react';
 import { render } from "@testing-library/react";
 import { ApolloProvider } from "@apollo/client";
 
 import { client } from "../../index";
 
 export const renderWithApolloClient = (
-  ui,
+  ui: ReactElement,
   { providerProps, ...renderOptions } = { providerProps: {} }
 ) => {
   return render(
