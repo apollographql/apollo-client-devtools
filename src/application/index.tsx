@@ -1,7 +1,4 @@
-/** @jsx jsx */
-
 import { useEffect } from "react";
-import { jsx } from "@emotion/react";
 import { createRoot } from 'react-dom/client';
 import {
   ApolloClient,

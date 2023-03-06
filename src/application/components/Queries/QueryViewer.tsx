@@ -1,7 +1,5 @@
-/** @jsx jsx */
-
 import { useState } from "react";
-import { jsx, css } from "@emotion/react";
+import { css } from "@emotion/react";
 import { rem } from "polished";
 import { colors } from "@apollo/space-kit/colors";
 import SyntaxHighlighter from '../SyntaxHighlighter';

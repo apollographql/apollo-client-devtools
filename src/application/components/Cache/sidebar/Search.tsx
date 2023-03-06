@@ -1,10 +1,8 @@
-/** @jsx jsx */
-
 import React from "react";
 import { IconSearch } from "@apollo/space-kit/icons/IconSearch";
 import { TextField } from "@apollo/space-kit/TextField";
 import { colors } from "@apollo/space-kit/colors";
-import { jsx, css } from "@emotion/react";
+import { css } from "@emotion/react";
 import { rem } from "polished";
 
 import { objectFilter } from "../common/utils";

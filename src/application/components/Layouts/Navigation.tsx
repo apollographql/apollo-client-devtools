@@ -1,8 +1,6 @@
-/** @jsx jsx */
-
 import React from "react";
 import { makeVar, useReactiveVar } from "@apollo/client";
-import { jsx, css } from "@emotion/react";
+import { css } from "@emotion/react";
 import { rem } from "polished";
 import { colors } from "@apollo/space-kit/colors";
 import { ApolloLogo } from "@apollo/space-kit/icons/ApolloLogo";
