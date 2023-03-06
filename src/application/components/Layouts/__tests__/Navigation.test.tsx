@@ -32,9 +32,7 @@ describe("<Navigation />", () => {
     const buttons = container.querySelectorAll("button");
     const lastButton = buttons[buttons.length - 1];
     expect(lastButton).not.toHaveStyleRule("color", colors.silver.lighter);
-    await act(async () => {
-      await user.click(lastButton);
-    });
+    await act(() => user.click(lastButton));
     expect(lastButton).toHaveStyleRule("color", colors.silver.lighter);
   });
 });

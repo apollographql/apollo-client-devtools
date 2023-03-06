@@ -80,9 +80,9 @@ describe("<Mutations />", () => {
     expect(within(header).getByText("Unnamed")).toBeInTheDocument();
 
     const sidebar = screen.getByTestId("sidebar");
-    await act(async () => {
-      await user.click(within(sidebar).getByText("AddColorToFavorites"));
-    });
+    await act(() => 
+      user.click(within(sidebar).getByText("AddColorToFavorites"))
+    );
     await waitFor(() => {
       expect(
         within(header).getByText("AddColorToFavorites")

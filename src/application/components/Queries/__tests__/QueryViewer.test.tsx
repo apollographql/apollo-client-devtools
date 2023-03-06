@@ -60,9 +60,7 @@ describe("<QueryViewer />", () => {
     expect(cachedDataTab).toBeInTheDocument();
     // TODO: Determine why this needs to be wrapped in act since user.click 
     // should already be wrapped in act
-    await act(async () => {
-      await user.click(cachedDataTab);
-    });
+    await act(() => user.click(cachedDataTab));
     const cachedDataPanel = screen.getByRole("tabpanel");
     expect(
       within(cachedDataPanel).getByText((content) =>
@@ -75,9 +73,7 @@ describe("<QueryViewer />", () => {
     const { user } = renderWithApolloClient(<QueryViewer {...props} />);
 
     const copyButton = screen.getByTestId("copy-query-data");
-    await act(async () => {
-      await user.click(copyButton);
-    });
+    await act(() => user.click(copyButton));
     expect(window.prompt).toBeCalledWith(
       "Copy to clipboard: Ctrl+C, Enter",
       JSON.stringify(props.variables)
@@ -85,12 +81,8 @@ describe("<QueryViewer />", () => {
 
     const cachedDataTab = screen.getByText("Cached Data");
 
-    await act(async () => {
-      await user.click(cachedDataTab);
-    });
-    await act(async () => {
-      await user.click(copyButton);
-    });
+    await act(() => user.click(cachedDataTab));
+    await act(() => user.click(copyButton));
     expect(window.prompt).toBeCalledWith(
       "Copy to clipboard: Ctrl+C, Enter",
       JSON.stringify(props.cachedData)
