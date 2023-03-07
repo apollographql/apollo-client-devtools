@@ -8,13 +8,16 @@
     "128": "images/logo128.png",
     "400": "images/logo400.png"
   },
-  "page_action": {},
   "devtools_page": "devtools.html",
   "background": {
-    "scripts": ["background.js"],
-    "persistent": false
+    "service_worker": "background.js"
   },
-  "web_accessible_resources": ["panel.html", "devtools.html", "hook.js"],
+  "web_accessible_resources": [
+    {
+      "resources": ["panel.html", "devtools.html", "hook.js"],
+      "matches": ["<all_urls>"]
+    }
+  ],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
@@ -23,5 +26,7 @@
       "all_frames": true
     }
   ],
-  "manifest_version": 2
+  "manifest_version": 3,
+  "action": {},
+  "content_security_policy": {}
 }
