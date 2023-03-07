@@ -51,7 +51,7 @@ devtools.addConnection(EXPLORER_SUBSCRIPTION_TERMINATION, () => {
 devtools.listen(CREATE_DEVTOOLS_PANEL, ({ payload }) => {
   if (!isPanelCreated) {
     chrome.devtools.panels.create(
-      "Apollo",
+      "Apollo (Iframes)",
       "logo_devtools.png",
       "panel.html",
       function (panel) {

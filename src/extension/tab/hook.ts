@@ -6,7 +6,6 @@ import { ApolloClient, ApolloError, NetworkStatus } from "@apollo/client";
 import gql from "graphql-tag";
 import Observable from "zen-observable";
 import { OperationDefinitionNode } from "graphql/language";
-import cuid from "cuid"
 import { version as devtoolsVersion } from "../manifest.json";
 import Relay from "../../Relay";
 import {
@@ -47,7 +46,13 @@ type Hook = {
   getCache: () => void;
 };
 
-const apolloClientId = cuid();
+
+const generatePageId = () => {
+  const randomId = (Math.random() + 1).toString(36).substring(7);
+  return `${window.location.host} (${randomId})`
+}
+
+const apolloClientId = generatePageId();
 
 function initializeHook() {
   const hook: Hook = {
