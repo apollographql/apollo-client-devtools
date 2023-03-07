@@ -74,6 +74,9 @@ const logoStyles = css`
 
 const borderStyles = css`
   border-right: ${rem(1)} solid var(--whiteTransparent);
+  height: 100%;
+  display: flex;
+  align-items: center;
 `;
 
 const NavButton: React.FC<NavButtonProps> = ({
