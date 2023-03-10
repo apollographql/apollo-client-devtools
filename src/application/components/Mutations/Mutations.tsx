@@ -1,7 +1,4 @@
-/** @jsx jsx */
-
 import { Fragment, useState } from "react";
-import { jsx } from "@emotion/react";
 import { gql, useQuery, useReactiveVar } from "@apollo/client";
 import { List } from "@apollo/space-kit/List";
 import { ListItem } from "@apollo/space-kit/ListItem";
@@ -52,7 +49,7 @@ export const Mutations = ({ navigationProps, embeddedExplorerProps }: {
   embeddedExplorerProps: {
     embeddedExplorerIFrame: HTMLIFrameElement | null,
   }
-}): jsx.JSX.Element => {
+}): JSX.Element => {
   const [selected, setSelected] = useState<number>(0);
   const selectedClient = useReactiveVar(currentClient)
   const theme = useTheme();

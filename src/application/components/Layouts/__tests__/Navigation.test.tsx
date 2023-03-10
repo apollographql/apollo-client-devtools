@@ -1,5 +1,5 @@
 import React from "react";
-import user from "@testing-library/user-event";
+import { act, screen } from "@testing-library/react";
 import { matchers } from "@emotion/jest";
 import { colors } from "@apollo/space-kit/colors";
 
@@ -19,19 +19,20 @@ describe("<Navigation />", () => {
   });
 
   it("renders the navigation items", () => {
-    const { getByText } = renderWithApolloClient(<Navigation {...props} />);
-    expect(getByText("Explorer")).toBeInTheDocument();
-    expect(getByText(`Queries (${props.queriesCount})`)).toBeInTheDocument();
-    expect(getByText(`Mutations (${props.queriesCount})`)).toBeInTheDocument();
-    expect(getByText("Cache")).toBeInTheDocument();
+    renderWithApolloClient(<Navigation {...props} />);
+
+    expect(screen.getByText("Explorer")).toBeInTheDocument();
+    expect(screen.getByText(`Queries (${props.queriesCount})`)).toBeInTheDocument();
+    expect(screen.getByText(`Mutations (${props.queriesCount})`)).toBeInTheDocument();
+    expect(screen.getByText("Cache")).toBeInTheDocument();
   });
 
-  it("can select a navigation item", () => {
-    const { container } = renderWithApolloClient(<Navigation {...props} />);
+  it("can select a navigation item", async () => {
+    const { container, user } = renderWithApolloClient(<Navigation {...props} />);
     const buttons = container.querySelectorAll("button");
     const lastButton = buttons[buttons.length - 1];
     expect(lastButton).not.toHaveStyleRule("color", colors.silver.lighter);
-    user.click(lastButton);
+    await act(() => user.click(lastButton));
     expect(lastButton).toHaveStyleRule("color", colors.silver.lighter);
   });
 });

@@ -1,7 +1,5 @@
-/** @jsx jsx */
-
 import { Fragment, useState } from "react";
-import { jsx, css } from "@emotion/react";
+import { css } from "@emotion/react";
 import { gql, useQuery, useReactiveVar } from "@apollo/client";
 import { rem } from "polished";
 import { colors } from "@apollo/space-kit/colors";
@@ -52,7 +50,7 @@ export function Cache({ navigationProps }: {
     queriesCount: number,
     mutationsCount: number,
   }
-}): jsx.JSX.Element {
+}): JSX.Element {
   const [searchResults, setSearchResults] = useState({});
   const [cacheId, setCacheId] = useState<string>("ROOT_QUERY");
   const selectedClient = useReactiveVar(currentClient);

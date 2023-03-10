@@ -1,8 +1,5 @@
-/** @jsx jsx */
-
-import React, { useEffect } from "react"
 import { Fragment, useState } from "react";
-import { jsx, css } from "@emotion/react";
+import { css } from "@emotion/react";
 import { rem } from "polished";
 import { gql, useApolloClient, useQuery, makeVar, useReactiveVar } from "@apollo/client";
 import { List } from "@apollo/space-kit/List";
@@ -86,7 +83,7 @@ export const Queries = ({ navigationProps, embeddedExplorerProps }: {
   embeddedExplorerProps: {
     embeddedExplorerIFrame: HTMLIFrameElement | null,
   }
-}): jsx.JSX.Element => {
+}): JSX.Element => {
   const selectedClient = useReactiveVar(currentClient)
   const [selected, setSelected] = useState<number>(0);
   const theme = useTheme();

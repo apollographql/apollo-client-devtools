@@ -1,5 +1,6 @@
 // This script is injected into each tab.
 import "./tabRelay"; 
+import browser from 'webextension-polyfill';
 
 /* 
   Content scripts are unable to modify the window object directly. 
@@ -9,7 +10,7 @@ import "./tabRelay";
 if (typeof document === "object" && document instanceof HTMLDocument) {
   const script = document.createElement("script");
   script.setAttribute("type", "module");
-  script.setAttribute("src", chrome.runtime.getURL("hook.js"));
+  script.setAttribute("src", browser.runtime.getURL("hook.js"));
   document.addEventListener("DOMContentLoaded", () => {
     const importMap = document.querySelector("script[type=\"importmap\"]");
     if (importMap != null) {
