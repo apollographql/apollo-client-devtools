@@ -1,8 +1,8 @@
 {
-  "version": "4.1.4",
+  "version": "4.2.0",
   "author": "Apollo",
   "name": "Apollo Client Devtools With iframe Support",
-  "description": "Fork of Apollo Client DevTools based on PR 951 that works with multiple iframes on a page",
+  "description": "Fork of Apollo Client DevTools that works with multiple iframes on a page",
   "icons": {
     "64": "images/logo64.png",
     "128": "images/logo128.png",
