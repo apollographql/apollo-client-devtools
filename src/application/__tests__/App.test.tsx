@@ -2,8 +2,9 @@ import React from "react";
 import { waitFor } from "@testing-library/react";
 
 import { renderWithApolloClient } from "../utilities/testing/renderWithApolloClient";
-import { currentScreen, Screens } from "../components/Layouts/Navigation";
+import { currentScreen } from "../components/Layouts/Navigation";
 import { App, reloadStatus } from "../App";
+import { Screens } from "../components/Layouts/screens";
 
 jest.mock("../components/Queries/Queries", () => ({
   Queries: ({ navigationProps }) => (
@@ -37,7 +38,7 @@ describe("<App />", () => {
 
   test("after reload, renders the Queries screen", async () => {
     currentScreen(Screens.Mutations);
-    const { getByText, debug } = renderWithApolloClient(<App />);
+    const { getByText } = renderWithApolloClient(<App />);
     const element = getByText("Mutations (0)");
     expect(element).toBeInTheDocument();
     await waitFor(() => {

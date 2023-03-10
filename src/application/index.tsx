@@ -16,23 +16,33 @@ import { App, reloadStatus } from "./App";
 
 import "@apollo/space-kit/reset.css";
 
-const cache = new InMemoryCache({
+const queryCacheMap = new Map();
+
+const inMemoryCache = new InMemoryCache({
   typePolicies: {
     WatchedQuery: {
+      keyFields: ["id", "clientId"],
       fields: {
         name(_) {
           return _ ?? "Unnamed";
         },
+        clientId(_) {
+          return _
+        }
       },
     },
     Mutation: {
+      keyFields: ["id", "clientId"],
       fields: {
         name(_) {
           return _ ?? "Unnamed";
         },
+        clientId(_) {
+          return _
+        }
       },
     },
-    Query: {
+    Client: {
       fields: {
         watchedQueries(_ = { queries: [], count: 0 }) {
           return _;
@@ -40,56 +50,74 @@ const cache = new InMemoryCache({
         mutationLog(_ = { mutations: [], count: 0 }) {
           return _;
         },
-        watchedQuery(_, { toReference, args, canRead }) {
+        watchedQuery(_, { toReference, variables, canRead }) {
           const ref = toReference({
             __typename: "WatchedQuery",
-            id: args?.id,
+            id: variables?.id,
+            clientId: variables?.clientId
           });
 
           return canRead(ref) ? ref : _;
         },
-        mutation(_, { toReference, args }) {
+        mutation(_, { toReference, variables }) {
           return toReference({
             __typename: "Mutation",
-            id: args?.id,
+            id: variables?.id,
+            clientId: variables?.clientId
           });
         },
-        cache() {
-          return cacheVar();
+        cache(_, { variables }) {
+          const cacheVar = queryCacheMap.get(variables?.clientId);
+          return cacheVar && cacheVar()
+        },
+      }
+    },
+    Query: {
+      fields: {
+        client: {
+          read(_) {
+            return _
+          }
         },
       },
     },
   },
 });
 
-const cacheVar = makeVar(null);
 export const client = new ApolloClient({
-  cache,
+  cache: inMemoryCache,
 });
 
+
 export const GET_QUERIES = gql`
-  query GetQueries {
-    watchedQueries @client {
-      queries {
-        name
-        queryString
-        variables
-        cachedData
+  query GetQueries($clientId: ID!) {
+    client(id: $clientId) @client {
+      watchedQueries {
+        queries {
+          name
+          clientId
+          queryString
+          variables
+          cachedData
+        }
+        count
       }
-      count
     }
   }
 `;
 
 export const GET_MUTATIONS = gql`
-  query GetMutations {
-    mutationLog @client {
-      mutations {
-        name
-        mutationString
-        variables
+  query GetMutations($clientId: ID!) {
+    client(id: $clientId) @client {
+      mutationLog {
+        mutations {
+          name
+          clientId
+          mutationString
+          variables
+        }
+        count
       }
-      count
     }
   }
 `;
@@ -143,36 +171,76 @@ export function getMutationData(mutation, key: number): Mutation | undefined {
   };
 }
 
-export const writeData = ({ queries, mutations, cache }) => {
+export const clients = makeVar<string[]>([])
+export const currentClient = makeVar<string | null>(null);
+
+export const writeData = ({ id, queries, mutations, cache }) => {
+  const registeredClients = clients();
+  if (!registeredClients.includes(id)) {
+    clients([...registeredClients, id])
+  }
+
   const filteredQueries: WatchedQuery[] = queries
     .map((q, i: number) => getQueryData(q, i))
-    .filter(Boolean);
+    .filter(Boolean)
+    .map(data => {
+      return { ...data, clientId: id }
+    })
 
   client.writeQuery({
     query: GET_QUERIES,
     data: {
-      watchedQueries: {
-        queries: filteredQueries,
-        count: filteredQueries.length,
-      },
+      client: {
+        id: id,
+        __typename: "Client",
+        watchedQueries: {
+          queries: filteredQueries,
+          count: filteredQueries.length,
+        },
+      }
     },
+    variables: {
+      clientId: id
+    }
   });
 
   const mappedMutations: Mutation[] = mutations.map((m, i: number) =>
     getMutationData(m, i)
-  );
+  )
+  .filter(Boolean)
+  .map(data => {
+    return { ...data, clientId: id }
+  })
+
 
   client.writeQuery({
     query: GET_MUTATIONS,
     data: {
-      mutationLog: {
-        mutations: mappedMutations,
-        count: mappedMutations.length,
-      },
+      client: {
+        id,
+        __typename: "Client",
+        mutationLog: {
+          mutations: mappedMutations,
+          count: mappedMutations.length,
+        },
+      }
     },
+    variables: {
+      clientId: id
+    }
   });
+
+  const cacheVar = queryCacheMap.get(id) ?? makeVar(null);
   cacheVar(cache);
+  queryCacheMap.set(id, cacheVar)
 };
+
+const reset = () => {
+  clients([])
+  currentClient(null)
+  queryCacheMap.clear();
+  client.resetStore();
+}
 
 export const handleReload = () => {
   reloadStatus(true);
@@ -180,7 +248,7 @@ export const handleReload = () => {
 
 export const handleReloadComplete = () => {
   reloadStatus(false);
-  client.resetStore();
+  reset();
 };
 
 export const AppProvider = () => {

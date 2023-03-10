@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useReactiveVar, gql, useQuery, makeVar } from "@apollo/client";
 
-import { currentScreen, Screens } from "./components/Layouts/Navigation";
+import { currentScreen } from "./components/Layouts/Navigation";
+import { Screens } from "./components/Layouts/screens";
 import { Queries } from "./components/Queries/Queries";
 import { Mutations } from "./components/Mutations/Mutations";
 import { Explorer } from "./components/Explorer/Explorer";
 import { Cache } from "./components/Cache/Cache";
+import { clients, currentClient } from ".";
 
 export const reloadStatus = makeVar<boolean>(false);
 
@@ -16,19 +18,35 @@ const screens = {
   [Screens.Cache]: Cache,
 };
 
-const GET_OPERATION_COUNTS = gql`
-  query GetOperationCounts {
-    watchedQueries @client {
-      count
-    }
-    mutationLog @client {
-      count
+export const GET_OPERATION_COUNTS = gql`
+  query GetOperationCounts($clientId: ID!) {
+    client(id: $id) @client {
+      watchedQueries {
+        queries {
+          id
+        }
+        count
+      }
+      mutationLog {
+        count
+      }
     }
   }
 `;
 
 export const App = (): JSX.Element => {
-  const { data } = useQuery(GET_OPERATION_COUNTS);
+  const selectedClient = useReactiveVar(currentClient)
+  const allClients = useReactiveVar(clients);
+
+  if (allClients.length > 0 && !selectedClient) {
+    currentClient(allClients[0])
+  }
+
+  const { data } = useQuery(GET_OPERATION_COUNTS, {
+    variables: {
+      id: selectedClient
+    },
+  });
   const selected = useReactiveVar<Screens>(currentScreen);
   const reloading = useReactiveVar<boolean>(reloadStatus);
   const [embeddedExplorerIFrame, setEmbeddedExplorerIFrame] = useState<HTMLIFrameElement | null>(null);
@@ -52,8 +70,8 @@ export const App = (): JSX.Element => {
         <Screen
           isVisible={undefined}
           navigationProps={{
-            queriesCount: data?.watchedQueries?.count,
-            mutationsCount: data?.mutationLog?.count,
+            queriesCount: data?.client?.watchedQueries?.count ?? 0,
+            mutationsCount: data?.client?.mutationLog?.count ?? 0,
           }}
           embeddedExplorerProps={{
             embeddedExplorerIFrame,
@@ -68,8 +86,8 @@ export const App = (): JSX.Element => {
       <Explorer
         isVisible={selected === Screens.Explorer}
         navigationProps={{
-          queriesCount: data?.watchedQueries?.count,
-          mutationsCount: data?.mutationLog?.count,
+          queriesCount: data?.client?.watchedQueries?.count,
+          mutationsCount: data?.client?.mutationLog?.count,
         }}
         embeddedExplorerProps={{
           embeddedExplorerIFrame,
@@ -79,3 +97,4 @@ export const App = (): JSX.Element => {
     </>
   );
 };
+

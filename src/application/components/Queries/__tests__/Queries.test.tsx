@@ -3,23 +3,27 @@ import { within, waitFor } from "@testing-library/react";
 import user from "@testing-library/user-event";
 
 import { renderWithApolloClient } from "../../../utilities/testing/renderWithApolloClient";
-import { client, GET_QUERIES } from "../../../index";
+import { client, currentClient, GET_QUERIES } from "../../../index";
 import { Queries } from "../Queries";
 
 jest.mock("../QueryViewer", () => ({
   QueryViewer: () => null,
 }));
 
+const clientId = "client-1";
+
 describe("<Queries />", () => {
   const queries = [
     {
       id: 0,
       __typename: "WatchedQuery",
+      clientId,
       name: null,
     },
     {
       id: 1,
       __typename: "WatchedQuery",
+      clientId,
       name: "GetColors",
     },
   ];
@@ -34,13 +38,21 @@ describe("<Queries />", () => {
   });
 
   test("queries render in the sidebar", async () => {
+    currentClient(clientId);
     client.writeQuery({
       query: GET_QUERIES,
       data: {
-        watchedQueries: {
-          queries,
-          count: queries.length,
+        client: {
+          id: clientId,
+          __typename: "Client",
+          watchedQueries: {
+            queries,
+            count: queries.length,
+          },
         },
+      },
+      variables: {
+        clientId,
       },
     });
 
@@ -61,13 +73,21 @@ describe("<Queries />", () => {
   });
 
   test("renders query name", async () => {
+    currentClient(clientId);
     client.writeQuery({
       query: GET_QUERIES,
       data: {
-        watchedQueries: {
-          queries,
-          count: queries.length,
+        client: {
+          id: clientId,
+          __typename: "Client",
+          watchedQueries: {
+            queries,
+            count: queries.length,
+          },
         },
+      },
+      variables: {
+        clientId,
       },
     });
 
