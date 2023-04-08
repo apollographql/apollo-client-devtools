@@ -10,7 +10,7 @@
     "@apollo/datasource-rest": "^5.0.1",
     "@apollo/server": "^4.3.0",
     "graphql": "^16.6.0",
-    "lowdb": "^1.0.0"
+    "lowdb": "^5.0.0"
   },
   "devDependencies": {
     "nodemon": "2.0.21"
