@@ -5,7 +5,8 @@ import {
   postMessageToEmbed,
   SET_OPERATION,
 } from "../Explorer/postMessageHelpers";
-import { currentScreen, Screens } from "../Layouts/Navigation";
+import { currentScreen } from "../Layouts/Navigation";
+import { Screens } from "../Layouts/screens";
 
 interface RunInExplorerButtonProps {
   operation: string;

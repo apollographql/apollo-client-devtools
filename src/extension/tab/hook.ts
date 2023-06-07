@@ -6,7 +6,6 @@ import { ApolloClient, ApolloError, NetworkStatus } from "@apollo/client";
 import gql from "graphql-tag";
 import Observable from "zen-observable";
 import { OperationDefinitionNode } from "graphql/language";
-
 import { version as devtoolsVersion } from "../manifest.json";
 import Relay from "../../Relay";
 import {
@@ -46,6 +45,14 @@ type Hook = {
   getMutations: () => QueryInfo[];
   getCache: () => void;
 };
+
+
+const generatePageId = () => {
+  const randomId = (Math.random() + 1).toString(36).substring(7);
+  return `${window.location.host} (${randomId})`
+}
+
+const apolloClientId = generatePageId();
 
 function initializeHook() {
   const hook: Hook = {
@@ -105,6 +112,7 @@ function initializeHook() {
     sendMessageToTab(
       eventName,
       JSON.stringify({
+        id: apolloClientId,
         queries: hook.getQueries(),
         mutations: hook.getMutations(),
         cache: hook.getCache(),
@@ -213,13 +221,14 @@ function initializeHook() {
 
   /**
    * Attempt to find the client on a 1-second interval for 10 seconds max
+   * Note: Increasing limit to 40 seconds to account for slow loads
    */
   function findClient() {
     let interval;
     let count = 0;
 
     function initializeDevtoolsHook() {
-      if (count++ > 10) clearInterval(interval);
+      if (count++ > 40) clearInterval(interval);
       if (window.__APOLLO_CLIENT__) {
         hook.ApolloClient = window.__APOLLO_CLIENT__;
         hook.ApolloClient.__actionHookForDevTools(handleActionHookForDevtools);

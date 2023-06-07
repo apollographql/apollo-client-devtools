@@ -61,7 +61,7 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, async ({ payload }) => {
   );
 
   isPanelCreated = true;
-  const { queries, mutations, cache } = JSON.parse(payload);
+  const { id, queries, mutations, cache } = JSON.parse(payload);
   let removeUpdateListener;
   let removeExplorerForward;
   let removeSubscriptionTerminationListener;
@@ -86,15 +86,15 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, async ({ payload }) => {
 
     if (!isAppInitialized) {
       initialize();
-      writeData({ queries, mutations, cache: JSON.stringify(cache) });
+      writeData({ id, queries, mutations, cache: JSON.stringify(cache) });
       isAppInitialized = true;
     }
 
     clearRequestInterval = startRequestInterval();
 
     removeUpdateListener = devtools.listen(UPDATE, ({ payload }) => {
-      const { queries, mutations, cache } = JSON.parse(payload);
-      writeData({ queries, mutations, cache: JSON.stringify(cache) });
+      const { id, queries, mutations, cache } = JSON.parse(payload);
+      writeData({ id, queries, mutations, cache: JSON.stringify(cache) });
     });
 
     // Add connection so client can send to `background:devtools-${inspectedTabId}:explorer`
