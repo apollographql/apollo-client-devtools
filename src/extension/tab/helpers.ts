@@ -1,9 +1,11 @@
-import {
+import type { ObservableQuery } from "@apollo/client";
+import type {
   DocumentNode,
   Source,
   OperationDefinitionNode,
   FragmentDefinitionNode,
 } from "graphql/language";
+import { getPrivateAccess } from "../../privateAccess";
 
 export type QueryInfo = {
   document: DocumentNode;
@@ -13,17 +15,16 @@ export type QueryInfo = {
   cachedData?: any; // Not a member of the actual Apollo Client QueryInfo type
 }
 
-type ObservableQuery = {
-  queryInfo: QueryInfo
-}
 
 // Transform the map of observable queries into a list of QueryInfo objects usable by DevTools
-export function getQueries(observableQueries: ObservableQuery[]): QueryInfo[] {
+export function getQueries(observableQueries: Pick<ObservableQuery[], 'forEach'>): QueryInfo[] {
   const queries: QueryInfo[] = [];
   if (observableQueries) {
-    observableQueries.forEach((observableQuery)=>{
+    observableQueries.forEach((oc)=>{
+      const observableQuery = getPrivateAccess(oc);
       const {document, variables} = observableQuery.queryInfo;
-      const diff = (observableQuery.queryInfo as any).getDiff();
+      const diff = observableQuery.queryInfo.getDiff();
+      if (!document) return;
 
       queries.push({ 
         document, 
