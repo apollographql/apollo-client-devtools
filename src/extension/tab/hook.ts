@@ -32,7 +32,7 @@ import {
 import { EXPLORER_SUBSCRIPTION_TERMINATION } from "../../application/components/Explorer/postMessageHelpers";
 import { getPrivateAccess } from "../../privateAccess";
 
-const DEVTOOLS_KEY = Symbol.for("ApolloDevtools");
+const DEVTOOLS_KEY = Symbol.for("apollo.devtools");
 
 declare global {
   type TCache = any;
@@ -89,12 +89,6 @@ function initializeHook() {
     },
     configurable: true,
   });
-
-  const preExisting = window[DEVTOOLS_KEY];
-  window[DEVTOOLS_KEY] = { push: registerClient };
-  if (Array.isArray(preExisting)) {
-    preExisting.forEach(registerClient);
-  }
 
   const clientRelay = new Relay();
 
@@ -280,6 +274,12 @@ function initializeHook() {
     // incase initial update was missed because the client wasn't ready, send the create devtools event.
     // devtools checks to see if it's already created, so this won't create duplicate tabs
     sendHookDataToDevTools(CREATE_DEVTOOLS_PANEL);
+  }
+
+  const preExisting = window[DEVTOOLS_KEY];
+  window[DEVTOOLS_KEY] = { push: registerClient };
+  if (Array.isArray(preExisting)) {
+    preExisting.forEach(registerClient);
   }
 
   findClient();
