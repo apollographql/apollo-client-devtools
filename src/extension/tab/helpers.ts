@@ -17,7 +17,7 @@ export type QueryInfo = {
 
 
 // Transform the map of observable queries into a list of QueryInfo objects usable by DevTools
-export function getQueries(observableQueries: Pick<ObservableQuery[], 'forEach'>): QueryInfo[] {
+export function getQueries(observableQueries: Map<string, ObservableQuery>): QueryInfo[] {
   const queries: QueryInfo[] = [];
   if (observableQueries) {
     observableQueries.forEach((oc)=>{

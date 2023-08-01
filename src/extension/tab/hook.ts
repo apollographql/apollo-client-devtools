@@ -62,8 +62,6 @@ function initializeHook() {
       const ac = getPrivateAccess(hook.ApolloClient);
       if (ac?.queryManager.getObservableQueries) {
         return getQueries(
-          // @ts-expect-error we are passing ObservableQueries here, with some private members
-          // that the devtools would rather like to see public
           ac.queryManager.getObservableQueries("active")
         );
       } else {
