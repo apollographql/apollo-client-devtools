@@ -61,9 +61,7 @@ function initializeHook() {
     getQueries() {
       const ac = getPrivateAccess(hook.ApolloClient);
       if (ac?.queryManager.getObservableQueries) {
-        return getQueries(
-          ac.queryManager.getObservableQueries("active")
-        );
+        return getQueries(ac.queryManager.getObservableQueries("active"));
       } else {
         return getQueriesLegacy(ac?.queryManager["queries"]);
       }
