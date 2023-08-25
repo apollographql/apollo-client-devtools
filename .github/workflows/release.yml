@@ -61,17 +61,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Get package version from package.json
-        id: package-version
-        uses: martinbeentjes/npm-get-version-action@main
-
-      - name: Update src/extension/manifest.json version
-        uses: jossef/action-set-json-field@v2.1
-        with:
-          file: src/extension/manifest.json
-          field: version
-          value: ${{ steps.package-version.outputs.current-version }}
-
       - name: Upload & release Chrome extension
         uses: mnao305/chrome-extension-upload@v4.0.1
         with:
