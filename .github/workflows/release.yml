@@ -61,19 +61,26 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Upload & release Chrome extension
-        uses: mnao305/chrome-extension-upload@v4.0.1
-        with:
-          file-path: dist/chrome.zip
-          extension-id: hogefuga(extension id)
-          client-id: ${{ secrets.CLIENT_ID }}
-          client-secret: ${{ secrets.CLIENT_SECRET }}
-          refresh-token: ${{ secrets.REFRESH_TOKEN }}
+      - name: Get package version from package.json
+        if: steps.changesets.outcome == 'success' && steps.changesets.outputs.published == 'true'
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@main
+
+      # - name: Upload & release Chrome extension
+      #   if: steps.changesets.outcome == 'success' && steps.changesets.outputs.published == 'true'
+      #   uses: mnao305/chrome-extension-upload@v4.0.1
+      #   with:
+      #     file-path: dist/chrome.zip
+      #     extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
+      #     client-id: ${{ secrets.CHROME_CLIENT_ID }}
+      #     client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
+      #     refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
 
       - name: Upload & release Firefox addon
+        if: steps.changesets.outcome == 'success' && steps.changesets.outputs.published == 'true'
         uses: trmcnvn/firefox-addon@v1
         with:
-          uuid: "{7b312f5e-9680-436b-acc1-9b09f60e8aaa}"
+          uuid: ${{ secrets.FIREFOX_ADDON_UUID }}
           xpi: "dist/apollo_client_devtools-${{ steps.package-version.outputs.current-version }}.zip"
           manifest: src/extension/manifest.json
           api-key: ${{ secrets.FIREFOX_API_KEY }}
