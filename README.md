@@ -2,8 +2,9 @@
 
 # Apollo Client Browser Devtools
 
+[![npm version](https://badge.fury.io/js/apollo-client-devtools.svg)](https://badge.fury.io/js/apollo-client-devtools)
 [![Build Status](https://circleci.com/gh/apollographql/apollo-client-devtools.svg?style=svg)](https://circleci.com/gh/apollographql/apollo-client-devtools)
-[![Join the community on Spectrum](https://withspectrum.github.io/badge/badge.svg)](https://spectrum.chat/apollo)
+[![Join our Discord server](https://img.shields.io/discord/1022972389463687228.svg?color=7389D8&labelColor=6A7EC2&logo=discord&logoColor=ffffff&style=flat-square)](https://discord.gg/graphos)
 
 [Download for Firefox](https://addons.mozilla.org/firefox/addon/apollo-developer-tools/) | [Download for Chrome](https://chrome.google.com/webstore/detail/apollo-client-developer-t/jdkknkkbebbapilgoeccciglkfbmbnfm)
 
