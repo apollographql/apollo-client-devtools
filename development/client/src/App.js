@@ -1,16 +1,11 @@
-import React from 'react';
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link
-} from "react-router-dom";
-import { useQuery } from '@apollo/client';
-import ColorSchemeGenerator from './ColorSchemeGenerator';
-import Favorites from './Favorites';
-import ColorLookup from './ColorLookup';
-import { GET_SAVED_COLORS } from './queries';
-import './App.css';
+import React from "react";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { useQuery } from "@apollo/client";
+import ColorSchemeGenerator from "./ColorSchemeGenerator";
+import Favorites from "./Favorites";
+import ColorLookup from "./ColorLookup";
+import { GET_SAVED_COLORS } from "./queries";
+import "./App.css";
 
 function App() {
   useQuery(GET_SAVED_COLORS);
@@ -28,17 +23,11 @@ function App() {
           </nav>
         </header>
         <main>
-          <Switch>
-            <Route path="/favorites">
-              <Favorites />
-            </Route>
-            <Route path="/lookup">
-              <ColorLookup />
-            </Route>
-            <Route path="/">
-              <ColorSchemeGenerator />
-            </Route>
-          </Switch>
+          <Routes>
+            <Route path="/favorites" element={<Favorites />} />
+            <Route path="/lookup" element={<ColorLookup />} />
+            <Route path="/" element={<ColorSchemeGenerator />} />
+          </Routes>
         </main>
       </div>
     </Router>
