@@ -102,7 +102,7 @@ export const treeTheme: Record<ColorTheme, Record<string, ShadedColor>> = {
   },
 };
 
-export type Theme = typeof themes[keyof typeof themes];
+export type Theme = (typeof themes)[keyof typeof themes];
 export const colorTheme = makeVar<ColorTheme>(getPreferredTheme());
 export const isDarkMode = (theme: ColorTheme): boolean => {
   return theme === ColorTheme.Dark;
