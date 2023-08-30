@@ -101,7 +101,7 @@ export const initBroadCastEvents = (hook, bridge) => {
   };
 
   // The backend has acknowledged receipt of a broadcast
-  bridge.on("broadcast:ack", data => {
+  bridge.on("broadcast:ack", () => {
     acknowledged = true;
     if (enqueued) {
       scheduleBroadcast();

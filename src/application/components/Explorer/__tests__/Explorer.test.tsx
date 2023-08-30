@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { within } from "@testing-library/react";
+import { within, screen } from "@testing-library/react";
 import { graphql } from "graphql";
 import { getIntrospectionQuery } from "graphql/utilities";
 
@@ -49,8 +49,8 @@ const EmbeddedExplorerWrapper = () => {
 
 describe("<Explorer />", () => {
   test("it renders a header", () => {
-    const { getByTestId } = renderWithApolloClient(<EmbeddedExplorerWrapper />);
-    const header = getByTestId("header");
+    renderWithApolloClient(<EmbeddedExplorerWrapper />);
+    const header = screen.getByTestId("header");
     const { getByLabelText } = within(header);
 
     expect(header).toBeInTheDocument();

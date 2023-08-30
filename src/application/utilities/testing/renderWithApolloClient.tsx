@@ -1,7 +1,7 @@
-import { ReactElement } from 'react';
+import { ReactElement } from "react";
 import { render } from "@testing-library/react";
 import { ApolloProvider } from "@apollo/client";
-import userEvent from '@testing-library/user-event';
+import userEvent from "@testing-library/user-event";
 
 import { client } from "../../index";
 
@@ -15,6 +15,6 @@ export const renderWithApolloClient = (
     </ApolloProvider>,
     renderOptions
   );
-
+  // eslint-disable-next-line testing-library/await-async-events
   return { ...utils, user: userEvent.setup() };
 };

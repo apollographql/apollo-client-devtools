@@ -215,6 +215,7 @@ function initializeHook() {
    * Attempt to find the client on a 1-second interval for 10 seconds max
    */
   function findClient() {
+    // eslint-disable-next-line prefer-const
     let interval;
     let count = 0;
 
