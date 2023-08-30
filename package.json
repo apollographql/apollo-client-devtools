@@ -23,6 +23,7 @@
     "prepdist:changesets": "ts-node-script prepareChangesetsRelease.ts && prettier src/extension/manifest.json --write",
     "prezip": "npm run build:prod",
     "test": "jest",
+    "type-check": "tsc --noEmit",
     "test:circleci": "jest --maxWorkers=2",
     "test:watch": "jest --watch",
     "zip": "npm run prezip && npm run zip:chrome && npm run zip:firefox",
