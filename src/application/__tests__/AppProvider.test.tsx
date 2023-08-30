@@ -56,7 +56,7 @@ describe("<AppProvider />", () => {
         __typename: "WatchedQuery",
         name: "GetColorByHex",
         queryString:
-          "query GetColorByHex {\n  someQuery {\n    id\n    __typename\n  }\n}\n",
+          "query GetColorByHex {\n  someQuery {\n    id\n    __typename\n  }\n}",
         variables: {
           color: "#ee82ee",
         },
