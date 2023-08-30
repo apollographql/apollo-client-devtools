@@ -22,13 +22,20 @@ describe("<Navigation />", () => {
     renderWithApolloClient(<Navigation {...props} />);
 
     expect(screen.getByText("Explorer")).toBeInTheDocument();
-    expect(screen.getByText(`Queries (${props.queriesCount})`)).toBeInTheDocument();
-    expect(screen.getByText(`Mutations (${props.queriesCount})`)).toBeInTheDocument();
+    expect(
+      screen.getByText(`Queries (${props.queriesCount})`)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(`Mutations (${props.queriesCount})`)
+    ).toBeInTheDocument();
     expect(screen.getByText("Cache")).toBeInTheDocument();
   });
 
   it("can select a navigation item", async () => {
-    const { container, user } = renderWithApolloClient(<Navigation {...props} />);
+    const { container, user } = renderWithApolloClient(
+      <Navigation {...props} />
+    );
+    // eslint-disable-next-line testing-library/no-container
     const buttons = container.querySelectorAll("button");
     const lastButton = buttons[buttons.length - 1];
     expect(lastButton).not.toHaveStyleRule("color", colors.silver.lighter);

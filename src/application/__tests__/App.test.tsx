@@ -1,5 +1,5 @@
 import React from "react";
-import { waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 
 import { renderWithApolloClient } from "../utilities/testing/renderWithApolloClient";
 import { currentScreen, Screens } from "../components/Layouts/Navigation";
@@ -21,24 +21,24 @@ jest.mock("../components/Explorer/Explorer", () => ({
 
 describe("<App />", () => {
   test("renders the selected screen", async () => {
-    const { getByText } = renderWithApolloClient(<App />);
-    expect(getByText("Queries (0)")).toBeInTheDocument();
+    renderWithApolloClient(<App />);
+    expect(screen.getByText("Queries (0)")).toBeInTheDocument();
     await waitFor(() => {
       currentScreen(Screens.Mutations);
       expect(currentScreen()).toEqual(Screens.Mutations);
     });
-    await waitFor(() => expect(getByText("Mutations (0)")).toBeInTheDocument());
+    await screen.findByText("Mutations (0)");
     await waitFor(() => {
       currentScreen(Screens.Explorer);
       expect(currentScreen()).toEqual(Screens.Explorer);
     });
-    await waitFor(() => expect(getByText("Build")).toBeInTheDocument());
+    await screen.findByText("Build");
   });
 
   test("after reload, renders the Queries screen", async () => {
     currentScreen(Screens.Mutations);
-    const { getByText, debug } = renderWithApolloClient(<App />);
-    const element = getByText("Mutations (0)");
+    renderWithApolloClient(<App />);
+    const element = screen.getByText("Mutations (0)");
     expect(element).toBeInTheDocument();
     await waitFor(() => {
       reloadStatus(true);
@@ -52,7 +52,7 @@ describe("<App />", () => {
       expect(reloadStatus()).toBeFalsy();
     });
     await waitFor(() => {
-      expect(getByText("Queries (0)")).toBeInTheDocument();
+      expect(screen.getByText("Queries (0)")).toBeInTheDocument();
     });
   });
 });

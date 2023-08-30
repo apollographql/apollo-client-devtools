@@ -1,5 +1,5 @@
 import React from "react";
-import { render, waitFor } from "@testing-library/react";
+import { render, waitFor, screen } from "@testing-library/react";
 import { gql } from "@apollo/client";
 
 import matchMediaMock from "../utilities/testing/matchMedia";
@@ -14,8 +14,8 @@ jest.mock("../App", () => ({
 
 describe("<AppProvider />", () => {
   test("changes the color theme", async () => {
-    const { getByText } = render(<AppProvider />);
-    expect(getByText("App")).toBeInTheDocument();
+    render(<AppProvider />);
+    expect(screen.getByText("App")).toBeInTheDocument();
 
     expect(colorTheme()).toEqual("light");
     await waitFor(() => {

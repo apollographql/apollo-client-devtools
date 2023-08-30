@@ -78,7 +78,9 @@ const cacheLink = (fetchPolicy) =>
     try {
       const results = cache.readQuery({ query, variables });
       if (results) return Observable.of({ data: results });
-    } catch (e) {}
+    } catch (e) {
+      // do nothing
+    }
 
     return forward(operation);
   });
@@ -125,6 +127,8 @@ export const initLinkEvents = (hook, bridge) => {
 
       if (!supportsApolloClientLocalState) {
         // Supports `apollo-link-state`.
+        // TODO(fixme): key is undefined here.
+        // eslint-disable-next-line no-undef
         const context = { __devtools_key__: key, cache };
 
         const devtoolsLink = from([
