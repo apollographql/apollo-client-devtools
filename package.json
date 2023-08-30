@@ -64,7 +64,7 @@
     "@types/webextension-polyfill": "0.10.2",
     "@typescript-eslint/eslint-plugin": "6.5.0",
     "@typescript-eslint/parser": "6.5.0",
-    "copy-webpack-plugin": "7.0.0",
+    "copy-webpack-plugin": "11.0.0",
     "css-loader": "5.2.7",
     "eslint": "8.48.0",
     "eslint-plugin-jest-dom": "5.1.0",
