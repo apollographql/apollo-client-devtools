@@ -78,7 +78,7 @@ export function getMainDefinition(
 ): OperationDefinitionNode | FragmentDefinitionNode {
   let fragmentDefinition;
 
-  for (let definition of queryDoc.definitions) {
+  for (const definition of queryDoc.definitions) {
     if (definition.kind === "OperationDefinition") {
       const operation = (definition as OperationDefinitionNode).operation;
       if (

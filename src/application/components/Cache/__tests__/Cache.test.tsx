@@ -1,5 +1,5 @@
 import React from "react";
-import { within, waitFor, fireEvent } from "@testing-library/react";
+import { screen, within, waitFor, fireEvent } from "@testing-library/react";
 
 import { Cache } from "../Cache";
 import { renderWithApolloClient } from "../../../utilities/testing/renderWithApolloClient";
@@ -42,22 +42,18 @@ const navigationProps = {
 
 describe("Cache component tests", () => {
   describe("No cache data", () => {
-    it("should show no cache data message in sidebar", () => {
-      const { getByTestId } = renderWithApolloClient(
-        <Cache navigationProps={navigationProps} />
-      );
-      const sidebar = getByTestId("sidebar");
-      return waitFor(() => {
+    it("should show no cache data message in sidebar", async () => {
+      renderWithApolloClient(<Cache navigationProps={navigationProps} />);
+      const sidebar = screen.getByTestId("sidebar");
+      await waitFor(() => {
         expect(within(sidebar).getByText("No cache data")).toBeInTheDocument();
       });
     });
 
-    it("should leave the header blank instead of trying to show a cache ID", () => {
-      const { getByTestId } = renderWithApolloClient(
-        <Cache navigationProps={navigationProps} />
-      );
-      const header = getByTestId("header");
-      return waitFor(() => {
+    it("should leave the header blank instead of trying to show a cache ID", async () => {
+      renderWithApolloClient(<Cache navigationProps={navigationProps} />);
+      const header = screen.getByTestId("header");
+      await waitFor(() => {
         expect(header.firstChild).not.toBeInTheDocument();
       });
     });
@@ -74,33 +70,27 @@ describe("Cache component tests", () => {
       });
     });
 
-    it("should show list of root cache ids in the sidebar", () => {
-      const { getByTestId } = renderWithApolloClient(
-        <Cache navigationProps={navigationProps} />
-      );
-      const sidebar = getByTestId("sidebar");
-      return waitFor(() => {
+    it("should show list of root cache ids in the sidebar", async () => {
+      renderWithApolloClient(<Cache navigationProps={navigationProps} />);
+      const sidebar = screen.getByTestId("sidebar");
+      await waitFor(() => {
         expect(within(sidebar).getByText("ROOT_QUERY")).toBeInTheDocument();
-        expect(within(sidebar).getByText("Result:1")).toBeInTheDocument();
-        expect(within(sidebar).getByText("Result:2")).toBeInTheDocument();
       });
+      expect(within(sidebar).getByText("Result:1")).toBeInTheDocument();
+      expect(within(sidebar).getByText("Result:2")).toBeInTheDocument();
     });
 
-    it("should show sidebar selected/active cache ID in the header", () => {
-      const { getByTestId } = renderWithApolloClient(
-        <Cache navigationProps={navigationProps} />
-      );
-      const header = getByTestId("header");
-      return waitFor(() => {
+    it("should show sidebar selected/active cache ID in the header", async () => {
+      renderWithApolloClient(<Cache navigationProps={navigationProps} />);
+      const header = screen.getByTestId("header");
+      await waitFor(() => {
         expect(within(header).getByText("ROOT_QUERY")).toBeInTheDocument();
       });
     });
 
     it("should show data for the sidebar selected/active cache ID in main ", () => {
-      const { getByTestId } = renderWithApolloClient(
-        <Cache navigationProps={navigationProps} />
-      );
-      const main = getByTestId("main");
+      renderWithApolloClient(<Cache navigationProps={navigationProps} />);
+      const main = screen.getByTestId("main");
       expect(within(main).getByText("ROOT_QUERY")).toBeInTheDocument();
       expect(within(main).getByText("__typename:")).toBeInTheDocument();
       expect(within(main).getByText('"Query"')).toBeInTheDocument();
@@ -129,55 +119,50 @@ describe("Cache component tests", () => {
       });
     });
 
-    it("should highlight sidebar cache ID's if a match is found", () => {
-      const { getByPlaceholderText, getByTestId } = renderWithApolloClient(
-        <Cache navigationProps={navigationProps} />
-      );
+    it("should highlight sidebar cache ID's if a match is found", async () => {
+      renderWithApolloClient(<Cache navigationProps={navigationProps} />);
 
-      const searchInput = getByPlaceholderText("Search queries");
+      const searchInput = screen.getByPlaceholderText("Search queries");
       fireEvent.change(searchInput, { target: { value: "Result 2" } });
 
-      const sidebar = getByTestId("sidebar");
+      const sidebar = screen.getByTestId("sidebar");
 
-      return waitFor(() => {
+      await waitFor(() => {
         expect((searchInput as any).value).toBe("Result 2");
-
-        const result1 = within(sidebar).getByText("Result:1");
-        expect(result1.parentNode).not.toHaveStyle(selectedSidebarStyles);
-
-        const result2 = within(sidebar).getByText("Result:2");
-        expect(result2.parentNode).toHaveStyle(selectedSidebarStyles);
       });
+      const result1 = within(sidebar).getByText("Result:1");
+      expect(result1.parentNode).not.toHaveStyle(selectedSidebarStyles);
+
+      const result2 = within(sidebar).getByText("Result:2");
+      expect(result2.parentNode).toHaveStyle(selectedSidebarStyles);
     });
 
-    it("should highlight object keys/values if a match is found", () => {
-      const { getByPlaceholderText, getByTestId } = renderWithApolloClient(
-        <Cache navigationProps={navigationProps} />
-      );
+    it("should highlight object keys/values if a match is found", async () => {
+      renderWithApolloClient(<Cache navigationProps={navigationProps} />);
 
-      const searchInput = getByPlaceholderText("Search queries");
+      const searchInput = screen.getByPlaceholderText("Search queries");
       fireEvent.change(searchInput, { target: { value: "Result 2" } });
 
-      const sidebar = getByTestId("sidebar");
+      const sidebar = screen.getByTestId("sidebar");
 
       const result2 = within(sidebar).getByText("Result:2");
       const result2Parent = result2.parentNode;
       fireEvent.click(result2Parent!);
 
-      const main = getByTestId("main");
+      const main = screen.getByTestId("main");
 
-      return waitFor(() => {
+      await waitFor(() => {
         expect(within(main).getByText("__typename:")).not.toHaveStyle(
           selectedMainStyles
         );
-        expect(within(main).getByText('"Result"')).not.toHaveStyle(
-          selectedMainStyles
-        );
-        expect(within(main).getByText("name:")).toHaveStyle(selectedMainStyles);
-        expect(within(main).getByText('"Result 2"')).toHaveStyle(
-          selectedMainStyles
-        );
       });
+      expect(within(main).getByText('"Result"')).not.toHaveStyle(
+        selectedMainStyles
+      );
+      expect(within(main).getByText("name:")).toHaveStyle(selectedMainStyles);
+      expect(within(main).getByText('"Result 2"')).toHaveStyle(
+        selectedMainStyles
+      );
     });
   });
 });

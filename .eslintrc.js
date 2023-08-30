@@ -20,6 +20,9 @@ module.exports = {
     // https://emotion.sh/docs/eslint-plugin-react
     "react/no-unknown-property": ["error", { ignore: ["css"] }],
     "react/display-name": "off",
+    "testing-library/no-node-access": "off",
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/no-unused-vars": "warn",
   },
   settings: {
     react: {

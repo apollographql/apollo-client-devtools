@@ -44,7 +44,10 @@ describe("<Mutations />", () => {
     });
 
     renderWithApolloClient(
-      <Mutations navigationProps={navigationProps} embeddedExplorerProps={{ embeddedExplorerIFrame: null }}/>
+      <Mutations
+        navigationProps={navigationProps}
+        embeddedExplorerProps={{ embeddedExplorerIFrame: null }}
+      />
     );
 
     const sidebar = screen.getByTestId("sidebar");
@@ -54,11 +57,11 @@ describe("<Mutations />", () => {
           `Mutations (${navigationProps.mutationsCount})`
         ).length
       ).toBe(2);
-      expect(within(sidebar).getByText("Unnamed")).toBeInTheDocument();
-      expect(
-        within(sidebar).getByText("AddColorToFavorites")
-      ).toBeInTheDocument();
     });
+    expect(within(sidebar).getByText("Unnamed")).toBeInTheDocument();
+    expect(
+      within(sidebar).getByText("AddColorToFavorites")
+    ).toBeInTheDocument();
   });
 
   test("renders query name", async () => {
@@ -73,14 +76,17 @@ describe("<Mutations />", () => {
     });
 
     const { user } = renderWithApolloClient(
-      <Mutations navigationProps={navigationProps} embeddedExplorerProps={{ embeddedExplorerIFrame: null }}/>
+      <Mutations
+        navigationProps={navigationProps}
+        embeddedExplorerProps={{ embeddedExplorerIFrame: null }}
+      />
     );
 
     const header = screen.getByTestId("header");
     expect(within(header).getByText("Unnamed")).toBeInTheDocument();
 
     const sidebar = screen.getByTestId("sidebar");
-    await act(() => 
+    await act(() =>
       user.click(within(sidebar).getByText("AddColorToFavorites"))
     );
     await waitFor(() => {
@@ -92,7 +98,10 @@ describe("<Mutations />", () => {
 
   test("it renders an empty state", () => {
     renderWithApolloClient(
-      <Mutations navigationProps={navigationProps} embeddedExplorerProps={{ embeddedExplorerIFrame: null }}/>
+      <Mutations
+        navigationProps={navigationProps}
+        embeddedExplorerProps={{ embeddedExplorerIFrame: null }}
+      />
     );
 
     expect(screen.getByTestId("header")).toBeEmptyDOMElement();
