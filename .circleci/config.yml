@@ -1,32 +1,22 @@
 version: 2.1
-orbs:
-  node: circleci/node@4.9.0
 
 jobs:
   lint:
-    executor:
-      name: node/default
-      tag: 'current'
+    docker:
+      - image: cimg/node:20.5.1
     steps:
       - checkout
-      - node/install-packages:
-          cache-path: ~/project/node_modules
-          override-ci-command: npx -p npm@6 npm ci
-      - run:
-          command: |
-            npm run build
-            npm run lint
+      - run: npm ci
+      - run: npm run build
+      - run: npm run lint
+
   test:
-    executor:
-      name: node/default
-      tag: 'current'
+    docker:
+      - image: cimg/node:20.5.1
     steps:
       - checkout
-      - node/install-packages:
-          cache-path: ~/project/node_modules
-          override-ci-command: npx -p npm@6 npm ci
-      - run:
-          command: npm run test:circleci
+      - run: npm ci
+      - run: npm run test:circleci
 
 workflows:
   lint-and-test:
