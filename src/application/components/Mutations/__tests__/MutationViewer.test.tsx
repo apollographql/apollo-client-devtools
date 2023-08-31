@@ -1,5 +1,5 @@
 import React from "react";
-import { screen } from '@testing-library/react';
+import { screen } from "@testing-library/react";
 
 import { renderWithApolloClient } from "../../../utilities/testing/renderWithApolloClient";
 import { MutationViewer } from "../MutationViewer";

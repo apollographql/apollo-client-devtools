@@ -80,11 +80,7 @@ const borderStyles = css`
   border-right: ${rem(1)} solid var(--whiteTransparent);
 `;
 
-const NavButton = ({
-  isSelected,
-  onClick,
-  children,
-}: NavButtonProps) => (
+const NavButton = ({ isSelected, onClick, children }: NavButtonProps) => (
   <button
     css={[navButtonStyles, isSelected && selectedNavButtonStyles]}
     onClick={onClick}

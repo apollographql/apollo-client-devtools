@@ -23,6 +23,7 @@
     "changeset-version": "changeset version && npm i && npm run prepdist:changesets",
     "chrome": "npm run build -- --watch --env TARGET=chromium",
     "firefox": "npm run build -- --watch",
+    "format": "prettier --write .",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "prepublishOnly": "npm run build",
     "prepdist:changesets": "ts-node-script prepareChangesetsRelease.ts && prettier src/extension/manifest.json --write",

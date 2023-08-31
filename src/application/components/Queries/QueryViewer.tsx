@@ -2,8 +2,8 @@ import { useState } from "react";
 import { css } from "@emotion/react";
 import { rem } from "polished";
 import { colors } from "@apollo/space-kit/colors";
-import SyntaxHighlighter from '../SyntaxHighlighter';
-import * as Tabs from '@radix-ui/react-tabs';
+import SyntaxHighlighter from "../SyntaxHighlighter";
+import * as Tabs from "@radix-ui/react-tabs";
 
 import { JSONTree } from "react-json-tree";
 import { IconCopy } from "@apollo/space-kit/icons/IconCopy";
@@ -114,8 +114,8 @@ interface QueryViewerProps {
 }
 
 enum QueryTabs {
-  Variables = 'Variables',
-  CachedData = 'CachedData',
+  Variables = "Variables",
+  CachedData = "CachedData",
 }
 
 export const QueryViewer = ({
@@ -136,13 +136,13 @@ export const QueryViewer = ({
           <IconCopy css={copyIconStyle} data-testid="copy-query-string" />
         </CopyToClipboard>
       </h4>
-      <SyntaxHighlighter 
-        css={queryStringMain} 
-        language="graphql" 
-        code={queryString} 
+      <SyntaxHighlighter
+        css={queryStringMain}
+        language="graphql"
+        code={queryString}
       />
-      <Tabs.Root 
-        value={currentTab} 
+      <Tabs.Root
+        value={currentTab}
         onValueChange={(value: QueryTabs) => setCurrentTab(value)}
       >
         <Tabs.List css={queryDataHeader}>

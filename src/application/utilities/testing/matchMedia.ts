@@ -1,4 +1,4 @@
-import MatchMediaMock from 'jest-matchmedia-mock';
+import MatchMediaMock from "jest-matchmedia-mock";
 
 const matchMediaMock = new MatchMediaMock();
 

@@ -58,7 +58,7 @@ describe("<QueryViewer />", () => {
 
     const cachedDataTab = screen.getByText("Cached Data");
     expect(cachedDataTab).toBeInTheDocument();
-    // TODO: Determine why this needs to be wrapped in act since user.click 
+    // TODO: Determine why this needs to be wrapped in act since user.click
     // should already be wrapped in act
     await act(() => user.click(cachedDataTab));
     const cachedDataPanel = screen.getByRole("tabpanel");

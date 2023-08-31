@@ -1,13 +1,15 @@
-import { MessageObj } from '../types';
+import { MessageObj } from "../types";
 
-export type EventListener<T = any> = (event: CustomEvent<MessageObj<T>>) => void;
+export type EventListener<T = any> = (
+  event: CustomEvent<MessageObj<T>>
+) => void;
 
 class EventTarget {
   listeners = new Map<string, Set<EventListener>>();
 
   addEventListener(eventType: string, callback: EventListener) {
     const isRegistered = this.listeners.has(eventType);
-    
+
     if (!isRegistered) {
       this.listeners.set(eventType, new Set<EventListener>());
     }
@@ -30,11 +32,9 @@ class EventTarget {
 
     if (isRegistered) {
       const listeners = this.listeners.get(event.type);
-      listeners!.forEach(listener => listener(event));
+      listeners!.forEach((listener) => listener(event));
     }
   }
 }
 
 export default EventTarget;
-
-

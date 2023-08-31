@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client';
+import { gql } from "@apollo/client";
 
 export const COLOR_FIELDS = gql`
   fragment colorFields on Color {

@@ -7,14 +7,14 @@ type KnownPrivates = [
     ApolloClient<any>,
     {
       queryManager: QueryManager<any>;
-    }
+    },
   ],
   [
     ObservableQuery,
     {
       queryInfo: QueryInfo;
-    }
-  ]
+    },
+  ],
 ];
 
 export type WithPrivateAccess<U> = U extends infer T

@@ -11,7 +11,7 @@ import {
   RELOADING_TAB,
   RELOAD_TAB_COMPLETE,
 } from "../constants";
-import browser from 'webextension-polyfill'
+import browser from "webextension-polyfill";
 
 const inspectedTabId = browser.devtools.inspectedWindow.tabId;
 const devtools = new Relay();
@@ -57,7 +57,7 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, async ({ payload }) => {
   const panel = await browser.devtools.panels.create(
     "Apollo",
     "logo_devtools.png",
-    "panel.html",
+    "panel.html"
   );
 
   isPanelCreated = true;
