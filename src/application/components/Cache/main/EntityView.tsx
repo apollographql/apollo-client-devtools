@@ -42,19 +42,20 @@ export function EntityView({ cacheId, data, searchResults, setCacheId }) {
           const matchFound = searchResult && searchResult[key] === value;
 
           return (
-            <span 
+            <span
               css={css`
                 ${matchFound ? selectedStyles : void 0}
-                ${key === '__ref' && css`
+                ${key === "__ref" &&
+                css`
                   &:hover {
                     text-decoration: underline;
                     cursor: pointer;
                   }
                 `}
-              `} 
+              `}
               onClick={() => {
-                if (key === '__ref') {
-                  setCacheId(value)
+                if (key === "__ref") {
+                  setCacheId(value);
                 }
               }}
             >

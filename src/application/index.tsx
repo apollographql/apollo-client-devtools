@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { createRoot } from 'react-dom/client';
+import { createRoot } from "react-dom/client";
 import {
   ApolloClient,
   ApolloProvider,
@@ -197,7 +197,7 @@ export const AppProvider = () => {
 };
 
 export const initDevTools = () => {
-  const root = createRoot(document.getElementById('devtools') as HTMLElement);
+  const root = createRoot(document.getElementById("devtools") as HTMLElement);
 
   root.render(<AppProvider />);
 };

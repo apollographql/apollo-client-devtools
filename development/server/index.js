@@ -1,7 +1,7 @@
-const { ApolloServer } = require('@apollo/server');
-const { startStandaloneServer } = require('@apollo/server/standalone');
-const ColorAPI = require('./api/color');
-const db = require('./db');
+const { ApolloServer } = require("@apollo/server");
+const { startStandaloneServer } = require("@apollo/server/standalone");
+const ColorAPI = require("./api/color");
+const db = require("./db");
 
 const typeDefs = `#graphql
   enum Mode {
@@ -55,21 +55,20 @@ const typeDefs = `#graphql
 const resolvers = {
   Mutation: {
     addColor: async (_source, { color }, { dataSources }) => {
-      const exists = dataSources.db.get('favorites').find({hex: color.hex}).value();
-      
+      const exists = dataSources.db
+        .get("favorites")
+        .find({ hex: color.hex })
+        .value();
+
       if (exists) {
-        return dataSources.db.get('favorites').value();
+        return dataSources.db.get("favorites").value();
       }
 
-      return dataSources.db.get('favorites')
-        .push(color)
-        .write();
+      return dataSources.db.get("favorites").push(color).write();
     },
     removeColor: async (_source, { color }, { dataSources }) => {
-      return dataSources.db.get('favorites')
-        .remove(color)
-        .write();
-    }
+      return dataSources.db.get("favorites").remove(color).write();
+    },
   },
   Query: {
     random: () => ({}),
@@ -80,7 +79,7 @@ const resolvers = {
       return dataSources.colorAPI.getColorScheme({ hex, mode, count });
     },
     favoritedColors: async (_source, _, { dataSources }) => {
-      return dataSources.db.get('favorites');
+      return dataSources.db.get("favorites");
     },
   },
   Random: {
@@ -99,7 +98,7 @@ const resolvers = {
     COMPLEMENT: "complement",
     ANALOGIC_COMPLEMENT: "analogic-complement",
     TRIAD: "triad",
-    QUAD: "quad",  
+    QUAD: "quad",
   },
 };
 

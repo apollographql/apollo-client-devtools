@@ -1,9 +1,9 @@
-import Highlight, { 
+import Highlight, {
   defaultProps,
   Language,
   PrismTheme,
 } from "prism-react-renderer";
-import { colors } from '@apollo/space-kit/colors';
+import { colors } from "@apollo/space-kit/colors";
 
 interface SyntaxHighlighterProps {
   className?: string;
@@ -13,101 +13,96 @@ interface SyntaxHighlighterProps {
 
 const theme: PrismTheme = {
   plain: {
-    color: 'currentColor',
-    backgroundColor: 'transparent',
+    color: "currentColor",
+    backgroundColor: "transparent",
   },
   styles: [
     {
-      types: ['important', 'bold'],
+      types: ["important", "bold"],
       style: {
-        fontWeight: 'bold'
-      }
+        fontWeight: "bold",
+      },
     },
     {
-      types: ['italic'],
+      types: ["italic"],
       style: {
-        fontStyle: 'italic'
-      }
+        fontStyle: "italic",
+      },
     },
     {
-      types: ['entity'],
+      types: ["entity"],
       style: {
-        cursor: 'help'
-      }
+        cursor: "help",
+      },
     },
     {
-      types: ['selector', 'attr-name', 'char', 'builtin', 'inserted'],
+      types: ["selector", "attr-name", "char", "builtin", "inserted"],
       style: {
         color: colors.teal.light,
-      }
+      },
     },
     {
-      types: ['comment', 'prolog', 'doctype', 'cdata'],
+      types: ["comment", "prolog", "doctype", "cdata"],
       style: {
         color: colors.orange.light,
-        fontWeight: 'bold'
-      }
+        fontWeight: "bold",
+      },
     },
     {
-      types: ['punctuation'],
+      types: ["punctuation"],
       style: {
         color: colors.grey.light,
-      }
+      },
     },
     {
       types: [
-        'property',
-        'tag',
-        'boolean',
-        'number',
-        'constant',
-        'symbol',
-        'deleted',
-        'class-name',
-        'function'
+        "property",
+        "tag",
+        "boolean",
+        "number",
+        "constant",
+        "symbol",
+        "deleted",
+        "class-name",
+        "function",
       ],
       style: {
         color: colors.pink.light,
-      }
+      },
     },
     {
-      types: ['atrule', 'attr-value', 'keyword'],
+      types: ["atrule", "attr-value", "keyword"],
       style: {
-        color: 'inherit',
-        background: 'transparent'
-      }
+        color: "inherit",
+        background: "transparent",
+      },
     },
     {
-      types: ['atrule', 'attr-value', 'keyword'],
+      types: ["atrule", "attr-value", "keyword"],
       style: {
         color: colors.indigo.light,
-      }
+      },
     },
     {
-      types: ['regex', 'important', 'variable', 'description'],
+      types: ["regex", "important", "variable", "description"],
       style: {
         color: colors.yellow.light,
-      }
-    }
-  ]
+      },
+    },
+  ],
 };
 
-const SyntaxHighlighter = ({ 
+const SyntaxHighlighter = ({
   code,
   className: outerClassName,
   language,
 }: SyntaxHighlighterProps) => {
   return (
-    <Highlight
-      {...defaultProps}
-      language={language} 
-      theme={theme}
-      code={code}
-    >
+    <Highlight {...defaultProps} language={language} theme={theme} code={code}>
       {({ className, style, tokens, getLineProps, getTokenProps }) => {
         return (
-          <pre 
-            className={[className, outerClassName].filter(Boolean).join(' ')} 
+          <pre
+            className={[className, outerClassName].filter(Boolean).join(" ")}
             style={style}
           >
             <code>
@@ -115,7 +110,9 @@ const SyntaxHighlighter = ({
                 return (
                   <div key={index} {...getLineProps({ line, key: index })}>
                     {line.map((token, key) => {
-                      return <span key={key} {...getTokenProps({ token, key })} />
+                      return (
+                        <span key={key} {...getTokenProps({ token, key })} />
+                      );
                     })}
                   </div>
                 );

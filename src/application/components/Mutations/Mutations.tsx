@@ -36,14 +36,17 @@ const GET_SELECTED_MUTATION = gql`
   }
 `;
 
-export const Mutations = ({ navigationProps, embeddedExplorerProps }: {
+export const Mutations = ({
+  navigationProps,
+  embeddedExplorerProps,
+}: {
   navigationProps: {
-    queriesCount: number,
-    mutationsCount: number,
-  },
+    queriesCount: number;
+    mutationsCount: number;
+  };
   embeddedExplorerProps: {
-    embeddedExplorerIFrame: HTMLIFrameElement | null,
-  }
+    embeddedExplorerIFrame: HTMLIFrameElement | null;
+  };
 }): JSX.Element => {
   const [selected, setSelected] = useState<number>(0);
   const theme = useTheme();
@@ -88,7 +91,9 @@ export const Mutations = ({ navigationProps, embeddedExplorerProps }: {
               <RunInExplorerButton
                 operation={selectedMutationData?.mutation?.mutationString}
                 variables={selectedMutationData?.mutation?.variables}
-                embeddedExplorerIFrame={embeddedExplorerProps.embeddedExplorerIFrame}
+                embeddedExplorerIFrame={
+                  embeddedExplorerProps.embeddedExplorerIFrame
+                }
               />
             </Fragment>
           )}

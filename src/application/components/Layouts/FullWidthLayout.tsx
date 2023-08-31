@@ -26,7 +26,11 @@ const headerStyles = css`
   grid-area: header;
 `;
 
-const FullWidthLayout = ({ navigationProps, children, className }: FullWidthLayoutProps) => {
+const FullWidthLayout = ({
+  navigationProps,
+  children,
+  className,
+}: FullWidthLayoutProps) => {
   const { queriesCount, mutationsCount } = navigationProps;
 
   return (
@@ -38,8 +42,8 @@ const FullWidthLayout = ({ navigationProps, children, className }: FullWidthLayo
 };
 
 interface HeaderProps {
-  className?: string
-  children?: ReactNode
+  className?: string;
+  children?: ReactNode;
 }
 
 const Header = ({ children, className }: HeaderProps) => (
@@ -49,8 +53,8 @@ const Header = ({ children, className }: HeaderProps) => (
 );
 
 interface MainProps {
-  className?: string
-  children?: ReactNode
+  className?: string;
+  children?: ReactNode;
 }
 
 const Main = ({ children, className }: MainProps) => (

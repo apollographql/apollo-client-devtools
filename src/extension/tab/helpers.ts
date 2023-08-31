@@ -9,52 +9,48 @@ import { getPrivateAccess } from "../../privateAccess";
 
 export type QueryInfo = {
   document: DocumentNode;
-  source?: Source,
+  source?: Source;
   variables?: Record<string, any>;
   diff?: Record<string, any>;
   cachedData?: any; // Not a member of the actual Apollo Client QueryInfo type
-}
-
+};
 
 // Transform the map of observable queries into a list of QueryInfo objects usable by DevTools
-export function getQueries(observableQueries: Map<string, ObservableQuery>): QueryInfo[] {
+export function getQueries(
+  observableQueries: Map<string, ObservableQuery>
+): QueryInfo[] {
   const queries: QueryInfo[] = [];
   if (observableQueries) {
-    observableQueries.forEach((oc)=>{
+    observableQueries.forEach((oc) => {
       const observableQuery = getPrivateAccess(oc);
-      const {document, variables} = observableQuery.queryInfo;
+      const { document, variables } = observableQuery.queryInfo;
       const diff = observableQuery.queryInfo.getDiff();
       if (!document) return;
 
-      queries.push({ 
-        document, 
+      queries.push({
+        document,
         source: document?.loc?.source,
         variables,
         cachedData: diff?.result,
       });
-    })
+    });
   }
   return queries;
 }
 
 // Version of getQueries compatible with Apollo Client versions < 3.4.0
 export function getQueriesLegacy(queryMap: any): QueryInfo[] {
-    let queries: QueryInfo[] = [];
-    if (queryMap) {
-      queries = [...queryMap.values()].map(({
-        document,
-        variables,
-        diff,
-      }) => ({
-          document,
-          source: document?.loc?.source,
-          variables,
-          cachedData: diff?.result,
-        })
-      )
-    }
-    return queries;
+  let queries: QueryInfo[] = [];
+  if (queryMap) {
+    queries = [...queryMap.values()].map(({ document, variables, diff }) => ({
+      document,
+      source: document?.loc?.source,
+      variables,
+      cachedData: diff?.result,
+    }));
   }
+  return queries;
+}
 
 export function getMutations(mutationsObj): QueryInfo[] {
   const keys = Object.keys(mutationsObj);
@@ -63,13 +59,13 @@ export function getMutations(mutationsObj): QueryInfo[] {
     return [];
   }
 
-  return keys.map(key => {
+  return keys.map((key) => {
     const { mutation, variables } = mutationsObj[key];
     return {
       document: mutation,
       variables,
       source: mutation?.loc?.source,
-    }
+    };
   });
 }
 

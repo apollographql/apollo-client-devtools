@@ -1,10 +1,10 @@
-import path from 'path';
-import url from 'url';
-import CopyPlugin from 'copy-webpack-plugin';
-import TerserPlugin from 'terser-webpack-plugin';
-import WebExtPlugin from 'web-ext-plugin';
+import path from "path";
+import url from "url";
+import CopyPlugin from "copy-webpack-plugin";
+import TerserPlugin from "terser-webpack-plugin";
+import WebExtPlugin from "web-ext-plugin";
 
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
 export default (env) => {
   const devOptions =
@@ -39,11 +39,11 @@ export default (env) => {
 
   if (env.NODE_ENV === "development") {
     plugins.push(
-      new WebExtPlugin({ 
+      new WebExtPlugin({
         browserConsole: true,
         runLint: false,
-        sourceDir: path.resolve(__dirname, 'build'),
-        startUrl: 'http://localhost:3000',
+        sourceDir: path.resolve(__dirname, "build"),
+        startUrl: "http://localhost:3000",
         target: env.TARGET,
       })
     );

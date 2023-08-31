@@ -68,14 +68,17 @@ const GET_WATCHED_QUERY = gql`
   }
 `;
 
-export const Queries = ({ navigationProps, embeddedExplorerProps }: {
+export const Queries = ({
+  navigationProps,
+  embeddedExplorerProps,
+}: {
   navigationProps: {
-    queriesCount: number,
-    mutationsCount: number,
-  },
+    queriesCount: number;
+    mutationsCount: number;
+  };
   embeddedExplorerProps: {
-    embeddedExplorerIFrame: HTMLIFrameElement | null,
-  }
+    embeddedExplorerIFrame: HTMLIFrameElement | null;
+  };
 }): JSX.Element => {
   const [selected, setSelected] = useState<number>(0);
   const theme = useTheme();
@@ -120,7 +123,9 @@ export const Queries = ({ navigationProps, embeddedExplorerProps }: {
               <RunInExplorerButton
                 operation={watchedQueryData?.watchedQuery?.queryString}
                 variables={watchedQueryData?.watchedQuery?.variables}
-                embeddedExplorerIFrame={embeddedExplorerProps.embeddedExplorerIFrame}
+                embeddedExplorerIFrame={
+                  embeddedExplorerProps.embeddedExplorerIFrame
+                }
               />
             </Fragment>
           )}

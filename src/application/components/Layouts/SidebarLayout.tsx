@@ -84,7 +84,7 @@ const Sidebar = ({ navigationProps, children, className }: SidebarProps) => (
 );
 
 interface ContentProps {
-  children?: ReactNode
+  children?: ReactNode;
 }
 
 const Content = ({ children }: ContentProps) => (
@@ -94,7 +94,7 @@ const Content = ({ children }: ContentProps) => (
 );
 
 interface HeaderProps {
-  children?: ReactNode
+  children?: ReactNode;
 }
 
 const Header = ({ children }: HeaderProps) => (
@@ -104,7 +104,7 @@ const Header = ({ children }: HeaderProps) => (
 );
 
 interface MainProps {
-  children?: ReactNode
+  children?: ReactNode;
 }
 
 const Main = ({ children }: MainProps) => (

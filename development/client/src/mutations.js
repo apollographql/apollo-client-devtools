@@ -1,5 +1,5 @@
-import { gql } from '@apollo/client';
-import { COLOR_FIELDS } from './queries';
+import { gql } from "@apollo/client";
+import { COLOR_FIELDS } from "./queries";
 
 export const ADD_COLOR_TO_FAVORITES = gql`
   mutation AddColorToFavorites($color: ColorInput!) {

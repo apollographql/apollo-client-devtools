@@ -31,7 +31,8 @@ export const App = (): JSX.Element => {
   const { data } = useQuery(GET_OPERATION_COUNTS);
   const selected = useReactiveVar<Screens>(currentScreen);
   const reloading = useReactiveVar<boolean>(reloadStatus);
-  const [embeddedExplorerIFrame, setEmbeddedExplorerIFrame] = useState<HTMLIFrameElement | null>(null);
+  const [embeddedExplorerIFrame, setEmbeddedExplorerIFrame] =
+    useState<HTMLIFrameElement | null>(null);
 
   const Screen = screens[selected];
 

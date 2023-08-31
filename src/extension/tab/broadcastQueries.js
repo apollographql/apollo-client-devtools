@@ -26,7 +26,7 @@ function getQueries(client) {
     if (client.queryManager.queryStore.getStore) {
       return () => client.queryManager.queryStore.getStore();
     }
-  // Apollo Client 3
+    // Apollo Client 3
   } else if (client.queryManager.queries) {
     return () => filterQueryInfo(client.queryManager.queries);
   }
@@ -38,10 +38,13 @@ function getMutations(client) {
   }
 
   // Apollo Client 2 to 3.2
-  if (client.queryManager.mutationStore && client.queryManager.mutationStore.getStore) {
+  if (
+    client.queryManager.mutationStore &&
+    client.queryManager.mutationStore.getStore
+  ) {
     return () => client.queryManager.mutationStore.getStore();
   } else {
-  // Apollo Client 3.3+
+    // Apollo Client 3.3+
     return () => client.queryManager.mutationStore;
   }
 }
@@ -79,7 +82,7 @@ export const initBroadCastEvents = (hook, bridge) => {
       const currentMB = msg.length / 1000000;
       console.warn(
         `Apollo DevTools serialized state is ${currentMB.toFixed(1)} MB. ` +
-        "This may cause performance degradation.",
+          "This may cause performance degradation."
       );
       // Warn again if it doubles
       warnMB = currentMB * 2;
