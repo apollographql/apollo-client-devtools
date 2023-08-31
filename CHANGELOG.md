@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.1.5
+
+### Patch Changes
+
+- [#745](https://github.com/apollographql/apollo-client-devtools/pull/745) [`d6cb6f4`](https://github.com/apollographql/apollo-client-devtools/commit/d6cb6f4bae183ed9320e6ee206c602a9e66b4c1a) Thanks [@renovate](https://github.com/apps/renovate)! - Bumps graphql dependency to v16
+
+- [#1038](https://github.com/apollographql/apollo-client-devtools/pull/1038) [`72292ca`](https://github.com/apollographql/apollo-client-devtools/commit/72292ca7b0546266f2968837d815dfbf6c23ef42) Thanks [@phryneas](https://github.com/phryneas)! - Make the devtools <> client registration mechanism more robust. Also lays the groundwork for registering multiple Apollo Client instances in the future.
+
 ## 4.0.0 (2021-10-15)
 
 - This release introduces a significant functionality change: [GraphiQL](https://github.com/graphql/graphiql) and [GraphiQL Explorer](https://github.com/OneGraph/graphiql-explorer) have been removed and replaced with an embedded version of [Apollo Studio's Explorer](https://www.apollographql.com/studio/develop). This means many of the more advanced features of Apollo Studio's Explorer are now available to run against your application's defined GraphQL endpoint, all from the comfort of a browser devtools panel. This change does not require you to have a Studio account and all existing GraphiQL / GraphiQL Explorer functionality has been replicated.
