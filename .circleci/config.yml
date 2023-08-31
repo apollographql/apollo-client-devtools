@@ -11,6 +11,14 @@ jobs:
       - run: npm run type-check
       - run: npm run lint
 
+  formatting:
+    docker:
+      - image: cimg/node:20.5.1
+    steps:
+      - checkout
+      - run: npm ci
+      - run: npm run check:format
+
   test:
     docker:
       - image: cimg/node:20.5.1
@@ -24,3 +32,4 @@ workflows:
     jobs:
       - lint
       - test
+      - formatting
