@@ -73,7 +73,7 @@ const cache = new InMemoryCache({
   },
 });
 
-const cacheVar = makeVar(null);
+const cacheVar = makeVar<Cache | null>(null);
 export const client = new ApolloClient({
   cache,
 });
