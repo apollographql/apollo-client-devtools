@@ -98,21 +98,13 @@ export type GetMutationsVariables = Exact<{ [key: string]: never }>;
 export type GetMutations = {
   mutationLog: {
     __typename: "MutationLog";
-    mutations: Array<{ id: number; name: string | null }>;
+    mutations: Array<{
+      id: number;
+      name: string | null;
+      mutationString: string | null;
+      variables: Variables | null;
+    }>;
   };
-};
-
-export type GetSelectedMutationVariables = Exact<{
-  id: Scalars["ID"]["input"];
-}>;
-
-export type GetSelectedMutation = {
-  mutation: {
-    id: number;
-    name: string | null;
-    mutationString: string | null;
-    variables: Variables | null;
-  } | null;
 };
 
 export type GetWatchedQueriesVariables = Exact<{ [key: string]: never }>;

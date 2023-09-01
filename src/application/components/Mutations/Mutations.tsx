@@ -13,12 +13,7 @@ import {
   listStyles,
 } from "../Queries/Queries";
 import { MutationViewer } from "./MutationViewer";
-import {
-  GetMutations,
-  GetMutationsVariables,
-  GetSelectedMutation,
-  GetSelectedMutationVariables,
-} from "../../types/gql";
+import { GetMutations, GetMutationsVariables } from "../../types/gql";
 
 const GET_MUTATIONS: TypedDocumentNode<
   GetMutations,
@@ -29,21 +24,9 @@ const GET_MUTATIONS: TypedDocumentNode<
       mutations {
         id
         name
+        mutationString
+        variables
       }
-    }
-  }
-`;
-
-const GET_SELECTED_MUTATION: TypedDocumentNode<
-  GetSelectedMutation,
-  GetSelectedMutationVariables
-> = gql`
-  query GetSelectedMutation($id: ID!) {
-    mutation(id: $id) @client {
-      id
-      name
-      mutationString
-      variables
     }
   }
 `;
@@ -63,12 +46,10 @@ export const Mutations = ({
   const [selected, setSelected] = useState<number>(0);
   const theme = useTheme();
   const { data } = useQuery(GET_MUTATIONS);
-  const { data: selectedMutationData } = useQuery(GET_SELECTED_MUTATION, {
-    variables: { id: selected },
-    returnPartialData: true,
-  });
 
-  const shouldRender = !!data?.mutationLog?.mutations?.length;
+  const selectedMutation = data?.mutationLog.mutations.find(
+    (mutation) => mutation.id === selected
+  );
 
   return (
     <SidebarLayout navigationProps={navigationProps}>
@@ -96,13 +77,13 @@ export const Mutations = ({
       </SidebarLayout.Sidebar>
       <SidebarLayout.Content>
         <SidebarLayout.Header>
-          {shouldRender && (
+          {selectedMutation && (
             <Fragment>
-              <h1 css={h1Styles}>{selectedMutationData?.mutation.name}</h1>
+              <h1 css={h1Styles}>{selectedMutation.name}</h1>
               <span css={operationNameStyles}>Mutation</span>
               <RunInExplorerButton
-                operation={selectedMutationData?.mutation?.mutationString}
-                variables={selectedMutationData?.mutation?.variables}
+                operation={selectedMutation.mutationString}
+                variables={selectedMutation.variables}
                 embeddedExplorerIFrame={
                   embeddedExplorerProps.embeddedExplorerIFrame
                 }
@@ -111,10 +92,10 @@ export const Mutations = ({
           )}
         </SidebarLayout.Header>
         <SidebarLayout.Main>
-          {shouldRender && (
+          {selectedMutation && (
             <MutationViewer
-              mutationString={selectedMutationData?.mutation?.mutationString}
-              variables={selectedMutationData?.mutation?.variables}
+              mutationString={selectedMutation.mutationString}
+              variables={selectedMutation.variables}
             />
           )}
         </SidebarLayout.Main>
