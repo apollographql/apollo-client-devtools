@@ -53,7 +53,7 @@ export function Cache({
   };
 }): JSX.Element {
   const [searchResults, setSearchResults] = useState({});
-  const [cacheId, setCacheId] = useState<string>("ROOT_QUERY");
+  const [cacheId, setCacheId] = useState("ROOT_QUERY");
 
   const { loading, data } = useQuery(GET_CACHE);
 
