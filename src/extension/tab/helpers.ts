@@ -5,14 +5,15 @@ import type {
   OperationDefinitionNode,
   FragmentDefinitionNode,
 } from "graphql/language";
+import { JSONObject } from "../../application/types/json";
 import { getPrivateAccess } from "../../privateAccess";
 
 export type QueryInfo = {
   document: DocumentNode;
   source?: Source;
-  variables?: Record<string, any>;
-  diff?: Record<string, any>;
-  cachedData?: any; // Not a member of the actual Apollo Client QueryInfo type
+  variables?: JSONObject;
+  diff?: JSONObject;
+  cachedData?: JSONObject; // Not a member of the actual Apollo Client QueryInfo type
 };
 
 // Transform the map of observable queries into a list of QueryInfo objects usable by DevTools
