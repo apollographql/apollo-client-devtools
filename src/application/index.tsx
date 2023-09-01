@@ -138,7 +138,7 @@ export function getMutationData(mutation: QueryInfo, key: number): Mutation {
     id: key,
     __typename: "Mutation",
     name: getOperationName(mutation.document),
-    mutationString: mutation.source?.body ?? null,
+    mutationString: print(mutation.document),
     variables: mutation.variables ?? null,
   };
 }

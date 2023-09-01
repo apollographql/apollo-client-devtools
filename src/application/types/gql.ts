@@ -39,7 +39,7 @@ export type Scalars = {
 export type Mutation = {
   __typename: "Mutation";
   id: Scalars["ID"]["output"];
-  mutationString: Maybe<Scalars["String"]["output"]>;
+  mutationString: Scalars["String"]["output"];
   name: Maybe<Scalars["String"]["output"]>;
   variables: Maybe<Scalars["Variables"]["output"]>;
 };
@@ -101,7 +101,7 @@ export type GetMutations = {
     mutations: Array<{
       id: number;
       name: string | null;
-      mutationString: string | null;
+      mutationString: string;
       variables: Variables | null;
     }>;
   };
@@ -147,7 +147,7 @@ export type GetAllMutations = {
     count: number;
     mutations: Array<{
       name: string | null;
-      mutationString: string | null;
+      mutationString: string;
       variables: Variables | null;
     }>;
   };
