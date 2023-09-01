@@ -15,7 +15,7 @@ const HighlightMatch = ({ searchTerm, value }: HighlightMatchProps) => {
   }
 
   return (
-    <>
+    <span>
       {value.slice(0, match.index)}
       <span
         css={css`
@@ -26,7 +26,7 @@ const HighlightMatch = ({ searchTerm, value }: HighlightMatchProps) => {
         {match[0]}
       </span>
       {value.slice(match.index + searchTerm.length)}
-    </>
+    </span>
   );
 };
 
