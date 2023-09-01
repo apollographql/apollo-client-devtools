@@ -156,6 +156,7 @@ export type GetAllMutations = {
     __typename: "MutationLog";
     count: number;
     mutations: Array<{
+      id: number;
       name: string | null;
       mutationString: string;
       variables: Variables | null;

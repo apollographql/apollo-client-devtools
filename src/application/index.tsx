@@ -104,6 +104,7 @@ export const GET_MUTATIONS: TypedDocumentNode<
   query GetAllMutations {
     mutationLog @client {
       mutations {
+        id
         name
         mutationString
         variables
