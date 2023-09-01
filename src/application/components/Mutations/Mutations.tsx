@@ -1,5 +1,5 @@
 import { Fragment, useState } from "react";
-import { gql, useQuery } from "@apollo/client";
+import { gql, TypedDocumentNode, useQuery } from "@apollo/client";
 import { List } from "@apollo/space-kit/List";
 import { ListItem } from "@apollo/space-kit/ListItem";
 
@@ -13,8 +13,17 @@ import {
   listStyles,
 } from "../Queries/Queries";
 import { MutationViewer } from "./MutationViewer";
+import {
+  GetMutations,
+  GetMutationsVariables,
+  GetSelectedMutation,
+  GetSelectedMutationVariables,
+} from "../../types/gql";
 
-const GET_MUTATIONS = gql`
+const GET_MUTATIONS: TypedDocumentNode<
+  GetMutations,
+  GetMutationsVariables
+> = gql`
   query GetMutations {
     mutationLog @client {
       mutations {
@@ -25,7 +34,10 @@ const GET_MUTATIONS = gql`
   }
 `;
 
-const GET_SELECTED_MUTATION = gql`
+const GET_SELECTED_MUTATION: TypedDocumentNode<
+  GetSelectedMutation,
+  GetSelectedMutationVariables
+> = gql`
   query GetSelectedMutation($id: ID!) {
     mutation(id: $id) @client {
       id
