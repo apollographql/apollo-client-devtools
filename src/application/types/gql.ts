@@ -124,23 +124,11 @@ export type GetWatchedQueries = {
       __typename: "WatchedQuery";
       id: number;
       name: string | null;
+      queryString: string;
+      variables: Variables | null;
+      cachedData: QueryData | null;
     }>;
   };
-};
-
-export type GetWatchedQueryVariables = Exact<{
-  id: Scalars["ID"]["input"];
-}>;
-
-export type GetWatchedQuery = {
-  watchedQuery: {
-    __typename: "WatchedQuery";
-    id: number;
-    name: string | null;
-    queryString: string;
-    variables: Variables | null;
-    cachedData: QueryData | null;
-  } | null;
 };
 
 export type GetQueriesVariables = Exact<{ [key: string]: never }>;

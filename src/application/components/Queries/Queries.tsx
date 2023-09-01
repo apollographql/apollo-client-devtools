@@ -10,12 +10,7 @@ import { useTheme } from "../../theme";
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { RunInExplorerButton } from "./RunInExplorerButton";
 import { QueryViewer } from "./QueryViewer";
-import {
-  GetWatchedQueries,
-  GetWatchedQueriesVariables,
-  GetWatchedQuery,
-  GetWatchedQueryVariables,
-} from "../../types/gql";
+import { GetWatchedQueries, GetWatchedQueriesVariables } from "../../types/gql";
 
 export const sidebarHeadingStyles = css`
   margin-left: ${rem(12)};
@@ -60,22 +55,10 @@ const GET_WATCHED_QUERIES: TypedDocumentNode<
       queries {
         id
         name
+        queryString
+        variables
+        cachedData
       }
-    }
-  }
-`;
-
-const GET_WATCHED_QUERY: TypedDocumentNode<
-  GetWatchedQuery,
-  GetWatchedQueryVariables
-> = gql`
-  query GetWatchedQuery($id: ID!) {
-    watchedQuery(id: $id) @client {
-      id
-      name
-      queryString
-      variables
-      cachedData
     }
   }
 `;
@@ -94,13 +77,11 @@ export const Queries = ({
 }): JSX.Element => {
   const [selected, setSelected] = useState<number>(0);
   const theme = useTheme();
-  const { data } = useQuery(GET_WATCHED_QUERIES);
-  const { data: watchedQueryData } = useQuery(GET_WATCHED_QUERY, {
-    variables: { id: selected },
-    returnPartialData: true,
-  });
+  const { data } = useQuery(GET_WATCHED_QUERIES, { returnPartialData: true });
 
-  const shouldRender = !!data?.watchedQueries?.queries?.length;
+  const selectedQuery = data?.watchedQueries.queries.find(
+    (query) => query.id === selected
+  );
 
   return (
     <SidebarLayout navigationProps={navigationProps}>
@@ -128,13 +109,13 @@ export const Queries = ({
       </SidebarLayout.Sidebar>
       <SidebarLayout.Content>
         <SidebarLayout.Header>
-          {shouldRender && (
+          {selectedQuery && (
             <Fragment>
-              <h1 css={h1Styles}>{watchedQueryData?.watchedQuery?.name}</h1>
+              <h1 css={h1Styles}>{selectedQuery.name}</h1>
               <span css={operationNameStyles}>Query</span>
               <RunInExplorerButton
-                operation={watchedQueryData?.watchedQuery?.queryString}
-                variables={watchedQueryData?.watchedQuery?.variables}
+                operation={selectedQuery.queryString}
+                variables={selectedQuery.variables}
                 embeddedExplorerIFrame={
                   embeddedExplorerProps.embeddedExplorerIFrame
                 }
@@ -143,11 +124,11 @@ export const Queries = ({
           )}
         </SidebarLayout.Header>
         <SidebarLayout.Main>
-          {shouldRender && (
+          {selectedQuery && (
             <QueryViewer
-              queryString={watchedQueryData?.watchedQuery?.queryString}
-              variables={watchedQueryData?.watchedQuery?.variables}
-              cachedData={watchedQueryData?.watchedQuery?.cachedData}
+              queryString={selectedQuery.queryString}
+              variables={selectedQuery.variables}
+              cachedData={selectedQuery.cachedData}
             />
           )}
         </SidebarLayout.Main>
