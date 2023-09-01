@@ -1,6 +1,6 @@
 import React from "react";
-import { screen, within, waitFor } from "@testing-library/react";
-import user from "@testing-library/user-event";
+import { screen, within, waitFor, act } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import { renderWithApolloClient } from "../../../utilities/testing/renderWithApolloClient";
 import { client, GET_QUERIES } from "../../../index";
@@ -68,6 +68,8 @@ describe("<Queries />", () => {
   });
 
   test("renders query name", async () => {
+    const user = userEvent.setup();
+
     client.writeQuery({
       query: GET_QUERIES,
       data: {
@@ -90,7 +92,7 @@ describe("<Queries />", () => {
     expect(within(header).getByText("Unnamed")).toBeInTheDocument();
 
     const sidebar = screen.getByTestId("sidebar");
-    await user.click(within(sidebar).getByText("GetColors"));
+    await act(() => user.click(within(sidebar).getByText("GetColors")));
     await waitFor(() => {
       expect(within(header).getByText("GetColors")).toBeInTheDocument();
     });
