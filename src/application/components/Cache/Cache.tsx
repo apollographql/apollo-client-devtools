@@ -1,6 +1,6 @@
 import { Fragment, useState } from "react";
 import { css } from "@emotion/react";
-import { gql, useQuery } from "@apollo/client";
+import { gql, TypedDocumentNode, useQuery } from "@apollo/client";
 import { rem } from "polished";
 import { colors } from "@apollo/space-kit/colors";
 
@@ -9,6 +9,7 @@ import { Search } from "./sidebar/Search";
 import { EntityList } from "./sidebar/EntityList";
 import { EntityView } from "./main/EntityView";
 import { Loading } from "./common/Loading";
+import { GetCache, GetCacheVariables } from "../../types/gql";
 
 const { Header, Sidebar, Main, Content } = SidebarLayout;
 
@@ -36,7 +37,7 @@ const noDataStyles = css`
   padding-top: ${rem(16)};
 `;
 
-const GET_CACHE = gql`
+const GET_CACHE: TypedDocumentNode<GetCache, GetCacheVariables> = gql`
   query GetCache {
     cache @client
   }
