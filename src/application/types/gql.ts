@@ -140,6 +140,7 @@ export type GetQueries = {
     count: number;
     queries: Array<{
       __typename: "WatchedQuery";
+      id: number;
       name: string | null;
       queryString: string;
       variables: Variables | null;

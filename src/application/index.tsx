@@ -86,6 +86,7 @@ export const GET_QUERIES: TypedDocumentNode<
   query GetQueries {
     watchedQueries @client {
       queries {
+        id
         name
         queryString
         variables
