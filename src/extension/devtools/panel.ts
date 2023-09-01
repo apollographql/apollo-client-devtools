@@ -9,6 +9,7 @@ import {
   receiveSubscriptionTerminationRequest,
   sendResponseToExplorer,
 } from "../../application/components/Explorer/explorerRelay";
+import "./panel.css";
 
 (window as any).__DEVTOOLS_APPLICATION__ = {
   initialize: initDevTools,
