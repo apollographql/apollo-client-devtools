@@ -59,11 +59,11 @@ export type Query = {
   watchedQuery: Maybe<WatchedQuery>;
 };
 
-export type QueryMutationArgs = {
+export type QuerymutationArgs = {
   id: Scalars["ID"]["input"];
 };
 
-export type QueryWatchedQueryArgs = {
+export type QuerywatchedQueryArgs = {
   id: Scalars["ID"]["input"];
 };
 
@@ -92,6 +92,11 @@ export type GetOperationCounts = {
 export type GetCacheVariables = Exact<{ [key: string]: never }>;
 
 export type GetCache = { cache: Cache | null };
+
+export type MutationViewer_mutation = {
+  mutationString: string;
+  variables: Variables | null;
+};
 
 export type GetMutationsVariables = Exact<{ [key: string]: never }>;
 

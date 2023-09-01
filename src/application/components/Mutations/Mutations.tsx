@@ -26,6 +26,7 @@ const GET_MUTATIONS: TypedDocumentNode<
         name
         mutationString
         variables
+        ...MutationViewer_mutation
       }
     }
   }
@@ -92,12 +93,7 @@ export const Mutations = ({
           )}
         </SidebarLayout.Header>
         <SidebarLayout.Main>
-          {selectedMutation && (
-            <MutationViewer
-              mutationString={selectedMutation.mutationString}
-              variables={selectedMutation.variables}
-            />
-          )}
+          {selectedMutation && <MutationViewer mutation={selectedMutation} />}
         </SidebarLayout.Main>
       </SidebarLayout.Content>
     </SidebarLayout>
