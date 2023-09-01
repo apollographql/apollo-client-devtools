@@ -21,6 +21,8 @@ import {
   GetAllMutationsVariables,
   GetQueries,
   GetQueriesVariables,
+  Mutation,
+  WatchedQuery,
 } from "./types/gql";
 
 const cache = new InMemoryCache({
@@ -106,23 +108,6 @@ export const GET_MUTATIONS: TypedDocumentNode<
     }
   }
 `;
-
-interface Query {
-  id: number;
-  name: string | null;
-  variables: object;
-}
-
-type WatchedQuery = Query & {
-  __typename: "WatchedQuery";
-  queryString: string;
-  cachedData: object;
-};
-
-type Mutation = Query & {
-  __typename: "Mutation";
-  mutationString: string;
-};
 
 export function getQueryData(query, key: number): WatchedQuery | undefined {
   if (!query || !query.document) return;
