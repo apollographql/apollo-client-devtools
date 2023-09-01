@@ -12,7 +12,7 @@ export interface ExplorerResponse {
 export interface MessageObj<TPayload = any> {
   to?: string;
   message: string;
-  payload?: TPayload;
+  payload: TPayload;
 }
 
 export type CustomEventListener<T = any> = (message: MessageObj<T>) => void;
