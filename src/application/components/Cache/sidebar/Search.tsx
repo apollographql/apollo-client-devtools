@@ -41,7 +41,7 @@ const textFieldStyles = css`
 
 interface SearchProps {
   data: Record<string, JSONObject>;
-  setSearchResults: (results: JSONObject) => void;
+  setSearchResults: (results: Record<string, JSONObject>) => void;
 }
 
 export const Search = ({ data, setSearchResults }: SearchProps) => {
@@ -54,7 +54,7 @@ export const Search = ({ data, setSearchResults }: SearchProps) => {
     }
 
     if (keywords.length >= 3) {
-      const searchResults: JSONObject = {};
+      const searchResults: Record<string, JSONObject> = {};
       Object.keys(data).forEach((dataId) => {
         const results = objectFilter(data[dataId], keywords);
         if (results) searchResults[dataId] = results;

@@ -22,7 +22,7 @@ interface EntityListProps {
   data: Record<string, JSONObject>;
   cacheId: string;
   setCacheId: (cacheId: string) => void;
-  searchResults: unknown;
+  searchResults: Record<string, JSONObject>;
 }
 
 export function EntityList({

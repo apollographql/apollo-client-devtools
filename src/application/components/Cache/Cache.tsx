@@ -52,7 +52,9 @@ export function Cache({
     mutationsCount: number;
   };
 }): JSX.Element {
-  const [searchResults, setSearchResults] = useState({});
+  const [searchResults, setSearchResults] = useState<
+    Record<string, JSONObject>
+  >({});
   const [cacheId, setCacheId] = useState("ROOT_QUERY");
 
   const { loading, data } = useQuery(GET_CACHE);

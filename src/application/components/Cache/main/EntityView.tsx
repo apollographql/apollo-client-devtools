@@ -24,7 +24,7 @@ const selectedStyles = css`
 interface EntityViewProps {
   cacheId: string;
   data: JSONObject | undefined;
-  searchResults: unknown;
+  searchResults: Record<string, JSONObject>;
   setCacheId: (cacheId: string) => void;
 }
 
