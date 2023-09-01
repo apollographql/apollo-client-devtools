@@ -25,6 +25,9 @@ const config: CodegenConfig = {
       plugins: ["typescript", "typescript-operations"],
     },
   },
+  hooks: {
+    afterAllFileWrite: ["prettier --write"],
+  },
 };
 
 export default config;
