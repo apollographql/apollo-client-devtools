@@ -48,7 +48,8 @@ export const Mutations = ({
   const theme = useTheme();
   const { data } = useQuery(GET_MUTATIONS);
 
-  const selectedMutation = data?.mutationLog.mutations.find(
+  const mutations = data?.mutationLog.mutations ?? [];
+  const selectedMutation = mutations.find(
     (mutation) => mutation.id === selected
   );
 
@@ -63,7 +64,7 @@ export const Mutations = ({
           selectedColor={theme.sidebarSelected}
           hoverColor={theme.sidebarHover}
         >
-          {data?.mutationLog?.mutations.map(({ name, id }) => {
+          {mutations.map(({ name, id }) => {
             return (
               <ListItem
                 key={`${name}-${id}`}
