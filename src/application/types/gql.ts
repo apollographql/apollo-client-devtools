@@ -1,4 +1,5 @@
-import { JSONObject } from "./json";
+import { Cache } from "./scalars";
+import { Variables } from "./scalars";
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -26,8 +27,8 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean };
   Int: { input: number; output: number };
   Float: { input: number; output: number };
-  Cache: { input: JSONObject; output: JSONObject };
-  Variables: { input: JSONObject; output: JSONObject };
+  Cache: { input: Cache; output: Cache };
+  Variables: { input: Variables; output: Variables };
 };
 
 export type Mutation = {
@@ -85,7 +86,7 @@ export type GetOperationCounts = {
 
 export type GetCacheVariables = Exact<{ [key: string]: never }>;
 
-export type GetCache = { cache: JSONObject | null };
+export type GetCache = { cache: Cache | null };
 
 export type GetMutationsVariables = Exact<{ [key: string]: never }>;
 
@@ -105,7 +106,7 @@ export type GetSelectedMutation = {
     id: number;
     name: string | null;
     mutationString: string | null;
-    variables: JSONObject | null;
+    variables: Variables | null;
   } | null;
 };
 
@@ -132,8 +133,8 @@ export type GetWatchedQuery = {
     id: number;
     name: string | null;
     queryString: string;
-    variables: JSONObject | null;
-    cachedData: JSONObject | null;
+    variables: Variables | null;
+    cachedData: Cache | null;
   } | null;
 };
 
@@ -147,8 +148,8 @@ export type GetQueries = {
       __typename: "WatchedQuery";
       name: string | null;
       queryString: string;
-      variables: JSONObject | null;
-      cachedData: JSONObject | null;
+      variables: Variables | null;
+      cachedData: Cache | null;
     }>;
   };
 };
@@ -162,7 +163,7 @@ export type GetAllMutations = {
     mutations: Array<{
       name: string | null;
       mutationString: string | null;
-      variables: JSONObject | null;
+      variables: Variables | null;
     }>;
   };
 };
