@@ -5,7 +5,7 @@ import { ApolloQueryResult } from "@apollo/client";
 export type QueryResult = ApolloQueryResult<any>;
 
 export interface ExplorerResponse {
-  operationName: string;
+  operationName: string | undefined;
   response: QueryResult;
 }
 
