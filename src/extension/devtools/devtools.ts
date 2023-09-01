@@ -12,6 +12,8 @@ import {
   RELOAD_TAB_COMPLETE,
 } from "../constants";
 import browser from "webextension-polyfill";
+import { QueryInfo } from "../tab/helpers";
+import { JSONObject } from "../../application/types/json";
 
 const inspectedTabId = browser.devtools.inspectedWindow.tabId;
 const devtools = new Relay();
@@ -49,7 +51,7 @@ devtools.addConnection(EXPLORER_SUBSCRIPTION_TERMINATION, () => {
   sendMessageToClient(EXPLORER_SUBSCRIPTION_TERMINATION);
 });
 
-devtools.listen(CREATE_DEVTOOLS_PANEL, async ({ payload }) => {
+devtools.listen<string>(CREATE_DEVTOOLS_PANEL, async ({ payload }) => {
   if (isPanelCreated) {
     return;
   }
@@ -61,7 +63,12 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, async ({ payload }) => {
   );
 
   isPanelCreated = true;
-  const { queries, mutations, cache } = JSON.parse(payload);
+  const { queries, mutations, cache } = JSON.parse(payload ?? "") as {
+    queries: QueryInfo[];
+    mutations: QueryInfo[];
+    cache: Record<string, JSONObject>;
+  };
+
   let removeUpdateListener;
   let removeExplorerForward;
   let removeSubscriptionTerminationListener;
@@ -92,8 +99,12 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, async ({ payload }) => {
 
     clearRequestInterval = startRequestInterval();
 
-    removeUpdateListener = devtools.listen(UPDATE, ({ payload }) => {
-      const { queries, mutations, cache } = JSON.parse(payload);
+    removeUpdateListener = devtools.listen<string>(UPDATE, ({ payload }) => {
+      const { queries, mutations, cache } = JSON.parse(payload ?? "") as {
+        queries: QueryInfo[];
+        mutations: QueryInfo[];
+        cache: Record<string, JSONObject>;
+      };
       writeData({ queries, mutations, cache: JSON.stringify(cache) });
     });
 
