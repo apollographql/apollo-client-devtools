@@ -53,7 +53,7 @@ export const Search = ({ data, setSearchResults }: SearchProps) => {
       setSearchResults({});
     }
 
-    if (keywords.length >= 3) {
+    if (keywords.length >= 2) {
       const searchResults: Record<string, JSONObject> = {};
       Object.keys(data).forEach((dataId) => {
         const results = objectFilter(data[dataId], keywords);
