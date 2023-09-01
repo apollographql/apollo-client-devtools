@@ -38,14 +38,14 @@ export function EntityList({
       selectedColor={theme.sidebarSelected}
       hoverColor={theme.sidebarHover}
     >
-      {ids.map((listCacheId, index) => {
+      {ids.map((cacheId) => {
         return (
           <ListItem
-            key={`${listCacheId}-${index}`}
-            onClick={() => setCacheId(listCacheId)}
-            selected={listCacheId === selectedCacheId}
+            key={cacheId}
+            onClick={() => setCacheId(cacheId)}
+            selected={cacheId === selectedCacheId}
           >
-            {listCacheId}
+            {cacheId}
           </ListItem>
         );
       })}
