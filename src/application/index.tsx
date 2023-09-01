@@ -6,6 +6,7 @@ import {
   InMemoryCache,
   makeVar,
   gql,
+  TypedDocumentNode,
 } from "@apollo/client";
 import { getOperationName } from "@apollo/client/utilities";
 import { print } from "graphql/language/printer";
@@ -15,6 +16,12 @@ import { colorTheme, listenForThemeChange } from "./theme";
 import { App, reloadStatus } from "./App";
 
 import "@apollo/space-kit/reset.css";
+import {
+  GetAllMutations,
+  GetAllMutationsVariables,
+  GetQueries,
+  GetQueriesVariables,
+} from "./types/gql";
 
 const cache = new InMemoryCache({
   typePolicies: {
@@ -67,7 +74,10 @@ export const client = new ApolloClient({
   cache,
 });
 
-export const GET_QUERIES = gql`
+export const GET_QUERIES: TypedDocumentNode<
+  GetQueries,
+  GetQueriesVariables
+> = gql`
   query GetQueries {
     watchedQueries @client {
       queries {
@@ -81,7 +91,10 @@ export const GET_QUERIES = gql`
   }
 `;
 
-export const GET_MUTATIONS = gql`
+export const GET_MUTATIONS: TypedDocumentNode<
+  GetAllMutations,
+  GetAllMutationsVariables
+> = gql`
   query GetAllMutations {
     mutationLog @client {
       mutations {
