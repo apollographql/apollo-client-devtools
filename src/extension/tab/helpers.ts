@@ -2,7 +2,6 @@ import type { ObservableQuery } from "@apollo/client";
 import type { Cache } from "@apollo/client/cache";
 import type {
   DocumentNode,
-  Source,
   OperationDefinitionNode,
   FragmentDefinitionNode,
 } from "graphql/language";
@@ -11,7 +10,6 @@ import { getPrivateAccess } from "../../privateAccess";
 
 export type QueryInfo = {
   document: DocumentNode;
-  source?: Source;
   variables?: Variables;
   cachedData?: QueryData; // Not a member of the actual Apollo Client QueryInfo type
 };
@@ -30,7 +28,6 @@ export function getQueries(
 
       queries.push({
         document,
-        source: document.loc?.source,
         variables,
         cachedData: diff.result,
       });
@@ -54,7 +51,6 @@ export function getQueriesLegacy(
   if (queryMap) {
     queries = [...queryMap.values()].map(({ document, variables, diff }) => ({
       document,
-      source: document?.loc?.source,
       variables,
       cachedData: diff?.result,
     }));
@@ -76,7 +72,6 @@ export function getMutations(
     return {
       document: mutation,
       variables,
-      source: mutation?.loc?.source,
     };
   });
 }
