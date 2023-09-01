@@ -8,7 +8,7 @@ const config: CodegenConfig = {
     "!src/application/**/*.test.{ts,tsx}",
   ],
   generates: {
-    "src/application/gql/index.ts": {
+    "src/application/types/gql.ts": {
       config: {
         avoidOptionals: {
           field: true,
@@ -18,8 +18,8 @@ const config: CodegenConfig = {
         },
         defaultScalarType: "unknown",
         scalars: {
-          Cache: "../types/json#JSONObject",
-          Variables: "../types/json#JSONObject",
+          Cache: "./json#JSONObject",
+          Variables: "./json#JSONObject",
         },
       },
       plugins: ["typescript", "typescript-operations"],
