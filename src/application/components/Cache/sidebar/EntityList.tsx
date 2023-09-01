@@ -22,18 +22,12 @@ interface EntityListProps {
   data: Record<string, JSONObject>;
   cacheId: string;
   setCacheId: (cacheId: string) => void;
-  searchResults: Record<string, JSONObject>;
 }
 
-export function EntityList({
-  data,
-  cacheId,
-  setCacheId,
-  searchResults = {},
-}: EntityListProps) {
+export function EntityList({ data, cacheId, setCacheId }: EntityListProps) {
   const theme = useTheme();
   const ids = getRootCacheIds(data);
-  const idHits = Object.keys(searchResults);
+
   return (
     <List
       css={listStyles}
@@ -46,7 +40,6 @@ export function EntityList({
             key={`${listCacheId}-${index}`}
             onClick={() => setCacheId(listCacheId)}
             selected={listCacheId === cacheId}
-            highlighted={idHits.includes(listCacheId)}
           >
             {listCacheId}
           </ListItem>
