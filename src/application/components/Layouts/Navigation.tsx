@@ -1,8 +1,6 @@
-/** @jsx jsx */
-
-import React, { useContext } from "react";
+import React, { ReactNode, useContext } from "react";
 import { makeVar, useReactiveVar } from "@apollo/client";
-import { jsx, css } from "@emotion/react";
+import { css } from "@emotion/react";
 import { rem } from "polished";
 import { colors } from "@apollo/space-kit/colors";
 import { ApolloLogo } from "@apollo/space-kit/icons/ApolloLogo";
@@ -17,6 +15,7 @@ export enum Screens {
 }
 
 type NavButtonProps = {
+  children: ReactNode;
   isSelected: boolean;
   onClick: any;
 };
@@ -33,10 +32,10 @@ const navigationStyles = css`
   align-items: center;
   box-shadow: 0 ${rem(-1)} 0 0 rgba(255, 255, 255, 0.3) inset;
   background-color: var(--primary);
-  
+
   scrollbar-gutter: stable both-edges;
 
-  &::-webkit-scrollbar {  
+  &::-webkit-scrollbar {
     display: block;
     overflow: auto;
     height: 2em;
@@ -78,7 +77,7 @@ const navButtonStyles = css`
 const listStyles = css`
   display: flex;
   flex-direction: row;
-  width:100%;
+  width: 100%;
   align-items: center;
   justify-content: start;
   margin: 0 ${rem(5)};
@@ -88,7 +87,7 @@ const listStyles = css`
 const listStyles2 = css`
   display: flex;
   flex-direction: column;
-  width:100%;
+  width: 100%;
   align-items: start;
   justify-content: start;
   margin: 0 ${rem(5)};
@@ -101,7 +100,7 @@ const logoLinkStyles = css`
 
 const logoStyles = css`
   width: ${rem(24)};
-  height: auto;
+  height: auto !important;
   margin: 0 ${rem(16)};
   color: ${colors.silver.lighter};
 `;
@@ -110,11 +109,7 @@ const borderStyles = css`
   border-right: ${rem(1)} solid var(--whiteTransparent);
 `;
 
-const NavButton: React.FC<NavButtonProps> = ({
-  isSelected,
-  onClick,
-  children,
-}) => (
+const NavButton = ({ isSelected, onClick, children }: NavButtonProps) => (
   <button
     css={[navButtonStyles, isSelected && selectedNavButtonStyles]}
     onClick={onClick}
@@ -133,26 +128,35 @@ export const Navigation: React.FC<NavigationProps> = ({
   const isSelected = (NavButton: Screens) => selected === NavButton;
   const onNavigate = (screen: Screens) => currentScreen(screen);
   //const [navCol, setNavCol] = useState(true)
-  const {sidebarWidth} = useContext(DevtoolsContext)
-  console.log("meow:", sidebarWidth)
+  const { sidebarWidth } = useContext(DevtoolsContext);
+  console.log("meow:", sidebarWidth);
 
   return (
     <nav css={navigationStyles}>
-      <ul css={selected != Screens.Explorer && sidebarWidth < 375 ? listStyles2 : listStyles}>
+      <ul
+        css={
+          selected != Screens.Explorer && sidebarWidth < 375
+            ? listStyles2
+            : listStyles
+        }
+      >
         <li>
-        <a
-          href="https://go.apollo.dev/c/docs"
-          target="_blank"
-          title="Apollo Client developer documentation"
-          css={logoLinkStyles}
-        >
-          <ApolloLogo css={logoStyles} />
-        </a>
+          <a
+            href="https://go.apollo.dev/c/docs"
+            target="_blank"
+            title="Apollo Client developer documentation"
+            css={logoLinkStyles}
+            rel="noreferrer"
+          >
+            <ApolloLogo css={logoStyles} />
+          </a>
         </li>
         <li>
           <NavButton
             isSelected={isSelected(Screens.Explorer)}
-            onClick={() => {onNavigate(Screens.Explorer)}}
+            onClick={() => {
+              onNavigate(Screens.Explorer);
+            }}
           >
             Explorer
           </NavButton>

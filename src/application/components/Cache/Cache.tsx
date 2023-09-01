@@ -1,7 +1,5 @@
-/** @jsx jsx */
-
 import { Fragment, useState } from "react";
-import { jsx, css } from "@emotion/react";
+import { css } from "@emotion/react";
 import { gql, useQuery } from "@apollo/client";
 import { rem } from "polished";
 import { colors } from "@apollo/space-kit/colors";
@@ -44,12 +42,14 @@ const GET_CACHE = gql`
   }
 `;
 
-export function Cache({ navigationProps }: {
+export function Cache({
+  navigationProps,
+}: {
   navigationProps: {
-    queriesCount: number,
-    mutationsCount: number,
-  }
-}): jsx.JSX.Element {
+    queriesCount: number;
+    mutationsCount: number;
+  };
+}): JSX.Element {
   const [searchResults, setSearchResults] = useState({});
   const [cacheId, setCacheId] = useState<string>("ROOT_QUERY");
 
@@ -98,6 +98,7 @@ export function Cache({ navigationProps }: {
               cacheId={cacheId}
               data={parsedData[cacheId]}
               searchResults={searchResults}
+              setCacheId={setCacheId}
             />
           )}
         </Main>

@@ -2,8 +2,9 @@
 
 # Apollo Client Browser Devtools
 
+[![npm version](https://badge.fury.io/js/apollo-client-devtools.svg)](https://badge.fury.io/js/apollo-client-devtools)
 [![Build Status](https://circleci.com/gh/apollographql/apollo-client-devtools.svg?style=svg)](https://circleci.com/gh/apollographql/apollo-client-devtools)
-[![Join the community on Spectrum](https://withspectrum.github.io/badge/badge.svg)](https://spectrum.chat/apollo)
+[![Join our Discord server](https://img.shields.io/discord/1022972389463687228.svg?color=7389D8&labelColor=6A7EC2&logo=discord&logoColor=ffffff&style=flat-square)](https://discord.gg/graphos)
 
 [Download for Firefox](https://addons.mozilla.org/firefox/addon/apollo-developer-tools/) | [Download for Chrome](https://chrome.google.com/webstore/detail/apollo-client-developer-t/jdkknkkbebbapilgoeccciglkfbmbnfm)
 
@@ -22,12 +23,14 @@ The Apollo Client Browser Devtools appear as an "Apollo" tab in your web browser
 
 ## Maintainers
 
-- [@benjamn](https://github.com/benjamn)
-- [@alessbell](https://github.com/alessbell)
-- [@bignimbus](https://github.com/bignimbus)
-- [@jpvajda](https://github.com/jpvajda)
-- [@mrdoombringer](https://github.com/mrdoombringer)
-- [@jerelmiller](https://github.com/jerelmiller)
+| Name               | Username                                       |
+| ------------------ | ---------------------------------------------- |
+| Ben Newman         | [@benjamn](https://github.com/benjamn)         |
+| Alessia Bellisario | [@alessbell](https://github.com/alessbell)     |
+| Jeff Auriemma      | [@bignimbus](https://github.com/bignimbus)     |
+| Hugh Willson       | [@hwillson](https://github.com/hwillson)       |
+| Jerel Miller       | [@jerelmiller](https://github.com/jerelmiller) |
+| Lenz Weber-Tronic  | [@phryneas](https://github.com/phryneas)       |
 
 ## Apollo Client version support
 
@@ -217,19 +220,13 @@ Release process, for those with permission:
 
 This project is governed by the [Apollo Code of Conduct](https://www.apollographql.com/docs/community/code-of-conduct/).
 
-## Maintainers
-
-- [@mayakoneval](https://github.com/mayakoneval) (Apollo)
-- [@jephuff](https://github.com/jephuff) (Apollo)
-- [@cheapsteak](https://github.com/cheapsteak) (Apollo)
-
 ## Who is Apollo?
 
 [Apollo](https://apollographql.com/) builds open-source software and a graph platform to unify GraphQL across your apps and services. We help you ship faster with:
 
 - [Apollo Studio](https://www.apollographql.com/studio/develop/) – A free, end-to-end platform for managing your GraphQL lifecycle. Track your GraphQL schemas in a hosted registry to create a source of truth for everything in your graph. Studio provides an IDE (Apollo Explorer) so you can explore data, collaborate on queries, observe usage, and safely make schema changes.
 - [Apollo Federation](https://www.apollographql.com/apollo-federation) – The industry-standard open architecture for building a distributed graph. Use Apollo’s gateway to compose a unified graph from multiple subgraphs, determine a query plan, and route requests across your services.
-- [Apollo Client](https://www.apollographql.com/apollo-client/) – The most popular GraphQL client for the web. Apollo also builds and maintains [Apollo iOS](https://github.com/apollographql/apollo-ios) and [Apollo Android](https://github.com/apollographql/apollo-android).
+- [Apollo Client](https://www.apollographql.com/apollo-client/) – The most popular GraphQL client for the web. Apollo also builds and maintains [Apollo iOS](https://github.com/apollographql/apollo-ios) and [Apollo Kotlin](https://github.com/apollographql/apollo-kotlin).
 - [Apollo Server](https://www.apollographql.com/docs/apollo-server/) – A production-ready JavaScript GraphQL server that connects to any microservice, API, or database. Compatible with all popular JavaScript frameworks and deployable in serverless environments.
 
 ## Learn how to build with Apollo

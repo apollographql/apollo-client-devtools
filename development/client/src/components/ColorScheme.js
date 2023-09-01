@@ -1,5 +1,5 @@
-import React from 'react';
-import Color from './Color';
+import React from "react";
+import Color from "./Color";
 
 const ColorScheme = ({ colors }) => {
   if (!colors) {
@@ -9,11 +9,11 @@ const ColorScheme = ({ colors }) => {
   return (
     <div className="scheme">
       {colors.map(({ contrast, hex, name, saved }, index) => (
-        <Color 
+        <Color
           key={`${hex}-${index}`}
           className="scheme__color"
           contrast={contrast}
-          hexCode={hex} 
+          hexCode={hex}
           name={name}
           isSaved={saved}
         />
@@ -23,4 +23,3 @@ const ColorScheme = ({ colors }) => {
 };
 
 export default ColorScheme;
-

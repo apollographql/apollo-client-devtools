@@ -1,7 +1,5 @@
-/** @jsx jsx */
-
 import { useMemo } from "react";
-import { jsx, css, Global } from "@emotion/react";
+import { css, Global } from "@emotion/react";
 
 import { ColorTheme, Mode, themes } from "./theme";
 

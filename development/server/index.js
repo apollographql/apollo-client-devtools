@@ -1,8 +1,9 @@
-const { ApolloServer, gql } = require('apollo-server');
-const ColorAPI = require('./api/color');
-const db = require('./db');
+const { ApolloServer } = require("@apollo/server");
+const { startStandaloneServer } = require("@apollo/server/standalone");
+const ColorAPI = require("./api/color");
+const db = require("./db");
 
-const typeDefs = gql`
+const typeDefs = `#graphql
   enum Mode {
     MONOCHROME
     MONOCHROME_DARK
@@ -54,33 +55,31 @@ const typeDefs = gql`
 const resolvers = {
   Mutation: {
     addColor: async (_source, { color }, { dataSources }) => {
-      const exists = dataSources.db.get('favorites').find({hex: color.hex}).value();
-      
+      const exists = dataSources.db
+        .get("favorites")
+        .find({ hex: color.hex })
+        .value();
+
       if (exists) {
-        return dataSources.db.get('favorites').value();
+        return dataSources.db.get("favorites").value();
       }
 
-      return dataSources.db.get('favorites')
-        .push(color)
-        .write();
+      return dataSources.db.get("favorites").push(color).write();
     },
     removeColor: async (_source, { color }, { dataSources }) => {
-      return dataSources.db.get('favorites')
-        .remove(color)
-        .write();
-    }
+      return dataSources.db.get("favorites").remove(color).write();
+    },
   },
   Query: {
     random: () => ({}),
     color: async (_source, { hex }, { dataSources }) => {
-      const data = await dataSources.colorAPI.identifyColor({ hex });
-      return data;
+      return dataSources.colorAPI.identifyColor({ hex });
     },
     scheme: async (_source, { hex, mode, count }, { dataSources }) => {
       return dataSources.colorAPI.getColorScheme({ hex, mode, count });
     },
     favoritedColors: async (_source, _, { dataSources }) => {
-      return dataSources.db.get('favorites');
+      return dataSources.db.get("favorites");
     },
   },
   Random: {
@@ -99,19 +98,26 @@ const resolvers = {
     COMPLEMENT: "complement",
     ANALOGIC_COMPLEMENT: "analogic-complement",
     TRIAD: "triad",
-    QUAD: "quad",  
+    QUAD: "quad",
   },
 };
 
-const server = new ApolloServer({ 
-  typeDefs, 
-  resolvers, 
-  dataSources: () => ({
-    colorAPI: new ColorAPI(),
-    db,
-  })
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
 });
 
-server.listen().then(({ url }) => {
+startStandaloneServer(server, {
+  context: () => {
+    const { cache } = server;
+
+    return {
+      dataSources: {
+        colorAPI: new ColorAPI({ cache }),
+        db,
+      },
+    };
+  },
+}).then(({ url }) => {
   console.log(`🚀  Server ready at ${url}`);
 });

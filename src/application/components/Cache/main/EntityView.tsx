@@ -1,10 +1,9 @@
-/** @jsx jsx */
-
-import { jsx, css } from "@emotion/react";
-import JSONTree from "react-json-tree";
+import { css } from "@emotion/react";
+import { JSONTree } from "react-json-tree";
 import { rem } from "polished";
 
 import { useTreeTheme } from "../../../theme";
+import { ReactNode } from "react";
 
 const cacheStyles = css`
   padding-top: 1rem;
@@ -21,10 +20,10 @@ const selectedStyles = css`
   background-color: yellow;
 `;
 
-export function EntityView({ cacheId, data, searchResults }) {
-  if (!data) return null;
-
+export function EntityView({ cacheId, data, searchResults, setCacheId }) {
   const treeTheme = useTreeTheme();
+
+  if (!data) return null;
 
   const searchResult = searchResults[cacheId];
   return (
@@ -39,10 +38,29 @@ export function EntityView({ cacheId, data, searchResults }) {
           const matchFound = searchResult && !!searchResult[key];
           return <span css={matchFound ? selectedStyles : void 0}>{key}:</span>;
         }}
-        valueRenderer={(valueAsString, value, key) => {
+        valueRenderer={(valueAsString: ReactNode, value, key) => {
           const matchFound = searchResult && searchResult[key] === value;
+
           return (
-            <span css={matchFound ? selectedStyles : void 0}>{valueAsString}</span>
+            <span
+              css={css`
+                ${matchFound ? selectedStyles : void 0}
+                ${key === "__ref" &&
+                css`
+                  &:hover {
+                    text-decoration: underline;
+                    cursor: pointer;
+                  }
+                `}
+              `}
+              onClick={() => {
+                if (key === "__ref") {
+                  setCacheId(value);
+                }
+              }}
+            >
+              {valueAsString}
+            </span>
           );
         }}
       />

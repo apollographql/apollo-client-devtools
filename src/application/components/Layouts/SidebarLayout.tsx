@@ -1,32 +1,22 @@
-/** @jsx jsx */
-
-import { ReactNode, useContext } from "react";
-import React from "react"
-import { jsx, css } from "@emotion/react";
+import React, { ReactNode, useContext } from "react";
+import { css } from "@emotion/react";
 import { rem } from "polished";
 
 import { Navigation, NavigationProps } from "./Navigation";
 
-import { ResizableBox } from 'react-resizable';
-import 'react-resizable/css/styles.css';
+import { ResizableBox } from "react-resizable";
+import "react-resizable/css/styles.css";
 
-import { DevtoolsContext } from '../../App'
+import { DevtoolsContext } from "../../App";
 interface SidebarLayoutProps {
   navigationProps: NavigationProps;
-  children: any;
+  children: ReactNode;
 }
 
 interface SidebarProps {
   navigationProps: NavigationProps;
   children: ReactNode;
   className?: string;
-}
-
-interface SidebarLayoutComposition {
-  Sidebar: React.FC<SidebarProps>;
-  Content: React.FC;
-  Header: React.FC;
-  Main: React.FC;
 }
 
 const layoutStyles = css`
@@ -79,8 +69,7 @@ const mainStyles = css`
   color: var(--textPrimary);
 `;
 
-const SidebarLayout: React.FC<SidebarLayoutProps> &
-  SidebarLayoutComposition = ({ children }) => {
+const SidebarLayout = ({ children }: SidebarLayoutProps) => {
   return (
     <div data-testid="layout" css={layoutStyles}>
       {children}
@@ -114,44 +103,63 @@ const handleStyles = css`
   border-radius: 2px;
 `;
 
-const MyHandle = React.forwardRef((props:any, ref:any) => {
-  const {handleAxis, ...restProps} = props;
-  console.log("Mewling!")
+const MyHandle = React.forwardRef((props: any, ref: any) => {
+  const { handleAxis, ...restProps } = props;
+  console.log("Mewling!");
   return (
-  <div ref={ref} className={'Resizer'} css={resizerStyles} {...restProps}  >
-    <div className={'Handle'} css={handleStyles}/>
-  </div>
-
+    <div ref={ref} className={"Resizer"} css={resizerStyles} {...restProps}>
+      <div className={"Handle"} css={handleStyles} />
+    </div>
   );
 });
 
-const Sidebar = ({ navigationProps, children, className }) => {
-  const {sidebarWidth, setSidebarWidth} = useContext(DevtoolsContext)
+const Sidebar = ({ navigationProps, children, className }: SidebarProps) => {
+  const { sidebarWidth, setSidebarWidth } = useContext(DevtoolsContext);
   return (
-  <ResizableBox onResize={(e, data)=>setSidebarWidth(data.size.width)} width={sidebarWidth} height={100} axis={'x'} resizeHandles={['e']} handle={<MyHandle />}>
-  <div className={className} css={sidebarStyles} data-testid="sidebar">
-    <Navigation
-      queriesCount={navigationProps.queriesCount}
-      mutationsCount={navigationProps.mutationsCount}
-    />
-    <div css={listStyles}>{children}</div>
-  </div>
-  </ResizableBox>
-)};
+    <ResizableBox
+      onResize={(e, data) => setSidebarWidth(data.size.width)}
+      width={sidebarWidth}
+      height={100}
+      axis={"x"}
+      resizeHandles={["e"]}
+      handle={<MyHandle />}
+    >
+      <div className={className} css={sidebarStyles} data-testid="sidebar">
+        <Navigation
+          queriesCount={navigationProps.queriesCount}
+          mutationsCount={navigationProps.mutationsCount}
+        />
+        <div css={listStyles}>{children}</div>
+      </div>
+    </ResizableBox>
+  );
+};
 
-const Content = ({ children }) => (
+interface ContentProps {
+  children?: ReactNode;
+}
+
+const Content = ({ children }: ContentProps) => (
   <div css={contentStyles} data-testid="content">
     {children}
   </div>
 );
 
-const Header = ({ children }) => (
+interface HeaderProps {
+  children?: ReactNode;
+}
+
+const Header = ({ children }: HeaderProps) => (
   <div css={headerStyles} data-testid="header">
     {children}
   </div>
 );
 
-const Main = ({ children }) => (
+interface MainProps {
+  children?: ReactNode;
+}
+
+const Main = ({ children }: MainProps) => (
   <div css={mainStyles} data-testid="main">
     {children}
   </div>

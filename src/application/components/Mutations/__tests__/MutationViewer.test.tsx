@@ -1,6 +1,5 @@
 import React from "react";
-import user from "@testing-library/user-event";
-import stringifyObject from "stringify-object";
+import { screen } from "@testing-library/react";
 
 import { renderWithApolloClient } from "../../../utilities/testing/renderWithApolloClient";
 import { MutationViewer } from "../MutationViewer";
@@ -31,22 +30,18 @@ describe("<MutationViewer />", () => {
   };
 
   test("renders the mutation string", () => {
-    const { getByText, getAllByText } = renderWithApolloClient(
-      <MutationViewer {...props} />
-    );
+    renderWithApolloClient(<MutationViewer {...props} />);
 
-    expect(getByText("Mutation String")).toBeInTheDocument();
-    expect(getByText("AddColorToFavorites")).toBeInTheDocument();
-    expect(getAllByText("colorFields").length).toEqual(2);
+    expect(screen.getByText("Mutation String")).toBeInTheDocument();
+    expect(screen.getByText("AddColorToFavorites")).toBeInTheDocument();
+    expect(screen.getAllByText("colorFields").length).toEqual(2);
   });
 
-  test("can copy the mutation string", () => {
-    const { getByTestId } = renderWithApolloClient(
-      <MutationViewer {...props} />
-    );
+  test("can copy the mutation string", async () => {
+    const { user } = renderWithApolloClient(<MutationViewer {...props} />);
 
-    const copyButton = getByTestId("copy-mutation-string");
-    user.click(copyButton);
+    const copyButton = screen.getByTestId("copy-mutation-string");
+    await user.click(copyButton);
     expect(window.prompt).toBeCalledWith(
       "Copy to clipboard: Ctrl+C, Enter",
       props.mutationString
@@ -54,21 +49,19 @@ describe("<MutationViewer />", () => {
   });
 
   test("renders the mutation variables", () => {
-    const { getByText } = renderWithApolloClient(<MutationViewer {...props} />);
+    renderWithApolloClient(<MutationViewer {...props} />);
 
-    expect(getByText("Variables")).toBeInTheDocument();
+    expect(screen.getByText("Variables")).toBeInTheDocument();
     expect(
-      getByText((content) => content.includes(props.variables.name))
+      screen.getByText((content) => content.includes(props.variables.name))
     ).toBeInTheDocument();
   });
 
-  test("can copy the mutation variables", () => {
-    const { getByTestId } = renderWithApolloClient(
-      <MutationViewer {...props} />
-    );
+  test("can copy the mutation variables", async () => {
+    const { user } = renderWithApolloClient(<MutationViewer {...props} />);
 
-    const copyButton = getByTestId("copy-mutation-variables");
-    user.click(copyButton);
+    const copyButton = screen.getByTestId("copy-mutation-variables");
+    await user.click(copyButton);
     expect(window.prompt).toBeCalledWith(
       "Copy to clipboard: Ctrl+C, Enter",
       JSON.stringify(props.variables)

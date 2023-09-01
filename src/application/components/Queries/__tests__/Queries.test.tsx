@@ -1,5 +1,5 @@
 import React from "react";
-import { within, waitFor } from "@testing-library/react";
+import { screen, within, waitFor } from "@testing-library/react";
 import user from "@testing-library/user-event";
 
 import { renderWithApolloClient } from "../../../utilities/testing/renderWithApolloClient";
@@ -44,20 +44,23 @@ describe("<Queries />", () => {
       },
     });
 
-    const { getByTestId } = renderWithApolloClient(
-      <Queries navigationProps={navigationProps} embeddedExplorerProps={{ embeddedExplorerIFrame: null }}/>
+    renderWithApolloClient(
+      <Queries
+        navigationProps={navigationProps}
+        embeddedExplorerProps={{ embeddedExplorerIFrame: null }}
+      />
     );
 
-    const sidebar = getByTestId("sidebar");
+    const sidebar = screen.getByTestId("sidebar");
     await waitFor(() => {
       expect(
         within(sidebar).getByText(
           `Active Queries (${navigationProps.queriesCount})`
         )
       ).toBeInTheDocument();
-      expect(within(sidebar).getByText("Unnamed")).toBeInTheDocument();
-      expect(within(sidebar).getByText("GetColors")).toBeInTheDocument();
     });
+    expect(within(sidebar).getByText("Unnamed")).toBeInTheDocument();
+    expect(within(sidebar).getByText("GetColors")).toBeInTheDocument();
   });
 
   test("renders query name", async () => {
@@ -71,26 +74,32 @@ describe("<Queries />", () => {
       },
     });
 
-    const { getByTestId } = renderWithApolloClient(
-      <Queries navigationProps={navigationProps} embeddedExplorerProps={{ embeddedExplorerIFrame: null }}/>
+    renderWithApolloClient(
+      <Queries
+        navigationProps={navigationProps}
+        embeddedExplorerProps={{ embeddedExplorerIFrame: null }}
+      />
     );
 
-    const header = getByTestId("header");
+    const header = screen.getByTestId("header");
     expect(within(header).getByText("Unnamed")).toBeInTheDocument();
 
-    const sidebar = getByTestId("sidebar");
-    user.click(within(sidebar).getByText("GetColors"));
+    const sidebar = screen.getByTestId("sidebar");
+    await user.click(within(sidebar).getByText("GetColors"));
     await waitFor(() => {
       expect(within(header).getByText("GetColors")).toBeInTheDocument();
     });
   });
 
   test("it renders an empty state", () => {
-    const { getByTestId } = renderWithApolloClient(
-      <Queries navigationProps={navigationProps} embeddedExplorerProps={{ embeddedExplorerIFrame: null }}/>
+    renderWithApolloClient(
+      <Queries
+        navigationProps={navigationProps}
+        embeddedExplorerProps={{ embeddedExplorerIFrame: null }}
+      />
     );
 
-    expect(getByTestId("header")).toBeEmptyDOMElement();
-    expect(getByTestId("main")).toBeEmptyDOMElement();
+    expect(screen.getByTestId("header")).toBeEmptyDOMElement();
+    expect(screen.getByTestId("main")).toBeEmptyDOMElement();
   });
 });

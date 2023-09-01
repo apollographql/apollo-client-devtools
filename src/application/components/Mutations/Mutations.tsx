@@ -1,7 +1,4 @@
-/** @jsx jsx */
-
 import { Fragment, useState } from "react";
-import { jsx } from "@emotion/react";
 import { gql, useQuery } from "@apollo/client";
 import { List } from "@apollo/space-kit/List";
 import { ListItem } from "@apollo/space-kit/ListItem";
@@ -39,15 +36,18 @@ const GET_SELECTED_MUTATION = gql`
   }
 `;
 
-export const Mutations = ({ navigationProps, embeddedExplorerProps }: {
+export const Mutations = ({
+  navigationProps,
+  embeddedExplorerProps,
+}: {
   navigationProps: {
-    queriesCount: number,
-    mutationsCount: number,
-  },
+    queriesCount: number;
+    mutationsCount: number;
+  };
   embeddedExplorerProps: {
-    embeddedExplorerIFrame: HTMLIFrameElement | null,
-  }
-}): jsx.JSX.Element => {
+    embeddedExplorerIFrame: HTMLIFrameElement | null;
+  };
+}): JSX.Element => {
   const [selected, setSelected] = useState<number>(0);
   const theme = useTheme();
   const { data } = useQuery(GET_MUTATIONS);
@@ -91,7 +91,9 @@ export const Mutations = ({ navigationProps, embeddedExplorerProps }: {
               <RunInExplorerButton
                 operation={selectedMutationData?.mutation?.mutationString}
                 variables={selectedMutationData?.mutation?.variables}
-                embeddedExplorerIFrame={embeddedExplorerProps.embeddedExplorerIFrame}
+                embeddedExplorerIFrame={
+                  embeddedExplorerProps.embeddedExplorerIFrame
+                }
               />
             </Fragment>
           )}

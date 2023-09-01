@@ -9,22 +9,20 @@ import {
   RELOADING_TAB,
   RELOAD_TAB_COMPLETE,
 } from "../constants";
+import browser from "webextension-polyfill";
 
 // Inspected tabs are unable to retrieve their own ids.
 // This requests the tab's id from the background script.
 // Once it resolves, we can create the tab's Relay.
 function requestId() {
-  return new Promise((resolve) => {
-    chrome.runtime.sendMessage({ message: REQUEST_TAB_ID }, function (id) {
-      resolve(id);
-    });
-  });
+  return browser.runtime.sendMessage({ message: REQUEST_TAB_ID });
 }
 
+// eslint-disable-next-line no-async-promise-executor
 export default new Promise(async ($export) => {
   const id = await requestId();
   const tab = new Relay();
-  const port = chrome.runtime.connect({
+  const port = browser.runtime.connect({
     name: `tab-${id}`,
   });
 

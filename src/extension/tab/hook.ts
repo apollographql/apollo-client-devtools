@@ -30,17 +30,23 @@ import {
   RELOAD_TAB_COMPLETE,
 } from "../constants";
 import { EXPLORER_SUBSCRIPTION_TERMINATION } from "../../application/components/Explorer/postMessageHelpers";
+import { getPrivateAccess } from "../../privateAccess";
+
+const DEVTOOLS_KEY = Symbol.for("apollo.devtools");
 
 declare global {
   type TCache = any;
 
   interface Window {
     __APOLLO_CLIENT__: ApolloClient<TCache>;
+    [DEVTOOLS_KEY]?: {
+      push(client: ApolloClient<any>): void;
+    };
   }
 }
 
 type Hook = {
-  ApolloClient: ApolloClient<TCache> | undefined;
+  ApolloClient: ApolloClient<any> | undefined;
   version: string;
   getQueries: () => QueryInfo[];
   getMutations: () => QueryInfo[];
@@ -48,12 +54,29 @@ type Hook = {
 };
 
 function initializeHook() {
+  const knownClients = new Set<ApolloClient<any>>();
   const hook: Hook = {
     ApolloClient: undefined,
     version: devtoolsVersion,
-    getQueries: () => [],
-    getMutations: () => [],
-    getCache: () => {},
+    getQueries() {
+      const ac = getPrivateAccess(hook.ApolloClient);
+      if (ac?.queryManager.getObservableQueries) {
+        return getQueries(ac.queryManager.getObservableQueries("active"));
+      } else {
+        return getQueriesLegacy(ac?.queryManager["queries"]);
+      }
+    },
+    getMutations: () => {
+      const ac = getPrivateAccess(hook.ApolloClient);
+      return getMutations(
+        (ac?.queryManager.mutationStore?.getStore
+          ? // @ts-expect-error Apollo Client 3.0 - 3.2
+            ac.queryManager.mutationStore?.getStore()
+          : // Apollo Client 3.3
+            ac?.queryManager.mutationStore) ?? {}
+      );
+    },
+    getCache: () => hook.ApolloClient?.cache.extract(true) ?? {},
   };
 
   Object.defineProperty(window, "__APOLLO_DEVTOOLS_GLOBAL_HOOK__", {
@@ -100,7 +123,9 @@ function initializeHook() {
     sendMessageToTab(EXPLORER_RESPONSE, payload);
   }
 
-  function sendHookDataToDevTools(eventName: typeof CREATE_DEVTOOLS_PANEL | typeof UPDATE) {
+  function sendHookDataToDevTools(
+    eventName: typeof CREATE_DEVTOOLS_PANEL | typeof UPDATE
+  ) {
     // Tab Relay forwards this the devtools
     sendMessageToTab(
       eventName,
@@ -117,7 +142,7 @@ function initializeHook() {
       sendHookDataToDevTools(CREATE_DEVTOOLS_PANEL);
     } else {
       // try finding client again, if it's found findClient will send the CREATE_DEVTOOLS_PANEL event
-      findClient()
+      findClient();
     }
   });
 
@@ -214,44 +239,43 @@ function initializeHook() {
   /**
    * Attempt to find the client on a 1-second interval for 10 seconds max
    */
+  let interval;
   function findClient() {
-    let interval;
     let count = 0;
 
     function initializeDevtoolsHook() {
       if (count++ > 10) clearInterval(interval);
       if (window.__APOLLO_CLIENT__) {
-        hook.ApolloClient = window.__APOLLO_CLIENT__;
-        hook.ApolloClient.__actionHookForDevTools(handleActionHookForDevtools);
-        hook.getQueries = () =>{
-          if((hook.ApolloClient as any).queryManager.getObservableQueries){
-            return getQueries((hook.ApolloClient as any).queryManager.getObservableQueries("active"));
-          } else {
-            return getQueriesLegacy((hook.ApolloClient as any).queryManager.queries);
-          }
-        }
-        hook.getMutations = () =>
-          getMutations(
-            (hook.ApolloClient as any).queryManager.mutationStore?.getStore
-              ? // Apollo Client 3.0 - 3.2
-                (
-                  hook.ApolloClient as any
-                ).queryManager.mutationStore?.getStore()
-              : // Apollo Client 3.3
-                (hook.ApolloClient as any).queryManager.mutationStore
-          );
-        hook.getCache = () => hook.ApolloClient?.cache.extract(true);
-
-        clearInterval(interval);
-        sendMessageToTab(CLIENT_FOUND);
-        // incase initial update was missed because the client wasn't ready, send the create devtools event.
-        // devtools checks to see if it's already created, so this won't create duplicate tabs
-        sendHookDataToDevTools(CREATE_DEVTOOLS_PANEL);
+        registerClient(window.__APOLLO_CLIENT__);
       }
     }
 
     interval = setInterval(initializeDevtoolsHook, 1000);
-    initializeDevtoolsHook() // call immediately to reduce lag if devtools are already available
+    initializeDevtoolsHook(); // call immediately to reduce lag if devtools are already available
+  }
+
+  function registerClient(client: ApolloClient<any>) {
+    knownClients.add(client);
+    hook.ApolloClient = client;
+    client.__actionHookForDevTools(() => {
+      if (client !== hook.ApolloClient) {
+        // if the client has changed, don't send the action hook
+        return;
+      }
+      handleActionHookForDevtools();
+    });
+
+    clearInterval(interval);
+    sendMessageToTab(CLIENT_FOUND);
+    // incase initial update was missed because the client wasn't ready, send the create devtools event.
+    // devtools checks to see if it's already created, so this won't create duplicate tabs
+    sendHookDataToDevTools(CREATE_DEVTOOLS_PANEL);
+  }
+
+  const preExisting = window[DEVTOOLS_KEY];
+  window[DEVTOOLS_KEY] = { push: registerClient };
+  if (Array.isArray(preExisting)) {
+    preExisting.forEach(registerClient);
   }
 
   findClient();

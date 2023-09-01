@@ -1,7 +1,5 @@
-/** @jsx jsx */
-
 import { Fragment, useState } from "react";
-import { jsx, css } from "@emotion/react";
+import { css } from "@emotion/react";
 import { rem } from "polished";
 import { gql, useQuery } from "@apollo/client";
 import { List } from "@apollo/space-kit/List";
@@ -70,15 +68,18 @@ const GET_WATCHED_QUERY = gql`
   }
 `;
 
-export const Queries = ({ navigationProps, embeddedExplorerProps }: {
+export const Queries = ({
+  navigationProps,
+  embeddedExplorerProps,
+}: {
   navigationProps: {
-    queriesCount: number,
-    mutationsCount: number,
-  },
+    queriesCount: number;
+    mutationsCount: number;
+  };
   embeddedExplorerProps: {
-    embeddedExplorerIFrame: HTMLIFrameElement | null,
-  }
-}): jsx.JSX.Element => {
+    embeddedExplorerIFrame: HTMLIFrameElement | null;
+  };
+}): JSX.Element => {
   const [selected, setSelected] = useState<number>(0);
   const theme = useTheme();
   const { data } = useQuery(GET_WATCHED_QUERIES);
@@ -122,7 +123,9 @@ export const Queries = ({ navigationProps, embeddedExplorerProps }: {
               <RunInExplorerButton
                 operation={watchedQueryData?.watchedQuery?.queryString}
                 variables={watchedQueryData?.watchedQuery?.variables}
-                embeddedExplorerIFrame={embeddedExplorerProps.embeddedExplorerIFrame}
+                embeddedExplorerIFrame={
+                  embeddedExplorerProps.embeddedExplorerIFrame
+                }
               />
             </Fragment>
           )}

@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { render } from "@testing-library/react";
-import user from "@testing-library/user-event";
+import React from "react";
+import { screen, render } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import { currentScreen } from "../../Layouts/Navigation";
-import { RunInExplorerButton } from '../RunInExplorerButton'
+import { RunInExplorerButton } from "../RunInExplorerButton";
 
 jest.mock("../../Layouts/Navigation", () => ({
   currentScreen: jest.fn(),
@@ -28,14 +28,17 @@ describe("<RunInExplorerButton />", () => {
     variables: {
       filter: "red",
     },
-    embeddedExplorerIFrame: <iframe src="https://embed.apollographql.com" /> as unknown as HTMLIFrameElement,
+    embeddedExplorerIFrame: (
+      <iframe src="https://embed.apollographql.com" />
+    ) as unknown as HTMLIFrameElement,
   };
 
-  it("should navigate to the Explorer panel", () => {
-    const { getByText } = render(<RunInExplorerButton {...props}/>);
-    const button = getByText("Run in Explorer");
+  it("should navigate to the Explorer panel", async () => {
+    const user = userEvent.setup();
+    render(<RunInExplorerButton {...props} />);
+    const button = screen.getByText("Run in Explorer");
     expect(button).toBeInTheDocument();
-    user.click(button);
+    await user.click(button);
     expect(currentScreen).toHaveBeenCalledWith("explorer");
   });
 });

@@ -13,4 +13,3 @@ export const EXPLORER_REQUEST = "explorer-request";
 export const EXPLORER_RESPONSE = "explorer-response";
 export const RELOADING_TAB = "reloading-tab";
 export const RELOAD_TAB_COMPLETE = "reload-tab-complete";
-

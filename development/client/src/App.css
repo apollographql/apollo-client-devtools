@@ -1,9 +1,11 @@
 body {
-  font-family: 'Roboto', Arial, Helvetica, sans-serif;
+  font-family: "Roboto", Arial, Helvetica, sans-serif;
 }
 
-h1, h2, h3 {
-  font-family: 'Abril Fatface'
+h1,
+h2,
+h3 {
+  font-family: "Abril Fatface";
 }
 
 a {
@@ -15,7 +17,7 @@ header {
   align-items: center;
   height: 40px;
   padding: 16px;
-  font-family: 'Abril Fatface'
+  font-family: "Abril Fatface";
 }
 
 header h1 {

@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import {
-  within,
-} from "@testing-library/react";
+import { within, screen } from "@testing-library/react";
 import { graphql } from "graphql";
 import { getIntrospectionQuery } from "graphql/utilities";
 
@@ -35,7 +33,8 @@ jest.mock("../explorerRelay", () => ({
 
 const EmbeddedExplorerWrapper = () => {
   const navigationProps = { queriesCount: 0, mutationsCount: 0 };
-  const [embeddedExplorerIFrame, setEmbeddedExplorerIFrame] = useState<HTMLIFrameElement | null>(null);
+  const [embeddedExplorerIFrame, setEmbeddedExplorerIFrame] =
+    useState<HTMLIFrameElement | null>(null);
   return (
     <Explorer
       isVisible={true}
@@ -46,14 +45,12 @@ const EmbeddedExplorerWrapper = () => {
       }}
     />
   );
-}
+};
 
 describe("<Explorer />", () => {
   test("it renders a header", () => {
-    const { getByTestId } = renderWithApolloClient(
-      <EmbeddedExplorerWrapper/>
-    );
-    const header = getByTestId("header");
+    renderWithApolloClient(<EmbeddedExplorerWrapper />);
+    const header = screen.getByTestId("header");
     const { getByLabelText } = within(header);
 
     expect(header).toBeInTheDocument();
@@ -61,19 +58,22 @@ describe("<Explorer />", () => {
   });
 
   test("it renders the Explorer iframe", () => {
-    renderWithApolloClient(
-      <EmbeddedExplorerWrapper/>
-    );
-    const iframe = document.getElementById('embedded-explorer') as HTMLIFrameElement;
+    renderWithApolloClient(<EmbeddedExplorerWrapper />);
+    const iframe = document.getElementById(
+      "embedded-explorer"
+    ) as HTMLIFrameElement;
     expect(iframe).toBeTruthy();
-    expect(iframe.src).toEqual('https://explorer.embed.apollographql.com');
+    expect(iframe.src).toEqual(
+      "https://explorer.embed.apollographql.com/?sendRequestsFrom=parent&shouldPersistState=false&showHeadersAndEnvVars=false&shouldShowGlobalHeader=false&parentSupportsSubscriptions=true&theme=light"
+    );
   });
 
-  test.only("it retrieves a schema from an IntrospectionQuery", async () => {
+  test("it retrieves a schema from an IntrospectionQuery", async () => {
     (listenForResponse as any).mockImplementation((_, cb) => {
-      graphql(schemaWithMocks, getIntrospectionQuery()).then((result) =>
-        cb(result)
-      );
+      graphql({
+        schema: schemaWithMocks,
+        source: getIntrospectionQuery(),
+      }).then((result) => cb(result));
     });
   });
 });

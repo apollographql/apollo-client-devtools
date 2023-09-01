@@ -1,7 +1,5 @@
-/** @jsx jsx */
-
-import React, { useMemo } from "react";
-import { jsx, css } from "@emotion/react";
+import { useMemo } from "react";
+import { css } from "@emotion/react";
 import { rem } from "polished";
 import { colors } from "@apollo/space-kit/colors";
 import { useState, useEffect } from "react";
@@ -165,7 +163,7 @@ export const Explorer = ({
     embeddedExplorerIFrame: HTMLIFrameElement | null;
     setEmbeddedExplorerIFrame: (iframe: HTMLIFrameElement) => void;
   };
-}): jsx.JSX.Element => {
+}): JSX.Element => {
   const [graphRef, setGraphRef] = useState<string>();
   const [showGraphRefModal, setShowGraphRefModal] = useState<
     false | "triggeredByIntrospectionFailure" | "triggeredManually"
