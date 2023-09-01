@@ -45,7 +45,7 @@ interface SearchProps {
 export const Search = ({ data, setSearchResults }: SearchProps) => {
   const theme = useTheme();
 
-  function performSearch(event) {
+  function performSearch(event: ChangeEvent<HTMLInputElement>) {
     const keywords = event.target.value;
     if (keywords.trim() === "") {
       setSearchResults({});
