@@ -4,22 +4,27 @@ import { act, screen, within, waitFor } from "@testing-library/react";
 import { renderWithApolloClient } from "../../../utilities/testing/renderWithApolloClient";
 import { client, GET_MUTATIONS } from "../../../index";
 import { Mutations } from "../Mutations";
+import type { GetMutations } from "../../../types/gql";
 
 jest.mock("../MutationViewer", () => ({
   MutationViewer: () => null,
 }));
 
 describe("<Mutations />", () => {
-  const mutations = [
+  const mutations: GetMutations["mutationLog"]["mutations"] = [
     {
       id: 0,
       __typename: "Mutation",
       name: null,
+      mutationString: "mutation { performTest }",
+      variables: null,
     },
     {
       id: 1,
       __typename: "Mutation",
       name: "AddColorToFavorites",
+      mutationString: "mutation AddColorToFavorites { addColorToFavorites }",
+      variables: null,
     },
   ];
 
@@ -37,6 +42,7 @@ describe("<Mutations />", () => {
       query: GET_MUTATIONS,
       data: {
         mutationLog: {
+          __typename: "MutationLog",
           mutations,
           count: mutations.length,
         },
@@ -69,6 +75,7 @@ describe("<Mutations />", () => {
       query: GET_MUTATIONS,
       data: {
         mutationLog: {
+          __typename: "MutationLog",
           mutations,
           count: mutations.length,
         },
