@@ -10,7 +10,9 @@ describe("<QueryViewer />", () => {
   });
 
   const props = {
-    queryString: `
+    query: {
+      __typename: "WatchedQuery" as const,
+      queryString: `
       query GetSavedColors {
         favoritedColors {
           ...colorFields
@@ -22,8 +24,9 @@ describe("<QueryViewer />", () => {
         contrast
       }
     `,
-    variables: { hex: "#E4C4B1" },
-    cachedData: { color: "#D4EABD", contrast: "#000000" },
+      variables: { hex: "#E4C4B1" },
+      cachedData: { color: "#D4EABD", contrast: "#000000" },
+    },
   };
 
   test("renders the query string", () => {
@@ -41,7 +44,7 @@ describe("<QueryViewer />", () => {
     await user.click(queryString);
     expect(window.prompt).toBeCalledWith(
       "Copy to clipboard: Ctrl+C, Enter",
-      props.queryString
+      props.query.queryString
     );
   });
 
@@ -52,7 +55,7 @@ describe("<QueryViewer />", () => {
     const variablesPanel = screen.getByRole("tabpanel");
     expect(
       within(variablesPanel).getByText((content) =>
-        content.includes(props.variables.hex)
+        content.includes(props.query.variables.hex)
       )
     ).toBeInTheDocument();
 
@@ -64,7 +67,7 @@ describe("<QueryViewer />", () => {
     const cachedDataPanel = screen.getByRole("tabpanel");
     expect(
       within(cachedDataPanel).getByText((content) =>
-        content.includes(props.cachedData.color)
+        content.includes(props.query.cachedData.color)
       )
     ).toBeInTheDocument();
   });
@@ -76,7 +79,7 @@ describe("<QueryViewer />", () => {
     await act(() => user.click(copyButton));
     expect(window.prompt).toBeCalledWith(
       "Copy to clipboard: Ctrl+C, Enter",
-      JSON.stringify(props.variables)
+      JSON.stringify(props.query.variables)
     );
 
     const cachedDataTab = screen.getByText("Cached Data");
@@ -85,7 +88,7 @@ describe("<QueryViewer />", () => {
     await act(() => user.click(copyButton));
     expect(window.prompt).toBeCalledWith(
       "Copy to clipboard: Ctrl+C, Enter",
-      JSON.stringify(props.cachedData)
+      JSON.stringify(props.query.cachedData)
     );
   });
 });
