@@ -32,7 +32,7 @@ export function getQueries(
         document,
         source: document.loc?.source,
         variables,
-        cachedData: diff?.result,
+        cachedData: diff.result,
       });
     });
   }
