@@ -12,7 +12,6 @@ export type QueryInfo = {
   document: DocumentNode;
   source?: Source;
   variables?: Variables;
-  diff?: unknown;
   cachedData?: QueryData; // Not a member of the actual Apollo Client QueryInfo type
 };
 
