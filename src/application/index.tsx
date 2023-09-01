@@ -157,9 +157,9 @@ export const writeData = ({ queries, mutations, cache }) => {
     },
   });
 
-  const mappedMutations: Mutation[] = mutations.map((m, i: number) =>
-    getMutationData(m, i)
-  );
+  const mappedMutations: Mutation[] = mutations
+    .map((m, i: number) => getMutationData(m, i))
+    .filter(Boolean);
 
   client.writeQuery({
     query: GET_MUTATIONS,
