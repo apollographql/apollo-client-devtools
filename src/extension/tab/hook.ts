@@ -240,7 +240,7 @@ function initializeHook() {
   /**
    * Attempt to find the client on a 1-second interval for 10 seconds max
    */
-  let interval;
+  let interval: NodeJS.Timeout;
   function findClient() {
     let count = 0;
 
