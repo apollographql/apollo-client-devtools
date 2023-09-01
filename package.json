@@ -74,6 +74,7 @@
     "@types/react-copy-to-clipboard": "^5.0.4",
     "@types/react-dom": "18.2.7",
     "@types/webextension-polyfill": "0.10.2",
+    "@types/zen-observable": "^0.8.4",
     "@typescript-eslint/eslint-plugin": "6.5.0",
     "@typescript-eslint/parser": "6.5.0",
     "copy-webpack-plugin": "11.0.0",
