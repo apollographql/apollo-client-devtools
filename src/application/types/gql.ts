@@ -1,4 +1,3 @@
-import { Cache } from "./scalars";
 import { QueryData } from "./scalars";
 import { Variables } from "./scalars";
 export type Maybe<T> = T | null;
@@ -28,8 +27,6 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean };
   Int: { input: number; output: number };
   Float: { input: number; output: number };
-  /** Represents data in the cache as a whole */
-  Cache: { input: Cache; output: Cache };
   /** Represents data for a specific query */
   QueryData: { input: QueryData; output: QueryData };
   /** Represents variables for a query */
@@ -52,7 +49,7 @@ export type MutationLog = {
 
 export type Query = {
   __typename: "Query";
-  cache: Maybe<Scalars["Cache"]["output"]>;
+  cache: Scalars["String"]["output"];
   mutation: Maybe<Mutation>;
   mutationLog: MutationLog;
   watchedQueries: WatchedQueries;
@@ -91,7 +88,7 @@ export type GetOperationCounts = {
 
 export type GetCacheVariables = Exact<{ [key: string]: never }>;
 
-export type GetCache = { cache: Cache | null };
+export type GetCache = { cache: string };
 
 export type MutationViewer_mutation = {
   mutationString: string;

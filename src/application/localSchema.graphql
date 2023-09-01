@@ -1,6 +1,3 @@
-"Represents data in the cache as a whole"
-scalar Cache
-
 "Represents data for a specific query"
 scalar QueryData
 
@@ -8,7 +5,7 @@ scalar QueryData
 scalar Variables
 
 type Query {
-  cache: Cache
+  cache: String!
   mutation(id: ID!): Mutation
   mutationLog: MutationLog!
   watchedQueries: WatchedQueries!

@@ -26,7 +26,6 @@ import {
   WatchedQuery,
 } from "./types/gql";
 import { QueryInfo } from "../extension/tab/helpers";
-import { Cache } from "./types/scalars";
 
 const cache = new InMemoryCache({
   fragments: fragmentRegistry,
@@ -75,7 +74,7 @@ const cache = new InMemoryCache({
   },
 });
 
-const cacheVar = makeVar<Cache | null>(null);
+const cacheVar = makeVar<string | null>(null);
 export const client = new ApolloClient({
   cache,
 });
@@ -152,7 +151,7 @@ export const writeData = ({
 }: {
   queries: QueryInfo[];
   mutations: QueryInfo[];
-  cache: Cache;
+  cache: string;
 }) => {
   const filteredQueries = queries.map(getQueryData).filter(Boolean);
 
