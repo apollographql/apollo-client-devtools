@@ -4,12 +4,12 @@ import { matchers } from "@emotion/jest";
 import { colors } from "@apollo/space-kit/colors";
 
 import { renderWithApolloClient } from "../../../utilities/testing/renderWithApolloClient";
-import { Navigation } from "../Navigation";
+import { Navigation, NavigationProps } from "../Navigation";
 
 expect.extend(matchers);
 
 describe("<Navigation />", () => {
-  let props;
+  let props: NavigationProps;
 
   beforeEach(() => {
     props = {
