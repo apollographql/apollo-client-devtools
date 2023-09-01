@@ -69,12 +69,12 @@ devtools.listen<string>(CREATE_DEVTOOLS_PANEL, async ({ payload }) => {
     cache: Record<string, JSONObject>;
   };
 
-  let removeUpdateListener;
-  let removeExplorerForward;
-  let removeSubscriptionTerminationListener;
-  let removeReloadListener;
-  let clearRequestInterval;
-  let removeExplorerListener;
+  let removeUpdateListener: () => void;
+  let removeExplorerForward: () => void;
+  let removeSubscriptionTerminationListener: () => void;
+  let removeReloadListener: () => void;
+  let clearRequestInterval: () => void;
+  let removeExplorerListener: () => void;
 
   panel.onShown.addListener((window) => {
     sendMessageToClient(PANEL_OPEN);
