@@ -1,6 +1,8 @@
+import { JSONObject } from "../../../types/json";
+
 // Return an alphabetically sorted list of all root cache ID's. ROOT_QUERY,
 // ROOT_MUTATION, and ROOT_SUBSCRIPTION will be listed first (if they exist).
-export function getRootCacheIds(data = {}) {
+export function getRootCacheIds(data: JSONObject = {}) {
   const sortedRootIds: string[] = [];
 
   ["ROOT_QUERY", "ROOT_MUTATION", "ROOT_SUBSCRIPTION"].forEach((id) => {
