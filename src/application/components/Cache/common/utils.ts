@@ -22,8 +22,8 @@ export function getRootCacheIds(data: JSONObject = {}) {
 // values that match the specified keywords. Object values are only matched
 // if they are strings, all matching is case insensitive, and only top
 // level values are checked (nested objects are skipped).
-export function objectFilter(data: Record<string, any>, keywords: string) {
-  let results;
+export function objectFilter(data: JSONObject, keywords: string) {
+  let results: JSONObject | undefined;
   const regex = new RegExp(keywords, "i");
   Object.keys(data).forEach((key) => {
     const value = data[key];
