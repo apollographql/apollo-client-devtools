@@ -1,4 +1,5 @@
 import type { ObservableQuery } from "@apollo/client";
+import type { Cache } from "@apollo/client/cache";
 import type {
   DocumentNode,
   Source,
@@ -39,7 +40,16 @@ export function getQueries(
 }
 
 // Version of getQueries compatible with Apollo Client versions < 3.4.0
-export function getQueriesLegacy(queryMap: any): QueryInfo[] {
+export function getQueriesLegacy(
+  queryMap: Map<
+    string,
+    {
+      document: DocumentNode;
+      variables: Variables;
+      diff: Cache.DiffResult<any>;
+    }
+  >
+): QueryInfo[] {
   let queries: QueryInfo[] = [];
   if (queryMap) {
     queries = [...queryMap.values()].map(({ document, variables, diff }) => ({
