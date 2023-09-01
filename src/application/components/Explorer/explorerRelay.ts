@@ -18,7 +18,7 @@ explorer.listen<ExplorerResponse>(EXPLORER_RESPONSE, ({ payload }) => {
 });
 
 export const listenForResponse = (
-  cb: (p) => void,
+  cb: (result: QueryResult) => void,
   operationName?: string,
   isSubscription?: boolean
 ): void => {
