@@ -31,6 +31,7 @@ import {
 } from "../constants";
 import { EXPLORER_SUBSCRIPTION_TERMINATION } from "../../application/components/Explorer/postMessageHelpers";
 import { getPrivateAccess } from "../../privateAccess";
+import { JSONObject } from "../../application/types/json";
 
 const DEVTOOLS_KEY = Symbol.for("apollo.devtools");
 
@@ -50,7 +51,7 @@ type Hook = {
   version: string;
   getQueries: () => QueryInfo[];
   getMutations: () => QueryInfo[];
-  getCache: () => void;
+  getCache: () => JSONObject;
 };
 
 function initializeHook() {
