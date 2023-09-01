@@ -24,6 +24,7 @@ const config: CodegenConfig = {
           Cache: "./json#JSONObject",
           Variables: "./json#JSONObject",
         },
+        skipTypeNameForRoot: true,
       },
       plugins: ["typescript", "typescript-operations"],
     },

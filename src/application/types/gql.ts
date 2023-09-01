@@ -79,26 +79,20 @@ export type WatchedQuery = {
 export type GetOperationCountsVariables = Exact<{ [key: string]: never }>;
 
 export type GetOperationCounts = {
-  __typename: "Query";
   watchedQueries: { __typename: "WatchedQueries"; count: number };
   mutationLog: { __typename: "MutationLog"; count: number };
 };
 
 export type GetCacheVariables = Exact<{ [key: string]: never }>;
 
-export type GetCache = { __typename: "Query"; cache: JSONObject | null };
+export type GetCache = { cache: JSONObject | null };
 
 export type GetMutationsVariables = Exact<{ [key: string]: never }>;
 
 export type GetMutations = {
-  __typename: "Query";
   mutationLog: {
     __typename: "MutationLog";
-    mutations: Array<{
-      __typename: "Mutation";
-      id: number;
-      name: string | null;
-    }>;
+    mutations: Array<{ id: number; name: string | null }>;
   };
 };
 
@@ -107,9 +101,7 @@ export type GetSelectedMutationVariables = Exact<{
 }>;
 
 export type GetSelectedMutation = {
-  __typename: "Query";
   mutation: {
-    __typename: "Mutation";
     id: number;
     name: string | null;
     mutationString: string;
@@ -120,7 +112,6 @@ export type GetSelectedMutation = {
 export type GetWatchedQueriesVariables = Exact<{ [key: string]: never }>;
 
 export type GetWatchedQueries = {
-  __typename: "Query";
   watchedQueries: {
     __typename: "WatchedQueries";
     queries: Array<{
@@ -136,7 +127,6 @@ export type GetWatchedQueryVariables = Exact<{
 }>;
 
 export type GetWatchedQuery = {
-  __typename: "Query";
   watchedQuery: {
     __typename: "WatchedQuery";
     id: number;
@@ -150,7 +140,6 @@ export type GetWatchedQuery = {
 export type GetQueriesVariables = Exact<{ [key: string]: never }>;
 
 export type GetQueries = {
-  __typename: "Query";
   watchedQueries: {
     __typename: "WatchedQueries";
     count: number;
@@ -167,12 +156,10 @@ export type GetQueries = {
 export type GetAllMutationsVariables = Exact<{ [key: string]: never }>;
 
 export type GetAllMutations = {
-  __typename: "Query";
   mutationLog: {
     __typename: "MutationLog";
     count: number;
     mutations: Array<{
-      __typename: "Mutation";
       name: string | null;
       mutationString: string;
       variables: JSONObject | null;
