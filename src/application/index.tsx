@@ -150,6 +150,7 @@ export const writeData = ({ queries, mutations, cache }) => {
     query: GET_QUERIES,
     data: {
       watchedQueries: {
+        __typename: "WatchedQueries",
         queries: filteredQueries,
         count: filteredQueries.length,
       },
@@ -164,6 +165,7 @@ export const writeData = ({ queries, mutations, cache }) => {
     query: GET_MUTATIONS,
     data: {
       mutationLog: {
+        __typename: "MutationLog",
         mutations: mappedMutations,
         count: mappedMutations.length,
       },
