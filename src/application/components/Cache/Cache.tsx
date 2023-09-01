@@ -70,7 +70,6 @@ export function Cache({
   };
 }): JSX.Element {
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults] = useState<Record<string, JSONObject>>({});
   const [cacheId, setCacheId] = useState("ROOT_QUERY");
 
   const { loading, data } = useQuery(GET_CACHE);
@@ -120,7 +119,6 @@ export function Cache({
             <EntityView
               cacheId={cacheId}
               data={cache[cacheId]}
-              searchResults={searchResults}
               setCacheId={setCacheId}
             />
           )}
