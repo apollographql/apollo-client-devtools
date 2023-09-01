@@ -7,6 +7,7 @@ import {
   act,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { colors } from "@apollo/space-kit/colors";
 
 import { Cache } from "../Cache";
 import { renderWithApolloClient } from "../../../utilities/testing/renderWithApolloClient";
@@ -133,7 +134,7 @@ describe("Cache component tests", () => {
       });
     });
 
-    it("should highlight sidebar cache ID's if a match is found", async () => {
+    it("filters cache ID's for matches against the keyword", async () => {
       const user = userEvent.setup();
       renderWithApolloClient(<Cache navigationProps={navigationProps} />);
 
@@ -160,8 +161,8 @@ describe("Cache component tests", () => {
       expect(within(sidebar).queryByText("ROOT_QUERY")).not.toBeInTheDocument();
     });
 
-    it("should highlight object keys/values if a match is found", async () => {
-      const selectedMainStyles = "background-color: yellow";
+    it("highlights matched substring in cache ID", async () => {
+      const selectedMainStyles = `background: ${colors.yellow.base}`;
       const user = userEvent.setup();
 
       renderWithApolloClient(<Cache navigationProps={navigationProps} />);
@@ -171,22 +172,20 @@ describe("Cache component tests", () => {
 
       const sidebar = screen.getByTestId("sidebar");
 
-      const result2 = within(sidebar).getByText("Result:2");
-      const result2Parent = result2.parentNode;
-      fireEvent.click(result2Parent!);
-
-      const main = screen.getByTestId("main");
-
-      await waitFor(() => {
-        expect(within(main).getByText("__typename:")).not.toHaveStyle(
-          selectedMainStyles
-        );
+      const result1 = within(sidebar).getByText((_, element) => {
+        return elementMatchesHighlightedNode(element, "Result:1");
       });
-      expect(within(main).getByText('"Result"')).not.toHaveStyle(
+
+      const result2 = within(sidebar).getByText((_, element) => {
+        return elementMatchesHighlightedNode(element, "Result:2");
+      });
+
+      expect(within(result1).getByText("Res")).toHaveStyle(selectedMainStyles);
+      expect(within(result1).getByText("ult:1")).not.toHaveStyle(
         selectedMainStyles
       );
-      expect(within(main).getByText("name:")).toHaveStyle(selectedMainStyles);
-      expect(within(main).getByText('"Result 2"')).toHaveStyle(
+      expect(within(result2).getByText("Res")).toHaveStyle(selectedMainStyles);
+      expect(within(result2).getByText("ult:2")).not.toHaveStyle(
         selectedMainStyles
       );
     });
