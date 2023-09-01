@@ -24,6 +24,8 @@ import {
   Mutation,
   WatchedQuery,
 } from "./types/gql";
+import { JSONObject } from "./types/json";
+import { QueryInfo } from "../extension/tab/helpers";
 
 const cache = new InMemoryCache({
   typePolicies: {
@@ -109,12 +111,14 @@ export const GET_MUTATIONS: TypedDocumentNode<
   }
 `;
 
-export function getQueryData(query, key: number): WatchedQuery | undefined {
-  if (!query || !query.document) return;
+export function getQueryData(
+  query: QueryInfo,
+  key: number
+): WatchedQuery | undefined {
   // TODO: The current designs do not account for non-cached data.
   // We need a workaround to show that data + we should surface
   // the FetchPolicy.
-  const name = getOperationName(query?.document);
+  const name = getOperationName(query.document);
   if (name === "IntrospectionQuery") {
     return;
   }
@@ -124,27 +128,31 @@ export function getQueryData(query, key: number): WatchedQuery | undefined {
     __typename: "WatchedQuery",
     name,
     queryString: print(query.document),
-    variables: query.variables,
-    cachedData: query.cachedData,
+    variables: query.variables ?? null,
+    cachedData: query.cachedData ?? null,
   };
 }
 
-export function getMutationData(mutation, key: number): Mutation | undefined {
-  if (!mutation) return;
-
+export function getMutationData(mutation: QueryInfo, key: number): Mutation {
   return {
     id: key,
     __typename: "Mutation",
-    name: getOperationName(mutation?.document),
-    mutationString: mutation?.source?.body,
-    variables: mutation.variables,
+    name: getOperationName(mutation.document),
+    mutationString: mutation.source?.body ?? null,
+    variables: mutation.variables ?? null,
   };
 }
 
-export const writeData = ({ queries, mutations, cache }) => {
-  const filteredQueries: WatchedQuery[] = queries
-    .map((q, i: number) => getQueryData(q, i))
-    .filter(Boolean);
+export const writeData = ({
+  queries,
+  mutations,
+  cache,
+}: {
+  queries: QueryInfo[];
+  mutations: QueryInfo[];
+  cache: JSONObject;
+}) => {
+  const filteredQueries = queries.map(getQueryData).filter(Boolean);
 
   client.writeQuery({
     query: GET_QUERIES,
@@ -157,9 +165,7 @@ export const writeData = ({ queries, mutations, cache }) => {
     },
   });
 
-  const mappedMutations: Mutation[] = mutations
-    .map((m, i: number) => getMutationData(m, i))
-    .filter(Boolean);
+  const mappedMutations = mutations.map(getMutationData);
 
   client.writeQuery({
     query: GET_MUTATIONS,
