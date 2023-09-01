@@ -89,7 +89,7 @@ devtools.listen<string>(CREATE_DEVTOOLS_PANEL, async ({ payload }) => {
         handleReload,
         handleReloadComplete,
       },
-    } = window as any;
+    } = window;
 
     if (!isAppInitialized) {
       initialize();
