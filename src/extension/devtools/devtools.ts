@@ -31,10 +31,11 @@ devtools.addConnection("background", (message) => {
   }
 });
 
-function sendMessageToClient(message: any) {
+function sendMessageToClient(message: string) {
   devtools.send({
     message,
     to: `background:tab-${inspectedTabId}:client`,
+    payload: undefined,
   });
 }
 
