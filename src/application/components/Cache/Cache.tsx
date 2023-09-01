@@ -10,6 +10,7 @@ import { EntityList } from "./sidebar/EntityList";
 import { EntityView } from "./main/EntityView";
 import { Loading } from "./common/Loading";
 import { GetCache, GetCacheVariables } from "../../types/gql";
+import { JSONObject } from "../../types/json";
 
 const { Header, Sidebar, Main, Content } = SidebarLayout;
 
@@ -56,9 +57,9 @@ export function Cache({
 
   const { loading, data } = useQuery(GET_CACHE);
 
-  let parsedData: Record<string, any> = {};
+  let parsedData: JSONObject = {};
   if (!loading && data && data.cache) {
-    parsedData = JSON.parse(data.cache);
+    parsedData = JSON.parse(data.cache) as JSONObject;
   }
 
   const dataExists = parsedData && Object.keys(parsedData).length > 0;
