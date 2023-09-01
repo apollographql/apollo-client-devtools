@@ -31,7 +31,7 @@ export type Scalars = {
 };
 
 export type Mutation = {
-  __typename?: "Mutation";
+  __typename: "Mutation";
   id: Scalars["ID"]["output"];
   mutationString: Scalars["String"]["output"];
   name: Maybe<Scalars["String"]["output"]>;
@@ -39,13 +39,13 @@ export type Mutation = {
 };
 
 export type MutationLog = {
-  __typename?: "MutationLog";
+  __typename: "MutationLog";
   count: Scalars["Int"]["output"];
   mutations: Array<Mutation>;
 };
 
 export type Query = {
-  __typename?: "Query";
+  __typename: "Query";
   cache: Maybe<Scalars["Cache"]["output"]>;
   mutation: Maybe<Mutation>;
   mutationLog: MutationLog;
@@ -62,13 +62,13 @@ export type QueryWatchedQueryArgs = {
 };
 
 export type WatchedQueries = {
-  __typename?: "WatchedQueries";
+  __typename: "WatchedQueries";
   count: Scalars["Int"]["output"];
   queries: Array<WatchedQuery>;
 };
 
 export type WatchedQuery = {
-  __typename?: "WatchedQuery";
+  __typename: "WatchedQuery";
   cachedData: Maybe<Scalars["Cache"]["output"]>;
   id: Scalars["ID"]["output"];
   name: Maybe<Scalars["String"]["output"]>;
@@ -76,40 +76,40 @@ export type WatchedQuery = {
   variables: Maybe<Scalars["Variables"]["output"]>;
 };
 
-export type GetOperationCountsQueryVariables = Exact<{ [key: string]: never }>;
+export type GetOperationCountsVariables = Exact<{ [key: string]: never }>;
 
-export type GetOperationCountsQuery = {
-  __typename?: "Query";
-  watchedQueries: { __typename?: "WatchedQueries"; count: number };
-  mutationLog: { __typename?: "MutationLog"; count: number };
+export type GetOperationCounts = {
+  __typename: "Query";
+  watchedQueries: { __typename: "WatchedQueries"; count: number };
+  mutationLog: { __typename: "MutationLog"; count: number };
 };
 
-export type GetCacheQueryVariables = Exact<{ [key: string]: never }>;
+export type GetCacheVariables = Exact<{ [key: string]: never }>;
 
-export type GetCacheQuery = { __typename?: "Query"; cache: JSONObject | null };
+export type GetCache = { __typename: "Query"; cache: JSONObject | null };
 
-export type GetMutationsQueryVariables = Exact<{ [key: string]: never }>;
+export type GetMutationsVariables = Exact<{ [key: string]: never }>;
 
-export type GetMutationsQuery = {
-  __typename?: "Query";
+export type GetMutations = {
+  __typename: "Query";
   mutationLog: {
-    __typename?: "MutationLog";
+    __typename: "MutationLog";
     mutations: Array<{
-      __typename?: "Mutation";
+      __typename: "Mutation";
       id: string;
       name: string | null;
     }>;
   };
 };
 
-export type GetSelectedMutationQueryVariables = Exact<{
+export type GetSelectedMutationVariables = Exact<{
   id: Scalars["ID"]["input"];
 }>;
 
-export type GetSelectedMutationQuery = {
-  __typename?: "Query";
+export type GetSelectedMutation = {
+  __typename: "Query";
   mutation: {
-    __typename?: "Mutation";
+    __typename: "Mutation";
     id: string;
     name: string | null;
     mutationString: string;
@@ -117,28 +117,28 @@ export type GetSelectedMutationQuery = {
   } | null;
 };
 
-export type GetWatchedQueriesQueryVariables = Exact<{ [key: string]: never }>;
+export type GetWatchedQueriesVariables = Exact<{ [key: string]: never }>;
 
-export type GetWatchedQueriesQuery = {
-  __typename?: "Query";
+export type GetWatchedQueries = {
+  __typename: "Query";
   watchedQueries: {
-    __typename?: "WatchedQueries";
+    __typename: "WatchedQueries";
     queries: Array<{
-      __typename?: "WatchedQuery";
+      __typename: "WatchedQuery";
       id: string;
       name: string | null;
     }>;
   };
 };
 
-export type GetWatchedQueryQueryVariables = Exact<{
+export type GetWatchedQueryVariables = Exact<{
   id: Scalars["ID"]["input"];
 }>;
 
-export type GetWatchedQueryQuery = {
-  __typename?: "Query";
+export type GetWatchedQuery = {
+  __typename: "Query";
   watchedQuery: {
-    __typename?: "WatchedQuery";
+    __typename: "WatchedQuery";
     id: string;
     name: string | null;
     queryString: string;
@@ -147,15 +147,15 @@ export type GetWatchedQueryQuery = {
   } | null;
 };
 
-export type GetQueriesQueryVariables = Exact<{ [key: string]: never }>;
+export type GetQueriesVariables = Exact<{ [key: string]: never }>;
 
-export type GetQueriesQuery = {
-  __typename?: "Query";
+export type GetQueries = {
+  __typename: "Query";
   watchedQueries: {
-    __typename?: "WatchedQueries";
+    __typename: "WatchedQueries";
     count: number;
     queries: Array<{
-      __typename?: "WatchedQuery";
+      __typename: "WatchedQuery";
       name: string | null;
       queryString: string;
       variables: JSONObject | null;
@@ -164,15 +164,15 @@ export type GetQueriesQuery = {
   };
 };
 
-export type GetAllMutationsQueryVariables = Exact<{ [key: string]: never }>;
+export type GetAllMutationsVariables = Exact<{ [key: string]: never }>;
 
-export type GetAllMutationsQuery = {
-  __typename?: "Query";
+export type GetAllMutations = {
+  __typename: "Query";
   mutationLog: {
-    __typename?: "MutationLog";
+    __typename: "MutationLog";
     count: number;
     mutations: Array<{
-      __typename?: "Mutation";
+      __typename: "Mutation";
       name: string | null;
       mutationString: string;
       variables: JSONObject | null;

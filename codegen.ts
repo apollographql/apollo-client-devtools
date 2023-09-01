@@ -17,6 +17,8 @@ const config: CodegenConfig = {
           defaultValue: false,
         },
         defaultScalarType: "unknown",
+        nonOptionalTypename: true,
+        omitOperationSuffix: true,
         scalars: {
           Cache: "./json#JSONObject",
           Variables: "./json#JSONObject",
