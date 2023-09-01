@@ -97,6 +97,7 @@ export function Cache({
               data={filteredCache}
               selectedCacheId={cacheId}
               setCacheId={setCacheId}
+              searchTerm={searchTerm}
             />
           </Fragment>
         ) : (
