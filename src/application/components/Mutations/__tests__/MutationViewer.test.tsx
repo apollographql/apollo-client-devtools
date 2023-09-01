@@ -11,6 +11,7 @@ describe("<MutationViewer />", () => {
 
   const props = {
     mutation: {
+      __typename: "WatchedMutation" as const,
       mutationString: `
       mutation AddColorToFavorites($color: ColorInput!) {
         addColor(color: $color) {
