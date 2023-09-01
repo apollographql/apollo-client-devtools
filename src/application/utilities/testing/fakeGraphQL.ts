@@ -1,5 +1,19 @@
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import { addMocksToSchema } from "@graphql-tools/mock";
+import { GraphQLFieldResolver } from "graphql";
+
+interface Author {
+  id: number;
+  firstName: string;
+  lastName: string;
+}
+
+interface Post {
+  id: number;
+  title: string;
+  authorId: number;
+  votes: number;
+}
 
 const typeDefs = `
   type Author {
@@ -33,13 +47,13 @@ const typeDefs = `
   }
 `;
 
-const authors = [
+const authors: Author[] = [
   { id: 1, firstName: "Tom", lastName: "Coleman" },
   { id: 2, firstName: "Sashko", lastName: "Stubailo" },
   { id: 3, firstName: "Mikhail", lastName: "Novikov" },
 ];
 
-const posts = [
+const posts: Post[] = [
   { id: 1, authorId: 1, title: "Introduction to GraphQL", votes: 2 },
   { id: 2, authorId: 2, title: "Welcome to Meteor", votes: 3 },
   { id: 3, authorId: 2, title: "Advanced GraphQL", votes: 1 },
@@ -50,6 +64,9 @@ const resolvers = {
   Query: {
     posts: () => posts,
     author: (_, { id }) => authors.find((author) => author.id === id),
+  } satisfies {
+    posts: GraphQLFieldResolver<unknown, unknown>;
+    author: GraphQLFieldResolver<unknown, unknown, { id: number }>;
   },
 
   Mutation: {
@@ -61,14 +78,20 @@ const resolvers = {
       post.votes += 1;
       return post;
     },
+  } satisfies {
+    upvotePost: GraphQLFieldResolver<unknown, unknown, { postId: number }>;
   },
 
   Author: {
     posts: (author) => posts.filter((post) => post.authorId === author.id),
+  } satisfies {
+    posts: GraphQLFieldResolver<Author, unknown>;
   },
 
   Post: {
     author: (post) => authors.find((author) => (author.id = post.authorId)),
+  } satisfies {
+    author: GraphQLFieldResolver<Post, unknown>;
   },
 };
 
