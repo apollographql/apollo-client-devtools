@@ -29,7 +29,7 @@ export function getQueries(
 
       queries.push({
         document,
-        source: document?.loc?.source,
+        source: document.loc?.source,
         variables,
         cachedData: diff?.result,
       });
