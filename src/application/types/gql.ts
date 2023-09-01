@@ -21,7 +21,7 @@ export type Incremental<T> =
     };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string };
+  ID: { input: number; output: number };
   String: { input: string; output: string };
   Boolean: { input: boolean; output: boolean };
   Int: { input: number; output: number };
@@ -96,7 +96,7 @@ export type GetMutations = {
     __typename: "MutationLog";
     mutations: Array<{
       __typename: "Mutation";
-      id: string;
+      id: number;
       name: string | null;
     }>;
   };
@@ -110,7 +110,7 @@ export type GetSelectedMutation = {
   __typename: "Query";
   mutation: {
     __typename: "Mutation";
-    id: string;
+    id: number;
     name: string | null;
     mutationString: string;
     variables: JSONObject | null;
@@ -125,7 +125,7 @@ export type GetWatchedQueries = {
     __typename: "WatchedQueries";
     queries: Array<{
       __typename: "WatchedQuery";
-      id: string;
+      id: number;
       name: string | null;
     }>;
   };
@@ -139,7 +139,7 @@ export type GetWatchedQuery = {
   __typename: "Query";
   watchedQuery: {
     __typename: "WatchedQuery";
-    id: string;
+    id: number;
     name: string | null;
     queryString: string;
     variables: JSONObject | null;

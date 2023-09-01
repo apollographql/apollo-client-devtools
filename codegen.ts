@@ -20,6 +20,7 @@ const config: CodegenConfig = {
         nonOptionalTypename: true,
         omitOperationSuffix: true,
         scalars: {
+          ID: "number",
           Cache: "./json#JSONObject",
           Variables: "./json#JSONObject",
         },
