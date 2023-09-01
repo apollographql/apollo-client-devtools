@@ -62,8 +62,11 @@ class Relay extends EventTarget {
     this.dispatchEvent(event);
   };
 
-  public listen = <T = any>(name: string, fn: CustomEventListener<T>) => {
-    function wrappedFn(event: CustomEvent<MessageObj<T>>) {
+  public listen = <TPayload = any>(
+    name: string,
+    fn: CustomEventListener<TPayload>
+  ) => {
+    function wrappedFn(event: CustomEvent<MessageObj<TPayload>>) {
       return fn(event.detail);
     }
 
