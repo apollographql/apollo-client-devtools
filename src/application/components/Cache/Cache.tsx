@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { css } from "@emotion/react";
 import { gql, TypedDocumentNode, useQuery } from "@apollo/client";
 import { rem } from "polished";
@@ -44,6 +44,23 @@ const GET_CACHE: TypedDocumentNode<GetCache, GetCacheVariables> = gql`
   }
 `;
 
+type Cache = Record<string, JSONObject>;
+
+function filterCache(cache: Cache, searchTerm: string) {
+  const regex = new RegExp(searchTerm, "i");
+
+  return Object.entries(cache).reduce<Cache>(
+    (filteredCache, [cacheKey, value]) => {
+      if (regex.test(cacheKey)) {
+        filteredCache[cacheKey] = value;
+      }
+
+      return filteredCache;
+    },
+    {}
+  );
+}
+
 export function Cache({
   navigationProps,
 }: {
@@ -52,19 +69,22 @@ export function Cache({
     mutationsCount: number;
   };
 }): JSX.Element {
-  const [searchResults, setSearchResults] = useState<
-    Record<string, JSONObject>
-  >({});
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults] = useState<Record<string, JSONObject>>({});
   const [cacheId, setCacheId] = useState("ROOT_QUERY");
 
   const { loading, data } = useQuery(GET_CACHE);
+  const cache = useMemo(
+    () => (data?.cache ? (JSON.parse(data.cache) as Cache) : {}),
+    [data?.cache]
+  );
 
-  let parsedData: Record<string, JSONObject> = {};
-  if (!loading && data?.cache) {
-    parsedData = JSON.parse(data.cache) as Record<string, JSONObject>;
-  }
+  const filteredCache = useMemo(
+    () => (searchTerm ? filterCache(cache, searchTerm) : cache),
+    [cache, searchTerm]
+  );
 
-  const dataExists = parsedData && Object.keys(parsedData).length > 0;
+  const dataExists = Object.keys(cache).length > 0;
 
   return (
     <SidebarLayout navigationProps={navigationProps}>
@@ -73,9 +93,9 @@ export function Cache({
           <Loading />
         ) : dataExists ? (
           <Fragment>
-            <Search data={parsedData} setSearchResults={setSearchResults} />
+            <Search onChange={setSearchTerm} value={searchTerm} />
             <EntityList
-              data={parsedData}
+              data={filteredCache}
               cacheId={cacheId}
               setCacheId={setCacheId}
               searchResults={searchResults}
@@ -100,7 +120,7 @@ export function Cache({
           ) : (
             <EntityView
               cacheId={cacheId}
-              data={parsedData[cacheId]}
+              data={cache[cacheId]}
               searchResults={searchResults}
               setCacheId={setCacheId}
             />

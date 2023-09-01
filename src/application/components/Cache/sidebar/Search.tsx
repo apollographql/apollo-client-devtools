@@ -1,13 +1,10 @@
-import { ChangeEvent } from "react";
 import { IconSearch } from "@apollo/space-kit/icons/IconSearch";
 import { TextField } from "@apollo/space-kit/TextField";
 import { colors } from "@apollo/space-kit/colors";
 import { css } from "@emotion/react";
 import { rem } from "polished";
 
-import { objectFilter } from "../common/utils";
 import { useTheme, Theme } from "../../../theme";
-import { JSONObject } from "../../../types/json";
 
 const searchIconStyles = (theme: Theme) => ({
   height: 16,
@@ -40,28 +37,12 @@ const textFieldStyles = css`
 `;
 
 interface SearchProps {
-  data: Record<string, JSONObject>;
-  setSearchResults: (results: Record<string, JSONObject>) => void;
+  value: string;
+  onChange: (value: string) => void;
 }
 
-export const Search = ({ data, setSearchResults }: SearchProps) => {
+export const Search = ({ onChange, value }: SearchProps) => {
   const theme = useTheme();
-
-  function performSearch(event: ChangeEvent<HTMLInputElement>) {
-    const keywords = event.target.value;
-    if (keywords.trim() === "") {
-      setSearchResults({});
-    }
-
-    if (keywords.length >= 2) {
-      const searchResults: Record<string, JSONObject> = {};
-      Object.keys(data).forEach((dataId) => {
-        const results = objectFilter(data[dataId], keywords);
-        if (results) searchResults[dataId] = results;
-      });
-      setSearchResults(searchResults);
-    }
-  }
 
   return (
     <TextField
@@ -69,8 +50,9 @@ export const Search = ({ data, setSearchResults }: SearchProps) => {
       icon={<IconSearch style={searchIconStyles(theme)} />}
       className="search-input"
       placeholder="Search queries"
-      onChange={performSearch}
+      onChange={(e) => onChange(e.target.value)}
       size="small"
+      value={value}
     />
   );
 };
