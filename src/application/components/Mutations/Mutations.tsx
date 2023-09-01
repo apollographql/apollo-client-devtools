@@ -85,7 +85,7 @@ export const Mutations = ({
               <span css={operationNameStyles}>Mutation</span>
               <RunInExplorerButton
                 operation={selectedMutation.mutationString}
-                variables={selectedMutation.variables}
+                variables={selectedMutation.variables ?? undefined}
                 embeddedExplorerIFrame={
                   embeddedExplorerProps.embeddedExplorerIFrame
                 }
