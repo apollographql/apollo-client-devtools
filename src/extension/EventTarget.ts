@@ -18,7 +18,7 @@ class EventTarget {
     listeners!.add(callback);
   }
 
-  removeEventListener(eventType: string, callback) {
+  removeEventListener(eventType: string, callback: EventListener) {
     const isRegistered = this.listeners.has(eventType);
 
     if (isRegistered) {
