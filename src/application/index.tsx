@@ -14,6 +14,7 @@ import { print } from "graphql/language/printer";
 import { Theme } from "./ThemeVars";
 import { colorTheme, listenForThemeChange } from "./theme";
 import { App, reloadStatus } from "./App";
+import { fragmentRegistry } from "./fragmentRegistry";
 
 import "@apollo/space-kit/reset.css";
 import {
@@ -28,6 +29,7 @@ import { QueryInfo } from "../extension/tab/helpers";
 import { Cache } from "./types/scalars";
 
 const cache = new InMemoryCache({
+  fragments: fragmentRegistry,
   typePolicies: {
     WatchedQuery: {
       fields: {
