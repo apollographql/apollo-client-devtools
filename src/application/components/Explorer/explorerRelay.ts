@@ -61,7 +61,9 @@ export const sendExplorerRequest = (operation: string): void => {
   );
 };
 
-export const receiveExplorerRequests = (callback: () => void): (() => void) => {
+export const receiveExplorerRequests = (
+  callback: (event: CustomEvent<MessageObj<string>>) => void
+): (() => void) => {
   window.addEventListener(EXPLORER_REQUEST, callback);
   return () => {
     window.removeEventListener(EXPLORER_REQUEST, callback);
@@ -69,7 +71,7 @@ export const receiveExplorerRequests = (callback: () => void): (() => void) => {
 };
 
 export const receiveSubscriptionTerminationRequest = (
-  callback: () => void
+  callback: (event: CustomEvent<MessageObj<undefined>>) => void
 ): (() => void) => {
   window.addEventListener(EXPLORER_SUBSCRIPTION_TERMINATION, callback);
   return () => {
