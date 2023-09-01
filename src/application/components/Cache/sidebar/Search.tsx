@@ -1,4 +1,3 @@
-import React from "react";
 import { IconSearch } from "@apollo/space-kit/icons/IconSearch";
 import { TextField } from "@apollo/space-kit/TextField";
 import { colors } from "@apollo/space-kit/colors";
@@ -43,7 +42,7 @@ interface SearchProps {
   setSearchResults: (results: Record<string, any>) => void;
 }
 
-export const Search: React.FC<SearchProps> = ({ data, setSearchResults }) => {
+export const Search = ({ data, setSearchResults }: SearchProps) => {
   const theme = useTheme();
 
   function performSearch(event) {
