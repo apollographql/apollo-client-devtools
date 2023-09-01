@@ -62,7 +62,9 @@ export function getQueriesLegacy(
   return queries;
 }
 
-export function getMutations(mutationsObj): QueryInfo[] {
+export function getMutations(
+  mutationsObj: Record<string, { mutation: DocumentNode; variables: Variables }>
+): QueryInfo[] {
   const keys = Object.keys(mutationsObj);
 
   if (keys.length === 0) {
