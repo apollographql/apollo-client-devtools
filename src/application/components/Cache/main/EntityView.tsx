@@ -36,9 +36,6 @@ export function EntityView({ cacheId, data, setCacheId }: EntityViewProps) {
         theme={treeTheme}
         invertTheme={false}
         hideRoot={true}
-        labelRenderer={([key]) => {
-          return <span>{key}:</span>;
-        }}
         valueRenderer={(valueAsString: ReactNode, value, key) => {
           return (
             <span
