@@ -17,6 +17,9 @@ const config: CodegenConfig = {
           defaultValue: false,
         },
         defaultScalarType: "unknown",
+        namingConvention: {
+          typeNames: "keep",
+        },
         nonOptionalTypename: true,
         omitOperationSuffix: true,
         scalars: {
