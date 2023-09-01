@@ -7,10 +7,6 @@ import { client, GET_QUERIES } from "../../../index";
 import { Queries } from "../Queries";
 import type { GetQueries } from "../../../types/gql";
 
-jest.mock("../QueryViewer", () => ({
-  QueryViewer: () => null,
-}));
-
 describe("<Queries />", () => {
   const queries: GetQueries["watchedQueries"]["queries"] = [
     {
