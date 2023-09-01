@@ -6,10 +6,6 @@ import { client, GET_MUTATIONS } from "../../../index";
 import { Mutations } from "../Mutations";
 import type { GetMutations } from "../../../types/gql";
 
-jest.mock("../MutationViewer", () => ({
-  MutationViewer: () => null,
-}));
-
 describe("<Mutations />", () => {
   const mutations: GetMutations["mutationLog"]["mutations"] = [
     {
