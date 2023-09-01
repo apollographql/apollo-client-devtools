@@ -24,8 +24,8 @@ import {
   Mutation,
   WatchedQuery,
 } from "./types/gql";
-import { JSONObject } from "./types/json";
 import { QueryInfo } from "../extension/tab/helpers";
+import { Cache } from "./types/scalars";
 
 const cache = new InMemoryCache({
   typePolicies: {
@@ -150,7 +150,7 @@ export const writeData = ({
 }: {
   queries: QueryInfo[];
   mutations: QueryInfo[];
-  cache: JSONObject;
+  cache: Cache;
 }) => {
   const filteredQueries = queries.map(getQueryData).filter(Boolean);
 
