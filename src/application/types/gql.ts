@@ -28,8 +28,11 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean };
   Int: { input: number; output: number };
   Float: { input: number; output: number };
+  /** Represents data in the cache as a whole */
   Cache: { input: Cache; output: Cache };
+  /** Represents data for a specific query */
   QueryData: { input: QueryData; output: QueryData };
+  /** Represents variables for a query */
   Variables: { input: Variables; output: Variables };
 };
 

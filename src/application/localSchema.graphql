@@ -1,5 +1,10 @@
+"Represents data in the cache as a whole"
 scalar Cache
+
+"Represents data for a specific query"
 scalar QueryData
+
+"Represents variables for a query"
 scalar Variables
 
 type Query {
