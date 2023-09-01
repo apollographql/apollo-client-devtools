@@ -128,6 +128,13 @@ export type GetWatchedQueries = {
   };
 };
 
+export type QueryViewer_query = {
+  __typename: "WatchedQuery";
+  queryString: string;
+  variables: Variables | null;
+  cachedData: QueryData | null;
+};
+
 export type GetQueriesVariables = Exact<{ [key: string]: never }>;
 
 export type GetQueries = {

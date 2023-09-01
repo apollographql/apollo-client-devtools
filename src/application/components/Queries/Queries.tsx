@@ -57,7 +57,7 @@ const GET_WATCHED_QUERIES: TypedDocumentNode<
         name
         queryString
         variables
-        cachedData
+        ...QueryViewer_query
       }
     }
   }
@@ -79,9 +79,8 @@ export const Queries = ({
   const theme = useTheme();
   const { data } = useQuery(GET_WATCHED_QUERIES, { returnPartialData: true });
 
-  const selectedQuery = data?.watchedQueries.queries.find(
-    (query) => query.id === selected
-  );
+  const queries = data?.watchedQueries.queries ?? [];
+  const selectedQuery = queries.find((query) => query.id === selected);
 
   return (
     <SidebarLayout navigationProps={navigationProps}>
@@ -94,7 +93,7 @@ export const Queries = ({
           selectedColor={theme.sidebarSelected}
           hoverColor={theme.sidebarHover}
         >
-          {data?.watchedQueries?.queries.map(({ name, id }) => {
+          {queries.map(({ name, id }) => {
             return (
               <ListItem
                 key={`${name}-${id}`}
@@ -115,7 +114,7 @@ export const Queries = ({
               <span css={operationNameStyles}>Query</span>
               <RunInExplorerButton
                 operation={selectedQuery.queryString}
-                variables={selectedQuery.variables}
+                variables={selectedQuery.variables ?? undefined}
                 embeddedExplorerIFrame={
                   embeddedExplorerProps.embeddedExplorerIFrame
                 }
@@ -124,13 +123,7 @@ export const Queries = ({
           )}
         </SidebarLayout.Header>
         <SidebarLayout.Main>
-          {selectedQuery && (
-            <QueryViewer
-              queryString={selectedQuery.queryString}
-              variables={selectedQuery.variables}
-              cachedData={selectedQuery.cachedData}
-            />
-          )}
+          {selectedQuery && <QueryViewer query={selectedQuery} />}
         </SidebarLayout.Main>
       </SidebarLayout.Content>
     </SidebarLayout>
