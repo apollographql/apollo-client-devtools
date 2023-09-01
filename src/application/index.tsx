@@ -22,7 +22,7 @@ import {
   GetAllMutationsVariables,
   GetQueries,
   GetQueriesVariables,
-  Mutation,
+  WatchedMutation,
   WatchedQuery,
 } from "./types/gql";
 import { QueryInfo } from "../extension/tab/helpers";
@@ -37,7 +37,7 @@ const cache = new InMemoryCache({
         },
       },
     },
-    Mutation: {
+    WatchedMutation: {
       fields: {
         name(_) {
           return _ ?? "Unnamed";
@@ -62,7 +62,7 @@ const cache = new InMemoryCache({
         },
         mutation(_, { toReference, args }) {
           return toReference({
-            __typename: "Mutation",
+            __typename: "WatchedMutation",
             id: args?.id,
           });
         },
@@ -136,10 +136,13 @@ export function getQueryData(
   };
 }
 
-export function getMutationData(mutation: QueryInfo, key: number): Mutation {
+export function getMutationData(
+  mutation: QueryInfo,
+  key: number
+): WatchedMutation {
   return {
     id: key,
-    __typename: "Mutation",
+    __typename: "WatchedMutation",
     name: getOperationName(mutation.document),
     mutationString: print(mutation.document),
     variables: mutation.variables ?? null,

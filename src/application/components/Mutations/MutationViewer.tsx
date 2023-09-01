@@ -16,10 +16,10 @@ import {
 import SyntaxHighlighter from "../SyntaxHighlighter";
 import { fragmentRegistry } from "../../fragmentRegistry";
 import { gql } from "@apollo/client";
-import { MutationViewer_mutation as Mutation } from "../../types/gql";
+import { MutationViewer_mutation as WatchedMutation } from "../../types/gql";
 
 interface MutationViewerProps {
-  mutation: Mutation;
+  mutation: WatchedMutation;
 }
 
 const queryDataHeader = css`
@@ -37,7 +37,7 @@ const queryDataHeader = css`
 `;
 
 fragmentRegistry.register(gql`
-  fragment MutationViewer_mutation on Mutation {
+  fragment MutationViewer_mutation on WatchedMutation {
     mutationString
     variables
   }

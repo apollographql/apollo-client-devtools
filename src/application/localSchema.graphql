@@ -6,13 +6,13 @@ scalar Variables
 
 type Query {
   cache: String!
-  mutation(id: ID!): Mutation
+  mutation(id: ID!): WatchedMutation
   mutationLog: MutationLog!
   watchedQueries: WatchedQueries!
   watchedQuery(id: ID!): WatchedQuery
 }
 
-type Mutation {
+type WatchedMutation {
   id: ID!
   name: String
   mutationString: String!
@@ -21,7 +21,7 @@ type Mutation {
 
 type MutationLog {
   count: Int!
-  mutations: [Mutation!]!
+  mutations: [WatchedMutation!]!
 }
 
 type WatchedQueries {

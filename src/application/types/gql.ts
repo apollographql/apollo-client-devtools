@@ -33,24 +33,16 @@ export type Scalars = {
   Variables: { input: Variables; output: Variables };
 };
 
-export type Mutation = {
-  __typename: "Mutation";
-  id: Scalars["ID"]["output"];
-  mutationString: Scalars["String"]["output"];
-  name: Maybe<Scalars["String"]["output"]>;
-  variables: Maybe<Scalars["Variables"]["output"]>;
-};
-
 export type MutationLog = {
   __typename: "MutationLog";
   count: Scalars["Int"]["output"];
-  mutations: Array<Mutation>;
+  mutations: Array<WatchedMutation>;
 };
 
 export type Query = {
   __typename: "Query";
   cache: Scalars["String"]["output"];
-  mutation: Maybe<Mutation>;
+  mutation: Maybe<WatchedMutation>;
   mutationLog: MutationLog;
   watchedQueries: WatchedQueries;
   watchedQuery: Maybe<WatchedQuery>;
@@ -62,6 +54,14 @@ export type QuerymutationArgs = {
 
 export type QuerywatchedQueryArgs = {
   id: Scalars["ID"]["input"];
+};
+
+export type WatchedMutation = {
+  __typename: "WatchedMutation";
+  id: Scalars["ID"]["output"];
+  mutationString: Scalars["String"]["output"];
+  name: Maybe<Scalars["String"]["output"]>;
+  variables: Maybe<Scalars["Variables"]["output"]>;
 };
 
 export type WatchedQueries = {
@@ -91,6 +91,7 @@ export type GetCacheVariables = Exact<{ [key: string]: never }>;
 export type GetCache = { cache: string };
 
 export type MutationViewer_mutation = {
+  __typename: "WatchedMutation";
   mutationString: string;
   variables: Variables | null;
 };
@@ -101,6 +102,7 @@ export type GetMutations = {
   mutationLog: {
     __typename: "MutationLog";
     mutations: Array<{
+      __typename: "WatchedMutation";
       id: number;
       name: string | null;
       mutationString: string;
@@ -156,6 +158,7 @@ export type GetAllMutations = {
     __typename: "MutationLog";
     count: number;
     mutations: Array<{
+      __typename: "WatchedMutation";
       id: number;
       name: string | null;
       mutationString: string;

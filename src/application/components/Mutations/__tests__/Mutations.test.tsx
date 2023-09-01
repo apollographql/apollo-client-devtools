@@ -10,14 +10,14 @@ describe("<Mutations />", () => {
   const mutations: GetMutations["mutationLog"]["mutations"] = [
     {
       id: 0,
-      __typename: "Mutation",
+      __typename: "WatchedMutation",
       name: null,
       mutationString: "mutation { performTest }",
       variables: null,
     },
     {
       id: 1,
-      __typename: "Mutation",
+      __typename: "WatchedMutation",
       name: "AddColorToFavorites",
       mutationString: "mutation AddColorToFavorites { addColorToFavorites }",
       variables: null,
