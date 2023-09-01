@@ -1,5 +1,12 @@
 import React from "react";
-import { screen, within, waitFor, fireEvent } from "@testing-library/react";
+import {
+  screen,
+  within,
+  waitFor,
+  fireEvent,
+  act,
+} from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import { Cache } from "../Cache";
 import { renderWithApolloClient } from "../../../utilities/testing/renderWithApolloClient";
@@ -39,6 +46,16 @@ const navigationProps = {
   queriesCount: 2,
   mutationsCount: 0,
 };
+
+function elementMatchesHighlightedNode(
+  element: Element | null,
+  textContent: string
+) {
+  return (
+    element?.tagName.toLowerCase() === "span" &&
+    element.textContent === textContent
+  );
+}
 
 describe("Cache component tests", () => {
   describe("No cache data", () => {
@@ -108,9 +125,6 @@ describe("Cache component tests", () => {
   });
 
   describe("Search", () => {
-    const selectedSidebarStyles = "background-color: #1B2240";
-    const selectedMainStyles = "background-color: yellow";
-
     beforeEach(() => {
       writeData({
         queries: [],
@@ -120,28 +134,40 @@ describe("Cache component tests", () => {
     });
 
     it("should highlight sidebar cache ID's if a match is found", async () => {
+      const user = userEvent.setup();
       renderWithApolloClient(<Cache navigationProps={navigationProps} />);
 
-      const searchInput = screen.getByPlaceholderText("Search queries");
-      fireEvent.change(searchInput, { target: { value: "Result 2" } });
+      const searchInput =
+        screen.getByPlaceholderText<HTMLInputElement>("Search queries");
+      await act(() => user.type(searchInput, "Result"));
 
       const sidebar = screen.getByTestId("sidebar");
 
       await waitFor(() => {
-        expect((searchInput as any).value).toBe("Result 2");
+        expect(searchInput.value).toBe("Result");
       });
-      const result1 = within(sidebar).getByText("Result:1");
-      expect(result1.parentNode).not.toHaveStyle(selectedSidebarStyles);
 
-      const result2 = within(sidebar).getByText("Result:2");
-      expect(result2.parentNode).toHaveStyle(selectedSidebarStyles);
+      expect(
+        within(sidebar).getByText((_, element) => {
+          return elementMatchesHighlightedNode(element, "Result:1");
+        })
+      ).toBeInTheDocument();
+      expect(
+        within(sidebar).getByText((_, element) => {
+          return elementMatchesHighlightedNode(element, "Result:2");
+        })
+      ).toBeInTheDocument();
+      expect(within(sidebar).queryByText("ROOT_QUERY")).not.toBeInTheDocument();
     });
 
     it("should highlight object keys/values if a match is found", async () => {
+      const selectedMainStyles = "background-color: yellow";
+      const user = userEvent.setup();
+
       renderWithApolloClient(<Cache navigationProps={navigationProps} />);
 
       const searchInput = screen.getByPlaceholderText("Search queries");
-      fireEvent.change(searchInput, { target: { value: "Result 2" } });
+      await act(() => user.type(searchInput, "Res"));
 
       const sidebar = screen.getByTestId("sidebar");
 
