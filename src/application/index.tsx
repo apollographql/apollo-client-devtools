@@ -82,7 +82,7 @@ export const GET_QUERIES = gql`
 `;
 
 export const GET_MUTATIONS = gql`
-  query GetMutations {
+  query GetAllMutations {
     mutationLog @client {
       mutations {
         name

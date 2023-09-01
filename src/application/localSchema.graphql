@@ -1,0 +1,35 @@
+scalar Cache
+scalar Variables
+
+type Query {
+  cache: Cache
+  mutation(id: ID!): Mutation
+  mutationLog: MutationLog!
+  watchedQueries: WatchedQueries!
+  watchedQuery(id: ID!): WatchedQuery
+}
+
+type Mutation {
+  id: ID!
+  name: String
+  mutationString: String!
+  variables: Variables
+}
+
+type MutationLog {
+  count: Int!
+  mutations: [Mutation!]!
+}
+
+type WatchedQueries {
+  count: Int!
+  queries: [WatchedQuery!]!
+}
+
+type WatchedQuery {
+  id: ID!
+  name: String
+  queryString: String!
+  cachedData: Cache
+  variables: Variables
+}
