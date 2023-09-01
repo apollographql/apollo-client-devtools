@@ -21,8 +21,9 @@ const config: CodegenConfig = {
         omitOperationSuffix: true,
         scalars: {
           ID: "number",
-          Cache: "./json#JSONObject",
-          Variables: "./json#JSONObject",
+          Cache: "./scalars#Cache",
+          QueryData: "./scalars#QueryData",
+          Variables: "./scalars#Variables",
         },
         skipTypeNameForRoot: true,
       },
