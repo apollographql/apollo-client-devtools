@@ -1,7 +1,7 @@
 import { Fragment, useState } from "react";
 import { css } from "@emotion/react";
 import { rem } from "polished";
-import { gql, useQuery } from "@apollo/client";
+import { gql, useQuery, TypedDocumentNode } from "@apollo/client";
 import { List } from "@apollo/space-kit/List";
 import { ListItem } from "@apollo/space-kit/ListItem";
 import { colors } from "@apollo/space-kit/colors";
@@ -10,6 +10,12 @@ import { useTheme } from "../../theme";
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { RunInExplorerButton } from "./RunInExplorerButton";
 import { QueryViewer } from "./QueryViewer";
+import {
+  GetWatchedQueries,
+  GetWatchedQueriesVariables,
+  GetWatchedQuery,
+  GetWatchedQueryVariables,
+} from "../../types/gql";
 
 export const sidebarHeadingStyles = css`
   margin-left: ${rem(12)};
@@ -45,7 +51,10 @@ export const listStyles = css`
   }
 `;
 
-const GET_WATCHED_QUERIES = gql`
+const GET_WATCHED_QUERIES: TypedDocumentNode<
+  GetWatchedQueries,
+  GetWatchedQueriesVariables
+> = gql`
   query GetWatchedQueries {
     watchedQueries @client {
       queries {
@@ -56,7 +65,10 @@ const GET_WATCHED_QUERIES = gql`
   }
 `;
 
-const GET_WATCHED_QUERY = gql`
+const GET_WATCHED_QUERY: TypedDocumentNode<
+  GetWatchedQuery,
+  GetWatchedQueryVariables
+> = gql`
   query GetWatchedQuery($id: ID!) {
     watchedQuery(id: $id) @client {
       id
