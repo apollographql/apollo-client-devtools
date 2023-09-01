@@ -5,22 +5,29 @@ import user from "@testing-library/user-event";
 import { renderWithApolloClient } from "../../../utilities/testing/renderWithApolloClient";
 import { client, GET_QUERIES } from "../../../index";
 import { Queries } from "../Queries";
+import type { GetQueries } from "../../../types/gql";
 
 jest.mock("../QueryViewer", () => ({
   QueryViewer: () => null,
 }));
 
 describe("<Queries />", () => {
-  const queries = [
+  const queries: GetQueries["watchedQueries"]["queries"] = [
     {
       id: 0,
       __typename: "WatchedQuery",
       name: null,
+      queryString: "query { hello }",
+      variables: null,
+      cachedData: null,
     },
     {
       id: 1,
       __typename: "WatchedQuery",
       name: "GetColors",
+      queryString: "query GetColors { colors }",
+      variables: null,
+      cachedData: null,
     },
   ];
 
@@ -38,6 +45,7 @@ describe("<Queries />", () => {
       query: GET_QUERIES,
       data: {
         watchedQueries: {
+          __typename: "WatchedQueries",
           queries,
           count: queries.length,
         },
@@ -68,6 +76,7 @@ describe("<Queries />", () => {
       query: GET_QUERIES,
       data: {
         watchedQueries: {
+          __typename: "WatchedQueries",
           queries,
           count: queries.length,
         },
