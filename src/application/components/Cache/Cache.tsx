@@ -95,7 +95,7 @@ export function Cache({
             <Search onChange={setSearchTerm} value={searchTerm} />
             <EntityList
               data={filteredCache}
-              cacheId={cacheId}
+              selectedCacheId={cacheId}
               setCacheId={setCacheId}
             />
           </Fragment>

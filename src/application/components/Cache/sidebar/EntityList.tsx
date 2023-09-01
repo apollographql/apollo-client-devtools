@@ -20,11 +20,15 @@ const listStyles = css`
 
 interface EntityListProps {
   data: Record<string, JSONObject>;
-  cacheId: string;
+  selectedCacheId: string;
   setCacheId: (cacheId: string) => void;
 }
 
-export function EntityList({ data, cacheId, setCacheId }: EntityListProps) {
+export function EntityList({
+  data,
+  selectedCacheId,
+  setCacheId,
+}: EntityListProps) {
   const theme = useTheme();
   const ids = getRootCacheIds(data);
 
@@ -39,7 +43,7 @@ export function EntityList({ data, cacheId, setCacheId }: EntityListProps) {
           <ListItem
             key={`${listCacheId}-${index}`}
             onClick={() => setCacheId(listCacheId)}
-            selected={listCacheId === cacheId}
+            selected={listCacheId === selectedCacheId}
           >
             {listCacheId}
           </ListItem>
