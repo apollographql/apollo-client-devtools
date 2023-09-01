@@ -1,4 +1,5 @@
 scalar Cache
+scalar QueryData
 scalar Variables
 
 type Query {
@@ -30,6 +31,6 @@ type WatchedQuery {
   id: ID!
   name: String
   queryString: String!
-  cachedData: Cache
+  cachedData: QueryData
   variables: Variables
 }

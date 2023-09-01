@@ -1,4 +1,5 @@
 import { Cache } from "./scalars";
+import { QueryData } from "./scalars";
 import { Variables } from "./scalars";
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
@@ -28,6 +29,7 @@ export type Scalars = {
   Int: { input: number; output: number };
   Float: { input: number; output: number };
   Cache: { input: Cache; output: Cache };
+  QueryData: { input: QueryData; output: QueryData };
   Variables: { input: Variables; output: Variables };
 };
 
@@ -70,7 +72,7 @@ export type WatchedQueries = {
 
 export type WatchedQuery = {
   __typename: "WatchedQuery";
-  cachedData: Maybe<Scalars["Cache"]["output"]>;
+  cachedData: Maybe<Scalars["QueryData"]["output"]>;
   id: Scalars["ID"]["output"];
   name: Maybe<Scalars["String"]["output"]>;
   queryString: Scalars["String"]["output"];
@@ -134,7 +136,7 @@ export type GetWatchedQuery = {
     name: string | null;
     queryString: string;
     variables: Variables | null;
-    cachedData: Cache | null;
+    cachedData: QueryData | null;
   } | null;
 };
 
@@ -149,7 +151,7 @@ export type GetQueries = {
       name: string | null;
       queryString: string;
       variables: Variables | null;
-      cachedData: Cache | null;
+      cachedData: QueryData | null;
     }>;
   };
 };
