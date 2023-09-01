@@ -6,6 +6,7 @@ import { rem } from "polished";
 
 import { objectFilter } from "../common/utils";
 import { useTheme, Theme } from "../../../theme";
+import { JSONObject } from "../../../types/json";
 
 const searchIconStyles = (theme: Theme) => ({
   height: 16,
@@ -38,8 +39,8 @@ const textFieldStyles = css`
 `;
 
 interface SearchProps {
-  data: Record<string, any>;
-  setSearchResults: (results: Record<string, any>) => void;
+  data: Record<string, JSONObject>;
+  setSearchResults: (results: JSONObject) => void;
 }
 
 export const Search = ({ data, setSearchResults }: SearchProps) => {
@@ -52,7 +53,7 @@ export const Search = ({ data, setSearchResults }: SearchProps) => {
     }
 
     if (keywords.length >= 3) {
-      const searchResults: Record<string, any> = {};
+      const searchResults: JSONObject = {};
       Object.keys(data).forEach((dataId) => {
         const results = objectFilter(data[dataId], keywords);
         if (results) searchResults[dataId] = results;

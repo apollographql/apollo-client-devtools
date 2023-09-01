@@ -57,9 +57,9 @@ export function Cache({
 
   const { loading, data } = useQuery(GET_CACHE);
 
-  let parsedData: JSONObject = {};
+  let parsedData: Record<string, JSONObject> = {};
   if (!loading && data?.cache) {
-    parsedData = JSON.parse(data.cache) as JSONObject;
+    parsedData = JSON.parse(data.cache) as Record<string, JSONObject>;
   }
 
   const dataExists = parsedData && Object.keys(parsedData).length > 0;
