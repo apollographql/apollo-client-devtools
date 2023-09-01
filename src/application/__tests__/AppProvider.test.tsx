@@ -6,7 +6,7 @@ import matchMediaMock from "../utilities/testing/matchMedia";
 import { Mode, colorTheme } from "../theme";
 import { AppProvider, getQueryData, getMutationData } from "../index";
 import { QueryInfo } from "../../extension/tab/helpers";
-import { Kind, OperationTypeNode, print } from "graphql";
+import { print, getIntrospectionQuery } from "graphql";
 
 const matchMedia = matchMediaMock();
 
@@ -66,20 +66,7 @@ describe("<AppProvider />", () => {
     });
 
     test("ignores IntrospectionQuery", () => {
-      queryData.document = {
-        kind: Kind.DOCUMENT,
-        definitions: [
-          {
-            kind: Kind.OPERATION_DEFINITION,
-            name: {
-              kind: Kind.NAME,
-              value: "IntrospectionQuery",
-            },
-            operation: OperationTypeNode.QUERY,
-            selectionSet: { kind: Kind.SELECTION_SET, selections: [] },
-          },
-        ],
-      };
+      queryData.document = gql(getIntrospectionQuery());
 
       const data = getQueryData(queryData, 0);
       expect(data).toBeUndefined();
