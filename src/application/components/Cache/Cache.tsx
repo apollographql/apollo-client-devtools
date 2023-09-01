@@ -58,7 +58,7 @@ export function Cache({
   const { loading, data } = useQuery(GET_CACHE);
 
   let parsedData: JSONObject = {};
-  if (!loading && data && data.cache) {
+  if (!loading && data?.cache) {
     parsedData = JSON.parse(data.cache) as JSONObject;
   }
 
