@@ -50,6 +50,7 @@
     "react-copy-to-clipboard": "^5.1.0",
     "react-dom": "^18.2.0",
     "react-json-tree": "^0.18.0",
+    "react-resizable-panels": "^0.0.55",
     "react-syntax-highlighter": "^15.5.0",
     "zen-observable": "^0.10.0"
   },
