@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.1.6
+
+### Patch Changes
+
+- [#947](https://github.com/apollographql/apollo-client-devtools/pull/947) [`41c5fa2`](https://github.com/apollographql/apollo-client-devtools/commit/41c5fa258e5998e03370cb1347b96017f4c0667f) Thanks [@MrDoomBringer](https://github.com/MrDoomBringer)! - Makes the sidebar resizable.
+
+- [#1054](https://github.com/apollographql/apollo-client-devtools/pull/1054) [`ecb25f8`](https://github.com/apollographql/apollo-client-devtools/commit/ecb25f834a2482ac0a490d6305c0c4dd8fcab48c) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Update color theme of areas that display JSON data such as variables and cache data to match the theme used to display GraphQL queries.
+
 ## 4.1.5
 
 ### Patch Changes
