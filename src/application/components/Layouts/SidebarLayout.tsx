@@ -58,17 +58,18 @@ const Sidebar = ({ navigationProps, children }: SidebarProps) => {
         id="sidebar"
         defaultSize={25}
         minSize={10}
-        data-testid="sidebar"
         style={{
           height: "100vh",
           backgroundColor: "var(--primary)",
         }}
       >
-        <Navigation
-          queriesCount={navigationProps.queriesCount}
-          mutationsCount={navigationProps.mutationsCount}
-        />
-        <div css={listStyles}>{children}</div>
+        <div data-testid="sidebar">
+          <Navigation
+            queriesCount={navigationProps.queriesCount}
+            mutationsCount={navigationProps.mutationsCount}
+          />
+          <div css={listStyles}>{children}</div>
+        </div>
       </Panel>
       <PanelResizeHandle
         style={{

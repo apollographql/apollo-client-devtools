@@ -12,7 +12,7 @@
     "resolveJsonModule": true
   },
   "compileOnSave": true,
-  "include": ["src/**/*", "development/**/*"],
+  "include": ["src/**/*", "development/**/*", "test.setup.ts"],
   "exclude": [
     "node_modules",
     "dist",
