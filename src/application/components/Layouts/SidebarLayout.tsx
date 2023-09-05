@@ -1,13 +1,11 @@
-import React, { ReactNode, useContext } from "react";
+import React, { ReactNode } from "react";
 import { css } from "@emotion/react";
 import { rem } from "polished";
+import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
 
 import { Navigation, NavigationProps } from "./Navigation";
 
-import { ResizableBox } from "react-resizable";
-import "react-resizable/css/styles.css";
-
-import { DevtoolsContext } from "../../App";
+// import { DevtoolsContext } from "../../App";
 interface SidebarLayoutProps {
   navigationProps: NavigationProps;
   children: ReactNode;
@@ -16,33 +14,11 @@ interface SidebarLayoutProps {
 interface SidebarProps {
   navigationProps: NavigationProps;
   children: ReactNode;
-  className?: string;
 }
-
-const layoutStyles = css`
-  display: flex;
-`;
-
-const sidebarStyles = css`
-  grid-area: sidebar;
-  grid-template-areas:
-    "nav"
-    "list";
-  height: 100vh;
-  background-color: var(--primary);
-  overflow-y: auto;
-  border-right: ${rem(1)} solid var(--mainBorder);
-`;
 
 const listStyles = css`
   grid-area: list;
   padding: 0 1rem;
-`;
-
-const contentStyles = css`
-  height: 100vh;
-  width: 100%;
-  background-color: var(--main);
 `;
 
 const headerStyles = css`
@@ -65,67 +41,42 @@ const mainStyles = css`
 
 const SidebarLayout = ({ children }: SidebarLayoutProps) => {
   return (
-    <div data-testid="layout" css={layoutStyles}>
+    <PanelGroup
+      direction="horizontal"
+      data-testid="layout"
+      autoSaveId="layout"
+      style={{ display: "flex" }}
+    >
       {children}
-    </div>
+    </PanelGroup>
   );
 };
 
-const resizerStyles = css`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0);
-  padding: 0 6px;
-  width: 4px;
-  height: 100vh;
-  cursor: col-resize;
-  top: 0;
-  right: 0;
-  position: absolute;
-  opacity: 0;
-  transition-duration: 200ms;
-  &:hover {
-    opacity: 1;
-  }
-`;
-const handleStyles = css`
-  background-color: white;
-  width: 4px;
-  height: 112px;
-  position: absolute;
-  border-radius: 2px;
-`;
-
-const MyHandle = React.forwardRef((props: any, ref: any) => {
-  const { handleAxis, ...restProps } = props;
-
+const Sidebar = ({ navigationProps, children }: SidebarProps) => {
   return (
-    <div ref={ref} className="resizer" css={resizerStyles} {...restProps}>
-      <div className="handle" css={handleStyles} />
-    </div>
-  );
-});
-
-const Sidebar = ({ navigationProps, children, className }: SidebarProps) => {
-  const { sidebarWidth, setSidebarWidth } = useContext(DevtoolsContext);
-  return (
-    <ResizableBox
-      onResize={(e, data) => setSidebarWidth(data.size.width)}
-      width={sidebarWidth}
-      height={100}
-      axis={"x"}
-      resizeHandles={["e"]}
-      handle={<MyHandle />}
-    >
-      <div className={className} css={sidebarStyles} data-testid="sidebar">
+    <>
+      <Panel
+        id="sidebar"
+        defaultSize={25}
+        minSize={10}
+        data-testid="sidebar"
+        style={{
+          height: "100vh",
+          backgroundColor: "var(--primary)",
+        }}
+      >
         <Navigation
           queriesCount={navigationProps.queriesCount}
           mutationsCount={navigationProps.mutationsCount}
         />
         <div css={listStyles}>{children}</div>
-      </div>
-    </ResizableBox>
+      </Panel>
+      <PanelResizeHandle
+        style={{
+          border: "1px solid var(--mainBorder)",
+        }}
+      />
+    </>
   );
 };
 
@@ -134,9 +85,19 @@ interface ContentProps {
 }
 
 const Content = ({ children }: ContentProps) => (
-  <div css={contentStyles} data-testid="content">
+  <Panel
+    id="content"
+    defaultSize={70}
+    minSize={30}
+    data-testid="content"
+    style={{
+      height: "100vh",
+      width: "100%",
+      backgroundColor: "var(--main)",
+    }}
+  >
     {children}
-  </div>
+  </Panel>
 );
 
 interface HeaderProps {
