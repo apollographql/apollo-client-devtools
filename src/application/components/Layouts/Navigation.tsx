@@ -29,7 +29,6 @@ const navigationStyles = css`
   align-items: center;
   box-shadow: 0 ${rem(-1)} 0 0 rgba(255, 255, 255, 0.3) inset;
   background-color: var(--primary);
-  height: 2.5rem;
 `;
 
 const selectedNavButtonStyles = css`
@@ -64,6 +63,7 @@ const listStyles = css`
   margin: 0 ${rem(5)};
   padding: 0;
   list-style: none;
+  flex-wrap: wrap;
 `;
 
 const logoLinkStyles = css`
