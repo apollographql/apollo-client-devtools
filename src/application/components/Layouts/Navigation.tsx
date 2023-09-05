@@ -105,10 +105,6 @@ const logoStyles = css`
   color: ${colors.silver.lighter};
 `;
 
-const borderStyles = css`
-  border-right: ${rem(1)} solid var(--whiteTransparent);
-`;
-
 const NavButton = ({ isSelected, onClick, children }: NavButtonProps) => (
   <button
     css={[navButtonStyles, isSelected && selectedNavButtonStyles]}
@@ -127,9 +123,7 @@ export const Navigation: React.FC<NavigationProps> = ({
   const selected = useReactiveVar<Screens>(currentScreen);
   const isSelected = (NavButton: Screens) => selected === NavButton;
   const onNavigate = (screen: Screens) => currentScreen(screen);
-  //const [navCol, setNavCol] = useState(true)
   const { sidebarWidth } = useContext(DevtoolsContext);
-  console.log("meow:", sidebarWidth);
 
   return (
     <nav css={navigationStyles}>

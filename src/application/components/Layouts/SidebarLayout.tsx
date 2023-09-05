@@ -20,9 +20,7 @@ interface SidebarProps {
 }
 
 const layoutStyles = css`
-  display: inline-grid;
-  grid-template-columns: auto;
-  grid-template-areas: "sidebar content";
+  display: flex;
 `;
 
 const sidebarStyles = css`
@@ -42,12 +40,8 @@ const listStyles = css`
 `;
 
 const contentStyles = css`
-  grid-area: content;
-  grid-template-areas:
-    "header"
-    "main";
   height: 100vh;
-  overflow: auto;
+  width: 100%;
   background-color: var(--main);
 `;
 
@@ -86,7 +80,7 @@ const resizerStyles = css`
   width: 4px;
   height: 100vh;
   cursor: col-resize;
-  top: 50%;
+  top: 0;
   right: 0;
   position: absolute;
   opacity: 0;
@@ -105,10 +99,10 @@ const handleStyles = css`
 
 const MyHandle = React.forwardRef((props: any, ref: any) => {
   const { handleAxis, ...restProps } = props;
-  console.log("Mewling!");
+
   return (
-    <div ref={ref} className={"Resizer"} css={resizerStyles} {...restProps}>
-      <div className={"Handle"} css={handleStyles} />
+    <div ref={ref} className="resizer" css={resizerStyles} {...restProps}>
+      <div className="handle" css={handleStyles} />
     </div>
   );
 });
