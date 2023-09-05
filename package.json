@@ -59,7 +59,7 @@
     "@emotion/jest": "11.11.0",
     "@graphql-tools/mock": "9.0.0",
     "@graphql-tools/schema": "10.0.0",
-    "@testing-library/jest-dom": "5.17.0",
+    "@testing-library/jest-dom": "6.1.2",
     "@testing-library/react": "14.0.0",
     "@testing-library/user-event": "14.4.3",
     "@types/chrome": "0.0.244",
