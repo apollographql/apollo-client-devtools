@@ -2,7 +2,7 @@
   "name": "apollo-client-devtools",
   "description": "Developer tools for Apollo Client, with Studio Explorer integration, cache inspection, and query watching.",
   "license": "MIT",
-  "version": "4.1.5",
+  "version": "4.1.6",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/apollographql/apollo-client-devtools.git"
@@ -49,6 +49,7 @@
     "react-copy-to-clipboard": "^5.1.0",
     "react-dom": "^18.2.0",
     "react-json-tree": "^0.18.0",
+    "react-resizable-panels": "^0.0.55",
     "react-syntax-highlighter": "^15.5.0",
     "zen-observable": "^0.10.0"
   },
@@ -59,7 +60,7 @@
     "@emotion/jest": "11.11.0",
     "@graphql-tools/mock": "9.0.0",
     "@graphql-tools/schema": "10.0.0",
-    "@testing-library/jest-dom": "5.17.0",
+    "@testing-library/jest-dom": "6.1.2",
     "@testing-library/react": "14.0.0",
     "@testing-library/user-event": "14.4.3",
     "@types/chrome": "0.0.244",
@@ -81,7 +82,7 @@
     "jest-matchmedia-mock": "1.1.0",
     "npm-run-all": "4.1.5",
     "prettier": "3.0.3",
-    "rimraf": "3.0.2",
+    "rimraf": "5.0.1",
     "style-loader": "2.0.0",
     "terser-webpack-plugin": "5.3.9",
     "ts-jest": "29.1.1",
