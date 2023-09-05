@@ -1,15 +1,6 @@
-import {
-  ApolloClient,
-  gql,
-  execute,
-  ApolloLink,
-  Observable,
-  from,
-} from "@apollo/client";
+import { ApolloClient, gql, Observable } from "@apollo/client";
 
 import { buildSchemasFromTypeDefs } from "./typeDefs";
-
-const hasOwn = Object.prototype.hasOwnProperty;
 
 /*
  * Supports dynamic client schemas set on the context;
@@ -22,68 +13,6 @@ const hasOwn = Object.prototype.hasOwnProperty;
 const apolloClientSchema = {
   directives: "directive @connection(key: String!, filter: [String]) on FIELD",
 };
-
-const schemaLink = () =>
-  new ApolloLink((operation, forward) => {
-    const obs = forward(operation);
-    return obs.map
-      ? obs.map((result) => {
-          let { schemas = [] } = operation.getContext();
-          result.extensions = Object.assign({}, result.extensions, {
-            schemas: schemas.concat([apolloClientSchema]),
-          });
-          return result;
-        })
-      : obs;
-  });
-
-// Forward all "errors" to next with a good shape for Explorer
-const errorLink = () =>
-  new ApolloLink((operation, forward) => {
-    return new Observable((observer) => {
-      let sub;
-      try {
-        sub = forward(operation).subscribe({
-          next: observer.next.bind(observer),
-          error: (networkError) => {
-            observer.next({
-              errors: [
-                {
-                  message: networkError.message,
-                  locations: [networkError.stack],
-                },
-              ],
-            });
-          },
-          complete: observer.complete.bind(observer),
-        });
-      } catch (e) {
-        observer.next({
-          errors: [{ message: e.message, locations: [e.stack] }],
-        });
-      }
-
-      return () => {
-        if (sub) sub.unsubscribe();
-      };
-    });
-  });
-
-const cacheLink = (fetchPolicy) =>
-  new ApolloLink((operation, forward) => {
-    if (fetchPolicy === "no-cache") return forward(operation);
-
-    const { cache } = operation.getContext();
-    const { variables, query } = operation;
-    try {
-      const results = cache.readQuery({ query, variables });
-      if (results) return Observable.of({ data: results });
-    } catch (e) {
-      // do nothing
-    }
-
-    return forward(operation);
-  });
 
 export const initLinkEvents = (hook, bridge) => {
   // Handle incoming requests
@@ -106,50 +35,6 @@ export const initLinkEvents = (hook, bridge) => {
         },
         complete: () => bridge.send(`link:complete:${operationName}`),
       };
-
-      // Devtools can currently be used with 2 versions of local state
-      // handling: 1) Using `apollo-link-state` or 2) Using local state
-      // features integrated directly into Apollo Client. `apollo-link-state`
-      // will eventually be deprecated, but for the time being we need to
-      // support both approaches via devtools.
-      //
-      // The `apollo-link-state` approach uses a custom link chain to parse
-      // and execute queries, whereas the Apollo Client local state approach
-      // uses Apollo Client directly. To decide which approach to use
-      // below, we'll check to see if typeDefs have been set on the
-      // ApolloClient instance, as if so, this means Apollo Client local state
-      // is being used.
-
-      const supportsApolloClientLocalState = hasOwn.call(
-        apolloClient,
-        "typeDefs"
-      );
-
-      if (!supportsApolloClientLocalState) {
-        // Supports `apollo-link-state`.
-        // TODO(fixme): key is undefined here.
-        // eslint-disable-next-line no-undef
-        const context = { __devtools_key__: key, cache };
-
-        const devtoolsLink = from([
-          errorLink(),
-          cacheLink(fetchPolicy),
-          schemaLink(),
-          userLink,
-        ]);
-
-        const operationExecution$ = execute(devtoolsLink, {
-          query: queryAst,
-          variables,
-          operationName,
-          context,
-        });
-
-        operationExecution$.subscribe(subscriptionHandlers);
-        return;
-      }
-
-      // Supports Apollo Client local state.
 
       const typeDefs = apolloClient.typeDefs;
 
