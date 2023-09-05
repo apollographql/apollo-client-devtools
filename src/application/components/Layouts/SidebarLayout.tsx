@@ -1,11 +1,10 @@
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
 import { css } from "@emotion/react";
 import { rem } from "polished";
 import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
 
 import { Navigation, NavigationProps } from "./Navigation";
 
-// import { DevtoolsContext } from "../../App";
 interface SidebarLayoutProps {
   navigationProps: NavigationProps;
   children: ReactNode;

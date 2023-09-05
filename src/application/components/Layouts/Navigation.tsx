@@ -79,7 +79,6 @@ const logoStyles = css`
 
 const borderStyles = css`
   border-right: ${rem(1)} solid var(--whiteTransparent);
-  text-wrap: nowrap;
 `;
 
 const NavButton = ({ isSelected, onClick, children }: NavButtonProps) => (

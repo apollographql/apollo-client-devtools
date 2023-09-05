@@ -4,8 +4,6 @@ import { gql, useQuery } from "@apollo/client";
 import { rem } from "polished";
 import { colors } from "@apollo/space-kit/colors";
 
-import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
-
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { Search } from "./sidebar/Search";
 import { EntityList } from "./sidebar/EntityList";
