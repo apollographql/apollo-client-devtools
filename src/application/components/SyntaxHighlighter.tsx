@@ -1,8 +1,4 @@
-import Highlight, {
-  defaultProps,
-  Language,
-  PrismTheme,
-} from "prism-react-renderer";
+import { Highlight, Language, PrismTheme } from "prism-react-renderer";
 import { useReactiveVar } from "@apollo/client";
 import { colors } from "@apollo/space-kit/colors";
 import { ColorTheme, colorTheme } from "../theme";
@@ -184,12 +180,7 @@ const SyntaxHighlighter = ({
   const activeTheme = theme[useReactiveVar(colorTheme)];
 
   return (
-    <Highlight
-      {...defaultProps}
-      language={language}
-      theme={activeTheme}
-      code={code}
-    >
+    <Highlight language={language} theme={activeTheme} code={code}>
       {({ className, style, tokens, getLineProps, getTokenProps }) => {
         return (
           <pre
