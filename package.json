@@ -40,7 +40,7 @@
   "dependencies": {
     "@apollo/client": "^3.7.10",
     "@apollo/space-kit": "^9.11.0",
-    "@emotion/react": "^11.10.6",
+    "@emotion/react": "^11.11.1",
     "@radix-ui/react-tabs": "^1.0.2",
     "graphql": "^16.0.0",
     "graphql-tag": "^2.11.0",
@@ -57,7 +57,7 @@
   "devDependencies": {
     "@changesets/changelog-github": "0.4.8",
     "@changesets/cli": "2.26.2",
-    "@emotion/core": "10.3.1",
+    "@emotion/core": "11.0.0",
     "@emotion/jest": "11.11.0",
     "@graphql-codegen/cli": "5.0.0",
     "@graphql-codegen/typescript": "4.0.1",
