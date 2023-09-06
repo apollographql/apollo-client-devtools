@@ -1,5 +1,5 @@
 import React from "react";
-import { keyframes } from "@emotion/core";
+import { keyframes } from "@emotion/react";
 
 export type Size = "large" | "medium" | "small" | "xsmall" | "2xsmall";
 export type Theme = "light" | "dark" | "grayscale";
