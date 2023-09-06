@@ -58,6 +58,7 @@
     "@changesets/changelog-github": "0.4.8",
     "@changesets/cli": "2.26.2",
     "@emotion/core": "11.0.0",
+    "@emotion/eslint-plugin": "^11.11.0",
     "@emotion/jest": "11.11.0",
     "@graphql-codegen/cli": "5.0.0",
     "@graphql-codegen/typescript": "4.0.1",
