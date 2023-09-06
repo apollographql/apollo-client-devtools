@@ -1,6 +1,6 @@
-import { Fragment, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { css } from "@emotion/react";
-import { gql, useQuery } from "@apollo/client";
+import { gql, TypedDocumentNode, useQuery } from "@apollo/client";
 import { rem } from "polished";
 import { colors } from "@apollo/space-kit/colors";
 
@@ -9,6 +9,8 @@ import { Search } from "./sidebar/Search";
 import { EntityList } from "./sidebar/EntityList";
 import { EntityView } from "./main/EntityView";
 import { Loading } from "./common/Loading";
+import { GetCache, GetCacheVariables } from "../../types/gql";
+import { JSONObject } from "../../types/json";
 
 const { Header, Sidebar, Main, Content } = SidebarLayout;
 
@@ -36,11 +38,28 @@ const noDataStyles = css`
   padding-top: ${rem(16)};
 `;
 
-const GET_CACHE = gql`
+const GET_CACHE: TypedDocumentNode<GetCache, GetCacheVariables> = gql`
   query GetCache {
     cache @client
   }
 `;
+
+type Cache = Record<string, JSONObject>;
+
+function filterCache(cache: Cache, searchTerm: string) {
+  const regex = new RegExp(searchTerm, "i");
+
+  return Object.entries(cache).reduce<Cache>(
+    (filteredCache, [cacheKey, value]) => {
+      if (regex.test(cacheKey)) {
+        filteredCache[cacheKey] = value;
+      }
+
+      return filteredCache;
+    },
+    {}
+  );
+}
 
 export function Cache({
   navigationProps,
@@ -50,17 +69,21 @@ export function Cache({
     mutationsCount: number;
   };
 }): JSX.Element {
-  const [searchResults, setSearchResults] = useState({});
-  const [cacheId, setCacheId] = useState<string>("ROOT_QUERY");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [cacheId, setCacheId] = useState("ROOT_QUERY");
 
   const { loading, data } = useQuery(GET_CACHE);
+  const cache = useMemo(
+    () => (data?.cache ? (JSON.parse(data.cache) as Cache) : {}),
+    [data?.cache]
+  );
 
-  let parsedData: Record<string, any> = {};
-  if (!loading && data && data.cache) {
-    parsedData = JSON.parse(data.cache);
-  }
+  const filteredCache = useMemo(
+    () => (searchTerm ? filterCache(cache, searchTerm) : cache),
+    [cache, searchTerm]
+  );
 
-  const dataExists = parsedData && Object.keys(parsedData).length > 0;
+  const dataExists = Object.keys(cache).length > 0;
 
   return (
     <SidebarLayout navigationProps={navigationProps}>
@@ -69,12 +92,12 @@ export function Cache({
           <Loading />
         ) : dataExists ? (
           <Fragment>
-            <Search data={parsedData} setSearchResults={setSearchResults} />
+            <Search onChange={setSearchTerm} value={searchTerm} />
             <EntityList
-              data={parsedData}
-              cacheId={cacheId}
+              data={filteredCache}
+              selectedCacheId={cacheId}
               setCacheId={setCacheId}
-              searchResults={searchResults}
+              searchTerm={searchTerm}
             />
           </Fragment>
         ) : (
@@ -96,8 +119,7 @@ export function Cache({
           ) : (
             <EntityView
               cacheId={cacheId}
-              data={parsedData[cacheId]}
-              searchResults={searchResults}
+              data={cache[cacheId]}
               setCacheId={setCacheId}
             />
           )}

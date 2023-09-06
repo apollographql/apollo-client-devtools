@@ -1,5 +1,13 @@
 import React from "react";
-import { screen, within, waitFor, fireEvent } from "@testing-library/react";
+import {
+  screen,
+  within,
+  waitFor,
+  fireEvent,
+  act,
+} from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { colors } from "@apollo/space-kit/colors";
 
 import { Cache } from "../Cache";
 import { renderWithApolloClient } from "../../../utilities/testing/renderWithApolloClient";
@@ -39,6 +47,16 @@ const navigationProps = {
   queriesCount: 2,
   mutationsCount: 0,
 };
+
+function elementMatchesHighlightedNode(
+  element: Element | null,
+  textContent: string
+) {
+  return (
+    element?.tagName.toLowerCase() === "span" &&
+    element.textContent === textContent
+  );
+}
 
 describe("Cache component tests", () => {
   describe("No cache data", () => {
@@ -108,9 +126,6 @@ describe("Cache component tests", () => {
   });
 
   describe("Search", () => {
-    const selectedSidebarStyles = "background-color: #1B2240";
-    const selectedMainStyles = "background-color: yellow";
-
     beforeEach(() => {
       writeData({
         queries: [],
@@ -119,48 +134,58 @@ describe("Cache component tests", () => {
       });
     });
 
-    it("should highlight sidebar cache ID's if a match is found", async () => {
+    it("filters cache ID's for matches against the keyword", async () => {
+      const user = userEvent.setup();
       renderWithApolloClient(<Cache navigationProps={navigationProps} />);
 
-      const searchInput = screen.getByPlaceholderText("Search queries");
-      fireEvent.change(searchInput, { target: { value: "Result 2" } });
+      const searchInput =
+        screen.getByPlaceholderText<HTMLInputElement>("Search queries");
+      await act(() => user.type(searchInput, "Result"));
 
       const sidebar = screen.getByTestId("sidebar");
 
       await waitFor(() => {
-        expect((searchInput as any).value).toBe("Result 2");
+        expect(searchInput.value).toBe("Result");
       });
-      const result1 = within(sidebar).getByText("Result:1");
-      expect(result1.parentNode).not.toHaveStyle(selectedSidebarStyles);
 
-      const result2 = within(sidebar).getByText("Result:2");
-      expect(result2.parentNode).toHaveStyle(selectedSidebarStyles);
+      expect(
+        within(sidebar).getByText((_, element) => {
+          return elementMatchesHighlightedNode(element, "Result:1");
+        })
+      ).toBeInTheDocument();
+      expect(
+        within(sidebar).getByText((_, element) => {
+          return elementMatchesHighlightedNode(element, "Result:2");
+        })
+      ).toBeInTheDocument();
+      expect(within(sidebar).queryByText("ROOT_QUERY")).not.toBeInTheDocument();
     });
 
-    it("should highlight object keys/values if a match is found", async () => {
+    it("highlights matched substring in cache ID", async () => {
+      const selectedMainStyles = `background: ${colors.yellow.base}`;
+      const user = userEvent.setup();
+
       renderWithApolloClient(<Cache navigationProps={navigationProps} />);
 
       const searchInput = screen.getByPlaceholderText("Search queries");
-      fireEvent.change(searchInput, { target: { value: "Result 2" } });
+      await act(() => user.type(searchInput, "Res"));
 
       const sidebar = screen.getByTestId("sidebar");
 
-      const result2 = within(sidebar).getByText("Result:2");
-      const result2Parent = result2.parentNode;
-      fireEvent.click(result2Parent!);
-
-      const main = screen.getByTestId("main");
-
-      await waitFor(() => {
-        expect(within(main).getByText("__typename:")).not.toHaveStyle(
-          selectedMainStyles
-        );
+      const result1 = within(sidebar).getByText((_, element) => {
+        return elementMatchesHighlightedNode(element, "Result:1");
       });
-      expect(within(main).getByText('"Result"')).not.toHaveStyle(
+
+      const result2 = within(sidebar).getByText((_, element) => {
+        return elementMatchesHighlightedNode(element, "Result:2");
+      });
+
+      expect(within(result1).getByText("Res")).toHaveStyle(selectedMainStyles);
+      expect(within(result1).getByText("ult:1")).not.toHaveStyle(
         selectedMainStyles
       );
-      expect(within(main).getByText("name:")).toHaveStyle(selectedMainStyles);
-      expect(within(main).getByText('"Result 2"')).toHaveStyle(
+      expect(within(result2).getByText("Res")).toHaveStyle(selectedMainStyles);
+      expect(within(result2).getByText("ult:2")).not.toHaveStyle(
         selectedMainStyles
       );
     });

@@ -1,6 +1,7 @@
 import { IconRun } from "@apollo/space-kit/icons/IconRun";
 import { css } from "@emotion/react";
 import { rem } from "polished";
+import { Variables } from "../../types/scalars";
 import {
   postMessageToEmbed,
   SET_OPERATION,
@@ -9,7 +10,7 @@ import { currentScreen, Screens } from "../Layouts/Navigation";
 
 interface RunInExplorerButtonProps {
   operation: string;
-  variables?: Record<string, any>;
+  variables?: Variables;
   embeddedExplorerIFrame: HTMLIFrameElement | null;
 }
 

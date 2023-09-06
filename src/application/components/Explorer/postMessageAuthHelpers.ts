@@ -12,7 +12,7 @@ export const hasGraphRefBeenAuthenticated = (graphRef: string): boolean => {
     "apolloStudioEmbeddedExplorerEncodedApiKey"
   );
   const partialEmbedApiKeys = partialEmbedApiKeysString
-    ? JSON.parse(partialEmbedApiKeysString)
+    ? (JSON.parse(partialEmbedApiKeysString) as Record<string, string>)
     : {};
   return Object.keys(partialEmbedApiKeys).some((key) => {
     const splitKey = key.split(":");
@@ -41,7 +41,7 @@ export const handleAuthenticationPostMessage = ({
       "apolloStudioEmbeddedExplorerEncodedApiKey"
     );
     const partialEmbedApiKeys = partialEmbedApiKeysString
-      ? JSON.parse(partialEmbedApiKeysString)
+      ? (JSON.parse(partialEmbedApiKeysString) as Record<string, string>)
       : {};
     partialEmbedApiKeys[data.localStorageKey] = data.partialToken;
     window.localStorage.setItem(
@@ -60,7 +60,7 @@ export const handleAuthenticationPostMessage = ({
       "apolloStudioEmbeddedExplorerEncodedApiKey"
     );
     const partialEmbedApiKeys = partialEmbedApiKeysString
-      ? JSON.parse(partialEmbedApiKeysString)
+      ? (JSON.parse(partialEmbedApiKeysString) as Record<string, string>)
       : {};
     if (partialEmbedApiKeys && partialEmbedApiKeys[data.localStorageKey]) {
       onAuthHandshakeReceived();

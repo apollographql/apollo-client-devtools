@@ -10,7 +10,9 @@ describe("<MutationViewer />", () => {
   });
 
   const props = {
-    mutationString: `
+    mutation: {
+      __typename: "WatchedMutation" as const,
+      mutationString: `
       mutation AddColorToFavorites($color: ColorInput!) {
         addColor(color: $color) {
           ...colorFields
@@ -22,10 +24,11 @@ describe("<MutationViewer />", () => {
         contrast
       }
     `,
-    variables: {
-      name: "Violet",
-      hex: "#15572C",
-      contrast: "#ffffff",
+      variables: {
+        name: "Violet",
+        hex: "#15572C",
+        contrast: "#ffffff",
+      },
     },
   };
 
@@ -44,7 +47,7 @@ describe("<MutationViewer />", () => {
     await user.click(copyButton);
     expect(window.prompt).toBeCalledWith(
       "Copy to clipboard: Ctrl+C, Enter",
-      props.mutationString
+      props.mutation.mutationString
     );
   });
 
@@ -53,7 +56,9 @@ describe("<MutationViewer />", () => {
 
     expect(screen.getByText("Variables")).toBeInTheDocument();
     expect(
-      screen.getByText((content) => content.includes(props.variables.name))
+      screen.getByText((content) =>
+        content.includes(props.mutation.variables.name)
+      )
     ).toBeInTheDocument();
   });
 
@@ -64,7 +69,7 @@ describe("<MutationViewer />", () => {
     await user.click(copyButton);
     expect(window.prompt).toBeCalledWith(
       "Copy to clipboard: Ctrl+C, Enter",
-      JSON.stringify(props.variables)
+      JSON.stringify(props.mutation.variables)
     );
   });
 });

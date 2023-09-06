@@ -4,6 +4,7 @@ import { rem } from "polished";
 
 import { useTreeTheme } from "../../../theme";
 import { ReactNode } from "react";
+import { JSONObject } from "../../../types/json";
 
 const cacheStyles = css`
   padding-top: 1rem;
@@ -16,16 +17,17 @@ const cacheStyles = css`
   }
 `;
 
-const selectedStyles = css`
-  background-color: yellow;
-`;
+interface EntityViewProps {
+  cacheId: string;
+  data: JSONObject | undefined;
+  setCacheId: (cacheId: string) => void;
+}
 
-export function EntityView({ cacheId, data, searchResults, setCacheId }) {
+export function EntityView({ cacheId, data, setCacheId }: EntityViewProps) {
   const treeTheme = useTreeTheme();
 
   if (!data) return null;
 
-  const searchResult = searchResults[cacheId];
   return (
     <div css={cacheStyles}>
       {cacheId}
@@ -34,17 +36,10 @@ export function EntityView({ cacheId, data, searchResults, setCacheId }) {
         theme={treeTheme}
         invertTheme={false}
         hideRoot={true}
-        labelRenderer={([key]) => {
-          const matchFound = searchResult && !!searchResult[key];
-          return <span css={matchFound ? selectedStyles : void 0}>{key}:</span>;
-        }}
         valueRenderer={(valueAsString: ReactNode, value, key) => {
-          const matchFound = searchResult && searchResult[key] === value;
-
           return (
             <span
               css={css`
-                ${matchFound ? selectedStyles : void 0}
                 ${key === "__ref" &&
                 css`
                   &:hover {
@@ -55,7 +50,7 @@ export function EntityView({ cacheId, data, searchResults, setCacheId }) {
               `}
               onClick={() => {
                 if (key === "__ref") {
-                  setCacheId(value);
+                  setCacheId(value as string);
                 }
               }}
             >

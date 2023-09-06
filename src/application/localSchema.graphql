@@ -1,0 +1,38 @@
+"Represents data for a specific query"
+scalar QueryData
+
+"Represents variables for a query"
+scalar Variables
+
+type Query {
+  cache: String!
+  mutation(id: ID!): WatchedMutation
+  mutationLog: MutationLog!
+  watchedQueries: WatchedQueries!
+  watchedQuery(id: ID!): WatchedQuery
+}
+
+type WatchedMutation {
+  id: ID!
+  name: String
+  mutationString: String!
+  variables: Variables
+}
+
+type MutationLog {
+  count: Int!
+  mutations: [WatchedMutation!]!
+}
+
+type WatchedQueries {
+  count: Int!
+  queries: [WatchedQuery!]!
+}
+
+type WatchedQuery {
+  id: ID!
+  name: String
+  queryString: String!
+  cachedData: QueryData
+  variables: Variables
+}

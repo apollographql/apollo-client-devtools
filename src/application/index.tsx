@@ -6,6 +6,7 @@ import {
   InMemoryCache,
   makeVar,
   gql,
+  TypedDocumentNode,
 } from "@apollo/client";
 import { getOperationName } from "@apollo/client/utilities";
 import { print } from "graphql/language/printer";
@@ -13,10 +14,21 @@ import { print } from "graphql/language/printer";
 import { Theme } from "./ThemeVars";
 import { colorTheme, listenForThemeChange } from "./theme";
 import { App, reloadStatus } from "./App";
+import { fragmentRegistry } from "./fragmentRegistry";
 
 import "@apollo/space-kit/reset.css";
+import {
+  GetAllMutations,
+  GetAllMutationsVariables,
+  GetQueries,
+  GetQueriesVariables,
+  WatchedMutation,
+  WatchedQuery,
+} from "./types/gql";
+import { QueryInfo } from "../extension/tab/helpers";
 
 const cache = new InMemoryCache({
+  fragments: fragmentRegistry,
   typePolicies: {
     WatchedQuery: {
       fields: {
@@ -25,7 +37,7 @@ const cache = new InMemoryCache({
         },
       },
     },
-    Mutation: {
+    WatchedMutation: {
       fields: {
         name(_) {
           return _ ?? "Unnamed";
@@ -50,7 +62,7 @@ const cache = new InMemoryCache({
         },
         mutation(_, { toReference, args }) {
           return toReference({
-            __typename: "Mutation",
+            __typename: "WatchedMutation",
             id: args?.id,
           });
         },
@@ -62,15 +74,19 @@ const cache = new InMemoryCache({
   },
 });
 
-const cacheVar = makeVar(null);
+const cacheVar = makeVar<string | null>(null);
 export const client = new ApolloClient({
   cache,
 });
 
-export const GET_QUERIES = gql`
+export const GET_QUERIES: TypedDocumentNode<
+  GetQueries,
+  GetQueriesVariables
+> = gql`
   query GetQueries {
     watchedQueries @client {
       queries {
+        id
         name
         queryString
         variables
@@ -81,10 +97,14 @@ export const GET_QUERIES = gql`
   }
 `;
 
-export const GET_MUTATIONS = gql`
-  query GetMutations {
+export const GET_MUTATIONS: TypedDocumentNode<
+  GetAllMutations,
+  GetAllMutationsVariables
+> = gql`
+  query GetAllMutations {
     mutationLog @client {
       mutations {
+        id
         name
         mutationString
         variables
@@ -94,29 +114,14 @@ export const GET_MUTATIONS = gql`
   }
 `;
 
-interface Query {
-  id: number;
-  name: string | null;
-  variables: object;
-}
-
-type WatchedQuery = Query & {
-  __typename: "WatchedQuery";
-  queryString: string;
-  cachedData: object;
-};
-
-type Mutation = Query & {
-  __typename: "Mutation";
-  mutationString: string;
-};
-
-export function getQueryData(query, key: number): WatchedQuery | undefined {
-  if (!query || !query.document) return;
+export function getQueryData(
+  query: QueryInfo,
+  key: number
+): WatchedQuery | undefined {
   // TODO: The current designs do not account for non-cached data.
   // We need a workaround to show that data + we should surface
   // the FetchPolicy.
-  const name = getOperationName(query?.document);
+  const name = getOperationName(query.document);
   if (name === "IntrospectionQuery") {
     return;
   }
@@ -126,46 +131,53 @@ export function getQueryData(query, key: number): WatchedQuery | undefined {
     __typename: "WatchedQuery",
     name,
     queryString: print(query.document),
-    variables: query.variables,
-    cachedData: query.cachedData,
+    variables: query.variables ?? null,
+    cachedData: query.cachedData ?? null,
   };
 }
 
-export function getMutationData(mutation, key: number): Mutation | undefined {
-  if (!mutation) return;
-
+export function getMutationData(
+  mutation: QueryInfo,
+  key: number
+): WatchedMutation {
   return {
     id: key,
-    __typename: "Mutation",
-    name: getOperationName(mutation?.document),
-    mutationString: mutation?.source?.body,
-    variables: mutation.variables,
+    __typename: "WatchedMutation",
+    name: getOperationName(mutation.document),
+    mutationString: print(mutation.document),
+    variables: mutation.variables ?? null,
   };
 }
 
-export const writeData = ({ queries, mutations, cache }) => {
-  const filteredQueries: WatchedQuery[] = queries
-    .map((q, i: number) => getQueryData(q, i))
-    .filter(Boolean);
+export const writeData = ({
+  queries,
+  mutations,
+  cache,
+}: {
+  queries: QueryInfo[];
+  mutations: QueryInfo[];
+  cache: string;
+}) => {
+  const filteredQueries = queries.map(getQueryData).filter(Boolean);
 
   client.writeQuery({
     query: GET_QUERIES,
     data: {
       watchedQueries: {
+        __typename: "WatchedQueries",
         queries: filteredQueries,
         count: filteredQueries.length,
       },
     },
   });
 
-  const mappedMutations: Mutation[] = mutations.map((m, i: number) =>
-    getMutationData(m, i)
-  );
+  const mappedMutations = mutations.map(getMutationData);
 
   client.writeQuery({
     query: GET_MUTATIONS,
     data: {
       mutationLog: {
+        __typename: "MutationLog",
         mutations: mappedMutations,
         count: mappedMutations.length,
       },

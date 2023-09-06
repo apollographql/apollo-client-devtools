@@ -14,10 +14,12 @@ import {
   queryDataMain,
 } from "../Queries/QueryViewer";
 import SyntaxHighlighter from "../SyntaxHighlighter";
+import { fragmentRegistry } from "../../fragmentRegistry";
+import { gql } from "@apollo/client";
+import { MutationViewer_mutation as WatchedMutation } from "../../types/gql";
 
 interface MutationViewerProps {
-  mutationString: string;
-  variables: Record<string, any>;
+  mutation: WatchedMutation;
 }
 
 const queryDataHeader = css`
@@ -34,29 +36,33 @@ const queryDataHeader = css`
   }
 `;
 
-export const MutationViewer = ({
-  mutationString = "",
-  variables = {},
-}: MutationViewerProps) => {
+fragmentRegistry.register(gql`
+  fragment MutationViewer_mutation on WatchedMutation {
+    mutationString
+    variables
+  }
+`);
+
+export const MutationViewer = ({ mutation }: MutationViewerProps) => {
   const treeTheme = useTreeTheme();
 
   return (
     <div css={queryViewStyles}>
       <h4 css={queryStringHeader}>
         Mutation String
-        <CopyToClipboard text={mutationString}>
+        <CopyToClipboard text={mutation.mutationString}>
           <IconCopy css={copyIconStyle} data-testid="copy-mutation-string" />
         </CopyToClipboard>
       </h4>
       <SyntaxHighlighter
         css={queryStringMain}
-        code={mutationString}
+        code={mutation.mutationString}
         language="graphql"
       />
       <div>
         <div css={queryDataHeader}>
           <span>Variables</span>
-          <CopyToClipboard text={JSON.stringify(variables)}>
+          <CopyToClipboard text={JSON.stringify(mutation.variables)}>
             <IconCopy
               css={copyIconStyle}
               data-testid="copy-mutation-variables"
@@ -64,7 +70,11 @@ export const MutationViewer = ({
           </CopyToClipboard>
         </div>
         <div css={queryDataMain}>
-          <JSONTree data={variables} theme={treeTheme} invertTheme={false} />
+          <JSONTree
+            data={mutation.variables}
+            theme={treeTheme}
+            invertTheme={false}
+          />
         </div>
       </div>
     </div>

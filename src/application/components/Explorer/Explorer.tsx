@@ -40,7 +40,7 @@ import {
 } from "./postMessageAuthHelpers";
 import { GraphRefModal } from "./GraphRefModal";
 
-enum FetchPolicy {
+export enum FetchPolicy {
   NoCache = "no-cache",
   CacheOnly = "cache-only",
 }

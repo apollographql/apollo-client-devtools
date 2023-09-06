@@ -68,12 +68,16 @@ describe("<Explorer />", () => {
     );
   });
 
-  test("it retrieves a schema from an IntrospectionQuery", async () => {
-    (listenForResponse as any).mockImplementation((_, cb) => {
-      graphql({
-        schema: schemaWithMocks,
-        source: getIntrospectionQuery(),
-      }).then((result) => cb(result));
-    });
+  // TODO: This test does nothing but stub an implementation of a function.
+  // Disabling until we can make it useful
+  test.skip("it retrieves a schema from an IntrospectionQuery", async () => {
+    (listenForResponse as any).mockImplementation(
+      (_: unknown, cb: (result: unknown) => void) => {
+        graphql({
+          schema: schemaWithMocks,
+          source: getIntrospectionQuery(),
+        }).then((result) => cb(result));
+      }
+    );
   });
 });

@@ -1,11 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { useReactiveVar, gql, useQuery, makeVar } from "@apollo/client";
+import {
+  useReactiveVar,
+  gql,
+  useQuery,
+  makeVar,
+  TypedDocumentNode,
+} from "@apollo/client";
 
 import { currentScreen, Screens } from "./components/Layouts/Navigation";
 import { Queries } from "./components/Queries/Queries";
 import { Mutations } from "./components/Mutations/Mutations";
 import { Explorer } from "./components/Explorer/Explorer";
 import { Cache } from "./components/Cache/Cache";
+import { GetOperationCounts, GetOperationCountsVariables } from "./types/gql";
 
 export const reloadStatus = makeVar<boolean>(false);
 
@@ -16,7 +23,10 @@ const screens = {
   [Screens.Cache]: Cache,
 };
 
-const GET_OPERATION_COUNTS = gql`
+const GET_OPERATION_COUNTS: TypedDocumentNode<
+  GetOperationCounts,
+  GetOperationCountsVariables
+> = gql`
   query GetOperationCounts {
     watchedQueries @client {
       count
@@ -53,8 +63,8 @@ export const App = (): JSX.Element => {
         <Screen
           isVisible={undefined}
           navigationProps={{
-            queriesCount: data?.watchedQueries?.count,
-            mutationsCount: data?.mutationLog?.count,
+            queriesCount: data?.watchedQueries?.count ?? 0,
+            mutationsCount: data?.mutationLog?.count ?? 0,
           }}
           embeddedExplorerProps={{
             embeddedExplorerIFrame,
@@ -69,8 +79,8 @@ export const App = (): JSX.Element => {
       <Explorer
         isVisible={selected === Screens.Explorer}
         navigationProps={{
-          queriesCount: data?.watchedQueries?.count,
-          mutationsCount: data?.mutationLog?.count,
+          queriesCount: data?.watchedQueries?.count ?? 0,
+          mutationsCount: data?.mutationLog?.count ?? 0,
         }}
         embeddedExplorerProps={{
           embeddedExplorerIFrame,
