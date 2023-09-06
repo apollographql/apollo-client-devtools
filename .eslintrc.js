@@ -1,7 +1,7 @@
 module.exports = {
   root: true,
   parser: "@typescript-eslint/parser",
-  plugins: ["@typescript-eslint", "testing-library", "jest-dom"],
+  plugins: ["@typescript-eslint", "testing-library", "jest-dom", "@emotion"],
   extends: [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
@@ -23,6 +23,7 @@ module.exports = {
     "testing-library/no-node-access": "off",
     "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/no-unused-vars": "warn",
+    "@emotion/pkg-renaming": "error",
   },
   settings: {
     react: {
