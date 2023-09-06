@@ -1,4 +1,4 @@
-import React from "react";
+import { ChangeEvent } from "react";
 import { IconSearch } from "@apollo/space-kit/icons/IconSearch";
 import { TextField } from "@apollo/space-kit/TextField";
 import { colors } from "@apollo/space-kit/colors";
@@ -7,6 +7,7 @@ import { rem } from "polished";
 
 import { objectFilter } from "../common/utils";
 import { useTheme, Theme } from "../../../theme";
+import { JSONObject } from "../../../types/json";
 
 const searchIconStyles = (theme: Theme) => ({
   height: 16,
@@ -39,21 +40,21 @@ const textFieldStyles = css`
 `;
 
 interface SearchProps {
-  data: Record<string, any>;
-  setSearchResults: (results: Record<string, any>) => void;
+  data: Record<string, JSONObject>;
+  setSearchResults: (results: Record<string, JSONObject>) => void;
 }
 
-export const Search: React.FC<SearchProps> = ({ data, setSearchResults }) => {
+export const Search = ({ data, setSearchResults }: SearchProps) => {
   const theme = useTheme();
 
-  function performSearch(event) {
+  function performSearch(event: ChangeEvent<HTMLInputElement>) {
     const keywords = event.target.value;
     if (keywords.trim() === "") {
       setSearchResults({});
     }
 
     if (keywords.length >= 3) {
-      const searchResults: Record<string, any> = {};
+      const searchResults: Record<string, JSONObject> = {};
       Object.keys(data).forEach((dataId) => {
         const results = objectFilter(data[dataId], keywords);
         if (results) searchResults[dataId] = results;

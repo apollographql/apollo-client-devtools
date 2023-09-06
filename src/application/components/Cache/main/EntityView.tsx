@@ -4,6 +4,7 @@ import { rem } from "polished";
 
 import { useTreeTheme } from "../../../theme";
 import { ReactNode } from "react";
+import { JSONObject } from "../../../types/json";
 
 const cacheStyles = css`
   padding-top: 1rem;
@@ -20,7 +21,19 @@ const selectedStyles = css`
   background-color: yellow;
 `;
 
-export function EntityView({ cacheId, data, searchResults, setCacheId }) {
+interface EntityViewProps {
+  cacheId: string;
+  data: JSONObject | undefined;
+  searchResults: Record<string, JSONObject>;
+  setCacheId: (cacheId: string) => void;
+}
+
+export function EntityView({
+  cacheId,
+  data,
+  searchResults,
+  setCacheId,
+}: EntityViewProps) {
   const treeTheme = useTreeTheme();
 
   if (!data) return null;
@@ -55,7 +68,7 @@ export function EntityView({ cacheId, data, searchResults, setCacheId }) {
               `}
               onClick={() => {
                 if (key === "__ref") {
-                  setCacheId(value);
+                  setCacheId(value as string);
                 }
               }}
             >

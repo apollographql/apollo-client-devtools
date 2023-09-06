@@ -1,6 +1,6 @@
 import { Fragment, useState } from "react";
 import { css } from "@emotion/react";
-import { gql, useQuery } from "@apollo/client";
+import { gql, TypedDocumentNode, useQuery } from "@apollo/client";
 import { rem } from "polished";
 import { colors } from "@apollo/space-kit/colors";
 
@@ -9,6 +9,8 @@ import { Search } from "./sidebar/Search";
 import { EntityList } from "./sidebar/EntityList";
 import { EntityView } from "./main/EntityView";
 import { Loading } from "./common/Loading";
+import { GetCache, GetCacheVariables } from "../../types/gql";
+import { JSONObject } from "../../types/json";
 
 const { Header, Sidebar, Main, Content } = SidebarLayout;
 
@@ -36,7 +38,7 @@ const noDataStyles = css`
   padding-top: ${rem(16)};
 `;
 
-const GET_CACHE = gql`
+const GET_CACHE: TypedDocumentNode<GetCache, GetCacheVariables> = gql`
   query GetCache {
     cache @client
   }
@@ -50,14 +52,16 @@ export function Cache({
     mutationsCount: number;
   };
 }): JSX.Element {
-  const [searchResults, setSearchResults] = useState({});
-  const [cacheId, setCacheId] = useState<string>("ROOT_QUERY");
+  const [searchResults, setSearchResults] = useState<
+    Record<string, JSONObject>
+  >({});
+  const [cacheId, setCacheId] = useState("ROOT_QUERY");
 
   const { loading, data } = useQuery(GET_CACHE);
 
-  let parsedData: Record<string, any> = {};
-  if (!loading && data && data.cache) {
-    parsedData = JSON.parse(data.cache);
+  let parsedData: Record<string, JSONObject> = {};
+  if (!loading && data?.cache) {
+    parsedData = JSON.parse(data.cache) as Record<string, JSONObject>;
   }
 
   const dataExists = parsedData && Object.keys(parsedData).length > 0;

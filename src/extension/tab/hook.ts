@@ -1,4 +1,9 @@
-import { ApolloClient, ApolloError, NetworkStatus } from "@apollo/client";
+import {
+  ApolloClient,
+  ApolloError,
+  DocumentNode,
+  NetworkStatus,
+} from "@apollo/client";
 
 // Note that we are intentionally not using Apollo Client's gql and
 // Observable exports, as we don't want Apollo Client and its dependencies
@@ -31,6 +36,8 @@ import {
 } from "../constants";
 import { EXPLORER_SUBSCRIPTION_TERMINATION } from "../../application/components/Explorer/postMessageHelpers";
 import { getPrivateAccess } from "../../privateAccess";
+import { JSONObject } from "../../application/types/json";
+import { FetchPolicy } from "../../application/components/Explorer/Explorer";
 
 const DEVTOOLS_KEY = Symbol.for("apollo.devtools");
 
@@ -50,7 +57,7 @@ type Hook = {
   version: string;
   getQueries: () => QueryInfo[];
   getMutations: () => QueryInfo[];
-  getCache: () => void;
+  getCache: () => JSONObject;
 };
 
 function initializeHook() {
@@ -148,32 +155,37 @@ function initializeHook() {
 
   clientRelay.listen(REQUEST_DATA, () => sendHookDataToDevTools(UPDATE));
 
-  clientRelay.listen(EXPLORER_REQUEST, ({ payload }) => {
+  clientRelay.listen<string>(EXPLORER_REQUEST, ({ payload }) => {
     const {
       operation: query,
       operationName,
       fetchPolicy,
       variables,
-    } = JSON.parse(payload);
+    } = JSON.parse(payload ?? "") as {
+      operation: string;
+      operationName: string | undefined;
+      variables: JSONObject | undefined;
+      fetchPolicy: FetchPolicy;
+    };
 
     const queryAst = gql(query);
+    const clonedQueryAst = JSON.parse(
+      JSON.stringify(queryAst)
+    ) as DocumentNode & { definitions: OperationDefinitionNode[] };
 
-    const clonedQueryAst = JSON.parse(JSON.stringify(queryAst));
+    const filteredDefinitions = clonedQueryAst.definitions.reduce<
+      OperationDefinitionNode[]
+    >((acumm, curr: OperationDefinitionNode) => {
+      if (
+        (curr.kind === "OperationDefinition" &&
+          curr.name?.value === operationName) ||
+        curr.kind !== "OperationDefinition"
+      ) {
+        acumm.push(curr);
+      }
 
-    const filteredDefinitions = clonedQueryAst.definitions.reduce(
-      (acumm: any, curr: OperationDefinitionNode) => {
-        if (
-          (curr.kind === "OperationDefinition" &&
-            curr.name?.value === operationName) ||
-          curr.kind !== "OperationDefinition"
-        ) {
-          acumm.push(curr);
-        }
-
-        return acumm;
-      },
-      []
-    );
+      return acumm;
+    }, []);
 
     clonedQueryAst.definitions = filteredDefinitions;
 
@@ -239,7 +251,7 @@ function initializeHook() {
   /**
    * Attempt to find the client on a 1-second interval for 10 seconds max
    */
-  let interval;
+  let interval: NodeJS.Timeout;
   function findClient() {
     let count = 0;
 

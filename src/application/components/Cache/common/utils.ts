@@ -1,6 +1,8 @@
+import { JSONObject } from "../../../types/json";
+
 // Return an alphabetically sorted list of all root cache ID's. ROOT_QUERY,
 // ROOT_MUTATION, and ROOT_SUBSCRIPTION will be listed first (if they exist).
-export function getRootCacheIds(data = {}) {
+export function getRootCacheIds(data: JSONObject = {}) {
   const sortedRootIds: string[] = [];
 
   ["ROOT_QUERY", "ROOT_MUTATION", "ROOT_SUBSCRIPTION"].forEach((id) => {
@@ -20,8 +22,8 @@ export function getRootCacheIds(data = {}) {
 // values that match the specified keywords. Object values are only matched
 // if they are strings, all matching is case insensitive, and only top
 // level values are checked (nested objects are skipped).
-export function objectFilter(data: Record<string, any>, keywords: string) {
-  let results;
+export function objectFilter(data: JSONObject, keywords: string) {
+  let results: JSONObject | undefined;
   const regex = new RegExp(keywords, "i");
   Object.keys(data).forEach((key) => {
     const value = data[key];

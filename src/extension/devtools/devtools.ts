@@ -12,6 +12,8 @@ import {
   RELOAD_TAB_COMPLETE,
 } from "../constants";
 import browser from "webextension-polyfill";
+import { QueryInfo } from "../tab/helpers";
+import { JSONObject } from "../../application/types/json";
 
 const inspectedTabId = browser.devtools.inspectedWindow.tabId;
 const devtools = new Relay();
@@ -29,10 +31,11 @@ devtools.addConnection("background", (message) => {
   }
 });
 
-function sendMessageToClient(message: any) {
+function sendMessageToClient(message: string) {
   devtools.send({
     message,
     to: `background:tab-${inspectedTabId}:client`,
+    payload: undefined,
   });
 }
 
@@ -49,7 +52,7 @@ devtools.addConnection(EXPLORER_SUBSCRIPTION_TERMINATION, () => {
   sendMessageToClient(EXPLORER_SUBSCRIPTION_TERMINATION);
 });
 
-devtools.listen(CREATE_DEVTOOLS_PANEL, async ({ payload }) => {
+devtools.listen<string>(CREATE_DEVTOOLS_PANEL, async ({ payload }) => {
   if (isPanelCreated) {
     return;
   }
@@ -61,13 +64,18 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, async ({ payload }) => {
   );
 
   isPanelCreated = true;
-  const { queries, mutations, cache } = JSON.parse(payload);
-  let removeUpdateListener;
-  let removeExplorerForward;
-  let removeSubscriptionTerminationListener;
-  let removeReloadListener;
-  let clearRequestInterval;
-  let removeExplorerListener;
+  const { queries, mutations, cache } = JSON.parse(payload ?? "") as {
+    queries: QueryInfo[];
+    mutations: QueryInfo[];
+    cache: Record<string, JSONObject>;
+  };
+
+  let removeUpdateListener: () => void;
+  let removeExplorerForward: () => void;
+  let removeSubscriptionTerminationListener: () => void;
+  let removeReloadListener: () => void;
+  let clearRequestInterval: () => void;
+  let removeExplorerListener: () => void;
 
   panel.onShown.addListener((window) => {
     sendMessageToClient(PANEL_OPEN);
@@ -82,7 +90,7 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, async ({ payload }) => {
         handleReload,
         handleReloadComplete,
       },
-    } = window as any;
+    } = window;
 
     if (!isAppInitialized) {
       initialize();
@@ -92,8 +100,12 @@ devtools.listen(CREATE_DEVTOOLS_PANEL, async ({ payload }) => {
 
     clearRequestInterval = startRequestInterval();
 
-    removeUpdateListener = devtools.listen(UPDATE, ({ payload }) => {
-      const { queries, mutations, cache } = JSON.parse(payload);
+    removeUpdateListener = devtools.listen<string>(UPDATE, ({ payload }) => {
+      const { queries, mutations, cache } = JSON.parse(payload ?? "") as {
+        queries: QueryInfo[];
+        mutations: QueryInfo[];
+        cache: Record<string, JSONObject>;
+      };
       writeData({ queries, mutations, cache: JSON.stringify(cache) });
     });
 

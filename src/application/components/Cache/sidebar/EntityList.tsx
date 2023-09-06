@@ -6,6 +6,7 @@ import { rem } from "polished";
 
 import { useTheme } from "../../../theme";
 import { getRootCacheIds } from "../common/utils";
+import { JSONObject } from "../../../types/json";
 
 const listStyles = css`
   font-family: monospace;
@@ -17,7 +18,19 @@ const listStyles = css`
   }
 `;
 
-export function EntityList({ data, cacheId, setCacheId, searchResults = {} }) {
+interface EntityListProps {
+  data: Record<string, JSONObject>;
+  cacheId: string;
+  setCacheId: (cacheId: string) => void;
+  searchResults: Record<string, JSONObject>;
+}
+
+export function EntityList({
+  data,
+  cacheId,
+  setCacheId,
+  searchResults = {},
+}: EntityListProps) {
   const theme = useTheme();
   const ids = getRootCacheIds(data);
   const idHits = Object.keys(searchResults);
@@ -27,7 +40,7 @@ export function EntityList({ data, cacheId, setCacheId, searchResults = {} }) {
       selectedColor={theme.sidebarSelected}
       hoverColor={theme.sidebarHover}
     >
-      {ids.map((listCacheId: string, index) => {
+      {ids.map((listCacheId, index) => {
         return (
           <ListItem
             key={`${listCacheId}-${index}`}

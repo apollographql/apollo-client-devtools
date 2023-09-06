@@ -5,6 +5,8 @@ import { gql } from "@apollo/client";
 import matchMediaMock from "../utilities/testing/matchMedia";
 import { Mode, colorTheme } from "../theme";
 import { AppProvider, getQueryData, getMutationData } from "../index";
+import { QueryInfo } from "../../extension/tab/helpers";
+import { print, getIntrospectionQuery } from "graphql";
 
 const matchMedia = matchMediaMock();
 
@@ -25,10 +27,8 @@ describe("<AppProvider />", () => {
   });
 
   describe("getQueryData", () => {
-    let queryData;
-
-    beforeEach(() => {
-      queryData = {
+    test("returns expected query data", () => {
+      const queryData: QueryInfo = {
         document: gql`
           query GetColorByHex {
             someQuery {
@@ -37,9 +37,6 @@ describe("<AppProvider />", () => {
             }
           }
         `,
-        source: {
-          body: "some source",
-        },
         variables: {
           color: "#ee82ee",
         },
@@ -47,10 +44,9 @@ describe("<AppProvider />", () => {
           name: "Violet",
         },
       };
-    });
 
-    test("returns expected query data", () => {
       const data = getQueryData(queryData, 0);
+
       expect(data).toEqual({
         id: 0,
         __typename: "WatchedQuery",
@@ -67,15 +63,8 @@ describe("<AppProvider />", () => {
     });
 
     test("ignores IntrospectionQuery", () => {
-      queryData.document = {
-        definitions: [
-          {
-            kind: "OperationDefinition",
-            name: {
-              value: "IntrospectionQuery",
-            },
-          },
-        ],
+      const queryData: QueryInfo = {
+        document: gql(getIntrospectionQuery()),
       };
 
       const data = getQueryData(queryData, 0);
@@ -84,36 +73,27 @@ describe("<AppProvider />", () => {
   });
 
   describe("getMutationData", () => {
-    let mutationData;
+    test("returns expected mutation data", () => {
+      const mutation = gql`
+        mutation SaveColor {
+          saveColor
+        }
+      `;
 
-    beforeEach(() => {
-      mutationData = {
-        document: {
-          definitions: [
-            {
-              kind: "OperationDefinition",
-              name: {
-                value: "SaveColor",
-              },
-            },
-          ],
-        },
-        source: {
-          body: "mutation-string",
-        },
+      const mutationData: QueryInfo = {
+        document: mutation,
         variables: {
           color: "#ee82ee",
         },
       };
-    });
 
-    test("returns expected mutation data", () => {
       const data = getMutationData(mutationData, 0);
+
       expect(data).toEqual({
         id: 0,
-        __typename: "Mutation",
+        __typename: "WatchedMutation",
         name: "SaveColor",
-        mutationString: "mutation-string",
+        mutationString: print(mutation),
         variables: {
           color: "#ee82ee",
         },
