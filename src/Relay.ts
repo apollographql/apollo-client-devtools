@@ -35,7 +35,6 @@ class Relay extends EventTarget {
 
     if (message?.to) {
       let destination = message.to;
-      event.detail["to"] = destination;
       let nextDestination: string | undefined;
       let remaining: string[];
 
