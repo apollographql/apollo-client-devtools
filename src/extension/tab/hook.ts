@@ -169,7 +169,9 @@ function initializeHook() {
     };
 
     const queryAst = gql(query);
-    const clonedQueryAst = JSON.parse(JSON.stringify(queryAst)) as DocumentNode;
+    const clonedQueryAst = JSON.parse(
+      JSON.stringify(queryAst)
+    ) as DocumentNode & { definitions: OperationDefinitionNode[] };
 
     const filteredDefinitions = clonedQueryAst.definitions.reduce<
       OperationDefinitionNode[]
@@ -185,7 +187,7 @@ function initializeHook() {
       return acumm;
     }, []);
 
-    (clonedQueryAst as any).definitions = filteredDefinitions;
+    clonedQueryAst.definitions = filteredDefinitions;
 
     const definition = getMainDefinition(clonedQueryAst);
 
