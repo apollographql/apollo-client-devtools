@@ -22,7 +22,7 @@ module.exports = {
     "react/display-name": "off",
     "testing-library/no-node-access": "off",
     "@typescript-eslint/no-explicit-any": "warn",
-    "@typescript-eslint/no-unused-vars": "warn",
+    "@typescript-eslint/no-unused-vars": ["warn", { ignoreRestSiblings: true }],
     "@emotion/pkg-renaming": "error",
   },
   settings: {
