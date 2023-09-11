@@ -18,7 +18,7 @@
     "build:prod": "npm run clean && webpack --env NODE_ENV=production --progress",
     "check:format": "prettier --check .",
     "clean": "rimraf build && mkdir build && rimraf dist && mkdir dist",
-    "changeset-publish": "npm run build:prod && changeset publish",
+    "changeset-publish": "npm run build:prod && npm run zip:chrome && changeset publish",
     "changeset-check": "changeset status --verbose --since=origin/main",
     "changeset-version": "changeset version && npm i && npm run prepdist:changesets",
     "chrome": "npm run build -- --watch --env TARGET=chromium",
