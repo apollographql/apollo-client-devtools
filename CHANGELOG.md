@@ -1,5 +1,21 @@
 # Changelog
 
+## 4.2.0
+
+### Minor Changes
+
+- [#1070](https://github.com/apollographql/apollo-client-devtools/pull/1070) [`8ff6f05`](https://github.com/apollographql/apollo-client-devtools/commit/8ff6f0578ae8ccc124601436ed8fb04b91837626) Thanks [@alessbell](https://github.com/alessbell)! - Removes [`apollo-link-state`](https://github.com/apollographql/apollo-link-state) support, which was deprecated in 2019.
+
+### Patch Changes
+
+- [#1072](https://github.com/apollographql/apollo-client-devtools/pull/1072) [`0d16b8e`](https://github.com/apollographql/apollo-client-devtools/commit/0d16b8e993b6905614b917920a9af39a90f84181) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Upgrade `@emotion/react` to v11.11.1 to get access to updated TypeScript types
+
+- [#1073](https://github.com/apollographql/apollo-client-devtools/pull/1073) [`bc0cd51`](https://github.com/apollographql/apollo-client-devtools/commit/bc0cd51225d99b70e02dea6b67f50adfc3271371) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Upgrade to TypeScript v5
+
+- [#1056](https://github.com/apollographql/apollo-client-devtools/pull/1056) [`ddaec3d`](https://github.com/apollographql/apollo-client-devtools/commit/ddaec3dbdbc8ede12dadca66a3c212cdd56dfca3) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Improve searching the cache by filtering the list of cache ids that match the search term and highlight the matched substring. This change removes the matching against the cache values as that was difficult to determine why a match occurred.
+
+- [#1085](https://github.com/apollographql/apollo-client-devtools/pull/1085) [`61540a8`](https://github.com/apollographql/apollo-client-devtools/commit/61540a8f175de102102bf019c5ebce3eda99e212) Thanks [@alessbell](https://github.com/alessbell)! - Fix scrolling bug introduced when making sidebar expandable.
+
 ## 4.1.6
 
 ### Patch Changes
