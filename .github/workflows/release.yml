@@ -47,8 +47,8 @@ jobs:
         with:
           node-version: 18.x
 
-      - name: Install dependencies (with cache)
-        uses: bahmutov/npm-install@v1
+      - name: Install dependencies
+        run: npm ci
 
       - name: Create release PR or publish to npm + GitHub
         id: changesets
@@ -60,16 +60,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Upload & release Chrome extension
-        if: steps.changesets.outcome == 'success' && steps.changesets.outputs.published == 'true'
-        uses: mnao305/chrome-extension-upload@v4.0.1
-        with:
-          file-path: dist/chrome.zip
-          extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
-          client-id: ${{ secrets.CHROME_CLIENT_ID }}
-          client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
-          refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
 
       - name: Send a Slack notification on publish
         if: steps.changesets.outcome == 'success' && steps.changesets.outputs.published == 'true'
@@ -88,29 +78,8 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "A new version of `apollo-client-devtools` was released :rocket:"
+                    "text": "A new version of `apollo-client-devtools` was released: <https://github.com/apollographql/apollo-client-devtools/releases/tag/v${{ fromJson(steps.changesets.outputs.publishedPackages)[0].version }}|v${{ fromJson(steps.changesets.outputs.publishedPackages)[0].version }}> :rocket:"
                   }
-                },
-                {
-                  "type": "section",
-                  "fields": [
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Version:*\n`${{ fromJson(steps.changesets.outputs.publishedPackages)[0].version }}`"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Tag:*\n`latest`"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*GitHub release:*\n<https://github.com/apollographql/apollo-client-devtools/releases/tag/v${{ fromJson(steps.changesets.outputs.publishedPackages)[0].version }}|link>"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*npm releases:*\n<https://www.npmjs.com/package/apollo-client-devtools/v/${{ fromJson(steps.changesets.outputs.publishedPackages)[0].version }}|link>"
-                    }
-                  ]
                 }
               ]
             }

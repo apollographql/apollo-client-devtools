@@ -1,0 +1,67 @@
+name: Deploy
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  deploy-chrome:
+    name: Deploy Chrome extension
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build production extension
+        run: npm run build:prod
+
+      - name: Create zip file
+        run: npm run dist chrome
+
+      - name: Upload & release Chrome extension
+        uses: mnao305/chrome-extension-upload@v4.0.1
+        with:
+          file-path: apollo-client-devtools-chrome.zip
+          extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
+          client-id: ${{ secrets.CHROME_CLIENT_ID }}
+          client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
+          refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
+
+  deploy-firefox:
+    name: Deploy Firefox extension
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build production extension
+        run: npm run build:prod
+
+      - name: Create zip file
+        run: npm run dist firefox
+
+      - name: Publish the extension for Firefox
+        uses: yayuyokitano/firefox-addon@v0.0.6-alpha
+        with:
+          api_key: ${{ secrets.FIREFOX_API_KEY }}
+          api_secret: ${{ secrets.FIREFOX_API_SECRET }}
+          guid: ${{ secrets.FIREFOX_ADDON_UUID }}
+          xpi_path: apollo-client-devtools-firefox.zip
+          src_path: apollo-client-devtools-src.zip
