@@ -14,7 +14,7 @@ This repository contains the Apollo Client Browser Devtools extension for Chrome
 
 The Apollo Client Browser Devtools appear as an "Apollo" tab in your web browser inspector, alongside other tabs like "Elements" and "Console". The devtools currently have four main features:
 
-- **GraphiQL:** Send queries to your server through your web applications configured Apollo Client instance, or query the Apollo Client cache to see what data is loaded.
+- **Explorer:** A built-in version of the Apollo Studio Explorer that allows you to make queries against your GraphQL server using your app's network interface directly (no configuration necessary).
 - **Watched query inspector:** View active queries, variables, cached results, and re-run individual queries.
 - **Mutation inspector:** View fired mutations, variables, and re-run individual mutations.
 - **Cache inspector:** Visualize the Apollo Client cache and search through it by field names and/or values.
