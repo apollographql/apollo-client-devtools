@@ -1,0 +1,18 @@
+# The action fetches an access token from Google API.
+# It can be used to prevent your Refresh Token from being expired.
+# See https://github.com/cardinalby/google-api-fetch-token-action for more info.
+
+name: "fetch-access-token"
+on:
+  schedule:
+    - cron: "0 3 2 * *" # At 03:00 on day-of-month 2
+
+jobs:
+  fetchToken:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: cardinalby/google-api-fetch-token-action@v1
+        with:
+          clientId: ${{ secrets.CHROME_CLIENT_ID }}
+          clientSecret: ${{ secrets.CHROME_CLIENT_SECRET }}
+          refreshToken: ${{ secrets.CHROME_REFRESH_TOKEN }}
