@@ -59,6 +59,7 @@ const Sidebar = ({ navigationProps, children }: SidebarProps) => {
         defaultSize={25}
         minSize={10}
         style={{
+          overflow: "scroll",
           height: "100vh",
           backgroundColor: "var(--primary)",
         }}
@@ -91,6 +92,7 @@ const Content = ({ children }: ContentProps) => (
     minSize={30}
     data-testid="content"
     style={{
+      overflow: "scroll",
       height: "100vh",
       width: "100%",
       backgroundColor: "var(--main)",
