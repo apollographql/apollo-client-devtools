@@ -80,7 +80,7 @@ export const Mutations = ({
         <SidebarLayout.Header>
           {selectedMutation && (
             <Fragment>
-              <h1 className="font-normal font-monospace text-lg">
+              <h1 className="font-normal font-monospace text-xl">
                 <code>{selectedMutation.name}</code>
               </h1>
               <span css={operationNameStyles}>Mutation</span>

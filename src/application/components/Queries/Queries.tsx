@@ -105,7 +105,7 @@ export const Queries = ({
         <SidebarLayout.Header>
           {selectedQuery && (
             <Fragment>
-              <h1 className="font-normal font-monospace text-lg">
+              <h1 className="font-normal font-monospace text-xl">
                 <code>{selectedQuery.name}</code>
               </h1>
               <span css={operationNameStyles}>Query</span>
