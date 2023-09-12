@@ -28,7 +28,7 @@ const headerStyles = css`
   border-bottom: ${rem(1)} solid var(--mainBorder);
   background-color: var(--main);
   color: var(--textPrimary);
-  height: 2.5rem;
+  height: 2.75rem;
 `;
 
 const mainStyles = css`
