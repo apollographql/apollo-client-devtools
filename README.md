@@ -57,13 +57,21 @@ If you are seeing the "Apollo" tab but are still having issues, skip ahead to th
 
 ## Developing
 
-### Installation
+### Build the extension
 
-After cloning this repo, install the required packages:
+Before building the extension you should install dependencies:
 
-```bash
-cd apollo-client-devtools
-npm install
+```sh
+# Install dependencies
+> npm install
+
+# Build the extension
+> npm run build
+
+# Generate zipped distributables
+> npm run dist chrome
+# or
+> npm run dist firefox
 ```
 
 ### Running the sample application
@@ -134,7 +142,7 @@ There are two main pieces of the Apollo Client Browser Devtools: the extension i
 
 The devtools folder structure mirrors this architecture. The source code for the extension can be found in `src/extension`. The React application code can be found in `src/application`.
 
-For builds, we use the `build` folder. After a build, all of the files needed to run the devtools can be found here. If these files are bundled for development, source maps are provided. When these files are bundled for production, source maps are not provided and the code is minified. We use the `dist` folder for distributable zip files.
+For builds, we use the `build` folder. After a build, all of the files needed to run the devtools can be found here. If these files are bundled for development, source maps are provided. When these files are bundled for production, source maps are not provided and the code is minified. Distributable zip files are generated in the root of the project.
 
 ### Application Structure
 
@@ -172,17 +180,6 @@ If you are using Apollo Client 3.0, make sure you are using at least version 2.3
 
 If you're seeing an error that's being caused by the devtools, please open an issue on this repository with a detailed explanation of the problem and steps that we can take to replicate the error.
 
-## Publishing
-
-Release process, for those with permission:
-
-1. Verify that your changes work as expected by loading the extension as an "unpacked extension" locally for each browser.
-2. Update the `./package.json` and `./src/extension/manifest.json` version numbers.
-3. Commit changes and tag your version as a github release.
-4. Publish a new version to npm using `npm publish` in the root of the project. We're publishing to npm to allow other projects to have a dependency on devtools.
-5. Run `npm run zip` to pack all of the builds for submission.
-6. Create a new release in the Chrome/Firefox web stores (following the instructions for each browser in the sections below), uploading the zip bundle.
-
 ### Chrome
 
 #### Testing locally
@@ -197,7 +194,7 @@ Release process, for those with permission:
 1. Login to the [Chrome webstore](https://chrome.google.com/webstore/user/purchases?authuser=1) and access the Developer Dashboard.
 2. Select the `Apollo Client Devtools` extension to update.
 3. Click on `Package` then `Upload new package`.
-4. Select the `./dist/chrome.zip` file for upload.
+4. Select the `apollo-client-devtools-chrome.zip` file for upload.
 5. Click on "Submit for review".
 
 ### Firefox
@@ -206,7 +203,7 @@ Release process, for those with permission:
 
 1. In your Firefox URL bar, go to: `about:debugging#/runtime/this-firefox`
 2. Click on `Load Temporary Add-on`.
-3. Add the `apollo-client-devtools/dist/apollo_client_developer_tools-X.X.X.zip` file.
+3. Add the `apollo-client-devtools-firefox.zip` file.
 4. The add-on should now be installed.
 
 #### Submit for review
@@ -216,7 +213,7 @@ Release process, for those with permission:
 3. Click on the "Upload New Version" link in the top left side menu.
 4. Agree to any new Firefox distribution agreements or policies that might show up.
 5. When the "Submit a New Version" page shows, click on the file upload button in the "Upload Version" section (keeping "Firefox" as the only option checked in the compatible application section).
-6. Choose the `apollo-client-devtools/dist/apollo_client_developer_tools-X.X.X.zip` for upload and submit. **NOTE: when uploading to Firefox, you also must include the source code. A zipped version of the `apollo-client-devtools` repo with the built files, node_modules, tests & development folder deleted will do**
+6. Choose the `apollo-client-devtools/apollo-client-devtools-firefox.zip` for upload and submit. **NOTE: when uploading to Firefox, you also must include the source code. Select the file `apollo-client-devtools/apollo-client-devtools-src.zip` for upload.**
 7. After the file has been validated, continue with the submission.
 
 ## Code of Conduct
