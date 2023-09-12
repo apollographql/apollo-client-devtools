@@ -59,7 +59,7 @@ devtools.listen<string>(CREATE_DEVTOOLS_PANEL, async ({ payload }) => {
 
   const panel = await browser.devtools.panels.create(
     "Apollo",
-    "logo_devtools.png",
+    "",
     "panel.html"
   );
 
