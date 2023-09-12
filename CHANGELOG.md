@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.2.2
+
+### Patch Changes
+
+- [#1057](https://github.com/apollographql/apollo-client-devtools/pull/1057) [`4de261c`](https://github.com/apollographql/apollo-client-devtools/commit/4de261c1cba2b3fc9320d494db1156a27bb13f07) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Introduce Tailwind and begin migrating existing CSS.
+
 ## 4.2.1
 
 ### Patch Changes
