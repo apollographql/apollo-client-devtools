@@ -9,6 +9,7 @@ import {
   receiveSubscriptionTerminationRequest,
   sendResponseToExplorer,
 } from "../../application/components/Explorer/explorerRelay";
+import "./panel.css";
 
 declare global {
   interface Window {

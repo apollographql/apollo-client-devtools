@@ -1,8 +1,5 @@
-import { Fragment, useMemo, useState } from "react";
-import { css } from "@emotion/react";
-import { gql, TypedDocumentNode, useQuery } from "@apollo/client";
-import { rem } from "polished";
-import { colors } from "@apollo/space-kit/colors";
+import { Fragment, useState, useMemo } from "react";
+import { gql, useQuery, TypedDocumentNode } from "@apollo/client";
 
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { Search } from "./sidebar/Search";
@@ -13,30 +10,6 @@ import { GetCache, GetCacheVariables } from "../../types/gql";
 import { JSONObject } from "../../types/json";
 
 const { Header, Sidebar, Main, Content } = SidebarLayout;
-
-const h1Styles = css`
-  font-family: monospace;
-  font-weight: normal;
-  font-size: ${rem(20)};
-`;
-
-const headerLabelStyles = css`
-  margin: ${rem(3)} 0 0 ${rem(8)};
-  font-family: "Source Sans Pro", sans-serif;
-  color: ${colors.grey.light};
-  text-transform: uppercase;
-  font-size: ${rem(11)};
-`;
-
-const noDataStyles = css`
-  margin-left: ${rem(12)};
-  text-transform: uppercase;
-  font-size: ${rem(13)};
-  font-weight: normal;
-  letter-spacing: ${rem(1)};
-  color: var(--whiteTransparent);
-  padding-top: ${rem(16)};
-`;
 
 const GET_CACHE: TypedDocumentNode<GetCache, GetCacheVariables> = gql`
   query GetCache {
@@ -101,15 +74,21 @@ export function Cache({
             />
           </Fragment>
         ) : (
-          <h3 css={noDataStyles}>No cache data</h3>
+          <h3 className="ml-3 uppercase text-sm font-normal pt-4 text-white/50 tracking-wider">
+            No cache data
+          </h3>
         )}
       </Sidebar>
       <Content>
         <Header>
           {dataExists ? (
             <Fragment>
-              <h1 css={h1Styles}>{cacheId || undefined}</h1>
-              <span css={headerLabelStyles}>CACHE ID</span>
+              <h1 className="font-monospace font-normal text-xl">
+                <code>{cacheId || undefined}</code>
+              </h1>
+              <span className="font-sans text-grey-light uppercase text-xs mt-1 ml-2">
+                CACHE ID
+              </span>
             </Fragment>
           ) : null}
         </Header>

@@ -8,7 +8,6 @@ import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { RunInExplorerButton } from "../Queries/RunInExplorerButton";
 import {
   sidebarHeadingStyles,
-  h1Styles,
   operationNameStyles,
   listStyles,
 } from "../Queries/Queries";
@@ -81,7 +80,9 @@ export const Mutations = ({
         <SidebarLayout.Header>
           {selectedMutation && (
             <Fragment>
-              <h1 css={h1Styles}>{selectedMutation.name}</h1>
+              <h1 className="font-normal font-monospace text-xl">
+                <code>{selectedMutation.name}</code>
+              </h1>
               <span css={operationNameStyles}>Mutation</span>
               <RunInExplorerButton
                 operation={selectedMutation.mutationString}
