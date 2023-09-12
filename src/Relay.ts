@@ -4,6 +4,7 @@
 */
 import EventTarget from "./extension/EventTarget";
 import { CustomEventListener, MessageObj } from "./types";
+
 class Relay extends EventTarget {
   private connections = new Map<
     string,
@@ -29,16 +30,11 @@ class Relay extends EventTarget {
     }
   };
 
-  private createEvent = (message: string) => {
-    return new CustomEvent(message, { detail: {} });
-  };
-
-  public broadcast = (message: MessageObj) => {
-    let event = this.createEvent(message.message);
+  public broadcast = <TPayload = any>(message: MessageObj<TPayload>) => {
+    let event = new CustomEvent(message.message, { detail: message });
 
     if (message?.to) {
       let destination = message.to;
-      event.detail["to"] = destination;
       let nextDestination: string | undefined;
       let remaining: string[];
 
@@ -50,18 +46,19 @@ class Relay extends EventTarget {
       }
 
       if (this.connections.has(destination)) {
-        event = this.createEvent(destination);
+        event = new CustomEvent(destination, { detail: message });
         event.detail["to"] = nextDestination;
       }
     }
 
-    event.detail["message"] = message.message;
-    event.detail["payload"] = message.payload;
     this.dispatchEvent(event);
   };
 
-  public listen = <T = any>(name: string, fn: CustomEventListener<T>) => {
-    function wrappedFn(event: CustomEvent<MessageObj<T>>) {
+  public listen = <TPayload = any>(
+    name: string,
+    fn: CustomEventListener<TPayload>
+  ) => {
+    function wrappedFn(event: CustomEvent<MessageObj<TPayload>>) {
       return fn(event.detail);
     }
 

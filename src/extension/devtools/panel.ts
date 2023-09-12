@@ -11,7 +11,21 @@ import {
 } from "../../application/components/Explorer/explorerRelay";
 import "./panel.css";
 
-(window as any).__DEVTOOLS_APPLICATION__ = {
+declare global {
+  interface Window {
+    __DEVTOOLS_APPLICATION__: {
+      initialize: typeof initDevTools;
+      writeData: typeof writeData;
+      receiveExplorerRequests: typeof receiveExplorerRequests;
+      receiveSubscriptionTerminationRequest: typeof receiveSubscriptionTerminationRequest;
+      sendResponseToExplorer: typeof sendResponseToExplorer;
+      handleReload: typeof handleReload;
+      handleReloadComplete: typeof handleReloadComplete;
+    };
+  }
+}
+
+window.__DEVTOOLS_APPLICATION__ = {
   initialize: initDevTools,
   writeData,
   receiveExplorerRequests,

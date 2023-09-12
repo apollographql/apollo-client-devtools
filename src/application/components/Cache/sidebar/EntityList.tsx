@@ -6,6 +6,8 @@ import { rem } from "polished";
 
 import { useTheme } from "../../../theme";
 import { getRootCacheIds } from "../common/utils";
+import { JSONObject } from "../../../types/json";
+import HighlightMatch from "../../HighlightMatch";
 
 const listStyles = css`
   font-family: monospace;
@@ -17,25 +19,40 @@ const listStyles = css`
   }
 `;
 
-export function EntityList({ data, cacheId, setCacheId, searchResults = {} }) {
+interface EntityListProps {
+  data: Record<string, JSONObject>;
+  selectedCacheId: string;
+  setCacheId: (cacheId: string) => void;
+  searchTerm: string;
+}
+
+export function EntityList({
+  data,
+  selectedCacheId,
+  setCacheId,
+  searchTerm,
+}: EntityListProps) {
   const theme = useTheme();
   const ids = getRootCacheIds(data);
-  const idHits = Object.keys(searchResults);
+
   return (
     <List
       css={listStyles}
       selectedColor={theme.sidebarSelected}
       hoverColor={theme.sidebarHover}
     >
-      {ids.map((listCacheId: string, index) => {
+      {ids.map((cacheId) => {
         return (
           <ListItem
-            key={`${listCacheId}-${index}`}
-            onClick={() => setCacheId(listCacheId)}
-            selected={listCacheId === cacheId}
-            highlighted={idHits.includes(listCacheId)}
+            key={cacheId}
+            onClick={() => setCacheId(cacheId)}
+            selected={cacheId === selectedCacheId}
           >
-            {listCacheId}
+            {searchTerm ? (
+              <HighlightMatch searchTerm={searchTerm} value={cacheId} />
+            ) : (
+              cacheId
+            )}
           </ListItem>
         );
       })}

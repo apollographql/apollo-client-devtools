@@ -9,6 +9,7 @@ describe("Relay", () => {
       relay.send({
         message: "The L train is delayed.",
         to: "Bedford Ave",
+        payload: undefined,
       });
     }).then((result) => {
       expect(result).toEqual({
@@ -25,6 +26,7 @@ describe("Relay", () => {
       relay.send({
         message: "The L train is delayed.",
         to: "Bedford Ave:Lorimer St",
+        payload: undefined,
       });
     }).then((result) => {
       expect(result).toEqual({
@@ -49,6 +51,7 @@ describe("Relay", () => {
           relay.send({
             message: "The L train is delayed.",
             to: "Bedford Ave",
+            payload: undefined,
           });
 
           // We set a short delay to allow the above to fail.
@@ -63,6 +66,7 @@ describe("Relay", () => {
       relay.send({
         message: "The L train is delayed.",
         to: "Bedford Ave",
+        payload: undefined,
       });
     }));
 
@@ -70,7 +74,7 @@ describe("Relay", () => {
     new Promise((resolve) => {
       const relay = new Relay();
       relay.listen("Train delayed.", resolve);
-      relay.broadcast({ message: "Train delayed." });
+      relay.broadcast({ message: "Train delayed.", payload: undefined });
     }).then((result) => {
       expect(result).toEqual({ message: "Train delayed.", payload: undefined });
     }));
@@ -87,7 +91,7 @@ describe("Relay", () => {
           });
           removeEventListener();
           // A second broadcast will cause a test failure if the listener has not been removed.
-          relay.broadcast({ message: "Train delayed." });
+          relay.broadcast({ message: "Train delayed.", payload: undefined });
 
           // We set a short delay to allow the above to fail.
           setTimeout(resolve, 1000);
@@ -97,7 +101,7 @@ describe("Relay", () => {
       });
 
       const removeEventListener = relay.listen("Train delayed.", callback);
-      relay.broadcast({ message: "Train delayed." });
+      relay.broadcast({ message: "Train delayed.", payload: undefined });
     }));
 
   it("can forward message to a connection", () =>

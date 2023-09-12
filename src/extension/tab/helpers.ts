@@ -1,18 +1,17 @@
 import type { ObservableQuery } from "@apollo/client";
+import type { Cache } from "@apollo/client/cache";
 import type {
   DocumentNode,
-  Source,
   OperationDefinitionNode,
   FragmentDefinitionNode,
 } from "graphql/language";
+import { QueryData, Variables } from "../../application/types/scalars";
 import { getPrivateAccess } from "../../privateAccess";
 
 export type QueryInfo = {
   document: DocumentNode;
-  source?: Source;
-  variables?: Record<string, any>;
-  diff?: Record<string, any>;
-  cachedData?: any; // Not a member of the actual Apollo Client QueryInfo type
+  variables?: Variables;
+  cachedData?: QueryData; // Not a member of the actual Apollo Client QueryInfo type
 };
 
 // Transform the map of observable queries into a list of QueryInfo objects usable by DevTools
@@ -29,9 +28,8 @@ export function getQueries(
 
       queries.push({
         document,
-        source: document?.loc?.source,
         variables,
-        cachedData: diff?.result,
+        cachedData: diff.result,
       });
     });
   }
@@ -39,12 +37,20 @@ export function getQueries(
 }
 
 // Version of getQueries compatible with Apollo Client versions < 3.4.0
-export function getQueriesLegacy(queryMap: any): QueryInfo[] {
+export function getQueriesLegacy(
+  queryMap: Map<
+    string,
+    {
+      document: DocumentNode;
+      variables: Variables;
+      diff: Cache.DiffResult<any>;
+    }
+  >
+): QueryInfo[] {
   let queries: QueryInfo[] = [];
   if (queryMap) {
     queries = [...queryMap.values()].map(({ document, variables, diff }) => ({
       document,
-      source: document?.loc?.source,
       variables,
       cachedData: diff?.result,
     }));
@@ -52,7 +58,9 @@ export function getQueriesLegacy(queryMap: any): QueryInfo[] {
   return queries;
 }
 
-export function getMutations(mutationsObj): QueryInfo[] {
+export function getMutations(
+  mutationsObj: Record<string, { mutation: DocumentNode; variables: Variables }>
+): QueryInfo[] {
   const keys = Object.keys(mutationsObj);
 
   if (keys.length === 0) {
@@ -64,7 +72,6 @@ export function getMutations(mutationsObj): QueryInfo[] {
     return {
       document: mutation,
       variables,
-      source: mutation?.loc?.source,
     };
   });
 }

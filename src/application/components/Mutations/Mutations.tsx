@@ -1,5 +1,5 @@
 import { Fragment, useState } from "react";
-import { gql, useQuery } from "@apollo/client";
+import { gql, TypedDocumentNode, useQuery } from "@apollo/client";
 import { List } from "@apollo/space-kit/List";
 import { ListItem } from "@apollo/space-kit/ListItem";
 
@@ -13,25 +13,21 @@ import {
   listStyles,
 } from "../Queries/Queries";
 import { MutationViewer } from "./MutationViewer";
+import { GetMutations, GetMutationsVariables } from "../../types/gql";
 
-const GET_MUTATIONS = gql`
+const GET_MUTATIONS: TypedDocumentNode<
+  GetMutations,
+  GetMutationsVariables
+> = gql`
   query GetMutations {
     mutationLog @client {
       mutations {
         id
         name
+        mutationString
+        variables
+        ...MutationViewer_mutation
       }
-    }
-  }
-`;
-
-const GET_SELECTED_MUTATION = gql`
-  query GetSelectedMutation($id: ID!) {
-    mutation(id: $id) @client {
-      id
-      name
-      mutationString
-      variables
     }
   }
 `;
@@ -51,12 +47,11 @@ export const Mutations = ({
   const [selected, setSelected] = useState<number>(0);
   const theme = useTheme();
   const { data } = useQuery(GET_MUTATIONS);
-  const { data: selectedMutationData } = useQuery(GET_SELECTED_MUTATION, {
-    variables: { id: selected },
-    returnPartialData: true,
-  });
 
-  const shouldRender = !!data?.mutationLog?.mutations?.length;
+  const mutations = data?.mutationLog.mutations ?? [];
+  const selectedMutation = mutations.find(
+    (mutation) => mutation.id === selected
+  );
 
   return (
     <SidebarLayout navigationProps={navigationProps}>
@@ -69,7 +64,7 @@ export const Mutations = ({
           selectedColor={theme.sidebarSelected}
           hoverColor={theme.sidebarHover}
         >
-          {data?.mutationLog?.mutations.map(({ name, id }) => {
+          {mutations.map(({ name, id }) => {
             return (
               <ListItem
                 key={`${name}-${id}`}
@@ -84,13 +79,13 @@ export const Mutations = ({
       </SidebarLayout.Sidebar>
       <SidebarLayout.Content>
         <SidebarLayout.Header>
-          {shouldRender && (
+          {selectedMutation && (
             <Fragment>
-              <h1 css={h1Styles}>{selectedMutationData?.mutation.name}</h1>
+              <h1 css={h1Styles}>{selectedMutation.name}</h1>
               <span css={operationNameStyles}>Mutation</span>
               <RunInExplorerButton
-                operation={selectedMutationData?.mutation?.mutationString}
-                variables={selectedMutationData?.mutation?.variables}
+                operation={selectedMutation.mutationString}
+                variables={selectedMutation.variables ?? undefined}
                 embeddedExplorerIFrame={
                   embeddedExplorerProps.embeddedExplorerIFrame
                 }
@@ -99,12 +94,7 @@ export const Mutations = ({
           )}
         </SidebarLayout.Header>
         <SidebarLayout.Main>
-          {shouldRender && (
-            <MutationViewer
-              mutationString={selectedMutationData?.mutation?.mutationString}
-              variables={selectedMutationData?.mutation?.variables}
-            />
-          )}
+          {selectedMutation && <MutationViewer mutation={selectedMutation} />}
         </SidebarLayout.Main>
       </SidebarLayout.Content>
     </SidebarLayout>

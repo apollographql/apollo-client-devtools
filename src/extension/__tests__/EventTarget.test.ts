@@ -1,7 +1,7 @@
 import EventTarget from "../EventTarget";
 
 describe("EventTarget", () => {
-  let eventTarget;
+  let eventTarget: EventTarget;
   beforeEach(() => {
     eventTarget = new EventTarget();
   });

@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { css } from "@emotion/react";
 import { rem } from "polished";
+import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
 
 import { Navigation, NavigationProps } from "./Navigation";
 
@@ -12,39 +13,11 @@ interface SidebarLayoutProps {
 interface SidebarProps {
   navigationProps: NavigationProps;
   children: ReactNode;
-  className?: string;
 }
-
-const layoutStyles = css`
-  display: grid;
-  grid-template-columns: 27rem auto;
-  grid-template-areas: "sidebar content";
-`;
-
-const sidebarStyles = css`
-  grid-area: sidebar;
-  grid-template-areas:
-    "nav"
-    "list";
-  height: 100vh;
-  background-color: var(--primary);
-  overflow-y: auto;
-  border-right: ${rem(1)} solid var(--mainBorder);
-`;
 
 const listStyles = css`
   grid-area: list;
   padding: 0 1rem;
-`;
-
-const contentStyles = css`
-  grid-area: content;
-  grid-template-areas:
-    "header"
-    "main";
-  height: 100vh;
-  overflow: auto;
-  background-color: var(--main);
 `;
 
 const headerStyles = css`
@@ -67,30 +40,66 @@ const mainStyles = css`
 
 const SidebarLayout = ({ children }: SidebarLayoutProps) => {
   return (
-    <div data-testid="layout" css={layoutStyles}>
+    <PanelGroup
+      direction="horizontal"
+      data-testid="layout"
+      autoSaveId="layout"
+      style={{ display: "flex" }}
+    >
       {children}
-    </div>
+    </PanelGroup>
   );
 };
 
-const Sidebar = ({ navigationProps, children, className }: SidebarProps) => (
-  <div className={className} css={sidebarStyles} data-testid="sidebar">
-    <Navigation
-      queriesCount={navigationProps.queriesCount}
-      mutationsCount={navigationProps.mutationsCount}
-    />
-    <div css={listStyles}>{children}</div>
-  </div>
-);
+const Sidebar = ({ navigationProps, children }: SidebarProps) => {
+  return (
+    <>
+      <Panel
+        id="sidebar"
+        defaultSize={25}
+        minSize={10}
+        style={{
+          overflow: "scroll",
+          height: "100vh",
+          backgroundColor: "var(--primary)",
+        }}
+      >
+        <div data-testid="sidebar">
+          <Navigation
+            queriesCount={navigationProps.queriesCount}
+            mutationsCount={navigationProps.mutationsCount}
+          />
+          <div css={listStyles}>{children}</div>
+        </div>
+      </Panel>
+      <PanelResizeHandle
+        style={{
+          border: "1px solid var(--mainBorder)",
+        }}
+      />
+    </>
+  );
+};
 
 interface ContentProps {
   children?: ReactNode;
 }
 
 const Content = ({ children }: ContentProps) => (
-  <div css={contentStyles} data-testid="content">
+  <Panel
+    id="content"
+    defaultSize={70}
+    minSize={30}
+    data-testid="content"
+    style={{
+      overflow: "scroll",
+      height: "100vh",
+      width: "100%",
+      backgroundColor: "var(--main)",
+    }}
+  >
     {children}
-  </div>
+  </Panel>
 );
 
 interface HeaderProps {

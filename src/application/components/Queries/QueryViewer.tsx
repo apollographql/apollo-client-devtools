@@ -5,11 +5,14 @@ import { colors } from "@apollo/space-kit/colors";
 import SyntaxHighlighter from "../SyntaxHighlighter";
 import * as Tabs from "@radix-ui/react-tabs";
 
+import { gql } from "@apollo/client";
 import { JSONTree } from "react-json-tree";
 import { IconCopy } from "@apollo/space-kit/icons/IconCopy";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
 import { useTreeTheme } from "../../theme";
+import { fragmentRegistry } from "../../fragmentRegistry";
+import { QueryViewer_query as WatchedQuery } from "../../types/gql";
 
 export const queryViewStyles = css`
   display: grid;
@@ -108,9 +111,7 @@ const tabPanelStyles = css`
 `;
 
 interface QueryViewerProps {
-  queryString: string;
-  variables: Record<string, any>;
-  cachedData: Record<string, any>;
+  query: WatchedQuery;
 }
 
 enum QueryTabs {
@@ -118,28 +119,32 @@ enum QueryTabs {
   CachedData = "CachedData",
 }
 
-export const QueryViewer = ({
-  queryString = "",
-  variables = {},
-  cachedData = {},
-}: QueryViewerProps) => {
+fragmentRegistry.register(gql`
+  fragment QueryViewer_query on WatchedQuery {
+    queryString
+    variables
+    cachedData
+  }
+`);
+
+export const QueryViewer = ({ query }: QueryViewerProps) => {
   const [currentTab, setCurrentTab] = useState<QueryTabs>(QueryTabs.Variables);
   const copyCurrentTab = `${JSON.stringify(
-    currentTab === QueryTabs.Variables ? variables : cachedData
+    currentTab === QueryTabs.Variables ? query.variables : query.cachedData
   )}`;
   const treeTheme = useTreeTheme();
   return (
     <div css={queryViewStyles}>
       <h4 css={queryStringHeader}>
         Query String
-        <CopyToClipboard text={queryString}>
+        <CopyToClipboard text={query.queryString}>
           <IconCopy css={copyIconStyle} data-testid="copy-query-string" />
         </CopyToClipboard>
       </h4>
       <SyntaxHighlighter
         css={queryStringMain}
         language="graphql"
-        code={queryString}
+        code={query.queryString}
       />
       <Tabs.Root
         value={currentTab}
@@ -154,10 +159,18 @@ export const QueryViewer = ({
         </Tabs.List>
         <div css={queryDataMain}>
           <Tabs.Content css={tabPanelStyles} value={QueryTabs.Variables}>
-            <JSONTree data={variables} theme={treeTheme} invertTheme={false} />
+            <JSONTree
+              data={query.variables}
+              theme={treeTheme}
+              invertTheme={false}
+            />
           </Tabs.Content>
           <Tabs.Content css={tabPanelStyles} value={QueryTabs.CachedData}>
-            <JSONTree data={cachedData} theme={treeTheme} invertTheme={false} />
+            <JSONTree
+              data={query.cachedData}
+              theme={treeTheme}
+              invertTheme={false}
+            />
           </Tabs.Content>
         </div>
       </Tabs.Root>
