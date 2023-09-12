@@ -106,7 +106,7 @@ export const Queries = ({
           {selectedQuery && (
             <Fragment>
               <h1 className="font-normal font-monospace text-lg">
-                {selectedQuery.name}
+                <code>{selectedQuery.name}</code>
               </h1>
               <span css={operationNameStyles}>Query</span>
               <RunInExplorerButton

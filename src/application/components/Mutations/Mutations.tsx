@@ -81,7 +81,7 @@ export const Mutations = ({
           {selectedMutation && (
             <Fragment>
               <h1 className="font-normal font-monospace text-lg">
-                {selectedMutation.name}
+                <code>{selectedMutation.name}</code>
               </h1>
               <span css={operationNameStyles}>Mutation</span>
               <RunInExplorerButton

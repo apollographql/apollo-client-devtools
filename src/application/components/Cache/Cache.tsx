@@ -84,7 +84,7 @@ export function Cache({
           {dataExists ? (
             <Fragment>
               <h1 className="font-monospace font-normal text-xl">
-                {cacheId || undefined}
+                <code>{cacheId || undefined}</code>
               </h1>
               <span className="font-sans text-grey-light uppercase text-xs mt-1 ml-2">
                 CACHE ID
