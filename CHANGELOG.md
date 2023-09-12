@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.2.1
+
+### Patch Changes
+
+- [#1091](https://github.com/apollographql/apollo-client-devtools/pull/1091) [`873cf88`](https://github.com/apollographql/apollo-client-devtools/commit/873cf88f72631d725c2bff914a9bb0ae6f90353d) Thanks [@alessbell](https://github.com/alessbell)! - Fixes [#817](https://github.com/apollographql/apollo-client-devtools/issues/817): icon for Apollo Client Devtools is missing in Firefox.
+
 ## 4.2.0
 
 ### Minor Changes
