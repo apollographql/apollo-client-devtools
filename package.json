@@ -15,7 +15,7 @@
     "start:server": "npm start --prefix development/server",
     "start:dev": "run-p start:client start:server",
     "dist": "npm run build",
-    "build": "tsx build.ts",
+    "build": "npm run clean && tsx build.ts",
     "build:prod": "npm run clean && webpack --env NODE_ENV=production --progress",
     "check:format": "prettier --check .",
     "clean": "rimraf build && mkdir build && rimraf *.zip",
