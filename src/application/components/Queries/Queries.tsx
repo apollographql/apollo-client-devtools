@@ -19,12 +19,7 @@ export const sidebarHeadingStyles = css`
   font-weight: normal;
   letter-spacing: ${rem(1)};
   color: var(--whiteTransparent);
-`;
-
-export const h1Styles = css`
-  font-family: monospace;
-  font-weight: normal;
-  font-size: ${rem(20)};
+  padding: ${rem(8)} 0;
 `;
 
 export const operationNameStyles = css`
@@ -110,7 +105,9 @@ export const Queries = ({
         <SidebarLayout.Header>
           {selectedQuery && (
             <Fragment>
-              <h1 css={h1Styles}>{selectedQuery.name}</h1>
+              <h1 className="font-normal font-monospace text-lg">
+                {selectedQuery.name}
+              </h1>
               <span css={operationNameStyles}>Query</span>
               <RunInExplorerButton
                 operation={selectedQuery.queryString}
