@@ -5,8 +5,7 @@
 </p>
 <h1>Apollo Client Devtools</h1>
 
-[![Chrome Web Store][ChromeWebStoreBadge]][WebStore] [![Addons.mozilla.org][FirefoxAddonBadge]][Amo]
-[![Discord][DiscordBadge]][Discord] [![Build Status](https://circleci.com/gh/apollographql/apollo-client-devtools.svg?style=svg)](https://circleci.com/gh/apollographql/apollo-client-devtools)
+[![Chrome Web Store][ChromeWebStoreBadge]][WebStore] [![Addons.mozilla.org][FirefoxAddonBadge]][Amo] [![Discord][DiscordBadge]][Discord] [![Build Status](https://circleci.com/gh/apollographql/apollo-client-devtools.svg?style=svg)](https://circleci.com/gh/apollographql/apollo-client-devtools)
 
 </div>
 
