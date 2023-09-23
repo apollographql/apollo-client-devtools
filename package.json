@@ -77,7 +77,7 @@
     "@typescript-eslint/eslint-plugin": "6.7.2",
     "@typescript-eslint/parser": "6.7.2",
     "archiver": "6.0.1",
-    "autoprefixer": "10.4.15",
+    "autoprefixer": "10.4.16",
     "copy-webpack-plugin": "11.0.0",
     "css-loader": "5.2.7",
     "eslint": "8.49.0",
