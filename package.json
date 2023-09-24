@@ -98,7 +98,7 @@
     "terser-webpack-plugin": "5.3.9",
     "ts-jest": "29.1.1",
     "ts-loader": "9.4.4",
-    "tsx": "3.12.10",
+    "tsx": "3.13.0",
     "typescript": "5.2.2",
     "web-ext-plugin": "2.8.1",
     "webextension-polyfill": "0.10.0",
