@@ -80,7 +80,7 @@
     "autoprefixer": "10.4.16",
     "copy-webpack-plugin": "11.0.0",
     "css-loader": "5.2.7",
-    "eslint": "8.49.0",
+    "eslint": "8.50.0",
     "eslint-plugin-jest-dom": "5.1.0",
     "eslint-plugin-react": "7.33.2",
     "eslint-plugin-react-hooks": "4.6.0",
