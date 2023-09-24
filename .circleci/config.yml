@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   lint:
     docker:
-      - image: cimg/node:20.6.1
+      - image: cimg/node:20.7.0
     steps:
       - checkout
       - run: npm ci
@@ -13,7 +13,7 @@ jobs:
 
   formatting:
     docker:
-      - image: cimg/node:20.6.1
+      - image: cimg/node:20.7.0
     steps:
       - checkout
       - run: npm ci
@@ -21,7 +21,7 @@ jobs:
 
   test:
     docker:
-      - image: cimg/node:20.6.1
+      - image: cimg/node:20.7.0
     steps:
       - checkout
       - run: npm ci
