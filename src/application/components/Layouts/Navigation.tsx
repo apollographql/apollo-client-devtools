@@ -8,6 +8,7 @@ import { ApolloLogo } from "@apollo/space-kit/icons/ApolloLogo";
 
 export enum Screens {
   Cache = "cache",
+  Network = "network",
   Queries = "queries",
   Mutations = "mutations",
   Explorer = "explorer",
@@ -145,6 +146,14 @@ export const Navigation: React.FC<NavigationProps> = ({
             onClick={() => onNavigate(Screens.Cache)}
           >
             Cache
+          </NavButton>
+        </li>
+        <li>
+          <NavButton
+            isSelected={isSelected(Screens.Network)}
+            onClick={() => onNavigate(Screens.Network)}
+          >
+            Network
           </NavButton>
         </li>
       </ul>

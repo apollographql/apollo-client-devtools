@@ -90,6 +90,10 @@ export type GetCacheVariables = Exact<{ [key: string]: never }>;
 
 export type GetCache = { cache: string };
 
+export type GetNetwork = { network: string };
+
+export type GetNetworkVariables = Exact<{ [key: string]: never }>;
+
 export type MutationViewer_mutation = {
   __typename: "WatchedMutation";
   mutationString: string;

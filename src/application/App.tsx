@@ -12,6 +12,7 @@ import { Queries } from "./components/Queries/Queries";
 import { Mutations } from "./components/Mutations/Mutations";
 import { Explorer } from "./components/Explorer/Explorer";
 import { Cache } from "./components/Cache/Cache";
+import { Network } from "./components/Network/Network";
 import { GetOperationCounts, GetOperationCountsVariables } from "./types/gql";
 
 export const reloadStatus = makeVar<boolean>(false);
@@ -21,6 +22,7 @@ const screens = {
   [Screens.Queries]: Queries,
   [Screens.Mutations]: Mutations,
   [Screens.Cache]: Cache,
+  [Screens.Network]: Network,
 };
 
 const GET_OPERATION_COUNTS: TypedDocumentNode<

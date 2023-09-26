@@ -46,6 +46,7 @@ declare global {
 
   interface Window {
     __APOLLO_CLIENT__: ApolloClient<TCache>;
+    __APOLLO_CLIENT_NETWORK_REQUESTS__: any;
     [DEVTOOLS_KEY]?: {
       push(client: ApolloClient<any>): void;
     };
@@ -54,6 +55,7 @@ declare global {
 
 type Hook = {
   ApolloClient: ApolloClient<any> | undefined;
+  networkRequests: any;
   version: string;
   getQueries: () => QueryInfo[];
   getMutations: () => QueryInfo[];
@@ -65,6 +67,7 @@ function initializeHook() {
   const hook: Hook = {
     ApolloClient: undefined,
     version: devtoolsVersion,
+    networkRequests: window.__APOLLO_CLIENT_NETWORK_REQUESTS__,
     getQueries() {
       const ac = getPrivateAccess(hook.ApolloClient);
       if (ac?.queryManager.getObservableQueries) {
@@ -133,6 +136,9 @@ function initializeHook() {
   function sendHookDataToDevTools(
     eventName: typeof CREATE_DEVTOOLS_PANEL | typeof UPDATE
   ) {
+    console.log(hook.networkRequests);
+    // can't stringify my Map
+
     // Tab Relay forwards this the devtools
     sendMessageToTab(
       eventName,
@@ -140,6 +146,7 @@ function initializeHook() {
         queries: hook.getQueries(),
         mutations: hook.getMutations(),
         cache: hook.getCache(),
+        network: hook.networkRequests,
       })
     );
   }

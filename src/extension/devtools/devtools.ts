@@ -64,10 +64,11 @@ devtools.listen<string>(CREATE_DEVTOOLS_PANEL, async ({ payload }) => {
   );
 
   isPanelCreated = true;
-  const { queries, mutations, cache } = JSON.parse(payload ?? "") as {
+  const { queries, mutations, cache, network } = JSON.parse(payload ?? "") as {
     queries: QueryInfo[];
     mutations: QueryInfo[];
     cache: Record<string, JSONObject>;
+    network: Record<string, JSONObject>;
   };
 
   let removeUpdateListener: () => void;
@@ -94,19 +95,33 @@ devtools.listen<string>(CREATE_DEVTOOLS_PANEL, async ({ payload }) => {
 
     if (!isAppInitialized) {
       initialize();
-      writeData({ queries, mutations, cache: JSON.stringify(cache) });
+      writeData({
+        queries,
+        mutations,
+        cache: JSON.stringify(cache),
+        network: JSON.stringify(network),
+      });
       isAppInitialized = true;
     }
 
     clearRequestInterval = startRequestInterval();
 
     removeUpdateListener = devtools.listen<string>(UPDATE, ({ payload }) => {
-      const { queries, mutations, cache } = JSON.parse(payload ?? "") as {
+      const { queries, mutations, cache, network } = JSON.parse(
+        payload ?? ""
+      ) as {
         queries: QueryInfo[];
         mutations: QueryInfo[];
         cache: Record<string, JSONObject>;
+        network: Record<string, JSONObject>;
       };
-      writeData({ queries, mutations, cache: JSON.stringify(cache) });
+      console.log(network);
+      writeData({
+        queries,
+        mutations,
+        cache: JSON.stringify(cache),
+        network: JSON.stringify(network),
+      });
     });
 
     // Add connection so client can send to `background:devtools-${inspectedTabId}:explorer`

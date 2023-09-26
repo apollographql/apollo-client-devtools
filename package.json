@@ -34,7 +34,7 @@
     "codegen": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
-    "@apollo/client": "^3.7.10",
+    "@apollo/client": "file:../apollo-client/dist/apollo-client-3.8.4.tgz",
     "@apollo/space-kit": "^9.11.0",
     "@emotion/react": "^11.11.1",
     "@headlessui/react": "^1.7.17",

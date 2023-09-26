@@ -69,12 +69,16 @@ const cache = new InMemoryCache({
         cache() {
           return cacheVar();
         },
+        network() {
+          return networkVar();
+        },
       },
     },
   },
 });
 
 const cacheVar = makeVar<string | null>(null);
+const networkVar = makeVar<string | null>(null);
 export const client = new ApolloClient({
   cache,
 });
@@ -153,9 +157,11 @@ export const writeData = ({
   queries,
   mutations,
   cache,
+  network,
 }: {
   queries: QueryInfo[];
   mutations: QueryInfo[];
+  network: string;
   cache: string;
 }) => {
   const filteredQueries = queries.map(getQueryData).filter(Boolean);
@@ -184,6 +190,7 @@ export const writeData = ({
     },
   });
   cacheVar(cache);
+  networkVar(network);
 };
 
 export const handleReload = () => {
