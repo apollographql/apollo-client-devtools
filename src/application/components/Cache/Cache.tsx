@@ -83,7 +83,10 @@ export function Cache({
         <Header>
           {dataExists ? (
             <Fragment>
-              <h1 className="font-monospace font-normal text-xl">
+              <h1
+                className="font-monospace font-normal text-xl"
+                data-testid="cache-id"
+              >
                 <code>{cacheId || undefined}</code>
               </h1>
               <span className="font-sans text-grey-light uppercase text-xs mt-1 ml-2">

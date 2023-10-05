@@ -1,3 +1,4 @@
+/** @jsxImportSource @emotion/react */
 import { useMemo } from "react";
 import { css } from "@emotion/react";
 import { rem } from "polished";
@@ -48,7 +49,7 @@ export enum FetchPolicy {
 const headerStyles = css`
   display: flex;
   align-items: center;
-  padding: 0 ${rem(16)};
+  padding: 0 0.75rem;
   background-color: var(--primary);
   box-shadow: 0 ${rem(-1)} 0 0 rgba(255, 255, 255, 0.3) inset;
 `;

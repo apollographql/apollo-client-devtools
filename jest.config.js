@@ -2,6 +2,9 @@ module.exports = {
   preset: "ts-jest",
   setupFilesAfterEnv: ["./test.setup.ts"],
   testEnvironment: "jsdom",
+  globals: {
+    VERSION: "0.0.0",
+  },
   testPathIgnorePatterns: [
     "<rootDir>/build",
     "<rootDir>/dist",

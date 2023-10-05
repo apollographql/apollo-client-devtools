@@ -1,3 +1,4 @@
+/** @jsxImportSource @emotion/react */
 import React, { useState } from "react";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { hasGraphRefBeenAuthenticated } from "./postMessageAuthHelpers";
