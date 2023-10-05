@@ -43,7 +43,7 @@ export function Modal({
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+              <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full max-w-sm sm:p-6">
                 <div>
                   <div className="mt-1">
                     <Dialog.Title
@@ -52,11 +52,11 @@ export function Modal({
                     >
                       Settings
                     </Dialog.Title>
-                    <div className="mt-2">
-                      <p className="text-sm text-gray-500">
-                        Version:{" "}
+                    <div className="mt-2 text-sm">
+                      <p>
+                        Devtools version:{" "}
                         <a
-                          className="text-midnight-darkest underline font-monospace"
+                          className="underline text-purple-darker font-monospace"
                           target="_blank"
                           rel="noopener noreferrer"
                           href={`https://github.com/apollographql/apollo-client-devtools/releases/tag/v${VERSION}`}
