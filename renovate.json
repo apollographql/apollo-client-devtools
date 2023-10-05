@@ -19,5 +19,8 @@
       "matchPackagePatterns": ["*"],
       "matchUpdateTypes": ["patch"]
     }
+  ],
+  "ignoreDeps": [
+    "@emotion/core"
   ]
 }
