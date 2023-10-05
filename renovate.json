@@ -20,7 +20,5 @@
       "matchUpdateTypes": ["patch"]
     }
   ],
-  "ignoreDeps": [
-    "@emotion/core"
-  ]
+  "ignoreDeps": ["@emotion/core"]
 }
