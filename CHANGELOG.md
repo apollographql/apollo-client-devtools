@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.2.3
+
+### Patch Changes
+
+- [#1128](https://github.com/apollographql/apollo-client-devtools/pull/1128) [`576efe6`](https://github.com/apollographql/apollo-client-devtools/commit/576efe6f83f21b60af4ea2fbb3cd314fb677d283) Thanks [@alessbell](https://github.com/alessbell)! - Adds settings modal that displays the current devtools version with a link to the GitHub release page
+
+- [#1097](https://github.com/apollographql/apollo-client-devtools/pull/1097) [`0c3e8ec`](https://github.com/apollographql/apollo-client-devtools/commit/0c3e8ec6f1a84a0e07995a55ca4d4f880576c600) Thanks [@alessbell](https://github.com/alessbell)! - Remove unused files `broadcastQueries.js` and `link.js`.
+
 ## 4.2.2
 
 ### Patch Changes
