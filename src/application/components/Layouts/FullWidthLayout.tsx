@@ -3,7 +3,7 @@ import { ReactNode, useState, useRef } from "react";
 import { css } from "@emotion/react";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 
-import { Modal } from "./SettingsModal";
+import { SettingsModal } from "./SettingsModal";
 import { Navigation, NavigationProps } from "./Navigation";
 
 interface FullWidthLayoutProps {
@@ -51,7 +51,7 @@ interface HeaderProps {
 
 const Header = ({ children, className }: HeaderProps) => {
   const [open, setOpen] = useState(false);
-  const cancelButtonRef = useRef(null);
+
   return (
     <div className={className} css={headerStyles} data-testid="header">
       {children}
@@ -59,7 +59,7 @@ const Header = ({ children, className }: HeaderProps) => {
         <span className="sr-only">Settings</span>
         <Cog6ToothIcon aria-hidden="true" className="h-6 w-6 stroke-white" />
       </button>
-      <Modal open={open} setOpen={setOpen} cancelButtonRef={cancelButtonRef} />
+      <SettingsModal open={open} onOpen={setOpen} />
     </div>
   );
 };
