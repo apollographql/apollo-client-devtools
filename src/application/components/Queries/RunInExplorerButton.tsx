@@ -1,3 +1,4 @@
+/** @jsxImportSource @emotion/react */
 import { IconRun } from "@apollo/space-kit/icons/IconRun";
 import { css } from "@emotion/react";
 import { rem } from "polished";
@@ -40,6 +41,7 @@ export const RunInExplorerButton = ({
   return (
     embeddedExplorerIFrame && (
       <button
+        className="peer is-explorer-button"
         css={buttonStyles}
         onClick={() => {
           // send a post message to the embedded explorer to fill the operation

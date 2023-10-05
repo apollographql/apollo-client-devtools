@@ -1,3 +1,4 @@
+/** @jsxImportSource @emotion/react */
 import React, { ReactNode } from "react";
 import { makeVar, useReactiveVar } from "@apollo/client";
 import { css } from "@emotion/react";

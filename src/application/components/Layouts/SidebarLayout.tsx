@@ -1,8 +1,11 @@
-import { ReactNode } from "react";
+/** @jsxImportSource @emotion/react */
+import { ReactNode, useState, useRef } from "react";
 import { css } from "@emotion/react";
 import { rem } from "polished";
 import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
+import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 
+import { SettingsModal } from "./SettingsModal";
 import { Navigation, NavigationProps } from "./Navigation";
 
 interface SidebarLayoutProps {
@@ -21,10 +24,10 @@ const listStyles = css`
 `;
 
 const headerStyles = css`
-  grid-area: header;
   display: flex;
+  justify-content: flex-end;
   align-items: center;
-  padding: 0 1rem;
+  padding: 0 0.75rem;
   border-bottom: ${rem(1)} solid var(--mainBorder);
   background-color: var(--main);
   color: var(--textPrimary);
@@ -106,11 +109,27 @@ interface HeaderProps {
   children?: ReactNode;
 }
 
-const Header = ({ children }: HeaderProps) => (
-  <div css={headerStyles} data-testid="header">
-    {children}
-  </div>
-);
+const Header = ({ children }: HeaderProps) => {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div css={headerStyles} data-testid="header">
+      {children}
+      {/* In order to avoid duplicating the cog component everywhere
+        `SidebarLayout.Header` is used, we use margin-left: auto as the default,
+        and margin-left: 4 when displayed next to the explorer button.
+      */}
+      <button
+        className="ml-auto peer-[.is-explorer-button]:ml-6"
+        onClick={() => setOpen(true)}
+      >
+        <span className="sr-only">Settings</span>
+        <Cog6ToothIcon aria-hidden="true" className="h-6 w-6" />
+      </button>
+      <SettingsModal open={open} onOpen={setOpen} />
+    </div>
+  );
+};
 
 interface MainProps {
   children?: ReactNode;

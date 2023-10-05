@@ -3,6 +3,8 @@ import url from "url";
 import CopyPlugin from "copy-webpack-plugin";
 import TerserPlugin from "terser-webpack-plugin";
 import WebExtPlugin from "web-ext-plugin";
+import webpack from "webpack";
+import packageJson from "./package.json" assert { type: "json" };
 
 const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
@@ -34,6 +36,9 @@ export default (env) => {
           to: path.resolve(__dirname, "build"),
         },
       ],
+    }),
+    new webpack.DefinePlugin({
+      VERSION: JSON.stringify(packageJson.version),
     }),
   ];
 

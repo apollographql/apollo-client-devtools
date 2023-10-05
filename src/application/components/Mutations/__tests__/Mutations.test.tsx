@@ -106,8 +106,6 @@ describe("<Mutations />", () => {
         embeddedExplorerProps={{ embeddedExplorerIFrame: null }}
       />
     );
-
-    expect(screen.getByTestId("header")).toBeEmptyDOMElement();
     expect(screen.getByTestId("main")).toBeEmptyDOMElement();
   });
 });

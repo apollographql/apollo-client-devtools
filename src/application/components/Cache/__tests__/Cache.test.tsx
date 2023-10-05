@@ -70,10 +70,8 @@ describe("Cache component tests", () => {
 
     it("should leave the header blank instead of trying to show a cache ID", async () => {
       renderWithApolloClient(<Cache navigationProps={navigationProps} />);
-      const header = screen.getByTestId("header");
-      await waitFor(() => {
-        expect(header.firstChild).not.toBeInTheDocument();
-      });
+      const cacheId = screen.queryByTestId("cache-id");
+      expect(cacheId).toBeNull();
     });
   });
 

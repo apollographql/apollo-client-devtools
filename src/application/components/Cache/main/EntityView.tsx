@@ -1,3 +1,4 @@
+/** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
 import { JSONTree } from "react-json-tree";
 import { rem } from "polished";

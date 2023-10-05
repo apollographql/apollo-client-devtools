@@ -1,3 +1,4 @@
+/** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
 import { List } from "@apollo/space-kit/List";
 import { ListItem } from "@apollo/space-kit/ListItem";

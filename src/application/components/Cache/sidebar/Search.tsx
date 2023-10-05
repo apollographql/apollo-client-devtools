@@ -1,3 +1,4 @@
+/** @jsxImportSource @emotion/react */
 import { IconSearch } from "@apollo/space-kit/icons/IconSearch";
 import { TextField } from "@apollo/space-kit/TextField";
 import { colors } from "@apollo/space-kit/colors";
