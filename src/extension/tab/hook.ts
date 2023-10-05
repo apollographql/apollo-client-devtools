@@ -64,10 +64,15 @@ type Hook = {
 
 function initializeHook() {
   const knownClients = new Set<ApolloClient<any>>();
+  let networkRequests = {};
+
   const hook: Hook = {
     ApolloClient: undefined,
     version: devtoolsVersion,
-    networkRequests: window.__APOLLO_CLIENT_NETWORK_REQUESTS__,
+    // networkRequests: window.__APOLLO_CLIENT_NETWORK_REQUESTS__,
+    getNetworkRequests() {
+      return networkRequests;
+    },
     getQueries() {
       const ac = getPrivateAccess(hook.ApolloClient);
       if (ac?.queryManager.getObservableQueries) {
@@ -136,7 +141,7 @@ function initializeHook() {
   function sendHookDataToDevTools(
     eventName: typeof CREATE_DEVTOOLS_PANEL | typeof UPDATE
   ) {
-    console.log(hook.networkRequests);
+    // console.log(hook.networkRequests);
     // can't stringify my Map
 
     // Tab Relay forwards this the devtools
@@ -146,10 +151,13 @@ function initializeHook() {
         queries: hook.getQueries(),
         mutations: hook.getMutations(),
         cache: hook.getCache(),
-        network: hook.networkRequests,
+        network: hook.getNetworkRequests(),
       })
     );
   }
+
+  // could go the event emitter/message bus approach or use a global fn
+  //
 
   clientRelay.listen(DEVTOOLS_INITIALIZED, () => {
     if (hook.ApolloClient) {
@@ -291,8 +299,20 @@ function initializeHook() {
     sendHookDataToDevTools(CREATE_DEVTOOLS_PANEL);
   }
 
+  function registerNetworkRequest(
+    operationName: string,
+    parsedResponse: unknown
+  ) {
+    (networkRequests[operationName] || []).push(parsedResponse);
+    networkRequests = {
+      ...networkRequests,
+      [operationName]: parsedResponse,
+    };
+    // networkRequests[]
+  }
+
   const preExisting = window[DEVTOOLS_KEY];
-  window[DEVTOOLS_KEY] = { push: registerClient };
+  window[DEVTOOLS_KEY] = { push: registerClient, registerNetworkRequest };
   if (Array.isArray(preExisting)) {
     preExisting.forEach(registerClient);
   }

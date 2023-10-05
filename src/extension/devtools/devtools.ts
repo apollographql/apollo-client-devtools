@@ -115,7 +115,7 @@ devtools.listen<string>(CREATE_DEVTOOLS_PANEL, async ({ payload }) => {
         cache: Record<string, JSONObject>;
         network: Record<string, JSONObject>;
       };
-      console.log(network);
+
       writeData({
         queries,
         mutations,
