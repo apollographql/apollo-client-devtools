@@ -1,3 +1,4 @@
+/** @jsxImportSource @emotion/react */
 import { TypedDocumentNode, useQuery, gql } from "@apollo/client";
 import { useMemo, useState } from "react";
 import { List } from "@apollo/space-kit/List";
@@ -6,6 +7,7 @@ import { ListItem } from "@apollo/space-kit/ListItem";
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { useTheme } from "../../theme";
 import { GetNetwork, GetNetworkVariables } from "../../types/gql";
+import { OperationViewer } from "./OperationViewer";
 import {
   sidebarHeadingStyles,
   operationNameStyles,
@@ -26,16 +28,19 @@ export function Network({
     mutationsCount: number;
   };
 }) {
-  const { loading, data } = useQuery(GET_NETWORK);
+  const { data } = useQuery(GET_NETWORK);
+  console.log({ data });
   const theme = useTheme();
-  const [selected, setSelected] = useState<string>("");
+  const [selectedOperation, setSelected] = useState<string>("");
   const network = useMemo(
     () => (data?.network ? (JSON.parse(data.network) as Cache) : {}),
     [data?.network]
   );
-  console.log(network);
+  console.log(network[selectedOperation]);
   return (
+    // @ts-ignore-next-line
     <SidebarLayout navigationProps={navigationProps}>
+      {/* @ts-ignore-next-line */}
       <SidebarLayout.Sidebar navigationProps={navigationProps}>
         <h3 css={sidebarHeadingStyles}>Network</h3>
         <List
@@ -48,7 +53,7 @@ export function Network({
               <ListItem
                 key={`${name}-${operationName}`}
                 onClick={() => setSelected(operationName)}
-                selected={selected === operationName}
+                selected={selectedOperation === operationName}
               >
                 {operationName}
               </ListItem>
@@ -75,7 +80,9 @@ export function Network({
           )} */}
         </SidebarLayout.Header>
         <SidebarLayout.Main>
-          {/* {selectedMutation && <MutationViewer mutation={selectedMutation} />} */}
+          {selectedOperation && (
+            <OperationViewer operation={network[selectedOperation]} />
+          )}
         </SidebarLayout.Main>
       </SidebarLayout.Content>
     </SidebarLayout>

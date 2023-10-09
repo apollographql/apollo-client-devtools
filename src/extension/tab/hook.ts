@@ -41,6 +41,13 @@ import { FetchPolicy } from "../../application/components/Explorer/Explorer";
 
 const DEVTOOLS_KEY = Symbol.for("apollo.devtools");
 
+type OperationDetails = {
+  operation: DocumentNode;
+  operationKind: string | undefined;
+  operationName: string;
+  variables: Record<string, unknown>;
+  data: any;
+};
 declare global {
   type TCache = any;
 
@@ -49,27 +56,46 @@ declare global {
     __APOLLO_CLIENT_NETWORK_REQUESTS__: any;
     [DEVTOOLS_KEY]?: {
       push(client: ApolloClient<any>): void;
+      registerNetworkRequest(
+        operationName: string,
+        parsedResponse: unknown
+      ): void;
+      pushMulitpartResponse(
+        operationName: string,
+        operationDetails: OperationDetails,
+        timestamp: string,
+        parsedResponse: unknown
+      ): void;
     };
   }
 }
 
+interface NetworkRequest {
+  [operationId: string]: {
+    operation: DocumentNode;
+    operationKind: string | undefined;
+    operationName: string;
+    variables: Record<string, unknown>;
+    data: unknown[];
+  };
+}
+
 type Hook = {
   ApolloClient: ApolloClient<any> | undefined;
-  networkRequests: any;
   version: string;
   getQueries: () => QueryInfo[];
   getMutations: () => QueryInfo[];
   getCache: () => JSONObject;
+  getNetworkRequests: () => NetworkRequest;
 };
 
 function initializeHook() {
   const knownClients = new Set<ApolloClient<any>>();
-  let networkRequests = {};
+  let networkRequests: NetworkRequest = {};
 
   const hook: Hook = {
     ApolloClient: undefined,
     version: devtoolsVersion,
-    // networkRequests: window.__APOLLO_CLIENT_NETWORK_REQUESTS__,
     getNetworkRequests() {
       return networkRequests;
     },
@@ -141,9 +167,6 @@ function initializeHook() {
   function sendHookDataToDevTools(
     eventName: typeof CREATE_DEVTOOLS_PANEL | typeof UPDATE
   ) {
-    // console.log(hook.networkRequests);
-    // can't stringify my Map
-
     // Tab Relay forwards this the devtools
     sendMessageToTab(
       eventName,
@@ -155,9 +178,6 @@ function initializeHook() {
       })
     );
   }
-
-  // could go the event emitter/message bus approach or use a global fn
-  //
 
   clientRelay.listen(DEVTOOLS_INITIALIZED, () => {
     if (hook.ApolloClient) {
@@ -303,16 +323,41 @@ function initializeHook() {
     operationName: string,
     parsedResponse: unknown
   ) {
-    (networkRequests[operationName] || []).push(parsedResponse);
+    console.log("register request", operationName);
+    if (operationName.includes("IntrospectionQuery")) return;
     networkRequests = {
       ...networkRequests,
-      [operationName]: parsedResponse,
+      [operationName]: parsedResponse as NetworkRequest[typeof operationName],
     };
-    // networkRequests[]
+  }
+
+  // this function should also register the operation if a reference to it
+  // doesn't exist already in our requests singleton
+  function pushMulitpartResponse(
+    operationName: string,
+    operationDetails: OperationDetails,
+    timestamp: string,
+    parsedResponse: unknown
+  ) {
+    console.log({ operationName, operationDetails, timestamp, parsedResponse });
+    if (!networkRequests[operationName]) {
+      networkRequests = {
+        ...networkRequests,
+        [operationName]: operationDetails,
+      };
+    }
+    networkRequests[operationName].data?.push({
+      ...(parsedResponse as object),
+      timestamp,
+    });
   }
 
   const preExisting = window[DEVTOOLS_KEY];
-  window[DEVTOOLS_KEY] = { push: registerClient, registerNetworkRequest };
+  window[DEVTOOLS_KEY] = {
+    push: registerClient,
+    pushMulitpartResponse,
+    registerNetworkRequest,
+  };
   if (Array.isArray(preExisting)) {
     preExisting.forEach(registerClient);
   }
