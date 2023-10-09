@@ -40,7 +40,6 @@
     "@headlessui/react": "^1.7.17",
     "@heroicons/react": "^2.0.18",
     "@radix-ui/react-tabs": "^1.0.2",
-    "@tanstack/react-table": "^8.10.6",
     "graphql": "^16.0.0",
     "graphql-tag": "^2.11.0",
     "polished": "^4.1.1",

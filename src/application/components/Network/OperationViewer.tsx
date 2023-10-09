@@ -11,22 +11,13 @@ import {
   headerStyles,
   copyIconStyle,
   queryStringHeader,
-  queryStringMain,
   queryDataMain,
 } from "../Queries/QueryViewer";
 import SyntaxHighlighter from "../SyntaxHighlighter";
 import { fragmentRegistry } from "../../fragmentRegistry";
 import { gql } from "@apollo/client";
-import {
-  createColumnHelper,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-  ColumnResizeMode,
-} from "@tanstack/react-table";
 
 import { OperationViewer_mutation as WatchedMutation } from "../../types/gql";
-import { useState } from "react";
 
 interface OperationViewerProps {
   mutation: WatchedMutation;
@@ -53,119 +44,57 @@ fragmentRegistry.register(gql`
   }
 `);
 
-type Request = {
-  [timestamp: string]: unknown;
-};
-
-const columnHelper = createColumnHelper<Request>();
-
-const columns = [
-  columnHelper.accessor("timestamp", {
-    cell: (info) => {
-      return JSON.stringify(info.getValue());
-    },
-    maxSize: 200,
-    minSize: 150,
-  }),
-  columnHelper.accessor("data", {
-    cell: (info) => {
-      return JSON.stringify(info.getValue());
-    },
-    maxSize: 300,
-  }),
-];
-
-function Table({ data }) {
-  const table = useReactTable({
-    data,
-    columns,
-    columnResizeMode: "onChange",
-    enableColumnResizing: true,
-    getCoreRowModel: getCoreRowModel(),
-    debugTable: true,
-    debugHeaders: true,
-    debugColumns: true,
-  });
-
+function Table({ data, onChunkSelect }) {
   return (
-    <div className="p-2 block max-w-full overflow-x-scroll overflow-y-">
-      <table className="w-full">
-        <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr className="flex" key={headerGroup.id}>
-              {headerGroup.headers.map((header, i) => (
-                <th
-                  key={header.id}
-                  colSpan={header.colSpan}
-                  style={{ position: "relative", width: header.getSize() }}
-                >
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                  {i === 0
-                    ? header.column.getCanResize() && (
-                        <div
-                          onMouseDown={header.getResizeHandler()}
-                          onTouchStart={header.getResizeHandler()}
-                          className={`resizer ${
-                            header.column.getIsResizing() ? "isResizing" : ""
-                          }`}
-                          style={{
-                            position: "absolute",
-                            right: 0,
-                            top: 0,
-                            height: "100%",
-                            width: "5px",
-                            background: "grey",
-                            cursor: "col-resize",
-                            userSelect: "none",
-                            touchAction: "none",
-                          }}
-                        ></div>
-                      )
-                    : // <div
-                      //   {...{
-                      //     onMouseDown: header.getResizeHandler(),
-                      //     onTouchStart: header.getResizeHandler(),
-                      //     className: `resizer ${
-                      //       header.column.getIsResizing() ? "isResizing" : ""
-                      //     }`,
-                      //     style: {
-                      //       position: "absolute",
-                      //       right: 0,
-                      //       top: 0,
-                      //       height: "100%",
-                      //       width: "5px",
-                      //       background: "grey",
-                      //       cursor: "col-resize",
-                      //       userSelect: "none",
-                      //       touchAction: "none",
-                      //     },
-                      //   }}
-                      // />
-                      null}
-                </th>
-              ))}
-            </tr>
-          ))}
+    <div>
+      <table className="w-full whitespace-nowrap text-left table-fixed">
+        <colgroup>
+          <col className="lg:w-3/12" />
+          <col className="lg:w-9/12" />
+        </colgroup>
+        <thead className="border-b border-white/10 text-xs leading-6 text-white">
+          <tr>
+            <th
+              scope="col"
+              className="hidden sr-only py-2 pl-0 pr-8 font-semibold sm:table-cell"
+            >
+              Time
+            </th>
+            <th
+              scope="col"
+              className="hidden sr-only py-2 pl-0 pr-8 font-semibold md:table-cell lg:pr-20"
+            >
+              Data
+            </th>
+          </tr>
         </thead>
-        <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr className="w-fit flex h-7" key={row.id}>
-              {row.getVisibleCells().map((cell, i) => (
-                <td
-                  key={cell.id}
-                  style={{
-                    width: i === 0 ? cell.column.getSize() : "auto",
-                    overflowX: "hidden",
-                  }}
-                >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
+        <tbody className="divide-y divide-white/5">
+          {data.map((data, i) => (
+            <tr
+              onClick={() => {
+                onChunkSelect(data.timestamp);
+              }}
+              key={data.timestamp}
+            >
+              <td className="hidden py-2 pl-0 pr-4 sm:table-cell sm:pr-8">
+                <div className="flex gap-x-3">
+                  <div className="rounded-md bg-gray-700/40 px-2 py-1 text-xs font-medium text-gray-400 ring-1 ring-inset ring-white/10">
+                    {new Date(parseInt(data.timestamp)).toLocaleTimeString(
+                      "en-US",
+                      {
+                        hour12: false,
+                        hour: "numeric",
+                        minute: "numeric",
+                        second: "numeric",
+                        fractionalSecondDigits: 3,
+                      }
+                    )}
+                  </div>
+                </div>
+              </td>
+              <td className="hidden py-2 pl-0 text-xs leading-6 text-gray-400 md:table-cell overflow-hidden text-ellipsis">
+                {JSON.stringify(data)}
+              </td>
             </tr>
           ))}
         </tbody>
@@ -174,10 +103,13 @@ function Table({ data }) {
   );
 }
 
-export const OperationViewer = ({ operation }: OperationViewerProps) => {
+export const OperationViewer = ({
+  operation,
+  onChunkSelect,
+}: OperationViewerProps) => {
   const treeTheme = useTreeTheme();
   const stringifiedData = JSON.stringify(operation, null, 2);
-  console.log(operation);
+
   return (
     <div css={queryViewStyles}>
       <div>
@@ -189,7 +121,7 @@ export const OperationViewer = ({ operation }: OperationViewerProps) => {
         </h4>
         <div className="font-monospace text-xs">
           {Array.isArray(operation?.data) ? (
-            <Table data={operation?.data} />
+            <Table onChunkSelect={onChunkSelect} data={operation?.data} />
           ) : (
             <JSONTree
               shouldExpandNodeInitially={() => true}

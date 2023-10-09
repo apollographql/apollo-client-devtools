@@ -5,14 +5,12 @@ import { List } from "@apollo/space-kit/List";
 import { ListItem } from "@apollo/space-kit/ListItem";
 
 import { SidebarLayout } from "../Layouts/SidebarLayout";
-import { useTheme } from "../../theme";
+import { useTheme, useTreeTheme } from "../../theme";
 import { GetNetwork, GetNetworkVariables } from "../../types/gql";
 import { OperationViewer } from "./OperationViewer";
-import {
-  sidebarHeadingStyles,
-  operationNameStyles,
-  listStyles,
-} from "../Queries/Queries";
+import { sidebarHeadingStyles, listStyles } from "../Queries/Queries";
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import { JSONTree } from "react-json-tree";
 
 const GET_NETWORK: TypedDocumentNode<GetNetwork, GetNetworkVariables> = gql`
   query GetNetwork {
@@ -29,18 +27,19 @@ export function Network({
   };
 }) {
   const { data } = useQuery(GET_NETWORK);
-  console.log({ data });
   const theme = useTheme();
-  const [selectedOperation, setSelected] = useState<string>("");
+  const treeTheme = useTreeTheme();
   const network = useMemo(
     () => (data?.network ? (JSON.parse(data.network) as Cache) : {}),
     [data?.network]
   );
-  console.log(network[selectedOperation]);
+  const [selectedOperation, setSelected] = useState<string>(
+    network ? Object.keys(network)[0] : ""
+  );
+  const [selectedChunk, setSelectedChunk] = useState<string>("");
+
   return (
-    // @ts-ignore-next-line
     <SidebarLayout navigationProps={navigationProps}>
-      {/* @ts-ignore-next-line */}
       <SidebarLayout.Sidebar navigationProps={navigationProps}>
         <h3 css={sidebarHeadingStyles}>Network</h3>
         <List
@@ -55,35 +54,55 @@ export function Network({
                 onClick={() => setSelected(operationName)}
                 selected={selectedOperation === operationName}
               >
-                {operationName}
+                {network[operationName].operationName}
               </ListItem>
             );
           })}
         </List>
       </SidebarLayout.Sidebar>
       <SidebarLayout.Content>
-        <SidebarLayout.Header>
-          {/* {selectedMutation && (
-            <Fragment>
-              <h1 className="font-normal font-monospace text-xl">
-                <code>{selectedMutation.name}</code>
-              </h1>
-              <span css={operationNameStyles}>Mutation</span>
-              <RunInExplorerButton
-                operation={selectedMutation.mutationString}
-                variables={selectedMutation.variables ?? undefined}
-                embeddedExplorerIFrame={
-                  embeddedExplorerProps.embeddedExplorerIFrame
-                }
-              />
-            </Fragment>
-          )} */}
-        </SidebarLayout.Header>
-        <SidebarLayout.Main>
-          {selectedOperation && (
-            <OperationViewer operation={network[selectedOperation]} />
-          )}
-        </SidebarLayout.Main>
+        {/* <SidebarLayout.Header></SidebarLayout.Header> */}
+        {Array.isArray(network[selectedOperation]?.data) ? (
+          <PanelGroup direction="vertical" className="p-4">
+            <Panel maxSize={75} style={{ overflow: "scroll" }}>
+              {/* <h1>hello</h1> */}
+              <SidebarLayout.Main>
+                <OperationViewer
+                  onChunkSelect={(name: string) => setSelectedChunk(name)}
+                  operation={network[selectedOperation]}
+                />
+              </SidebarLayout.Main>
+            </Panel>
+            <PanelResizeHandle
+              style={{
+                border: "1px solid var(--mainBorder)",
+              }}
+            />
+            <Panel maxSize={75} style={{ overflow: "scroll" }}>
+              <SidebarLayout.Main>
+                <div className="font-monospace text-xs">
+                  {Array.isArray(network[selectedOperation]?.data) ? (
+                    <JSONTree
+                      shouldExpandNodeInitially={() => true}
+                      data={network[selectedOperation]?.data.find(
+                        ({ timestamp }) => timestamp === selectedChunk
+                      )}
+                      theme={treeTheme}
+                      invertTheme={false}
+                    />
+                  ) : null}
+                </div>
+              </SidebarLayout.Main>
+            </Panel>
+          </PanelGroup>
+        ) : (
+          <SidebarLayout.Main>
+            <OperationViewer
+              onChunkSelect={(name: string) => setSelectedChunk(name)}
+              operation={network[selectedOperation]}
+            />
+          </SidebarLayout.Main>
+        )}
       </SidebarLayout.Content>
     </SidebarLayout>
   );

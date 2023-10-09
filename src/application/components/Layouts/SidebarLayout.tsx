@@ -35,7 +35,7 @@ const headerStyles = css`
 `;
 
 const mainStyles = css`
-  grid-area: main;
+  // grid-area: main;
   padding: 0 1rem 2rem;
   background-color: var(--main);
   color: var(--textPrimary);
