@@ -21,6 +21,7 @@ import { OperationViewer_mutation as WatchedMutation } from "../../types/gql";
 
 interface OperationViewerProps {
   mutation: WatchedMutation;
+  selectedChunk: any;
 }
 
 const queryDataHeader = css`
@@ -44,7 +45,7 @@ fragmentRegistry.register(gql`
   }
 `);
 
-function Table({ data, onChunkSelect }) {
+function Table({ data, onChunkSelect, selectedChunk }) {
   return (
     <div>
       <table className="w-full whitespace-nowrap text-left table-fixed">
@@ -52,47 +53,34 @@ function Table({ data, onChunkSelect }) {
           <col className="lg:w-3/12" />
           <col className="lg:w-9/12" />
         </colgroup>
-        <thead className="border-b border-white/10 text-xs leading-6 text-white">
-          <tr>
-            <th
-              scope="col"
-              className="hidden sr-only py-2 pl-0 pr-8 font-semibold sm:table-cell"
-            >
-              Time
-            </th>
-            <th
-              scope="col"
-              className="hidden sr-only py-2 pl-0 pr-8 font-semibold md:table-cell lg:pr-20"
-            >
-              Data
-            </th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-white/5">
+        <tbody className="">
           {data.map((data, i) => (
             <tr
+              className={`${
+                selectedChunk === data.timestamp
+                  ? "bg-blilet-base text-white"
+                  : ""
+              } rounded py-1 hover:bg-blilet-dark cursor-pointer hover:text-white`}
               onClick={() => {
                 onChunkSelect(data.timestamp);
               }}
               key={data.timestamp}
             >
-              <td className="hidden py-2 pl-0 pr-4 sm:table-cell sm:pr-8">
-                <div className="flex gap-x-3">
-                  <div className="rounded-md bg-gray-700/40 px-2 py-1 text-xs font-medium text-gray-400 ring-1 ring-inset ring-white/10">
-                    {new Date(parseInt(data.timestamp)).toLocaleTimeString(
-                      "en-US",
-                      {
-                        hour12: false,
-                        hour: "numeric",
-                        minute: "numeric",
-                        second: "numeric",
-                        fractionalSecondDigits: 3,
-                      }
-                    )}
-                  </div>
+              <td className="first:rounded-r-none first:rounded-l last:rounded-l-none last:rounded-r pl-1 pr-4 table-cell sm:pr-8">
+                <div className="px-2 text-xs">
+                  {new Date(parseInt(data.timestamp)).toLocaleTimeString(
+                    "en-US",
+                    {
+                      hour12: false,
+                      hour: "numeric",
+                      minute: "numeric",
+                      second: "numeric",
+                      fractionalSecondDigits: 3,
+                    }
+                  )}
                 </div>
               </td>
-              <td className="hidden py-2 pl-0 text-xs leading-6 text-gray-400 md:table-cell overflow-hidden text-ellipsis">
+              <td className="table-cell first:rounded-r-none first:rounded-l last:rounded-l-none last:rounded-r pl-0 text-xs leading-6 text-gray-400 md:table-cell overflow-hidden text-ellipsis">
                 {JSON.stringify(data)}
               </td>
             </tr>
@@ -106,6 +94,7 @@ function Table({ data, onChunkSelect }) {
 export const OperationViewer = ({
   operation,
   onChunkSelect,
+  selectedChunk,
 }: OperationViewerProps) => {
   const treeTheme = useTreeTheme();
   const stringifiedData = JSON.stringify(operation, null, 2);
@@ -121,7 +110,11 @@ export const OperationViewer = ({
         </h4>
         <div className="font-monospace text-xs">
           {Array.isArray(operation?.data) ? (
-            <Table onChunkSelect={onChunkSelect} data={operation?.data} />
+            <Table
+              selectedChunk={selectedChunk}
+              onChunkSelect={onChunkSelect}
+              data={operation?.data}
+            />
           ) : (
             <JSONTree
               shouldExpandNodeInitially={() => true}
@@ -135,7 +128,7 @@ export const OperationViewer = ({
       <div>
         <div css={queryDataHeader}>
           <span>Variables</span>
-          <CopyToClipboard text={JSON.stringify(operation.variables)}>
+          <CopyToClipboard text={JSON.stringify(operation?.variables)}>
             <IconCopy
               css={copyIconStyle}
               data-testid="copy-operation-variables"
@@ -144,7 +137,7 @@ export const OperationViewer = ({
         </div>
         <div css={queryDataMain}>
           <JSONTree
-            data={operation.variables}
+            data={operation?.variables}
             theme={treeTheme}
             invertTheme={false}
           />

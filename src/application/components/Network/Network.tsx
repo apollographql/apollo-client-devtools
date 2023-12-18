@@ -65,9 +65,9 @@ export function Network({
         {Array.isArray(network[selectedOperation]?.data) ? (
           <PanelGroup direction="vertical" className="p-4">
             <Panel maxSize={75} style={{ overflow: "scroll" }}>
-              {/* <h1>hello</h1> */}
               <SidebarLayout.Main>
                 <OperationViewer
+                  selectedChunk={selectedChunk}
                   onChunkSelect={(name: string) => setSelectedChunk(name)}
                   operation={network[selectedOperation]}
                 />
