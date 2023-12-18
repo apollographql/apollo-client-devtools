@@ -15,22 +15,20 @@ import {
 import { MutationViewer } from "./MutationViewer";
 import { GetMutations, GetMutationsVariables } from "../../types/gql";
 
-const GET_MUTATIONS: TypedDocumentNode<
-  GetMutations,
-  GetMutationsVariables
-> = gql`
-  query GetMutations {
-    mutationLog @client {
-      mutations {
-        id
-        name
-        mutationString
-        variables
-        ...MutationViewer_mutation
+const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
+  gql`
+    query GetMutations {
+      mutationLog @client {
+        mutations {
+          id
+          name
+          mutationString
+          variables
+          ...MutationViewer_mutation
+        }
       }
     }
-  }
-`;
+  `;
 
 export const Mutations = ({
   navigationProps,

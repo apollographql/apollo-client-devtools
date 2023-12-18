@@ -21,10 +21,10 @@ export type WithPrivateAccess<U> = U extends infer T
   ? T extends undefined
     ? undefined
     : KnownPrivates[number] extends infer Known
-    ? Known extends [T, infer Overrides]
-      ? Omit<T, keyof Overrides> & Overrides
+      ? Known extends [T, infer Overrides]
+        ? Omit<T, keyof Overrides> & Overrides
+        : never
       : never
-    : never
   : never;
 
 export function getPrivateAccess<T>(t: T): WithPrivateAccess<T> {
