@@ -227,7 +227,9 @@ function initializeHook() {
             errors: error.graphQLErrors.length
               ? error.graphQLErrors
               : error.networkError && "result" in error.networkError
-                ? error.networkError?.result.errors
+                ? typeof error.networkError?.result === "string"
+                  ? error.networkError?.result
+                  : error.networkError?.result.errors ?? []
                 : [],
             error: error,
             data: null,

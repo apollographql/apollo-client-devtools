@@ -34,7 +34,7 @@
     "codegen": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
-    "@apollo/client": "^3.7.10",
+    "@apollo/client": "^3.8.8",
     "@apollo/space-kit": "^9.11.0",
     "@emotion/react": "^11.11.1",
     "@headlessui/react": "^1.7.17",
@@ -48,7 +48,7 @@
     "react-copy-to-clipboard": "^5.1.0",
     "react-dom": "^18.2.0",
     "react-json-tree": "^0.18.0",
-    "react-resizable-panels": "^0.0.63",
+    "react-resizable-panels": "^1.0.0",
     "react-syntax-highlighter": "^15.5.0",
     "zen-observable": "^0.10.0"
   },
