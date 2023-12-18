@@ -2,7 +2,7 @@
   "name": "apollo-client-devtools",
   "description": "Developer tools for Apollo Client, with Studio Explorer integration, cache inspection, and query watching.",
   "license": "MIT",
-  "version": "4.2.3",
+  "version": "4.3.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/apollographql/apollo-client-devtools.git"
@@ -76,8 +76,8 @@
     "@types/react-dom": "18.2.15",
     "@types/webextension-polyfill": "0.10.6",
     "@types/zen-observable": "0.8.6",
-    "@typescript-eslint/eslint-plugin": "6.14.0",
-    "@typescript-eslint/parser": "6.14.0",
+    "@typescript-eslint/eslint-plugin": "6.15.0",
+    "@typescript-eslint/parser": "6.15.0",
     "archiver": "6.0.1",
     "autoprefixer": "10.4.16",
     "copy-webpack-plugin": "11.0.0",
