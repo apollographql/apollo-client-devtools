@@ -79,23 +79,21 @@ export const client = new ApolloClient({
   cache,
 });
 
-export const GET_QUERIES: TypedDocumentNode<
-  GetQueries,
-  GetQueriesVariables
-> = gql`
-  query GetQueries {
-    watchedQueries @client {
-      queries {
-        id
-        name
-        queryString
-        variables
-        cachedData
+export const GET_QUERIES: TypedDocumentNode<GetQueries, GetQueriesVariables> =
+  gql`
+    query GetQueries {
+      watchedQueries @client {
+        queries {
+          id
+          name
+          queryString
+          variables
+          cachedData
+        }
+        count
       }
-      count
     }
-  }
-`;
+  `;
 
 export const GET_MUTATIONS: TypedDocumentNode<
   GetAllMutations,
