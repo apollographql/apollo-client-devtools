@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.3.1
+
+### Patch Changes
+
+- [#1169](https://github.com/apollographql/apollo-client-devtools/pull/1169) [`5a36ab4`](https://github.com/apollographql/apollo-client-devtools/commit/5a36ab42c534ff750e1bbd697538b3c4f4925dfc) Thanks [@alessbell](https://github.com/alessbell)! - Revert change to script injection approach
+
 ## 4.3.0
 
 ### Minor Changes
