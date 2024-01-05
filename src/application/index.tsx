@@ -16,7 +16,7 @@ import { colorTheme, listenForThemeChange } from "./theme";
 import { App, reloadStatus } from "./App";
 import { fragmentRegistry } from "./fragmentRegistry";
 
-import "@apollo/space-kit/reset.css";
+import "./reset.css";
 import {
   GetAllMutations,
   GetAllMutationsVariables,
