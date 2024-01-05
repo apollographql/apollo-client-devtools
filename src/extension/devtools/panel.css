@@ -7,7 +7,7 @@
 }
 
 @layer base {
-  body {
+  html {
     @apply font-body;
   }
 
