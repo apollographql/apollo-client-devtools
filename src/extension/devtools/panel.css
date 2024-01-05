@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --root-color: black;
-}
-
 @layer base {
   html {
     @apply font-body;
