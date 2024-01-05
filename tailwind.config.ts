@@ -26,8 +26,9 @@ export default {
   ],
   theme: {
     fontFamily: {
-      sans: ["Inter", "sans-serif"],
-      monospace: ["Fira Code", "monospace"],
+      body: ["Inter", "sans-serif"],
+      heading: ["Inter", "sans-serif"],
+      code: ["'Fira Code'", "monospace"],
     },
     colors: colors.primitives,
     backgroundColor: toUnprefixed(colors.tokens.bg),
