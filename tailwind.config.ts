@@ -38,6 +38,7 @@ export default {
       `${config.fontSize}px`,
       `${config.lineHeight}px`,
     ]),
+    fontWeight: mapEntries(typography.primitives.fontWeight, String),
     extend: {},
   },
   plugins: [],
