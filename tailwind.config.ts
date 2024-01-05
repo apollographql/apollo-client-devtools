@@ -1,7 +1,7 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { colors } = require("@apollo/space-kit/colors");
-/** @type {import('tailwindcss').Config} */
-module.exports = {
+import type { Config } from "tailwindcss";
+import { colors } from "@apollo/space-kit/colors";
+
+export default {
   content: [
     "./src/extension/devtools/panel.html",
     "./src/application/**/*.{html,ts,tsx}",
@@ -151,4 +151,4 @@ module.exports = {
     extend: {},
   },
   plugins: [],
-};
+} satisfies Config;
