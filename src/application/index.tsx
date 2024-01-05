@@ -16,7 +16,6 @@ import { colorTheme, listenForThemeChange } from "./theme";
 import { App, reloadStatus } from "./App";
 import { fragmentRegistry } from "./fragmentRegistry";
 
-import "./reset.css";
 import {
   GetAllMutations,
   GetAllMutationsVariables,
