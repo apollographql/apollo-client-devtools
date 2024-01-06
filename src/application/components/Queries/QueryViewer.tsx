@@ -7,13 +7,12 @@ import SyntaxHighlighter from "../SyntaxHighlighter";
 import * as Tabs from "@radix-ui/react-tabs";
 
 import { gql } from "@apollo/client";
-import { JSONTree } from "react-json-tree";
 import { IconCopy } from "@apollo/space-kit/icons/IconCopy";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
-import { useTreeTheme } from "../../theme";
 import { fragmentRegistry } from "../../fragmentRegistry";
 import { QueryViewer_query as WatchedQuery } from "../../types/gql";
+import { JSONTreeViewer } from "../JSONTreeViewer";
 
 export const queryViewStyles = css`
   display: grid;
@@ -133,9 +132,9 @@ export const QueryViewer = ({ query }: QueryViewerProps) => {
   const copyCurrentTab = `${JSON.stringify(
     currentTab === QueryTabs.Variables ? query.variables : query.cachedData
   )}`;
-  const treeTheme = useTreeTheme();
+
   return (
-    <div css={queryViewStyles}>
+    <div className="pt-3 grid [grid-template-columns:minmax(12rem,2fr)_minmax(12rem,1fr)] [grid-template-rows:1.75rem_auto] gap-x-6 [grid-template-areas:'queryStringHeader_queryDataHeader'_'queryStringMain_queryDataMain']">
       <h4 css={queryStringHeader}>
         Query String
         <CopyToClipboard text={query.queryString}>
@@ -160,18 +159,10 @@ export const QueryViewer = ({ query }: QueryViewerProps) => {
         </Tabs.List>
         <div css={queryDataMain}>
           <Tabs.Content css={tabPanelStyles} value={QueryTabs.Variables}>
-            <JSONTree
-              data={query.variables}
-              theme={treeTheme}
-              invertTheme={false}
-            />
+            <JSONTreeViewer data={query.variables} />
           </Tabs.Content>
           <Tabs.Content css={tabPanelStyles} value={QueryTabs.CachedData}>
-            <JSONTree
-              data={query.cachedData}
-              theme={treeTheme}
-              invertTheme={false}
-            />
+            <JSONTreeViewer data={query.cachedData} />
           </Tabs.Content>
         </div>
       </Tabs.Root>

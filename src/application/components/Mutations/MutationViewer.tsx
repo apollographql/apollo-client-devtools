@@ -1,11 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
-import { JSONTree } from "react-json-tree";
 import { IconCopy } from "@apollo/space-kit/icons/IconCopy";
 
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
-import { useTreeTheme } from "../../theme";
 import {
   queryViewStyles,
   headerStyles,
@@ -18,6 +16,7 @@ import SyntaxHighlighter from "../SyntaxHighlighter";
 import { fragmentRegistry } from "../../fragmentRegistry";
 import { gql } from "@apollo/client";
 import { MutationViewer_mutation as WatchedMutation } from "../../types/gql";
+import { JSONTreeViewer } from "../JSONTreeViewer";
 
 interface MutationViewerProps {
   mutation: WatchedMutation;
@@ -45,8 +44,6 @@ fragmentRegistry.register(gql`
 `);
 
 export const MutationViewer = ({ mutation }: MutationViewerProps) => {
-  const treeTheme = useTreeTheme();
-
   return (
     <div css={queryViewStyles}>
       <h4 css={queryStringHeader}>
@@ -71,11 +68,7 @@ export const MutationViewer = ({ mutation }: MutationViewerProps) => {
           </CopyToClipboard>
         </div>
         <div css={queryDataMain}>
-          <JSONTree
-            data={mutation.variables}
-            theme={treeTheme}
-            invertTheme={false}
-          />
+          <JSONTreeViewer data={mutation.variables} />
         </div>
       </div>
     </div>

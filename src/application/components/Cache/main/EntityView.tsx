@@ -1,11 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
-import { JSONTree } from "react-json-tree";
 import { rem } from "polished";
 
-import { useTreeTheme } from "../../../theme";
 import { ReactNode } from "react";
 import { JSONObject } from "../../../types/json";
+import { JSONTreeViewer } from "../../JSONTreeViewer";
 
 const cacheStyles = css`
   padding-top: 1rem;
@@ -25,17 +24,13 @@ interface EntityViewProps {
 }
 
 export function EntityView({ cacheId, data, setCacheId }: EntityViewProps) {
-  const treeTheme = useTreeTheme();
-
   if (!data) return null;
 
   return (
     <div css={cacheStyles}>
       {cacheId}
-      <JSONTree
+      <JSONTreeViewer
         data={data}
-        theme={treeTheme}
-        invertTheme={false}
         hideRoot={true}
         valueRenderer={(valueAsString: ReactNode, value, key) => {
           return (
