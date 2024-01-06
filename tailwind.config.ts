@@ -1,5 +1,8 @@
 import type { Config } from "tailwindcss";
-import { colors, typography } from "@apollo/brand";
+import plugin from "tailwindcss/plugin";
+import { colors, typography, TextStyle } from "@apollo/brand";
+
+type TailwindTextStyle = { [K in keyof TextStyle]: string };
 
 function mapEntries<T, R>(
   obj: { [key: string]: T },
@@ -19,17 +22,19 @@ function toUnprefixed<TConfig extends { base: string; [key: string]: unknown }>(
   }));
 }
 
+const fonts = {
+  body: "Inter, sans-serif",
+  heading: "Inter, sans-serif",
+  code: "'Fira Code', monospace",
+};
+
 export default {
   content: [
     "./src/extension/devtools/panel.html",
     "./src/application/**/*.{html,ts,tsx}",
   ],
   theme: {
-    fontFamily: {
-      body: ["Inter", "sans-serif"],
-      heading: ["Inter", "sans-serif"],
-      code: ["'Fira Code'", "monospace"],
-    },
+    fontFamily: fonts,
     colors: colors.primitives,
     backgroundColor: toUnprefixed(colors.tokens.bg),
     borderColor: toUnprefixed(colors.tokens.border),
@@ -41,5 +46,23 @@ export default {
     fontWeight: mapEntries(typography.primitives.fontWeight, String),
     extend: {},
   },
-  plugins: [],
+  plugins: [
+    plugin(({ addComponents }) => {
+      const typographyClasses = Object.fromEntries(
+        Object.entries(typography.tokens).map(([key, config]) => {
+          return [
+            key === "base" ? ".prose" : `.prose-${key}`,
+            {
+              fontFamily: fonts[config.fontFamily],
+              fontWeight: String(config.fontWeight),
+              fontSize: `${config.fontSize}px`,
+              lineHeight: String(config.lineHeight),
+            } satisfies TailwindTextStyle,
+          ];
+        })
+      );
+
+      addComponents(typographyClasses);
+    }),
+  ],
 } satisfies Config;
