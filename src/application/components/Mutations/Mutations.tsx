@@ -1,10 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { Fragment, useState } from "react";
 import { gql, TypedDocumentNode, useQuery } from "@apollo/client";
-import { List } from "@apollo/space-kit/List";
-import { ListItem } from "@apollo/space-kit/ListItem";
+import { List } from "../List";
+import { ListItem } from "../ListItem";
 
-import { useTheme } from "../../theme";
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { RunInExplorerButton } from "../Queries/RunInExplorerButton";
 import { MutationViewer } from "./MutationViewer";
@@ -38,7 +37,6 @@ export const Mutations = ({
   };
 }): JSX.Element => {
   const [selected, setSelected] = useState<number>(0);
-  const theme = useTheme();
   const { data } = useQuery(GET_MUTATIONS);
 
   const mutations = data?.mutationLog.mutations ?? [];
@@ -49,15 +47,12 @@ export const Mutations = ({
   return (
     <SidebarLayout navigationProps={navigationProps}>
       <SidebarLayout.Sidebar navigationProps={navigationProps}>
-        <List
-          className="font-code [&>div]:h-8 [&>div]:text-sm"
-          selectedColor={theme.sidebarSelected}
-          hoverColor={theme.sidebarHover}
-        >
+        <List>
           {mutations.map(({ name, id }) => {
             return (
               <ListItem
                 key={`${name}-${id}`}
+                className="font-code h-8 text-sm"
                 onClick={() => setSelected(id)}
                 selected={selected === id}
               >
