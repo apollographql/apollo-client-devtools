@@ -36,7 +36,7 @@ export const Queries = ({
   embeddedExplorerProps: {
     embeddedExplorerIFrame: HTMLIFrameElement | null;
   };
-}): JSX.Element => {
+}) => {
   const [selected, setSelected] = useState<number>(0);
   const { data } = useQuery(GET_WATCHED_QUERIES, { returnPartialData: true });
 

@@ -35,7 +35,7 @@ export const Mutations = ({
   embeddedExplorerProps: {
     embeddedExplorerIFrame: HTMLIFrameElement | null;
   };
-}): JSX.Element => {
+}) => {
   const [selected, setSelected] = useState<number>(0);
   const { data } = useQuery(GET_MUTATIONS);
 
