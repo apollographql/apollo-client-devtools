@@ -13,17 +13,6 @@ import { fragmentRegistry } from "../../fragmentRegistry";
 import { QueryViewer_query as WatchedQuery } from "../../types/gql";
 import { JSONTreeViewer } from "../JSONTreeViewer";
 
-export const queryViewStyles = css`
-  display: grid;
-  grid-template-columns: minmax(12rem, 2fr) minmax(12rem, 1fr);
-  grid-template-rows: 1.75rem auto;
-  grid-column-gap: ${rem(24)};
-  grid-template-areas:
-    "queryStringHeader queryDataHeader"
-    "queryStringMain queryDataMain";
-  padding-top: ${rem(10)};
-`;
-
 export const headerStyles = css`
   font-size: ${rem(14)};
   font-weight: 600;

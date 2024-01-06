@@ -4,7 +4,6 @@ import { IconCopy } from "@apollo/space-kit/icons/IconCopy";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
 import {
-  queryViewStyles,
   queryStringHeader,
   queryStringMain,
   queryDataMain,
@@ -28,7 +27,7 @@ fragmentRegistry.register(gql`
 
 export const MutationViewer = ({ mutation }: MutationViewerProps) => {
   return (
-    <div css={queryViewStyles}>
+    <div className="pt-3 grid [grid-template-columns:minmax(12rem,2fr)_minmax(12rem,1fr)] [grid-template-rows:1.75rem_auto] gap-x-6 [grid-template-areas:'queryStringHeader_queryDataHeader'_'queryStringMain_queryDataMain']">
       <h4 css={queryStringHeader}>
         Mutation String
         <CopyToClipboard text={mutation.mutationString}>
