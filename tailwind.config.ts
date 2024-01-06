@@ -36,7 +36,7 @@ export default {
     textColor: toUnprefixed(colors.tokens.text),
     fontSize: mapEntries(typography.primitives.fontSize, (config) => [
       `${config.fontSize}px`,
-      `${config.lineHeight}px`,
+      String(config.lineHeight),
     ]),
     fontWeight: mapEntries(typography.primitives.fontWeight, String),
     extend: {},
