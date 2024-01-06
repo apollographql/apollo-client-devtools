@@ -7,7 +7,6 @@ import { ListItem } from "@apollo/space-kit/ListItem";
 import { useTheme } from "../../theme";
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { RunInExplorerButton } from "../Queries/RunInExplorerButton";
-import { operationNameStyles } from "../Queries/Queries";
 import { MutationViewer } from "./MutationViewer";
 import { GetMutations, GetMutationsVariables } from "../../types/gql";
 
@@ -72,10 +71,14 @@ export const Mutations = ({
         <SidebarLayout.Header>
           {selectedMutation && (
             <Fragment>
-              <h1 className="font-normal font-monospace text-xl">
-                <code>{selectedMutation.name}</code>
-              </h1>
-              <span css={operationNameStyles}>Mutation</span>
+              <div className="flex items-center gap-2">
+                <h1 className="prose-xl">
+                  <code>{selectedMutation.name}</code>
+                </h1>
+                <span className="uppercase text-xs text-info dark:text-info-dark">
+                  Mutation
+                </span>
+              </div>
               <RunInExplorerButton
                 operation={selectedMutation.mutationString}
                 variables={selectedMutation.variables ?? undefined}
