@@ -16,7 +16,7 @@ export enum Screens {
 type NavButtonProps = {
   children: ReactNode;
   isSelected: boolean;
-  onClick: any;
+  onClick: ComponentPropsWithoutRef<"button">["onClick"];
 };
 
 export type NavigationProps = {
