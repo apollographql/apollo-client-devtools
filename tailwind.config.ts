@@ -47,6 +47,9 @@ export default {
       String(config.lineHeight),
     ]),
     fontWeight: mapEntries(typography.primitives.fontWeight, String),
+    data: {
+      "state-active": 'state="active"',
+    },
     extend: {},
   },
   plugins: [
