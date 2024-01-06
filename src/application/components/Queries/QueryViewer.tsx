@@ -35,14 +35,6 @@ export const queryStringMain = css`
   overflow-y: hidden;
 `;
 
-export const queryDataMain = css`
-  grid-area: queryDataMain;
-  margin-top: 1rem;
-  padding-bottom: 1rem;
-  font-family: "Source Code Pro", monospace;
-  font-size: ${rem(13)};
-`;
-
 const tabPanelStyles = css`
   outline: none;
   > ul {
@@ -116,7 +108,7 @@ export const QueryViewer = ({ query }: QueryViewerProps) => {
             />
           </CopyToClipboard>
         </Tabs.List>
-        <div css={queryDataMain}>
+        <div className="[grid-area:queryDataMain] mt-4 pb-4 text-sm">
           <Tabs.Content css={tabPanelStyles} value={QueryTabs.Variables}>
             <JSONTreeViewer data={query.variables} />
           </Tabs.Content>

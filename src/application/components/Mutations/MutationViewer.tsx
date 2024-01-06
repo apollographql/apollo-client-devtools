@@ -3,11 +3,7 @@ import { IconCopy } from "@apollo/space-kit/icons/IconCopy";
 
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
-import {
-  queryStringHeader,
-  queryStringMain,
-  queryDataMain,
-} from "../Queries/QueryViewer";
+import { queryStringHeader, queryStringMain } from "../Queries/QueryViewer";
 import SyntaxHighlighter from "../SyntaxHighlighter";
 import { fragmentRegistry } from "../../fragmentRegistry";
 import { gql } from "@apollo/client";
@@ -54,7 +50,7 @@ export const MutationViewer = ({ mutation }: MutationViewerProps) => {
             />
           </CopyToClipboard>
         </div>
-        <div css={queryDataMain}>
+        <div className="[grid-area:queryDataMain] mt-4 pb-4 text-sm">
           <JSONTreeViewer data={mutation.variables} />
         </div>
       </div>
