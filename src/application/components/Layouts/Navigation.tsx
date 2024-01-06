@@ -1,10 +1,7 @@
-/** @jsxImportSource @emotion/react */
-import React, { ReactNode } from "react";
+import React, { ComponentPropsWithoutRef, ReactNode } from "react";
 import { makeVar, useReactiveVar } from "@apollo/client";
-import { css } from "@emotion/react";
-import { rem } from "polished";
-import { colors } from "@apollo/space-kit/colors";
 import { ApolloLogo } from "@apollo/space-kit/icons/ApolloLogo";
+import { clsx } from "clsx";
 
 export enum Screens {
   Cache = "cache",
@@ -24,67 +21,16 @@ export type NavigationProps = {
   mutationsCount: number;
 };
 
-const navigationStyles = css`
-  grid-area: nav;
-  display: flex;
-  align-items: center;
-  box-shadow: 0 ${rem(-1)} 0 0 rgba(255, 255, 255, 0.3) inset;
-  background-color: var(--primary);
-`;
-
-const selectedNavButtonStyles = css`
-  color: ${colors.silver.lighter};
-  box-shadow: 0 ${rem(-2)} 0 0 ${colors.silver.lighter} inset;
-`;
-
-const navButtonStyles = css`
-  appearance: none;
-  margin: 0 ${rem(10)};
-  padding: ${rem(12)} 0;
-  font-size: ${rem(13)};
-  border: none;
-  background-color: transparent;
-  color: var(--whiteTransparent);
-  text-transform: uppercase;
-  cursor: pointer;
-  text-wrap: nowrap;
-
-  &:hover {
-    color: ${colors.silver.lighter};
-  }
-
-  &:focus {
-    outline: none;
-  }
-`;
-
-const listStyles = css`
-  display: flex;
-  align-items: center;
-  margin: 0 ${rem(5)};
-  padding: 0;
-  list-style: none;
-  flex-wrap: wrap;
-`;
-
-const logoLinkStyles = css`
-  display: block;
-`;
-
-const logoStyles = css`
-  width: ${rem(24)};
-  height: auto !important;
-  margin: 0 ${rem(16)};
-  color: ${colors.silver.lighter};
-`;
-
-const borderStyles = css`
-  border-right: ${rem(1)} solid var(--whiteTransparent);
-`;
-
 const NavButton = ({ isSelected, onClick, children }: NavButtonProps) => (
   <button
-    css={[navButtonStyles, isSelected && selectedNavButtonStyles]}
+    className={clsx(
+      "appearance-none mx-2 py-3 border-y-2 border-transparent text-sm uppercase cursor-pointer whitespace-nowrap",
+      "hover:text-white hover:dark:text-white-dark focus:outline-none",
+      {
+        "text-white dark:text-white-dark border-b-focused dark:border-b-focused-dark":
+          isSelected,
+      }
+    )}
     onClick={onClick}
   >
     {children}
@@ -102,19 +48,19 @@ export const Navigation: React.FC<NavigationProps> = ({
   const onNavigate = (screen: Screens) => currentScreen(screen);
 
   return (
-    <nav css={navigationStyles}>
-      <div css={borderStyles}>
+    <nav className="flex items-center bg-secondary dark:bg-secondary-dark border-b border-primary dark:border-primary-dark border-solid">
+      <div className="border-r border-primary dark:border-r-primary-dark border-solid">
         <a
           href="https://go.apollo.dev/c/docs"
           target="_blank"
           title="Apollo Client developer documentation"
-          css={logoLinkStyles}
+          className="block"
           rel="noreferrer"
         >
-          <ApolloLogo css={logoStyles} />
+          <ApolloLogo className="w-[24px] !h-auto mx-4 text-primary dark:text-primary-dark" />
         </a>
       </div>
-      <ul css={listStyles}>
+      <ul className="flex flex-wrap items-center mx-1 list-none">
         <li>
           <NavButton
             isSelected={isSelected(Screens.Explorer)}
