@@ -7,7 +7,6 @@ import { List } from "../List";
 import { ListItem } from "../ListItem";
 import { colors } from "@apollo/space-kit/colors";
 
-import { useTheme } from "../../theme";
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { RunInExplorerButton } from "./RunInExplorerButton";
 import { QueryViewer } from "./QueryViewer";
@@ -51,7 +50,6 @@ export const Queries = ({
   };
 }): JSX.Element => {
   const [selected, setSelected] = useState<number>(0);
-  const theme = useTheme();
   const { data } = useQuery(GET_WATCHED_QUERIES, { returnPartialData: true });
 
   const queries = data?.watchedQueries.queries ?? [];
