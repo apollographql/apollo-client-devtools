@@ -49,41 +49,6 @@ export const queryStringHeader = css`
   ${headerStyles}
 `;
 
-const queryDataHeader = css`
-  display: flex;
-  grid-area: queryDataHeader;
-  height: 100%;
-  background-color: transparent;
-  ${headerStyles}
-  color: ${colors.grey.lighter};
-
-  button {
-    padding: 0 0.5em 1.7rem;
-    outline: none;
-    display: inline-block;
-    border: none;
-    margin: 0;
-    border-bottom: 1px solid transparent;
-    background: none;
-    color: inherit;
-    font: inherit;
-    cursor: pointer;
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-  }
-
-  button[data-state="active"] {
-    color: var(--textPrimary);
-    border-bottom: ${rem(1)} solid var(--textPrimary);
-  }
-
-  svg {
-    margin-right: 0;
-    margin-left: auto;
-  }
-`;
-
 export const queryStringMain = css`
   grid-area: queryStringMain;
   margin-top: 1rem;
@@ -150,11 +115,25 @@ export const QueryViewer = ({ query }: QueryViewerProps) => {
         value={currentTab}
         onValueChange={(value: QueryTabs) => setCurrentTab(value)}
       >
-        <Tabs.List css={queryDataHeader}>
-          <Tabs.Trigger value={QueryTabs.Variables}>Variables</Tabs.Trigger>
-          <Tabs.Trigger value={QueryTabs.CachedData}>Cached Data</Tabs.Trigger>
+        <Tabs.List className="flex [grid-area:queryDataHeader] h-full text-sm font-semibold border-b-primary dark:border-b-primary-dark border-b">
+          <Tabs.Trigger
+            className="px-2 pb-2 data-state-active:text-white data-state-active:border-b-focused dark:data-state-active:border-b-focused-dark data-state-active:border-b"
+            value={QueryTabs.Variables}
+          >
+            Variables
+          </Tabs.Trigger>
+          <Tabs.Trigger
+            className="px-2 pb-2 data-state-active:text-white data-state-active:border-b-focused dark:data-state-active:border-b-focused-dark data-state-active:border-b"
+            value={QueryTabs.CachedData}
+          >
+            Cached Data
+          </Tabs.Trigger>
           <CopyToClipboard text={copyCurrentTab}>
-            <IconCopy css={copyIconStyle} data-testid="copy-query-data" />
+            <IconCopy
+              className="ml-auto"
+              css={copyIconStyle}
+              data-testid="copy-query-data"
+            />
           </CopyToClipboard>
         </Tabs.List>
         <div css={queryDataMain}>
