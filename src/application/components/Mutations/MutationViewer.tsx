@@ -1,12 +1,10 @@
 /** @jsxImportSource @emotion/react */
-import { css } from "@emotion/react";
 import { IconCopy } from "@apollo/space-kit/icons/IconCopy";
 
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
 import {
   queryViewStyles,
-  headerStyles,
   copyIconStyle,
   queryStringHeader,
   queryStringMain,
@@ -21,20 +19,6 @@ import { JSONTreeViewer } from "../JSONTreeViewer";
 interface MutationViewerProps {
   mutation: WatchedMutation;
 }
-
-const queryDataHeader = css`
-  grid-area: queryDataHeader;
-  display: flex;
-  height: 100%;
-  background-color: transparent;
-  ${headerStyles}
-  color: var(--textPrimary);
-
-  svg {
-    margin-right: 0;
-    margin-left: auto;
-  }
-`;
 
 fragmentRegistry.register(gql`
   fragment MutationViewer_mutation on WatchedMutation {
@@ -58,10 +42,13 @@ export const MutationViewer = ({ mutation }: MutationViewerProps) => {
         language="graphql"
       />
       <div>
-        <div css={queryDataHeader}>
-          <span>Variables</span>
+        <div className="flex [grid-area:queryDataHeader] h-full text-sm font-semibold border-b-primary dark:border-b-primary-dark border-b">
+          <span className="px-2 pb-2 text-white border-b-focused dark:border-b-focused-dark border-b">
+            Variables
+          </span>
           <CopyToClipboard text={JSON.stringify(mutation.variables)}>
             <IconCopy
+              className="ml-auto"
               css={copyIconStyle}
               data-testid="copy-mutation-variables"
             />
