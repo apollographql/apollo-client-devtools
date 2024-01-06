@@ -5,7 +5,6 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 
 import {
   queryViewStyles,
-  copyIconStyle,
   queryStringHeader,
   queryStringMain,
   queryDataMain,
@@ -33,7 +32,10 @@ export const MutationViewer = ({ mutation }: MutationViewerProps) => {
       <h4 css={queryStringHeader}>
         Mutation String
         <CopyToClipboard text={mutation.mutationString}>
-          <IconCopy css={copyIconStyle} data-testid="copy-mutation-string" />
+          <IconCopy
+            className="ml-auto !h-4 cursor-pointer text-secondary dark:text-secondary-dark hover:text-primary hover:dark:text-primary-dark"
+            data-testid="copy-mutation-string"
+          />
         </CopyToClipboard>
       </h4>
       <SyntaxHighlighter
@@ -48,8 +50,7 @@ export const MutationViewer = ({ mutation }: MutationViewerProps) => {
           </span>
           <CopyToClipboard text={JSON.stringify(mutation.variables)}>
             <IconCopy
-              className="ml-auto"
-              css={copyIconStyle}
+              className="ml-auto !h-4 cursor-pointer text-secondary dark:text-secondary-dark hover:text-primary hover:dark:text-primary-dark"
               data-testid="copy-mutation-variables"
             />
           </CopyToClipboard>

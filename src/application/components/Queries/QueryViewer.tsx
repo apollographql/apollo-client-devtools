@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { css } from "@emotion/react";
 import { rem } from "polished";
-import { colors } from "@apollo/space-kit/colors";
 import SyntaxHighlighter from "../SyntaxHighlighter";
 import * as Tabs from "@radix-ui/react-tabs";
 
@@ -29,16 +28,6 @@ export const headerStyles = css`
   font-size: ${rem(14)};
   font-weight: 600;
   border-bottom: ${rem(1)} solid var(--mainBorder);
-`;
-
-export const copyIconStyle = css`
-  height: ${rem(16)} !important;
-  color: ${colors.silver.darker};
-  cursor: pointer;
-
-  &:hover {
-    color: var(--textPrimary);
-  }
 `;
 
 export const queryStringHeader = css`
@@ -103,7 +92,10 @@ export const QueryViewer = ({ query }: QueryViewerProps) => {
       <h4 css={queryStringHeader}>
         Query String
         <CopyToClipboard text={query.queryString}>
-          <IconCopy css={copyIconStyle} data-testid="copy-query-string" />
+          <IconCopy
+            className="ml-auto !h-4 cursor-pointer text-secondary dark:text-secondary-dark hover:text-primary hover:dark:text-primary-dark"
+            data-testid="copy-query-string"
+          />
         </CopyToClipboard>
       </h4>
       <SyntaxHighlighter
@@ -130,8 +122,7 @@ export const QueryViewer = ({ query }: QueryViewerProps) => {
           </Tabs.Trigger>
           <CopyToClipboard text={copyCurrentTab}>
             <IconCopy
-              className="ml-auto"
-              css={copyIconStyle}
+              className="ml-auto !h-4 cursor-pointer text-secondary dark:text-secondary-dark hover:text-primary hover:dark:text-primary-dark"
               data-testid="copy-query-data"
             />
           </CopyToClipboard>
