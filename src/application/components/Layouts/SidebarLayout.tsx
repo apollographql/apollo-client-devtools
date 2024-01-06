@@ -42,7 +42,7 @@ const Sidebar = ({ navigationProps, children }: SidebarProps) => {
             queriesCount={navigationProps.queriesCount}
             mutationsCount={navigationProps.mutationsCount}
           />
-          <div className="py-0 px-4">{children}</div>
+          <div className="p-4">{children}</div>
         </div>
       </Panel>
       <PanelResizeHandle className="border border-secondary border-solid dark:border-secondary-dark" />
