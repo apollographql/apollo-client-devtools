@@ -1,24 +1,12 @@
-/** @jsxImportSource @emotion/react */
 import { Fragment, useState } from "react";
-import { css } from "@emotion/react";
-import { rem } from "polished";
 import { gql, useQuery, TypedDocumentNode } from "@apollo/client";
 import { List } from "../List";
 import { ListItem } from "../ListItem";
-import { colors } from "@apollo/space-kit/colors";
 
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { RunInExplorerButton } from "./RunInExplorerButton";
 import { QueryViewer } from "./QueryViewer";
 import { GetWatchedQueries, GetWatchedQueriesVariables } from "../../types/gql";
-
-export const operationNameStyles = css`
-  margin: ${rem(3)} 0 0 ${rem(8)};
-  font-family: "Source Sans Pro", sans-serif;
-  color: ${colors.grey.light};
-  text-transform: uppercase;
-  font-size: ${rem(11)};
-`;
 
 const GET_WATCHED_QUERIES: TypedDocumentNode<
   GetWatchedQueries,
