@@ -37,7 +37,10 @@ export default {
     fontFamily: fonts,
     colors: colors.primitives,
     backgroundColor: toUnprefixed(colors.tokens.bg),
-    borderColor: toUnprefixed(colors.tokens.border),
+    borderColor: {
+      ...toUnprefixed(colors.tokens.border),
+      transparent: "transparent",
+    },
     textColor: toUnprefixed(colors.tokens.text),
     fontSize: mapEntries(typography.primitives.fontSize, (config) => [
       `${config.fontSize}px`,
