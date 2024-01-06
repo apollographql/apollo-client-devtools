@@ -1,6 +1,6 @@
 import { Highlight, Language, PrismTheme } from "prism-react-renderer";
 import { useReactiveVar } from "@apollo/client";
-import { colors } from "@apollo/space-kit/colors";
+import { colors } from "@apollo/brand";
 import { ColorTheme, colorTheme } from "../theme";
 
 interface SyntaxHighlighterProps {
@@ -9,8 +9,12 @@ interface SyntaxHighlighterProps {
   code: string;
 }
 
-const theme: Record<ColorTheme, PrismTheme> = {
-  [ColorTheme.Light]: {
+const { code } = colors.tokens;
+
+const getTheme = (mode: ColorTheme): PrismTheme => {
+  const isDark = mode === ColorTheme.Dark;
+
+  return {
     plain: {
       color: "currentColor",
       backgroundColor: "transparent",
@@ -37,36 +41,50 @@ const theme: Record<ColorTheme, PrismTheme> = {
       {
         types: ["selector", "attr-name", "char", "builtin", "inserted"],
         style: {
-          color: colors.teal.dark,
+          color: isDark ? code.d.dark : code.d.base,
         },
       },
       {
         types: ["comment", "prolog", "doctype", "cdata"],
         style: {
-          color: colors.orange.base,
+          color: isDark ? code.b.dark : code.b.base,
           fontWeight: "bold",
         },
       },
       {
-        types: ["punctuation"],
+        types: ["scalar", "attr-value"],
         style: {
-          color: colors.grey.base,
+          color: isDark ? code.c.dark : code.c.base,
         },
       },
       {
-        types: [
-          "property",
-          "tag",
-          "boolean",
-          "number",
-          "constant",
-          "symbol",
-          "deleted",
-          "class-name",
-          "function",
-        ],
+        types: ["url", "attr-value"],
         style: {
-          color: colors.pink.dark,
+          color: isDark ? code.g.dark : code.g.base,
+        },
+      },
+      {
+        types: ["punctuation", "constant"],
+        style: {
+          color: isDark ? code.a.dark : code.a.base,
+        },
+      },
+      {
+        types: ["property", "tag", "boolean", "number", "symbol"],
+        style: {
+          color: isDark ? code.c.dark : code.c.base,
+        },
+      },
+      {
+        types: ["class-name"],
+        style: {
+          color: isDark ? code.a.dark : code.a.base,
+        },
+      },
+      {
+        types: ["property", "function"],
+        style: {
+          color: isDark ? code.d.dark : code.d.base,
         },
       },
       {
@@ -79,97 +97,32 @@ const theme: Record<ColorTheme, PrismTheme> = {
       {
         types: ["atrule", "attr-value", "keyword"],
         style: {
-          color: colors.indigo.base,
+          color: isDark ? code.b.dark : code.b.base,
         },
       },
       {
-        types: ["regex", "important", "variable", "description"],
+        types: ["string"],
         style: {
-          color: colors.yellow.base,
-        },
-      },
-    ],
-  },
-  [ColorTheme.Dark]: {
-    plain: {
-      color: "currentColor",
-      backgroundColor: "transparent",
-    },
-    styles: [
-      {
-        types: ["important", "bold"],
-        style: {
-          fontWeight: "bold",
-        },
-      },
-      {
-        types: ["italic"],
-        style: {
-          fontStyle: "italic",
-        },
-      },
-      {
-        types: ["entity"],
-        style: {
-          cursor: "help",
-        },
-      },
-      {
-        types: ["selector", "attr-name", "char", "builtin", "inserted"],
-        style: {
-          color: colors.teal.light,
-        },
-      },
-      {
-        types: ["comment", "prolog", "doctype", "cdata"],
-        style: {
-          color: colors.orange.light,
-          fontWeight: "bold",
-        },
-      },
-      {
-        types: ["punctuation"],
-        style: {
-          color: colors.grey.light,
+          color: isDark ? code.g.dark : code.g.base,
         },
       },
       {
         types: [
-          "property",
-          "tag",
-          "boolean",
-          "number",
-          "constant",
-          "symbol",
-          "deleted",
-          "class-name",
-          "function",
+          "regex",
+          "important",
+          "variable",
+          "description",
+          "comment",
+          "prolog",
+          "doctype",
+          "cdata",
         ],
         style: {
-          color: colors.pink.light,
-        },
-      },
-      {
-        types: ["atrule", "attr-value", "keyword"],
-        style: {
-          color: "inherit",
-          background: "transparent",
-        },
-      },
-      {
-        types: ["atrule", "attr-value", "keyword"],
-        style: {
-          color: colors.indigo.light,
-        },
-      },
-      {
-        types: ["regex", "important", "variable", "description"],
-        style: {
-          color: colors.yellow.light,
+          color: isDark ? code.f.dark : code.f.base,
         },
       },
     ],
-  },
+  };
 };
 
 const SyntaxHighlighter = ({
@@ -177,7 +130,7 @@ const SyntaxHighlighter = ({
   className: outerClassName,
   language,
 }: SyntaxHighlighterProps) => {
-  const activeTheme = theme[useReactiveVar(colorTheme)];
+  const activeTheme = getTheme(useReactiveVar(colorTheme));
 
   return (
     <Highlight language={language} theme={activeTheme} code={code}>
