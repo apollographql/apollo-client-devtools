@@ -71,9 +71,6 @@ export const Queries = ({
   return (
     <SidebarLayout navigationProps={navigationProps}>
       <SidebarLayout.Sidebar navigationProps={navigationProps}>
-        <SidebarLayout.SidebarHeading>
-          Active Queries ({navigationProps.queriesCount})
-        </SidebarLayout.SidebarHeading>
         <List
           css={listStyles}
           selectedColor={theme.sidebarSelected}

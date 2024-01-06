@@ -50,9 +50,6 @@ export const Mutations = ({
   return (
     <SidebarLayout navigationProps={navigationProps}>
       <SidebarLayout.Sidebar navigationProps={navigationProps}>
-        <SidebarLayout.SidebarHeading>
-          Mutations ({navigationProps.mutationsCount})
-        </SidebarLayout.SidebarHeading>
         <List
           css={listStyles}
           selectedColor={theme.sidebarSelected}
