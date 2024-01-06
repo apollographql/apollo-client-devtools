@@ -21,17 +21,6 @@ export const operationNameStyles = css`
   font-size: ${rem(11)};
 `;
 
-export const listStyles = css`
-  grid-area: list;
-  font-family: monospace;
-  color: ${colors.silver.lighter};
-
-  > div {
-    height: ${rem(32)};
-    font-size: ${rem(13)};
-  }
-`;
-
 const GET_WATCHED_QUERIES: TypedDocumentNode<
   GetWatchedQueries,
   GetWatchedQueriesVariables
@@ -72,7 +61,7 @@ export const Queries = ({
     <SidebarLayout navigationProps={navigationProps}>
       <SidebarLayout.Sidebar navigationProps={navigationProps}>
         <List
-          css={listStyles}
+          className="font-code [&>div]:h-8 [&>div]:text-sm"
           selectedColor={theme.sidebarSelected}
           hoverColor={theme.sidebarHover}
         >
