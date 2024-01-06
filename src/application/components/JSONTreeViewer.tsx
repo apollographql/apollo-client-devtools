@@ -2,7 +2,7 @@ import { ComponentPropsWithoutRef } from "react";
 import { useReactiveVar } from "@apollo/client";
 import { JSONTree } from "react-json-tree";
 import { ColorTheme, colorTheme } from "../theme";
-import { colors, ShadedColor } from "@apollo/space-kit/colors";
+import { colors } from "@apollo/brand";
 
 type JSONTreeProps = ComponentPropsWithoutRef<typeof JSONTree>;
 
@@ -11,49 +11,36 @@ type JSONTreeViewerProps = Pick<
   "data" | "hideRoot" | "valueRenderer"
 >;
 
+const { bg, code, icon } = colors.tokens;
+const { primitives } = colors;
+
 // The Base16 options used below are explained here:
 // https://github.com/chriskempson/base16/blob/7fa89d33bc77a43e1cf93c4654b235e21f827ce3/styling.md
-const theme: Record<ColorTheme, Record<string, string>> = {
-  [ColorTheme.Light]: {
-    base00: colors.white as ShadedColor,
-    base01: colors.white as ShadedColor,
-    base02: "#FFFF00" as ShadedColor,
-    base03: "#969896" as ShadedColor,
-    base04: colors.white as ShadedColor,
-    base05: colors.white as ShadedColor,
-    base06: colors.white as ShadedColor,
-    base07: colors.white as ShadedColor,
-    base08: colors.grey.base,
-    base09: colors.indigo.base,
-    base0A: colors.black.base,
-    base0B: colors.pink.dark,
-    base0C: colors.black.base,
-    base0D: colors.black.base,
-    base0E: colors.black.base,
-    base0F: colors.black.base,
-  },
-  [ColorTheme.Dark]: {
-    base00: "#23262d" as ShadedColor,
-    base01: colors.white as ShadedColor,
-    base02: "#FFFF00" as ShadedColor,
-    base03: "#969896" as ShadedColor,
-    base04: colors.white as ShadedColor,
-    base05: colors.white as ShadedColor,
-    base06: colors.white as ShadedColor,
-    base07: colors.white as ShadedColor,
-    base08: colors.grey.base,
-    base09: colors.indigo.light,
-    base0A: colors.white as ShadedColor,
-    base0B: colors.pink.light,
-    base0C: colors.white as ShadedColor,
-    base0D: colors.white as ShadedColor,
-    base0E: colors.white as ShadedColor,
-    base0F: colors.white as ShadedColor,
-  },
+const getTheme = (theme: ColorTheme) => {
+  const isDark = theme === ColorTheme.Dark;
+
+  return {
+    base00: isDark ? bg.primary.dark : bg.primary.base,
+    base01: isDark ? bg.secondary.dark : bg.secondary.base,
+    base02: isDark ? bg.selected.dark : bg.selected.base,
+    base03: isDark ? code.b.dark : code.b.base,
+    base04: primitives.white,
+    base05: isDark ? icon.primary.dark : icon.primary.base,
+    base06: primitives.white,
+    base07: primitives.white,
+    base08: isDark ? code.a.dark : code.a.base,
+    base09: isDark ? code.c.dark : code.c.base,
+    base0A: isDark ? code.a.dark : code.a.base,
+    base0B: isDark ? code.g.dark : code.g.base,
+    base0C: isDark ? code.f.dark : code.f.base,
+    base0D: isDark ? code.d.dark : code.d.base,
+    base0E: isDark ? code.d.dark : code.d.base,
+    base0F: isDark ? code.b.dark : code.b.base,
+  };
 };
 
 export function JSONTreeViewer(props: JSONTreeViewerProps) {
-  const activeTheme = theme[useReactiveVar(colorTheme)];
+  const activeTheme = getTheme(useReactiveVar(colorTheme));
 
   return <JSONTree {...props} invertTheme={false} theme={activeTheme} />;
 }
