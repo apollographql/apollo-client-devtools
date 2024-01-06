@@ -7,11 +7,7 @@ import { ListItem } from "@apollo/space-kit/ListItem";
 import { useTheme } from "../../theme";
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { RunInExplorerButton } from "../Queries/RunInExplorerButton";
-import {
-  sidebarHeadingStyles,
-  operationNameStyles,
-  listStyles,
-} from "../Queries/Queries";
+import { operationNameStyles, listStyles } from "../Queries/Queries";
 import { MutationViewer } from "./MutationViewer";
 import { GetMutations, GetMutationsVariables } from "../../types/gql";
 
@@ -54,7 +50,7 @@ export const Mutations = ({
   return (
     <SidebarLayout navigationProps={navigationProps}>
       <SidebarLayout.Sidebar navigationProps={navigationProps}>
-        <h3 css={sidebarHeadingStyles}>
+        <h3 className="prose-sm text-heading dark:text-heading-dark uppercase py-2 ml-3">
           Mutations ({navigationProps.mutationsCount})
         </h3>
         <List

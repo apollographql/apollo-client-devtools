@@ -13,16 +13,6 @@ import { RunInExplorerButton } from "./RunInExplorerButton";
 import { QueryViewer } from "./QueryViewer";
 import { GetWatchedQueries, GetWatchedQueriesVariables } from "../../types/gql";
 
-export const sidebarHeadingStyles = css`
-  margin-left: ${rem(12)};
-  text-transform: uppercase;
-  font-size: ${rem(13)};
-  font-weight: normal;
-  letter-spacing: ${rem(1)};
-  color: var(--whiteTransparent);
-  padding: ${rem(8)} 0;
-`;
-
 export const operationNameStyles = css`
   margin: ${rem(3)} 0 0 ${rem(8)};
   font-family: "Source Sans Pro", sans-serif;
@@ -81,7 +71,7 @@ export const Queries = ({
   return (
     <SidebarLayout navigationProps={navigationProps}>
       <SidebarLayout.Sidebar navigationProps={navigationProps}>
-        <h3 css={sidebarHeadingStyles}>
+        <h3 className="prose-sm text-heading dark:text-heading-dark uppercase py-2 ml-3">
           Active Queries ({navigationProps.queriesCount})
         </h3>
         <List
