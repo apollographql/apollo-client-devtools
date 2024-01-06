@@ -1,7 +1,4 @@
-/** @jsxImportSource @emotion/react */
 import { ReactNode, useState } from "react";
-import { css } from "@emotion/react";
-import { rem } from "polished";
 import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 
@@ -18,36 +15,13 @@ interface SidebarProps {
   children: ReactNode;
 }
 
-const listStyles = css`
-  grid-area: list;
-  padding: 0 1rem;
-`;
-
-const headerStyles = css`
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  padding: 0 0.75rem;
-  border-bottom: ${rem(1)} solid var(--mainBorder);
-  background-color: var(--main);
-  color: var(--textPrimary);
-  height: 2.75rem;
-`;
-
-const mainStyles = css`
-  grid-area: main;
-  padding: 0 1rem 2rem;
-  background-color: var(--main);
-  color: var(--textPrimary);
-`;
-
 const SidebarLayout = ({ children }: SidebarLayoutProps) => {
   return (
     <PanelGroup
       direction="horizontal"
       data-testid="layout"
       autoSaveId="layout"
-      style={{ display: "flex" }}
+      className="flex"
     >
       {children}
     </PanelGroup>
@@ -61,25 +35,17 @@ const Sidebar = ({ navigationProps, children }: SidebarProps) => {
         id="sidebar"
         defaultSize={25}
         minSize={10}
-        style={{
-          overflow: "scroll",
-          height: "100vh",
-          backgroundColor: "var(--primary)",
-        }}
+        className="overflow-scroll h-[100vh] bg-secondary dark:bg-secondary-dark"
       >
         <div data-testid="sidebar">
           <Navigation
             queriesCount={navigationProps.queriesCount}
             mutationsCount={navigationProps.mutationsCount}
           />
-          <div css={listStyles}>{children}</div>
+          <div className="py-0 px-4">{children}</div>
         </div>
       </Panel>
-      <PanelResizeHandle
-        style={{
-          border: "1px solid var(--mainBorder)",
-        }}
-      />
+      <PanelResizeHandle className="border border-secondary border-solid dark:border-secondary-dark" />
     </>
   );
 };
@@ -94,12 +60,7 @@ const Content = ({ children }: ContentProps) => (
     defaultSize={70}
     minSize={30}
     data-testid="content"
-    style={{
-      overflow: "scroll",
-      height: "100vh",
-      width: "100%",
-      backgroundColor: "var(--main)",
-    }}
+    className="overflow-scroll h-[100vh] w-full bg-primary dark:bg-primary-dark"
   >
     {children}
   </Panel>
@@ -113,7 +74,10 @@ const Header = ({ children }: HeaderProps) => {
   const [open, setOpen] = useState(false);
 
   return (
-    <div css={headerStyles} data-testid="header">
+    <div
+      className="flex justify-end items-center border-b border-solid border-secondary dark:border-secondary-dark bg-primary dark:bg-primary-dark px-3 py-0"
+      data-testid="header"
+    >
       {children}
       {/* In order to avoid duplicating the cog component everywhere
         `SidebarLayout.Header` is used, we use margin-left: auto as the default,
@@ -136,7 +100,7 @@ interface MainProps {
 }
 
 const Main = ({ children }: MainProps) => (
-  <div css={mainStyles} data-testid="main">
+  <div className="pt-0 px-4 pb-8" data-testid="main">
     {children}
   </div>
 );
