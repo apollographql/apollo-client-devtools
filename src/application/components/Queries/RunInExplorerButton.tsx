@@ -1,7 +1,4 @@
-/** @jsxImportSource @emotion/react */
 import { IconRun } from "@apollo/space-kit/icons/IconRun";
-import { css } from "@emotion/react";
-import { rem } from "polished";
 import { Variables } from "../../types/scalars";
 import {
   postMessageToEmbed,
@@ -15,24 +12,6 @@ interface RunInExplorerButtonProps {
   embeddedExplorerIFrame: HTMLIFrameElement | null;
 }
 
-export const buttonStyles = css`
-  appearance: none;
-  display: flex;
-  align-items: center;
-  margin: 0 0 0 auto;
-  border: none;
-  font-size: ${rem(13)};
-  color: var(--textPrimary);
-  background-color: transparent;
-  cursor: pointer;
-  outline: none;
-
-  > svg {
-    width: ${rem(13)};
-    margin-right: ${rem(8)};
-  }
-`;
-
 export const RunInExplorerButton = ({
   operation,
   variables,
@@ -41,8 +20,7 @@ export const RunInExplorerButton = ({
   return (
     embeddedExplorerIFrame && (
       <button
-        className="peer is-explorer-button"
-        css={buttonStyles}
+        className="peer is-explorer-button appearance-none flex items-center ml-auto border-none text-sm cursor-pointer"
         onClick={() => {
           // send a post message to the embedded explorer to fill the operation
           postMessageToEmbed({
@@ -56,7 +34,7 @@ export const RunInExplorerButton = ({
           currentScreen(Screens.Explorer);
         }}
       >
-        <IconRun />
+        <IconRun className="w-3 mr-2" />
         <span>Run in Explorer</span>
       </button>
     )
