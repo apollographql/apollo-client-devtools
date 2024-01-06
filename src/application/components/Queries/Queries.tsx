@@ -3,8 +3,8 @@ import { Fragment, useState } from "react";
 import { css } from "@emotion/react";
 import { rem } from "polished";
 import { gql, useQuery, TypedDocumentNode } from "@apollo/client";
-import { List } from "@apollo/space-kit/List";
-import { ListItem } from "@apollo/space-kit/ListItem";
+import { List } from "../List";
+import { ListItem } from "../ListItem";
 import { colors } from "@apollo/space-kit/colors";
 
 import { useTheme } from "../../theme";
@@ -60,17 +60,14 @@ export const Queries = ({
   return (
     <SidebarLayout navigationProps={navigationProps}>
       <SidebarLayout.Sidebar navigationProps={navigationProps}>
-        <List
-          className="font-code [&>div]:h-8 [&>div]:text-sm"
-          selectedColor={theme.sidebarSelected}
-          hoverColor={theme.sidebarHover}
-        >
+        <List>
           {queries.map(({ name, id }) => {
             return (
               <ListItem
                 key={`${name}-${id}`}
                 onClick={() => setSelected(id)}
                 selected={selected === id}
+                className="font-code h-8 text-sm"
               >
                 {name}
               </ListItem>
