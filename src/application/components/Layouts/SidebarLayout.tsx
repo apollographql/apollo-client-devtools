@@ -35,7 +35,7 @@ const Sidebar = ({ navigationProps, children }: SidebarProps) => {
         id="sidebar"
         defaultSize={25}
         minSize={10}
-        className="overflow-scroll h-[100vh] bg-secondary dark:bg-secondary-dark"
+        className="!overflow-scroll h-[100vh] bg-secondary dark:bg-secondary-dark"
       >
         <div data-testid="sidebar">
           <Navigation
@@ -60,7 +60,7 @@ const Content = ({ children }: ContentProps) => (
     defaultSize={70}
     minSize={30}
     data-testid="content"
-    className="overflow-scroll h-[100vh] w-full bg-primary dark:bg-primary-dark"
+    className="!overflow-scroll h-[100vh] w-full bg-primary dark:bg-primary-dark"
   >
     {children}
   </Panel>
