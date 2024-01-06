@@ -77,10 +77,14 @@ export const Queries = ({
         <SidebarLayout.Header>
           {selectedQuery && (
             <Fragment>
-              <h1 className="prose-xl">
-                <code>{selectedQuery.name}</code>
-              </h1>
-              <span css={operationNameStyles}>Query</span>
+              <div className="flex items-center gap-2">
+                <h1 className="prose-xl">
+                  <code>{selectedQuery.name}</code>
+                </h1>
+                <span className="uppercase text-xs text-info dark:text-info-dark">
+                  Query
+                </span>
+              </div>
               <RunInExplorerButton
                 operation={selectedQuery.queryString}
                 variables={selectedQuery.variables ?? undefined}
