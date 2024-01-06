@@ -50,6 +50,18 @@ const Sidebar = ({ navigationProps, children }: SidebarProps) => {
   );
 };
 
+interface SidebarHeadingProps {
+  children?: ReactNode;
+}
+
+const SidebarHeading = ({ children }: SidebarHeadingProps) => {
+  return (
+    <h3 className="prose-sm text-heading dark:text-heading-dark uppercase py-2 ml-3">
+      {children}
+    </h3>
+  );
+};
+
 interface ContentProps {
   children?: ReactNode;
 }
@@ -106,6 +118,7 @@ const Main = ({ children }: MainProps) => (
 );
 
 SidebarLayout.Sidebar = Sidebar;
+SidebarLayout.SidebarHeading = SidebarHeading;
 SidebarLayout.Content = Content;
 SidebarLayout.Header = Header;
 SidebarLayout.Main = Main;

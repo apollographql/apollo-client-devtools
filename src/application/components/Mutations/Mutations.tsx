@@ -50,9 +50,9 @@ export const Mutations = ({
   return (
     <SidebarLayout navigationProps={navigationProps}>
       <SidebarLayout.Sidebar navigationProps={navigationProps}>
-        <h3 className="prose-sm text-heading dark:text-heading-dark uppercase py-2 ml-3">
+        <SidebarLayout.SidebarHeading>
           Mutations ({navigationProps.mutationsCount})
-        </h3>
+        </SidebarLayout.SidebarHeading>
         <List
           css={listStyles}
           selectedColor={theme.sidebarSelected}
