@@ -42,5 +42,9 @@ const getTheme = (theme: ColorTheme) => {
 export function JSONTreeViewer(props: JSONTreeViewerProps) {
   const activeTheme = getTheme(useReactiveVar(colorTheme));
 
-  return <JSONTree {...props} invertTheme={false} theme={activeTheme} />;
+  return (
+    <div className="font-code">
+      <JSONTree {...props} invertTheme={false} theme={activeTheme} />
+    </div>
+  );
 }
