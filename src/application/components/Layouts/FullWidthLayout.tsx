@@ -1,7 +1,6 @@
-/** @jsxImportSource @emotion/react */
 import { ReactNode, useState } from "react";
-import { css } from "@emotion/react";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
+import { clsx } from "clsx";
 
 import { SettingsModal } from "./SettingsModal";
 import { Navigation, NavigationProps } from "./Navigation";
@@ -12,23 +11,6 @@ interface FullWidthLayoutProps {
   className?: string;
 }
 
-const layoutStyles = css`
-  display: grid;
-  grid-template-columns: 26rem minmax(27rem, auto);
-  grid-template-areas:
-    "nav header"
-    "main main";
-`;
-
-const mainStyles = css`
-  grid-area: main;
-  height: calc(100vh - 2.5rem);
-`;
-
-const headerStyles = css`
-  grid-area: header;
-`;
-
 const FullWidthLayout = ({
   navigationProps,
   children,
@@ -37,7 +19,13 @@ const FullWidthLayout = ({
   const { queriesCount, mutationsCount } = navigationProps;
 
   return (
-    <div data-testid="layout" className={className} css={layoutStyles}>
+    <div
+      data-testid="layout"
+      className={clsx(
+        className,
+        "grid [grid-template-columns:28rem_minmax(28rem,auto)] [grid-template-areas:'nav_header'_'main_main']"
+      )}
+    >
       <Navigation queriesCount={queriesCount} mutationsCount={mutationsCount} />
       {children}
     </div>
@@ -53,7 +41,7 @@ const Header = ({ children, className }: HeaderProps) => {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className={className} css={headerStyles} data-testid="header">
+    <div className={clsx(className, "[grid-area:header]")} data-testid="header">
       {children}
       <button className="ml-auto" onClick={() => setOpen(true)}>
         <span className="sr-only">Settings</span>
@@ -70,7 +58,10 @@ interface MainProps {
 }
 
 const Main = ({ children, className }: MainProps) => (
-  <div className={className} css={mainStyles} data-testid="main">
+  <div
+    className={clsx(className, "[grid-area:main] h-[calc(100vh-2.5rem)]")}
+    data-testid="main"
+  >
     {children}
   </div>
 );
