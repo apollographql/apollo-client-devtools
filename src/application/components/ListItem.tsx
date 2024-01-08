@@ -19,9 +19,7 @@ export function ListItem({
       className={clsx(
         className,
         "flex items-center rounded cursor-pointer py-1 px-3",
-        selected
-          ? "bg-selected dark:bg-selected-dark"
-          : "hover:bg-unselected dark:hover:bg-unselected-dark"
+        { "bg-selected dark:bg-selected-dark": selected }
       )}
       onClick={onClick}
     >
