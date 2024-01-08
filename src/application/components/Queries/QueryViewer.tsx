@@ -34,23 +34,15 @@ export const QueryViewer = ({ query }: QueryViewerProps) => {
   )}`;
 
   return (
-    <div className="pt-3 grid [grid-template-columns:minmax(12rem,2fr)_minmax(12rem,1fr)] [grid-template-rows:1.75rem_auto] gap-x-6 [grid-template-areas:'queryStringHeader_queryDataHeader'_'queryStringMain_queryDataMain']">
-      <h4 className="[grid-area:queryStringHeader] flex justify-between m-0 text-sm font-bold border-b border-b-primary dark:border-b-primary-dark">
-        Query String
-        <CopyToClipboard text={query.queryString}>
-          <IconCopy
-            className="ml-auto !h-4 cursor-pointer text-secondary dark:text-secondary-dark hover:text-primary hover:dark:text-primary-dark"
-            data-testid="copy-query-string"
-          />
-        </CopyToClipboard>
-      </h4>
-      <CodeBlock
-        className="[grid-area:queryStringMain] mt-4 text-sm h-full overflow-y-hidden"
-        language="graphql"
-        code={query.queryString}
-      />
+    <div className="gap-6 pt-3 grid [grid-template-columns:1fr_350px]">
+      <div>
+        <CodeBlock
+          className="overflow-y-hidden"
+          language="graphql"
+          code={query.queryString}
+        />
+      </div>
       <Tabs
-        className="[grid-area:queryDataHeader]"
         value={currentTab}
         onChange={(value: QueryTabs) => setCurrentTab(value)}
       >
@@ -64,7 +56,7 @@ export const QueryViewer = ({ query }: QueryViewerProps) => {
             />
           </CopyToClipboard>
         </Tabs.List>
-        <div className="[grid-area:queryDataMain] mt-4 pb-4 text-sm">
+        <div className="mt-4 pb-4 text-sm">
           <Tabs.Content value={QueryTabs.Variables}>
             <JSONTreeViewer
               className="[&>li]:!pt-0"
