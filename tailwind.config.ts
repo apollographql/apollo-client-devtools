@@ -43,24 +43,6 @@ export default {
   theme: {
     fontFamily: fonts,
     colors: colors.primitives,
-    backgroundColor: {
-      ...toUnprefixed(colors.tokens.bg),
-      highlight: {
-        DEFAULT: colors.primitives.yellow[100],
-        dark: colors.primitives.yellow[500],
-      },
-    },
-    borderColor: {
-      ...toUnprefixed(colors.tokens.border),
-      transparent: "transparent",
-    },
-    textColor: {
-      ...toUnprefixed(colors.tokens.text),
-      ...mapEntries(colors.tokens.icon, (name, { base, ...rest }) => [
-        `icon-${name}`,
-        { ...rest, DEFAULT: base },
-      ]),
-    },
     fontSize: replaceValues(typography.primitives.fontSize, (config) => [
       `${config.fontSize}px`,
       String(config.lineHeight),
@@ -69,7 +51,26 @@ export default {
     data: {
       "state-active": 'state="active"',
     },
-    extend: {},
+    extend: {
+      backgroundColor: {
+        ...toUnprefixed(colors.tokens.bg),
+        highlight: {
+          DEFAULT: colors.primitives.yellow[100],
+          dark: colors.primitives.yellow[500],
+        },
+      },
+      borderColor: {
+        ...toUnprefixed(colors.tokens.border),
+        transparent: "transparent",
+      },
+      textColor: {
+        ...toUnprefixed(colors.tokens.text),
+        ...mapEntries(colors.tokens.icon, (name, { base, ...rest }) => [
+          `icon-${name}`,
+          { ...rest, DEFAULT: base },
+        ]),
+      },
+    },
   },
   plugins: [
     plugin(({ addComponents }) => {
