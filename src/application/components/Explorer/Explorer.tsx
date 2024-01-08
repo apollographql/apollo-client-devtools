@@ -1,8 +1,4 @@
-/** @jsxImportSource @emotion/react */
 import { useMemo } from "react";
-import { css } from "@emotion/react";
-import { rem } from "polished";
-import { colors } from "@apollo/space-kit/colors";
 import { useState, useEffect } from "react";
 import {
   Observable,
@@ -45,53 +41,6 @@ export enum FetchPolicy {
   NoCache = "no-cache",
   CacheOnly = "cache-only",
 }
-
-const headerStyles = css`
-  display: flex;
-  align-items: center;
-  padding: 0 0.75rem;
-  background-color: var(--primary);
-  box-shadow: 0 ${rem(-1)} 0 0 rgba(255, 255, 255, 0.3) inset;
-`;
-
-const mainStyles = css`
-  display: flex;
-`;
-
-const labelStyles = css`
-  display: inline-flex;
-  align-items: center;
-  margin: 0 2rem 0 0;
-  font-size: ${rem(14)};
-  color: ${colors.white};
-  line-height: ${rem(17)};
-`;
-
-const checkboxStyles = css`
-  margin-right: ${rem(10)};
-`;
-
-const borderStyles = css`
-  width: ${rem(1)};
-  height: ${rem(26)};
-  border-right: ${rem(1)} var(--whiteTransparent);
-`;
-
-const iFrameStyles = css`
-  width: 100vw;
-  height: 100%;
-  border: none;
-`;
-
-const authorizeButtonStyles = css`
-  width: 185px;
-  height: 25px;
-  cursor: pointer;
-  border: none;
-  border-radius: 2px;
-  color: ${colors.grey.darker};
-  font-size: 13px;
-`;
 
 function executeOperation({
   operation,
@@ -317,12 +266,14 @@ export const Explorer = ({
 
   return (
     <FullWidthLayout navigationProps={navigationProps}>
-      <FullWidthLayout.Header css={headerStyles}>
-        <div css={borderStyles}></div>
-        <label htmlFor="loadFromCache" css={labelStyles}>
+      <FullWidthLayout.Header className="flex items-center px-3 bg-secondary dark:bg-secondary-dark border-b border-primary dark:border-primary-dark">
+        <label
+          htmlFor="loadFromCache"
+          className="flex items-center mr-8 text-sm"
+        >
           <input
             id="loadFromCache"
-            css={checkboxStyles}
+            className="mr-3"
             type="checkbox"
             name="loadFromCache"
             checked={queryCache === FetchPolicy.CacheOnly}
@@ -338,7 +289,7 @@ export const Explorer = ({
         </label>
         {embeddedExplorerIFrame && graphRef && (
           <button
-            css={authorizeButtonStyles}
+            className="bg-button-secondary dark:bg-button-secondary-dark hover:bg-button-secondaryHover hover:dark:bg-button-secondaryHover-dark border border-primary dark:border-primary-dark py-2 px-3 cursor-pointer rounded-sm text-sm"
             onClick={() => {
               setShowGraphRefModal("triggeredManually");
             }}
@@ -347,10 +298,10 @@ export const Explorer = ({
           </button>
         )}
       </FullWidthLayout.Header>
-      <FullWidthLayout.Main css={mainStyles}>
+      <FullWidthLayout.Main className="flex">
         <iframe
           id="embedded-explorer"
-          css={iFrameStyles}
+          className="w-[100vw] h-full border-none"
           src={embedIframeSrcString}
         />
         {showGraphRefModalAndIsVisible && embeddedExplorerIFrame && (
