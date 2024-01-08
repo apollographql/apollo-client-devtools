@@ -1,7 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { useState } from "react";
 import { css } from "@emotion/react";
-import { rem } from "polished";
 import SyntaxHighlighter from "../SyntaxHighlighter";
 import * as Tabs from "@radix-ui/react-tabs";
 
@@ -12,20 +11,6 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import { fragmentRegistry } from "../../fragmentRegistry";
 import { QueryViewer_query as WatchedQuery } from "../../types/gql";
 import { JSONTreeViewer } from "../JSONTreeViewer";
-
-export const headerStyles = css`
-  font-size: ${rem(14)};
-  font-weight: 600;
-  border-bottom: ${rem(1)} solid var(--mainBorder);
-`;
-
-export const queryStringHeader = css`
-  grid-area: queryStringHeader;
-  display: flex;
-  justify-content: space-between;
-  margin: 0;
-  ${headerStyles}
-`;
 
 const tabPanelStyles = css`
   outline: none;
@@ -62,7 +47,7 @@ export const QueryViewer = ({ query }: QueryViewerProps) => {
 
   return (
     <div className="pt-3 grid [grid-template-columns:minmax(12rem,2fr)_minmax(12rem,1fr)] [grid-template-rows:1.75rem_auto] gap-x-6 [grid-template-areas:'queryStringHeader_queryDataHeader'_'queryStringMain_queryDataMain']">
-      <h4 css={queryStringHeader}>
+      <h4 className="[grid-area:queryStringHeader] flex justify-between m-0 text-sm font-bold border-b border-b-primary dark:border-b-primary-dark">
         Query String
         <CopyToClipboard text={query.queryString}>
           <IconCopy
