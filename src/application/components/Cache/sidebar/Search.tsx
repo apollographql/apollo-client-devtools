@@ -1,28 +1,18 @@
 import { IconSearch } from "@apollo/space-kit/icons/IconSearch";
 import { clsx } from "clsx";
 
-import { useTheme, Theme } from "../../../theme";
-
-const searchIconStyles = (theme: Theme) => ({
-  height: 16,
-  width: 16,
-  color: theme.whiteTransparent,
-});
-
 interface SearchProps {
   value: string;
   onChange: (value: string) => void;
 }
 
 export const Search = ({ onChange, value }: SearchProps) => {
-  const theme = useTheme();
-
   return (
     <div className="mb-2 border-b border-b-primary dark:border-b-primary-dark">
       <label className="prose">
         <div className="relative">
           <div className="absolute inline-flex left-3 top-1/2 -translate-y-1/2">
-            <IconSearch style={searchIconStyles(theme)} />
+            <IconSearch className="h-4 w-4 text-icon-primary dark:text-icon-primary-dark" />
           </div>
           <input
             placeholder="Search queries"
