@@ -50,6 +50,7 @@ export const QueryViewer = ({ query }: QueryViewerProps) => {
         code={query.queryString}
       />
       <Tabs
+        className="[grid-area:queryDataHeader]"
         value={currentTab}
         onChange={(value: QueryTabs) => setCurrentTab(value)}
       >
