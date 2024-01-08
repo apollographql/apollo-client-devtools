@@ -4,7 +4,7 @@ import { colors, typography, TextStyle } from "@apollo/brand";
 
 type TailwindTextStyle = { [K in keyof TextStyle]: string };
 
-function mapEntries<T, R>(
+function replaceValues<T, R>(
   obj: { [key: string]: T },
   mapper: (value: T, key: string) => R
 ) {
@@ -16,7 +16,7 @@ function mapEntries<T, R>(
 function toUnprefixed<TConfig extends { base: string; [key: string]: unknown }>(
   config: Record<string, TConfig>
 ) {
-  return mapEntries(config, ({ base, ...rest }) => ({
+  return replaceValues(config, ({ base, ...rest }) => ({
     DEFAULT: base,
     ...rest,
   }));
@@ -47,12 +47,12 @@ export default {
       ...toUnprefixed(colors.tokens.border),
       transparent: "transparent",
     },
-    textColor: toUnprefixed(colors.tokens.text),
-    fontSize: mapEntries(typography.primitives.fontSize, (config) => [
+    textColor: { ...toUnprefixed(colors.tokens.text) },
+    fontSize: replaceValues(typography.primitives.fontSize, (config) => [
       `${config.fontSize}px`,
       String(config.lineHeight),
     ]),
-    fontWeight: mapEntries(typography.primitives.fontWeight, String),
+    fontWeight: replaceValues(typography.primitives.fontWeight, String),
     data: {
       "state-active": 'state="active"',
     },
