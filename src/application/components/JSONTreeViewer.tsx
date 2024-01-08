@@ -1,15 +1,19 @@
-import { ComponentPropsWithoutRef } from "react";
+import { CSSProperties, ComponentPropsWithoutRef } from "react";
 import { useReactiveVar } from "@apollo/client";
 import { JSONTree } from "react-json-tree";
 import { ColorTheme, colorTheme } from "../theme";
 import { colors } from "@apollo/brand";
+import { clsx } from "clsx";
 
 type JSONTreeProps = ComponentPropsWithoutRef<typeof JSONTree>;
 
 type JSONTreeViewerProps = Pick<
   JSONTreeProps,
   "data" | "hideRoot" | "valueRenderer"
->;
+> & {
+  className?: string;
+  style?: CSSProperties;
+};
 
 const { bg, code, icon } = colors.tokens;
 const { primitives } = colors;
@@ -20,6 +24,8 @@ const getTheme = (theme: ColorTheme) => {
   const isDark = theme === ColorTheme.Dark;
 
   return {
+    scheme: "apollo",
+    author: "Apollo (community@apollographql.com)",
     base00: isDark ? bg.primary.dark : bg.primary.base,
     base01: isDark ? bg.secondary.dark : bg.secondary.base,
     base02: isDark ? bg.selected.dark : bg.selected.base,
@@ -39,12 +45,24 @@ const getTheme = (theme: ColorTheme) => {
   };
 };
 
-export function JSONTreeViewer(props: JSONTreeViewerProps) {
+export function JSONTreeViewer({
+  className,
+  style,
+  ...props
+}: JSONTreeViewerProps) {
   const activeTheme = getTheme(useReactiveVar(colorTheme));
 
   return (
-    <div className="font-code">
-      <JSONTree {...props} invertTheme={false} theme={activeTheme} />
-    </div>
+    <JSONTree
+      {...props}
+      invertTheme={false}
+      theme={{
+        extend: activeTheme,
+        tree: ({ style: defaultStyle }) => ({
+          className: clsx("font-code", className),
+          style: { ...defaultStyle, ...style },
+        }),
+      }}
+    />
   );
 }
