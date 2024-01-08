@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { ReactNode, useState, useRef } from "react";
+import { ReactNode, useState } from "react";
 import { css } from "@emotion/react";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 
