@@ -54,6 +54,10 @@ export default {
     extend: {
       backgroundColor: {
         ...toUnprefixed(colors.tokens.bg),
+        ...mapEntries(colors.tokens.button, (name, { base, ...rest }) => [
+          `button-${name}`,
+          { ...rest, DEFAULT: base },
+        ]),
         highlight: {
           DEFAULT: colors.primitives.yellow[100],
           dark: colors.primitives.yellow[500],
