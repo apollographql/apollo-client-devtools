@@ -25,4 +25,10 @@
   h6 {
     @apply font-heading;
   }
+
+  a {
+    @apply underline;
+    @apply text-primary;
+    @apply dark:text-primary-dark;
+  }
 }
