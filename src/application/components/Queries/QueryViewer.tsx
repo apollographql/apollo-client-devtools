@@ -1,6 +1,5 @@
 import { useState } from "react";
 import SyntaxHighlighter from "../SyntaxHighlighter";
-import * as Tabs from "@radix-ui/react-tabs";
 
 import { gql } from "@apollo/client";
 import { IconCopy } from "@apollo/space-kit/icons/IconCopy";
@@ -9,6 +8,7 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import { fragmentRegistry } from "../../fragmentRegistry";
 import { QueryViewer_query as WatchedQuery } from "../../types/gql";
 import { JSONTreeViewer } from "../JSONTreeViewer";
+import { Tabs } from "../Tabs";
 
 interface QueryViewerProps {
   query: WatchedQuery;
@@ -49,23 +49,13 @@ export const QueryViewer = ({ query }: QueryViewerProps) => {
         language="graphql"
         code={query.queryString}
       />
-      <Tabs.Root
+      <Tabs
         value={currentTab}
-        onValueChange={(value: QueryTabs) => setCurrentTab(value)}
+        onChange={(value: QueryTabs) => setCurrentTab(value)}
       >
-        <Tabs.List className="flex [grid-area:queryDataHeader] h-full text-sm font-semibold border-b-primary dark:border-b-primary-dark border-b">
-          <Tabs.Trigger
-            className="px-2 pb-2 data-state-active:text-white data-state-active:border-b-focused dark:data-state-active:border-b-focused-dark data-state-active:border-b"
-            value={QueryTabs.Variables}
-          >
-            Variables
-          </Tabs.Trigger>
-          <Tabs.Trigger
-            className="px-2 pb-2 data-state-active:text-white data-state-active:border-b-focused dark:data-state-active:border-b-focused-dark data-state-active:border-b"
-            value={QueryTabs.CachedData}
-          >
-            Cached Data
-          </Tabs.Trigger>
+        <Tabs.List>
+          <Tabs.Trigger value={QueryTabs.Variables}>Variables</Tabs.Trigger>
+          <Tabs.Trigger value={QueryTabs.CachedData}>Cached Data</Tabs.Trigger>
           <CopyToClipboard text={copyCurrentTab}>
             <IconCopy
               className="ml-auto !h-4 cursor-pointer text-secondary dark:text-secondary-dark hover:text-primary hover:dark:text-primary-dark"
@@ -74,14 +64,14 @@ export const QueryViewer = ({ query }: QueryViewerProps) => {
           </CopyToClipboard>
         </Tabs.List>
         <div className="[grid-area:queryDataMain] mt-4 pb-4 text-sm">
-          <Tabs.Content className="outline-none" value={QueryTabs.Variables}>
+          <Tabs.Content value={QueryTabs.Variables}>
             <JSONTreeViewer
               className="[&>li]:!pt-0"
               style={{ marginTop: 0 }}
               data={query.variables}
             />
           </Tabs.Content>
-          <Tabs.Content className="outline-none" value={QueryTabs.CachedData}>
+          <Tabs.Content value={QueryTabs.CachedData}>
             <JSONTreeViewer
               className="[&>li]:!pt-0"
               style={{ marginTop: 0 }}
@@ -89,7 +79,7 @@ export const QueryViewer = ({ query }: QueryViewerProps) => {
             />
           </Tabs.Content>
         </div>
-      </Tabs.Root>
+      </Tabs>
     </div>
   );
 };
