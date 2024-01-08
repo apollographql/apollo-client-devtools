@@ -3,7 +3,7 @@ import { IconCopy } from "@apollo/space-kit/icons/IconCopy";
 
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
-import { queryStringHeader, queryStringMain } from "../Queries/QueryViewer";
+import { queryStringHeader } from "../Queries/QueryViewer";
 import SyntaxHighlighter from "../SyntaxHighlighter";
 import { fragmentRegistry } from "../../fragmentRegistry";
 import { gql } from "@apollo/client";
@@ -34,7 +34,7 @@ export const MutationViewer = ({ mutation }: MutationViewerProps) => {
         </CopyToClipboard>
       </h4>
       <SyntaxHighlighter
-        css={queryStringMain}
+        className="[grid-area:queryStringMain] mt-4 text-sm h-full overflow-y-hidden"
         code={mutation.mutationString}
         language="graphql"
       />

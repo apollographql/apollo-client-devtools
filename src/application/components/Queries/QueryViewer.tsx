@@ -27,14 +27,6 @@ export const queryStringHeader = css`
   ${headerStyles}
 `;
 
-export const queryStringMain = css`
-  grid-area: queryStringMain;
-  margin-top: 1rem;
-  font-size: ${rem(13)};
-  height: 100%;
-  overflow-y: hidden;
-`;
-
 const tabPanelStyles = css`
   outline: none;
   > ul {
@@ -80,7 +72,7 @@ export const QueryViewer = ({ query }: QueryViewerProps) => {
         </CopyToClipboard>
       </h4>
       <SyntaxHighlighter
-        css={queryStringMain}
+        className="[grid-area:queryStringMain] mt-4 text-sm h-full overflow-y-hidden"
         language="graphql"
         code={query.queryString}
       />
