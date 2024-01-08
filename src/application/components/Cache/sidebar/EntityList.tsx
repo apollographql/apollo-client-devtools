@@ -1,24 +1,9 @@
-/** @jsxImportSource @emotion/react */
-import { css } from "@emotion/react";
-import { List } from "@apollo/space-kit/List";
-import { ListItem } from "@apollo/space-kit/ListItem";
-import { colors } from "@apollo/space-kit/colors";
-import { rem } from "polished";
+import { List } from "../../List";
+import { ListItem } from "../../ListItem";
 
-import { useTheme } from "../../../theme";
 import { getRootCacheIds } from "../common/utils";
 import { JSONObject } from "../../../types/json";
 import HighlightMatch from "../../HighlightMatch";
-
-const listStyles = css`
-  font-family: monospace;
-  color: ${colors.silver.lighter};
-
-  > div {
-    height: ${rem(32)};
-    font-size: ${rem(13)};
-  }
-`;
 
 interface EntityListProps {
   data: Record<string, JSONObject>;
@@ -33,21 +18,17 @@ export function EntityList({
   setCacheId,
   searchTerm,
 }: EntityListProps) {
-  const theme = useTheme();
   const ids = getRootCacheIds(data);
 
   return (
-    <List
-      css={listStyles}
-      selectedColor={theme.sidebarSelected}
-      hoverColor={theme.sidebarHover}
-    >
+    <List>
       {ids.map((cacheId) => {
         return (
           <ListItem
             key={cacheId}
             onClick={() => setCacheId(cacheId)}
             selected={cacheId === selectedCacheId}
+            className="font-code h-8 text-sm"
           >
             {searchTerm ? (
               <HighlightMatch searchTerm={searchTerm} value={cacheId} />
