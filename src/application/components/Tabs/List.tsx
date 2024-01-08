@@ -7,7 +7,7 @@ interface ListProps {
 
 export function List({ children }: ListProps) {
   return (
-    <ListBase className="flex h-full text-sm font-semibold border-b-primary dark:border-b-primary-dark border-b">
+    <ListBase className="flex items-center gap-6 border-b border-b-neutral dark:border-b-neutral-dark">
       {children}
     </ListBase>
   );

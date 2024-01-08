@@ -9,7 +9,7 @@ interface TriggerProps {
 export function Trigger({ children, value }: TriggerProps) {
   return (
     <TriggerBase
-      className="px-2 pb-2 data-state-active:text-white data-state-active:border-b-focused dark:data-state-active:border-b-focused-dark data-state-active:border-b"
+      className="py-2 text-md text-secondary dark:text-secondary-dark data-state-active:text-primary dark:data-state-active:text-primary-dark border-b-4 border-b-transparent data-state-active:border-b-primary dark:data-state-active:border-b-primary-dark"
       value={value}
     >
       {children}

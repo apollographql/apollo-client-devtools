@@ -7,14 +7,26 @@ import { Trigger } from "./Trigger";
 
 interface TabsProps {
   children: ReactNode;
+  className?: string;
   defaultValue?: string;
   value?: string;
   onChange?: (value: string) => void;
 }
 
-export function Tabs({ children, defaultValue, value, onChange }: TabsProps) {
+export function Tabs({
+  children,
+  className,
+  defaultValue,
+  value,
+  onChange,
+}: TabsProps) {
   return (
-    <Root defaultValue={defaultValue} value={value} onValueChange={onChange}>
+    <Root
+      className={className}
+      defaultValue={defaultValue}
+      value={value}
+      onValueChange={onChange}
+    >
       {children}
     </Root>
   );
