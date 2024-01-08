@@ -1,5 +1,5 @@
 import { useState } from "react";
-import SyntaxHighlighter from "../SyntaxHighlighter";
+import { CodeBlock } from "../CodeBlock";
 
 import { gql } from "@apollo/client";
 import { IconCopy } from "@apollo/space-kit/icons/IconCopy";
@@ -44,7 +44,7 @@ export const QueryViewer = ({ query }: QueryViewerProps) => {
           />
         </CopyToClipboard>
       </h4>
-      <SyntaxHighlighter
+      <CodeBlock
         className="[grid-area:queryStringMain] mt-4 text-sm h-full overflow-y-hidden"
         language="graphql"
         code={query.queryString}

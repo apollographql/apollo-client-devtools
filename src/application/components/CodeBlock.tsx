@@ -125,7 +125,7 @@ const getTheme = (mode: ColorTheme): PrismTheme => {
   };
 };
 
-const SyntaxHighlighter = ({
+export const CodeBlock = ({
   code,
   className: outerClassName,
   language,
@@ -159,5 +159,3 @@ const SyntaxHighlighter = ({
     </Highlight>
   );
 };
-
-export default SyntaxHighlighter;
