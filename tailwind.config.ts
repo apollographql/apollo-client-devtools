@@ -4,13 +4,20 @@ import { colors, typography, TextStyle } from "@apollo/brand";
 
 type TailwindTextStyle = { [K in keyof TextStyle]: string };
 
+function mapEntries<T, R>(
+  obj: { [key: string]: T },
+  mapper: (key: string, value: T) => [key: string, value: R]
+) {
+  return Object.fromEntries(
+    Object.entries(obj).map(([key, value]) => mapper(key, value))
+  );
+}
+
 function replaceValues<T, R>(
   obj: { [key: string]: T },
   mapper: (value: T, key: string) => R
 ) {
-  return Object.fromEntries(
-    Object.entries(obj).map(([key, value]) => [key, mapper(value, key)])
-  );
+  return mapEntries(obj, (key, value) => [key, mapper(value, key)]);
 }
 
 function toUnprefixed<TConfig extends { base: string; [key: string]: unknown }>(
