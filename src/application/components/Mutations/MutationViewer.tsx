@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { IconCopy } from "@apollo/space-kit/icons/IconCopy";
 
 import { CopyToClipboard } from "react-copy-to-clipboard";
@@ -50,7 +49,11 @@ export const MutationViewer = ({ mutation }: MutationViewerProps) => {
           </CopyToClipboard>
         </div>
         <div className="[grid-area:queryDataMain] mt-4 pb-4 text-sm">
-          <JSONTreeViewer data={mutation.variables} />
+          <JSONTreeViewer
+            className="[&>li]:!pt-0"
+            style={{ marginTop: 0 }}
+            data={mutation.variables}
+          />
         </div>
       </div>
     </div>

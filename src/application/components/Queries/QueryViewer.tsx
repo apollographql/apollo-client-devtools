@@ -1,6 +1,4 @@
-/** @jsxImportSource @emotion/react */
 import { useState } from "react";
-import { css } from "@emotion/react";
 import SyntaxHighlighter from "../SyntaxHighlighter";
 import * as Tabs from "@radix-ui/react-tabs";
 
@@ -11,16 +9,6 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import { fragmentRegistry } from "../../fragmentRegistry";
 import { QueryViewer_query as WatchedQuery } from "../../types/gql";
 import { JSONTreeViewer } from "../JSONTreeViewer";
-
-const tabPanelStyles = css`
-  outline: none;
-  > ul {
-    margin-top: 0 !important;
-    > li {
-      padding-top: 0 !important;
-    }
-  }
-`;
 
 interface QueryViewerProps {
   query: WatchedQuery;
@@ -86,11 +74,19 @@ export const QueryViewer = ({ query }: QueryViewerProps) => {
           </CopyToClipboard>
         </Tabs.List>
         <div className="[grid-area:queryDataMain] mt-4 pb-4 text-sm">
-          <Tabs.Content css={tabPanelStyles} value={QueryTabs.Variables}>
-            <JSONTreeViewer data={query.variables} />
+          <Tabs.Content className="outline-none" value={QueryTabs.Variables}>
+            <JSONTreeViewer
+              className="[&>li]:!pt-0"
+              style={{ marginTop: 0 }}
+              data={query.variables}
+            />
           </Tabs.Content>
-          <Tabs.Content css={tabPanelStyles} value={QueryTabs.CachedData}>
-            <JSONTreeViewer data={query.cachedData} />
+          <Tabs.Content className="outline-none" value={QueryTabs.CachedData}>
+            <JSONTreeViewer
+              className="[&>li]:!pt-0"
+              style={{ marginTop: 0 }}
+              data={query.cachedData}
+            />
           </Tabs.Content>
         </div>
       </Tabs.Root>
