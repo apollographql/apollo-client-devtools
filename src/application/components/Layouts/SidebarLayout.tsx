@@ -75,7 +75,7 @@ const Header = ({ children }: HeaderProps) => {
 
   return (
     <div
-      className="flex justify-end items-center border-b border-solid border-secondary dark:border-secondary-dark bg-primary dark:bg-primary-dark px-3 py-0"
+      className="flex justify-end items-center border-b border-solid border-secondary dark:border-secondary-dark bg-primary dark:bg-primary-dark px-3 py-0 h-11"
       data-testid="header"
     >
       {children}
