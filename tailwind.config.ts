@@ -36,7 +36,13 @@ export default {
   theme: {
     fontFamily: fonts,
     colors: colors.primitives,
-    backgroundColor: toUnprefixed(colors.tokens.bg),
+    backgroundColor: {
+      ...toUnprefixed(colors.tokens.bg),
+      highlight: {
+        DEFAULT: colors.primitives.yellow[100],
+        dark: colors.primitives.yellow[500],
+      },
+    },
     borderColor: {
       ...toUnprefixed(colors.tokens.border),
       transparent: "transparent",
