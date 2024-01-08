@@ -24,10 +24,9 @@ export type NavigationProps = {
 const NavButton = ({ isSelected, onClick, children }: NavButtonProps) => (
   <button
     className={clsx(
-      "appearance-none mx-2 py-3 border-y-2 border-transparent text-sm uppercase cursor-pointer whitespace-nowrap",
-      "hover:text-white hover:dark:text-white-dark focus:outline-none",
+      "text-secondary dark:text-secondary-dark appearance-none py-2 border-b-4 border-b-transparent text-md cursor-pointer whitespace-nowrap",
       {
-        "text-white dark:text-white-dark border-b-focused dark:border-b-focused-dark":
+        "text-primary dark:text-primary-dark border-b-neutral dark:border-b-neutral-dark":
           isSelected,
       }
     )}
@@ -48,7 +47,7 @@ export const Navigation: React.FC<NavigationProps> = ({
   const onNavigate = (screen: Screens) => currentScreen(screen);
 
   return (
-    <nav className="flex items-center bg-secondary dark:bg-secondary-dark border-b border-primary dark:border-primary-dark border-solid">
+    <nav className="flex items-center gap-4 bg-secondary dark:bg-secondary-dark border-b border-b-primary dark:border-b-primary-dark">
       <div className="border-r border-primary dark:border-r-primary-dark border-solid">
         <a
           href="https://go.apollo.dev/c/docs"
@@ -60,7 +59,7 @@ export const Navigation: React.FC<NavigationProps> = ({
           <ApolloLogo className="w-[24px] !h-auto mx-4 text-primary dark:text-primary-dark" />
         </a>
       </div>
-      <ul className="flex flex-wrap items-center mx-1 list-none">
+      <ul className="flex flex-wrap items-center gap-6 list-none">
         <li>
           <NavButton
             isSelected={isSelected(Screens.Explorer)}
