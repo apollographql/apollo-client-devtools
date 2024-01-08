@@ -1,7 +1,10 @@
 import { Highlight, Language, PrismTheme } from "prism-react-renderer";
 import { useReactiveVar } from "@apollo/client";
 import { colors } from "@apollo/brand";
+import { clsx } from "clsx";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 import { ColorTheme, colorTheme } from "../theme";
+import { IconCopy } from "@apollo/space-kit/icons/IconCopy";
 
 interface SyntaxHighlighterProps {
   className?: string;
@@ -17,7 +20,6 @@ const getTheme = (mode: ColorTheme): PrismTheme => {
   return {
     plain: {
       color: "currentColor",
-      backgroundColor: "transparent",
     },
     styles: [
       {
@@ -127,35 +129,45 @@ const getTheme = (mode: ColorTheme): PrismTheme => {
 
 export const CodeBlock = ({
   code,
-  className: outerClassName,
+  className,
   language,
 }: SyntaxHighlighterProps) => {
   const activeTheme = getTheme(useReactiveVar(colorTheme));
 
   return (
-    <Highlight language={language} theme={activeTheme} code={code}>
-      {({ className, style, tokens, getLineProps, getTokenProps }) => {
-        return (
-          <pre
-            className={[className, outerClassName].filter(Boolean).join(" ")}
-            style={style}
-          >
-            <code>
-              {tokens.map((line, index) => {
-                return (
-                  <div key={index} {...getLineProps({ line, key: index })}>
-                    {line.map((token, key) => {
-                      return (
-                        <span key={key} {...getTokenProps({ token, key })} />
-                      );
-                    })}
-                  </div>
-                );
-              })}
-            </code>
-          </pre>
-        );
-      }}
-    </Highlight>
+    <div
+      className={clsx(
+        className,
+        "bg-secondary dark:bg-secondary-dark p-4 rounded-lg relative border border-primary dark:border-primary-dark"
+      )}
+    >
+      <Highlight language={language} theme={activeTheme} code={code}>
+        {({ className, style, tokens, getLineProps, getTokenProps }) => {
+          return (
+            <pre className={className} style={style}>
+              <code className="block">
+                {tokens.map((line, index) => {
+                  return (
+                    <div key={index} {...getLineProps({ line, key: index })}>
+                      {line.map((token, key) => {
+                        return (
+                          <span key={key} {...getTokenProps({ token, key })} />
+                        );
+                      })}
+                    </div>
+                  );
+                })}
+              </code>
+            </pre>
+          );
+        }}
+      </Highlight>
+      <CopyToClipboard text={code}>
+        <IconCopy
+          className="absolute top-4 right-4 !h-4 cursor-pointer text-secondary dark:text-secondary-dark hover:text-primary hover:dark:text-primary-dark"
+          data-testid="copy-query-string"
+        />
+      </CopyToClipboard>
+    </div>
   );
 };
