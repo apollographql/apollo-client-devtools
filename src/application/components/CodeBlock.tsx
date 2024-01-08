@@ -138,7 +138,7 @@ export const CodeBlock = ({
     <div
       className={clsx(
         className,
-        "bg-secondary dark:bg-secondary-dark p-4 rounded-lg relative border border-primary dark:border-primary-dark"
+        "grid [grid-template-columns:1fr_auto] gap-1 bg-secondary dark:bg-secondary-dark p-4 rounded-lg relative border border-primary dark:border-primary-dark"
       )}
     >
       <Highlight language={language} theme={activeTheme} code={code}>
@@ -164,7 +164,7 @@ export const CodeBlock = ({
       </Highlight>
       <CopyToClipboard text={code}>
         <IconCopy
-          className="absolute top-4 right-4 !h-4 cursor-pointer text-secondary dark:text-secondary-dark hover:text-primary hover:dark:text-primary-dark"
+          className="!h-4 cursor-pointer text-secondary dark:text-secondary-dark hover:text-primary hover:dark:text-primary-dark"
           data-testid="copy-query-string"
         />
       </CopyToClipboard>
