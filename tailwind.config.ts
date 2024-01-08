@@ -54,7 +54,13 @@ export default {
       ...toUnprefixed(colors.tokens.border),
       transparent: "transparent",
     },
-    textColor: { ...toUnprefixed(colors.tokens.text) },
+    textColor: {
+      ...toUnprefixed(colors.tokens.text),
+      ...mapEntries(colors.tokens.icon, (name, { base, ...rest }) => [
+        `icon-${name}`,
+        { ...rest, DEFAULT: base },
+      ]),
+    },
     fontSize: replaceValues(typography.primitives.fontSize, (config) => [
       `${config.fontSize}px`,
       String(config.lineHeight),
