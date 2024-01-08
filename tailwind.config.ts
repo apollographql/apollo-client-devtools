@@ -65,11 +65,6 @@ export default {
       },
       borderColor: {
         ...toUnprefixed(colors.tokens.border),
-        // Fix for neutral colors according to the design file
-        neutral: {
-          DEFAULT: colors.primitives.gray[400],
-          dark: colors.primitives.navy[200],
-        },
         transparent: "transparent",
       },
       textColor: {
