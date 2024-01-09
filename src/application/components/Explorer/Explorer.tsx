@@ -36,6 +36,7 @@ import {
   sendHandshakeToEmbed,
 } from "./postMessageAuthHelpers";
 import { GraphRefModal } from "./GraphRefModal";
+import { Button } from "../Button";
 
 export enum FetchPolicy {
   NoCache = "no-cache",
@@ -288,14 +289,15 @@ export const Explorer = ({
           Load from cache
         </label>
         {embeddedExplorerIFrame && graphRef && (
-          <button
-            className="bg-button-secondary dark:bg-button-secondary-dark hover:bg-button-secondaryHover hover:dark:bg-button-secondaryHover-dark border border-primary dark:border-primary-dark py-2 px-3 cursor-pointer rounded-sm text-sm"
+          <Button
             onClick={() => {
               setShowGraphRefModal("triggeredManually");
             }}
+            variant="hidden"
+            size="xs"
           >
             Choose a different Studio graph
-          </button>
+          </Button>
         )}
       </FullWidthLayout.Header>
       <FullWidthLayout.Main className="flex">
