@@ -67,6 +67,24 @@ export default {
         ...toUnprefixed(colors.tokens.border),
         transparent: "transparent",
       },
+      ringColor: {
+        focused: {
+          DEFAULT: colors.tokens.border.focused.base,
+          dark: colors.tokens.border.focused.dark,
+        },
+      },
+      ringWidth: {
+        3: "3px",
+      },
+      ringOffsetWidth: {
+        3: "3px",
+      },
+      ringOffsetColor: {
+        primary: {
+          DEFAULT: colors.tokens.bg.primary.base,
+          dark: colors.tokens.bg.primary.dark,
+        },
+      },
       textColor: {
         ...toUnprefixed(colors.tokens.text),
         ...mapEntries(colors.tokens.icon, (name, { base, ...rest }) => [
