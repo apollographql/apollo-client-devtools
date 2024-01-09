@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { Fragment, useState } from "react";
 import { gql, TypedDocumentNode, useQuery } from "@apollo/client";
 import { List } from "../List";
