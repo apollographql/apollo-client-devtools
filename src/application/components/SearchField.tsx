@@ -18,7 +18,7 @@ export function SearchField({
 }: SearchFieldProps) {
   return (
     <div className={clsx(className, "flex items-center relative")}>
-      <SearchIcon className="absolute left-4 w-4 h-4 z-10 text-icon-secondary dark:text-icon-secondary-dark" />
+      <SearchIcon className="absolute left-4 z-10 text-icon-secondary dark:text-icon-secondary-dark" />
       <input
         autoFocus={autoFocus}
         onChange={(e) => onChange(e.target.value)}
