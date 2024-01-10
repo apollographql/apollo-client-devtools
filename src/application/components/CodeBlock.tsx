@@ -165,7 +165,7 @@ export const CodeBlock = ({
       </Highlight>
       <CopyToClipboard text={code}>
         <Button size="sm" variant="hidden" data-testid="copy-query-string">
-          <CopyIcon className="w-4 h-4" />
+          <CopyIcon />
           Copy
         </Button>
       </CopyToClipboard>
