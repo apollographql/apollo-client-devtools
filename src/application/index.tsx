@@ -11,7 +11,6 @@ import {
 import { getOperationName } from "@apollo/client/utilities";
 import { print } from "graphql/language/printer";
 
-import { Theme } from "./ThemeVars";
 import { colorTheme, listenForThemeChange } from "./theme";
 import { App, reloadStatus } from "./App";
 import { fragmentRegistry } from "./fragmentRegistry";
@@ -200,7 +199,6 @@ export const AppProvider = () => {
   return (
     <ApolloProvider client={client}>
       <App />
-      <Theme />
     </ApolloProvider>
   );
 };
