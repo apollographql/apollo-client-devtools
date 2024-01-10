@@ -23,7 +23,9 @@ export function ListItem({
       )}
       onClick={onClick}
     >
-      {children}
+      <div className="overflow-hidden whitespace-nowrap text-ellipsis">
+        {children}
+      </div>
     </div>
   );
 }
