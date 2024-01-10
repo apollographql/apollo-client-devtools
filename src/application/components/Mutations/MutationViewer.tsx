@@ -1,13 +1,13 @@
-import { IconCopy } from "@apollo/space-kit/icons/IconCopy";
-
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
 import { CodeBlock } from "../CodeBlock";
+import { CopyIcon } from "../icons/Copy";
 import { fragmentRegistry } from "../../fragmentRegistry";
 import { gql } from "@apollo/client";
 import { MutationViewer_mutation as WatchedMutation } from "../../types/gql";
 import { JSONTreeViewer } from "../JSONTreeViewer";
 import { Tabs } from "../Tabs";
+import { Button } from "../Button";
 
 interface MutationViewerProps {
   mutation: WatchedMutation;
@@ -34,10 +34,14 @@ export const MutationViewer = ({ mutation }: MutationViewerProps) => {
         <Tabs.List>
           <Tabs.Trigger value="variables">Variables</Tabs.Trigger>
           <CopyToClipboard text={JSON.stringify(mutation.variables)}>
-            <IconCopy
-              className="ml-auto !h-4 cursor-pointer text-secondary dark:text-secondary-dark hover:text-primary hover:dark:text-primary-dark"
+            <Button
+              className="ml-auto"
+              size="sm"
+              variant="hidden"
               data-testid="copy-mutation-variables"
-            />
+            >
+              <CopyIcon className="h-4" />
+            </Button>
           </CopyToClipboard>
         </Tabs.List>
         <div className="mt-4 pb-4 text-sm">

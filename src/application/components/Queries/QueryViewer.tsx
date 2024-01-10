@@ -2,13 +2,14 @@ import { useState } from "react";
 import { CodeBlock } from "../CodeBlock";
 
 import { gql } from "@apollo/client";
-import { IconCopy } from "@apollo/space-kit/icons/IconCopy";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
 import { fragmentRegistry } from "../../fragmentRegistry";
 import { QueryViewer_query as WatchedQuery } from "../../types/gql";
 import { JSONTreeViewer } from "../JSONTreeViewer";
 import { Tabs } from "../Tabs";
+import { Button } from "../Button";
+import { CopyIcon } from "../icons/Copy";
 
 interface QueryViewerProps {
   query: WatchedQuery;
@@ -50,10 +51,14 @@ export const QueryViewer = ({ query }: QueryViewerProps) => {
           <Tabs.Trigger value={QueryTabs.Variables}>Variables</Tabs.Trigger>
           <Tabs.Trigger value={QueryTabs.CachedData}>Cached Data</Tabs.Trigger>
           <CopyToClipboard text={copyCurrentTab}>
-            <IconCopy
-              className="ml-auto !h-4 cursor-pointer text-secondary dark:text-secondary-dark hover:text-primary hover:dark:text-primary-dark"
+            <Button
+              className="ml-auto"
+              size="sm"
+              variant="hidden"
               data-testid="copy-query-data"
-            />
+            >
+              <CopyIcon className="h-4" />
+            </Button>
           </CopyToClipboard>
         </Tabs.List>
         <div className="mt-4 pb-4 text-sm">
