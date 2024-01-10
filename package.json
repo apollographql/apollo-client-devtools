@@ -38,7 +38,6 @@
     "@apollo/client": "^3.8.8",
     "@apollo/space-kit": "^9.11.0",
     "@headlessui/react": "^1.7.17",
-    "@heroicons/react": "^2.0.18",
     "@radix-ui/react-tabs": "^1.0.2",
     "clsx": "^2.1.0",
     "graphql": "^16.0.0",
