@@ -2,7 +2,7 @@ import { Fragment, useState, useMemo } from "react";
 import { gql, useQuery, TypedDocumentNode } from "@apollo/client";
 
 import { SidebarLayout } from "../Layouts/SidebarLayout";
-import { Search } from "./sidebar/Search";
+import { SearchField } from "../SearchField";
 import { EntityList } from "./sidebar/EntityList";
 import { EntityView } from "./main/EntityView";
 import { Loading } from "./common/Loading";
@@ -65,7 +65,12 @@ export function Cache({
           <Loading />
         ) : dataExists ? (
           <Fragment>
-            <Search onChange={setSearchTerm} value={searchTerm} />
+            <SearchField
+              className="mb-2"
+              placeholder="Search queries"
+              onChange={setSearchTerm}
+              value={searchTerm}
+            />
             <EntityList
               data={filteredCache}
               selectedCacheId={cacheId}
