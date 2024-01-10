@@ -1,9 +1,10 @@
 import { ReactNode, useState } from "react";
-import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 import { clsx } from "clsx";
 
 import { SettingsModal } from "./SettingsModal";
 import { Navigation, NavigationProps } from "./Navigation";
+import { Button } from "../Button";
+import { SettingsIcon } from "../icons/Settings";
 
 interface FullWidthLayoutProps {
   navigationProps: NavigationProps;
@@ -43,10 +44,15 @@ const Header = ({ children, className }: HeaderProps) => {
   return (
     <div className={clsx(className, "[grid-area:header]")} data-testid="header">
       {children}
-      <button className="ml-auto" onClick={() => setOpen(true)}>
+      <Button
+        className="ml-auto"
+        size="sm"
+        variant="hidden"
+        onClick={() => setOpen(true)}
+      >
+        <SettingsIcon aria-hidden="true" />
         <span className="sr-only">Settings</span>
-        <Cog6ToothIcon aria-hidden="true" className="h-6 w-6 stroke-white" />
-      </button>
+      </Button>
       <SettingsModal open={open} onOpen={setOpen} />
     </div>
   );
