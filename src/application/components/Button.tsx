@@ -20,7 +20,7 @@ export function Button({
       {...props}
       className={clsx(
         className,
-        "flex items-center gap-2",
+        "flex items-center gap-2 outline-none",
         "focus:ring-3 focus:ring-offset-3 focus:ring-offset-primary focus:dark:ring-offset-primary-dark focus:ring-focused focus:dark:ring-focused-dark",
         "disabled:bg-button-disabled disabled:dark:bg-button-disabled-dark disabled:text-disabled disabled:dark:text-disabled-dark disabled:cursor-not-allowed",
         {
