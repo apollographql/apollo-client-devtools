@@ -26,7 +26,7 @@ export function SearchField({
         value={value}
         type="text"
         className={clsx(
-          "h-10 w-full border-2 bg-input rounded-[6px] pl-11 pr-4 dark:bg-input-dark border-primary dark:border-primary-dark placeholder:text-placeholder placeholder:dark:text-placeholder-dark",
+          "h-10 w-full border-2 bg-input rounded-md pl-11 pr-4 dark:bg-input-dark border-primary dark:border-primary-dark placeholder:text-placeholder placeholder:dark:text-placeholder-dark",
           "focus:border-focused focus:dark:border-focused-dark focus:outline-none focus:border-2",
           "disabled:bg-disabled disabled:dark:bg-disabled-dark disabled:text-disabled disabled:dark:text-disabled disabled:border-secondary disabled:dark:border-secondary-dark disabled:placeholder:text-disabled disabled:dark:placeholder:text-disabled-dark disabled:cursor-not-allowed"
         )}
