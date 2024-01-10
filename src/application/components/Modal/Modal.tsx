@@ -3,17 +3,25 @@ import { Fragment, ReactNode } from "react";
 import { clsx } from "clsx";
 
 import { Body } from "./Body";
+import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { Title } from "./Title";
 
 interface ModalProps {
+  className?: string;
   children: ReactNode;
   open: boolean;
   onClose: (value: boolean) => void;
   size: "sm" | "md" | "lg";
 }
 
-export function Modal({ children, open, onClose, size }: ModalProps) {
+export function Modal({
+  className,
+  children,
+  open,
+  onClose,
+  size,
+}: ModalProps) {
   return (
     <Transition.Root show={open} as={Fragment}>
       <Dialog onClose={onClose}>
@@ -50,7 +58,9 @@ export function Modal({ children, open, onClose, size }: ModalProps) {
                   }
                 )}
               >
-                <div className="flex flex-col gap-2">{children}</div>
+                <div className={clsx(className, "flex flex-col gap-2")}>
+                  {children}
+                </div>
               </Dialog.Panel>
             </Transition.Child>
           </div>
@@ -61,5 +71,6 @@ export function Modal({ children, open, onClose, size }: ModalProps) {
 }
 
 Modal.Body = Body;
+Modal.Footer = Footer;
 Modal.Header = Header;
 Modal.Title = Title;
