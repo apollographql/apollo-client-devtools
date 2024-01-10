@@ -1,7 +1,5 @@
 import type { ComponentPropsWithoutRef, ElementType } from "react";
-
-type ExtendProps<ExtendedProps, OverrideProps> = OverrideProps &
-  Omit<ExtendedProps, keyof OverrideProps>;
+import { ExtendProps } from "./props";
 
 type AsProp<TElement extends ElementType> = {
   as?: TElement;
