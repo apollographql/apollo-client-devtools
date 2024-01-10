@@ -4,7 +4,8 @@ import { colors } from "@apollo/brand";
 import { clsx } from "clsx";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { ColorTheme, colorTheme } from "../theme";
-import { IconCopy } from "@apollo/space-kit/icons/IconCopy";
+import { CopyIcon } from "./icons/Copy";
+import { Button } from "./Button";
 
 interface SyntaxHighlighterProps {
   className?: string;
@@ -138,7 +139,7 @@ export const CodeBlock = ({
     <div
       className={clsx(
         className,
-        "grid [grid-template-columns:1fr_auto] gap-1 bg-secondary dark:bg-secondary-dark p-4 rounded-lg relative border border-primary dark:border-primary-dark"
+        "grid [grid-template-columns:1fr_auto] gap-1 items-start bg-secondary dark:bg-secondary-dark p-4 rounded-lg relative border border-primary dark:border-primary-dark"
       )}
     >
       <Highlight language={language} theme={activeTheme} code={code}>
@@ -163,10 +164,10 @@ export const CodeBlock = ({
         }}
       </Highlight>
       <CopyToClipboard text={code}>
-        <IconCopy
-          className="!h-4 cursor-pointer text-secondary dark:text-secondary-dark hover:text-primary hover:dark:text-primary-dark"
-          data-testid="copy-query-string"
-        />
+        <Button size="sm" variant="hidden" data-testid="copy-query-string">
+          <CopyIcon className="w-4 h-4" />
+          Copy
+        </Button>
       </CopyToClipboard>
     </div>
   );
