@@ -22,7 +22,7 @@ export function Icon({
 }: IconProps) {
   return (
     <svg
-      className={clsx(className, "stroke-current")}
+      className={clsx(className, "stroke-current fill-none")}
       viewBox={viewBox}
       xmlns="http://www.w3.org/2000/svg"
       width={SIZES[size]}
