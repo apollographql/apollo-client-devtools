@@ -43,10 +43,7 @@ export const LoadingSpinner = React.forwardRef<SVGSVGElement, Props>(
         ref={ref}
         role="progressbar"
         viewBox="0 0 100 100"
-        css={{
-          width: pixelSize,
-          height: pixelSize,
-        }}
+        style={{ width: pixelSize, height: pixelSize }}
         {...props}
       >
         <circle
