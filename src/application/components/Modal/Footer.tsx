@@ -1,12 +1,16 @@
 import { ReactNode } from "react";
+import { clsx } from "clsx";
 
 interface FooterProps {
+  className?: string;
   children: ReactNode;
 }
 
-export function Footer({ children }: FooterProps) {
+export function Footer({ className, children }: FooterProps) {
   return (
-    <footer className="flex flex-row-reverse justify-between">
+    <footer
+      className={clsx(className, "flex flex-row-reverse justify-between")}
+    >
       {children}
     </footer>
   );
