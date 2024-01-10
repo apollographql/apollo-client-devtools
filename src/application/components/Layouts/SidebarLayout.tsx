@@ -1,9 +1,10 @@
 import { ReactNode, useState } from "react";
 import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
-import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 
 import { SettingsModal } from "./SettingsModal";
 import { Navigation, NavigationProps } from "./Navigation";
+import { Button } from "../Button";
+import { SettingsIcon } from "../icons/Settings";
 
 interface SidebarLayoutProps {
   navigationProps: NavigationProps;
@@ -83,13 +84,15 @@ const Header = ({ children }: HeaderProps) => {
         `SidebarLayout.Header` is used, we use margin-left: auto as the default,
         and margin-left: 4 when displayed next to the explorer button.
       */}
-      <button
-        className="ml-auto peer-[.is-explorer-button]:ml-6"
+      <Button
+        className="ml-auto peer-[.is-explorer-button]:ml-2"
+        size="sm"
+        variant="hidden"
         onClick={() => setOpen(true)}
       >
+        <SettingsIcon aria-hidden="true" />
         <span className="sr-only">Settings</span>
-        <Cog6ToothIcon aria-hidden="true" className="h-6 w-6" />
-      </button>
+      </Button>
       <SettingsModal open={open} onOpen={setOpen} />
     </div>
   );
