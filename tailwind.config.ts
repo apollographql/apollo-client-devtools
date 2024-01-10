@@ -90,7 +90,7 @@ export default {
           dark: colors.tokens.bg.primary.dark,
         },
       },
-      stroke: toUnprefixed(colors.tokens.bg),
+      stroke: { ...toUnprefixed(colors.tokens.bg), current: "currentColor" },
       textColor: {
         ...toUnprefixed(colors.tokens.text),
         ...mapEntries(colors.tokens.icon, (name, { base, ...rest }) => [
