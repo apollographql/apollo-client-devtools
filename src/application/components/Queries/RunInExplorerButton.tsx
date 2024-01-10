@@ -1,10 +1,11 @@
-import { IconRun } from "@apollo/space-kit/icons/IconRun";
 import { Variables } from "../../types/scalars";
 import {
   postMessageToEmbed,
   SET_OPERATION,
 } from "../Explorer/postMessageHelpers";
 import { currentScreen, Screens } from "../Layouts/Navigation";
+import { RunIcon } from "../icons/Run";
+import { Button } from "../Button";
 
 interface RunInExplorerButtonProps {
   operation: string;
@@ -19,8 +20,10 @@ export const RunInExplorerButton = ({
 }: RunInExplorerButtonProps): JSX.Element | null => {
   return (
     embeddedExplorerIFrame && (
-      <button
-        className="peer is-explorer-button appearance-none flex items-center ml-auto border-none text-sm cursor-pointer"
+      <Button
+        variant="hidden"
+        size="sm"
+        className="peer is-explorer-button ml-auto"
         onClick={() => {
           // send a post message to the embedded explorer to fill the operation
           postMessageToEmbed({
@@ -34,9 +37,9 @@ export const RunInExplorerButton = ({
           currentScreen(Screens.Explorer);
         }}
       >
-        <IconRun className="w-3 mr-2" />
-        <span>Run in Explorer</span>
-      </button>
+        <RunIcon />
+        Run in Explorer
+      </Button>
     )
   );
 };
