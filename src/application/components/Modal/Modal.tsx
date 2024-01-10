@@ -58,7 +58,7 @@ export function Modal({
                   }
                 )}
               >
-                <div className={clsx(className, "flex flex-col gap-2")}>
+                <div className={clsx(className, "flex flex-col")}>
                   {children}
                 </div>
               </Dialog.Panel>

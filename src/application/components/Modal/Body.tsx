@@ -7,5 +7,9 @@ interface BodyProps {
 }
 
 export function Body({ className, children }: BodyProps) {
-  return <div className={clsx(className, "text-md flex-1")}>{children}</div>;
+  return (
+    <div className={clsx(className, "text-md flex-1 pt-2 first:pt-0")}>
+      {children}
+    </div>
+  );
 }
