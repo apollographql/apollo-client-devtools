@@ -9,7 +9,10 @@ interface FooterProps {
 export function Footer({ className, children }: FooterProps) {
   return (
     <footer
-      className={clsx(className, "flex flex-row-reverse justify-between")}
+      className={clsx(
+        className,
+        "flex pt-6 justify-end has-[>:nth-child(2)]:justify-between"
+      )}
     >
       {children}
     </footer>
