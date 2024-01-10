@@ -18,8 +18,11 @@ export function ListItem({
     <div
       className={clsx(
         className,
-        "flex items-center rounded cursor-pointer py-2 px-3",
-        { "text-white bg-selected dark:bg-selected-dark": selected }
+        "border-2 border-transparent flex items-center rounded-md cursor-pointer py-2 px-4",
+        "focus:border-focused focus:dark:border-focused-dark",
+        selected
+          ? "text-white bg-selected dark:bg-selected-dark"
+          : "hover:bg-button-secondaryHover hover:dark:bg-button-secondaryHover-dark"
       )}
       onClick={onClick}
     >
