@@ -67,6 +67,11 @@ export default {
         ...toUnprefixed(colors.tokens.border),
         transparent: "transparent",
       },
+      boxShadow: {
+        modal:
+          "0 16px 32px 0 rgba(0, 0, 0, 16), 0 0 0 0 rgba(18, 21, 26, 0.04)",
+      },
+      fill: toUnprefixed(colors.tokens.bg),
       ringColor: {
         focused: {
           DEFAULT: colors.tokens.border.focused.base,
@@ -85,6 +90,7 @@ export default {
           dark: colors.tokens.bg.primary.dark,
         },
       },
+      stroke: toUnprefixed(colors.tokens.bg),
       textColor: {
         ...toUnprefixed(colors.tokens.text),
         ...mapEntries(colors.tokens.icon, (name, { base, ...rest }) => [
