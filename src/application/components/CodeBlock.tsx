@@ -139,13 +139,16 @@ export const CodeBlock = ({
     <div
       className={clsx(
         className,
-        "grid [grid-template-columns:1fr_auto] gap-1 items-start bg-secondary dark:bg-secondary-dark p-4 rounded-lg relative border border-primary dark:border-primary-dark"
+        "flex gap-1 items-start bg-secondary dark:bg-secondary-dark p-4 rounded-lg relative border border-primary dark:border-primary-dark overflow-hidden"
       )}
     >
       <Highlight language={language} theme={activeTheme} code={code}>
         {({ className, style, tokens, getLineProps, getTokenProps }) => {
           return (
-            <pre className={className} style={style}>
+            <pre
+              className={clsx(className, "flex-1 h-full overflow-auto")}
+              style={style}
+            >
               <code className="block">
                 {tokens.map((line, index) => {
                   return (
