@@ -88,13 +88,15 @@ export const Queries = ({ embeddedExplorerProps }: QueriesProps) => {
                 }
               />
             </div>
-            <CodeBlock
-              language="graphql"
-              code={selectedQuery.queryString}
-              className="[grid-area:content] max-h-[500px]"
-            />
+            <div className="[grid-area:content] max-h-[500px]">
+              <CodeBlock
+                language="graphql"
+                code={selectedQuery.queryString}
+                className="max-h-full"
+              />
+            </div>
             <Tabs
-              className="[grid-area:tabs] lg:overflow-hidden lg:-my-2 lg:h-full"
+              className="[grid-area:tabs] lg:overflow-hidden lg:-my-2"
               value={currentTab}
               onChange={(value: QueryTabs) => setCurrentTab(value)}
             >
