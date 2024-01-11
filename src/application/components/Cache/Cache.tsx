@@ -1,4 +1,4 @@
-import { Fragment, useState, useMemo } from "react";
+import { Fragment, useState, useMemo, ReactNode } from "react";
 import { gql, useQuery, TypedDocumentNode } from "@apollo/client";
 
 import { SidebarLayout } from "../Layouts/SidebarLayout";
@@ -8,8 +8,10 @@ import { EntityView } from "./main/EntityView";
 import { Loading } from "./common/Loading";
 import { GetCache, GetCacheVariables } from "../../types/gql";
 import { JSONObject } from "../../types/json";
+import { JSONTreeViewer } from "../JSONTreeViewer";
+import clsx from "clsx";
 
-const { Header, Sidebar, Main, Content } = SidebarLayout;
+const { Sidebar, Main, Content } = SidebarLayout;
 
 const GET_CACHE: TypedDocumentNode<GetCache, GetCacheVariables> = gql`
   query GetCache {
@@ -78,7 +80,7 @@ export function Cache() {
         )}
       </Sidebar>
       <Content>
-        <Header>
+        <Main>
           {dataExists ? (
             <Fragment>
               <div className="flex items-center gap-2">
@@ -91,16 +93,34 @@ export function Cache() {
               </div>
             </Fragment>
           ) : null}
-        </Header>
-        <Main>
+
           {loading ? (
             <Loading />
           ) : (
-            <EntityView
-              cacheId={cacheId}
-              data={cache[cacheId]}
-              setCacheId={setCacheId}
-            />
+            <div className="font-code text-sm">
+              <JSONTreeViewer
+                data={cache[cacheId]}
+                hideRoot={true}
+                style={{ marginTop: 0 }}
+                valueRenderer={(valueAsString: ReactNode, value, key) => {
+                  return (
+                    <span
+                      className={clsx({
+                        ["hover:underline hover:cursor-pointer"]:
+                          key === "__ref",
+                      })}
+                      onClick={() => {
+                        if (key === "__ref") {
+                          setCacheId(value as string);
+                        }
+                      }}
+                    >
+                      {valueAsString}
+                    </span>
+                  );
+                }}
+              />
+            </div>
           )}
         </Main>
       </Content>
