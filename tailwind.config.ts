@@ -50,6 +50,7 @@ export default {
     fontWeight: replaceValues(typography.primitives.fontWeight, String),
     data: {
       "state-active": 'state="active"',
+      "state-inactive": 'state="inactive"',
     },
     extend: {
       backgroundColor: {
