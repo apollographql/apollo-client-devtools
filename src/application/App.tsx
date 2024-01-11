@@ -67,12 +67,12 @@ export const App = (): JSX.Element => {
       onChange={(screen: Screens) => currentScreen(screen)}
       className="flex flex-col bg-primary dark:bg-primary-dark"
     >
-      <Tabs.List className="flex items-center">
+      <Tabs.List className="flex items-center px-4">
         <a
           href="https://go.apollo.dev/c/docs"
           target="_blank"
           title="Apollo Client developer documentation"
-          className="block px-4 border-r border-primary dark:border-primary-dark"
+          className="block pr-4 border-r border-primary dark:border-primary-dark"
           rel="noreferrer"
         >
           <Logo
