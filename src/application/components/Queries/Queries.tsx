@@ -70,7 +70,7 @@ export const Queries = ({ embeddedExplorerProps }: QueriesProps) => {
       </SidebarLayout.Sidebar>
       <SidebarLayout.Main
         className={clsx(
-          "grid gap-x-6 gap-y-2 !overflow-auto [grid-template-areas:'header'_'content'_'tabs'] [grid-template-columns:1fr] [grid-template-rows:auto_auto_minmax(0,1fr)]",
+          "grid gap-x-6 gap-y-2 !overflow-y-auto !overflow-x-hidden [grid-template-areas:'header'_'content'_'tabs'] [grid-template-columns:minmax(0,1fr)] [grid-template-rows:auto_auto_minmax(0,1fr)]",
           "lg:[grid-template-areas:'header_tabs'_'content_tabs'] lg:[grid-template-columns:1fr_262px] lg:[grid-template-rows:auto_minmax(0,1fr)]"
         )}
       >
@@ -124,7 +124,7 @@ export const Queries = ({ embeddedExplorerProps }: QueriesProps) => {
                 </CopyToClipboard>
               </Tabs.List>
               <Tabs.Content
-                className="text-sm pt-4 lg:flex-1 lg:overflow-auto"
+                className="text-sm py-4 lg:flex-1 lg:overflow-auto"
                 value={QueryTabs.Variables}
               >
                 <JSONTreeViewer
@@ -133,7 +133,7 @@ export const Queries = ({ embeddedExplorerProps }: QueriesProps) => {
                 />
               </Tabs.Content>
               <Tabs.Content
-                className="text-sm pt-4 lg:flex-1 lg:overflow-auto"
+                className="text-sm py-4 lg:flex-1 lg:overflow-auto"
                 value={QueryTabs.CachedData}
               >
                 <JSONTreeViewer
