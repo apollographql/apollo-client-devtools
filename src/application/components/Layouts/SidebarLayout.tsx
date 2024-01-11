@@ -39,34 +39,23 @@ const Sidebar = ({ children }: SidebarProps) => {
   );
 };
 
-interface ContentProps {
-  children?: ReactNode;
-}
-
-const Content = ({ children }: ContentProps) => (
-  <Panel
-    id="content"
-    defaultSize={70}
-    minSize={30}
-    data-testid="content"
-    className="!overflow-scroll h-[100vh] w-full bg-primary dark:bg-primary-dark"
-  >
-    {children}
-  </Panel>
-);
-
 interface MainProps {
   children?: ReactNode;
 }
 
 const Main = ({ children }: MainProps) => (
-  <div className="pt-0 px-4 pb-8" data-testid="main">
+  <Panel
+    id="content"
+    defaultSize={70}
+    minSize={30}
+    data-testid="main"
+    className="!overflow-scroll h-[100vh] w-full bg-primary dark:bg-primary-dark p-4"
+  >
     {children}
-  </div>
+  </Panel>
 );
 
 SidebarLayout.Sidebar = Sidebar;
-SidebarLayout.Content = Content;
 SidebarLayout.Main = Main;
 
 export { SidebarLayout };

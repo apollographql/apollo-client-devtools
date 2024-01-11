@@ -56,30 +56,28 @@ export const Queries = ({ embeddedExplorerProps }: QueriesProps) => {
           })}
         </List>
       </SidebarLayout.Sidebar>
-      <SidebarLayout.Content>
-        <SidebarLayout.Main>
-          {selectedQuery && (
-            <Fragment>
-              <div className="flex items-center gap-2">
-                <h1 className="prose-xl">
-                  <code>{selectedQuery.name}</code>
-                </h1>
-                <span className="uppercase text-xs text-info dark:text-info-dark">
-                  Query
-                </span>
-              </div>
-              <RunInExplorerButton
-                operation={selectedQuery.queryString}
-                variables={selectedQuery.variables ?? undefined}
-                embeddedExplorerIFrame={
-                  embeddedExplorerProps.embeddedExplorerIFrame
-                }
-              />
-            </Fragment>
-          )}
-          {selectedQuery && <QueryViewer query={selectedQuery} />}
-        </SidebarLayout.Main>
-      </SidebarLayout.Content>
+      <SidebarLayout.Main>
+        {selectedQuery && (
+          <Fragment>
+            <div className="flex items-center gap-2">
+              <h1 className="prose-xl">
+                <code>{selectedQuery.name}</code>
+              </h1>
+              <span className="uppercase text-xs text-info dark:text-info-dark">
+                Query
+              </span>
+            </div>
+            <RunInExplorerButton
+              operation={selectedQuery.queryString}
+              variables={selectedQuery.variables ?? undefined}
+              embeddedExplorerIFrame={
+                embeddedExplorerProps.embeddedExplorerIFrame
+              }
+            />
+          </Fragment>
+        )}
+        {selectedQuery && <QueryViewer query={selectedQuery} />}
+      </SidebarLayout.Main>
     </SidebarLayout>
   );
 };

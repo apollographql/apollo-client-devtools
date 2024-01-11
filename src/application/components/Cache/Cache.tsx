@@ -10,7 +10,7 @@ import { JSONObject } from "../../types/json";
 import { JSONTreeViewer } from "../JSONTreeViewer";
 import clsx from "clsx";
 
-const { Sidebar, Main, Content } = SidebarLayout;
+const { Sidebar, Main } = SidebarLayout;
 
 const GET_CACHE: TypedDocumentNode<GetCache, GetCacheVariables> = gql`
   query GetCache {
@@ -78,48 +78,46 @@ export function Cache() {
           </h3>
         )}
       </Sidebar>
-      <Content>
-        <Main>
-          {dataExists ? (
-            <Fragment>
-              <div className="flex items-center gap-2">
-                <h1 className="prose-xl" data-testid="cache-id">
-                  <code>{cacheId}</code>
-                </h1>
-                <span className="uppercase text-xs text-info dark:text-info-dark">
-                  CACHE ID
-                </span>
-              </div>
-            </Fragment>
-          ) : null}
+      <Main>
+        {dataExists ? (
+          <Fragment>
+            <div className="flex items-center gap-2">
+              <h1 className="prose-xl" data-testid="cache-id">
+                <code>{cacheId}</code>
+              </h1>
+              <span className="uppercase text-xs text-info dark:text-info-dark">
+                CACHE ID
+              </span>
+            </div>
+          </Fragment>
+        ) : null}
 
-          {loading ? (
-            <Loading />
-          ) : (
-            <JSONTreeViewer
-              data={cache[cacheId]}
-              hideRoot={true}
-              style={{ marginTop: 0 }}
-              valueRenderer={(valueAsString: ReactNode, value, key) => {
-                return (
-                  <span
-                    className={clsx({
-                      ["hover:underline hover:cursor-pointer"]: key === "__ref",
-                    })}
-                    onClick={() => {
-                      if (key === "__ref") {
-                        setCacheId(value as string);
-                      }
-                    }}
-                  >
-                    {valueAsString}
-                  </span>
-                );
-              }}
-            />
-          )}
-        </Main>
-      </Content>
+        {loading ? (
+          <Loading />
+        ) : (
+          <JSONTreeViewer
+            data={cache[cacheId]}
+            hideRoot={true}
+            style={{ marginTop: 0 }}
+            valueRenderer={(valueAsString: ReactNode, value, key) => {
+              return (
+                <span
+                  className={clsx({
+                    ["hover:underline hover:cursor-pointer"]: key === "__ref",
+                  })}
+                  onClick={() => {
+                    if (key === "__ref") {
+                      setCacheId(value as string);
+                    }
+                  }}
+                >
+                  {valueAsString}
+                </span>
+              );
+            }}
+          />
+        )}
+      </Main>
     </SidebarLayout>
   );
 }

@@ -56,30 +56,28 @@ export const Mutations = ({ embeddedExplorerProps }: MutationsProps) => {
           })}
         </List>
       </SidebarLayout.Sidebar>
-      <SidebarLayout.Content>
-        <SidebarLayout.Main>
-          {selectedMutation && (
-            <Fragment>
-              <div className="flex items-center gap-2">
-                <h1 className="prose-xl">
-                  <code>{selectedMutation.name}</code>
-                </h1>
-                <span className="uppercase text-xs text-info dark:text-info-dark">
-                  Mutation
-                </span>
-              </div>
-              <RunInExplorerButton
-                operation={selectedMutation.mutationString}
-                variables={selectedMutation.variables ?? undefined}
-                embeddedExplorerIFrame={
-                  embeddedExplorerProps.embeddedExplorerIFrame
-                }
-              />
-            </Fragment>
-          )}
-          {selectedMutation && <MutationViewer mutation={selectedMutation} />}
-        </SidebarLayout.Main>
-      </SidebarLayout.Content>
+      <SidebarLayout.Main>
+        {selectedMutation && (
+          <Fragment>
+            <div className="flex items-center gap-2">
+              <h1 className="prose-xl">
+                <code>{selectedMutation.name}</code>
+              </h1>
+              <span className="uppercase text-xs text-info dark:text-info-dark">
+                Mutation
+              </span>
+            </div>
+            <RunInExplorerButton
+              operation={selectedMutation.mutationString}
+              variables={selectedMutation.variables ?? undefined}
+              embeddedExplorerIFrame={
+                embeddedExplorerProps.embeddedExplorerIFrame
+              }
+            />
+          </Fragment>
+        )}
+        {selectedMutation && <MutationViewer mutation={selectedMutation} />}
+      </SidebarLayout.Main>
     </SidebarLayout>
   );
 };
