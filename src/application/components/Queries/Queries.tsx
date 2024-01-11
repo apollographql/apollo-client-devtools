@@ -57,7 +57,7 @@ export const Queries = ({ embeddedExplorerProps }: QueriesProps) => {
         </List>
       </SidebarLayout.Sidebar>
       <SidebarLayout.Content>
-        <SidebarLayout.Header>
+        <SidebarLayout.Main>
           {selectedQuery && (
             <Fragment>
               <div className="flex items-center gap-2">
@@ -77,8 +77,6 @@ export const Queries = ({ embeddedExplorerProps }: QueriesProps) => {
               />
             </Fragment>
           )}
-        </SidebarLayout.Header>
-        <SidebarLayout.Main>
           {selectedQuery && <QueryViewer query={selectedQuery} />}
         </SidebarLayout.Main>
       </SidebarLayout.Content>

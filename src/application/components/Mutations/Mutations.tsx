@@ -57,7 +57,7 @@ export const Mutations = ({ embeddedExplorerProps }: MutationsProps) => {
         </List>
       </SidebarLayout.Sidebar>
       <SidebarLayout.Content>
-        <SidebarLayout.Header>
+        <SidebarLayout.Main>
           {selectedMutation && (
             <Fragment>
               <div className="flex items-center gap-2">
@@ -77,8 +77,6 @@ export const Mutations = ({ embeddedExplorerProps }: MutationsProps) => {
               />
             </Fragment>
           )}
-        </SidebarLayout.Header>
-        <SidebarLayout.Main>
           {selectedMutation && <MutationViewer mutation={selectedMutation} />}
         </SidebarLayout.Main>
       </SidebarLayout.Content>
