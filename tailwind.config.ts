@@ -51,6 +51,8 @@ export default {
     data: {
       "state-active": 'state="active"',
       "state-inactive": 'state="inactive"',
+      "orientation-horizontal": 'orientation="horizontal"',
+      "orientation-vertical": 'orientation="vertical"',
     },
     extend: {
       backgroundColor: {
