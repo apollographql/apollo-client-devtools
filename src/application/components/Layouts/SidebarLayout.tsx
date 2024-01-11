@@ -33,7 +33,7 @@ const Sidebar = ({ children }: SidebarProps) => {
         id="sidebar"
         defaultSize={25}
         minSize={10}
-        className="!overflow-scroll h-[100vh] bg-secondary dark:bg-secondary-dark p-4"
+        className="!overflow-scroll h-[100vh] p-4"
         data-testid="sidebar"
       >
         {children}
