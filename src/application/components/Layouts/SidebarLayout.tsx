@@ -2,17 +2,14 @@ import { ReactNode, useState } from "react";
 import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
 
 import { SettingsModal } from "./SettingsModal";
-import { Navigation, NavigationProps } from "./Navigation";
 import { Button } from "../Button";
 import { SettingsIcon } from "../icons/Settings";
 
 interface SidebarLayoutProps {
-  navigationProps: NavigationProps;
   children: ReactNode;
 }
 
 interface SidebarProps {
-  navigationProps: NavigationProps;
   children: ReactNode;
 }
 
@@ -29,24 +26,19 @@ const SidebarLayout = ({ children }: SidebarLayoutProps) => {
   );
 };
 
-const Sidebar = ({ navigationProps, children }: SidebarProps) => {
+const Sidebar = ({ children }: SidebarProps) => {
   return (
     <>
       <Panel
         id="sidebar"
         defaultSize={25}
         minSize={10}
-        className="!overflow-scroll h-[100vh] bg-secondary dark:bg-secondary-dark"
+        className="!overflow-scroll h-[100vh] bg-secondary dark:bg-secondary-dark p-4"
+        data-testid="sidebar"
       >
-        <div data-testid="sidebar">
-          <Navigation
-            queriesCount={navigationProps.queriesCount}
-            mutationsCount={navigationProps.mutationsCount}
-          />
-          <div className="p-4">{children}</div>
-        </div>
+        {children}
       </Panel>
-      <PanelResizeHandle className="border border-secondary border-solid dark:border-secondary-dark" />
+      <PanelResizeHandle className="border-r border-secondary dark:border-secondary-dark" />
     </>
   );
 };
