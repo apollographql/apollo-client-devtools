@@ -97,30 +97,27 @@ export function Cache() {
           {loading ? (
             <Loading />
           ) : (
-            <div className="font-code text-sm">
-              <JSONTreeViewer
-                data={cache[cacheId]}
-                hideRoot={true}
-                style={{ marginTop: 0 }}
-                valueRenderer={(valueAsString: ReactNode, value, key) => {
-                  return (
-                    <span
-                      className={clsx({
-                        ["hover:underline hover:cursor-pointer"]:
-                          key === "__ref",
-                      })}
-                      onClick={() => {
-                        if (key === "__ref") {
-                          setCacheId(value as string);
-                        }
-                      }}
-                    >
-                      {valueAsString}
-                    </span>
-                  );
-                }}
-              />
-            </div>
+            <JSONTreeViewer
+              data={cache[cacheId]}
+              hideRoot={true}
+              style={{ marginTop: 0 }}
+              valueRenderer={(valueAsString: ReactNode, value, key) => {
+                return (
+                  <span
+                    className={clsx({
+                      ["hover:underline hover:cursor-pointer"]: key === "__ref",
+                    })}
+                    onClick={() => {
+                      if (key === "__ref") {
+                        setCacheId(value as string);
+                      }
+                    }}
+                  >
+                    {valueAsString}
+                  </span>
+                );
+              }}
+            />
           )}
         </Main>
       </Content>
