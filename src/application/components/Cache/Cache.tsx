@@ -91,7 +91,6 @@ export function Cache() {
           <JSONTreeViewer
             data={cache[cacheId]}
             hideRoot={true}
-            style={{ marginTop: 0 }}
             valueRenderer={(valueAsString: ReactNode, value, key) => {
               return (
                 <span

@@ -63,18 +63,10 @@ export const QueryViewer = ({ query }: QueryViewerProps) => {
         </Tabs.List>
         <div className="mt-4 pb-4 text-sm">
           <Tabs.Content value={QueryTabs.Variables}>
-            <JSONTreeViewer
-              className="[&>li]:!pt-0"
-              style={{ marginTop: 0 }}
-              data={query.variables}
-            />
+            <JSONTreeViewer className="[&>li]:!pt-0" data={query.variables} />
           </Tabs.Content>
           <Tabs.Content value={QueryTabs.CachedData}>
-            <JSONTreeViewer
-              className="[&>li]:!pt-0"
-              style={{ marginTop: 0 }}
-              data={query.cachedData}
-            />
+            <JSONTreeViewer className="[&>li]:!pt-0" data={query.cachedData} />
           </Tabs.Content>
         </div>
       </Tabs>

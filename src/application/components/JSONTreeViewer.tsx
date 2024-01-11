@@ -60,7 +60,11 @@ export function JSONTreeViewer({
         extend: activeTheme,
         tree: ({ style: defaultStyle }) => ({
           className: clsx("font-code", className),
-          style: { ...defaultStyle, ...style },
+          style: {
+            ...defaultStyle,
+            margin: 0,
+            ...style,
+          },
         }),
       }}
     />

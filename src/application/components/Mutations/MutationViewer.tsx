@@ -48,7 +48,6 @@ export const MutationViewer = ({ mutation }: MutationViewerProps) => {
           <Tabs.Content value="variables">
             <JSONTreeViewer
               className="[&>li]:!pt-0"
-              style={{ marginTop: 0 }}
               data={mutation.variables}
             />
           </Tabs.Content>
