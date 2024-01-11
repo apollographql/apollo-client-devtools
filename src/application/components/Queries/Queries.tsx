@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, forwardRef, useState } from "react";
 import { gql, useQuery, TypedDocumentNode } from "@apollo/client";
 import { List } from "../List";
 import { ListItem } from "../ListItem";
@@ -25,68 +25,67 @@ const GET_WATCHED_QUERIES: TypedDocumentNode<
   }
 `;
 
-export const Queries = ({
-  navigationProps,
-  embeddedExplorerProps,
-}: {
-  navigationProps: {
-    queriesCount: number;
-    mutationsCount: number;
-  };
+interface QueriesProps {
   embeddedExplorerProps: {
     embeddedExplorerIFrame: HTMLIFrameElement | null;
   };
-}) => {
-  const [selected, setSelected] = useState<number>(0);
-  const { data } = useQuery(GET_WATCHED_QUERIES, { returnPartialData: true });
+}
 
-  const queries = data?.watchedQueries.queries ?? [];
-  const selectedQuery = queries.find((query) => query.id === selected);
+export const Queries = forwardRef<HTMLDivElement, QueriesProps>(
+  ({ embeddedExplorerProps, ...tabContentProps }, ref) => {
+    const [selected, setSelected] = useState<number>(0);
+    const { data } = useQuery(GET_WATCHED_QUERIES, { returnPartialData: true });
 
-  return (
-    <SidebarLayout navigationProps={navigationProps}>
-      <SidebarLayout.Sidebar navigationProps={navigationProps}>
-        <List>
-          {queries.map(({ name, id }) => {
-            return (
-              <ListItem
-                key={`${name}-${id}`}
-                onClick={() => setSelected(id)}
-                selected={selected === id}
-                className="font-code h-8 text-sm"
-              >
-                {name}
-              </ListItem>
-            );
-          })}
-        </List>
-      </SidebarLayout.Sidebar>
-      <SidebarLayout.Content>
-        <SidebarLayout.Header>
-          {selectedQuery && (
-            <Fragment>
-              <div className="flex items-center gap-2">
-                <h1 className="prose-xl">
-                  <code>{selectedQuery.name}</code>
-                </h1>
-                <span className="uppercase text-xs text-info dark:text-info-dark">
-                  Query
-                </span>
-              </div>
-              <RunInExplorerButton
-                operation={selectedQuery.queryString}
-                variables={selectedQuery.variables ?? undefined}
-                embeddedExplorerIFrame={
-                  embeddedExplorerProps.embeddedExplorerIFrame
-                }
-              />
-            </Fragment>
-          )}
-        </SidebarLayout.Header>
-        <SidebarLayout.Main>
-          {selectedQuery && <QueryViewer query={selectedQuery} />}
-        </SidebarLayout.Main>
-      </SidebarLayout.Content>
-    </SidebarLayout>
-  );
-};
+    const queries = data?.watchedQueries.queries ?? [];
+    const selectedQuery = queries.find((query) => query.id === selected);
+
+    return (
+      <div ref={ref} {...tabContentProps}>
+        <SidebarLayout>
+          <SidebarLayout.Sidebar>
+            <List>
+              {queries.map(({ name, id }) => {
+                return (
+                  <ListItem
+                    key={`${name}-${id}`}
+                    onClick={() => setSelected(id)}
+                    selected={selected === id}
+                    className="font-code h-8 text-sm"
+                  >
+                    {name}
+                  </ListItem>
+                );
+              })}
+            </List>
+          </SidebarLayout.Sidebar>
+          <SidebarLayout.Content>
+            <SidebarLayout.Header>
+              {selectedQuery && (
+                <Fragment>
+                  <div className="flex items-center gap-2">
+                    <h1 className="prose-xl">
+                      <code>{selectedQuery.name}</code>
+                    </h1>
+                    <span className="uppercase text-xs text-info dark:text-info-dark">
+                      Query
+                    </span>
+                  </div>
+                  <RunInExplorerButton
+                    operation={selectedQuery.queryString}
+                    variables={selectedQuery.variables ?? undefined}
+                    embeddedExplorerIFrame={
+                      embeddedExplorerProps.embeddedExplorerIFrame
+                    }
+                  />
+                </Fragment>
+              )}
+            </SidebarLayout.Header>
+            <SidebarLayout.Main>
+              {selectedQuery && <QueryViewer query={selectedQuery} />}
+            </SidebarLayout.Main>
+          </SidebarLayout.Content>
+        </SidebarLayout>
+      </div>
+    );
+  }
+);

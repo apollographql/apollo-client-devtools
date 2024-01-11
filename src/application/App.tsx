@@ -120,13 +120,7 @@ export const App = (): JSX.Element => {
         </div>
       </Tabs.Content>
       <Tabs.Content asChild value={Screens.Queries}>
-        <Queries
-          navigationProps={{
-            queriesCount: data?.watchedQueries?.count ?? 0,
-            mutationsCount: data?.mutationLog?.count ?? 0,
-          }}
-          embeddedExplorerProps={{ embeddedExplorerIFrame }}
-        />
+        <Queries embeddedExplorerProps={{ embeddedExplorerIFrame }} />
       </Tabs.Content>
       <Tabs.Content value={Screens.Mutations}>
         <Mutations
