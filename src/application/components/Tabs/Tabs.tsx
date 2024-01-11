@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { Root } from "@radix-ui/react-tabs";
+import clsx from "clsx";
 
 import { Content } from "./Content";
 import { List } from "./List";
@@ -22,7 +23,7 @@ export function Tabs({
 }: TabsProps) {
   return (
     <Root
-      className={className}
+      className={clsx(className, "flex data-orientation-horizontal:flex-col")}
       defaultValue={defaultValue}
       value={value}
       onValueChange={onChange}
