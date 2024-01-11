@@ -76,7 +76,7 @@ export const Queries = ({ embeddedExplorerProps }: QueriesProps) => {
       >
         {selectedQuery && (
           <Fragment>
-            <div className="flex justify-between [grid-area:header]">
+            <div className="flex items-center justify-between [grid-area:header]">
               <h1 className="prose-2xl text-heading dark:text-heading-dark">
                 <code>{selectedQuery.name}</code>
               </h1>
