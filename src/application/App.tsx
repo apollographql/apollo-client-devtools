@@ -21,13 +21,6 @@ import Logo from "@apollo/brand/logos/symbol.svg";
 
 export const reloadStatus = makeVar<boolean>(false);
 
-const screens = {
-  [Screens.Explorer]: Explorer,
-  [Screens.Queries]: Queries,
-  [Screens.Mutations]: Mutations,
-  [Screens.Cache]: Cache,
-};
-
 const GET_OPERATION_COUNTS: TypedDocumentNode<
   GetOperationCounts,
   GetOperationCountsVariables
