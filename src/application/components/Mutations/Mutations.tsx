@@ -5,8 +5,13 @@ import { ListItem } from "../ListItem";
 
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { RunInExplorerButton } from "../Queries/RunInExplorerButton";
-import { MutationViewer } from "./MutationViewer";
 import { GetMutations, GetMutationsVariables } from "../../types/gql";
+import { CodeBlock } from "../CodeBlock";
+import { JSONTreeViewer } from "../JSONTreeViewer";
+import { Tabs } from "../Tabs";
+import CopyToClipboard from "react-copy-to-clipboard";
+import { Button } from "../Button";
+import { CopyIcon } from "../icons/Copy";
 
 const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
   gql`
@@ -17,7 +22,6 @@ const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
           name
           mutationString
           variables
-          ...MutationViewer_mutation
         }
       }
     }
@@ -69,7 +73,40 @@ export const Mutations = ({ embeddedExplorerProps }: MutationsProps) => {
                 embeddedExplorerProps.embeddedExplorerIFrame
               }
             />
-            <MutationViewer mutation={selectedMutation} />
+            <div className="pt-3 grid [grid-template-columns:1fr_350px] gap-6">
+              <div>
+                <CodeBlock
+                  className="overflow-y-hidden"
+                  code={selectedMutation.mutationString}
+                  language="graphql"
+                />
+              </div>
+              <Tabs defaultValue="variables">
+                <Tabs.List>
+                  <Tabs.Trigger value="variables">Variables</Tabs.Trigger>
+                  <CopyToClipboard
+                    text={JSON.stringify(selectedMutation.variables)}
+                  >
+                    <Button
+                      className="ml-auto"
+                      size="sm"
+                      variant="hidden"
+                      data-testid="copy-mutation-variables"
+                    >
+                      <CopyIcon className="h-4" />
+                    </Button>
+                  </CopyToClipboard>
+                </Tabs.List>
+                <div className="mt-4 pb-4 text-sm">
+                  <Tabs.Content value="variables">
+                    <JSONTreeViewer
+                      className="[&>li]:!pt-0"
+                      data={selectedMutation.variables}
+                    />
+                  </Tabs.Content>
+                </div>
+              </Tabs>
+            </div>
           </Fragment>
         )}
       </SidebarLayout.Main>
