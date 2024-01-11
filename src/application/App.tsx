@@ -76,8 +76,12 @@ export const App = (): JSX.Element => {
           />
         </a>
         <Tabs.Trigger value={Screens.Explorer}>Explorer</Tabs.Trigger>
-        <Tabs.Trigger value={Screens.Queries}>Queries</Tabs.Trigger>
-        <Tabs.Trigger value={Screens.Mutations}>Mutations</Tabs.Trigger>
+        <Tabs.Trigger value={Screens.Queries}>
+          Queries ({data?.watchedQueries?.count ?? 0})
+        </Tabs.Trigger>
+        <Tabs.Trigger value={Screens.Mutations}>
+          Mutations ({data?.mutationLog?.count ?? 0})
+        </Tabs.Trigger>
         <Tabs.Trigger value={Screens.Cache}>Cache</Tabs.Trigger>
         <div className="flex-1 justify-end">
           <Button
