@@ -69,9 +69,9 @@ export const Mutations = ({ embeddedExplorerProps }: MutationsProps) => {
                 embeddedExplorerProps.embeddedExplorerIFrame
               }
             />
+            <MutationViewer mutation={selectedMutation} />
           </Fragment>
         )}
-        {selectedMutation && <MutationViewer mutation={selectedMutation} />}
       </SidebarLayout.Main>
     </SidebarLayout>
   );

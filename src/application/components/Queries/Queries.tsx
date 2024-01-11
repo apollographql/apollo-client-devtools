@@ -69,9 +69,9 @@ export const Queries = ({ embeddedExplorerProps }: QueriesProps) => {
                 embeddedExplorerProps.embeddedExplorerIFrame
               }
             />
+            <QueryViewer query={selectedQuery} />
           </Fragment>
         )}
-        {selectedQuery && <QueryViewer query={selectedQuery} />}
       </SidebarLayout.Main>
     </SidebarLayout>
   );
