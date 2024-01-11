@@ -21,7 +21,7 @@ interface HeaderProps {
 
 const Header = ({ children, className }: HeaderProps) => {
   return (
-    <div className={className} data-testid="header">
+    <div className={clsx(className, "py-2 px-4")} data-testid="header">
       {children}
     </div>
   );

@@ -263,7 +263,7 @@ export const Explorer = ({
 
   return (
     <FullWidthLayout className={clsx({ hidden: !isVisible })}>
-      <FullWidthLayout.Header className="flex items-center px-3 bg-secondary dark:bg-secondary-dark border-b border-primary dark:border-primary-dark">
+      <FullWidthLayout.Header className="flex items-center border-b border-primary dark:border-primary-dark">
         <label
           htmlFor="loadFromCache"
           className="flex items-center mr-8 text-sm"
