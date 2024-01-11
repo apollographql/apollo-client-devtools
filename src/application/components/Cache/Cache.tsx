@@ -80,16 +80,9 @@ export function Cache() {
       </Sidebar>
       <Main>
         {dataExists ? (
-          <Fragment>
-            <div className="flex items-center gap-2">
-              <h1 className="prose-xl" data-testid="cache-id">
-                <code>{cacheId}</code>
-              </h1>
-              <span className="uppercase text-xs text-info dark:text-info-dark">
-                CACHE ID
-              </span>
-            </div>
-          </Fragment>
+          <h1 className="prose-xl" data-testid="cache-id">
+            <code>{cacheId}</code>
+          </h1>
         ) : null}
 
         {loading ? (
