@@ -139,7 +139,7 @@ export const CodeBlock = ({
     <div
       className={clsx(
         className,
-        "flex gap-1 items-start bg-secondary dark:bg-secondary-dark p-4 rounded-lg relative border border-primary dark:border-primary-dark overflow-hidden"
+        "flex gap-1 items-start bg-secondary dark:bg-secondary-dark p-4 rounded-lg relative border border-primary dark:border-primary-dark overflow-auto"
       )}
     >
       <Highlight language={language} theme={activeTheme} code={code}>
@@ -167,7 +167,12 @@ export const CodeBlock = ({
         }}
       </Highlight>
       <CopyToClipboard text={code}>
-        <Button size="sm" variant="hidden" data-testid="copy-query-string">
+        <Button
+          size="sm"
+          variant="hidden"
+          data-testid="copy-query-strin"
+          className="sticky top-0"
+        >
           <CopyIcon />
           Copy
         </Button>
