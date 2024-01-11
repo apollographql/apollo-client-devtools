@@ -2,32 +2,17 @@ import { ReactNode, useState } from "react";
 import { clsx } from "clsx";
 
 import { SettingsModal } from "./SettingsModal";
-import { Navigation, NavigationProps } from "./Navigation";
 import { Button } from "../Button";
 import { SettingsIcon } from "../icons/Settings";
 
 interface FullWidthLayoutProps {
-  navigationProps: NavigationProps;
   children: ReactNode;
   className?: string;
 }
 
-const FullWidthLayout = ({
-  navigationProps,
-  children,
-  className,
-}: FullWidthLayoutProps) => {
-  const { queriesCount, mutationsCount } = navigationProps;
-
+const FullWidthLayout = ({ children, className }: FullWidthLayoutProps) => {
   return (
-    <div
-      data-testid="layout"
-      className={clsx(
-        className,
-        "grid [grid-template-columns:28rem_minmax(28rem,auto)] [grid-template-areas:'nav_header'_'main_main']"
-      )}
-    >
-      <Navigation queriesCount={queriesCount} mutationsCount={mutationsCount} />
+    <div data-testid="layout" className={className}>
       {children}
     </div>
   );

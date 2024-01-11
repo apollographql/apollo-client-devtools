@@ -102,14 +102,9 @@ const setGraphRefFromLocalStorage = (graphRef: string) => {
 
 export const Explorer = ({
   isVisible,
-  navigationProps,
   embeddedExplorerProps,
 }: {
   isVisible: boolean | undefined;
-  navigationProps: {
-    queriesCount: number;
-    mutationsCount: number;
-  };
   embeddedExplorerProps: {
     embeddedExplorerIFrame: HTMLIFrameElement | null;
     setEmbeddedExplorerIFrame: (iframe: HTMLIFrameElement) => void;
@@ -266,7 +261,7 @@ export const Explorer = ({
   );
 
   return (
-    <FullWidthLayout navigationProps={navigationProps}>
+    <FullWidthLayout>
       <FullWidthLayout.Header className="flex items-center px-3 bg-secondary dark:bg-secondary-dark border-b border-primary dark:border-primary-dark">
         <label
           htmlFor="loadFromCache"

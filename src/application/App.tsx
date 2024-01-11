@@ -108,10 +108,6 @@ export const App = (): JSX.Element => {
         >
           <Explorer
             isVisible={selected === Screens.Explorer}
-            navigationProps={{
-              queriesCount: data?.watchedQueries?.count ?? 0,
-              mutationsCount: data?.mutationLog?.count ?? 0,
-            }}
             embeddedExplorerProps={{
               embeddedExplorerIFrame,
               setEmbeddedExplorerIFrame,
