@@ -1,9 +1,5 @@
-import { ReactNode, useState } from "react";
+import { ReactNode } from "react";
 import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
-
-import { SettingsModal } from "./SettingsModal";
-import { Button } from "../Button";
-import { SettingsIcon } from "../icons/Settings";
 
 interface SidebarLayoutProps {
   children: ReactNode;
@@ -64,28 +60,12 @@ interface HeaderProps {
 }
 
 const Header = ({ children }: HeaderProps) => {
-  const [open, setOpen] = useState(false);
-
   return (
     <div
       className="flex justify-end items-center border-b border-solid border-secondary dark:border-secondary-dark bg-primary dark:bg-primary-dark px-3 py-0 h-11"
       data-testid="header"
     >
       {children}
-      {/* In order to avoid duplicating the cog component everywhere
-        `SidebarLayout.Header` is used, we use margin-left: auto as the default,
-        and margin-left: 4 when displayed next to the explorer button.
-      */}
-      <Button
-        className="ml-auto peer-[.is-explorer-button]:ml-2"
-        size="sm"
-        variant="hidden"
-        onClick={() => setOpen(true)}
-      >
-        <SettingsIcon aria-hidden="true" />
-        <span className="sr-only">Settings</span>
-      </Button>
-      <SettingsModal open={open} onOpen={setOpen} />
     </div>
   );
 };
