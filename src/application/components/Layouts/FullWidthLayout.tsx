@@ -8,7 +8,10 @@ interface FullWidthLayoutProps {
 
 const FullWidthLayout = ({ children, className }: FullWidthLayoutProps) => {
   return (
-    <div data-testid="layout" className={className}>
+    <div
+      data-testid="layout"
+      className={clsx(className, "flex-1 flex flex-col")}
+    >
       {children}
     </div>
   );
@@ -33,7 +36,7 @@ interface MainProps {
 }
 
 const Main = ({ children, className }: MainProps) => (
-  <div className={clsx(className, "h-[calc(100vh-2.5rem)]")} data-testid="main">
+  <div className={clsx(className, "flex-1")} data-testid="main">
     {children}
   </div>
 );

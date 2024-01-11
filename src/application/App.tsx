@@ -58,7 +58,7 @@ export const App = (): JSX.Element => {
     <Tabs
       value={selected}
       onChange={(screen: Screens) => currentScreen(screen)}
-      className="flex flex-col bg-primary dark:bg-primary-dark"
+      className="flex flex-col h-screen bg-primary dark:bg-primary-dark"
     >
       <Tabs.List className="flex items-center px-4">
         <a
@@ -100,7 +100,11 @@ export const App = (): JSX.Element => {
        * We need to keep the iframe inside of the `Explorer` loaded at all times
        * so that we don't reload the iframe when we come to this tab
        */}
-      <Tabs.Content value={Screens.Explorer} forceMount>
+      <Tabs.Content
+        className="flex flex-col flex-1"
+        value={Screens.Explorer}
+        forceMount
+      >
         <Explorer
           isVisible={selected === Screens.Explorer}
           embeddedExplorerProps={{
