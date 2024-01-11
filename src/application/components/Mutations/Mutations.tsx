@@ -59,14 +59,9 @@ export const Mutations = ({ embeddedExplorerProps }: MutationsProps) => {
       <SidebarLayout.Main>
         {selectedMutation && (
           <Fragment>
-            <div className="flex items-center gap-2">
-              <h1 className="prose-xl">
-                <code>{selectedMutation.name}</code>
-              </h1>
-              <span className="uppercase text-xs text-info dark:text-info-dark">
-                Mutation
-              </span>
-            </div>
+            <h1 className="prose-xl">
+              <code>{selectedMutation.name}</code>
+            </h1>
             <RunInExplorerButton
               operation={selectedMutation.mutationString}
               variables={selectedMutation.variables ?? undefined}
