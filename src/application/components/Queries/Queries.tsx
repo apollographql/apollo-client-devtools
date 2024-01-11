@@ -1,4 +1,4 @@
-import { Fragment, forwardRef, useState } from "react";
+import { Fragment, useState } from "react";
 import { gql, useQuery, TypedDocumentNode } from "@apollo/client";
 import { List } from "../List";
 import { ListItem } from "../ListItem";
@@ -31,61 +31,57 @@ interface QueriesProps {
   };
 }
 
-export const Queries = forwardRef<HTMLDivElement, QueriesProps>(
-  ({ embeddedExplorerProps, ...tabContentProps }, ref) => {
-    const [selected, setSelected] = useState<number>(0);
-    const { data } = useQuery(GET_WATCHED_QUERIES, { returnPartialData: true });
+export const Queries = ({ embeddedExplorerProps }: QueriesProps) => {
+  const [selected, setSelected] = useState<number>(0);
+  const { data } = useQuery(GET_WATCHED_QUERIES, { returnPartialData: true });
 
-    const queries = data?.watchedQueries.queries ?? [];
-    const selectedQuery = queries.find((query) => query.id === selected);
+  const queries = data?.watchedQueries.queries ?? [];
+  const selectedQuery = queries.find((query) => query.id === selected);
 
-    return (
-      <div ref={ref} {...tabContentProps}>
-        <SidebarLayout>
-          <SidebarLayout.Sidebar>
-            <List>
-              {queries.map(({ name, id }) => {
-                return (
-                  <ListItem
-                    key={`${name}-${id}`}
-                    onClick={() => setSelected(id)}
-                    selected={selected === id}
-                    className="font-code h-8 text-sm"
-                  >
-                    {name}
-                  </ListItem>
-                );
-              })}
-            </List>
-          </SidebarLayout.Sidebar>
-          <SidebarLayout.Content>
-            <SidebarLayout.Header>
-              {selectedQuery && (
-                <Fragment>
-                  <div className="flex items-center gap-2">
-                    <h1 className="prose-xl">
-                      <code>{selectedQuery.name}</code>
-                    </h1>
-                    <span className="uppercase text-xs text-info dark:text-info-dark">
-                      Query
-                    </span>
-                  </div>
-                  <RunInExplorerButton
-                    operation={selectedQuery.queryString}
-                    variables={selectedQuery.variables ?? undefined}
-                    embeddedExplorerIFrame={
-                      embeddedExplorerProps.embeddedExplorerIFrame
-                    }
-                  />
-                </Fragment>
-              )}
-            </SidebarLayout.Header>
-            <SidebarLayout.Main>
-              {selectedQuery && <QueryViewer query={selectedQuery} />}
-            </SidebarLayout.Main>
-          </SidebarLayout.Content>
-        </SidebarLayout>
-      </div>
-    );
-  }
-);
+  return (
+    <SidebarLayout>
+      <SidebarLayout.Sidebar>
+        <List>
+          {queries.map(({ name, id }) => {
+            return (
+              <ListItem
+                key={`${name}-${id}`}
+                onClick={() => setSelected(id)}
+                selected={selected === id}
+                className="font-code h-8 text-sm"
+              >
+                {name}
+              </ListItem>
+            );
+          })}
+        </List>
+      </SidebarLayout.Sidebar>
+      <SidebarLayout.Content>
+        <SidebarLayout.Header>
+          {selectedQuery && (
+            <Fragment>
+              <div className="flex items-center gap-2">
+                <h1 className="prose-xl">
+                  <code>{selectedQuery.name}</code>
+                </h1>
+                <span className="uppercase text-xs text-info dark:text-info-dark">
+                  Query
+                </span>
+              </div>
+              <RunInExplorerButton
+                operation={selectedQuery.queryString}
+                variables={selectedQuery.variables ?? undefined}
+                embeddedExplorerIFrame={
+                  embeddedExplorerProps.embeddedExplorerIFrame
+                }
+              />
+            </Fragment>
+          )}
+        </SidebarLayout.Header>
+        <SidebarLayout.Main>
+          {selectedQuery && <QueryViewer query={selectedQuery} />}
+        </SidebarLayout.Main>
+      </SidebarLayout.Content>
+    </SidebarLayout>
+  );
+};
