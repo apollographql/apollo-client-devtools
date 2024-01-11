@@ -71,7 +71,7 @@ export const Queries = ({ embeddedExplorerProps }: QueriesProps) => {
       <SidebarLayout.Main
         className={clsx(
           "grid gap-x-6 gap-y-2 !overflow-auto [grid-template-areas:'header'_'content'_'tabs'] [grid-template-columns:1fr] [grid-template-rows:auto_auto_minmax(0,1fr)]",
-          "lg:overflow-hidden lg:[grid-template-areas:'header_tabs'_'content_tabs'] lg:[grid-template-columns:1fr_255px] lg:[grid-template-rows:auto_1fr]"
+          "lg:[grid-template-areas:'header_tabs'_'content_tabs'] lg:[grid-template-columns:1fr_262px] lg:[grid-template-rows:auto_minmax(0,1fr)]"
         )}
       >
         {selectedQuery && (
@@ -94,7 +94,7 @@ export const Queries = ({ embeddedExplorerProps }: QueriesProps) => {
               className="[grid-area:content] max-h-[500px]"
             />
             <Tabs
-              className="[grid-area:tabs] lg:overflow-hidden"
+              className="[grid-area:tabs] lg:overflow-hidden lg:-my-2 lg:h-full"
               value={currentTab}
               onChange={(value: QueryTabs) => setCurrentTab(value)}
             >
@@ -113,7 +113,6 @@ export const Queries = ({ embeddedExplorerProps }: QueriesProps) => {
                   )}`}
                 >
                   <Button
-                    className="ml-auto"
                     size="sm"
                     variant="hidden"
                     data-testid="copy-query-data"
@@ -122,20 +121,24 @@ export const Queries = ({ embeddedExplorerProps }: QueriesProps) => {
                   </Button>
                 </CopyToClipboard>
               </Tabs.List>
-              <div className="mt-4 pb-4 text-sm lg:overflow-auto lg:h-full">
-                <Tabs.Content value={QueryTabs.Variables}>
-                  <JSONTreeViewer
-                    className="[&>li]:!pt-0"
-                    data={selectedQuery.variables}
-                  />
-                </Tabs.Content>
-                <Tabs.Content value={QueryTabs.CachedData}>
-                  <JSONTreeViewer
-                    className="[&>li]:!pt-0"
-                    data={selectedQuery.cachedData}
-                  />
-                </Tabs.Content>
-              </div>
+              <Tabs.Content
+                className="text-sm pt-4 lg:flex-1 lg:overflow-auto"
+                value={QueryTabs.Variables}
+              >
+                <JSONTreeViewer
+                  className="[&>li]:!pt-0"
+                  data={selectedQuery.variables}
+                />
+              </Tabs.Content>
+              <Tabs.Content
+                className="text-sm pt-4 lg:flex-1 lg:overflow-auto"
+                value={QueryTabs.CachedData}
+              >
+                <JSONTreeViewer
+                  className="[&>li]:!pt-0"
+                  data={selectedQuery.cachedData}
+                />
+              </Tabs.Content>
             </Tabs>
           </Fragment>
         )}
