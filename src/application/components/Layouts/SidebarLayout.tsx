@@ -38,7 +38,7 @@ const Sidebar = ({ children }: SidebarProps) => {
       >
         {children}
       </Panel>
-      <PanelResizeHandle className="border-r border-secondary dark:border-secondary-dark" />
+      <PanelResizeHandle className="border-r border-primary dark:border-primary-dark" />
     </>
   );
 };
