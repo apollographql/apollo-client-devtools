@@ -27,7 +27,7 @@ const Header = ({ children, className }: HeaderProps) => {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className={clsx(className, "[grid-area:header]")} data-testid="header">
+    <div className={className} data-testid="header">
       {children}
       <Button
         className="ml-auto"
@@ -49,10 +49,7 @@ interface MainProps {
 }
 
 const Main = ({ children, className }: MainProps) => (
-  <div
-    className={clsx(className, "[grid-area:main] h-[calc(100vh-2.5rem)]")}
-    data-testid="main"
-  >
+  <div className={clsx(className, "h-[calc(100vh-2.5rem)]")} data-testid="main">
     {children}
   </div>
 );
