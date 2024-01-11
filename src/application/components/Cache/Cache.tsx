@@ -34,14 +34,7 @@ function filterCache(cache: Cache, searchTerm: string) {
   );
 }
 
-export function Cache({
-  navigationProps,
-}: {
-  navigationProps: {
-    queriesCount: number;
-    mutationsCount: number;
-  };
-}): JSX.Element {
+export function Cache() {
   const [searchTerm, setSearchTerm] = useState("");
   const [cacheId, setCacheId] = useState("ROOT_QUERY");
 
@@ -59,8 +52,8 @@ export function Cache({
   const dataExists = Object.keys(cache).length > 0;
 
   return (
-    <SidebarLayout navigationProps={navigationProps}>
-      <Sidebar navigationProps={navigationProps}>
+    <SidebarLayout>
+      <Sidebar>
         {loading ? (
           <Loading />
         ) : dataExists ? (
