@@ -55,21 +55,6 @@ const Content = ({ children }: ContentProps) => (
   </Panel>
 );
 
-interface HeaderProps {
-  children?: ReactNode;
-}
-
-const Header = ({ children }: HeaderProps) => {
-  return (
-    <div
-      className="flex justify-end items-center border-b border-primary dark:border-primary-dark bg-primary dark:bg-primary-dark px-3 py-0 h-11"
-      data-testid="header"
-    >
-      {children}
-    </div>
-  );
-};
-
 interface MainProps {
   children?: ReactNode;
 }
@@ -82,7 +67,6 @@ const Main = ({ children }: MainProps) => (
 
 SidebarLayout.Sidebar = Sidebar;
 SidebarLayout.Content = Content;
-SidebarLayout.Header = Header;
 SidebarLayout.Main = Main;
 
 export { SidebarLayout };
