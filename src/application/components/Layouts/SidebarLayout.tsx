@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { ReactNode } from "react";
 import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
 
@@ -40,16 +41,17 @@ const Sidebar = ({ children }: SidebarProps) => {
 };
 
 interface MainProps {
+  className?: string;
   children?: ReactNode;
 }
 
-const Main = ({ children }: MainProps) => (
+const Main = ({ className, children }: MainProps) => (
   <Panel
     id="content"
     defaultSize={70}
     minSize={30}
     data-testid="main"
-    className="!overflow-scroll h-[100vh] w-full bg-primary dark:bg-primary-dark p-4"
+    className={clsx(className, "bg-primary dark:bg-primary-dark p-4")}
   >
     {children}
   </Panel>
