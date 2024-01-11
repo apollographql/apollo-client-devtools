@@ -12,7 +12,7 @@ export function List({ className, children }: ListProps) {
     <ListBase
       className={clsx(
         className,
-        "flex items-center gap-6 border-b border-b-primary dark:border-b-primary-dark overflow-x-auto"
+        "flex shrink-0 items-center gap-6 border-b border-b-primary dark:border-b-primary-dark overflow-x-auto"
       )}
     >
       {children}
