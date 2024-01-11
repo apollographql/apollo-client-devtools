@@ -4,7 +4,6 @@ import { gql, useQuery, TypedDocumentNode } from "@apollo/client";
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { SearchField } from "../SearchField";
 import { EntityList } from "./sidebar/EntityList";
-import { EntityView } from "./main/EntityView";
 import { Loading } from "./common/Loading";
 import { GetCache, GetCacheVariables } from "../../types/gql";
 import { JSONObject } from "../../types/json";
