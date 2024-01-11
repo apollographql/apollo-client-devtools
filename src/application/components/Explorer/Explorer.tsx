@@ -37,6 +37,7 @@ import {
 } from "./postMessageAuthHelpers";
 import { GraphRefModal } from "./GraphRefModal";
 import { Button } from "../Button";
+import clsx from "clsx";
 
 export enum FetchPolicy {
   NoCache = "no-cache",
@@ -261,7 +262,7 @@ export const Explorer = ({
   );
 
   return (
-    <FullWidthLayout>
+    <FullWidthLayout className={clsx({ hidden: !isVisible })}>
       <FullWidthLayout.Header className="flex items-center px-3 bg-secondary dark:bg-secondary-dark border-b border-primary dark:border-primary-dark">
         <label
           htmlFor="loadFromCache"

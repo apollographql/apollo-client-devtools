@@ -101,19 +101,13 @@ export const App = (): JSX.Element => {
        * so that we don't reload the iframe when we come to this tab
        */}
       <Tabs.Content value={Screens.Explorer} forceMount>
-        <div
-          style={{
-            display: selected === Screens.Explorer ? undefined : "none",
+        <Explorer
+          isVisible={selected === Screens.Explorer}
+          embeddedExplorerProps={{
+            embeddedExplorerIFrame,
+            setEmbeddedExplorerIFrame,
           }}
-        >
-          <Explorer
-            isVisible={selected === Screens.Explorer}
-            embeddedExplorerProps={{
-              embeddedExplorerIFrame,
-              setEmbeddedExplorerIFrame,
-            }}
-          />
-        </div>
+        />
       </Tabs.Content>
       <Tabs.Content value={Screens.Queries}>
         <Queries embeddedExplorerProps={{ embeddedExplorerIFrame }} />
