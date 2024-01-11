@@ -123,13 +123,7 @@ export const App = (): JSX.Element => {
         <Queries embeddedExplorerProps={{ embeddedExplorerIFrame }} />
       </Tabs.Content>
       <Tabs.Content value={Screens.Mutations}>
-        <Mutations
-          navigationProps={{
-            queriesCount: data?.watchedQueries?.count ?? 0,
-            mutationsCount: data?.mutationLog?.count ?? 0,
-          }}
-          embeddedExplorerProps={{ embeddedExplorerIFrame }}
-        />
+        <Mutations embeddedExplorerProps={{ embeddedExplorerIFrame }} />
       </Tabs.Content>
       <Tabs.Content value={Screens.Cache}>
         <Cache

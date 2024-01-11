@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, forwardRef, useState } from "react";
 import { gql, TypedDocumentNode, useQuery } from "@apollo/client";
 import { List } from "../List";
 import { ListItem } from "../ListItem";
@@ -23,70 +23,71 @@ const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
     }
   `;
 
-export const Mutations = ({
-  navigationProps,
-  embeddedExplorerProps,
-}: {
-  navigationProps: {
-    queriesCount: number;
-    mutationsCount: number;
-  };
+interface MutationsProps {
   embeddedExplorerProps: {
     embeddedExplorerIFrame: HTMLIFrameElement | null;
   };
-}) => {
-  const [selected, setSelected] = useState<number>(0);
-  const { data } = useQuery(GET_MUTATIONS);
+}
 
-  const mutations = data?.mutationLog.mutations ?? [];
-  const selectedMutation = mutations.find(
-    (mutation) => mutation.id === selected
-  );
+export const Mutations = forwardRef<HTMLDivElement, MutationsProps>(
+  ({ embeddedExplorerProps, ...tabContentProps }, ref) => {
+    const [selected, setSelected] = useState<number>(0);
+    const { data } = useQuery(GET_MUTATIONS);
 
-  return (
-    <SidebarLayout navigationProps={navigationProps}>
-      <SidebarLayout.Sidebar navigationProps={navigationProps}>
-        <List>
-          {mutations.map(({ name, id }) => {
-            return (
-              <ListItem
-                key={`${name}-${id}`}
-                className="font-code h-8 text-sm"
-                onClick={() => setSelected(id)}
-                selected={selected === id}
-              >
-                {name}
-              </ListItem>
-            );
-          })}
-        </List>
-      </SidebarLayout.Sidebar>
-      <SidebarLayout.Content>
-        <SidebarLayout.Header>
-          {selectedMutation && (
-            <Fragment>
-              <div className="flex items-center gap-2">
-                <h1 className="prose-xl">
-                  <code>{selectedMutation.name}</code>
-                </h1>
-                <span className="uppercase text-xs text-info dark:text-info-dark">
-                  Mutation
-                </span>
-              </div>
-              <RunInExplorerButton
-                operation={selectedMutation.mutationString}
-                variables={selectedMutation.variables ?? undefined}
-                embeddedExplorerIFrame={
-                  embeddedExplorerProps.embeddedExplorerIFrame
-                }
-              />
-            </Fragment>
-          )}
-        </SidebarLayout.Header>
-        <SidebarLayout.Main>
-          {selectedMutation && <MutationViewer mutation={selectedMutation} />}
-        </SidebarLayout.Main>
-      </SidebarLayout.Content>
-    </SidebarLayout>
-  );
-};
+    const mutations = data?.mutationLog.mutations ?? [];
+    const selectedMutation = mutations.find(
+      (mutation) => mutation.id === selected
+    );
+
+    return (
+      <div ref={ref} {...tabContentProps}>
+        <SidebarLayout>
+          <SidebarLayout.Sidebar>
+            <List>
+              {mutations.map(({ name, id }) => {
+                return (
+                  <ListItem
+                    key={`${name}-${id}`}
+                    className="font-code h-8 text-sm"
+                    onClick={() => setSelected(id)}
+                    selected={selected === id}
+                  >
+                    {name}
+                  </ListItem>
+                );
+              })}
+            </List>
+          </SidebarLayout.Sidebar>
+          <SidebarLayout.Content>
+            <SidebarLayout.Header>
+              {selectedMutation && (
+                <Fragment>
+                  <div className="flex items-center gap-2">
+                    <h1 className="prose-xl">
+                      <code>{selectedMutation.name}</code>
+                    </h1>
+                    <span className="uppercase text-xs text-info dark:text-info-dark">
+                      Mutation
+                    </span>
+                  </div>
+                  <RunInExplorerButton
+                    operation={selectedMutation.mutationString}
+                    variables={selectedMutation.variables ?? undefined}
+                    embeddedExplorerIFrame={
+                      embeddedExplorerProps.embeddedExplorerIFrame
+                    }
+                  />
+                </Fragment>
+              )}
+            </SidebarLayout.Header>
+            <SidebarLayout.Main>
+              {selectedMutation && (
+                <MutationViewer mutation={selectedMutation} />
+              )}
+            </SidebarLayout.Main>
+          </SidebarLayout.Content>
+        </SidebarLayout>
+      </div>
+    );
+  }
+);
