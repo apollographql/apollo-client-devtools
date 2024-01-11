@@ -5,8 +5,18 @@ import { ListItem } from "../ListItem";
 
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { RunInExplorerButton } from "./RunInExplorerButton";
-import { QueryViewer } from "./QueryViewer";
 import { GetWatchedQueries, GetWatchedQueriesVariables } from "../../types/gql";
+import { CodeBlock } from "../CodeBlock";
+import { Tabs } from "../Tabs";
+import CopyToClipboard from "react-copy-to-clipboard";
+import { Button } from "../Button";
+import { CopyIcon } from "../icons/Copy";
+import { JSONTreeViewer } from "../JSONTreeViewer";
+
+enum QueryTabs {
+  Variables = "Variables",
+  CachedData = "CachedData",
+}
 
 const GET_WATCHED_QUERIES: TypedDocumentNode<
   GetWatchedQueries,
@@ -19,7 +29,7 @@ const GET_WATCHED_QUERIES: TypedDocumentNode<
         name
         queryString
         variables
-        ...QueryViewer_query
+        cachedData
       }
     }
   }
@@ -37,6 +47,7 @@ export const Queries = ({ embeddedExplorerProps }: QueriesProps) => {
 
   const queries = data?.watchedQueries.queries ?? [];
   const selectedQuery = queries.find((query) => query.id === selected);
+  const [currentTab, setCurrentTab] = useState<QueryTabs>(QueryTabs.Variables);
 
   return (
     <SidebarLayout>
@@ -69,7 +80,58 @@ export const Queries = ({ embeddedExplorerProps }: QueriesProps) => {
                 embeddedExplorerProps.embeddedExplorerIFrame
               }
             />
-            <QueryViewer query={selectedQuery} />
+            <div className="gap-6 pt-3 grid [grid-template-columns:1fr_350px]">
+              <div>
+                <CodeBlock
+                  className="overflow-y-hidden"
+                  language="graphql"
+                  code={selectedQuery.queryString}
+                />
+              </div>
+              <Tabs
+                value={currentTab}
+                onChange={(value: QueryTabs) => setCurrentTab(value)}
+              >
+                <Tabs.List>
+                  <Tabs.Trigger value={QueryTabs.Variables}>
+                    Variables
+                  </Tabs.Trigger>
+                  <Tabs.Trigger value={QueryTabs.CachedData}>
+                    Cached Data
+                  </Tabs.Trigger>
+                  <CopyToClipboard
+                    text={`${JSON.stringify(
+                      currentTab === QueryTabs.Variables
+                        ? selectedQuery.variables
+                        : selectedQuery.cachedData
+                    )}`}
+                  >
+                    <Button
+                      className="ml-auto"
+                      size="sm"
+                      variant="hidden"
+                      data-testid="copy-query-data"
+                    >
+                      <CopyIcon className="h-4" />
+                    </Button>
+                  </CopyToClipboard>
+                </Tabs.List>
+                <div className="mt-4 pb-4 text-sm">
+                  <Tabs.Content value={QueryTabs.Variables}>
+                    <JSONTreeViewer
+                      className="[&>li]:!pt-0"
+                      data={selectedQuery.variables}
+                    />
+                  </Tabs.Content>
+                  <Tabs.Content value={QueryTabs.CachedData}>
+                    <JSONTreeViewer
+                      className="[&>li]:!pt-0"
+                      data={selectedQuery.cachedData}
+                    />
+                  </Tabs.Content>
+                </div>
+              </Tabs>
+            </div>
           </Fragment>
         )}
       </SidebarLayout.Main>
