@@ -59,7 +59,7 @@ export const Mutations = ({ embeddedExplorerProps }: MutationsProps) => {
       <SidebarLayout.Main>
         {selectedMutation && (
           <Fragment>
-            <h1 className="prose-xl">
+            <h1 className="prose-xl text-heading dark:text-heading-dark">
               <code>{selectedMutation.name}</code>
             </h1>
             <RunInExplorerButton

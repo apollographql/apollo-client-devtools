@@ -80,7 +80,10 @@ export function Cache() {
       </Sidebar>
       <Main>
         {dataExists ? (
-          <h1 className="prose-xl" data-testid="cache-id">
+          <h1
+            className="prose-xl text-heading dark:text-heading-dark"
+            data-testid="cache-id"
+          >
             <code>{cacheId}</code>
           </h1>
         ) : null}

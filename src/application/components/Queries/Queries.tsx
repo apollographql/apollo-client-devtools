@@ -59,7 +59,7 @@ export const Queries = ({ embeddedExplorerProps }: QueriesProps) => {
       <SidebarLayout.Main>
         {selectedQuery && (
           <Fragment>
-            <h1 className="prose-xl">
+            <h1 className="prose-xl text-heading dark:text-heading-dark">
               <code>{selectedQuery.name}</code>
             </h1>
             <RunInExplorerButton
