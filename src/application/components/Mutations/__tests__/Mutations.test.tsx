@@ -44,7 +44,7 @@ describe("<Mutations />", () => {
 
     const sidebar = screen.getByTestId("sidebar");
 
-    expect(within(sidebar).getByText("Unnamed")).toBeInTheDocument();
+    expect(within(sidebar).getByText("(anonymous)")).toBeInTheDocument();
     expect(
       within(sidebar).getByText("AddColorToFavorites")
     ).toBeInTheDocument();
@@ -67,7 +67,7 @@ describe("<Mutations />", () => {
     );
 
     const main = screen.getByTestId("main");
-    expect(within(main).getByTestId("title")).toHaveTextContent("Unnamed");
+    expect(within(main).getByTestId("title")).toHaveTextContent("(anonymous)");
 
     const sidebar = screen.getByTestId("sidebar");
     await act(() =>

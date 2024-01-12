@@ -31,14 +31,14 @@ const cache = new InMemoryCache({
     WatchedQuery: {
       fields: {
         name(_) {
-          return _ ?? "Unnamed";
+          return _ ?? "(anonymous)";
         },
       },
     },
     WatchedMutation: {
       fields: {
         name(_) {
-          return _ ?? "Unnamed";
+          return _ ?? "(anonymous)";
         },
       },
     },
