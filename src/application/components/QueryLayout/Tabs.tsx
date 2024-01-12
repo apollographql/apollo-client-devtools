@@ -3,8 +3,9 @@ import { Tabs as TabsBase } from "../Tabs";
 
 interface TabsProps {
   children: ReactNode;
-  value: string;
-  onChange: (value: string) => void;
+  defaultValue?: string;
+  value?: string;
+  onChange?: (value: string) => void;
 }
 
 export function Tabs({ children, value, onChange }: TabsProps) {
