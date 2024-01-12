@@ -61,17 +61,19 @@ export function Cache() {
         ) : dataExists ? (
           <Fragment>
             <SearchField
-              className="mb-2"
+              className="mb-4"
               placeholder="Search queries"
               onChange={setSearchTerm}
               value={searchTerm}
             />
-            <EntityList
-              data={filteredCache}
-              selectedCacheId={cacheId}
-              setCacheId={setCacheId}
-              searchTerm={searchTerm}
-            />
+            <div className="overflow-auto h-full">
+              <EntityList
+                data={filteredCache}
+                selectedCacheId={cacheId}
+                setCacheId={setCacheId}
+                searchTerm={searchTerm}
+              />
+            </div>
           </Fragment>
         ) : (
           <h3 className="ml-3 uppercase text-sm font-normal pt-4 text-white/50 tracking-wider">
