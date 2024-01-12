@@ -55,7 +55,7 @@ export function Cache() {
 
   return (
     <SidebarLayout>
-      <Sidebar>
+      <Sidebar className="flex flex-col h-full">
         {loading ? (
           <Loading />
         ) : dataExists ? (

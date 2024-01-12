@@ -7,6 +7,7 @@ interface SidebarLayoutProps {
 }
 
 interface SidebarProps {
+  className?: string;
   children: ReactNode;
 }
 
@@ -23,14 +24,14 @@ const SidebarLayout = ({ children }: SidebarLayoutProps) => {
   );
 };
 
-const Sidebar = ({ children }: SidebarProps) => {
+const Sidebar = ({ className, children }: SidebarProps) => {
   return (
     <>
       <Panel
         id="sidebar"
         defaultSize={25}
         minSize={10}
-        className="!overflow-scroll h-[100vh] p-4"
+        className={clsx(className, "h-[100vh] p-4")}
         data-testid="sidebar"
       >
         {children}
