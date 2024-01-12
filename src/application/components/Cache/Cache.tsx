@@ -9,6 +9,7 @@ import { GetCache, GetCacheVariables } from "../../types/gql";
 import { JSONObject } from "../../types/json";
 import { JSONTreeViewer } from "../JSONTreeViewer";
 import clsx from "clsx";
+import { CopyButton } from "../CopyButton";
 
 const { Sidebar, Main } = SidebarLayout;
 
@@ -80,12 +81,15 @@ export function Cache() {
       </Sidebar>
       <Main className="!overflow-auto">
         {dataExists ? (
-          <h1
-            className="prose-xl text-heading dark:text-heading-dark mb-2"
-            data-testid="cache-id"
-          >
-            <code>{cacheId}</code>
-          </h1>
+          <div className="flex items-start justify-between mb-2 gap-2">
+            <h1
+              className="prose-xl text-heading dark:text-heading-dark break-all"
+              data-testid="cache-id"
+            >
+              <code>{cacheId}</code>
+            </h1>
+            <CopyButton size="md" text={JSON.stringify(cache[cacheId])} />
+          </div>
         ) : null}
 
         {loading ? (
