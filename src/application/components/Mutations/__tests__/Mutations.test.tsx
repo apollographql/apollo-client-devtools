@@ -24,11 +24,6 @@ describe("<Mutations />", () => {
     },
   ];
 
-  const navigationProps = {
-    queriesCount: 0,
-    mutationsCount: 2,
-  };
-
   beforeEach(() => {
     client.clearStore();
   });
@@ -45,20 +40,11 @@ describe("<Mutations />", () => {
       },
     });
 
-    renderWithApolloClient(
-      <Mutations
-        navigationProps={navigationProps}
-        embeddedExplorerProps={{ embeddedExplorerIFrame: null }}
-      />
-    );
+    renderWithApolloClient(<Mutations explorerIFrame={null} />);
 
     const sidebar = screen.getByTestId("sidebar");
     await waitFor(() => {
-      expect(
-        within(sidebar).queryAllByText(
-          `Mutations (${navigationProps.mutationsCount})`
-        ).length
-      ).toBe(2);
+      expect(within(sidebar).queryAllByText(`Mutations (2)`).length).toBe(2);
     });
     expect(within(sidebar).getByText("Unnamed")).toBeInTheDocument();
     expect(
@@ -79,10 +65,7 @@ describe("<Mutations />", () => {
     });
 
     const { user } = renderWithApolloClient(
-      <Mutations
-        navigationProps={navigationProps}
-        embeddedExplorerProps={{ embeddedExplorerIFrame: null }}
-      />
+      <Mutations explorerIFrame={null} />
     );
 
     const header = screen.getByTestId("header");
@@ -100,12 +83,7 @@ describe("<Mutations />", () => {
   });
 
   test("it renders an empty state", () => {
-    renderWithApolloClient(
-      <Mutations
-        navigationProps={navigationProps}
-        embeddedExplorerProps={{ embeddedExplorerIFrame: null }}
-      />
-    );
+    renderWithApolloClient(<Mutations explorerIFrame={null} />);
     expect(screen.getByTestId("main")).toBeEmptyDOMElement();
   });
 });
