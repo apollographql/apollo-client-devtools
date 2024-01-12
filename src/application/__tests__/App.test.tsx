@@ -5,20 +5,6 @@ import { renderWithApolloClient } from "../utilities/testing/renderWithApolloCli
 import { currentScreen, Screens } from "../components/Layouts/Navigation";
 import { App, reloadStatus } from "../App";
 
-jest.mock("../components/Queries/Queries", () => ({
-  Queries: ({
-    navigationProps,
-  }: {
-    navigationProps: { queriesCount: number; mutationsCount: number };
-  }) => <div>Queries ({navigationProps.queriesCount})</div>,
-}));
-jest.mock("../components/Mutations/Mutations", () => ({
-  Mutations: ({
-    navigationProps,
-  }: {
-    navigationProps: { queriesCount: number; mutationsCount: number };
-  }) => <div>Mutations ({navigationProps.mutationsCount})</div>,
-}));
 jest.mock("../components/Explorer/Explorer", () => ({
   Explorer: () => <div>Build</div>,
 }));
