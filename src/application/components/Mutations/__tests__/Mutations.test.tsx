@@ -84,4 +84,111 @@ describe("<Mutations />", () => {
     renderWithApolloClient(<Mutations explorerIFrame={null} />);
     expect(screen.getByTestId("main")).toBeEmptyDOMElement();
   });
+
+  test("renders the mutation string", () => {
+    client.writeQuery({
+      query: GET_MUTATIONS,
+      data: {
+        mutationLog: {
+          __typename: "MutationLog",
+          mutations,
+          count: mutations.length,
+        },
+      },
+    });
+
+    renderWithApolloClient(<Mutations explorerIFrame={null} />);
+
+    expect(screen.getByTestId("query")).toHaveTextContent(
+      mutations[0].mutationString
+    );
+  });
+
+  test("can copy the mutation string", async () => {
+    window.prompt = jest.fn();
+    client.writeQuery({
+      query: GET_MUTATIONS,
+      data: {
+        mutationLog: {
+          __typename: "MutationLog",
+          mutations,
+          count: mutations.length,
+        },
+      },
+    });
+
+    const { user } = renderWithApolloClient(
+      <Mutations explorerIFrame={null} />
+    );
+
+    await user.click(within(screen.getByTestId("query")).getByText("Copy"));
+    expect(window.prompt).toBeCalledWith(
+      "Copy to clipboard: Ctrl+C, Enter",
+      mutations[0].mutationString
+    );
+  });
+
+  test("renders the mutation variables", () => {
+    client.writeQuery({
+      query: GET_MUTATIONS,
+      data: {
+        mutationLog: {
+          __typename: "MutationLog",
+          mutations: [
+            {
+              __typename: "WatchedMutation",
+              id: 0,
+              name: "ChangeName",
+              mutationString: `mutation ChangeName($name: String!) { changeName(name: $name) { name } }`,
+              variables: { name: "Bob Vance (Vance Refridgeration)" },
+            },
+          ],
+          count: 1,
+        },
+      },
+    });
+
+    renderWithApolloClient(<Mutations explorerIFrame={null} />);
+
+    expect(screen.getByText("Variables")).toBeInTheDocument();
+
+    expect(
+      screen.getByText((content) =>
+        content.includes("Bob Vance (Vance Refridgeration)")
+      )
+    ).toBeInTheDocument();
+  });
+
+  test("can copy the mutation variables", async () => {
+    window.prompt = jest.fn();
+    client.writeQuery({
+      query: GET_MUTATIONS,
+      data: {
+        mutationLog: {
+          __typename: "MutationLog",
+          mutations: [
+            {
+              __typename: "WatchedMutation",
+              id: 0,
+              name: "ChangeName",
+              mutationString: `mutation ChangeName($name: String!) { changeName(name: $name) { name } }`,
+              variables: { name: "Bob Vance (Vance Refridgeration)" },
+            },
+          ],
+          count: 1,
+        },
+      },
+    });
+
+    const { user } = renderWithApolloClient(
+      <Mutations explorerIFrame={null} />
+    );
+
+    const copyButton = within(screen.getByRole("tablist")).getByRole("button");
+    await user.click(copyButton);
+    expect(window.prompt).toBeCalledWith(
+      "Copy to clipboard: Ctrl+C, Enter",
+      JSON.stringify({ name: "Bob Vance (Vance Refridgeration)" })
+    );
+  });
 });
