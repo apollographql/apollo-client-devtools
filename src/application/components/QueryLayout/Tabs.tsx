@@ -8,10 +8,11 @@ interface TabsProps {
   onChange?: (value: string) => void;
 }
 
-export function Tabs({ children, value, onChange }: TabsProps) {
+export function Tabs({ children, defaultValue, value, onChange }: TabsProps) {
   return (
     <TabsBase
       className="[grid-area:tabs] lg:overflow-hidden lg:-my-2"
+      defaultValue={defaultValue}
       value={value}
       onChange={onChange}
     >
