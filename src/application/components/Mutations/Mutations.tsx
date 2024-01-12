@@ -41,7 +41,7 @@ export const Mutations = ({ explorerIFrame }: MutationsProps) => {
   return (
     <SidebarLayout>
       <SidebarLayout.Sidebar>
-        <List className="overflow-y-auto h-full">
+        <List className="h-full">
           {mutations.map(({ name, id }) => {
             return (
               <ListItem
