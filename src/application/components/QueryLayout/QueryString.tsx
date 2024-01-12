@@ -6,7 +6,7 @@ interface QueryStringProps {
 
 export function QueryString({ code }: QueryStringProps) {
   return (
-    <div className="[grid-area:content] max-h-[500px]">
+    <div data-testid="query" className="[grid-area:content] max-h-[500px]">
       <CodeBlock language="graphql" code={code} className="max-h-full" />
     </div>
   );
