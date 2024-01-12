@@ -78,10 +78,10 @@ export function Cache() {
           </h3>
         )}
       </Sidebar>
-      <Main>
+      <Main className="!overflow-auto">
         {dataExists ? (
           <h1
-            className="prose-xl text-heading dark:text-heading-dark"
+            className="prose-xl text-heading dark:text-heading-dark mb-2"
             data-testid="cache-id"
           >
             <code>{cacheId}</code>
