@@ -34,12 +34,10 @@ const GET_WATCHED_QUERIES: TypedDocumentNode<
 `;
 
 interface QueriesProps {
-  embeddedExplorerProps: {
-    embeddedExplorerIFrame: HTMLIFrameElement | null;
-  };
+  explorerIFrame: HTMLIFrameElement | null;
 }
 
-export const Queries = ({ embeddedExplorerProps }: QueriesProps) => {
+export const Queries = ({ explorerIFrame }: QueriesProps) => {
   const [selected, setSelected] = useState<number>(0);
   const { data } = useQuery(GET_WATCHED_QUERIES, { returnPartialData: true });
 
@@ -73,9 +71,7 @@ export const Queries = ({ embeddedExplorerProps }: QueriesProps) => {
               <RunInExplorerButton
                 operation={selectedQuery.queryString}
                 variables={selectedQuery.variables ?? undefined}
-                embeddedExplorerIFrame={
-                  embeddedExplorerProps.embeddedExplorerIFrame
-                }
+                embeddedExplorerIFrame={explorerIFrame}
               />
             </QueryLayout.Header>
             <QueryLayout.QueryString code={selectedQuery.queryString} />

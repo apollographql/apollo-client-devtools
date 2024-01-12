@@ -114,13 +114,13 @@ export const App = (): JSX.Element => {
         />
       </Tabs.Content>
       <Tabs.Content className="flex-1 overflow-hidden" value={Screens.Queries}>
-        <Queries embeddedExplorerProps={{ embeddedExplorerIFrame }} />
+        <Queries explorerIFrame={embeddedExplorerIFrame} />
       </Tabs.Content>
       <Tabs.Content
         className="flex-1 overflow-hidden"
         value={Screens.Mutations}
       >
-        <Mutations embeddedExplorerProps={{ embeddedExplorerIFrame }} />
+        <Mutations explorerIFrame={embeddedExplorerIFrame} />
       </Tabs.Content>
       <Tabs.Content className="flex-1 overflow-hidden" value={Screens.Cache}>
         <Cache />

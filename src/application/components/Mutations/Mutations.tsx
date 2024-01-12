@@ -26,12 +26,10 @@ const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
   `;
 
 interface MutationsProps {
-  embeddedExplorerProps: {
-    embeddedExplorerIFrame: HTMLIFrameElement | null;
-  };
+  explorerIFrame: HTMLIFrameElement | null;
 }
 
-export const Mutations = ({ embeddedExplorerProps }: MutationsProps) => {
+export const Mutations = ({ explorerIFrame }: MutationsProps) => {
   const [selected, setSelected] = useState<number>(0);
   const { data } = useQuery(GET_MUTATIONS);
 
@@ -66,9 +64,7 @@ export const Mutations = ({ embeddedExplorerProps }: MutationsProps) => {
               <RunInExplorerButton
                 operation={selectedMutation.mutationString}
                 variables={selectedMutation.variables ?? undefined}
-                embeddedExplorerIFrame={
-                  embeddedExplorerProps.embeddedExplorerIFrame
-                }
+                embeddedExplorerIFrame={explorerIFrame}
               />
             </QueryLayout.Header>
             <QueryLayout.QueryString code={selectedMutation.mutationString} />
