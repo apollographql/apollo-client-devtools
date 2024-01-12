@@ -92,9 +92,11 @@ describe("Cache component tests", () => {
 
     it("should show sidebar selected/active cache ID in the header", async () => {
       renderWithApolloClient(<Cache />);
-      const header = screen.getByTestId("header");
+
+      const main = screen.getByTestId("main");
+
       await waitFor(() => {
-        expect(within(header).getByText("ROOT_QUERY")).toBeInTheDocument();
+        expect(within(main).getByText("ROOT_QUERY")).toBeInTheDocument();
       });
     });
 
