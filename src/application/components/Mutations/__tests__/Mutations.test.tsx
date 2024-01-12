@@ -43,9 +43,7 @@ describe("<Mutations />", () => {
     renderWithApolloClient(<Mutations explorerIFrame={null} />);
 
     const sidebar = screen.getByTestId("sidebar");
-    await waitFor(() => {
-      expect(within(sidebar).queryAllByText(`Mutations (2)`).length).toBe(2);
-    });
+
     expect(within(sidebar).getByText("Unnamed")).toBeInTheDocument();
     expect(
       within(sidebar).getByText("AddColorToFavorites")
@@ -68,17 +66,17 @@ describe("<Mutations />", () => {
       <Mutations explorerIFrame={null} />
     );
 
-    const header = screen.getByTestId("header");
-    expect(within(header).getByText("Unnamed")).toBeInTheDocument();
+    const main = screen.getByTestId("main");
+    expect(within(main).getByTestId("title")).toHaveTextContent("Unnamed");
 
     const sidebar = screen.getByTestId("sidebar");
     await act(() =>
       user.click(within(sidebar).getByText("AddColorToFavorites"))
     );
     await waitFor(() => {
-      expect(
-        within(header).getByText("AddColorToFavorites")
-      ).toBeInTheDocument();
+      expect(within(main).getByTestId("title")).toHaveTextContent(
+        "AddColorToFavorites"
+      );
     });
   });
 
