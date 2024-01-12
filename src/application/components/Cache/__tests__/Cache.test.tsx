@@ -7,7 +7,6 @@ import {
   act,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { colors } from "@apollo/space-kit/colors";
 
 import { Cache } from "../Cache";
 import { renderWithApolloClient } from "../../../utilities/testing/renderWithApolloClient";
@@ -43,11 +42,6 @@ const CACHE_DATA = {
   },
 };
 
-const navigationProps = {
-  queriesCount: 2,
-  mutationsCount: 0,
-};
-
 function elementMatchesHighlightedNode(
   element: Element | null,
   textContent: string
@@ -61,7 +55,7 @@ function elementMatchesHighlightedNode(
 describe("Cache component tests", () => {
   describe("No cache data", () => {
     it("should show no cache data message in sidebar", async () => {
-      renderWithApolloClient(<Cache navigationProps={navigationProps} />);
+      renderWithApolloClient(<Cache />);
       const sidebar = screen.getByTestId("sidebar");
       await waitFor(() => {
         expect(within(sidebar).getByText("No cache data")).toBeInTheDocument();
@@ -69,7 +63,7 @@ describe("Cache component tests", () => {
     });
 
     it("should leave the header blank instead of trying to show a cache ID", async () => {
-      renderWithApolloClient(<Cache navigationProps={navigationProps} />);
+      renderWithApolloClient(<Cache />);
       const cacheId = screen.queryByTestId("cache-id");
       expect(cacheId).toBeNull();
     });
@@ -87,7 +81,7 @@ describe("Cache component tests", () => {
     });
 
     it("should show list of root cache ids in the sidebar", async () => {
-      renderWithApolloClient(<Cache navigationProps={navigationProps} />);
+      renderWithApolloClient(<Cache />);
       const sidebar = screen.getByTestId("sidebar");
       await waitFor(() => {
         expect(within(sidebar).getByText("ROOT_QUERY")).toBeInTheDocument();
@@ -97,7 +91,7 @@ describe("Cache component tests", () => {
     });
 
     it("should show sidebar selected/active cache ID in the header", async () => {
-      renderWithApolloClient(<Cache navigationProps={navigationProps} />);
+      renderWithApolloClient(<Cache />);
       const header = screen.getByTestId("header");
       await waitFor(() => {
         expect(within(header).getByText("ROOT_QUERY")).toBeInTheDocument();
@@ -105,7 +99,7 @@ describe("Cache component tests", () => {
     });
 
     it("should show data for the sidebar selected/active cache ID in main ", () => {
-      renderWithApolloClient(<Cache navigationProps={navigationProps} />);
+      renderWithApolloClient(<Cache />);
       const main = screen.getByTestId("main");
       expect(within(main).getByText("ROOT_QUERY")).toBeInTheDocument();
       expect(within(main).getByText("__typename:")).toBeInTheDocument();
@@ -134,7 +128,7 @@ describe("Cache component tests", () => {
 
     it("filters cache ID's for matches against the keyword", async () => {
       const user = userEvent.setup();
-      renderWithApolloClient(<Cache navigationProps={navigationProps} />);
+      renderWithApolloClient(<Cache />);
 
       const searchInput =
         screen.getByPlaceholderText<HTMLInputElement>("Search queries");
@@ -160,10 +154,10 @@ describe("Cache component tests", () => {
     });
 
     it("highlights matched substring in cache ID", async () => {
-      const selectedMainStyles = `background: ${colors.yellow.base}`;
+      const selectedClassName = "bg-highlight dark:bg-highlight-dark";
       const user = userEvent.setup();
 
-      renderWithApolloClient(<Cache navigationProps={navigationProps} />);
+      renderWithApolloClient(<Cache />);
 
       const searchInput = screen.getByPlaceholderText("Search queries");
       await act(() => user.type(searchInput, "Res"));
@@ -178,13 +172,13 @@ describe("Cache component tests", () => {
         return elementMatchesHighlightedNode(element, "Result:2");
       });
 
-      expect(within(result1).getByText("Res")).toHaveStyle(selectedMainStyles);
-      expect(within(result1).getByText("ult:1")).not.toHaveStyle(
-        selectedMainStyles
+      expect(within(result1).getByText("Res")).toHaveClass(selectedClassName);
+      expect(within(result1).getByText("ult:1")).not.toHaveClass(
+        selectedClassName
       );
-      expect(within(result2).getByText("Res")).toHaveStyle(selectedMainStyles);
-      expect(within(result2).getByText("ult:2")).not.toHaveStyle(
-        selectedMainStyles
+      expect(within(result2).getByText("Res")).toHaveClass(selectedClassName);
+      expect(within(result2).getByText("ult:2")).not.toHaveClass(
+        selectedClassName
       );
     });
   });
