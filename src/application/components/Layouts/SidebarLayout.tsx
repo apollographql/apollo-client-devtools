@@ -31,7 +31,7 @@ const Sidebar = ({ className, children }: SidebarProps) => {
         id="sidebar"
         defaultSize={25}
         minSize={10}
-        className={clsx(className, "h-[100vh] p-4")}
+        className={clsx(className, "h-full p-4")}
         data-testid="sidebar"
       >
         {children}

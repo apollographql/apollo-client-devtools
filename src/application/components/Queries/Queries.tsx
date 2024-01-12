@@ -48,7 +48,7 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
   return (
     <SidebarLayout>
       <SidebarLayout.Sidebar>
-        <List>
+        <List className="overflow-y-auto h-full">
           {queries.map(({ name, id }) => {
             return (
               <ListItem
