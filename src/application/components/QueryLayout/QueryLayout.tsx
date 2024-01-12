@@ -17,7 +17,7 @@ export function QueryLayout({ children }: QueryLayoutProps) {
     <SidebarLayout.Main
       className={clsx(
         "grid gap-x-6 gap-y-2 !overflow-y-auto !overflow-x-hidden [grid-template-areas:'header'_'content'_'tabs'] [grid-template-columns:minmax(0,1fr)] [grid-template-rows:auto_auto_minmax(0,1fr)]",
-        "lg:[grid-template-areas:'header_tabs'_'content_tabs'] lg:[grid-template-columns:minmax(0,1fr)_262px] lg:[grid-template-rows:auto_minmax(0,1fr)]"
+        "lg:[grid-template-areas:'header_tabs'_'content_tabs'] lg:[grid-template-columns:minmax(0,1fr)_310px] lg:[grid-template-rows:auto_minmax(0,1fr)]"
       )}
     >
       {children}
