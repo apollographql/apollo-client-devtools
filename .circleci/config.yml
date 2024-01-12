@@ -1,12 +1,12 @@
 version: 2.1
 
 orbs:
-  secops: apollo/circleci-secops-orb@2.0.5
+  secops: apollo/circleci-secops-orb@2.0.6
 
 jobs:
   lint:
     docker:
-      - image: cimg/node:21.4.0
+      - image: cimg/node:21.5.0
     steps:
       - checkout
       - run: npm ci
@@ -16,7 +16,7 @@ jobs:
 
   formatting:
     docker:
-      - image: cimg/node:21.4.0
+      - image: cimg/node:21.5.0
     steps:
       - checkout
       - run: npm ci
@@ -24,7 +24,7 @@ jobs:
 
   test:
     docker:
-      - image: cimg/node:21.4.0
+      - image: cimg/node:21.5.0
     steps:
       - checkout
       - run: npm ci
