@@ -75,7 +75,6 @@ export const App = (): JSX.Element => {
             className="text-icon-primary dark:text-icon-primary-dark"
           />
         </a>
-        <Tabs.Trigger value={Screens.Explorer}>Explorer</Tabs.Trigger>
         <Tabs.Trigger value={Screens.Queries}>
           Queries ({data?.watchedQueries?.count ?? 0})
         </Tabs.Trigger>
@@ -83,6 +82,8 @@ export const App = (): JSX.Element => {
           Mutations ({data?.mutationLog?.count ?? 0})
         </Tabs.Trigger>
         <Tabs.Trigger value={Screens.Cache}>Cache</Tabs.Trigger>
+        <Tabs.Trigger value={Screens.Explorer}>Explorer</Tabs.Trigger>
+
         <div className="flex-1 justify-end">
           <Button
             className="ml-auto peer-[.is-explorer-button]:ml-2"
