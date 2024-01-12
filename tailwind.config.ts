@@ -61,10 +61,6 @@ export default {
           `button-${name}`,
           { ...rest, DEFAULT: base },
         ]),
-        highlight: {
-          DEFAULT: colors.primitives.yellow[100],
-          dark: colors.primitives.yellow[500],
-        },
       },
       borderColor: {
         ...toUnprefixed(colors.tokens.border),
