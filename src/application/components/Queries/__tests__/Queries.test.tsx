@@ -27,11 +27,6 @@ describe("<Queries />", () => {
     },
   ];
 
-  const navigationProps = {
-    queriesCount: 2,
-    mutationsCount: 0,
-  };
-
   beforeEach(() => {
     client.clearStore();
   });
@@ -48,21 +43,9 @@ describe("<Queries />", () => {
       },
     });
 
-    renderWithApolloClient(
-      <Queries
-        navigationProps={navigationProps}
-        embeddedExplorerProps={{ embeddedExplorerIFrame: null }}
-      />
-    );
+    renderWithApolloClient(<Queries explorerIFrame={null} />);
 
     const sidebar = screen.getByTestId("sidebar");
-    await waitFor(() => {
-      expect(
-        within(sidebar).getByText(
-          `Active Queries (${navigationProps.queriesCount})`
-        )
-      ).toBeInTheDocument();
-    });
     expect(within(sidebar).getByText("Unnamed")).toBeInTheDocument();
     expect(within(sidebar).getByText("GetColors")).toBeInTheDocument();
   });
@@ -81,30 +64,20 @@ describe("<Queries />", () => {
       },
     });
 
-    renderWithApolloClient(
-      <Queries
-        navigationProps={navigationProps}
-        embeddedExplorerProps={{ embeddedExplorerIFrame: null }}
-      />
-    );
+    renderWithApolloClient(<Queries explorerIFrame={null} />);
 
-    const header = screen.getByTestId("header");
-    expect(within(header).getByText("Unnamed")).toBeInTheDocument();
+    const main = screen.getByTestId("main");
+    expect(within(main).getByTestId("title")).toHaveTextContent("Unnamed");
 
     const sidebar = screen.getByTestId("sidebar");
     await act(() => user.click(within(sidebar).getByText("GetColors")));
     await waitFor(() => {
-      expect(within(header).getByText("GetColors")).toBeInTheDocument();
+      expect(within(main).getByTestId("title")).toHaveTextContent("GetColors");
     });
   });
 
   test("it renders an empty state", () => {
-    renderWithApolloClient(
-      <Queries
-        navigationProps={navigationProps}
-        embeddedExplorerProps={{ embeddedExplorerIFrame: null }}
-      />
-    );
+    renderWithApolloClient(<Queries explorerIFrame={null} />);
 
     expect(screen.getByTestId("main")).toBeEmptyDOMElement();
   });
