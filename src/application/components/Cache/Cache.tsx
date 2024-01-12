@@ -75,11 +75,7 @@ export function Cache() {
               />
             </div>
           </Fragment>
-        ) : (
-          <h3 className="ml-3 uppercase text-sm font-normal pt-4 text-white/50 tracking-wider">
-            No cache data
-          </h3>
-        )}
+        ) : null}
       </Sidebar>
       <Main className="!overflow-auto">
         {dataExists ? (
@@ -96,7 +92,7 @@ export function Cache() {
 
         {loading ? (
           <Loading />
-        ) : (
+        ) : dataExists ? (
           <JSONTreeViewer
             data={cache[cacheId]}
             hideRoot={true}
@@ -117,7 +113,7 @@ export function Cache() {
               );
             }}
           />
-        )}
+        ) : null}
       </Main>
     </SidebarLayout>
   );
