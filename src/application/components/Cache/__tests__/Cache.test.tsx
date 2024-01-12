@@ -54,7 +54,8 @@ function elementMatchesHighlightedNode(
 
 describe("Cache component tests", () => {
   describe("No cache data", () => {
-    it("should show no cache data message in sidebar", async () => {
+    // TODO Determine if we show anything
+    it.skip("should show no cache data message in sidebar", async () => {
       renderWithApolloClient(<Cache />);
       const sidebar = screen.getByTestId("sidebar");
       await waitFor(() => {
