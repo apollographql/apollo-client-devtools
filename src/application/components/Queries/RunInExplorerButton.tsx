@@ -19,12 +19,13 @@ export const RunInExplorerButton = ({
   embeddedExplorerIFrame,
 }: RunInExplorerButtonProps): JSX.Element | null => {
   return (
-    embeddedExplorerIFrame && (
-      <Button
-        variant="hidden"
-        size="sm"
-        className="peer is-explorer-button ml-auto"
-        onClick={() => {
+    <Button
+      variant="hidden"
+      size="sm"
+      className="peer is-explorer-button ml-auto"
+      disabled={!embeddedExplorerIFrame}
+      onClick={() => {
+        if (embeddedExplorerIFrame) {
           // send a post message to the embedded explorer to fill the operation
           postMessageToEmbed({
             message: {
@@ -35,11 +36,11 @@ export const RunInExplorerButton = ({
             embeddedExplorerIFrame,
           });
           currentScreen(Screens.Explorer);
-        }}
-      >
-        <RunIcon />
-        Run in Explorer
-      </Button>
-    )
+        }
+      }}
+    >
+      <RunIcon />
+      Run in Explorer
+    </Button>
   );
 };
