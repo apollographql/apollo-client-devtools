@@ -5,11 +5,9 @@ import { renderWithApolloClient } from "../../../utilities/testing/renderWithApo
 import { FullWidthLayout } from "../FullWidthLayout";
 
 describe("<FullWidthLayout />", () => {
-  const navigationProps = { queriesCount: 0, mutationsCount: 0 };
-
   it("renders", () => {
-    const { container } = renderWithApolloClient(
-      <FullWidthLayout navigationProps={navigationProps}>
+    renderWithApolloClient(
+      <FullWidthLayout>
         <FullWidthLayout.Header>
           This is the header section
         </FullWidthLayout.Header>
@@ -17,8 +15,6 @@ describe("<FullWidthLayout />", () => {
       </FullWidthLayout>
     );
 
-    // eslint-disable-next-line testing-library/no-container
-    expect(container.querySelector("nav")).toBeInTheDocument();
     expect(screen.getByTestId("header")).toBeInTheDocument();
     expect(screen.getByText("This is the header section")).toBeInTheDocument();
     expect(screen.getByTestId("main")).toBeInTheDocument();
