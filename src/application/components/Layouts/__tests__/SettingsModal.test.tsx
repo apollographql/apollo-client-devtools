@@ -1,12 +1,9 @@
 import React, { useState } from "react";
 import { act, screen } from "@testing-library/react";
-import { matchers } from "@emotion/jest";
 import * as ResizeObserverModule from "resize-observer-polyfill";
 
 import { renderWithApolloClient } from "../../../utilities/testing/renderWithApolloClient";
 import { SettingsModal } from "../SettingsModal";
-
-expect.extend(matchers);
 
 global.ResizeObserver = ResizeObserverModule.default;
 
