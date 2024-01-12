@@ -6,13 +6,10 @@ import { ListItem } from "../ListItem";
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { RunInExplorerButton } from "./RunInExplorerButton";
 import { GetWatchedQueries, GetWatchedQueriesVariables } from "../../types/gql";
-import { CodeBlock } from "../CodeBlock";
 import { Tabs } from "../Tabs";
-import CopyToClipboard from "react-copy-to-clipboard";
-import { Button } from "../Button";
-import { CopyIcon } from "../icons/Copy";
 import { JSONTreeViewer } from "../JSONTreeViewer";
-import clsx from "clsx";
+import { QueryLayout } from "../QueryLayout";
+import { CopyButton } from "../CopyButton";
 
 enum QueryTabs {
   Variables = "Variables",
@@ -68,18 +65,11 @@ export const Queries = ({ embeddedExplorerProps }: QueriesProps) => {
           })}
         </List>
       </SidebarLayout.Sidebar>
-      <SidebarLayout.Main
-        className={clsx(
-          "grid gap-x-6 gap-y-2 !overflow-y-auto !overflow-x-hidden [grid-template-areas:'header'_'content'_'tabs'] [grid-template-columns:minmax(0,1fr)] [grid-template-rows:auto_auto_minmax(0,1fr)]",
-          "lg:[grid-template-areas:'header_tabs'_'content_tabs'] lg:[grid-template-columns:1fr_262px] lg:[grid-template-rows:auto_minmax(0,1fr)]"
-        )}
-      >
+      <QueryLayout>
         {selectedQuery && (
           <Fragment>
-            <div className="flex items-center justify-between [grid-area:header]">
-              <h1 className="prose-2xl text-heading dark:text-heading-dark">
-                <code>{selectedQuery.name}</code>
-              </h1>
+            <QueryLayout.Header>
+              <QueryLayout.Title>{selectedQuery.name}</QueryLayout.Title>
               <RunInExplorerButton
                 operation={selectedQuery.queryString}
                 variables={selectedQuery.variables ?? undefined}
@@ -87,16 +77,9 @@ export const Queries = ({ embeddedExplorerProps }: QueriesProps) => {
                   embeddedExplorerProps.embeddedExplorerIFrame
                 }
               />
-            </div>
-            <div className="[grid-area:content] max-h-[500px]">
-              <CodeBlock
-                language="graphql"
-                code={selectedQuery.queryString}
-                className="max-h-full"
-              />
-            </div>
-            <Tabs
-              className="[grid-area:tabs] lg:overflow-hidden lg:-my-2"
+            </QueryLayout.Header>
+            <QueryLayout.QueryString code={selectedQuery.queryString} />
+            <QueryLayout.Tabs
               value={currentTab}
               onChange={(value: QueryTabs) => setCurrentTab(value)}
             >
@@ -107,44 +90,32 @@ export const Queries = ({ embeddedExplorerProps }: QueriesProps) => {
                 <Tabs.Trigger value={QueryTabs.CachedData}>
                   Cached Data
                 </Tabs.Trigger>
-                <CopyToClipboard
+                <CopyButton
+                  className="ml-auto relative right-[6px]"
+                  size="sm"
                   text={`${JSON.stringify(
                     currentTab === QueryTabs.Variables
                       ? selectedQuery.variables
                       : selectedQuery.cachedData
                   )}`}
-                >
-                  <Button
-                    size="sm"
-                    variant="hidden"
-                    data-testid="copy-query-data"
-                  >
-                    <CopyIcon className="h-4" />
-                  </Button>
-                </CopyToClipboard>
+                />
               </Tabs.List>
-              <Tabs.Content
-                className="text-sm py-4 lg:flex-1 lg:overflow-auto"
-                value={QueryTabs.Variables}
-              >
+              <QueryLayout.TabContent value={QueryTabs.Variables}>
                 <JSONTreeViewer
                   className="[&>li]:!pt-0"
                   data={selectedQuery.variables}
                 />
-              </Tabs.Content>
-              <Tabs.Content
-                className="text-sm py-4 lg:flex-1 lg:overflow-auto"
-                value={QueryTabs.CachedData}
-              >
+              </QueryLayout.TabContent>
+              <QueryLayout.TabContent value={QueryTabs.CachedData}>
                 <JSONTreeViewer
                   className="[&>li]:!pt-0"
                   data={selectedQuery.cachedData}
                 />
-              </Tabs.Content>
-            </Tabs>
+              </QueryLayout.TabContent>
+            </QueryLayout.Tabs>
           </Fragment>
         )}
-      </SidebarLayout.Main>
+      </QueryLayout>
     </SidebarLayout>
   );
 };
