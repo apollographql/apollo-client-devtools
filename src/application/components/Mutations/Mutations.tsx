@@ -57,8 +57,8 @@ export const Mutations = ({ explorerIFrame }: MutationsProps) => {
         </List>
       </SidebarLayout.Sidebar>
       <QueryLayout>
-        {selectedMutation && (
-          <Fragment>
+        {selectedMutation ? (
+          <>
             <QueryLayout.Header>
               <QueryLayout.Title>{selectedMutation.name}</QueryLayout.Title>
               <RunInExplorerButton
@@ -68,24 +68,26 @@ export const Mutations = ({ explorerIFrame }: MutationsProps) => {
               />
             </QueryLayout.Header>
             <QueryLayout.QueryString code={selectedMutation.mutationString} />
-            <QueryLayout.Tabs defaultValue="variables">
-              <Tabs.List>
-                <Tabs.Trigger value="variables">Variables</Tabs.Trigger>
-                <CopyButton
-                  text={JSON.stringify(selectedMutation.variables)}
-                  size="sm"
-                  className="ml-auto relative right-[6px]"
-                />
-              </Tabs.List>
-              <QueryLayout.TabContent value="variables">
-                <JSONTreeViewer
-                  className="[&>li]:!pt-0"
-                  data={selectedMutation.variables}
-                />
-              </QueryLayout.TabContent>
-            </QueryLayout.Tabs>
-          </Fragment>
+          </>
+        ) : (
+          <QueryLayout.EmptyMessage className="m-auto mt-20" />
         )}
+        <QueryLayout.Tabs defaultValue="variables">
+          <Tabs.List>
+            <Tabs.Trigger value="variables">Variables</Tabs.Trigger>
+            <CopyButton
+              text={JSON.stringify(selectedMutation?.variables ?? {})}
+              size="sm"
+              className="ml-auto relative right-[6px]"
+            />
+          </Tabs.List>
+          <QueryLayout.TabContent value="variables">
+            <JSONTreeViewer
+              className="[&>li]:!pt-0"
+              data={selectedMutation?.variables ?? {}}
+            />
+          </QueryLayout.TabContent>
+        </QueryLayout.Tabs>
       </QueryLayout>
     </SidebarLayout>
   );
