@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { clsx } from "clsx";
 
+import { EmptyMessage } from "./EmptyMessage";
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { Header } from "./Header";
 import { QueryString } from "./QueryString";
@@ -25,6 +26,7 @@ export function QueryLayout({ children }: QueryLayoutProps) {
   );
 }
 
+QueryLayout.EmptyMessage = EmptyMessage;
 QueryLayout.Header = Header;
 QueryLayout.QueryString = QueryString;
 QueryLayout.Tabs = Tabs;
