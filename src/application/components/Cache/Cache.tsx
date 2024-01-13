@@ -80,12 +80,15 @@ export function Cache() {
       <Main className="!overflow-auto">
         {dataExists ? (
           <div className="flex items-start justify-between mb-2 gap-2">
-            <h1
-              className="prose-xl text-heading dark:text-heading-dark break-all"
-              data-testid="cache-id"
-            >
-              <code>{cacheId}</code>
-            </h1>
+            <div>
+              <div className="text-xs font-bold uppercase">Cache ID</div>
+              <h1
+                className="prose-xl text-heading dark:text-heading-dark break-all"
+                data-testid="cache-id"
+              >
+                <code>{cacheId}</code>
+              </h1>
+            </div>
             <CopyButton size="md" text={JSON.stringify(cache[cacheId])} />
           </div>
         ) : null}
