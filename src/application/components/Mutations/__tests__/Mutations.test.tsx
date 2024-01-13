@@ -82,7 +82,9 @@ describe("<Mutations />", () => {
 
   test("it renders an empty state", () => {
     renderWithApolloClient(<Mutations explorerIFrame={null} />);
-    expect(screen.getByTestId("main")).toBeEmptyDOMElement();
+    expect(
+      within(screen.getByTestId("main")).getByRole("heading")
+    ).toHaveTextContent("👋 Welcome to Apollo Client Devtools");
   });
 
   test("renders the mutation string", () => {

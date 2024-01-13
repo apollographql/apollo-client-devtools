@@ -79,7 +79,9 @@ describe("<Queries />", () => {
   test("it renders an empty state", () => {
     renderWithApolloClient(<Queries explorerIFrame={null} />);
 
-    expect(screen.getByTestId("main")).toBeEmptyDOMElement();
+    expect(
+      within(screen.getByTestId("main")).getByRole("heading")
+    ).toHaveTextContent("👋 Welcome to Apollo Client Devtools");
   });
 
   test("renders the query string", () => {
