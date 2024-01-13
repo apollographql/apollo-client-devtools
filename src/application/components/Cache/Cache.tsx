@@ -10,6 +10,7 @@ import { JSONObject } from "../../types/json";
 import { JSONTreeViewer } from "../JSONTreeViewer";
 import clsx from "clsx";
 import { CopyButton } from "../CopyButton";
+import { EmptyMessage } from "../EmptyMessage";
 
 const { Sidebar, Main } = SidebarLayout;
 
@@ -92,15 +93,7 @@ export function Cache() {
             <CopyButton size="md" text={JSON.stringify(cache[cacheId])} />
           </div>
         ) : (
-          <div className={clsx("m-auto mt-20 w-[344px] text-center")}>
-            <h1 className="text-md font-semibold font-body text-heading dark:text-heading-dark">
-              👋 Welcome to Apollo Client Devtools
-            </h1>
-            <div className="[grid-area:content]">
-              Start interacting with your interface to see data reflected in
-              this space
-            </div>
-          </div>
+          <EmptyMessage className="m-auto mt-20" />
         )}
 
         {loading ? (

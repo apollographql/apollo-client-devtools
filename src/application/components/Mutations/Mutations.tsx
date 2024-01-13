@@ -10,6 +10,7 @@ import { JSONTreeViewer } from "../JSONTreeViewer";
 import { Tabs } from "../Tabs";
 import { QueryLayout } from "../QueryLayout";
 import { CopyButton } from "../CopyButton";
+import { EmptyMessage } from "../EmptyMessage";
 
 const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
   gql`
@@ -70,7 +71,7 @@ export const Mutations = ({ explorerIFrame }: MutationsProps) => {
             <QueryLayout.QueryString code={selectedMutation.mutationString} />
           </>
         ) : (
-          <QueryLayout.EmptyMessage className="m-auto mt-20" />
+          <EmptyMessage className="m-auto mt-20" />
         )}
         <QueryLayout.Tabs defaultValue="variables">
           <Tabs.List>

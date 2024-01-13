@@ -10,6 +10,7 @@ import { Tabs } from "../Tabs";
 import { JSONTreeViewer } from "../JSONTreeViewer";
 import { QueryLayout } from "../QueryLayout";
 import { CopyButton } from "../CopyButton";
+import { EmptyMessage } from "../EmptyMessage";
 
 enum QueryTabs {
   Variables = "Variables",
@@ -82,7 +83,7 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
             <QueryLayout.QueryString code={selectedQuery.queryString} />
           </>
         ) : (
-          <QueryLayout.EmptyMessage className="m-auto mt-20" />
+          <EmptyMessage className="m-auto mt-20" />
         )}
         <QueryLayout.Tabs
           value={currentTab}
