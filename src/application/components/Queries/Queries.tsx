@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import { gql, useQuery, TypedDocumentNode } from "@apollo/client";
 import { List } from "../List";
 import { ListItem } from "../ListItem";
@@ -44,6 +44,11 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
   const queries = data?.watchedQueries.queries ?? [];
   const selectedQuery = queries.find((query) => query.id === selected);
   const [currentTab, setCurrentTab] = useState<QueryTabs>(QueryTabs.Variables);
+  const copyButtonText = JSON.stringify(
+    currentTab === QueryTabs.Variables
+      ? selectedQuery?.variables ?? {}
+      : selectedQuery?.cachedData ?? {}
+  );
 
   return (
     <SidebarLayout>
@@ -64,8 +69,8 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
         </List>
       </SidebarLayout.Sidebar>
       <QueryLayout>
-        {selectedQuery && (
-          <Fragment>
+        {selectedQuery ? (
+          <>
             <QueryLayout.Header>
               <QueryLayout.Title>{selectedQuery.name}</QueryLayout.Title>
               <RunInExplorerButton
@@ -75,42 +80,38 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
               />
             </QueryLayout.Header>
             <QueryLayout.QueryString code={selectedQuery.queryString} />
-            <QueryLayout.Tabs
-              value={currentTab}
-              onChange={(value: QueryTabs) => setCurrentTab(value)}
-            >
-              <Tabs.List>
-                <Tabs.Trigger value={QueryTabs.Variables}>
-                  Variables
-                </Tabs.Trigger>
-                <Tabs.Trigger value={QueryTabs.CachedData}>
-                  Cached Data
-                </Tabs.Trigger>
-                <CopyButton
-                  className="ml-auto relative right-[6px]"
-                  size="sm"
-                  text={`${JSON.stringify(
-                    currentTab === QueryTabs.Variables
-                      ? selectedQuery.variables
-                      : selectedQuery.cachedData
-                  )}`}
-                />
-              </Tabs.List>
-              <QueryLayout.TabContent value={QueryTabs.Variables}>
-                <JSONTreeViewer
-                  className="[&>li]:!pt-0"
-                  data={selectedQuery.variables}
-                />
-              </QueryLayout.TabContent>
-              <QueryLayout.TabContent value={QueryTabs.CachedData}>
-                <JSONTreeViewer
-                  className="[&>li]:!pt-0"
-                  data={selectedQuery.cachedData}
-                />
-              </QueryLayout.TabContent>
-            </QueryLayout.Tabs>
-          </Fragment>
+          </>
+        ) : (
+          <QueryLayout.EmptyMessage className="m-auto mt-20" />
         )}
+        <QueryLayout.Tabs
+          value={currentTab}
+          onChange={(value: QueryTabs) => setCurrentTab(value)}
+        >
+          <Tabs.List>
+            <Tabs.Trigger value={QueryTabs.Variables}>Variables</Tabs.Trigger>
+            <Tabs.Trigger value={QueryTabs.CachedData}>
+              Cached Data
+            </Tabs.Trigger>
+            <CopyButton
+              className="ml-auto relative right-[6px]"
+              size="sm"
+              text={copyButtonText}
+            />
+          </Tabs.List>
+          <QueryLayout.TabContent value={QueryTabs.Variables}>
+            <JSONTreeViewer
+              className="[&>li]:!pt-0"
+              data={selectedQuery?.variables ?? {}}
+            />
+          </QueryLayout.TabContent>
+          <QueryLayout.TabContent value={QueryTabs.CachedData}>
+            <JSONTreeViewer
+              className="[&>li]:!pt-0"
+              data={selectedQuery?.cachedData ?? {}}
+            />
+          </QueryLayout.TabContent>
+        </QueryLayout.Tabs>
       </QueryLayout>
     </SidebarLayout>
   );
