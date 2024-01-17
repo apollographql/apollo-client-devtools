@@ -1,8 +1,5 @@
 import type { Config } from "tailwindcss";
-import plugin from "tailwindcss/plugin";
-import { colors, typography, TextStyle } from "@apollo/brand";
-
-type TailwindTextStyle = { [K in keyof TextStyle]: string };
+import { colors, typography } from "@apollo/brand";
 
 function mapEntries<T, R>(
   obj: { [key: string]: T },
@@ -103,23 +100,4 @@ export default {
       },
     },
   },
-  plugins: [
-    plugin(({ addComponents }) => {
-      const typographyClasses = Object.fromEntries(
-        Object.entries(typography.tokens).map(([key, config]) => {
-          return [
-            key === "base" ? ".prose" : `.prose-${key}`,
-            {
-              fontFamily: fonts[config.fontFamily],
-              fontWeight: String(config.fontWeight),
-              fontSize: `${config.fontSize}px`,
-              lineHeight: String(config.lineHeight),
-            } satisfies TailwindTextStyle,
-          ];
-        })
-      );
-
-      addComponents(typographyClasses);
-    }),
-  ],
 } satisfies Config;

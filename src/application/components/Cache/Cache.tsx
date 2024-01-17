@@ -84,7 +84,7 @@ export function Cache() {
             <div>
               <div className="text-xs font-bold uppercase">Cache ID</div>
               <h1
-                className="prose-xl text-heading dark:text-heading-dark break-all"
+                className="font-heading font-medium text-xl text-heading dark:text-heading-dark break-all"
                 data-testid="cache-id"
               >
                 <code>{cacheId}</code>
