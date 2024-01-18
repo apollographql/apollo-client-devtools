@@ -1,50 +1,14 @@
 import type { Config } from "tailwindcss";
-import { colors, typography } from "@apollo/brand";
-
-function mapEntries<T, R>(
-  obj: { [key: string]: T },
-  mapper: (key: string, value: T) => [key: string, value: R]
-) {
-  return Object.fromEntries(
-    Object.entries(obj).map(([key, value]) => mapper(key, value))
-  );
-}
-
-function replaceValues<T, R>(
-  obj: { [key: string]: T },
-  mapper: (value: T, key: string) => R
-) {
-  return mapEntries(obj, (key, value) => [key, mapper(value, key)]);
-}
-
-function toUnprefixed<TConfig extends { base: string; [key: string]: unknown }>(
-  config: Record<string, TConfig>
-) {
-  return replaceValues(config, ({ base, ...rest }) => ({
-    DEFAULT: base,
-    ...rest,
-  }));
-}
-
-const fonts = {
-  body: "Inter, sans-serif",
-  heading: "Inter, sans-serif",
-  code: "'Fira Code', monospace",
-};
+import { colors, typography, fontFamily } from "@apollo/tailwind-preset";
+import defaultConfig from "tailwindcss/defaultConfig";
 
 export default {
   content: [
     "./src/extension/devtools/panel.html",
     "./src/application/**/*.{html,ts,tsx}",
   ],
+  presets: [defaultConfig, colors, typography, fontFamily.openSource],
   theme: {
-    fontFamily: fonts,
-    colors: colors.primitives,
-    fontSize: replaceValues(typography.primitives.fontSize, (config) => [
-      `${config.fontSize}px`,
-      String(config.lineHeight),
-    ]),
-    fontWeight: replaceValues(typography.primitives.fontWeight, String),
     data: {
       "state-active": 'state="active"',
       "state-inactive": 'state="inactive"',
@@ -52,27 +16,12 @@ export default {
       "orientation-vertical": 'orientation="vertical"',
     },
     extend: {
-      backgroundColor: {
-        ...toUnprefixed(colors.tokens.bg),
-        ...mapEntries(colors.tokens.button, (name, { base, ...rest }) => [
-          `button-${name}`,
-          { ...rest, DEFAULT: base },
-        ]),
-      },
       borderColor: {
-        ...toUnprefixed(colors.tokens.border),
         transparent: "transparent",
       },
       boxShadow: {
         modal:
           "0 16px 32px 0 rgba(0, 0, 0, 16), 0 0 0 0 rgba(18, 21, 26, 0.04)",
-      },
-      fill: toUnprefixed(colors.tokens.bg),
-      ringColor: {
-        focused: {
-          DEFAULT: colors.tokens.border.focused.base,
-          dark: colors.tokens.border.focused.dark,
-        },
       },
       ringWidth: {
         3: "3px",
@@ -80,19 +29,8 @@ export default {
       ringOffsetWidth: {
         3: "3px",
       },
-      ringOffsetColor: {
-        primary: {
-          DEFAULT: colors.tokens.bg.primary.base,
-          dark: colors.tokens.bg.primary.dark,
-        },
-      },
-      stroke: { ...toUnprefixed(colors.tokens.bg), current: "currentColor" },
-      textColor: {
-        ...toUnprefixed(colors.tokens.text),
-        ...mapEntries(colors.tokens.icon, (name, { base, ...rest }) => [
-          `icon-${name}`,
-          { ...rest, DEFAULT: base },
-        ]),
+      stroke: {
+        current: "currentColor",
       },
     },
   },
