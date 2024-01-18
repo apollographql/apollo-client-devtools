@@ -157,7 +157,8 @@ describe("Cache component tests", () => {
     });
 
     it("highlights matched substring in cache ID", async () => {
-      const selectedClassName = "bg-highlight dark:bg-highlight-dark";
+      const selectedClassName =
+        "bg-searchHighlight dark:bg-searchHighlight-dark";
       const user = userEvent.setup();
 
       renderWithApolloClient(<Cache />);

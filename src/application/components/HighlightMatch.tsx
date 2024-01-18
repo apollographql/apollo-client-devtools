@@ -14,7 +14,7 @@ const HighlightMatch = ({ searchTerm, value }: HighlightMatchProps) => {
   return (
     <span>
       {value.slice(0, match.index)}
-      <span className="bg-highlight dark:bg-highlight-dark text-inverted dark:text-inverted-dark">
+      <span className="bg-searchHighlight dark:bg-searchHighlight-dark text-inverted dark:text-inverted-dark">
         {match[0]}
       </span>
       {value.slice(match.index + searchTerm.length)}
