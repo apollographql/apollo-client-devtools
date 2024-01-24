@@ -17,7 +17,7 @@ describe("<FullWidthLayout />", () => {
 
     expect(screen.getByTestId("header")).toBeInTheDocument();
     expect(screen.getByText("This is the header section")).toBeInTheDocument();
-    expect(screen.getByTestId("main")).toBeInTheDocument();
+    expect(screen.getByRole("main")).toBeInTheDocument();
     expect(screen.getByText("This is the main section")).toBeInTheDocument();
   });
 });

@@ -36,9 +36,7 @@ interface MainProps {
 }
 
 const Main = ({ children, className }: MainProps) => (
-  <div className={clsx(className, "flex-1")} data-testid="main">
-    {children}
-  </div>
+  <main className={clsx(className, "flex-1")}>{children}</main>
 );
 
 FullWidthLayout.Header = Header;
