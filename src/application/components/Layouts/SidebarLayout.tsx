@@ -32,7 +32,7 @@ const Sidebar = ({ className, children }: SidebarProps) => {
         defaultSize={25}
         minSize={10}
         className={clsx(className, "h-full p-4")}
-        data-testid="sidebar"
+        tagName="aside"
       >
         {children}
       </Panel>

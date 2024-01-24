@@ -45,7 +45,7 @@ describe("<Queries />", () => {
 
     renderWithApolloClient(<Queries explorerIFrame={null} />);
 
-    const sidebar = screen.getByTestId("sidebar");
+    const sidebar = screen.getByRole("complementary");
     expect(within(sidebar).getByText("(anonymous)")).toBeInTheDocument();
     expect(within(sidebar).getByText("GetColors")).toBeInTheDocument();
   });
@@ -69,7 +69,7 @@ describe("<Queries />", () => {
     const main = screen.getByTestId("main");
     expect(within(main).getByTestId("title")).toHaveTextContent("(anonymous)");
 
-    const sidebar = screen.getByTestId("sidebar");
+    const sidebar = screen.getByRole("complementary");
     await act(() => user.click(within(sidebar).getByText("GetColors")));
     await waitFor(() => {
       expect(within(main).getByTestId("title")).toHaveTextContent("GetColors");

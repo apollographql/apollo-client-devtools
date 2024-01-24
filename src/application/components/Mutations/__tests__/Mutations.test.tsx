@@ -42,7 +42,7 @@ describe("<Mutations />", () => {
 
     renderWithApolloClient(<Mutations explorerIFrame={null} />);
 
-    const sidebar = screen.getByTestId("sidebar");
+    const sidebar = screen.getByRole("complementary");
 
     expect(within(sidebar).getByText("(anonymous)")).toBeInTheDocument();
     expect(
@@ -69,7 +69,7 @@ describe("<Mutations />", () => {
     const main = screen.getByTestId("main");
     expect(within(main).getByTestId("title")).toHaveTextContent("(anonymous)");
 
-    const sidebar = screen.getByTestId("sidebar");
+    const sidebar = screen.getByRole("complementary");
     await act(() =>
       user.click(within(sidebar).getByText("AddColorToFavorites"))
     );

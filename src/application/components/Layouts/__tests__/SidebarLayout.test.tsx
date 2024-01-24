@@ -14,7 +14,7 @@ describe("<SidebarLayout />", () => {
         <SidebarLayout.Main>This is the main section</SidebarLayout.Main>
       </SidebarLayout>
     );
-    expect(screen.getByTestId("sidebar")).toBeInTheDocument();
+    expect(screen.getByRole("complementary")).toBeInTheDocument();
     expect(screen.getByText("This is the sidebar section")).toBeInTheDocument();
     expect(screen.getByTestId("main")).toBeInTheDocument();
     expect(screen.getByText("This is the main section")).toBeInTheDocument();

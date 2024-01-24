@@ -84,7 +84,7 @@ describe("Cache component tests", () => {
 
     it("should show list of root cache ids in the sidebar", async () => {
       renderWithApolloClient(<Cache />);
-      const sidebar = screen.getByTestId("sidebar");
+      const sidebar = screen.getByRole("complementary");
       await waitFor(() => {
         expect(within(sidebar).getByText("ROOT_QUERY")).toBeInTheDocument();
       });
@@ -138,7 +138,7 @@ describe("Cache component tests", () => {
         screen.getByPlaceholderText<HTMLInputElement>("Search queries");
       await act(() => user.type(searchInput, "Result"));
 
-      const sidebar = screen.getByTestId("sidebar");
+      const sidebar = screen.getByRole("complementary");
 
       await waitFor(() => {
         expect(searchInput.value).toBe("Result");
@@ -167,7 +167,7 @@ describe("Cache component tests", () => {
       const searchInput = screen.getByPlaceholderText("Search queries");
       await act(() => user.type(searchInput, "Res"));
 
-      const sidebar = screen.getByTestId("sidebar");
+      const sidebar = screen.getByRole("complementary");
 
       const result1 = within(sidebar).getByText((_, element) => {
         return elementMatchesHighlightedNode(element, "Result:1");
