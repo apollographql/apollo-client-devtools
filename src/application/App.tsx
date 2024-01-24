@@ -69,6 +69,7 @@ export const App = () => {
           rel="noreferrer"
         >
           <Logo
+            role="img"
             width="24"
             height="24"
             fill="currentColor"
