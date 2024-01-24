@@ -1,7 +1,7 @@
-import { ReactNode } from "react";
+import { ComponentPropsWithoutRef, ReactNode } from "react";
 import { clsx } from "clsx";
 
-export interface IconProps {
+export interface IconProps extends ComponentPropsWithoutRef<"svg"> {
   className?: string;
   children: ReactNode;
   size?: "large" | "default" | "small";
@@ -19,9 +19,11 @@ export function Icon({
   children,
   size = "default",
   viewBox,
+  ...props
 }: IconProps) {
   return (
     <svg
+      {...props}
       className={clsx(className, "stroke-current fill-none")}
       viewBox={viewBox}
       xmlns="http://www.w3.org/2000/svg"
