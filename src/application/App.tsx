@@ -35,7 +35,7 @@ const GET_OPERATION_COUNTS: TypedDocumentNode<
   }
 `;
 
-export const App = (): JSX.Element => {
+export const App = () => {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const { data } = useQuery(GET_OPERATION_COUNTS);
   const selected = useReactiveVar<Screens>(currentScreen);
