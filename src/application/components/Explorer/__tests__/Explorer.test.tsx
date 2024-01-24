@@ -46,13 +46,10 @@ const EmbeddedExplorerWrapper = () => {
 };
 
 describe("<Explorer />", () => {
-  test("it renders a header", () => {
+  test("it renders load from cache checkbox", () => {
     renderWithApolloClient(<EmbeddedExplorerWrapper />);
-    const header = screen.getByTestId("header");
-    const { getByLabelText } = within(header);
 
-    expect(header).toBeInTheDocument();
-    expect(getByLabelText("Load from cache")).toBeInTheDocument();
+    expect(screen.getByLabelText("Load from cache")).toBeInTheDocument();
   });
 
   test("it renders the Explorer iframe", () => {

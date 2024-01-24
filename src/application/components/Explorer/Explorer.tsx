@@ -262,7 +262,7 @@ export const Explorer = ({
 
   return (
     <FullWidthLayout>
-      <FullWidthLayout.Header className="flex items-center border-b border-primary dark:border-primary-dark">
+      <div className="py-2 px-4 flex items-center border-b border-primary dark:border-primary-dark">
         <label
           htmlFor="loadFromCache"
           className="flex items-center mr-8 text-sm"
@@ -294,7 +294,7 @@ export const Explorer = ({
             Choose a different Studio graph
           </Button>
         )}
-      </FullWidthLayout.Header>
+      </div>
       <FullWidthLayout.Main className="flex">
         <iframe
           id="embedded-explorer"
