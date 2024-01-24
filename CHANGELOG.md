@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.4.0
+
+### Minor Changes
+
+- [#1180](https://github.com/apollographql/apollo-client-devtools/pull/1180) [`3a5d8dd`](https://github.com/apollographql/apollo-client-devtools/commit/3a5d8dd3f688b452cefed66ee8d44dff4d8dfc00) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Update to new Apollo branding and color scheme. Includes layout improvements and reduces some information redundancy.
+
 ## 4.3.1
 
 ### Patch Changes
