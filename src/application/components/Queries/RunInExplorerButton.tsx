@@ -39,7 +39,7 @@ export const RunInExplorerButton = ({
         }
       }}
     >
-      <RunIcon />
+      <RunIcon aria-hidden />
       Run in Explorer
     </Button>
   );
