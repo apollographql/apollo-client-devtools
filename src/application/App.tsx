@@ -36,7 +36,7 @@ const GET_OPERATION_COUNTS: TypedDocumentNode<
 `;
 
 export const App = (): JSX.Element => {
-  const [open, setOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const { data } = useQuery(GET_OPERATION_COUNTS);
   const selected = useReactiveVar<Screens>(currentScreen);
   const reloading = useReactiveVar<boolean>(reloadStatus);
@@ -89,12 +89,12 @@ export const App = (): JSX.Element => {
             className="ml-auto peer-[.is-explorer-button]:ml-2"
             size="sm"
             variant="hidden"
-            onClick={() => setOpen(true)}
+            onClick={() => setSettingsOpen(true)}
           >
             <SettingsIcon aria-hidden="true" />
             <span className="sr-only">Settings</span>
           </Button>
-          <SettingsModal open={open} onOpen={setOpen} />
+          <SettingsModal open={settingsOpen} onOpen={setSettingsOpen} />
         </div>
       </Tabs.List>
       {/**
