@@ -52,9 +52,9 @@ export function Modal({
                 className={clsx(
                   "relative transform overflow-hidden rounded-lg bg-primary dark:bg-primary-dark p-6 shadow-modal transition-all",
                   {
-                    "w-[336px]": size === "sm",
-                    "w-[400px]": size === "md",
-                    "w-[464px]": size === "lg",
+                    "w-modal-sm": size === "sm",
+                    "w-modal-md": size === "md",
+                    "w-modal-lg": size === "lg",
                   }
                 )}
               >
