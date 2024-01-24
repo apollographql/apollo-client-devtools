@@ -61,7 +61,7 @@ export const GraphRefModal = ({
               </strong>
             </p>
 
-            <div className="flex gap-2 justify-between mt-6">
+            <div className="flex gap-2 justify-between mt-6 [@media(max-width:500px)]:flex-col">
               <TextField
                 autoFocus
                 label="Graph id"
