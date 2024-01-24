@@ -298,7 +298,7 @@ export const Explorer = ({
       <FullWidthLayout.Main className="flex">
         <iframe
           id="embedded-explorer"
-          className="w-[100vw] h-full border-none"
+          className="w-dvw h-full border-none"
           src={embedIframeSrcString}
         />
         {showGraphRefModalAndIsVisible && embeddedExplorerIFrame && (
