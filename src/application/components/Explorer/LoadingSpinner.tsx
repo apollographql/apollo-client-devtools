@@ -1,6 +1,4 @@
-/** @jsxImportSource @emotion/react */
 import React from "react";
-import { keyframes } from "@emotion/react";
 
 export type Size = "large" | "medium" | "small" | "xsmall" | "2xsmall";
 export type Theme = "light" | "dark" | "grayscale";
@@ -28,11 +26,6 @@ export const LoadingSpinner = React.forwardRef<SVGSVGElement, Props>(
     /* Length of animation */
     const DURATION = 1000;
 
-    const SPIN = keyframes`
-    0% { transform: rotate(0) }
-    100% { transform: rotate(360deg) }
-  `;
-
     const SIZE_MAP: Record<Size, number> = {
       large: 90,
       medium: 64,
@@ -41,16 +34,7 @@ export const LoadingSpinner = React.forwardRef<SVGSVGElement, Props>(
       "2xsmall": 16,
     };
 
-    const colors = {
-      orbitColor: "#EBEEF0",
-      orbitOpacity: 1,
-      asteroidColor: "#2070CB",
-    };
-
-    const { orbitColor, orbitOpacity, asteroidColor } = colors;
-
     const pixelSize = SIZE_MAP[size];
-
     const mountTime = React.useRef(Date.now());
     const mountDelay = -(mountTime.current % DURATION);
 
@@ -59,16 +43,12 @@ export const LoadingSpinner = React.forwardRef<SVGSVGElement, Props>(
         ref={ref}
         role="progressbar"
         viewBox="0 0 100 100"
-        css={{
-          width: pixelSize,
-          height: pixelSize,
-        }}
+        style={{ width: pixelSize, height: pixelSize }}
         {...props}
       >
         <circle
           strokeWidth="8"
-          stroke={orbitColor}
-          strokeOpacity={orbitOpacity}
+          className="stroke-silver-400 dark:stroke-navy-400/30"
           fill="transparent"
           r="41"
           cx="50"
@@ -76,12 +56,8 @@ export const LoadingSpinner = React.forwardRef<SVGSVGElement, Props>(
         />
         <g transform="translate(50 50)">
           <circle
-            css={{
-              animation: `${SPIN} ${DURATION}ms linear infinite`,
-              willChange: "transform",
-              animationDelay: `${mountDelay}ms`,
-            }}
-            fill={asteroidColor}
+            className="animate-spin will-change-transform fill-selected dark:fill-selected-dark"
+            style={{ animationDelay: `${mountDelay}ms` }}
             r="10"
             cx="40"
             cy="0"

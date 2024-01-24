@@ -1,65 +1,18 @@
-/** @jsxImportSource @emotion/react */
-import { ReactNode, useState, useRef } from "react";
-import { css } from "@emotion/react";
-import { Cog6ToothIcon } from "@heroicons/react/24/outline";
-
-import { SettingsModal } from "./SettingsModal";
-import { Navigation, NavigationProps } from "./Navigation";
+import { ReactNode } from "react";
+import { clsx } from "clsx";
 
 interface FullWidthLayoutProps {
-  navigationProps: NavigationProps;
   children: ReactNode;
   className?: string;
 }
 
-const layoutStyles = css`
-  display: grid;
-  grid-template-columns: 26rem minmax(27rem, auto);
-  grid-template-areas:
-    "nav header"
-    "main main";
-`;
-
-const mainStyles = css`
-  grid-area: main;
-  height: calc(100vh - 2.5rem);
-`;
-
-const headerStyles = css`
-  grid-area: header;
-`;
-
-const FullWidthLayout = ({
-  navigationProps,
-  children,
-  className,
-}: FullWidthLayoutProps) => {
-  const { queriesCount, mutationsCount } = navigationProps;
-
+const FullWidthLayout = ({ children, className }: FullWidthLayoutProps) => {
   return (
-    <div data-testid="layout" className={className} css={layoutStyles}>
-      <Navigation queriesCount={queriesCount} mutationsCount={mutationsCount} />
+    <div
+      data-testid="layout"
+      className={clsx(className, "flex-1 flex flex-col")}
+    >
       {children}
-    </div>
-  );
-};
-
-interface HeaderProps {
-  className?: string;
-  children?: ReactNode;
-}
-
-const Header = ({ children, className }: HeaderProps) => {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <div className={className} css={headerStyles} data-testid="header">
-      {children}
-      <button className="ml-auto" onClick={() => setOpen(true)}>
-        <span className="sr-only">Settings</span>
-        <Cog6ToothIcon aria-hidden="true" className="h-6 w-6 stroke-white" />
-      </button>
-      <SettingsModal open={open} onOpen={setOpen} />
     </div>
   );
 };
@@ -70,12 +23,9 @@ interface MainProps {
 }
 
 const Main = ({ children, className }: MainProps) => (
-  <div className={className} css={mainStyles} data-testid="main">
-    {children}
-  </div>
+  <main className={clsx(className, "flex-1")}>{children}</main>
 );
 
-FullWidthLayout.Header = Header;
 FullWidthLayout.Main = Main;
 
 export { FullWidthLayout };

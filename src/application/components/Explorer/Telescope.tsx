@@ -1,12 +1,17 @@
 import React from "react";
 
-export const Telescope = (): React.ReactElement => (
+interface TelescopeProps {
+  className?: string;
+}
+
+export const Telescope = ({
+  className,
+}: TelescopeProps): React.ReactElement => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     xmlnsXlink="http://www.w3.org/1999/xlink"
-    width="274"
-    height="210"
     viewBox="0 0 274 210"
+    className={className}
   >
     <defs>
       <path id="a" d="M.305.332H27.95v23.297H.305z" />

@@ -27,11 +27,6 @@ describe("<Queries />", () => {
     },
   ];
 
-  const navigationProps = {
-    queriesCount: 2,
-    mutationsCount: 0,
-  };
-
   beforeEach(() => {
     client.clearStore();
   });
@@ -48,22 +43,10 @@ describe("<Queries />", () => {
       },
     });
 
-    renderWithApolloClient(
-      <Queries
-        navigationProps={navigationProps}
-        embeddedExplorerProps={{ embeddedExplorerIFrame: null }}
-      />
-    );
+    renderWithApolloClient(<Queries explorerIFrame={null} />);
 
-    const sidebar = screen.getByTestId("sidebar");
-    await waitFor(() => {
-      expect(
-        within(sidebar).getByText(
-          `Active Queries (${navigationProps.queriesCount})`
-        )
-      ).toBeInTheDocument();
-    });
-    expect(within(sidebar).getByText("Unnamed")).toBeInTheDocument();
+    const sidebar = screen.getByRole("complementary");
+    expect(within(sidebar).getByText("(anonymous)")).toBeInTheDocument();
     expect(within(sidebar).getByText("GetColors")).toBeInTheDocument();
   });
 
@@ -81,31 +64,149 @@ describe("<Queries />", () => {
       },
     });
 
-    renderWithApolloClient(
-      <Queries
-        navigationProps={navigationProps}
-        embeddedExplorerProps={{ embeddedExplorerIFrame: null }}
-      />
-    );
+    renderWithApolloClient(<Queries explorerIFrame={null} />);
 
-    const header = screen.getByTestId("header");
-    expect(within(header).getByText("Unnamed")).toBeInTheDocument();
+    const main = screen.getByTestId("main");
+    expect(within(main).getByTestId("title")).toHaveTextContent("(anonymous)");
 
-    const sidebar = screen.getByTestId("sidebar");
+    const sidebar = screen.getByRole("complementary");
     await act(() => user.click(within(sidebar).getByText("GetColors")));
     await waitFor(() => {
-      expect(within(header).getByText("GetColors")).toBeInTheDocument();
+      expect(within(main).getByTestId("title")).toHaveTextContent("GetColors");
     });
   });
 
   test("it renders an empty state", () => {
-    renderWithApolloClient(
-      <Queries
-        navigationProps={navigationProps}
-        embeddedExplorerProps={{ embeddedExplorerIFrame: null }}
-      />
+    renderWithApolloClient(<Queries explorerIFrame={null} />);
+
+    expect(
+      within(screen.getByTestId("main")).getByRole("heading")
+    ).toHaveTextContent("👋 Welcome to Apollo Client Devtools");
+  });
+
+  test("renders the query string", () => {
+    client.writeQuery({
+      query: GET_QUERIES,
+      data: {
+        watchedQueries: {
+          __typename: "WatchedQueries",
+          queries,
+          count: queries.length,
+        },
+      },
+    });
+
+    renderWithApolloClient(<Queries explorerIFrame={null} />);
+
+    expect(screen.getByTestId("query")).toHaveTextContent(
+      queries[0].queryString
+    );
+  });
+
+  test("can copy the query string", async () => {
+    window.prompt = jest.fn();
+    client.writeQuery({
+      query: GET_QUERIES,
+      data: {
+        watchedQueries: {
+          __typename: "WatchedQueries",
+          queries,
+          count: queries.length,
+        },
+      },
+    });
+
+    const { user } = renderWithApolloClient(<Queries explorerIFrame={null} />);
+
+    await user.click(within(screen.getByTestId("query")).getByText("Copy"));
+    expect(window.prompt).toBeCalledWith(
+      "Copy to clipboard: Ctrl+C, Enter",
+      queries[0].queryString
+    );
+  });
+
+  test("renders the query data", async () => {
+    client.writeQuery({
+      query: GET_QUERIES,
+      data: {
+        watchedQueries: {
+          __typename: "WatchedQueries",
+          queries: [
+            {
+              __typename: "WatchedQuery",
+              id: 0,
+              queryString:
+                "query GetColor($hex: String!) { color(hex: $hex) { name }}",
+              name: "GetColor",
+              variables: { hex: "#000" },
+              cachedData: { color: { name: "black" } },
+            },
+          ],
+          count: 1,
+        },
+      },
+    });
+
+    const { user } = renderWithApolloClient(<Queries explorerIFrame={null} />);
+
+    expect(screen.getByText("Variables")).toBeInTheDocument();
+    const variablesPanel = within(screen.getByTestId("main")).getByRole(
+      "tabpanel"
+    );
+    expect(
+      within(variablesPanel).getByText((content) => content.includes("#000"))
+    ).toBeInTheDocument();
+
+    const cachedDataTab = screen.getByText("Cached Data");
+    expect(cachedDataTab).toBeInTheDocument();
+    // TODO: Determine why this needs to be wrapped in act since user.click
+    // should already be wrapped in act
+    await act(() => user.click(cachedDataTab));
+    const cachedDataPanel = screen.getByRole("tabpanel");
+    expect(
+      within(cachedDataPanel).getByText((content) => content.includes("color"))
+    ).toBeInTheDocument();
+  });
+
+  test("can copy the query data", async () => {
+    window.prompt = jest.fn();
+    const query = {
+      __typename: "WatchedQuery",
+      id: 0,
+      queryString: "query GetColor($hex: String!) { color(hex: $hex) { name }}",
+      name: "GetColor",
+      variables: { hex: "#000" },
+      cachedData: { color: { name: "black" } },
+    } satisfies GetQueries["watchedQueries"]["queries"][number];
+
+    client.writeQuery({
+      query: GET_QUERIES,
+      data: {
+        watchedQueries: {
+          __typename: "WatchedQueries",
+          queries: [query],
+          count: 1,
+        },
+      },
+    });
+
+    const { user } = renderWithApolloClient(<Queries explorerIFrame={null} />);
+
+    const copyButton = within(screen.getByRole("tablist")).getByRole("button");
+    await act(() => user.click(copyButton));
+
+    expect(window.prompt).toBeCalledWith(
+      "Copy to clipboard: Ctrl+C, Enter",
+      JSON.stringify(query.variables)
     );
 
-    expect(screen.getByTestId("main")).toBeEmptyDOMElement();
+    const cachedDataTab = screen.getByText("Cached Data");
+
+    await act(() => user.click(cachedDataTab));
+    await act(() => user.click(copyButton));
+    expect(window.prompt).toBeCalledWith(
+      "Copy to clipboard: Ctrl+C, Enter",
+      JSON.stringify(query.cachedData)
+    );
   });
 });

@@ -1,7 +1,3 @@
-/** @jsxImportSource @emotion/react */
-import { css } from "@emotion/react";
-import { colors } from "@apollo/space-kit/colors";
-
 interface HighlightMatchProps {
   searchTerm: string;
   value: string;
@@ -18,12 +14,7 @@ const HighlightMatch = ({ searchTerm, value }: HighlightMatchProps) => {
   return (
     <span>
       {value.slice(0, match.index)}
-      <span
-        css={css`
-          color: ${colors.grey.darker};
-          background: ${colors.yellow.base};
-        `}
-      >
+      <span className="bg-searchHighlight dark:bg-searchHighlight-dark text-inverted dark:text-inverted-dark">
         {match[0]}
       </span>
       {value.slice(match.index + searchTerm.length)}

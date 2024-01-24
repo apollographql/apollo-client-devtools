@@ -90,12 +90,6 @@ export type GetCacheVariables = Exact<{ [key: string]: never }>;
 
 export type GetCache = { cache: string };
 
-export type MutationViewer_mutation = {
-  __typename: "WatchedMutation";
-  mutationString: string;
-  variables: Variables | null;
-};
-
 export type GetMutationsVariables = Exact<{ [key: string]: never }>;
 
 export type GetMutations = {
@@ -125,13 +119,6 @@ export type GetWatchedQueries = {
       cachedData: QueryData | null;
     }>;
   };
-};
-
-export type QueryViewer_query = {
-  __typename: "WatchedQuery";
-  queryString: string;
-  variables: Variables | null;
-  cachedData: QueryData | null;
 };
 
 export type GetQueriesVariables = Exact<{ [key: string]: never }>;

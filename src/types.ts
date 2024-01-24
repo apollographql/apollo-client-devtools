@@ -1,5 +1,3 @@
-/// <reference types="@emotion/react/types/css-prop" />
-
 import { ApolloQueryResult } from "@apollo/client";
 
 export type QueryResult = ApolloQueryResult<any>;

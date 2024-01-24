@@ -2,6 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --root-color: black;
+@layer base {
+  html,
+  body {
+    @apply font-body;
+  }
+
+  body {
+    @apply text-md;
+    @apply font-normal;
+  }
+
+  pre,
+  code {
+    @apply font-code;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading;
+  }
+
+  a {
+    @apply underline;
+    @apply text-primary;
+    @apply dark:text-primary-dark;
+  }
 }

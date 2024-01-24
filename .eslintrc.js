@@ -1,7 +1,7 @@
 module.exports = {
   root: true,
   parser: "@typescript-eslint/parser",
-  plugins: ["@typescript-eslint", "testing-library", "jest-dom", "@emotion"],
+  plugins: ["@typescript-eslint", "testing-library", "jest-dom"],
   extends: [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
@@ -17,13 +17,11 @@ module.exports = {
   },
   rules: {
     "react/prop-types": 0,
-    // https://emotion.sh/docs/eslint-plugin-react
-    "react/no-unknown-property": ["error", { ignore: ["css"] }],
+    "react/no-unknown-property": "error",
     "react/display-name": "off",
     "testing-library/no-node-access": "off",
     "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/no-unused-vars": ["warn", { ignoreRestSiblings: true }],
-    "@emotion/pkg-renaming": "error",
   },
   settings: {
     react: {

@@ -87,6 +87,11 @@ export default (env) => {
           test: /\.(ts)x?$/,
           loader: "ts-loader",
         },
+        {
+          test: /\.svg$/i,
+          issuer: /\.[jt]sx?$/,
+          use: ["@svgr/webpack"],
+        },
       ],
     },
     optimization: {

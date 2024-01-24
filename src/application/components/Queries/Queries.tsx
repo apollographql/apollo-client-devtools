@@ -1,46 +1,21 @@
-/** @jsxImportSource @emotion/react */
-import { Fragment, useState } from "react";
-import { css } from "@emotion/react";
-import { rem } from "polished";
+import { useState } from "react";
 import { gql, useQuery, TypedDocumentNode } from "@apollo/client";
-import { List } from "@apollo/space-kit/List";
-import { ListItem } from "@apollo/space-kit/ListItem";
-import { colors } from "@apollo/space-kit/colors";
+import { List } from "../List";
+import { ListItem } from "../ListItem";
 
-import { useTheme } from "../../theme";
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { RunInExplorerButton } from "./RunInExplorerButton";
-import { QueryViewer } from "./QueryViewer";
 import { GetWatchedQueries, GetWatchedQueriesVariables } from "../../types/gql";
+import { Tabs } from "../Tabs";
+import { JSONTreeViewer } from "../JSONTreeViewer";
+import { QueryLayout } from "../QueryLayout";
+import { CopyButton } from "../CopyButton";
+import { EmptyMessage } from "../EmptyMessage";
 
-export const sidebarHeadingStyles = css`
-  margin-left: ${rem(12)};
-  text-transform: uppercase;
-  font-size: ${rem(13)};
-  font-weight: normal;
-  letter-spacing: ${rem(1)};
-  color: var(--whiteTransparent);
-  padding: ${rem(8)} 0;
-`;
-
-export const operationNameStyles = css`
-  margin: ${rem(3)} 0 0 ${rem(8)};
-  font-family: "Source Sans Pro", sans-serif;
-  color: ${colors.grey.light};
-  text-transform: uppercase;
-  font-size: ${rem(11)};
-`;
-
-export const listStyles = css`
-  grid-area: list;
-  font-family: monospace;
-  color: ${colors.silver.lighter};
-
-  > div {
-    height: ${rem(32)};
-    font-size: ${rem(13)};
-  }
-`;
+enum QueryTabs {
+  Variables = "Variables",
+  CachedData = "CachedData",
+}
 
 const GET_WATCHED_QUERIES: TypedDocumentNode<
   GetWatchedQueries,
@@ -53,48 +28,40 @@ const GET_WATCHED_QUERIES: TypedDocumentNode<
         name
         queryString
         variables
-        ...QueryViewer_query
+        cachedData
       }
     }
   }
 `;
 
-export const Queries = ({
-  navigationProps,
-  embeddedExplorerProps,
-}: {
-  navigationProps: {
-    queriesCount: number;
-    mutationsCount: number;
-  };
-  embeddedExplorerProps: {
-    embeddedExplorerIFrame: HTMLIFrameElement | null;
-  };
-}): JSX.Element => {
+interface QueriesProps {
+  explorerIFrame: HTMLIFrameElement | null;
+}
+
+export const Queries = ({ explorerIFrame }: QueriesProps) => {
   const [selected, setSelected] = useState<number>(0);
-  const theme = useTheme();
   const { data } = useQuery(GET_WATCHED_QUERIES, { returnPartialData: true });
 
   const queries = data?.watchedQueries.queries ?? [];
   const selectedQuery = queries.find((query) => query.id === selected);
+  const [currentTab, setCurrentTab] = useState<QueryTabs>(QueryTabs.Variables);
+  const copyButtonText = JSON.stringify(
+    currentTab === QueryTabs.Variables
+      ? selectedQuery?.variables ?? {}
+      : selectedQuery?.cachedData ?? {}
+  );
 
   return (
-    <SidebarLayout navigationProps={navigationProps}>
-      <SidebarLayout.Sidebar navigationProps={navigationProps}>
-        <h3 css={sidebarHeadingStyles}>
-          Active Queries ({navigationProps.queriesCount})
-        </h3>
-        <List
-          css={listStyles}
-          selectedColor={theme.sidebarSelected}
-          hoverColor={theme.sidebarHover}
-        >
+    <SidebarLayout>
+      <SidebarLayout.Sidebar>
+        <List className="h-full">
           {queries.map(({ name, id }) => {
             return (
               <ListItem
                 key={`${name}-${id}`}
                 onClick={() => setSelected(id)}
                 selected={selected === id}
+                className="font-code h-8 text-sm"
               >
                 {name}
               </ListItem>
@@ -102,28 +69,51 @@ export const Queries = ({
           })}
         </List>
       </SidebarLayout.Sidebar>
-      <SidebarLayout.Content>
-        <SidebarLayout.Header>
-          {selectedQuery && (
-            <Fragment>
-              <h1 className="font-normal font-monospace text-xl">
-                <code>{selectedQuery.name}</code>
-              </h1>
-              <span css={operationNameStyles}>Query</span>
+      <QueryLayout>
+        {selectedQuery ? (
+          <>
+            <QueryLayout.Header>
+              <QueryLayout.Title>{selectedQuery.name}</QueryLayout.Title>
               <RunInExplorerButton
                 operation={selectedQuery.queryString}
                 variables={selectedQuery.variables ?? undefined}
-                embeddedExplorerIFrame={
-                  embeddedExplorerProps.embeddedExplorerIFrame
-                }
+                embeddedExplorerIFrame={explorerIFrame}
               />
-            </Fragment>
-          )}
-        </SidebarLayout.Header>
-        <SidebarLayout.Main>
-          {selectedQuery && <QueryViewer query={selectedQuery} />}
-        </SidebarLayout.Main>
-      </SidebarLayout.Content>
+            </QueryLayout.Header>
+            <QueryLayout.QueryString code={selectedQuery.queryString} />
+          </>
+        ) : (
+          <EmptyMessage className="m-auto mt-20" />
+        )}
+        <QueryLayout.Tabs
+          value={currentTab}
+          onChange={(value: QueryTabs) => setCurrentTab(value)}
+        >
+          <Tabs.List>
+            <Tabs.Trigger value={QueryTabs.Variables}>Variables</Tabs.Trigger>
+            <Tabs.Trigger value={QueryTabs.CachedData}>
+              Cached Data
+            </Tabs.Trigger>
+            <CopyButton
+              className="ml-auto relative right-[6px]"
+              size="sm"
+              text={copyButtonText}
+            />
+          </Tabs.List>
+          <QueryLayout.TabContent value={QueryTabs.Variables}>
+            <JSONTreeViewer
+              className="[&>li]:!pt-0"
+              data={selectedQuery?.variables ?? {}}
+            />
+          </QueryLayout.TabContent>
+          <QueryLayout.TabContent value={QueryTabs.CachedData}>
+            <JSONTreeViewer
+              className="[&>li]:!pt-0"
+              data={selectedQuery?.cachedData ?? {}}
+            />
+          </QueryLayout.TabContent>
+        </QueryLayout.Tabs>
+      </QueryLayout>
     </SidebarLayout>
   );
 };

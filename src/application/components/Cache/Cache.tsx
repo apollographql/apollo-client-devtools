@@ -1,15 +1,18 @@
-import { Fragment, useState, useMemo } from "react";
+import { Fragment, useState, useMemo, ReactNode } from "react";
 import { gql, useQuery, TypedDocumentNode } from "@apollo/client";
 
 import { SidebarLayout } from "../Layouts/SidebarLayout";
-import { Search } from "./sidebar/Search";
+import { SearchField } from "../SearchField";
 import { EntityList } from "./sidebar/EntityList";
-import { EntityView } from "./main/EntityView";
 import { Loading } from "./common/Loading";
 import { GetCache, GetCacheVariables } from "../../types/gql";
 import { JSONObject } from "../../types/json";
+import { JSONTreeViewer } from "../JSONTreeViewer";
+import clsx from "clsx";
+import { CopyButton } from "../CopyButton";
+import { EmptyMessage } from "../EmptyMessage";
 
-const { Header, Sidebar, Main, Content } = SidebarLayout;
+const { Sidebar, Main } = SidebarLayout;
 
 const GET_CACHE: TypedDocumentNode<GetCache, GetCacheVariables> = gql`
   query GetCache {
@@ -34,14 +37,7 @@ function filterCache(cache: Cache, searchTerm: string) {
   );
 }
 
-export function Cache({
-  navigationProps,
-}: {
-  navigationProps: {
-    queriesCount: number;
-    mutationsCount: number;
-  };
-}): JSX.Element {
+export function Cache() {
   const [searchTerm, setSearchTerm] = useState("");
   const [cacheId, setCacheId] = useState("ROOT_QUERY");
 
@@ -59,54 +55,72 @@ export function Cache({
   const dataExists = Object.keys(cache).length > 0;
 
   return (
-    <SidebarLayout navigationProps={navigationProps}>
-      <Sidebar navigationProps={navigationProps}>
+    <SidebarLayout>
+      <Sidebar className="flex flex-col h-full">
         {loading ? (
           <Loading />
         ) : dataExists ? (
           <Fragment>
-            <Search onChange={setSearchTerm} value={searchTerm} />
-            <EntityList
-              data={filteredCache}
-              selectedCacheId={cacheId}
-              setCacheId={setCacheId}
-              searchTerm={searchTerm}
+            <SearchField
+              className="mb-4"
+              placeholder="Search queries"
+              onChange={setSearchTerm}
+              value={searchTerm}
             />
+            <div className="overflow-auto h-full">
+              <EntityList
+                data={filteredCache}
+                selectedCacheId={cacheId}
+                setCacheId={setCacheId}
+                searchTerm={searchTerm}
+              />
+            </div>
           </Fragment>
-        ) : (
-          <h3 className="ml-3 uppercase text-sm font-normal pt-4 text-white/50 tracking-wider">
-            No cache data
-          </h3>
-        )}
+        ) : null}
       </Sidebar>
-      <Content>
-        <Header>
-          {dataExists ? (
-            <Fragment>
+      <Main className="!overflow-auto">
+        {dataExists ? (
+          <div className="flex items-start justify-between mb-2 gap-2">
+            <div>
+              <div className="text-xs font-bold uppercase">Cache ID</div>
               <h1
-                className="font-monospace font-normal text-xl"
+                className="font-heading font-medium text-xl text-heading dark:text-heading-dark break-all"
                 data-testid="cache-id"
               >
-                <code>{cacheId || undefined}</code>
+                <code>{cacheId}</code>
               </h1>
-              <span className="font-sans text-grey-light uppercase text-xs mt-1 ml-2">
-                CACHE ID
-              </span>
-            </Fragment>
-          ) : null}
-        </Header>
-        <Main>
-          {loading ? (
-            <Loading />
-          ) : (
-            <EntityView
-              cacheId={cacheId}
-              data={cache[cacheId]}
-              setCacheId={setCacheId}
-            />
-          )}
-        </Main>
-      </Content>
+            </div>
+            <CopyButton size="md" text={JSON.stringify(cache[cacheId])} />
+          </div>
+        ) : (
+          <EmptyMessage className="m-auto mt-20" />
+        )}
+
+        {loading ? (
+          <Loading />
+        ) : dataExists ? (
+          <JSONTreeViewer
+            data={cache[cacheId]}
+            hideRoot={true}
+            valueRenderer={(valueAsString: ReactNode, value, key) => {
+              return (
+                <span
+                  className={clsx({
+                    ["hover:underline hover:cursor-pointer"]: key === "__ref",
+                  })}
+                  onClick={() => {
+                    if (key === "__ref") {
+                      setCacheId(value as string);
+                    }
+                  }}
+                >
+                  {valueAsString}
+                </span>
+              );
+            }}
+          />
+        ) : null}
+      </Main>
     </SidebarLayout>
   );
 }

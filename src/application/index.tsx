@@ -11,12 +11,10 @@ import {
 import { getOperationName } from "@apollo/client/utilities";
 import { print } from "graphql/language/printer";
 
-import { Theme } from "./ThemeVars";
 import { colorTheme, listenForThemeChange } from "./theme";
 import { App, reloadStatus } from "./App";
 import { fragmentRegistry } from "./fragmentRegistry";
 
-import "@apollo/space-kit/reset.css";
 import {
   GetAllMutations,
   GetAllMutationsVariables,
@@ -33,14 +31,14 @@ const cache = new InMemoryCache({
     WatchedQuery: {
       fields: {
         name(_) {
-          return _ ?? "Unnamed";
+          return _ ?? "(anonymous)";
         },
       },
     },
     WatchedMutation: {
       fields: {
         name(_) {
-          return _ ?? "Unnamed";
+          return _ ?? "(anonymous)";
         },
       },
     },
@@ -201,7 +199,6 @@ export const AppProvider = () => {
   return (
     <ApolloProvider client={client}>
       <App />
-      <Theme />
     </ApolloProvider>
   );
 };

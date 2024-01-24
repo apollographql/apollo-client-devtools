@@ -1,19 +1,16 @@
-/** @jsxImportSource @emotion/react */
 import { Fragment, useState } from "react";
 import { gql, TypedDocumentNode, useQuery } from "@apollo/client";
-import { List } from "@apollo/space-kit/List";
-import { ListItem } from "@apollo/space-kit/ListItem";
+import { List } from "../List";
+import { ListItem } from "../ListItem";
 
-import { useTheme } from "../../theme";
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { RunInExplorerButton } from "../Queries/RunInExplorerButton";
-import {
-  sidebarHeadingStyles,
-  operationNameStyles,
-  listStyles,
-} from "../Queries/Queries";
-import { MutationViewer } from "./MutationViewer";
 import { GetMutations, GetMutationsVariables } from "../../types/gql";
+import { JSONTreeViewer } from "../JSONTreeViewer";
+import { Tabs } from "../Tabs";
+import { QueryLayout } from "../QueryLayout";
+import { CopyButton } from "../CopyButton";
+import { EmptyMessage } from "../EmptyMessage";
 
 const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
   gql`
@@ -24,26 +21,17 @@ const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
           name
           mutationString
           variables
-          ...MutationViewer_mutation
         }
       }
     }
   `;
 
-export const Mutations = ({
-  navigationProps,
-  embeddedExplorerProps,
-}: {
-  navigationProps: {
-    queriesCount: number;
-    mutationsCount: number;
-  };
-  embeddedExplorerProps: {
-    embeddedExplorerIFrame: HTMLIFrameElement | null;
-  };
-}): JSX.Element => {
+interface MutationsProps {
+  explorerIFrame: HTMLIFrameElement | null;
+}
+
+export const Mutations = ({ explorerIFrame }: MutationsProps) => {
   const [selected, setSelected] = useState<number>(0);
-  const theme = useTheme();
   const { data } = useQuery(GET_MUTATIONS);
 
   const mutations = data?.mutationLog.mutations ?? [];
@@ -52,20 +40,14 @@ export const Mutations = ({
   );
 
   return (
-    <SidebarLayout navigationProps={navigationProps}>
-      <SidebarLayout.Sidebar navigationProps={navigationProps}>
-        <h3 css={sidebarHeadingStyles}>
-          Mutations ({navigationProps.mutationsCount})
-        </h3>
-        <List
-          css={listStyles}
-          selectedColor={theme.sidebarSelected}
-          hoverColor={theme.sidebarHover}
-        >
+    <SidebarLayout>
+      <SidebarLayout.Sidebar>
+        <List className="h-full">
           {mutations.map(({ name, id }) => {
             return (
               <ListItem
                 key={`${name}-${id}`}
+                className="font-code h-8 text-sm"
                 onClick={() => setSelected(id)}
                 selected={selected === id}
               >
@@ -75,28 +57,39 @@ export const Mutations = ({
           })}
         </List>
       </SidebarLayout.Sidebar>
-      <SidebarLayout.Content>
-        <SidebarLayout.Header>
-          {selectedMutation && (
-            <Fragment>
-              <h1 className="font-normal font-monospace text-xl">
-                <code>{selectedMutation.name}</code>
-              </h1>
-              <span css={operationNameStyles}>Mutation</span>
+      <QueryLayout>
+        {selectedMutation ? (
+          <>
+            <QueryLayout.Header>
+              <QueryLayout.Title>{selectedMutation.name}</QueryLayout.Title>
               <RunInExplorerButton
                 operation={selectedMutation.mutationString}
                 variables={selectedMutation.variables ?? undefined}
-                embeddedExplorerIFrame={
-                  embeddedExplorerProps.embeddedExplorerIFrame
-                }
+                embeddedExplorerIFrame={explorerIFrame}
               />
-            </Fragment>
-          )}
-        </SidebarLayout.Header>
-        <SidebarLayout.Main>
-          {selectedMutation && <MutationViewer mutation={selectedMutation} />}
-        </SidebarLayout.Main>
-      </SidebarLayout.Content>
+            </QueryLayout.Header>
+            <QueryLayout.QueryString code={selectedMutation.mutationString} />
+          </>
+        ) : (
+          <EmptyMessage className="m-auto mt-20" />
+        )}
+        <QueryLayout.Tabs defaultValue="variables">
+          <Tabs.List>
+            <Tabs.Trigger value="variables">Variables</Tabs.Trigger>
+            <CopyButton
+              text={JSON.stringify(selectedMutation?.variables ?? {})}
+              size="sm"
+              className="ml-auto relative right-[6px]"
+            />
+          </Tabs.List>
+          <QueryLayout.TabContent value="variables">
+            <JSONTreeViewer
+              className="[&>li]:!pt-0"
+              data={selectedMutation?.variables ?? {}}
+            />
+          </QueryLayout.TabContent>
+        </QueryLayout.Tabs>
+      </QueryLayout>
     </SidebarLayout>
   );
 };
