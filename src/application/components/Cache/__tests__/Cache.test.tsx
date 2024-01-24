@@ -54,12 +54,13 @@ function elementMatchesHighlightedNode(
 
 describe("Cache component tests", () => {
   describe("No cache data", () => {
-    // TODO Determine if we show anything
-    it.skip("should show no cache data message in sidebar", async () => {
+    it("should show no cache data message in sidebar", async () => {
       renderWithApolloClient(<Cache />);
-      const sidebar = screen.getByTestId("sidebar");
+      const main = screen.getByTestId("main");
       await waitFor(() => {
-        expect(within(sidebar).getByText("No cache data")).toBeInTheDocument();
+        expect(within(main).getByRole("heading")).toHaveTextContent(
+          "👋 Welcome to Apollo Client Devtools"
+        );
       });
     });
 
