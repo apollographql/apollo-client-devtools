@@ -11,8 +11,8 @@
 
 This repository contains the Apollo Client Browser Devtools extension for Chrome & Firefox.
 
-| ☑️  Apollo Client User Survey |
-| :----- |
+| ☑️ Apollo Client User Survey                                                                                                                                                                                                                                                                                                                                                             |
+| :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | What do you like best about Apollo Client? What needs to be improved? Please tell us by taking a [one-minute survey](https://docs.google.com/forms/d/e/1FAIpQLSczNDXfJne3ZUOXjk9Ursm9JYvhTh1_nFTDfdq3XBAFWCzplQ/viewform?usp=pp_url&entry.1170701325=Apollo+Client&entry.204965213=Readme). Your responses will help us understand Apollo Client usage and allow us to serve you better. |
 
 ## Installation
