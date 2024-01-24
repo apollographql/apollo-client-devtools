@@ -48,7 +48,7 @@ export const LoadingSpinner = React.forwardRef<SVGSVGElement, Props>(
       >
         <circle
           strokeWidth="8"
-          className="stroke-disabled dark:stroke-disabled-dark"
+          className="stroke-silver-400 dark:stroke-navy-400/30"
           fill="transparent"
           r="41"
           cx="50"
