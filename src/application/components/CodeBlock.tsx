@@ -6,6 +6,7 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import { ColorTheme, colorTheme } from "../theme";
 import { CopyIcon } from "./icons/Copy";
 import { Button } from "./Button";
+import { useMemo } from "react";
 
 interface SyntaxHighlighterProps {
   className?: string;
@@ -133,7 +134,8 @@ export const CodeBlock = ({
   className,
   language,
 }: SyntaxHighlighterProps) => {
-  const activeTheme = getTheme(useReactiveVar(colorTheme));
+  const theme = useReactiveVar(colorTheme);
+  const activeTheme = useMemo(() => getTheme(theme), [theme]);
 
   return (
     <div
