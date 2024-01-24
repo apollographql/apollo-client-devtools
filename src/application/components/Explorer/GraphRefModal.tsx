@@ -33,7 +33,7 @@ export const GraphRefModal = ({
   const [graphVariant, setGraphVariant] = useState<string>();
 
   return (
-    <Modal open onClose={onClose} size="lg" className="h-[422px]">
+    <Modal open onClose={onClose} size="lg" className="min-h-[422px]">
       <Modal.Header
         className={clsx("flex-col", { hidden: newGraphRefLoading })}
       >
