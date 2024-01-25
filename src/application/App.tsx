@@ -17,7 +17,7 @@ import { Tabs } from "./components/Tabs";
 import { Button } from "./components/Button";
 import { SettingsIcon } from "./components/icons/Settings";
 import { SettingsModal } from "./components/Layouts/SettingsModal";
-import Logo from "@apollo/brand/logos/symbol.svg";
+import Logo from "@apollo/icons/logos/LogoSymbol.svg";
 
 export const reloadStatus = makeVar<boolean>(false);
 
