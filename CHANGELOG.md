@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.4.1
+
+### Patch Changes
+
+- [#1194](https://github.com/apollographql/apollo-client-devtools/pull/1194) [`e3118d1`](https://github.com/apollographql/apollo-client-devtools/commit/e3118d1604c6e298118eadfd0de0eca3e530ad8e) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Use icons from new `@apollo/icons` package.
+
 ## 4.4.0
 
 ### Minor Changes
