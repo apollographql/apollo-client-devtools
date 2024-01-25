@@ -4,7 +4,7 @@ import { colors } from "@apollo/brand";
 import { clsx } from "clsx";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { ColorTheme, colorTheme } from "../theme";
-import { CopyIcon } from "./icons/Copy";
+import IconCopy from "@apollo/icons/default/IconCopy.svg";
 import { Button } from "./Button";
 import { useMemo } from "react";
 
@@ -175,7 +175,7 @@ export const CodeBlock = ({
           data-testid="copy-query-strin"
           className="sticky top-0"
         >
-          <CopyIcon />
+          <IconCopy className="w-4" />
           Copy
         </Button>
       </CopyToClipboard>

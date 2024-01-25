@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { SearchIcon } from "./icons/Search";
+import IconSearch from "@apollo/icons/default/IconSearch.svg";
 
 interface SearchFieldProps {
   autoFocus?: boolean;
@@ -18,7 +18,7 @@ export function SearchField({
 }: SearchFieldProps) {
   return (
     <div className={clsx(className, "flex items-center relative")}>
-      <SearchIcon className="absolute left-4 z-10 text-icon-secondary dark:text-icon-secondary-dark" />
+      <IconSearch className="absolute left-4 z-10 text-icon-secondary dark:text-icon-secondary-dark w-4" />
       <input
         autoFocus={autoFocus}
         onChange={(e) => onChange(e.target.value)}

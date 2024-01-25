@@ -15,9 +15,9 @@ import { Cache } from "./components/Cache/Cache";
 import { GetOperationCounts, GetOperationCountsVariables } from "./types/gql";
 import { Tabs } from "./components/Tabs";
 import { Button } from "./components/Button";
-import { SettingsIcon } from "./components/icons/Settings";
+import IconSettings from "@apollo/icons/default/IconSettings.svg";
 import { SettingsModal } from "./components/Layouts/SettingsModal";
-import Logo from "@apollo/brand/logos/symbol.svg";
+import Logo from "@apollo/icons/logos/LogoSymbol.svg";
 
 export const reloadStatus = makeVar<boolean>(false);
 
@@ -92,7 +92,7 @@ export const App = () => {
             variant="hidden"
             onClick={() => setSettingsOpen(true)}
           >
-            <SettingsIcon aria-hidden="true" />
+            <IconSettings aria-hidden="true" className="w-4" />
             <span className="sr-only">Settings</span>
           </Button>
           <SettingsModal open={settingsOpen} onOpen={setSettingsOpen} />
