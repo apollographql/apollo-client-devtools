@@ -2,7 +2,7 @@ import { ComponentPropsWithoutRef } from "react";
 import clsx from "clsx";
 import CopyToClipboard from "react-copy-to-clipboard";
 import { Button } from "./Button";
-import { CopyIcon } from "./icons/Copy";
+import IconCopy from "@apollo/icons/default/IconCopy.svg";
 
 type ButtonProps = ComponentPropsWithoutRef<typeof Button>;
 
@@ -21,7 +21,7 @@ export function CopyButton({
   return (
     <CopyToClipboard text={text}>
       <Button {...rest} className={className} size={size} variant="hidden">
-        <CopyIcon
+        <IconCopy
           className={clsx({
             "h-4": size === "sm" || size === "md",
             "h-2": size === "xs",
