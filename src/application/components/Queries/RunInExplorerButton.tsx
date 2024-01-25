@@ -4,7 +4,7 @@ import {
   SET_OPERATION,
 } from "../Explorer/postMessageHelpers";
 import { currentScreen, Screens } from "../Layouts/Navigation";
-import { RunIcon } from "../icons/Run";
+import IconRun from "@apollo/icons/default/IconRun.svg";
 import { Button } from "../Button";
 
 interface RunInExplorerButtonProps {
@@ -39,7 +39,7 @@ export const RunInExplorerButton = ({
         }
       }}
     >
-      <RunIcon aria-hidden />
+      <IconRun aria-hidden className="w-4" />
       Run in Explorer
     </Button>
   );
