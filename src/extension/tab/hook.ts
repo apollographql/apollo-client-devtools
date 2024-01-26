@@ -23,7 +23,6 @@ import {
 } from "./helpers";
 import { ExplorerResponse, QueryResult } from "../../types";
 import {
-  CLIENT_FOUND,
   DEVTOOLS_INITIALIZED,
   CREATE_DEVTOOLS_PANEL,
   ACTION_HOOK_FIRED,
