@@ -141,7 +141,7 @@ export const CodeBlock = ({
     <div
       className={clsx(
         className,
-        "flex gap-1 items-start bg-secondary dark:bg-secondary-dark p-4 rounded-lg relative border border-primary dark:border-primary-dark overflow-auto"
+        "flex gap-1 items-start bg-secondary dark:bg-secondary-dark p-4 rounded-lg relative border border-primary dark:border-primary-dark overflow-auto text-sm"
       )}
     >
       <Highlight language={language} theme={activeTheme} code={code}>
