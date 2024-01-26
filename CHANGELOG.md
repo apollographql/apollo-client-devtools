@@ -1,5 +1,17 @@
 # Changelog
 
+## 4.4.2
+
+### Patch Changes
+
+- [#1198](https://github.com/apollographql/apollo-client-devtools/pull/1198) [`5d75744`](https://github.com/apollographql/apollo-client-devtools/commit/5d7574411f08da4605d3b53c16747adaaa13562c) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Stop broadcasting messages that aren't listened to by the extension.
+
+  - `client-found`
+  - `panel-open`
+  - `panel-closed`
+
+- [#1197](https://github.com/apollographql/apollo-client-devtools/pull/1197) [`7e9f4ec`](https://github.com/apollographql/apollo-client-devtools/commit/7e9f4ec48a82d78507e8f5b68672e65f4b03fded) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Fix font size of code blocks to match new Apollo design system.
+
 ## 4.4.1
 
 ### Patch Changes
