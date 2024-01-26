@@ -2,7 +2,7 @@
   "name": "apollo-client-devtools",
   "description": "Developer tools for Apollo Client, with Studio Explorer integration, cache inspection, and query watching.",
   "license": "MIT",
-  "version": "4.4.1",
+  "version": "4.4.2",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/apollographql/apollo-client-devtools.git"
