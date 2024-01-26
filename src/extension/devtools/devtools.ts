@@ -5,8 +5,6 @@ import {
   CREATE_DEVTOOLS_PANEL,
   REQUEST_DATA,
   UPDATE,
-  PANEL_OPEN,
-  PANEL_CLOSED,
   EXPLORER_REQUEST,
   RELOADING_TAB,
   RELOAD_TAB_COMPLETE,
@@ -78,8 +76,6 @@ devtools.listen<string>(CREATE_DEVTOOLS_PANEL, async ({ payload }) => {
   let removeExplorerListener: () => void;
 
   panel.onShown.addListener((window) => {
-    sendMessageToClient(PANEL_OPEN);
-
     const {
       __DEVTOOLS_APPLICATION__: {
         initialize,
@@ -148,7 +144,6 @@ devtools.listen<string>(CREATE_DEVTOOLS_PANEL, async ({ payload }) => {
     removeReloadListener();
     removeExplorerListener();
     devtools.removeConnection("explorer");
-    sendMessageToClient(PANEL_CLOSED);
   });
 });
 

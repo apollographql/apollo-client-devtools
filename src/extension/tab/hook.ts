@@ -23,7 +23,6 @@ import {
 } from "./helpers";
 import { ExplorerResponse, QueryResult } from "../../types";
 import {
-  CLIENT_FOUND,
   DEVTOOLS_INITIALIZED,
   CREATE_DEVTOOLS_PANEL,
   ACTION_HOOK_FIRED,
@@ -280,7 +279,6 @@ function initializeHook() {
     });
 
     clearInterval(interval);
-    sendMessageToTab(CLIENT_FOUND);
     // incase initial update was missed because the client wasn't ready, send the create devtools event.
     // devtools checks to see if it's already created, so this won't create duplicate tabs
     sendHookDataToDevTools(CREATE_DEVTOOLS_PANEL);
