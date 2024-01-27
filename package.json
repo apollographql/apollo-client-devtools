@@ -62,8 +62,8 @@
     "@graphql-tools/mock": "9.0.0",
     "@graphql-tools/schema": "10.0.2",
     "@parcel/watcher": "2.4.0",
-    "@svgr/webpack": "^8.1.0",
-    "@testing-library/jest-dom": "6.2.0",
+    "@svgr/webpack": "8.1.0",
+    "@testing-library/jest-dom": "6.3.0",
     "@testing-library/react": "14.1.2",
     "@testing-library/user-event": "14.5.2",
     "@total-typescript/ts-reset": "0.5.1",
@@ -104,7 +104,7 @@
     "typescript": "5.3.3",
     "web-ext-plugin": "2.9.0",
     "webextension-polyfill": "0.10.0",
-    "webpack": "5.89.0",
+    "webpack": "5.90.0",
     "webpack-cli": "5.1.4"
   }
 }
