@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.4.3
+
+### Patch Changes
+
+- [#1202](https://github.com/apollographql/apollo-client-devtools/pull/1202) [`a36a3b7`](https://github.com/apollographql/apollo-client-devtools/commit/a36a3b77b98ccfc3024ef862182df18391f5cb2e) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Remove action-hook-fired event that was triggered with nothing listening. This change meant that the `__actionHookForDevTools` callback did nothing. This has now been disabled to avoid adding an extra `onBroadcast` listener on the client.
+
 ## 4.4.2
 
 ### Patch Changes
