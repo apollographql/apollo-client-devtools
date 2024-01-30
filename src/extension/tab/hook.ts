@@ -25,7 +25,6 @@ import { ExplorerResponse, QueryResult } from "../../types";
 import {
   DEVTOOLS_INITIALIZED,
   CREATE_DEVTOOLS_PANEL,
-  ACTION_HOOK_FIRED,
   EXPLORER_REQUEST,
   EXPLORER_RESPONSE,
   REQUEST_DATA,
@@ -120,10 +119,6 @@ function initializeHook() {
       ApolloClient: !!hook.ApolloClient,
     });
   });
-
-  function handleActionHookForDevtools() {
-    sendMessageToTab(ACTION_HOOK_FIRED);
-  }
 
   function handleExplorerResponse(payload: ExplorerResponse) {
     sendMessageToTab(EXPLORER_RESPONSE, payload);
@@ -270,13 +265,16 @@ function initializeHook() {
   function registerClient(client: ApolloClient<any>) {
     knownClients.add(client);
     hook.ApolloClient = client;
-    client.__actionHookForDevTools(() => {
-      if (client !== hook.ApolloClient) {
-        // if the client has changed, don't send the action hook
-        return;
-      }
-      handleActionHookForDevtools();
-    });
+    // TODO: Repurpose this callback. The message it sent was not listened by
+    // anything, so the broadcast was useless. Currently the devtools rely on
+    // polling the client every second for updates, rather than relying on
+    // this callback to update the devtools state.
+    // client.__actionHookForDevTools(() => {
+    //   if (client !== hook.ApolloClient) {
+    //     // if the client has changed, don't send the action hook
+    //     return;
+    //   }
+    // });
 
     clearInterval(interval);
     // incase initial update was missed because the client wasn't ready, send the create devtools event.

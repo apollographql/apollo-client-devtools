@@ -2,7 +2,6 @@ import Relay from "../../Relay";
 import {
   REQUEST_TAB_ID,
   CREATE_DEVTOOLS_PANEL,
-  ACTION_HOOK_FIRED,
   EXPLORER_RESPONSE,
   UPDATE,
   RELOADING_TAB,
@@ -41,7 +40,6 @@ export default new Promise(async ($export) => {
 
   const devtools = `background:devtools-${id}`;
   tab.forward(CREATE_DEVTOOLS_PANEL, devtools);
-  tab.forward(ACTION_HOOK_FIRED, devtools);
   tab.forward(UPDATE, devtools);
   tab.forward(RELOADING_TAB, devtools);
   tab.forward(RELOAD_TAB_COMPLETE, devtools);
