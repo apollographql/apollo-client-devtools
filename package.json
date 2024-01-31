@@ -36,7 +36,7 @@
   "dependencies": {
     "@apollo/brand": "^0.4.0",
     "@apollo/client": "^3.8.8",
-    "@apollo/icons": "^0.0.7",
+    "@apollo/icons": "^0.0.8",
     "@apollo/tailwind-preset": "^0.1.3",
     "@headlessui/react": "^1.7.17",
     "@radix-ui/react-tabs": "^1.0.2",
