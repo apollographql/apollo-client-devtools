@@ -68,9 +68,9 @@
     "@testing-library/user-event": "14.5.2",
     "@total-typescript/ts-reset": "0.5.1",
     "@types/archiver": "6.0.2",
-    "@types/chrome": "0.0.259",
-    "@types/jest": "29.5.11",
-    "@types/react": "18.2.48",
+    "@types/chrome": "0.0.260",
+    "@types/jest": "29.5.12",
+    "@types/react": "18.2.51",
     "@types/react-copy-to-clipboard": "5.0.7",
     "@types/react-dom": "18.2.18",
     "@types/webextension-polyfill": "0.10.7",
@@ -104,7 +104,7 @@
     "typescript": "5.3.3",
     "web-ext-plugin": "2.9.0",
     "webextension-polyfill": "0.10.0",
-    "webpack": "5.90.0",
+    "webpack": "5.90.1",
     "webpack-cli": "5.1.4"
   }
 }
