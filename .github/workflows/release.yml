@@ -67,7 +67,7 @@ jobs:
 
       - name: Upload & release Chrome extension
         if: steps.changesets.outcome == 'success' && steps.changesets.outputs.published == 'true'
-        uses: mnao305/chrome-extension-upload@v4.0.1
+        uses: mnao305/chrome-extension-upload@v5.0.0
         with:
           file-path: apollo-client-devtools-chrome.zip
           extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
