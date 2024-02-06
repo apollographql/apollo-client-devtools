@@ -21,7 +21,7 @@ import Logo from "@apollo/icons/logos/LogoSymbol.svg";
 import { LoadingSpinner } from "./components/Explorer/LoadingSpinner";
 
 export const devtoolsState = makeVar<
-  "initialized" | "connected" | "timedout" | "disconnected"
+  "initialized" | "connected" | "timedout" | "disconnected" | "notFound"
 >("initialized");
 
 const GET_OPERATION_COUNTS: TypedDocumentNode<
@@ -67,6 +67,11 @@ export const App = () => {
           <div className="text-md font-body">
             Disconnected. Trying to connect to client...
           </div>
+        </div>
+      )}
+      {state === "notFound" && (
+        <div className="bg-secondary dark:bg-secondary-dark w-dvw flex items-center gap-4 fixed z-10 bottom-0 px-4 py-4">
+          <div className="text-md font-body">Client not found</div>
         </div>
       )}
       <Tabs
