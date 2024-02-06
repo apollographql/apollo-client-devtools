@@ -17,33 +17,38 @@ type CurrentState<State extends string> = {
   value: State;
 };
 
-type Listener<State extends string> = (
-  currentState: CurrentState<State>
-) => void;
+type Listener<State extends string, EventName extends string> = (detail: {
+  state: CurrentState<State>;
+  event: Event<EventName>;
+}) => void;
+
+type Event<EventName extends string> = { type: EventName };
 
 export function createMachine<State extends string, EventName extends string>(
   machine: MachineConfig<State, EventName>
 ) {
-  const listeners = new Set<Listener<State>>();
+  const listeners = new Set<Listener<State, EventName>>();
   const stateListeners = new Map<State, Set<() => void>>();
 
   const current = {
     value: machine.initial,
   };
 
-  function send(event: { type: EventName }) {
+  function send(event: Event<EventName>) {
     const { events } = machine.states[current.value];
     const nextState = events?.[event.type];
 
     if (nextState) {
-      transitionTo(nextState);
+      transitionTo(nextState, event);
     }
   }
 
-  function transitionTo(state: State) {
+  function transitionTo(state: State, sourceEvent: Event<EventName>) {
     current.value = state;
 
-    listeners.forEach((listener) => listener(current));
+    listeners.forEach((listener) =>
+      listener({ state: current, event: sourceEvent })
+    );
     stateListeners.get(state)?.forEach((listener) => listener());
   }
 
@@ -51,7 +56,7 @@ export function createMachine<State extends string, EventName extends string>(
     return current;
   }
 
-  function subscribe(listener: Listener<State>) {
+  function subscribe(listener: Listener<State, EventName>) {
     listeners.add(listener);
 
     return () => {
