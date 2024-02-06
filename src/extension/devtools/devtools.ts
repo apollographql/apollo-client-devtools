@@ -44,6 +44,7 @@ function startConnectTimeout(attempts = 0) {
       sendMessageToClient(CONNECT_TO_CLIENT);
       startConnectTimeout(attempts + 1);
     } else {
+      console.log("timed out", inspectedTabId);
       devtoolsMachine.send({ type: "timeout" });
     }
     // Pick a threshold above the time it takes to determine if the client is

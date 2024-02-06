@@ -24,6 +24,7 @@ export default new Promise(async ($export) => {
   const port = browser.runtime.connect({
     name: `tab-${id}`,
   });
+  console.log("established port:", port.name);
 
   console.log({ id });
 
@@ -32,6 +33,9 @@ export default new Promise(async ($export) => {
   });
 
   port.onMessage.addListener(tab.broadcast);
+  port.onDisconnect.addListener((port) => {
+    console.log("port disconnected", port.name);
+  });
 
   window.addEventListener("message", (event) => {
     tab.broadcast(event?.data);
