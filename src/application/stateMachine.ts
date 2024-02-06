@@ -25,6 +25,7 @@ export function createMachine<State extends string, EventName extends string>(
   machine: MachineConfig<State, EventName>
 ) {
   const listeners = new Set<Listener<State>>();
+  const stateListeners = new Map<State, Set<() => void>>();
 
   const current = {
     value: machine.initial,
@@ -43,6 +44,7 @@ export function createMachine<State extends string, EventName extends string>(
     current.value = state;
 
     listeners.forEach((listener) => listener(current));
+    stateListeners.get(state)?.forEach((listener) => listener());
   }
 
   function getState() {
@@ -57,5 +59,16 @@ export function createMachine<State extends string, EventName extends string>(
     };
   }
 
-  return { send, getState, subscribe };
+  function onTransition(state: State, listener: () => void) {
+    if (!stateListeners.has(state)) {
+      stateListeners.set(state, new Set());
+    }
+
+    const listeners = stateListeners.get(state)!;
+    listeners.add(listener);
+
+    return () => listeners?.delete(listener);
+  }
+
+  return { send, getState, subscribe, onTransition };
 }
