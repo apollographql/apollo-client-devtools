@@ -36,6 +36,8 @@ devtools.addConnection("background", (message) => {
   }
 });
 
+// In case we can't connect to the tab, we should at least show something to the
+// user when we've attempted to connect 3 times.
 function startConnectTimeout(attempts = 0) {
   connectTimeoutId = setTimeout(() => {
     if (attempts < 3) {
@@ -44,7 +46,10 @@ function startConnectTimeout(attempts = 0) {
     } else {
       devtoolsMachine.send({ type: "timeout" });
     }
-  }, 15_000);
+    // Pick a threshold above the time it takes to determine if the client is
+    // found on the page. This ensures we don't reset that counter and provide a
+    // proper "not found" message.
+  }, 10_500);
 }
 
 function log(message: string, ...args: any[]) {
