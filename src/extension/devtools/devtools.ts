@@ -80,12 +80,7 @@ async function createDevtoolsPanel() {
     //     sendResponseToExplorer,
     //   },
     // } = window;
-    //
-    // if (!isAppInitialized) {
-    //   initialize();
-    //   writeData({ queries, mutations, cache: JSON.stringify(cache) });
-    //   isAppInitialized = true;
-    // }
+    // writeData({ queries, mutations, cache: JSON.stringify(cache) });
     //
     // clearRequestInterval = startRequestInterval();
     //
