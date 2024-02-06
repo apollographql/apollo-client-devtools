@@ -21,7 +21,7 @@ import Logo from "@apollo/icons/logos/LogoSymbol.svg";
 import { LoadingSpinner } from "./components/Explorer/LoadingSpinner";
 
 export const reloadStatus = makeVar<boolean>(false);
-export const devtoolsState = makeVar<"initialized" | "connected">(
+export const devtoolsState = makeVar<"initialized" | "connected" | "timedout">(
   "initialized"
 );
 
@@ -67,6 +67,11 @@ export const App = () => {
           <div className="text-md font-body">
             Waiting for client to connect...
           </div>
+        </div>
+      )}
+      {state === "timedout" && (
+        <div className="bg-error dark:bg-error-dark w-dvw flex items-center gap-4 fixed z-10 bottom-0 px-4 py-4">
+          <div className="text-md font-body">Unable to connect to client</div>
         </div>
       )}
       <Tabs
