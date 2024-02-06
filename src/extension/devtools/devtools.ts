@@ -36,6 +36,16 @@ devtools.addConnection("background", (message) => {
   }
 });
 
+function startConnectTimeout(attempts = 0) {
+  connectTimeoutId = setTimeout(() => {
+    if (attempts < 3) {
+      startConnectTimeout(attempts + 1);
+    } else {
+      devtoolsMachine.send({ type: "timeout" });
+    }
+  }, 10_000);
+}
+
 function log(message: string, ...args: any[]) {
   console.log(message, ...args, new Date());
 }
@@ -136,10 +146,7 @@ async function createDevtoolsPanel() {
 
     if (devtoolsMachine.matches("initialized")) {
       sendMessageToClient(DEVTOOLS_INITIALIZED);
-
-      connectTimeoutId = setTimeout(() => {
-        devtoolsMachine.send({ type: "timeout" });
-      }, 20_000);
+      startConnectTimeout();
     }
 
     if (devtoolsMachine.matches("connected")) {
