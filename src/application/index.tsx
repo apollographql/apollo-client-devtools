@@ -182,10 +182,6 @@ export const writeData = ({
   cacheVar(cache);
 };
 
-export const handleReloadComplete = () => {
-  client.resetStore();
-};
-
 export const AppProvider = () => {
   useEffect(() =>
     listenForThemeChange((newColorTheme) => colorTheme(newColorTheme))

@@ -1,14 +1,10 @@
-import {
-  initDevTools,
-  writeData,
-  handleReloadComplete,
-} from "../../application";
+import { initDevTools, writeData, client } from "../../application";
 import {
   receiveExplorerRequests,
   receiveSubscriptionTerminationRequest,
   sendResponseToExplorer,
 } from "../../application/components/Explorer/explorerRelay";
-import { RELOAD_TAB_COMPLETE, UPDATE } from "../constants";
+import { UPDATE } from "../constants";
 import "./panel.css";
 import { devtoolsState } from "../../application/App";
 
@@ -30,8 +26,6 @@ window.__DEVTOOLS_APPLICATION__ = {
 
 window.addEventListener("message", (event) => {
   switch (event.data.type) {
-    case RELOAD_TAB_COMPLETE:
-      return handleReloadComplete();
     case UPDATE:
       return writeData(event.data.payload);
   }

@@ -28,7 +28,6 @@ import {
   EXPLORER_RESPONSE,
   REQUEST_DATA,
   UPDATE,
-  RELOAD_TAB_COMPLETE,
   CONNECT_TO_DEVTOOLS,
   CONNECT_TO_CLIENT_TIMEOUT,
   DISCONNECT_FROM_DEVTOOLS,
@@ -120,10 +119,6 @@ function initializeHook() {
     if (hook.ApolloClient) {
       sendMessageToTab(CONNECT_TO_DEVTOOLS);
     }
-
-    sendMessageToTab(RELOAD_TAB_COMPLETE, {
-      ApolloClient: !!hook.ApolloClient,
-    });
   });
 
   function handleExplorerResponse(payload: ExplorerResponse) {
