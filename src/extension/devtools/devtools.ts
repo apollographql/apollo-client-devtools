@@ -94,6 +94,7 @@ async function createDevtoolsPanel() {
     }
 
     if (state.value === "initialized") {
+      sendMessageToClient(DEVTOOLS_INITIALIZED);
       const unsubscribe = devtoolsMachine.onTransition("connected", () => {
         console.log("connected");
         unsubscribe();
