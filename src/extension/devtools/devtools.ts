@@ -118,7 +118,7 @@ async function createDevtoolsPanel() {
         state: devtoolsMachine.getState().value,
       });
 
-      devtoolsMachine.subscribe((state) => {
+      devtoolsMachine.subscribe(({ state }) => {
         window.postMessage({ type: "STATE_CHANGE", state: state.value });
       });
 
