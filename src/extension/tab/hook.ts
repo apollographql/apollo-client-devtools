@@ -31,6 +31,7 @@ import {
   CONNECT_TO_DEVTOOLS,
   CONNECT_TO_CLIENT_TIMEOUT,
   DISCONNECT_FROM_DEVTOOLS,
+  CLIENT_NOT_FOUND,
 } from "../constants";
 import { EXPLORER_SUBSCRIPTION_TERMINATION } from "../../application/components/Explorer/postMessageHelpers";
 import { getPrivateAccess } from "../../privateAccess";
@@ -252,7 +253,7 @@ function initializeHook() {
     function initializeDevtoolsHook() {
       if (count++ > 10) {
         clearInterval(interval);
-        sendMessageToTab(CONNECT_TO_CLIENT_TIMEOUT);
+        sendMessageToTab(CLIENT_NOT_FOUND);
       }
       if (window.__APOLLO_CLIENT__) {
         registerClient(window.__APOLLO_CLIENT__);

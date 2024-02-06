@@ -6,6 +6,7 @@ import {
   CONNECT_TO_DEVTOOLS,
   CONNECT_TO_CLIENT_TIMEOUT,
   DISCONNECT_FROM_DEVTOOLS,
+  CLIENT_NOT_FOUND,
 } from "../constants";
 import browser from "webextension-polyfill";
 
@@ -40,6 +41,7 @@ export default new Promise(async ($export) => {
 
   const devtools = `background:devtools-${id}`;
   tab.forward(UPDATE, devtools);
+  tab.forward(CLIENT_NOT_FOUND, devtools);
   tab.forward(CONNECT_TO_DEVTOOLS, devtools);
   tab.forward(CONNECT_TO_CLIENT_TIMEOUT, devtools);
   tab.forward(DISCONNECT_FROM_DEVTOOLS, devtools);

@@ -5,6 +5,7 @@ export const UPDATE = "update";
 export const EXPLORER_REQUEST = "explorer-request";
 export const EXPLORER_RESPONSE = "explorer-response";
 
+export const CLIENT_NOT_FOUND = "client-not-found";
 export const CONNECT_TO_DEVTOOLS = "connect-to-devtools";
 export const CONNECT_TO_CLIENT_TIMEOUT = "connect-to-client-timeout";
 export const DISCONNECT_FROM_DEVTOOLS = "disconnect-from-devtools";
