@@ -95,7 +95,6 @@ async function createDevtoolsPanel() {
   let removeExplorerForward: () => void;
   let removeSubscriptionTerminationListener: () => void;
   let removeReloadListener: () => void;
-  let clearRequestInterval: () => void;
   let removeExplorerListener: () => void;
 
   panel.onShown.addListener((window) => {
@@ -163,23 +162,11 @@ async function createDevtoolsPanel() {
       EXPLORER_REQUEST,
       `background:tab-${inspectedTabId}:client`
     );
-    //
-    // // Listen for tab reload from background
-    removeReloadListener = devtools.listen(RELOADING_TAB, () => {
-      window.postMessage({ type: RELOADING_TAB });
-      clearRequestInterval();
-      const removeListener = devtools.listen(RELOAD_TAB_COMPLETE, () => {
-        window.postMessage({ type: RELOAD_TAB_COMPLETE });
-        clearRequestInterval = startRequestInterval();
-        removeListener();
-      });
-    });
   });
 
   panel.onHidden.addListener(() => {
     unsubscribeFromAll();
 
-    clearRequestInterval();
     removeExplorerForward();
     removeSubscriptionTerminationListener();
     removeUpdateListener();
