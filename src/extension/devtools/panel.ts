@@ -31,10 +31,11 @@ window.addEventListener("message", (event) => {
   }
 
   if (event.data.type === "STATE_CHANGE") {
-    console.log("STATE_CHANGE", event.data.state, new Date());
+    console.log("STATE_CHANGE", event.data, new Date());
     devtoolsState(event.data.state);
 
     if (event.data.state === "connected") {
+      console.log("clear store");
       client.resetStore();
     }
   }
