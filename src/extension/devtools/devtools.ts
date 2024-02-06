@@ -44,8 +44,6 @@ devtools.listen(DISCONNECT_FROM_DEVTOOLS, () => {
   devtoolsMachine.send({ type: "disconnect" });
 });
 
-sendMessageToClient(DEVTOOLS_INITIALIZED);
-
 function sendMessageToClient(message: string) {
   devtools.send({
     message,
