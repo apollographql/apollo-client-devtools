@@ -53,7 +53,7 @@ devtools.listen(DISCONNECT_FROM_DEVTOOLS, () => {
 });
 
 devtoolsMachine.onTransition("connected", () => {
-  startRequestInterval();
+  unsubscribers.add(startRequestInterval());
 });
 
 devtoolsMachine.onTransition("disconnected", () => {
@@ -129,7 +129,9 @@ async function createDevtoolsPanel() {
       sendMessageToClient(DEVTOOLS_INITIALIZED);
     }
 
-    unsubscribers.add(startRequestInterval());
+    if (devtoolsMachine.matches("connected")) {
+      unsubscribers.add(startRequestInterval());
+    }
 
     const {
       __DEVTOOLS_APPLICATION__: {
