@@ -11,6 +11,7 @@ import {
 } from "../../application/components/Explorer/explorerRelay";
 import { RELOADING_TAB, RELOAD_TAB_COMPLETE, UPDATE } from "../constants";
 import "./panel.css";
+import { devtoolsState } from "../../application/App";
 
 declare global {
   interface Window {
@@ -39,7 +40,7 @@ window.addEventListener("message", (event) => {
   }
 
   if (event.data.type === "STATE_CHANGE") {
-    console.log("panel.ts", event.data);
+    devtoolsState(event.data.state);
   }
 });
 
