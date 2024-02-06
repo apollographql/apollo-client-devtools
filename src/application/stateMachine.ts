@@ -70,5 +70,9 @@ export function createMachine<State extends string, EventName extends string>(
     return () => listeners?.delete(listener);
   }
 
-  return { send, getState, subscribe, onTransition };
+  function matches(state: State) {
+    return current.value === state;
+  }
+
+  return { send, getState, subscribe, onTransition, matches };
 }
