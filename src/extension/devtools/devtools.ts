@@ -43,9 +43,6 @@ function startRequestInterval(ms = 500) {
   return () => clearInterval(id);
 }
 
-let isPanelCreated = false;
-let isAppInitialized = false;
-
 devtools.addConnection(EXPLORER_SUBSCRIPTION_TERMINATION, () => {
   sendMessageToClient(EXPLORER_SUBSCRIPTION_TERMINATION);
 });
@@ -55,17 +52,11 @@ devtools.addConnection(EXPLORER_SUBSCRIPTION_TERMINATION, () => {
 sendMessageToClient(DEVTOOLS_INITIALIZED);
 
 async function createDevtoolsPanel() {
-  if (isPanelCreated) {
-    return;
-  }
-
   const panel = await browser.devtools.panels.create(
     "Apollo",
     "",
     "panel.html"
   );
-
-  isPanelCreated = true;
 
   // const { queries, mutations, cache } = JSON.parse(payload ?? "") as {
   //   queries: QueryInfo[];
