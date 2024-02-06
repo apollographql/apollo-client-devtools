@@ -2,7 +2,6 @@ import { EXPLORER_SUBSCRIPTION_TERMINATION } from "../../application/components/
 import Relay from "../../Relay";
 import {
   DEVTOOLS_INITIALIZED,
-  CREATE_DEVTOOLS_PANEL,
   REQUEST_DATA,
   UPDATE,
   EXPLORER_REQUEST,

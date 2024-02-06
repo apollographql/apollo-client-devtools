@@ -24,7 +24,6 @@ import {
 import { ExplorerResponse, QueryResult } from "../../types";
 import {
   DEVTOOLS_INITIALIZED,
-  CREATE_DEVTOOLS_PANEL,
   EXPLORER_REQUEST,
   EXPLORER_RESPONSE,
   REQUEST_DATA,
@@ -124,9 +123,7 @@ function initializeHook() {
     sendMessageToTab(EXPLORER_RESPONSE, payload);
   }
 
-  function sendHookDataToDevTools(
-    eventName: typeof CREATE_DEVTOOLS_PANEL | typeof UPDATE
-  ) {
+  function sendHookDataToDevTools(eventName: typeof UPDATE) {
     // Tab Relay forwards this the devtools
     sendMessageToTab(
       eventName,
@@ -140,7 +137,7 @@ function initializeHook() {
 
   clientRelay.listen(DEVTOOLS_INITIALIZED, () => {
     if (hook.ApolloClient) {
-      sendHookDataToDevTools(CREATE_DEVTOOLS_PANEL);
+      // sendHookDataToDevTools(CREATE_DEVTOOLS_PANEL);
     } else {
       // try finding client again, if it's found findClient will send the CREATE_DEVTOOLS_PANEL event
       findClient();
@@ -279,7 +276,7 @@ function initializeHook() {
     clearInterval(interval);
     // incase initial update was missed because the client wasn't ready, send the create devtools event.
     // devtools checks to see if it's already created, so this won't create duplicate tabs
-    sendHookDataToDevTools(CREATE_DEVTOOLS_PANEL);
+    // sendHookDataToDevTools(CREATE_DEVTOOLS_PANEL);
   }
 
   const preExisting = window[DEVTOOLS_KEY];
