@@ -14,7 +14,6 @@ import "./panel.css";
 declare global {
   interface Window {
     __DEVTOOLS_APPLICATION__: {
-      initialize: typeof initDevTools;
       writeData: typeof writeData;
       receiveExplorerRequests: typeof receiveExplorerRequests;
       receiveSubscriptionTerminationRequest: typeof receiveSubscriptionTerminationRequest;
@@ -26,7 +25,6 @@ declare global {
 }
 
 window.__DEVTOOLS_APPLICATION__ = {
-  initialize: initDevTools,
   writeData,
   receiveExplorerRequests,
   receiveSubscriptionTerminationRequest,
@@ -34,3 +32,5 @@ window.__DEVTOOLS_APPLICATION__ = {
   handleReload,
   handleReloadComplete,
 };
+
+initDevTools();
