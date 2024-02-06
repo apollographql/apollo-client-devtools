@@ -66,7 +66,7 @@ async function createDevtoolsPanel() {
   // let removeExplorerForward: () => void;
   // let removeSubscriptionTerminationListener: () => void;
   let removeReloadListener: () => void;
-  // let clearRequestInterval: () => void;
+  let clearRequestInterval: () => void;
   // let removeExplorerListener: () => void;
 
   panel.onShown.addListener((window) => {
@@ -80,7 +80,7 @@ async function createDevtoolsPanel() {
     // } = window;
     // writeData({ queries, mutations, cache: JSON.stringify(cache) });
     //
-    // clearRequestInterval = startRequestInterval();
+    clearRequestInterval = startRequestInterval();
     //
     // removeUpdateListener = devtools.listen<string>(UPDATE, ({ payload }) => {
     //   const { queries, mutations, cache } = JSON.parse(payload ?? "") as {
@@ -111,17 +111,17 @@ async function createDevtoolsPanel() {
     // // Listen for tab reload from background
     removeReloadListener = devtools.listen(RELOADING_TAB, () => {
       window.postMessage({ type: RELOADING_TAB });
-      // clearRequestInterval();
+      clearRequestInterval();
       const removeListener = devtools.listen(RELOAD_TAB_COMPLETE, () => {
         window.postMessage({ type: RELOAD_TAB_COMPLETE });
-        //   clearRequestInterval = startRequestInterval();
+        clearRequestInterval = startRequestInterval();
         removeListener();
       });
     });
   });
 
   panel.onHidden.addListener(() => {
-    // clearRequestInterval();
+    clearRequestInterval();
     // removeExplorerForward();
     // removeSubscriptionTerminationListener();
     // removeUpdateListener();
