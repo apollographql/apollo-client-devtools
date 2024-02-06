@@ -13,9 +13,19 @@ type Machine<State extends string, EventName extends string> = {
   };
 };
 
+type CurrentState<State extends string> = {
+  value: State;
+};
+
+type Listener<State extends string> = (
+  currentState: CurrentState<State>
+) => void;
+
 function createMachine<State extends string, EventName extends string>(
   machine: Machine<State, EventName>
 ) {
+  const listeners = new Set<Listener<State>>();
+
   const current = {
     value: machine.initial,
   };
@@ -31,13 +41,23 @@ function createMachine<State extends string, EventName extends string>(
 
   function transitionTo(state: State) {
     current.value = state;
+
+    listeners.forEach((listener) => listener(current));
   }
 
   function getSnapshot() {
     return current;
   }
 
-  return { send, getSnapshot };
+  function subscribe(listener: Listener<State>) {
+    listeners.add(listener);
+
+    return () => {
+      listeners.delete(listener);
+    };
+  }
+
+  return { send, getSnapshot, subscribe };
 }
 
 export const machine = createMachine({
