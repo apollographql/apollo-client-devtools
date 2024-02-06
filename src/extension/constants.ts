@@ -4,7 +4,6 @@ export const REQUEST_DATA = "request-data";
 export const UPDATE = "update";
 export const EXPLORER_REQUEST = "explorer-request";
 export const EXPLORER_RESPONSE = "explorer-response";
-export const RELOADING_TAB = "reloading-tab";
 export const RELOAD_TAB_COMPLETE = "reload-tab-complete";
 
 export const CONNECT_TO_DEVTOOLS = "connect-to-devtools";

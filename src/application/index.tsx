@@ -182,8 +182,6 @@ export const writeData = ({
   cacheVar(cache);
 };
 
-export const handleReload = () => {};
-
 export const handleReloadComplete = () => {
   client.resetStore();
 };

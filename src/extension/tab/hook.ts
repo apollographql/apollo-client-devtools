@@ -28,7 +28,6 @@ import {
   EXPLORER_RESPONSE,
   REQUEST_DATA,
   UPDATE,
-  RELOADING_TAB,
   RELOAD_TAB_COMPLETE,
   CONNECT_TO_DEVTOOLS,
   CONNECT_TO_CLIENT_TIMEOUT,
@@ -114,7 +113,6 @@ function initializeHook() {
   // Listen for tab refreshes
   window.onbeforeunload = () => {
     sendMessageToTab(DISCONNECT_FROM_DEVTOOLS);
-    sendMessageToTab(RELOADING_TAB);
   };
 
   window.addEventListener("load", () => {

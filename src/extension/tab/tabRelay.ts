@@ -3,7 +3,6 @@ import {
   REQUEST_TAB_ID,
   EXPLORER_RESPONSE,
   UPDATE,
-  RELOADING_TAB,
   RELOAD_TAB_COMPLETE,
   CONNECT_TO_DEVTOOLS,
   CONNECT_TO_CLIENT_TIMEOUT,
@@ -45,7 +44,6 @@ export default new Promise(async ($export) => {
   tab.forward(CONNECT_TO_DEVTOOLS, devtools);
   tab.forward(CONNECT_TO_CLIENT_TIMEOUT, devtools);
   tab.forward(DISCONNECT_FROM_DEVTOOLS, devtools);
-  tab.forward(RELOADING_TAB, devtools);
   tab.forward(RELOAD_TAB_COMPLETE, devtools);
   tab.forward(EXPLORER_RESPONSE, `${devtools}:explorer`);
 
