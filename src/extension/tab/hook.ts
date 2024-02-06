@@ -23,7 +23,7 @@ import {
 } from "./helpers";
 import { ExplorerResponse, QueryResult } from "../../types";
 import {
-  DEVTOOLS_INITIALIZED,
+  CONNECT_TO_CLIENT,
   EXPLORER_REQUEST,
   EXPLORER_RESPONSE,
   REQUEST_DATA,
@@ -137,7 +137,7 @@ function initializeHook() {
     );
   }
 
-  clientRelay.listen(DEVTOOLS_INITIALIZED, () => {
+  clientRelay.listen(CONNECT_TO_CLIENT, () => {
     if (hook.ApolloClient) {
       sendMessageToTab(CONNECT_TO_DEVTOOLS);
     } else {

@@ -1,7 +1,7 @@
 import { EXPLORER_SUBSCRIPTION_TERMINATION } from "../../application/components/Explorer/postMessageHelpers";
 import Relay from "../../Relay";
 import {
-  DEVTOOLS_INITIALIZED,
+  CONNECT_TO_CLIENT,
   REQUEST_DATA,
   UPDATE,
   EXPLORER_REQUEST,
@@ -145,7 +145,7 @@ async function createDevtoolsPanel() {
     }
 
     if (devtoolsMachine.matches("initialized")) {
-      sendMessageToClient(DEVTOOLS_INITIALIZED);
+      sendMessageToClient(CONNECT_TO_CLIENT);
       startConnectTimeout();
     }
 

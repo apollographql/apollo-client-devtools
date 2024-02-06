@@ -1,5 +1,5 @@
 export const REQUEST_TAB_ID = "request-tab-id";
-export const DEVTOOLS_INITIALIZED = "devtools-initialized";
+export const CONNECT_TO_CLIENT = "connect-to-client";
 export const REQUEST_DATA = "request-data";
 export const UPDATE = "update";
 export const EXPLORER_REQUEST = "explorer-request";
