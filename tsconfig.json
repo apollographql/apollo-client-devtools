@@ -8,7 +8,7 @@
     "module": "commonjs",
     "target": "es6",
     "jsx": "react-jsx",
-    "resolveJsonModule": true,
+    "resolveJsonModule": true
   },
   "compileOnSave": true,
   "include": ["src/**/*", "test.setup.ts", "build.ts"],
@@ -17,6 +17,6 @@
     "dist",
     "build",
     "src/**/__tests__/**/*",
-    "development/**/__tests__/**/*",
-  ],
+    "development/**/__tests__/**/*"
+  ]
 }
