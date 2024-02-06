@@ -7,6 +7,8 @@ import {
   EXPLORER_REQUEST,
   RELOADING_TAB,
   RELOAD_TAB_COMPLETE,
+  CONNECT_TO_DEVTOOLS,
+  CONNECT_TO_CLIENT_TIMEOUT,
 } from "../constants";
 import browser from "webextension-polyfill";
 import { QueryInfo } from "../tab/helpers";
@@ -61,6 +63,17 @@ async function createDevtoolsPanel() {
   let removeExplorerListener: () => void;
 
   panel.onShown.addListener((window) => {
+    console.log("onShown");
+    sendMessageToClient(DEVTOOLS_INITIALIZED);
+
+    devtools.listen(CONNECT_TO_DEVTOOLS, () => {
+      clearRequestInterval = startRequestInterval();
+    });
+
+    devtools.listen(CONNECT_TO_CLIENT_TIMEOUT, () => {
+      console.log("timeout");
+    });
+
     const {
       __DEVTOOLS_APPLICATION__: {
         receiveExplorerRequests,
@@ -68,8 +81,6 @@ async function createDevtoolsPanel() {
         sendResponseToExplorer,
       },
     } = window;
-
-    clearRequestInterval = startRequestInterval();
 
     removeUpdateListener = devtools.listen<string>(UPDATE, ({ payload }) => {
       const { queries, mutations, cache } = JSON.parse(payload ?? "") as {
@@ -126,8 +137,6 @@ async function createDevtoolsPanel() {
     removeExplorerListener();
     devtools.removeConnection("explorer");
   });
-
-  sendMessageToClient(DEVTOOLS_INITIALIZED);
 }
 
 createDevtoolsPanel();

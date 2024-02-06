@@ -30,6 +30,8 @@ import {
   UPDATE,
   RELOADING_TAB,
   RELOAD_TAB_COMPLETE,
+  CONNECT_TO_DEVTOOLS,
+  CONNECT_TO_CLIENT_TIMEOUT,
 } from "../constants";
 import { EXPLORER_SUBSCRIPTION_TERMINATION } from "../../application/components/Explorer/postMessageHelpers";
 import { getPrivateAccess } from "../../privateAccess";
@@ -137,7 +139,7 @@ function initializeHook() {
 
   clientRelay.listen(DEVTOOLS_INITIALIZED, () => {
     if (hook.ApolloClient) {
-      // sendHookDataToDevTools(CREATE_DEVTOOLS_PANEL);
+      sendMessageToTab(CONNECT_TO_DEVTOOLS);
     } else {
       // try finding client again, if it's found findClient will send the CREATE_DEVTOOLS_PANEL event
       findClient();
@@ -249,12 +251,17 @@ function initializeHook() {
     let count = 0;
 
     function initializeDevtoolsHook() {
-      if (count++ > 10) clearInterval(interval);
+      if (count++ > 10) {
+        clearInterval(interval);
+        console.log("timeout");
+        sendMessageToTab(CONNECT_TO_CLIENT_TIMEOUT);
+      }
       if (window.__APOLLO_CLIENT__) {
         registerClient(window.__APOLLO_CLIENT__);
       }
     }
 
+    clearInterval(interval);
     interval = setInterval(initializeDevtoolsHook, 1000);
     initializeDevtoolsHook(); // call immediately to reduce lag if devtools are already available
   }
@@ -276,7 +283,7 @@ function initializeHook() {
     clearInterval(interval);
     // incase initial update was missed because the client wasn't ready, send the create devtools event.
     // devtools checks to see if it's already created, so this won't create duplicate tabs
-    // sendHookDataToDevTools(CREATE_DEVTOOLS_PANEL);
+    sendMessageToTab(CONNECT_TO_DEVTOOLS);
   }
 
   const preExisting = window[DEVTOOLS_KEY];

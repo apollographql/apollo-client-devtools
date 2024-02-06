@@ -5,6 +5,8 @@ import {
   UPDATE,
   RELOADING_TAB,
   RELOAD_TAB_COMPLETE,
+  CONNECT_TO_DEVTOOLS,
+  CONNECT_TO_CLIENT_TIMEOUT,
 } from "../constants";
 import browser from "webextension-polyfill";
 
@@ -39,6 +41,8 @@ export default new Promise(async ($export) => {
 
   const devtools = `background:devtools-${id}`;
   tab.forward(UPDATE, devtools);
+  tab.forward(CONNECT_TO_DEVTOOLS, devtools);
+  tab.forward(CONNECT_TO_CLIENT_TIMEOUT, devtools);
   tab.forward(RELOADING_TAB, devtools);
   tab.forward(RELOAD_TAB_COMPLETE, devtools);
   tab.forward(EXPLORER_RESPONSE, `${devtools}:explorer`);

@@ -6,3 +6,6 @@ export const EXPLORER_REQUEST = "explorer-request";
 export const EXPLORER_RESPONSE = "explorer-response";
 export const RELOADING_TAB = "reloading-tab";
 export const RELOAD_TAB_COMPLETE = "reload-tab-complete";
+
+export const CONNECT_TO_DEVTOOLS = "connect-to-devtools";
+export const CONNECT_TO_CLIENT_TIMEOUT = "connect-to-client-timeout";
