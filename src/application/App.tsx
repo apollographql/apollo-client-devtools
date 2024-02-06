@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   useReactiveVar,
   gql,
@@ -18,7 +18,7 @@ import { Button } from "./components/Button";
 import IconSettings from "@apollo/icons/default/IconSettings.svg";
 import { SettingsModal } from "./components/Layouts/SettingsModal";
 import Logo from "@apollo/icons/logos/LogoSymbol.svg";
-import { LoadingSpinner } from "./components/Explorer/LoadingSpinner";
+import { BannerAlert } from "./components/BannerAlert";
 
 export const devtoolsState = makeVar<
   "initialized" | "connected" | "timedout" | "disconnected" | "notFound"
@@ -46,34 +46,38 @@ export const App = () => {
   const [embeddedExplorerIFrame, setEmbeddedExplorerIFrame] =
     useState<HTMLIFrameElement | null>(null);
 
+  useEffect(() => {
+    if (state === "initialized") {
+      return BannerAlert.show({
+        type: "loading",
+        content: "Waiting for client to connect...",
+      });
+    }
+
+    if (state === "connected") {
+      const dismiss = BannerAlert.show({
+        type: "success",
+        content: "Connected!",
+      });
+
+      setTimeout(dismiss, 3000);
+    }
+
+    if (state === "notFound") {
+      return BannerAlert.show({ type: "error", content: "Client not found" });
+    }
+
+    if (state === "timedout") {
+      return BannerAlert.show({
+        type: "error",
+        content: "Unable to connect to client",
+      });
+    }
+  }, [state]);
+
   return (
     <>
-      {state === "initialized" && (
-        <div className="bg-secondary dark:bg-secondary-dark w-dvw flex items-center gap-4 fixed z-10 bottom-0 px-4 py-4">
-          <LoadingSpinner size="2xsmall" />
-          <div className="text-md font-body">
-            Waiting for client to connect...
-          </div>
-        </div>
-      )}
-      {state === "timedout" && (
-        <div className="bg-error dark:bg-error-dark w-dvw flex items-center gap-4 fixed z-10 bottom-0 px-4 py-4">
-          <div className="text-md font-body">Unable to connect to client</div>
-        </div>
-      )}
-      {state === "disconnected" && (
-        <div className="bg-secondary dark:bg-secondary-dark w-dvw flex items-center gap-4 fixed z-10 bottom-0 px-4 py-4">
-          <LoadingSpinner size="2xsmall" />
-          <div className="text-md font-body">
-            Disconnected. Trying to connect to client...
-          </div>
-        </div>
-      )}
-      {state === "notFound" && (
-        <div className="bg-secondary dark:bg-secondary-dark w-dvw flex items-center gap-4 fixed z-10 bottom-0 px-4 py-4">
-          <div className="text-md font-body">Client not found</div>
-        </div>
-      )}
+      <BannerAlert />
       <Tabs
         value={selected}
         onChange={(screen: Screens) => currentScreen(screen)}
