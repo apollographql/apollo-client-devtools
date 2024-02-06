@@ -50,35 +50,33 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # - name: Create release PR or publish to npm + GitHub
-      #   id: changesets
-      #   if: steps.check_files.outputs.files_exists == 'false'
-      #   uses: changesets/action@v1
-      #   with:
-      #     version: npm run changeset-version
-      #     publish: npm run changeset-publish
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #     NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - run: npm run build
+      - name: Create release PR or publish to npm + GitHub
+        id: changesets
+        if: steps.check_files.outputs.files_exists == 'false'
+        uses: changesets/action@v1
+        with:
+          version: npm run changeset-version
+          publish: npm run changeset-publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Create zip files
-        # if: steps.changesets.outcome == 'success' && steps.changesets.outputs.published == 'true'
+        if: steps.changesets.outcome == 'success' && steps.changesets.outputs.published == 'true'
         run: npm run dist chrome && npm run dist firefox
 
-      # - name: Upload & release Chrome extension
-      #   # if: steps.changesets.outcome == 'success' && steps.changesets.outputs.published == 'true'
-      #   uses: mnao305/chrome-extension-upload@v5.0.0
-      #   with:
-      #     file-path: apollo-client-devtools-chrome.zip
-      #     extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
-      #     client-id: ${{ secrets.CHROME_CLIENT_ID }}
-      #     client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
-      #     refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
+      - name: Upload & release Chrome extension
+        if: steps.changesets.outcome == 'success' && steps.changesets.outputs.published == 'true'
+        uses: mnao305/chrome-extension-upload@v5.0.0
+        with:
+          file-path: apollo-client-devtools-chrome.zip
+          extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
+          client-id: ${{ secrets.CHROME_CLIENT_ID }}
+          client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
+          refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
 
       - name: Publish the extension for Firefox
-        # if: steps.changesets.outcome == 'success' && steps.changesets.outputs.published == 'true'
+        if: steps.changesets.outcome == 'success' && steps.changesets.outputs.published == 'true'
         uses: yayuyokitano/firefox-addon@v0.0.6-alpha
         with:
           xpi_path: apollo-client-devtools-firefox.zip
@@ -87,27 +85,27 @@ jobs:
           api_secret: ${{ secrets.FIREFOX_API_SECRET }}
           guid: ${{ secrets.FIREFOX_ADDON_UUID }}
 
-      # - name: Send a Slack notification on publish
-      #   if: steps.changesets.outcome == 'success' && steps.changesets.outputs.published == 'true'
-      #   id: slack
-      #   uses: slackapi/slack-github-action@v1.25.0
-      #   with:
-      #     # Slack channel id, channel name, or user id to post message
-      #     # See also: https://api.slack.com/methods/chat.postMessage#channels
-      #     # You can pass in multiple channels to post to by providing
-      #     # a comma-delimited list of channel IDs
-      #     channel-id: "C01GC140SUV"
-      #     payload: |
-      #       {
-      #         "blocks": [
-      #           {
-      #             "type": "section",
-      #             "text": {
-      #               "type": "mrkdwn",
-      #               "text": "A new version of `apollo-client-devtools` was released: <https://github.com/apollographql/apollo-client-devtools/releases/tag/v${{ fromJson(steps.changesets.outputs.publishedPackages)[0].version }}|v${{ fromJson(steps.changesets.outputs.publishedPackages)[0].version }}> :rocket:"
-      #             }
-      #           }
-      #         ]
-      #       }
-      #   env:
-      #     SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      - name: Send a Slack notification on publish
+        if: steps.changesets.outcome == 'success' && steps.changesets.outputs.published == 'true'
+        id: slack
+        uses: slackapi/slack-github-action@v1.25.0
+        with:
+          # Slack channel id, channel name, or user id to post message
+          # See also: https://api.slack.com/methods/chat.postMessage#channels
+          # You can pass in multiple channels to post to by providing
+          # a comma-delimited list of channel IDs
+          channel-id: "C01GC140SUV"
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "A new version of `apollo-client-devtools` was released: <https://github.com/apollographql/apollo-client-devtools/releases/tag/v${{ fromJson(steps.changesets.outputs.publishedPackages)[0].version }}|v${{ fromJson(steps.changesets.outputs.publishedPackages)[0].version }}> :rocket:"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
