@@ -24,8 +24,6 @@ export default new Promise(async ($export) => {
     name: `tab-${id}`,
   });
 
-  console.log("tabId", id);
-
   tab.addConnection("background", (message) => {
     port.postMessage(message);
   });
