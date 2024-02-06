@@ -37,6 +37,10 @@ window.addEventListener("message", (event) => {
     case UPDATE:
       return writeData(event.data.payload);
   }
+
+  if (event.data.type === "STATE_CHANGE") {
+    console.log("panel.ts", event.data);
+  }
 });
 
 initDevTools();

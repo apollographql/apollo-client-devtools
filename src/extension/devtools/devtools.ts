@@ -13,6 +13,7 @@ import {
 import browser from "webextension-polyfill";
 import { QueryInfo } from "../tab/helpers";
 import { JSONObject } from "../../application/types/json";
+import { devtoolsMachine } from "../../application/machines";
 
 const inspectedTabId = browser.devtools.inspectedWindow.tabId;
 const devtools = new Relay();
@@ -48,6 +49,18 @@ devtools.addConnection(EXPLORER_SUBSCRIPTION_TERMINATION, () => {
   sendMessageToClient(EXPLORER_SUBSCRIPTION_TERMINATION);
 });
 
+let connectedToPanel = false;
+
+function connectToPanel(window: Window) {
+  if (!connectedToPanel) {
+    devtoolsMachine.subscribe((state) => {
+      window.postMessage({ type: "STATE_CHANGE", state: state.value });
+    });
+
+    connectedToPanel = true;
+  }
+}
+
 async function createDevtoolsPanel() {
   const panel = await browser.devtools.panels.create(
     "Apollo",
@@ -63,15 +76,20 @@ async function createDevtoolsPanel() {
   let removeExplorerListener: () => void;
 
   panel.onShown.addListener((window) => {
+    connectToPanel(window);
+
     console.log("onShown");
     sendMessageToClient(DEVTOOLS_INITIALIZED);
 
     devtools.listen(CONNECT_TO_DEVTOOLS, () => {
-      clearRequestInterval = startRequestInterval();
+      console.log("connect to devtools", window);
+      devtoolsMachine.send({ type: "connect" });
+      // clearRequestInterval = startRequestInterval();
     });
 
     devtools.listen(CONNECT_TO_CLIENT_TIMEOUT, () => {
-      console.log("timeout");
+      devtoolsMachine.send({ type: "timeout" });
+      // console.log("timeout");
     });
 
     const {
@@ -129,6 +147,8 @@ async function createDevtoolsPanel() {
   });
 
   panel.onHidden.addListener(() => {
+    // unsubscriptions.forEach((unsubscribe) => unsubscribe());
+
     clearRequestInterval();
     removeExplorerForward();
     removeSubscriptionTerminationListener();
