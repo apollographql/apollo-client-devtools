@@ -39,11 +39,12 @@ devtools.addConnection("background", (message) => {
 function startConnectTimeout(attempts = 0) {
   connectTimeoutId = setTimeout(() => {
     if (attempts < 3) {
+      sendMessageToClient(CONNECT_TO_CLIENT);
       startConnectTimeout(attempts + 1);
     } else {
       devtoolsMachine.send({ type: "timeout" });
     }
-  }, 10_000);
+  }, 15_000);
 }
 
 function log(message: string, ...args: any[]) {
