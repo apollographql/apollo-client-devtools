@@ -31,6 +31,14 @@ devtools.addConnection("background", (message) => {
   }
 });
 
+devtools.listen(CONNECT_TO_DEVTOOLS, () => {
+  devtoolsMachine.send({ type: "connect" });
+});
+
+devtools.listen(CONNECT_TO_CLIENT_TIMEOUT, () => {
+  devtoolsMachine.send({ type: "timeout" });
+});
+
 function sendMessageToClient(message: string) {
   devtools.send({
     message,
@@ -51,16 +59,6 @@ devtools.addConnection(EXPLORER_SUBSCRIPTION_TERMINATION, () => {
 
 let connectedToPanel = false;
 
-function connectToPanel(window: Window) {
-  if (!connectedToPanel) {
-    devtoolsMachine.subscribe((state) => {
-      window.postMessage({ type: "STATE_CHANGE", state: state.value });
-    });
-
-    connectedToPanel = true;
-  }
-}
-
 async function createDevtoolsPanel() {
   const panel = await browser.devtools.panels.create(
     "Apollo",
@@ -76,21 +74,24 @@ async function createDevtoolsPanel() {
   let removeExplorerListener: () => void;
 
   panel.onShown.addListener((window) => {
-    connectToPanel(window);
+    if (!connectedToPanel) {
+      devtoolsMachine.subscribe((state) => {
+        window.postMessage({ type: "STATE_CHANGE", state: state.value });
+      });
 
-    console.log("onShown");
+      connectedToPanel = true;
+    }
+
+    const state = devtoolsMachine.getState();
+
+    if (state.value === "initialized") {
+      const unsubscribe = devtoolsMachine.onTransition("connected", () => {
+        console.log("connected");
+        unsubscribe();
+      });
+    }
+
     sendMessageToClient(DEVTOOLS_INITIALIZED);
-
-    devtools.listen(CONNECT_TO_DEVTOOLS, () => {
-      console.log("connect to devtools", window);
-      devtoolsMachine.send({ type: "connect" });
-      // clearRequestInterval = startRequestInterval();
-    });
-
-    devtools.listen(CONNECT_TO_CLIENT_TIMEOUT, () => {
-      devtoolsMachine.send({ type: "timeout" });
-      // console.log("timeout");
-    });
 
     const {
       __DEVTOOLS_APPLICATION__: {
