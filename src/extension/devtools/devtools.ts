@@ -44,6 +44,14 @@ devtools.listen(DISCONNECT_FROM_DEVTOOLS, () => {
   devtoolsMachine.send({ type: "disconnect" });
 });
 
+devtoolsMachine.onTransition("connected", () => {
+  startRequestInterval();
+});
+
+devtoolsMachine.onTransition("disconnected", () => {
+  unsubscribeFromAll();
+});
+
 function sendMessageToClient(message: string) {
   devtools.send({
     message,
@@ -53,14 +61,26 @@ function sendMessageToClient(message: string) {
 }
 
 function startRequestInterval(ms = 500) {
-  sendMessageToClient(REQUEST_DATA);
-  const id = setInterval(sendMessageToClient, ms, REQUEST_DATA);
+  let id: NodeJS.Timeout;
+
+  if (devtoolsMachine.matches("connected")) {
+    sendMessageToClient(REQUEST_DATA);
+    id = setInterval(sendMessageToClient, ms, REQUEST_DATA);
+  }
+
   return () => clearInterval(id);
 }
 
 devtools.addConnection(EXPLORER_SUBSCRIPTION_TERMINATION, () => {
   sendMessageToClient(EXPLORER_SUBSCRIPTION_TERMINATION);
 });
+
+const unsubscribers = new Set<() => void>();
+
+function unsubscribeFromAll() {
+  unsubscribers.forEach((unsubscribe) => unsubscribe());
+  unsubscribers.clear();
+}
 
 let connectedToPanel = false;
 
@@ -96,13 +116,11 @@ async function createDevtoolsPanel() {
       connectedToPanel = true;
     }
 
-    if (state.value === "initialized") {
+    if (devtoolsMachine.matches("initialized")) {
       sendMessageToClient(DEVTOOLS_INITIALIZED);
-      const unsubscribe = devtoolsMachine.onTransition("connected", () => {
-        console.log("connected");
-        unsubscribe();
-      });
     }
+
+    unsubscribers.add(startRequestInterval());
 
     const {
       __DEVTOOLS_APPLICATION__: {
@@ -159,7 +177,7 @@ async function createDevtoolsPanel() {
   });
 
   panel.onHidden.addListener(() => {
-    // unsubscriptions.forEach((unsubscribe) => unsubscribe());
+    unsubscribeFromAll();
 
     clearRequestInterval();
     removeExplorerForward();
