@@ -6,13 +6,15 @@ export const devtoolsMachine = createMachine({
     events: {} as
       | { type: "connect" }
       | { type: "timeout" }
-      | { type: "disconnect" },
+      | { type: "disconnect" }
+      | { type: "clientNotFound" },
   },
   states: {
     initialized: {
       events: {
         connect: "connected",
         timeout: "timedout",
+        clientNotFound: "notFound",
       },
     },
     connected: {
@@ -27,5 +29,6 @@ export const devtoolsMachine = createMachine({
       },
     },
     timedout: {},
+    notFound: {},
   },
 });
