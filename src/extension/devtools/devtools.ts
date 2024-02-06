@@ -39,6 +39,8 @@ devtools.listen(CONNECT_TO_CLIENT_TIMEOUT, () => {
   devtoolsMachine.send({ type: "timeout" });
 });
 
+sendMessageToClient(DEVTOOLS_INITIALIZED);
+
 function sendMessageToClient(message: string) {
   devtools.send({
     message,
@@ -90,8 +92,6 @@ async function createDevtoolsPanel() {
         unsubscribe();
       });
     }
-
-    sendMessageToClient(DEVTOOLS_INITIALIZED);
 
     const {
       __DEVTOOLS_APPLICATION__: {
