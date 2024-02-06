@@ -76,15 +76,22 @@ async function createDevtoolsPanel() {
   let removeExplorerListener: () => void;
 
   panel.onShown.addListener((window) => {
+    const state = devtoolsMachine.getState();
+
     if (!connectedToPanel) {
+      // Send the current state since subscribe does not immediately send a
+      // value. This will sync the panel with the current state of the devtools.
+      window.postMessage({
+        type: "STATE_CHANGE",
+        state: devtoolsMachine.getState().value,
+      });
+
       devtoolsMachine.subscribe((state) => {
         window.postMessage({ type: "STATE_CHANGE", state: state.value });
       });
 
       connectedToPanel = true;
     }
-
-    const state = devtoolsMachine.getState();
 
     if (state.value === "initialized") {
       const unsubscribe = devtoolsMachine.onTransition("connected", () => {
