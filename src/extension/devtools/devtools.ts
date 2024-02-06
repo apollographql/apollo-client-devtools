@@ -8,6 +8,7 @@ import {
   CONNECT_TO_DEVTOOLS,
   CONNECT_TO_CLIENT_TIMEOUT,
   DISCONNECT_FROM_DEVTOOLS,
+  CLIENT_NOT_FOUND,
 } from "../constants";
 import browser from "webextension-polyfill";
 import { QueryInfo } from "../tab/helpers";
@@ -50,6 +51,11 @@ devtools.listen(CONNECT_TO_CLIENT_TIMEOUT, () => {
 devtools.listen(DISCONNECT_FROM_DEVTOOLS, () => {
   log("disconnected from client");
   devtoolsMachine.send({ type: "disconnect" });
+});
+
+devtools.listen(CLIENT_NOT_FOUND, () => {
+  log("client not found");
+  devtoolsMachine.send({ type: "clientNotFound" });
 });
 
 devtoolsMachine.onTransition("connected", () => {
