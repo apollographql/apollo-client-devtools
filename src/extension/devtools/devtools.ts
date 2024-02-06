@@ -78,8 +78,6 @@ async function createDevtoolsPanel() {
     //     receiveExplorerRequests,
     //     receiveSubscriptionTerminationRequest,
     //     sendResponseToExplorer,
-    //     handleReload,
-    //     handleReloadComplete,
     //   },
     // } = window;
     //

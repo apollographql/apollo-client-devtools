@@ -19,8 +19,6 @@ declare global {
       receiveExplorerRequests: typeof receiveExplorerRequests;
       receiveSubscriptionTerminationRequest: typeof receiveSubscriptionTerminationRequest;
       sendResponseToExplorer: typeof sendResponseToExplorer;
-      handleReload: typeof handleReload;
-      handleReloadComplete: typeof handleReloadComplete;
     };
   }
 }
@@ -30,8 +28,6 @@ window.__DEVTOOLS_APPLICATION__ = {
   receiveExplorerRequests,
   receiveSubscriptionTerminationRequest,
   sendResponseToExplorer,
-  handleReload,
-  handleReloadComplete,
 };
 
 window.addEventListener("message", (event) => {
