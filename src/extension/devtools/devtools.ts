@@ -52,7 +52,6 @@ function log(message: string, ...args: any[]) {
 }
 
 devtools.listen(CONNECT_TO_DEVTOOLS, () => {
-  clearTimeout(connectTimeoutId);
   log("connect to devtools");
   devtoolsMachine.send({ type: "connect" });
 });
@@ -69,14 +68,21 @@ devtools.listen(DISCONNECT_FROM_DEVTOOLS, () => {
 
 devtools.listen(CLIENT_NOT_FOUND, () => {
   log("client not found");
+  clearTimeout(connectTimeoutId);
   devtoolsMachine.send({ type: "clientNotFound" });
 });
 
 devtoolsMachine.onTransition("connected", () => {
+  clearTimeout(connectTimeoutId);
   unsubscribers.add(startRequestInterval());
 });
 
 devtoolsMachine.onTransition("disconnected", () => {
+  unsubscribeFromAll();
+});
+
+devtoolsMachine.onTransition("notFound", () => {
+  clearTimeout(connectTimeoutId);
   unsubscribeFromAll();
 });
 
