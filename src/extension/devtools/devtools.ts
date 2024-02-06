@@ -50,7 +50,11 @@ devtools.addConnection(EXPLORER_SUBSCRIPTION_TERMINATION, () => {
   sendMessageToClient(EXPLORER_SUBSCRIPTION_TERMINATION);
 });
 
-devtools.listen<string>(CREATE_DEVTOOLS_PANEL, async ({ payload }) => {
+// devtools.listen<string>(CREATE_DEVTOOLS_PANEL, async ({ payload }) => {});
+
+sendMessageToClient(DEVTOOLS_INITIALIZED);
+
+async function createDevtoolsPanel() {
   if (isPanelCreated) {
     return;
   }
@@ -62,89 +66,90 @@ devtools.listen<string>(CREATE_DEVTOOLS_PANEL, async ({ payload }) => {
   );
 
   isPanelCreated = true;
-  const { queries, mutations, cache } = JSON.parse(payload ?? "") as {
-    queries: QueryInfo[];
-    mutations: QueryInfo[];
-    cache: Record<string, JSONObject>;
-  };
 
-  let removeUpdateListener: () => void;
-  let removeExplorerForward: () => void;
-  let removeSubscriptionTerminationListener: () => void;
-  let removeReloadListener: () => void;
-  let clearRequestInterval: () => void;
-  let removeExplorerListener: () => void;
+  // const { queries, mutations, cache } = JSON.parse(payload ?? "") as {
+  //   queries: QueryInfo[];
+  //   mutations: QueryInfo[];
+  //   cache: Record<string, JSONObject>;
+  // };
+  //
+  // let removeUpdateListener: () => void;
+  // let removeExplorerForward: () => void;
+  // let removeSubscriptionTerminationListener: () => void;
+  // let removeReloadListener: () => void;
+  // let clearRequestInterval: () => void;
+  // let removeExplorerListener: () => void;
 
   panel.onShown.addListener((window) => {
-    const {
-      __DEVTOOLS_APPLICATION__: {
-        initialize,
-        writeData,
-        receiveExplorerRequests,
-        receiveSubscriptionTerminationRequest,
-        sendResponseToExplorer,
-        handleReload,
-        handleReloadComplete,
-      },
-    } = window;
-
-    if (!isAppInitialized) {
-      initialize();
-      writeData({ queries, mutations, cache: JSON.stringify(cache) });
-      isAppInitialized = true;
-    }
-
-    clearRequestInterval = startRequestInterval();
-
-    removeUpdateListener = devtools.listen<string>(UPDATE, ({ payload }) => {
-      const { queries, mutations, cache } = JSON.parse(payload ?? "") as {
-        queries: QueryInfo[];
-        mutations: QueryInfo[];
-        cache: Record<string, JSONObject>;
-      };
-      writeData({ queries, mutations, cache: JSON.stringify(cache) });
-    });
-
-    // Add connection so client can send to `background:devtools-${inspectedTabId}:explorer`
-    devtools.addConnection("explorer", sendResponseToExplorer);
-    removeExplorerListener = receiveExplorerRequests(({ detail }) => {
-      devtools.broadcast(detail);
-    });
-
-    removeSubscriptionTerminationListener =
-      receiveSubscriptionTerminationRequest(({ detail }) => {
-        devtools.broadcast(detail);
-      });
-
-    // Forward all Explorer requests to the client
-    removeExplorerForward = devtools.forward(
-      EXPLORER_REQUEST,
-      `background:tab-${inspectedTabId}:client`
-    );
-
-    // Listen for tab reload from background
-    removeReloadListener = devtools.listen(RELOADING_TAB, () => {
-      handleReload();
-      clearRequestInterval();
-
-      const removeListener = devtools.listen(RELOAD_TAB_COMPLETE, () => {
-        clearRequestInterval = startRequestInterval();
-        handleReloadComplete();
-        removeListener();
-      });
-    });
+    // const {
+    //   __DEVTOOLS_APPLICATION__: {
+    //     initialize,
+    //     writeData,
+    //     receiveExplorerRequests,
+    //     receiveSubscriptionTerminationRequest,
+    //     sendResponseToExplorer,
+    //     handleReload,
+    //     handleReloadComplete,
+    //   },
+    // } = window;
+    //
+    // if (!isAppInitialized) {
+    //   initialize();
+    //   writeData({ queries, mutations, cache: JSON.stringify(cache) });
+    //   isAppInitialized = true;
+    // }
+    //
+    // clearRequestInterval = startRequestInterval();
+    //
+    // removeUpdateListener = devtools.listen<string>(UPDATE, ({ payload }) => {
+    //   const { queries, mutations, cache } = JSON.parse(payload ?? "") as {
+    //     queries: QueryInfo[];
+    //     mutations: QueryInfo[];
+    //     cache: Record<string, JSONObject>;
+    //   };
+    //   writeData({ queries, mutations, cache: JSON.stringify(cache) });
+    // });
+    //
+    // // Add connection so client can send to `background:devtools-${inspectedTabId}:explorer`
+    // devtools.addConnection("explorer", sendResponseToExplorer);
+    // removeExplorerListener = receiveExplorerRequests(({ detail }) => {
+    //   devtools.broadcast(detail);
+    // });
+    //
+    // removeSubscriptionTerminationListener =
+    //   receiveSubscriptionTerminationRequest(({ detail }) => {
+    //     devtools.broadcast(detail);
+    //   });
+    //
+    // // Forward all Explorer requests to the client
+    // removeExplorerForward = devtools.forward(
+    //   EXPLORER_REQUEST,
+    //   `background:tab-${inspectedTabId}:client`
+    // );
+    //
+    // // Listen for tab reload from background
+    // removeReloadListener = devtools.listen(RELOADING_TAB, () => {
+    //   handleReload();
+    //   clearRequestInterval();
+    //
+    //   const removeListener = devtools.listen(RELOAD_TAB_COMPLETE, () => {
+    //     clearRequestInterval = startRequestInterval();
+    //     handleReloadComplete();
+    //     removeListener();
+    //   });
+    // });
   });
 
-  panel.onHidden.addListener(() => {
-    isPanelCreated = false;
-    clearRequestInterval();
-    removeExplorerForward();
-    removeSubscriptionTerminationListener();
-    removeUpdateListener();
-    removeReloadListener();
-    removeExplorerListener();
-    devtools.removeConnection("explorer");
-  });
-});
+  // panel.onHidden.addListener(() => {
+  //   isPanelCreated = false;
+  //   clearRequestInterval();
+  //   removeExplorerForward();
+  //   removeSubscriptionTerminationListener();
+  //   removeUpdateListener();
+  //   removeReloadListener();
+  //   removeExplorerListener();
+  //   devtools.removeConnection("explorer");
+  // });
+}
 
-sendMessageToClient(DEVTOOLS_INITIALIZED);
+createDevtoolsPanel();
