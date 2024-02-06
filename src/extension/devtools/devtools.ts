@@ -9,6 +9,7 @@ import {
   RELOAD_TAB_COMPLETE,
   CONNECT_TO_DEVTOOLS,
   CONNECT_TO_CLIENT_TIMEOUT,
+  DISCONNECT_FROM_DEVTOOLS,
 } from "../constants";
 import browser from "webextension-polyfill";
 import { QueryInfo } from "../tab/helpers";
@@ -37,6 +38,10 @@ devtools.listen(CONNECT_TO_DEVTOOLS, () => {
 
 devtools.listen(CONNECT_TO_CLIENT_TIMEOUT, () => {
   devtoolsMachine.send({ type: "timeout" });
+});
+
+devtools.listen(DISCONNECT_FROM_DEVTOOLS, () => {
+  devtoolsMachine.send({ type: "disconnect" });
 });
 
 sendMessageToClient(DEVTOOLS_INITIALIZED);

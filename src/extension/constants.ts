@@ -9,3 +9,4 @@ export const RELOAD_TAB_COMPLETE = "reload-tab-complete";
 
 export const CONNECT_TO_DEVTOOLS = "connect-to-devtools";
 export const CONNECT_TO_CLIENT_TIMEOUT = "connect-to-client-timeout";
+export const DISCONNECT_FROM_DEVTOOLS = "disconnect-from-devtools";

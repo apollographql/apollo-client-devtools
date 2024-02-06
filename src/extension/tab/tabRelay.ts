@@ -7,6 +7,7 @@ import {
   RELOAD_TAB_COMPLETE,
   CONNECT_TO_DEVTOOLS,
   CONNECT_TO_CLIENT_TIMEOUT,
+  DISCONNECT_FROM_DEVTOOLS,
 } from "../constants";
 import browser from "webextension-polyfill";
 
@@ -43,6 +44,7 @@ export default new Promise(async ($export) => {
   tab.forward(UPDATE, devtools);
   tab.forward(CONNECT_TO_DEVTOOLS, devtools);
   tab.forward(CONNECT_TO_CLIENT_TIMEOUT, devtools);
+  tab.forward(DISCONNECT_FROM_DEVTOOLS, devtools);
   tab.forward(RELOADING_TAB, devtools);
   tab.forward(RELOAD_TAB_COMPLETE, devtools);
   tab.forward(EXPLORER_RESPONSE, `${devtools}:explorer`);

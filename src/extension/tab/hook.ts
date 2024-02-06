@@ -32,6 +32,7 @@ import {
   RELOAD_TAB_COMPLETE,
   CONNECT_TO_DEVTOOLS,
   CONNECT_TO_CLIENT_TIMEOUT,
+  DISCONNECT_FROM_DEVTOOLS,
 } from "../constants";
 import { EXPLORER_SUBSCRIPTION_TERMINATION } from "../../application/components/Explorer/postMessageHelpers";
 import { getPrivateAccess } from "../../privateAccess";
@@ -112,10 +113,15 @@ function initializeHook() {
 
   // Listen for tab refreshes
   window.onbeforeunload = () => {
+    sendMessageToTab(DISCONNECT_FROM_DEVTOOLS);
     sendMessageToTab(RELOADING_TAB);
   };
 
   window.addEventListener("load", () => {
+    if (hook.ApolloClient) {
+      sendMessageToTab(CONNECT_TO_DEVTOOLS);
+    }
+
     sendMessageToTab(RELOAD_TAB_COMPLETE, {
       ApolloClient: !!hook.ApolloClient,
     });
