@@ -55,10 +55,6 @@ export const App = () => {
     }
   }, [reloading, selected]);
 
-  if (reloading) {
-    return <div></div>;
-  }
-
   return (
     <>
       {state === "initialized" && (
