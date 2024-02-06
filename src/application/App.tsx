@@ -20,7 +20,6 @@ import { SettingsModal } from "./components/Layouts/SettingsModal";
 import Logo from "@apollo/icons/logos/LogoSymbol.svg";
 import { LoadingSpinner } from "./components/Explorer/LoadingSpinner";
 
-export const reloadStatus = makeVar<boolean>(false);
 export const devtoolsState = makeVar<
   "initialized" | "connected" | "timedout" | "disconnected"
 >("initialized");
@@ -43,17 +42,9 @@ export const App = () => {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const { data } = useQuery(GET_OPERATION_COUNTS);
   const selected = useReactiveVar<Screens>(currentScreen);
-  const reloading = useReactiveVar<boolean>(reloadStatus);
   const state = useReactiveVar(devtoolsState);
   const [embeddedExplorerIFrame, setEmbeddedExplorerIFrame] =
     useState<HTMLIFrameElement | null>(null);
-
-  // During a reload, reset the current screen to Queries.
-  useEffect(() => {
-    if (reloading && selected !== Screens.Queries) {
-      currentScreen(Screens.Queries);
-    }
-  }, [reloading, selected]);
 
   return (
     <>

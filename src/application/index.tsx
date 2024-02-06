@@ -12,7 +12,7 @@ import { getOperationName } from "@apollo/client/utilities";
 import { print } from "graphql/language/printer";
 
 import { colorTheme, listenForThemeChange } from "./theme";
-import { App, reloadStatus } from "./App";
+import { App } from "./App";
 import { fragmentRegistry } from "./fragmentRegistry";
 
 import {
@@ -182,12 +182,9 @@ export const writeData = ({
   cacheVar(cache);
 };
 
-export const handleReload = () => {
-  reloadStatus(true);
-};
+export const handleReload = () => {};
 
 export const handleReloadComplete = () => {
-  reloadStatus(false);
   client.resetStore();
 };
 
