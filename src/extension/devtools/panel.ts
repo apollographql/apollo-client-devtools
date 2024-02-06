@@ -9,13 +9,12 @@ import {
   receiveSubscriptionTerminationRequest,
   sendResponseToExplorer,
 } from "../../application/components/Explorer/explorerRelay";
-import { RELOADING_TAB, RELOAD_TAB_COMPLETE } from "../constants";
+import { RELOADING_TAB, RELOAD_TAB_COMPLETE, UPDATE } from "../constants";
 import "./panel.css";
 
 declare global {
   interface Window {
     __DEVTOOLS_APPLICATION__: {
-      writeData: typeof writeData;
       receiveExplorerRequests: typeof receiveExplorerRequests;
       receiveSubscriptionTerminationRequest: typeof receiveSubscriptionTerminationRequest;
       sendResponseToExplorer: typeof sendResponseToExplorer;
@@ -24,7 +23,6 @@ declare global {
 }
 
 window.__DEVTOOLS_APPLICATION__ = {
-  writeData,
   receiveExplorerRequests,
   receiveSubscriptionTerminationRequest,
   sendResponseToExplorer,
@@ -36,6 +34,8 @@ window.addEventListener("message", (event) => {
       return handleReload();
     case RELOAD_TAB_COMPLETE:
       return handleReloadComplete();
+    case UPDATE:
+      return writeData(event.data.payload);
   }
 });
 

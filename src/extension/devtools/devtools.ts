@@ -47,8 +47,6 @@ devtools.addConnection(EXPLORER_SUBSCRIPTION_TERMINATION, () => {
   sendMessageToClient(EXPLORER_SUBSCRIPTION_TERMINATION);
 });
 
-// devtools.listen<string>(CREATE_DEVTOOLS_PANEL, async ({ payload }) => {});
-
 async function createDevtoolsPanel() {
   const panel = await browser.devtools.panels.create(
     "Apollo",
@@ -56,13 +54,7 @@ async function createDevtoolsPanel() {
     "panel.html"
   );
 
-  // const { queries, mutations, cache } = JSON.parse(payload ?? "") as {
-  //   queries: QueryInfo[];
-  //   mutations: QueryInfo[];
-  //   cache: Record<string, JSONObject>;
-  // };
-  //
-  // let removeUpdateListener: () => void;
+  let removeUpdateListener: () => void;
   // let removeExplorerForward: () => void;
   // let removeSubscriptionTerminationListener: () => void;
   let removeReloadListener: () => void;
@@ -72,24 +64,30 @@ async function createDevtoolsPanel() {
   panel.onShown.addListener((window) => {
     // const {
     //   __DEVTOOLS_APPLICATION__: {
-    //     writeData,
     //     receiveExplorerRequests,
     //     receiveSubscriptionTerminationRequest,
     //     sendResponseToExplorer,
     //   },
     // } = window;
-    // writeData({ queries, mutations, cache: JSON.stringify(cache) });
-    //
+
     clearRequestInterval = startRequestInterval();
-    //
-    // removeUpdateListener = devtools.listen<string>(UPDATE, ({ payload }) => {
-    //   const { queries, mutations, cache } = JSON.parse(payload ?? "") as {
-    //     queries: QueryInfo[];
-    //     mutations: QueryInfo[];
-    //     cache: Record<string, JSONObject>;
-    //   };
-    //   writeData({ queries, mutations, cache: JSON.stringify(cache) });
-    // });
+
+    removeUpdateListener = devtools.listen<string>(UPDATE, ({ payload }) => {
+      const { queries, mutations, cache } = JSON.parse(payload ?? "") as {
+        queries: QueryInfo[];
+        mutations: QueryInfo[];
+        cache: Record<string, JSONObject>;
+      };
+
+      window.postMessage({
+        type: UPDATE,
+        payload: {
+          queries,
+          mutations,
+          cache: JSON.stringify(cache),
+        },
+      });
+    });
     //
     // // Add connection so client can send to `background:devtools-${inspectedTabId}:explorer`
     // devtools.addConnection("explorer", sendResponseToExplorer);
@@ -124,7 +122,7 @@ async function createDevtoolsPanel() {
     clearRequestInterval();
     // removeExplorerForward();
     // removeSubscriptionTerminationListener();
-    // removeUpdateListener();
+    removeUpdateListener();
     removeReloadListener();
     // removeExplorerListener();
     // devtools.removeConnection("explorer");
