@@ -18,7 +18,9 @@ import { devtoolsMachine } from "../../application/machines";
 const inspectedTabId = browser.devtools.inspectedWindow.tabId;
 const devtools = new Relay();
 
-log("devtools initialized");
+let connectTimeoutId: NodeJS.Timeout;
+
+log("devtools initialized", { inspectedTabId });
 
 const port = browser.runtime.connect({
   name: `devtools-${inspectedTabId}`,
@@ -39,6 +41,7 @@ function log(message: string, ...args: any[]) {
 }
 
 devtools.listen(CONNECT_TO_DEVTOOLS, () => {
+  clearTimeout(connectTimeoutId);
   log("connect to devtools");
   devtoolsMachine.send({ type: "connect" });
 });
@@ -133,6 +136,10 @@ async function createDevtoolsPanel() {
 
     if (devtoolsMachine.matches("initialized")) {
       sendMessageToClient(DEVTOOLS_INITIALIZED);
+
+      connectTimeoutId = setTimeout(() => {
+        devtoolsMachine.send({ type: "timeout" });
+      }, 20_000);
     }
 
     if (devtoolsMachine.matches("connected")) {
