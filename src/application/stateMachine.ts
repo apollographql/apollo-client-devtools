@@ -45,7 +45,7 @@ export function createMachine<State extends string, EventName extends string>(
     listeners.forEach((listener) => listener(current));
   }
 
-  function getSnapshot() {
+  function getState() {
     return current;
   }
 
@@ -57,5 +57,5 @@ export function createMachine<State extends string, EventName extends string>(
     };
   }
 
-  return { send, getSnapshot, subscribe };
+  return { send, getState, subscribe };
 }
