@@ -9,6 +9,7 @@ import {
   receiveSubscriptionTerminationRequest,
   sendResponseToExplorer,
 } from "../../application/components/Explorer/explorerRelay";
+import { RELOADING_TAB, RELOAD_TAB_COMPLETE } from "../constants";
 import "./panel.css";
 
 declare global {
@@ -32,5 +33,14 @@ window.__DEVTOOLS_APPLICATION__ = {
   handleReload,
   handleReloadComplete,
 };
+
+window.addEventListener("message", (event) => {
+  switch (event.data.type) {
+    case RELOADING_TAB:
+      return handleReload();
+    case RELOAD_TAB_COMPLETE:
+      return handleReloadComplete();
+  }
+});
 
 initDevTools();

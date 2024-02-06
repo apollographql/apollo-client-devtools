@@ -67,14 +67,13 @@ async function createDevtoolsPanel() {
   // let removeUpdateListener: () => void;
   // let removeExplorerForward: () => void;
   // let removeSubscriptionTerminationListener: () => void;
-  // let removeReloadListener: () => void;
+  let removeReloadListener: () => void;
   // let clearRequestInterval: () => void;
   // let removeExplorerListener: () => void;
 
   panel.onShown.addListener((window) => {
     // const {
     //   __DEVTOOLS_APPLICATION__: {
-    //     initialize,
     //     writeData,
     //     receiveExplorerRequests,
     //     receiveSubscriptionTerminationRequest,
@@ -119,28 +118,28 @@ async function createDevtoolsPanel() {
     // );
     //
     // // Listen for tab reload from background
-    // removeReloadListener = devtools.listen(RELOADING_TAB, () => {
-    //   handleReload();
-    //   clearRequestInterval();
-    //
-    //   const removeListener = devtools.listen(RELOAD_TAB_COMPLETE, () => {
-    //     clearRequestInterval = startRequestInterval();
-    //     handleReloadComplete();
-    //     removeListener();
-    //   });
-    // });
+    removeReloadListener = devtools.listen(RELOADING_TAB, () => {
+      window.postMessage({ type: RELOADING_TAB });
+      // clearRequestInterval();
+      const removeListener = devtools.listen(RELOAD_TAB_COMPLETE, () => {
+        window.postMessage({ type: RELOAD_TAB_COMPLETE });
+        //   clearRequestInterval = startRequestInterval();
+        removeListener();
+      });
+    });
   });
 
-  // panel.onHidden.addListener(() => {
-  //   isPanelCreated = false;
-  //   clearRequestInterval();
-  //   removeExplorerForward();
-  //   removeSubscriptionTerminationListener();
-  //   removeUpdateListener();
-  //   removeReloadListener();
-  //   removeExplorerListener();
-  //   devtools.removeConnection("explorer");
-  // });
+  panel.onHidden.addListener(() => {
+    // clearRequestInterval();
+    // removeExplorerForward();
+    // removeSubscriptionTerminationListener();
+    // removeUpdateListener();
+    removeReloadListener();
+    // removeExplorerListener();
+    // devtools.removeConnection("explorer");
+  });
+
+  sendMessageToClient(DEVTOOLS_INITIALIZED);
 }
 
 createDevtoolsPanel();
