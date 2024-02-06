@@ -60,6 +60,7 @@ type Hook = {
 };
 
 function initializeHook() {
+  console.log("initialize hook");
   const knownClients = new Set<ApolloClient<any>>();
   const hook: Hook = {
     ApolloClient: undefined,
@@ -142,6 +143,7 @@ function initializeHook() {
   }
 
   clientRelay.listen(DEVTOOLS_INITIALIZED, () => {
+    console.log("received devtools initialized", new Date());
     if (hook.ApolloClient) {
       sendMessageToTab(CONNECT_TO_DEVTOOLS);
     } else {
@@ -271,6 +273,7 @@ function initializeHook() {
   }
 
   function registerClient(client: ApolloClient<any>) {
+    console.log("client found");
     knownClients.add(client);
     hook.ApolloClient = client;
     // TODO: Repurpose this callback. The message it sent was not listened by
