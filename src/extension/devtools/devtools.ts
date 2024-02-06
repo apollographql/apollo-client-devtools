@@ -49,8 +49,6 @@ devtools.addConnection(EXPLORER_SUBSCRIPTION_TERMINATION, () => {
 
 // devtools.listen<string>(CREATE_DEVTOOLS_PANEL, async ({ payload }) => {});
 
-sendMessageToClient(DEVTOOLS_INITIALIZED);
-
 async function createDevtoolsPanel() {
   const panel = await browser.devtools.panels.create(
     "Apollo",
