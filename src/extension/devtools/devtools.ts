@@ -55,20 +55,20 @@ async function createDevtoolsPanel() {
   );
 
   let removeUpdateListener: () => void;
-  // let removeExplorerForward: () => void;
-  // let removeSubscriptionTerminationListener: () => void;
+  let removeExplorerForward: () => void;
+  let removeSubscriptionTerminationListener: () => void;
   let removeReloadListener: () => void;
   let clearRequestInterval: () => void;
-  // let removeExplorerListener: () => void;
+  let removeExplorerListener: () => void;
 
   panel.onShown.addListener((window) => {
-    // const {
-    //   __DEVTOOLS_APPLICATION__: {
-    //     receiveExplorerRequests,
-    //     receiveSubscriptionTerminationRequest,
-    //     sendResponseToExplorer,
-    //   },
-    // } = window;
+    const {
+      __DEVTOOLS_APPLICATION__: {
+        receiveExplorerRequests,
+        receiveSubscriptionTerminationRequest,
+        sendResponseToExplorer,
+      },
+    } = window;
 
     clearRequestInterval = startRequestInterval();
 
@@ -88,23 +88,23 @@ async function createDevtoolsPanel() {
         },
       });
     });
-    //
-    // // Add connection so client can send to `background:devtools-${inspectedTabId}:explorer`
-    // devtools.addConnection("explorer", sendResponseToExplorer);
-    // removeExplorerListener = receiveExplorerRequests(({ detail }) => {
-    //   devtools.broadcast(detail);
-    // });
-    //
-    // removeSubscriptionTerminationListener =
-    //   receiveSubscriptionTerminationRequest(({ detail }) => {
-    //     devtools.broadcast(detail);
-    //   });
-    //
-    // // Forward all Explorer requests to the client
-    // removeExplorerForward = devtools.forward(
-    //   EXPLORER_REQUEST,
-    //   `background:tab-${inspectedTabId}:client`
-    // );
+
+    // Add connection so client can send to `background:devtools-${inspectedTabId}:explorer`
+    devtools.addConnection("explorer", sendResponseToExplorer);
+    removeExplorerListener = receiveExplorerRequests(({ detail }) => {
+      devtools.broadcast(detail);
+    });
+
+    removeSubscriptionTerminationListener =
+      receiveSubscriptionTerminationRequest(({ detail }) => {
+        devtools.broadcast(detail);
+      });
+
+    // Forward all Explorer requests to the client
+    removeExplorerForward = devtools.forward(
+      EXPLORER_REQUEST,
+      `background:tab-${inspectedTabId}:client`
+    );
     //
     // // Listen for tab reload from background
     removeReloadListener = devtools.listen(RELOADING_TAB, () => {
@@ -120,12 +120,12 @@ async function createDevtoolsPanel() {
 
   panel.onHidden.addListener(() => {
     clearRequestInterval();
-    // removeExplorerForward();
-    // removeSubscriptionTerminationListener();
+    removeExplorerForward();
+    removeSubscriptionTerminationListener();
     removeUpdateListener();
     removeReloadListener();
-    // removeExplorerListener();
-    // devtools.removeConnection("explorer");
+    removeExplorerListener();
+    devtools.removeConnection("explorer");
   });
 
   sendMessageToClient(DEVTOOLS_INITIALIZED);
