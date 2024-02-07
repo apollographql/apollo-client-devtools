@@ -54,13 +54,20 @@ export const App = () => {
       });
     }
 
+    if (state === "disconnected") {
+      return BannerAlert.show({
+        type: "loading",
+        content: "Disconnected. Waiting for client to connect...",
+      });
+    }
+
     if (state === "connected") {
       const dismiss = BannerAlert.show({
         type: "success",
         content: "Connected!",
       });
 
-      setTimeout(dismiss, 3000);
+      setTimeout(dismiss, 2000);
     }
 
     if (state === "notFound") {
