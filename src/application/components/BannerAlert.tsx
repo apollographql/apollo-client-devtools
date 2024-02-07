@@ -28,7 +28,7 @@ export function BannerAlert() {
           exit={{ y: 100, opacity: 0 }}
           transition={{ type: "spring", bounce: 0.15 }}
           className={clsx(
-            "w-dvw flex items-center gap-4 fixed z-10 bottom-0 px-4 py-3",
+            "w-dvw flex items-center gap-4 fixed z-10 bottom-0 px-4 py-3 h-11",
             {
               ["bg-secondary dark:bg-secondary-dark"]:
                 banner.type === "loading",
