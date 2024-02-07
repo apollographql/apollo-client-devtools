@@ -32,6 +32,9 @@ type Listener<State extends string, EventName extends string> = (detail: {
 
 type Event<EventName extends string> = { type: EventName };
 
+export type GetStates<TMachine extends Machine<string, string>> =
+  TMachine extends Machine<infer State, string> ? State : never;
+
 export function createMachine<State extends string, EventName extends string>(
   machine: MachineConfig<State, EventName>
 ): Machine<State, EventName> {
