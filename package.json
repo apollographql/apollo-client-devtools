@@ -41,6 +41,7 @@
     "@headlessui/react": "^1.7.17",
     "@radix-ui/react-tabs": "^1.0.2",
     "clsx": "^2.1.0",
+    "framer-motion": "^11.0.3",
     "graphql": "^16.0.0",
     "graphql-tag": "^2.11.0",
     "polished": "^4.1.1",

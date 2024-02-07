@@ -4,7 +4,7 @@ import { ReactNode } from "react";
 import { LoadingSpinner } from "./Explorer/LoadingSpinner";
 import IconCheck from "@apollo/icons/default/IconCheck.svg";
 import IconError from "@apollo/icons/default/IconError.svg";
-import { Transition } from "@headlessui/react";
+import { AnimatePresence, motion } from "framer-motion";
 
 const bannerVar = makeVar<BannerAlertConfig | null>(null);
 
@@ -19,18 +19,14 @@ export function BannerAlert() {
   const banner = useReactiveVar(bannerVar);
 
   return (
-    <Transition
-      show={Boolean(banner)}
-      className="duration-500"
-      enter="transition-opacity"
-      enterFrom="opacity-0"
-      enterTo="opacity-100"
-      leave="transition-opacity"
-      leaveFrom="opacity-100"
-      leaveTo="opacity-0"
-    >
+    <AnimatePresence>
       {banner && (
-        <div
+        <motion.div
+          key="banner"
+          initial={{ y: 100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: 100, opacity: 0 }}
+          transition={{ type: "spring", bounce: 0.15 }}
           className={clsx(
             "w-dvw flex items-center gap-4 fixed z-10 bottom-0 px-4 py-3",
             {
@@ -45,9 +41,9 @@ export function BannerAlert() {
           {banner.type === "success" && <IconCheck className="w-4" />}
           {banner.type === "error" && <IconError className="w-4" />}
           <div className="text-sm font-body">{banner.content}</div>
-        </div>
+        </motion.div>
       )}
-    </Transition>
+    </AnimatePresence>
   );
 }
 
