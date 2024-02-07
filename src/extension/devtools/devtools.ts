@@ -50,7 +50,7 @@ function startConnectTimeout(attempts = 0) {
     // Pick a threshold above the time it takes to determine if the client is
     // found on the page. This ensures we don't reset that counter and provide a
     // proper "not found" message.
-  }, 10_500);
+  }, 11_000);
 }
 
 function log(message: string, ...args: any[]) {
