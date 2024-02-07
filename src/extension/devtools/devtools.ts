@@ -11,6 +11,7 @@ import {
   CLIENT_NOT_FOUND,
   DEVTOOLS_STATE_CHANGED,
   INITIALIZE_PANEL,
+  RETRY_CONNECTION,
 } from "../constants";
 import browser from "webextension-polyfill";
 import { QueryInfo } from "../tab/helpers";
@@ -76,6 +77,10 @@ devtools.listen(DISCONNECT_FROM_DEVTOOLS, () => {
 devtools.listen(CLIENT_NOT_FOUND, () => {
   clearTimeout(connectTimeoutId);
   devtoolsMachine.send({ type: "clientNotFound" });
+});
+
+devtoolsMachine.onTransition("connecting", () => {
+  sendMessageToClient(CONNECT_TO_CLIENT);
 });
 
 devtoolsMachine.onTransition("connected", () => {
@@ -150,6 +155,13 @@ async function createDevtoolsPanel() {
         type: INITIALIZE_PANEL,
         state: state.value,
         payload: state.context.clientContext,
+      });
+
+      window.addEventListener("message", (event) => {
+        switch (event.data.type) {
+          case RETRY_CONNECTION:
+            return devtoolsMachine.send({ type: "retry" });
+        }
       });
 
       devtoolsMachine.subscribe(({ state }) => {

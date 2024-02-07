@@ -9,7 +9,8 @@ export const devtoolsMachine = createMachine({
       | { type: "connect" }
       | { type: "timeout" }
       | { type: "disconnect" }
-      | { type: "clientNotFound" },
+      | { type: "clientNotFound" }
+      | { type: "retry" },
   },
   initialContext: {
     clientContext: {
@@ -26,6 +27,12 @@ export const devtoolsMachine = createMachine({
         clientNotFound: "notFound",
       },
     },
+    connecting: {
+      events: {
+        connect: "connected",
+        clientNotFound: "notFound",
+      },
+    },
     connected: {
       events: {
         disconnect: "disconnected",
@@ -38,6 +45,10 @@ export const devtoolsMachine = createMachine({
       },
     },
     timedout: {},
-    notFound: {},
+    notFound: {
+      events: {
+        retry: "connecting",
+      },
+    },
   },
 });

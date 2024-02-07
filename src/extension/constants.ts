@@ -10,3 +10,4 @@ export const REQUEST_DATA = "request-data";
 export const UPDATE = "update";
 export const EXPLORER_REQUEST = "explorer-request";
 export const EXPLORER_RESPONSE = "explorer-response";
+export const RETRY_CONNECTION = "retry-connection";

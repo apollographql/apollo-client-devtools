@@ -21,6 +21,7 @@ import Logo from "@apollo/icons/logos/LogoSymbol.svg";
 import { BannerAlert, BannerAlertConfig } from "./components/BannerAlert";
 import { GetStates } from "./stateMachine";
 import { devtoolsMachine } from "./machines";
+import { RETRY_CONNECTION } from "../extension/constants";
 
 type DevtoolsState = GetStates<typeof devtoolsMachine>;
 
@@ -29,7 +30,11 @@ export const devtoolsState = makeVar<DevtoolsState>("initialized");
 const ALERT_CONFIGS = {
   initialized: {
     type: "loading",
-    content: "Waiting for client to connect...",
+    content: "Looking for client...",
+  },
+  connecting: {
+    type: "loading",
+    content: "Looking for client...",
   },
   connected: {
     type: "success",
@@ -45,7 +50,18 @@ const ALERT_CONFIGS = {
   },
   notFound: {
     type: "error",
-    content: "Client not found",
+    content: (
+      <div className="flex justify-between items-center">
+        Client not found{" "}
+        <Button
+          size="xs"
+          variant="hidden"
+          onClick={() => window.postMessage({ type: RETRY_CONNECTION })}
+        >
+          Retry connection
+        </Button>
+      </div>
+    ),
   },
 } satisfies Record<DevtoolsState, BannerAlertConfig>;
 
