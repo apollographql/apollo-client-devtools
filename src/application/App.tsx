@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   useReactiveVar,
   gql,
@@ -49,21 +49,6 @@ const ALERT_CONFIGS = {
   },
 } satisfies Record<DevtoolsState, BannerAlertConfig>;
 
-BannerAlert.show(ALERT_CONFIGS.initialized);
-
-let timeout: NodeJS.Timeout;
-devtoolsState.onNextChange(function onNext(nextState) {
-  clearTimeout(timeout);
-
-  const dismiss = BannerAlert.show(ALERT_CONFIGS[nextState]);
-
-  if (nextState === "connected") {
-    timeout = setTimeout(dismiss, 2500);
-  }
-
-  devtoolsState.onNextChange(onNext);
-});
-
 const GET_OPERATION_COUNTS: TypedDocumentNode<
   GetOperationCounts,
   GetOperationCountsVariables
@@ -79,11 +64,32 @@ const GET_OPERATION_COUNTS: TypedDocumentNode<
 `;
 
 export const App = () => {
+  const mountedRef = useRef(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const { data } = useQuery(GET_OPERATION_COUNTS);
   const selected = useReactiveVar<Screens>(currentScreen);
+  const state = useReactiveVar(devtoolsState);
   const [embeddedExplorerIFrame, setEmbeddedExplorerIFrame] =
     useState<HTMLIFrameElement | null>(null);
+
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+    // Don't show connected message on the first render if we are already
+    // connected to the client.
+    if (!mountedRef.current && state === "connected") {
+      return;
+    }
+
+    const dismiss = BannerAlert.show(ALERT_CONFIGS[state]);
+
+    if (state === "connected") {
+      timeout = setTimeout(dismiss, 2500);
+    }
+
+    mountedRef.current = true;
+
+    return () => clearTimeout(timeout);
+  }, [state]);
 
   return (
     <>
