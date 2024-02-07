@@ -1,19 +1,28 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type NoInfer<T> = [T][T extends any ? 0 : never];
 
-interface Machine<State extends string, EventName extends string> {
-  send: (event: Event<EventName>) => void;
-  getState: () => CurrentState<State>;
-  subscribe: (listener: Listener<State, EventName>) => () => void;
+interface Machine<
+  State extends string,
+  EventName extends string,
+  Context extends Record<string, unknown>,
+> {
+  send: (event: Event<EventName, Context>) => void;
+  getState: () => CurrentState<State, Context>;
+  subscribe: (listener: Listener<State, EventName, Context>) => () => void;
   onTransition: (state: State, listener: () => void) => () => void;
   matches: (state: State) => boolean;
 }
 
-type MachineConfig<State extends string, EventName extends string> = {
+type MachineConfig<
+  State extends string,
+  EventName extends string,
+  Context extends Record<string, unknown>,
+> = {
   initial: NoInfer<State>;
   types: {
     events: { type: EventName };
   };
+  initialContext?: Context;
   states: {
     [K in State]: {
       events?: Partial<Record<EventName, NoInfer<State>>>;
@@ -21,31 +30,51 @@ type MachineConfig<State extends string, EventName extends string> = {
   };
 };
 
-type CurrentState<State extends string> = {
+type CurrentState<
+  State extends string,
+  Context extends Record<string, unknown>,
+> = {
+  context: Context;
   value: State;
 };
 
-type Listener<State extends string, EventName extends string> = (detail: {
-  state: CurrentState<State>;
-  event: Event<EventName>;
+type Listener<
+  State extends string,
+  EventName extends string,
+  Context extends Record<string, unknown>,
+> = (detail: {
+  state: CurrentState<State, Context>;
+  event: Event<EventName, Context>;
 }) => void;
 
-type Event<EventName extends string> = { type: EventName };
+type Event<
+  EventName extends string,
+  Context extends Record<string, unknown>,
+> = { type: EventName; context?: Partial<Context> };
 
-export type GetStates<TMachine extends Machine<string, string>> =
-  TMachine extends Machine<infer State, string> ? State : never;
+export type GetStates<
+  TMachine extends Machine<string, string, Record<string, unknown>>,
+> =
+  TMachine extends Machine<infer State, string, Record<string, unknown>>
+    ? State
+    : never;
 
-export function createMachine<State extends string, EventName extends string>(
-  machine: MachineConfig<State, EventName>
-): Machine<State, EventName> {
-  const listeners = new Set<Listener<State, EventName>>();
+export function createMachine<
+  State extends string,
+  EventName extends string,
+  Context extends Record<string, unknown> = Record<string, never>,
+>(
+  machine: MachineConfig<State, EventName, Context>
+): Machine<State, EventName, Context> {
+  const listeners = new Set<Listener<State, EventName, Context>>();
   const stateListeners = new Map<State, Set<() => void>>();
 
   const current = {
+    context: machine.initialContext ?? ({} as Context),
     value: machine.initial,
   };
 
-  function send(event: Event<EventName>) {
+  function send(event: Event<EventName, Context>) {
     const { events } = machine.states[current.value];
     const nextState = events?.[event.type];
 
@@ -62,8 +91,12 @@ export function createMachine<State extends string, EventName extends string>(
     }
   }
 
-  function transitionTo(state: State, sourceEvent: Event<EventName>) {
+  function transitionTo(state: State, sourceEvent: Event<EventName, Context>) {
     current.value = state;
+
+    if (sourceEvent.context) {
+      current.context = { ...current.context, ...sourceEvent.context };
+    }
 
     listeners.forEach((listener) =>
       listener({ state: current, event: sourceEvent })
@@ -75,7 +108,7 @@ export function createMachine<State extends string, EventName extends string>(
     return current;
   }
 
-  function subscribe(listener: Listener<State, EventName>) {
+  function subscribe(listener: Listener<State, EventName, Context>) {
     listeners.add(listener);
 
     return () => {
