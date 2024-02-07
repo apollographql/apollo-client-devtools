@@ -24,6 +24,45 @@ export const devtoolsState = makeVar<
   "initialized" | "connected" | "timedout" | "disconnected" | "notFound"
 >("initialized");
 
+BannerAlert.show({
+  type: "loading",
+  content: "Waiting for client to connect...",
+});
+
+let timeout: NodeJS.Timeout;
+devtoolsState.onNextChange(function onNext(nextState) {
+  clearTimeout(timeout);
+
+  switch (nextState) {
+    case "disconnected":
+      BannerAlert.show({
+        type: "loading",
+        content: "Disconnected. Waiting for client to connect...",
+      });
+      break;
+    case "connected": {
+      const dismiss = BannerAlert.show({
+        type: "success",
+        content: "Connected!",
+      });
+
+      timeout = setTimeout(dismiss, 2500);
+      break;
+    }
+    case "timedout":
+      BannerAlert.show({
+        type: "error",
+        content: "Unable to connect to client",
+      });
+      break;
+    case "notFound":
+      BannerAlert.show({ type: "error", content: "Client not found" });
+      break;
+  }
+
+  devtoolsState.onNextChange(onNext);
+});
+
 const GET_OPERATION_COUNTS: TypedDocumentNode<
   GetOperationCounts,
   GetOperationCountsVariables
@@ -42,45 +81,8 @@ export const App = () => {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const { data } = useQuery(GET_OPERATION_COUNTS);
   const selected = useReactiveVar<Screens>(currentScreen);
-  const state = useReactiveVar(devtoolsState);
   const [embeddedExplorerIFrame, setEmbeddedExplorerIFrame] =
     useState<HTMLIFrameElement | null>(null);
-
-  useEffect(() => {
-    if (state === "initialized") {
-      return BannerAlert.show({
-        type: "loading",
-        content: "Waiting for client to connect...",
-      });
-    }
-
-    if (state === "disconnected") {
-      return BannerAlert.show({
-        type: "loading",
-        content: "Disconnected. Waiting for client to connect...",
-      });
-    }
-
-    if (state === "connected") {
-      const dismiss = BannerAlert.show({
-        type: "success",
-        content: "Connected!",
-      });
-
-      setTimeout(dismiss, 2500);
-    }
-
-    if (state === "notFound") {
-      return BannerAlert.show({ type: "error", content: "Client not found" });
-    }
-
-    if (state === "timedout") {
-      return BannerAlert.show({
-        type: "error",
-        content: "Unable to connect to client",
-      });
-    }
-  }, [state]);
 
   return (
     <>
