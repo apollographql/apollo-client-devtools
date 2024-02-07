@@ -16,6 +16,7 @@ import { GetOperationCounts, GetOperationCountsVariables } from "./types/gql";
 import { Tabs } from "./components/Tabs";
 import { Button } from "./components/Button";
 import IconSettings from "@apollo/icons/default/IconSettings.svg";
+import IconSync from "@apollo/icons/small/IconSync.svg";
 import { SettingsModal } from "./components/Layouts/SettingsModal";
 import Logo from "@apollo/icons/logos/LogoSymbol.svg";
 import { BannerAlert, BannerAlertConfig } from "./components/BannerAlert";
@@ -56,6 +57,7 @@ const ALERT_CONFIGS = {
         <Button
           size="xs"
           variant="hidden"
+          icon={IconSync}
           onClick={() => window.postMessage({ type: RETRY_CONNECTION })}
         >
           Retry connection
