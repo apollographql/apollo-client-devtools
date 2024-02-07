@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 import { colors, typography, fontFamily } from "@apollo/tailwind-preset";
 import defaultConfig from "tailwindcss/defaultConfig";
+import headlessPlugin from "@headlessui/tailwindcss";
 
 export default {
   content: [
@@ -8,6 +9,7 @@ export default {
     "./src/application/**/*.{html,ts,tsx}",
   ],
   presets: [defaultConfig, colors, typography, fontFamily.openSource],
+  plugins: [headlessPlugin],
   theme: {
     data: {
       "state-active": 'state="active"',
