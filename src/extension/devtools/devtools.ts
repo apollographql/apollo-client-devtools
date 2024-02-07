@@ -50,8 +50,17 @@ function startConnectTimeout(attempts = 0) {
   }, 11_000);
 }
 
-devtools.listen(CONNECT_TO_DEVTOOLS, () => {
-  devtoolsMachine.send({ type: "connect" });
+devtools.listen(CONNECT_TO_DEVTOOLS, (event) => {
+  devtoolsMachine.send({
+    type: "connect",
+    context: {
+      clientContext: JSON.parse(event.payload ?? "") as {
+        queries: QueryInfo[];
+        mutations: QueryInfo[];
+        cache: Record<string, JSONObject>;
+      },
+    },
+  });
 });
 
 devtools.listen(CONNECT_TO_CLIENT_TIMEOUT, () => {
