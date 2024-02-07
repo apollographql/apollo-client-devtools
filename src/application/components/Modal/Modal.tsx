@@ -12,7 +12,7 @@ interface ModalProps {
   children: ReactNode;
   open: boolean;
   onClose: (value: boolean) => void;
-  size: "sm" | "md" | "lg";
+  size: "sm" | "md" | "lg" | "xl";
 }
 
 export function Modal({
@@ -55,6 +55,7 @@ export function Modal({
                     "w-modal-sm": size === "sm",
                     "w-modal-md": size === "md",
                     "w-modal-lg": size === "lg",
+                    "w-modal-xl": size === "xl",
                   }
                 )}
               >

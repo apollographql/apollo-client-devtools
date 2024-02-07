@@ -36,6 +36,7 @@ export default {
         "modal-sm": "336px",
         "modal-md": "400px",
         "modal-lg": "464px",
+        "modal-xl": "528px",
       },
     },
   },
