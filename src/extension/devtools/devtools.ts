@@ -20,8 +20,6 @@ const devtools = new Relay();
 
 let connectTimeoutId: NodeJS.Timeout;
 
-log("devtools initialized", { inspectedTabId });
-
 const port = browser.runtime.connect({
   name: `devtools-${inspectedTabId}`,
 });
@@ -29,7 +27,6 @@ port.onMessage.addListener(devtools.broadcast);
 
 devtools.addConnection("background", (message) => {
   try {
-    log("send to client", message);
     port.postMessage(message);
   } catch (error) {
     devtools.removeConnection("background");
@@ -53,27 +50,19 @@ function startConnectTimeout(attempts = 0) {
   }, 11_000);
 }
 
-function log(message: string, ...args: any[]) {
-  console.log(message, ...args, new Date());
-}
-
 devtools.listen(CONNECT_TO_DEVTOOLS, () => {
-  log("connect to devtools");
   devtoolsMachine.send({ type: "connect" });
 });
 
 devtools.listen(CONNECT_TO_CLIENT_TIMEOUT, () => {
-  log("timeout connecting");
   devtoolsMachine.send({ type: "timeout" });
 });
 
 devtools.listen(DISCONNECT_FROM_DEVTOOLS, () => {
-  log("disconnected from client");
   devtoolsMachine.send({ type: "disconnect" });
 });
 
 devtools.listen(CLIENT_NOT_FOUND, () => {
-  log("client not found");
   clearTimeout(connectTimeoutId);
   devtoolsMachine.send({ type: "clientNotFound" });
 });
@@ -138,13 +127,9 @@ async function createDevtoolsPanel() {
   let removeExplorerListener: () => void;
 
   panel.onShown.addListener((window) => {
-    const state = devtoolsMachine.getState();
-    log("onShown", state.value);
-
     if (!connectedToPanel) {
       // Send the current state since subscribe does not immediately send a
       // value. This will sync the panel with the current state of the devtools.
-      log("post initial state change", state.value);
       window.postMessage({
         type: "STATE_CHANGE",
         state: devtoolsMachine.getState().value,

@@ -137,7 +137,6 @@ function initializeHook() {
   }
 
   clientRelay.listen(CONNECT_TO_CLIENT, () => {
-    console.log("connect to client", !!hook.ApolloClient, new Date());
     if (hook.ApolloClient) {
       sendMessageToTab(CONNECT_TO_DEVTOOLS);
     } else {
@@ -248,18 +247,14 @@ function initializeHook() {
    */
   let interval: NodeJS.Timeout;
   function findClient() {
-    console.log("find client");
     let count = 0;
 
     function initializeDevtoolsHook() {
-      console.log("check again", count);
       if (count++ > 10) {
         clearInterval(interval);
-        console.log("client not found");
         sendMessageToTab(CLIENT_NOT_FOUND);
       }
       if (window.__APOLLO_CLIENT__) {
-        console.log("client found");
         registerClient(window.__APOLLO_CLIENT__);
       }
     }
