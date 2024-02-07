@@ -67,7 +67,7 @@ export const App = () => {
         content: "Connected!",
       });
 
-      setTimeout(dismiss, 2000);
+      setTimeout(dismiss, 2500);
     }
 
     if (state === "notFound") {
