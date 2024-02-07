@@ -32,7 +32,7 @@ const ALERT_CONFIGS = {
     type: "loading",
     content: "Looking for client...",
   },
-  connecting: {
+  retrying: {
     type: "loading",
     content: "Looking for client...",
   },

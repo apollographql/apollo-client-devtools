@@ -27,7 +27,7 @@ export const devtoolsMachine = createMachine({
         clientNotFound: "notFound",
       },
     },
-    connecting: {
+    retrying: {
       events: {
         connect: "connected",
         clientNotFound: "notFound",
@@ -47,7 +47,7 @@ export const devtoolsMachine = createMachine({
     timedout: {},
     notFound: {
       events: {
-        retry: "connecting",
+        retry: "retrying",
       },
     },
   },
