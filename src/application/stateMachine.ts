@@ -1,6 +1,14 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type NoInfer<T> = [T][T extends any ? 0 : never];
 
+interface Machine<State extends string, EventName extends string> {
+  send: (event: Event<EventName>) => void;
+  getState: () => CurrentState<State>;
+  subscribe: (listener: Listener<State, EventName>) => () => void;
+  onTransition: (state: State, listener: () => void) => () => void;
+  matches: (state: State) => boolean;
+}
+
 type MachineConfig<State extends string, EventName extends string> = {
   initial: NoInfer<State>;
   types: {
@@ -26,7 +34,7 @@ type Event<EventName extends string> = { type: EventName };
 
 export function createMachine<State extends string, EventName extends string>(
   machine: MachineConfig<State, EventName>
-) {
+): Machine<State, EventName> {
   const listeners = new Set<Listener<State, EventName>>();
   const stateListeners = new Map<State, Set<() => void>>();
 
