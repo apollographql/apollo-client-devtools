@@ -79,7 +79,7 @@ devtools.listen(CLIENT_NOT_FOUND, () => {
   devtoolsMachine.send({ type: "clientNotFound" });
 });
 
-devtoolsMachine.onTransition("connecting", () => {
+devtoolsMachine.onTransition("retrying", () => {
   sendMessageToClient(CONNECT_TO_CLIENT);
 });
 
