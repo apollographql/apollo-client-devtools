@@ -10,6 +10,7 @@ import {
   DISCONNECT_FROM_DEVTOOLS,
   CLIENT_NOT_FOUND,
   DEVTOOLS_STATE_CHANGED,
+  INITIALIZE_PANEL,
 } from "../constants";
 import browser from "webextension-polyfill";
 import { QueryInfo } from "../tab/helpers";
@@ -139,11 +140,13 @@ async function createDevtoolsPanel() {
 
   panel.onShown.addListener((window) => {
     if (!connectedToPanel) {
+      const state = devtoolsMachine.getState();
       // Send the current state since subscribe does not immediately send a
       // value. This will sync the panel with the current state of the devtools.
       window.postMessage({
-        type: DEVTOOLS_STATE_CHANGED,
-        state: devtoolsMachine.getState().value,
+        type: INITIALIZE_PANEL,
+        state: state.value,
+        payload: state.context.clientContext,
       });
 
       devtoolsMachine.subscribe(({ state }) => {

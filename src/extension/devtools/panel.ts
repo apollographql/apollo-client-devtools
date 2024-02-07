@@ -4,7 +4,7 @@ import {
   receiveSubscriptionTerminationRequest,
   sendResponseToExplorer,
 } from "../../application/components/Explorer/explorerRelay";
-import { DEVTOOLS_STATE_CHANGED, UPDATE } from "../constants";
+import { DEVTOOLS_STATE_CHANGED, INITIALIZE_PANEL, UPDATE } from "../constants";
 import "./panel.css";
 import { devtoolsState } from "../../application/App";
 
@@ -28,6 +28,12 @@ window.addEventListener("message", (event) => {
   switch (event.data.type) {
     case UPDATE:
       return writeData(event.data.payload);
+    case INITIALIZE_PANEL: {
+      devtoolsState(event.data.state);
+      writeData(event.data.payload);
+
+      return initDevTools();
+    }
     case DEVTOOLS_STATE_CHANGED: {
       devtoolsState(event.data.state);
 
@@ -37,5 +43,3 @@ window.addEventListener("message", (event) => {
     }
   }
 });
-
-initDevTools();
