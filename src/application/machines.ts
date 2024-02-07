@@ -1,4 +1,6 @@
 import { createMachine } from "./stateMachine";
+import { QueryInfo } from "../extension/tab/helpers";
+import { JSONObject } from "./types/json";
 
 export const devtoolsMachine = createMachine({
   initial: "initialized",
@@ -8,6 +10,13 @@ export const devtoolsMachine = createMachine({
       | { type: "timeout" }
       | { type: "disconnect" }
       | { type: "clientNotFound" },
+  },
+  initialContext: {
+    clientContext: {
+      queries: [] as QueryInfo[],
+      mutations: [] as QueryInfo[],
+      cache: {} as JSONObject,
+    },
   },
   states: {
     initialized: {
