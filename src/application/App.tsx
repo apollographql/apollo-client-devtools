@@ -19,10 +19,11 @@ import IconSettings from "@apollo/icons/default/IconSettings.svg";
 import { SettingsModal } from "./components/Layouts/SettingsModal";
 import Logo from "@apollo/icons/logos/LogoSymbol.svg";
 import { BannerAlert } from "./components/BannerAlert";
+import { GetStates } from "./stateMachine";
+import { devtoolsMachine } from "./machines";
 
-export const devtoolsState = makeVar<
-  "initialized" | "connected" | "timedout" | "disconnected" | "notFound"
->("initialized");
+export const devtoolsState =
+  makeVar<GetStates<typeof devtoolsMachine>>("initialized");
 
 BannerAlert.show({
   type: "loading",
