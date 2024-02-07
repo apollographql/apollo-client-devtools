@@ -20,6 +20,7 @@ import { devtoolsMachine } from "../../application/machines";
 const inspectedTabId = browser.devtools.inspectedWindow.tabId;
 const devtools = new Relay();
 
+let panelHidden = true;
 let connectTimeoutId: NodeJS.Timeout;
 
 const port = browser.runtime.connect({
@@ -79,7 +80,10 @@ devtools.listen(CLIENT_NOT_FOUND, () => {
 
 devtoolsMachine.onTransition("connected", () => {
   clearTimeout(connectTimeoutId);
-  unsubscribers.add(startRequestInterval());
+
+  if (!panelHidden) {
+    unsubscribers.add(startRequestInterval());
+  }
 });
 
 devtoolsMachine.onTransition("disconnected", () => {
@@ -163,7 +167,7 @@ async function createDevtoolsPanel() {
       startConnectTimeout();
     }
 
-    if (devtoolsMachine.matches("connected")) {
+    if (devtoolsMachine.matches("connected") && panelHidden) {
       unsubscribers.add(startRequestInterval());
     }
 
@@ -208,9 +212,12 @@ async function createDevtoolsPanel() {
       EXPLORER_REQUEST,
       `background:tab-${inspectedTabId}:client`
     );
+
+    panelHidden = false;
   });
 
   panel.onHidden.addListener(() => {
+    panelHidden = true;
     unsubscribeFromAll();
 
     removeExplorerForward();
