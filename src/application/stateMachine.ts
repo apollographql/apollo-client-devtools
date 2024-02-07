@@ -41,6 +41,14 @@ export function createMachine<State extends string, EventName extends string>(
     if (nextState) {
       transitionTo(nextState, event);
     }
+
+    if (process.env.NODE_ENV === "development") {
+      if (!nextState) {
+        console.warn(
+          `Transition from state '${current.value}' for event '${event.type}' not found.`
+        );
+      }
+    }
   }
 
   function transitionTo(state: State, sourceEvent: Event<EventName>) {
