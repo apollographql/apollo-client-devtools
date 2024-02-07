@@ -141,8 +141,7 @@ async function createDevtoolsPanel() {
   panel.onShown.addListener((window) => {
     if (!connectedToPanel) {
       const state = devtoolsMachine.getState();
-      // Send the current state since subscribe does not immediately send a
-      // value. This will sync the panel with the current state of the devtools.
+
       window.postMessage({
         type: INITIALIZE_PANEL,
         state: state.value,
