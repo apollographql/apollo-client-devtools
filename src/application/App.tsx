@@ -18,47 +18,47 @@ import { Button } from "./components/Button";
 import IconSettings from "@apollo/icons/default/IconSettings.svg";
 import { SettingsModal } from "./components/Layouts/SettingsModal";
 import Logo from "@apollo/icons/logos/LogoSymbol.svg";
-import { BannerAlert } from "./components/BannerAlert";
+import { BannerAlert, BannerAlertConfig } from "./components/BannerAlert";
 import { GetStates } from "./stateMachine";
 import { devtoolsMachine } from "./machines";
 
-export const devtoolsState =
-  makeVar<GetStates<typeof devtoolsMachine>>("initialized");
+type DevtoolsState = GetStates<typeof devtoolsMachine>;
 
-BannerAlert.show({
-  type: "loading",
-  content: "Waiting for client to connect...",
-});
+export const devtoolsState = makeVar<DevtoolsState>("initialized");
+
+const ALERT_CONFIGS = {
+  initialized: {
+    type: "loading",
+    content: "Waiting for client to connect...",
+  },
+  connected: {
+    type: "success",
+    content: "Connected!",
+  },
+  disconnected: {
+    type: "loading",
+    content: "Disconnected. Waiting for client to connect...",
+  },
+  timedout: {
+    type: "error",
+    content: "Unable to connect to client",
+  },
+  notFound: {
+    type: "error",
+    content: "Client not found",
+  },
+} satisfies Record<DevtoolsState, BannerAlertConfig>;
+
+BannerAlert.show(ALERT_CONFIGS.initialized);
 
 let timeout: NodeJS.Timeout;
 devtoolsState.onNextChange(function onNext(nextState) {
   clearTimeout(timeout);
 
-  switch (nextState) {
-    case "disconnected":
-      BannerAlert.show({
-        type: "loading",
-        content: "Disconnected. Waiting for client to connect...",
-      });
-      break;
-    case "connected": {
-      const dismiss = BannerAlert.show({
-        type: "success",
-        content: "Connected!",
-      });
+  const dismiss = BannerAlert.show(ALERT_CONFIGS[nextState]);
 
-      timeout = setTimeout(dismiss, 2500);
-      break;
-    }
-    case "timedout":
-      BannerAlert.show({
-        type: "error",
-        content: "Unable to connect to client",
-      });
-      break;
-    case "notFound":
-      BannerAlert.show({ type: "error", content: "Client not found" });
-      break;
+  if (nextState === "connected") {
+    timeout = setTimeout(dismiss, 2500);
   }
 
   devtoolsState.onNextChange(onNext);
