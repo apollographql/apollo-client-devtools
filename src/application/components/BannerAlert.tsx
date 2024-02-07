@@ -44,7 +44,7 @@ export function BannerAlert() {
           {banner.type === "loading" && <LoadingSpinner size="2xsmall" />}
           {banner.type === "success" && <IconCheck className="w-4" />}
           {banner.type === "error" && <IconError className="w-4" />}
-          <div className="text-md font-body">{banner.content}</div>
+          <div className="text-sm font-body">{banner.content}</div>
         </div>
       )}
     </Transition>
