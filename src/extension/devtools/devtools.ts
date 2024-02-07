@@ -81,6 +81,8 @@ devtoolsMachine.onTransition("notFound", () => {
   unsubscribeFromAll();
 });
 
+sendMessageToClient(CONNECT_TO_CLIENT);
+
 function sendMessageToClient(message: string) {
   devtools.send({
     message,
