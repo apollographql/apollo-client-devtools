@@ -4,7 +4,7 @@ import {
   receiveSubscriptionTerminationRequest,
   sendResponseToExplorer,
 } from "../../application/components/Explorer/explorerRelay";
-import { UPDATE } from "../constants";
+import { DEVTOOLS_STATE_CHANGED, UPDATE } from "../constants";
 import "./panel.css";
 import { devtoolsState } from "../../application/App";
 
@@ -30,7 +30,7 @@ window.addEventListener("message", (event) => {
       return writeData(event.data.payload);
   }
 
-  if (event.data.type === "STATE_CHANGE") {
+  if (event.data.type === DEVTOOLS_STATE_CHANGED) {
     devtoolsState(event.data.state);
 
     if (event.data.state === "connected") {
