@@ -1,18 +1,28 @@
-import { ComponentPropsWithoutRef } from "react";
+import { ComponentPropsWithoutRef, ElementType } from "react";
 import { clsx } from "clsx";
 
 type NativeButtonProps = ComponentPropsWithoutRef<"button">;
 
+type ButtonSize = "md" | "sm" | "xs";
+
 interface ButtonProps extends NativeButtonProps {
+  icon?: ElementType;
   variant: "primary" | "secondary" | "hidden";
-  size: "md" | "sm" | "xs";
+  size: ButtonSize;
 }
+
+const ICON_SIZES = {
+  xs: "w-3",
+  sm: "w-4",
+  md: "w-4",
+} satisfies Record<ButtonSize, string>;
 
 export function Button({
   className,
   children,
   variant,
   size,
+  icon: Icon,
   ...props
 }: ButtonProps) {
   return (
@@ -36,6 +46,7 @@ export function Button({
         }
       )}
     >
+      {Icon && <Icon className={clsx(ICON_SIZES[size])} />}
       {children}
     </button>
   );
