@@ -28,13 +28,12 @@ window.addEventListener("message", (event) => {
   switch (event.data.type) {
     case UPDATE:
       return writeData(event.data.payload);
-  }
+    case DEVTOOLS_STATE_CHANGED: {
+      devtoolsState(event.data.state);
 
-  if (event.data.type === DEVTOOLS_STATE_CHANGED) {
-    devtoolsState(event.data.state);
-
-    if (event.data.state === "connected") {
-      client.resetStore();
+      if (event.data.state === "connected") {
+        client.resetStore();
+      }
     }
   }
 });
