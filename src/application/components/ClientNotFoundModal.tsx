@@ -106,6 +106,35 @@ export function ClientNotFoundModal({
 
           <Disclosure>
             <Disclosure.Button>
+              I&apos;m using Apollo&apos;s Next.js RSC integration
+            </Disclosure.Button>
+            <Disclosure.Panel>
+              <p>
+                Apollo Client Devtools checks for the presence of the{" "}
+                <code>window.__APOLLO_CLIENT__</code> variable for up to 10
+                seconds after a page load before giving up. When using
+                Apollo&apos;s{" "}
+                <a
+                  rel="noreferrer noopener"
+                  target="_blank"
+                  href="https://github.com/apollographql/apollo-client-nextjs"
+                >
+                  Next.js RSC integration
+                </a>
+                , it is possible that Apollo Client Devtools will be unable to
+                connect to the client when the first loaded page does not render
+                any client components and no other client components are loaded
+                within the first 10 seconds of the page load.
+              </p>
+              <p className="mt-4">
+                Click the &quot;Retry&quot; button below to try connecting to
+                the Apollo Client instance after a client component loads.
+              </p>
+            </Disclosure.Panel>
+          </Disclosure>
+
+          <Disclosure>
+            <Disclosure.Button>
               I have set <code>connectToDevTools</code> to <code>true</code>
             </Disclosure.Button>
             <Disclosure.Panel>
