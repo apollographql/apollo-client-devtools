@@ -44,7 +44,7 @@ const ALERT_CONFIGS = {
   },
   disconnected: {
     type: "loading",
-    content: "Disconnected. Waiting for client to connect...",
+    content: "Disconnected. Looking for client...",
   },
   timedout: {
     type: "error",
