@@ -23,6 +23,7 @@ import { BannerAlert, BannerAlertConfig } from "./components/BannerAlert";
 import { GetStates } from "./stateMachine";
 import { devtoolsMachine } from "./machines";
 import { RETRY_CONNECTION } from "../extension/constants";
+import { ClientNotFoundModal } from "./components/ClientNotFoundModal";
 
 type DevtoolsState = GetStates<typeof devtoolsMachine>;
 
@@ -85,6 +86,7 @@ export const App = () => {
   const mountedRef = useRef(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const { data } = useQuery(GET_OPERATION_COUNTS);
+  const [clientNotFoundModalOpen, setClientNotFoundModalOpen] = useState(false);
   const selected = useReactiveVar<Screens>(currentScreen);
   const state = useReactiveVar(devtoolsState);
   const [embeddedExplorerIFrame, setEmbeddedExplorerIFrame] =
@@ -96,6 +98,10 @@ export const App = () => {
     // connected to the client.
     if (!mountedRef.current && state === "connected") {
       return;
+    }
+
+    if (state === "notFound") {
+      setClientNotFoundModalOpen(true);
     }
 
     const dismiss = BannerAlert.show(ALERT_CONFIGS[state]);
@@ -111,6 +117,14 @@ export const App = () => {
 
   return (
     <>
+      <ClientNotFoundModal
+        open={clientNotFoundModalOpen}
+        onClose={() => setClientNotFoundModalOpen(false)}
+        onRetry={() => {
+          window.postMessage({ type: RETRY_CONNECTION });
+          setClientNotFoundModalOpen(false);
+        }}
+      />
       <BannerAlert />
       <Tabs
         value={selected}
