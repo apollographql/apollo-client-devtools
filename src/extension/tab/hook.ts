@@ -116,7 +116,7 @@ function initializeHook() {
 
   window.addEventListener("load", () => {
     if (hook.ApolloClient) {
-      sendMessageToTab(CONNECT_TO_DEVTOOLS);
+      sendHookDataToDevTools(CONNECT_TO_DEVTOOLS);
     }
   });
 
