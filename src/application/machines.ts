@@ -42,6 +42,7 @@ export const devtoolsMachine = createMachine({
       events: {
         connect: "connected",
         timeout: "timedout",
+        clientNotFound: "notFound",
       },
     },
     timedout: {},
