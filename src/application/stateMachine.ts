@@ -19,6 +19,17 @@ type MachineConfig<
   Context extends Record<string, unknown>,
 > = {
   initial: NoInfer<State>;
+  /**
+   * Provides type hints to the machine on what events are allowed.
+   *
+   * @example
+   * ```ts
+   * createMachine({
+   *   types: {} as {
+   *     events: { type: "connect" } | { type: "timeout" };
+   *   }
+   * })
+   */
   types: {
     events: { type: EventName };
   };
