@@ -38,7 +38,7 @@ devtools.addConnection("background", (message) => {
 });
 
 // In case we can't connect to the tab, we should at least show something to the
-// user when we've attempted to connect 3 times.
+// user when we've attempted to connect a max number of times.
 function startConnectTimeout(attempts = 0) {
   connectTimeoutId = setTimeout(() => {
     if (attempts < 3) {
