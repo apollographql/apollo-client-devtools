@@ -10,6 +10,18 @@ interface ClientNotFoundModalProps {
   onRetry: () => void;
 }
 
+function ConnectToDevToolsOptionLink() {
+  return (
+    <a
+      rel="noreferrer noopener"
+      target="_blank"
+      href="https://www.apollographql.com/docs/react/api/core/ApolloClient#apolloclientoptions-connecttodevtools"
+    >
+      <code>connectToDevTools</code> option
+    </a>
+  );
+}
+
 export function ClientNotFoundModal({
   open,
   onClose,
@@ -25,14 +37,7 @@ export function ClientNotFoundModal({
           An Apollo Client instance was not found, either because an Apollo
           Client instance was never created, or because it could not be
           discovered. This is most commonly fixed by setting the{" "}
-          <a
-            rel="noreferrer noopener"
-            target="_blank"
-            href="https://www.apollographql.com/docs/react/api/core/ApolloClient#apolloclientoptions-connecttodevtools"
-          >
-            <code>connectToDevTools</code> option
-          </a>{" "}
-          to <code>true</code>.
+          <ConnectToDevToolsOptionLink /> to <code>true</code>.
         </p>
         <p className="mt-4">
           If this was reached in error, please try one of the following
@@ -40,6 +45,49 @@ export function ClientNotFoundModal({
           the client again.
         </p>
         <div className="mt-4 flex flex-col gap-2">
+          <Disclosure>
+            <Disclosure.Button>
+              I&apos;m running my application in development mode
+            </Disclosure.Button>
+            <Disclosure.Panel>
+              <p>
+                Apollo Client only connects to Apollo Client Devtools in
+                development mode. It detects the current environment using the{" "}
+                <code>globalThis.__DEV__</code> variable.{" "}
+              </p>
+              <p className="mt-4">
+                You may need to tweak your bundler settings to set{" "}
+                <code>globalThis.__DEV__</code> correctly. See the{" "}
+                <a
+                  rel="noreferrer noopener"
+                  target="_blank"
+                  href="https://www.apollographql.com/docs/react/development-testing/reducing-bundle-size/"
+                >
+                  &quot;Reducing bundle size&quot;
+                </a>{" "}
+                article in the documentation for examples on configuring your
+                bundler.
+              </p>
+              <p className="mt-4">
+                Alternatively, set the <ConnectToDevToolsOptionLink /> to{" "}
+                <code>true</code> in your Apollo Client instance.
+              </p>
+            </Disclosure.Panel>
+          </Disclosure>
+
+          <Disclosure>
+            <Disclosure.Button>
+              I&apos;m running my application in production mode
+            </Disclosure.Button>
+            <Disclosure.Panel>
+              By default, Apollo Client only connects to Apollo Client Devtools
+              in development mode. If you would like to use Apollo Client
+              Devtools for your production application, set the{" "}
+              <ConnectToDevToolsOptionLink /> to <code>true</code> in your
+              Apollo Client instance.
+            </Disclosure.Panel>
+          </Disclosure>
+
           <Disclosure>
             <Disclosure.Button>
               My Apollo Client instance is created in an iframe
