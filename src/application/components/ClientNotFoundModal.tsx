@@ -118,8 +118,8 @@ export function ClientNotFoundModal({
                 set.
               </p>
               <p className="mt-4">
-                If this variable is not set, this is most likely a bug with
-                Apollo Client. Please open a{" "}
+                If the value is <code>undefined</code>, this is most likely a
+                bug with Apollo Client. Please open a{" "}
                 <GitHubIssueLink
                   labels={["🐞 bug"]}
                   repository="apollo-client"
@@ -160,11 +160,11 @@ ${SECTIONS.devtoolsVersion}
                 that you can use to check if the client was discovered. Check
                 your browser console for the{" "}
                 <code>window.__APOLLO_DEVTOOLS_GLOBAL_HOOK__.ApolloClient</code>{" "}
-                variable to see if it contains a reference to your Apollo Client
-                instance. If the Apollo Client instance is not set, this likely
-                indicates your client was not discovered in time. Click the
-                &quot;Retry&quot; button below to try connecting to your Apollo
-                Client instance again.
+                variable to see if it references your Apollo Client instance. If
+                this value is <code>undefined</code>, this likely indicates your
+                client was not discovered in time. Click the &quot;Retry&quot;
+                button below to try connecting to your Apollo Client instance
+                again.
               </p>
               <p className="mt-4">
                 For best results, ensure your client is created within the first
