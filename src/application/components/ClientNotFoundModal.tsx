@@ -65,8 +65,7 @@ export function ClientNotFoundModal({
                 >
                   &quot;Reducing bundle size&quot;
                 </a>{" "}
-                article in the documentation for examples on configuring your
-                bundler.
+                article for examples on configuring your bundler.
               </p>
               <p className="mt-4">
                 Alternatively, set the <ConnectToDevToolsOptionLink /> to{" "}
