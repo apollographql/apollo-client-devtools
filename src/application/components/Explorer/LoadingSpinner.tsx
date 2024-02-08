@@ -48,7 +48,7 @@ export const LoadingSpinner = React.forwardRef<SVGSVGElement, Props>(
       >
         <circle
           strokeWidth="8"
-          className="stroke-silver-400 dark:stroke-navy-400/30"
+          className="stroke-silver-500 dark:stroke-navy-400/60"
           fill="transparent"
           r="41"
           cx="50"
@@ -56,7 +56,7 @@ export const LoadingSpinner = React.forwardRef<SVGSVGElement, Props>(
         />
         <g transform="translate(50 50)">
           <circle
-            className="animate-spin will-change-transform fill-selected dark:fill-selected-dark"
+            className="animate-spin will-change-transform fill-brand-nebula dark:fill-brand-nebula-dark"
             style={{ animationDelay: `${mountDelay}ms` }}
             r="10"
             cx="40"

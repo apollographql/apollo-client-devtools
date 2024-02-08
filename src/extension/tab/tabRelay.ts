@@ -1,11 +1,12 @@
 import Relay from "../../Relay";
 import {
   REQUEST_TAB_ID,
-  CREATE_DEVTOOLS_PANEL,
   EXPLORER_RESPONSE,
   UPDATE,
-  RELOADING_TAB,
-  RELOAD_TAB_COMPLETE,
+  CONNECT_TO_DEVTOOLS,
+  CONNECT_TO_CLIENT_TIMEOUT,
+  DISCONNECT_FROM_DEVTOOLS,
+  CLIENT_NOT_FOUND,
 } from "../constants";
 import browser from "webextension-polyfill";
 
@@ -39,10 +40,11 @@ export default new Promise(async ($export) => {
   });
 
   const devtools = `background:devtools-${id}`;
-  tab.forward(CREATE_DEVTOOLS_PANEL, devtools);
   tab.forward(UPDATE, devtools);
-  tab.forward(RELOADING_TAB, devtools);
-  tab.forward(RELOAD_TAB_COMPLETE, devtools);
+  tab.forward(CLIENT_NOT_FOUND, devtools);
+  tab.forward(CONNECT_TO_DEVTOOLS, devtools);
+  tab.forward(CONNECT_TO_CLIENT_TIMEOUT, devtools);
+  tab.forward(DISCONNECT_FROM_DEVTOOLS, devtools);
   tab.forward(EXPLORER_RESPONSE, `${devtools}:explorer`);
 
   const module = await Promise.resolve({ tab, id });

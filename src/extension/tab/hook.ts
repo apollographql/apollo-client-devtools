@@ -23,14 +23,14 @@ import {
 } from "./helpers";
 import { ExplorerResponse, QueryResult } from "../../types";
 import {
-  DEVTOOLS_INITIALIZED,
-  CREATE_DEVTOOLS_PANEL,
+  CONNECT_TO_CLIENT,
   EXPLORER_REQUEST,
   EXPLORER_RESPONSE,
   REQUEST_DATA,
   UPDATE,
-  RELOADING_TAB,
-  RELOAD_TAB_COMPLETE,
+  CONNECT_TO_DEVTOOLS,
+  DISCONNECT_FROM_DEVTOOLS,
+  CLIENT_NOT_FOUND,
 } from "../constants";
 import { EXPLORER_SUBSCRIPTION_TERMINATION } from "../../application/components/Explorer/postMessageHelpers";
 import { getPrivateAccess } from "../../privateAccess";
@@ -111,13 +111,13 @@ function initializeHook() {
 
   // Listen for tab refreshes
   window.onbeforeunload = () => {
-    sendMessageToTab(RELOADING_TAB);
+    sendMessageToTab(DISCONNECT_FROM_DEVTOOLS);
   };
 
   window.addEventListener("load", () => {
-    sendMessageToTab(RELOAD_TAB_COMPLETE, {
-      ApolloClient: !!hook.ApolloClient,
-    });
+    if (hook.ApolloClient) {
+      sendHookDataToDevTools(CONNECT_TO_DEVTOOLS);
+    }
   });
 
   function handleExplorerResponse(payload: ExplorerResponse) {
@@ -125,7 +125,7 @@ function initializeHook() {
   }
 
   function sendHookDataToDevTools(
-    eventName: typeof CREATE_DEVTOOLS_PANEL | typeof UPDATE
+    eventName: typeof UPDATE | typeof CONNECT_TO_DEVTOOLS
   ) {
     // Tab Relay forwards this the devtools
     sendMessageToTab(
@@ -138,9 +138,9 @@ function initializeHook() {
     );
   }
 
-  clientRelay.listen(DEVTOOLS_INITIALIZED, () => {
+  clientRelay.listen(CONNECT_TO_CLIENT, () => {
     if (hook.ApolloClient) {
-      sendHookDataToDevTools(CREATE_DEVTOOLS_PANEL);
+      sendHookDataToDevTools(CONNECT_TO_DEVTOOLS);
     } else {
       // try finding client again, if it's found findClient will send the CREATE_DEVTOOLS_PANEL event
       findClient();
@@ -252,12 +252,16 @@ function initializeHook() {
     let count = 0;
 
     function initializeDevtoolsHook() {
-      if (count++ > 10) clearInterval(interval);
+      if (count++ > 10) {
+        clearInterval(interval);
+        sendMessageToTab(CLIENT_NOT_FOUND);
+      }
       if (window.__APOLLO_CLIENT__) {
         registerClient(window.__APOLLO_CLIENT__);
       }
     }
 
+    clearInterval(interval);
     interval = setInterval(initializeDevtoolsHook, 1000);
     initializeDevtoolsHook(); // call immediately to reduce lag if devtools are already available
   }
@@ -279,7 +283,7 @@ function initializeHook() {
     clearInterval(interval);
     // incase initial update was missed because the client wasn't ready, send the create devtools event.
     // devtools checks to see if it's already created, so this won't create duplicate tabs
-    sendHookDataToDevTools(CREATE_DEVTOOLS_PANEL);
+    sendHookDataToDevTools(CONNECT_TO_DEVTOOLS);
   }
 
   const preExisting = window[DEVTOOLS_KEY];

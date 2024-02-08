@@ -32,4 +32,10 @@
     @apply text-primary;
     @apply dark:text-primary-dark;
   }
+
+  :not(pre) > code {
+    @apply rounded py-1 px-2 text-sm text-code-a dark:text-code-a-dark;
+    @apply bg-secondary dark:bg-secondary-dark;
+    @apply border border-primary dark:border-primary-dark;
+  }
 }

@@ -1,36 +1,45 @@
-import {
-  initDevTools,
-  writeData,
-  handleReload,
-  handleReloadComplete,
-} from "../../application";
+import { initDevTools, writeData, client } from "../../application";
 import {
   receiveExplorerRequests,
   receiveSubscriptionTerminationRequest,
   sendResponseToExplorer,
 } from "../../application/components/Explorer/explorerRelay";
+import { DEVTOOLS_STATE_CHANGED, INITIALIZE_PANEL, UPDATE } from "../constants";
 import "./panel.css";
+import { devtoolsState } from "../../application/App";
 
 declare global {
   interface Window {
     __DEVTOOLS_APPLICATION__: {
-      initialize: typeof initDevTools;
-      writeData: typeof writeData;
       receiveExplorerRequests: typeof receiveExplorerRequests;
       receiveSubscriptionTerminationRequest: typeof receiveSubscriptionTerminationRequest;
       sendResponseToExplorer: typeof sendResponseToExplorer;
-      handleReload: typeof handleReload;
-      handleReloadComplete: typeof handleReloadComplete;
     };
   }
 }
 
 window.__DEVTOOLS_APPLICATION__ = {
-  initialize: initDevTools,
-  writeData,
   receiveExplorerRequests,
   receiveSubscriptionTerminationRequest,
   sendResponseToExplorer,
-  handleReload,
-  handleReloadComplete,
 };
+
+window.addEventListener("message", (event) => {
+  switch (event.data.type) {
+    case UPDATE:
+      return writeData(event.data.payload);
+    case INITIALIZE_PANEL: {
+      devtoolsState(event.data.state);
+      writeData(event.data.payload);
+
+      return initDevTools();
+    }
+    case DEVTOOLS_STATE_CHANGED: {
+      devtoolsState(event.data.state);
+
+      if (event.data.state === "connected") {
+        client.resetStore();
+      }
+    }
+  }
+});
