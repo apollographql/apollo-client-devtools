@@ -142,8 +142,8 @@ ${SECTIONS.devtoolsVersion}
 
           <Disclosure>
             <Disclosure.Button>
-              <code>window.__APOLLO_CLIENT__</code> contains a reference to my
-              client instance
+              <code>window.__APOLLO_CLIENT__</code> references my client
+              instance
             </Disclosure.Button>
             <Disclosure.Panel>
               <p>
