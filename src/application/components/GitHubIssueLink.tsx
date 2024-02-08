@@ -11,7 +11,7 @@ interface GitHubIssueLinkProps {
 
 const WHITESPACE = /\s/g;
 const DEFAULT_BODY =
-  "<!-- Please provide a detailed description of the issue you are experiencing and the steps to reproduce it.-->";
+  "<!-- Please provide a detailed description of the issue you are experiencing and the steps to reproduce it.-->\n";
 
 export const SECTIONS = {
   default: DEFAULT_BODY,
