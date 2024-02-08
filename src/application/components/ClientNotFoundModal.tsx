@@ -112,9 +112,10 @@ export function ClientNotFoundModal({
             <Disclosure.Panel>
               <p>
                 Apollo Client Devtools relies on the presence of a global{" "}
-                <code>window</code> variable set from the client. Check for{" "}
-                <code>window.__APOLLO_CLIENT__</code> in your browser console to
-                see if this variable is set.
+                <code>window.__APOLLO_CLIENT__</code> variable set from the
+                Apollo Client instance. Check your browser console for{" "}
+                <code>window.__APOLLO_CLIENT__</code> to see if this variable is
+                set.
               </p>
               <p className="mt-4">
                 If this variable is not set, this is most likely a bug with
