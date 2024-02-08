@@ -80,10 +80,9 @@ export function ClientNotFoundModal({
             </Disclosure.Button>
             <Disclosure.Panel>
               By default, Apollo Client only connects to Apollo Client Devtools
-              in development mode. If you would like to use Apollo Client
-              Devtools for your production application, set the{" "}
-              <ConnectToDevToolsOptionLink /> to <code>true</code> in your
-              Apollo Client instance.
+              in development mode. To use Apollo Client Devtools for your
+              production application, set the <ConnectToDevToolsOptionLink /> to{" "}
+              <code>true</code> in your Apollo Client instance.
             </Disclosure.Panel>
           </Disclosure>
 
