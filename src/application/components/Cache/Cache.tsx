@@ -84,10 +84,10 @@ export function Cache() {
             <div>
               <div className="text-xs font-bold uppercase">Cache ID</div>
               <h1
-                className="font-heading font-medium text-xl text-heading dark:text-heading-dark break-all"
+                className="font-code font-medium text-xl text-heading dark:text-heading-dark break-all"
                 data-testid="cache-id"
               >
-                <code>{cacheId}</code>
+                {cacheId}
               </h1>
             </div>
             <CopyButton size="md" text={JSON.stringify(cache[cacheId])} />
