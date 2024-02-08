@@ -149,15 +149,18 @@ ${SECTIONS.devtoolsVersion}
             <Disclosure.Panel>
               <p>
                 Occasionally the Apollo Client instance was set correctly on
-                window, but the Apollo Client Devtools could not find it in
-                time. Apollo Client Devtools checks for the{" "}
-                <code>window.__APOLLO_CLIENT__</code> variable for up to 10
-                seconds before giving up.
+                <code>window</code>, but the Apollo Client Devtools could not
+                find it in time. Apollo Client Devtools checks for the presence
+                of the <code>window.__APOLLO_CLIENT__</code> variable for up to
+                10 seconds before giving up.
               </p>
               <p className="mt-4">
-                Check your browser console for the{" "}
+                Apollo Client Devtools exposes a global{" "}
+                <code>window.__APOLLO_DEVTOOLS_GLOBAL_HOOK__</code> variable
+                that you can use to check if the client was discovered. Check
+                your browser console for the{" "}
                 <code>window.__APOLLO_DEVTOOLS_GLOBAL_HOOK__.ApolloClient</code>{" "}
-                variable to see if it contains a reference to your client
+                variable to see if it contains a reference to your Apollo Client
                 instance. If the Apollo Client instance is not set, this likely
                 indicates your client was not discovered in time. Click the
                 &quot;Retry&quot; button below to try connecting to your Apollo
