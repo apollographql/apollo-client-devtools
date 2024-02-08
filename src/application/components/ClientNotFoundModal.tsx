@@ -51,7 +51,7 @@ export function ClientNotFoundModal({
             </Disclosure.Button>
             <Disclosure.Panel>
               <p>
-                Apollo Client only connects to Apollo Client Devtools in
+                By default, Apollo Client connects to Apollo Client Devtools in
                 development mode. It detects the current environment using the{" "}
                 <code>globalThis.__DEV__</code> variable.{" "}
               </p>
