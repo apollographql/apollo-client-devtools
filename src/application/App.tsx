@@ -48,7 +48,8 @@ const ALERT_CONFIGS = {
   },
   timedout: {
     type: "error",
-    content: "Unable to connect to client",
+    content:
+      "Unable to communicate with browser tab. Please reload the window and restart the devtools to try again.",
   },
   notFound: {
     type: "error",
