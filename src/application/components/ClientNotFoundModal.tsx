@@ -98,7 +98,7 @@ export function ClientNotFoundModal({
                 target="_blank"
                 href="https://github.com/apollographql/apollo-client-devtools/discussions/380"
               >
-                this discussion.
+                this discussion
               </a>{" "}
               for updates on this feature.
             </Disclosure.Panel>
