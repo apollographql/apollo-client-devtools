@@ -135,7 +135,7 @@ ${SECTIONS.devtoolsVersion}
                 >
                   GitHub issue
                 </GitHubIssueLink>{" "}
-                with the Apollo Client repository to get help from the Apollo
+                in the Apollo Client repository to get help from the Apollo
                 Client maintainers.
               </p>
             </Disclosure.Panel>
