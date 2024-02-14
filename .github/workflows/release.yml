@@ -63,7 +63,7 @@ jobs:
 
       - name: Create zip files
         if: steps.changesets.outcome == 'success' && steps.changesets.outputs.published == 'true'
-        run: npm run dist chrome && npm run dist firefox
+        run: npm run dist:chrome && npm run dist:firefox
 
       - name: Upload & release Chrome extension
         if: steps.changesets.outcome == 'success' && steps.changesets.outputs.published == 'true'
