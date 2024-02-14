@@ -21,7 +21,7 @@
     "changeset-publish": "npm run build && changeset publish",
     "changeset-check": "changeset status --verbose --since=origin/main",
     "changeset-version": "changeset version && npm i && npm run prepdist:changesets",
-    "prepdist:changesets": "tsx prepareChangesetsRelease.ts && prettier src/extension/manifest.json --write",
+    "prepdist:changesets": "tsx prepareChangesetsRelease.ts && prettier src/extension/manifest.json src/extension/manifestv3.json --write",
     "chrome": "npm run build:dev -- --watch --env TARGET=chromium",
     "firefox": "npm run build:dev -- --watch",
     "format": "prettier --write .",
