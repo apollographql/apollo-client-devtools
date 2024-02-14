@@ -61,9 +61,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Create zip files
+      - name: Create chrome zip file
         if: steps.changesets.outcome == 'success' && steps.changesets.outputs.published == 'true'
-        run: npm run dist:chrome && npm run dist:firefox
+        run: npm run dist:chrome
 
       - name: Upload & release Chrome extension
         if: steps.changesets.outcome == 'success' && steps.changesets.outputs.published == 'true'
@@ -74,6 +74,10 @@ jobs:
           client-id: ${{ secrets.CHROME_CLIENT_ID }}
           client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
           refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
+
+      - name: Create firefox zip files
+        if: steps.changesets.outcome == 'success' && steps.changesets.outputs.published == 'true'
+        run: npm run dist:firefox
 
       - name: Publish the extension for Firefox
         if: steps.changesets.outcome == 'success' && steps.changesets.outputs.published == 'true'
