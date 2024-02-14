@@ -60,6 +60,7 @@ export default (env) => {
     entry: {
       panel: "./src/extension/devtools/panel.ts",
       background: "./src/extension/background/background.ts",
+      service_worker: "./src/extension/service_worker/service_worker.ts",
       devtools: "./src/extension/devtools/devtools.ts",
       tab: "./src/extension/tab/tab.ts",
       hook: "./src/extension/tab/hook.ts",
