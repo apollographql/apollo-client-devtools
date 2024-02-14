@@ -16,6 +16,8 @@ export default (env) => {
         }
       : {};
 
+  const manifestVersion = process.env.MANIFEST_VERSION || "2";
+
   const plugins = [
     new CopyPlugin({
       patterns: [
@@ -32,8 +34,11 @@ export default (env) => {
           to: path.resolve(__dirname, "build/images"),
         },
         {
-          from: "./src/extension/manifest.json",
-          to: path.resolve(__dirname, "build"),
+          from:
+            manifestVersion === "3"
+              ? "./src/extension/manifestv3.json"
+              : "./src/extension/manifest.json",
+          to: path.resolve(__dirname, "build/manifest.json"),
         },
       ],
     }),
@@ -59,8 +64,10 @@ export default (env) => {
     mode: env.NODE_ENV,
     entry: {
       panel: "./src/extension/devtools/panel.ts",
-      background: "./src/extension/background/background.ts",
-      service_worker: "./src/extension/service_worker/service_worker.ts",
+      [manifestVersion === "2" ? "background" : "service_worker"]:
+        manifestVersion === "2"
+          ? "./src/extension/background/background.ts"
+          : "./src/extension/service_worker/service_worker.ts",
       devtools: "./src/extension/devtools/devtools.ts",
       tab: "./src/extension/tab/tab.ts",
       hook: "./src/extension/tab/hook.ts",
