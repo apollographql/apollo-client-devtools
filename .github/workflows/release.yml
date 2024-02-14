@@ -50,6 +50,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Publishes with manifest v2
       - name: Create release PR or publish to npm + GitHub
         id: changesets
         if: steps.check_files.outputs.files_exists == 'false'
