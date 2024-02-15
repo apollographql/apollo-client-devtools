@@ -19,7 +19,7 @@
     "build": "npm run clean && webpack --env NODE_ENV=production --progress",
     "build:dev": "npm run clean && webpack --env NODE_ENV=development --progress",
     "clean": "rimraf build && mkdir build && rimraf *.zip",
-    "changeset-publish": "npm run build && changeset publish",
+    "changeset-publish": "npm run build -- --env TARGET=firefox && changeset publish",
     "changeset-check": "changeset status --verbose --since=origin/main",
     "changeset-version": "changeset version && npm i && npm run prepdist:changesets",
     "prepdist:changesets": "tsx prepareChangesetsRelease.ts && prettier src/extension/firefox/manifest.json src/extension/chrome/manifest.json --write",
