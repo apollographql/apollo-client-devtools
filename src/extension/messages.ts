@@ -1,11 +1,16 @@
 import { ExplorerResponse } from "../types";
 
-export type ApolloClientDevtoolsMessage = {
+export interface MessageFormat {
+  type: string;
+  payload?: unknown;
+}
+
+export type ApolloClientDevtoolsMessage<Message extends MessageFormat> = {
   source: "apollo-client-devtools";
   message: Message;
 };
 
-export type Message =
+export type DevtoolsMessage =
   | { type: "clientNotFound" }
   | { type: "connectToClient" }
   | { type: "connectToClientTimeout" }
@@ -17,9 +22,9 @@ export type Message =
   | { type: "requestData" }
   | { type: "update"; payload: string };
 
-export function isApolloClientDevtoolsMessage(
+export function isApolloClientDevtoolsMessage<Message extends MessageFormat>(
   message: unknown
-): message is ApolloClientDevtoolsMessage {
+): message is ApolloClientDevtoolsMessage<Message> {
   return (
     typeof message === "object" &&
     message !== null &&

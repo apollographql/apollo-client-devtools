@@ -1,32 +1,32 @@
 import browser from "webextension-polyfill";
-import type { ApolloClientDevtoolsMessage, Message } from "./messages";
+import type { MessageFormat } from "./messages";
 import { isApolloClientDevtoolsMessage } from "./messages";
 
-interface Actor {
-  on: <TName extends Message["type"]>(
+interface Actor<Messages extends MessageFormat> {
+  on: <TName extends Messages["type"]>(
     name: TName,
     callback: (
-      ...args: Extract<Message, { type: TName }> extends {
+      ...args: Extract<Messages, { type: TName }> extends {
         payload: infer TPayload;
       }
         ? [payload: TPayload]
         : []
     ) => void
   ) => () => void;
-  send: <TName extends Message["type"]>(
+  send: <TName extends Messages["type"]>(
     name: TName,
-    ...args: Extract<Message, { type: TName }> extends {
+    ...args: Extract<Messages, { type: TName }> extends {
       payload: infer TPayload;
     }
       ? [payload: TPayload]
       : []
   ) => void;
-  proxy: (name: Message["type"], actor: Actor) => () => void;
+  proxy: (name: Messages["type"], actor: Actor<Messages>) => () => void;
 }
 
 interface MessageAdapter {
   addListener: (listener: (message: unknown) => void) => void;
-  postMessage: (message: ApolloClientDevtoolsMessage) => void;
+  postMessage: (message: unknown) => void;
 }
 
 function createWindowMessageAdapter(window: Window): MessageAdapter {
@@ -56,9 +56,11 @@ function createPortMessageAdapter(port: browser.Runtime.Port): MessageAdapter {
   };
 }
 
-function createActor(adapter: MessageAdapter): Actor {
+function createActor<Messages extends MessageFormat>(
+  adapter: MessageAdapter
+): Actor<Messages> {
   const messageListeners = new Map<
-    Message["type"],
+    Messages["type"],
     Set<(...args: unknown[]) => void>
   >();
 
@@ -82,7 +84,7 @@ function createActor(adapter: MessageAdapter): Actor {
 
   adapter.addListener(handleMessage);
 
-  const on: Actor["on"] = (name, callback) => {
+  const on: Actor<Messages>["on"] = (name, callback) => {
     let listeners = messageListeners.get(name);
 
     if (!listeners) {
@@ -104,7 +106,10 @@ function createActor(adapter: MessageAdapter): Actor {
 
       adapter.postMessage({
         source: "apollo-client-devtools",
-        message: { type: name, ...(payload ? { payload } : {}) } as Message,
+        message: {
+          type: name,
+          ...(payload ? { payload } : {}),
+        },
       });
     },
     proxy: (name, actor) => {
@@ -113,10 +118,14 @@ function createActor(adapter: MessageAdapter): Actor {
   };
 }
 
-export function createPortActor(port: browser.Runtime.Port) {
-  return createActor(createPortMessageAdapter(port));
+export function createPortActor<Messages extends MessageFormat>(
+  port: browser.Runtime.Port
+) {
+  return createActor<Messages>(createPortMessageAdapter(port));
 }
 
-export function createWindowActor(window: Window) {
-  return createActor(createWindowMessageAdapter(window));
+export function createWindowActor<Messages extends MessageFormat>(
+  window: Window
+) {
+  return createActor<Messages>(createWindowMessageAdapter(window));
 }
