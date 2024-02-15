@@ -29,7 +29,7 @@ interface MessageAdapter {
   postMessage: (message: ApolloClientDevtoolsMessage) => void;
 }
 
-function createWindowMessageAdapter(): MessageAdapter {
+function createWindowMessageAdapter(window: Window): MessageAdapter {
   return {
     addListener(listener) {
       window.addEventListener("message", ({ data }) => {
@@ -117,6 +117,6 @@ export function createPortActor(port: browser.Runtime.Port) {
   return createActor(createPortMessageAdapter(port));
 }
 
-export function createWindowActor() {
-  return createActor(createWindowMessageAdapter());
+export function createWindowActor(window: Window) {
+  return createActor(createWindowMessageAdapter(window));
 }

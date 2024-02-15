@@ -5,7 +5,7 @@ import browser from "webextension-polyfill";
 export default new Promise(async ($export) => {
   const port = browser.runtime.connect({ name: "tab" });
 
-  const tab = createWindowActor();
+  const tab = createWindowActor(window);
   const devtools = createPortActor(port);
 
   devtools.proxy("connectToClient", tab);

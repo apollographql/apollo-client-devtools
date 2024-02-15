@@ -31,7 +31,7 @@ import { createWindowActor } from "../actor";
 
 const DEVTOOLS_KEY = Symbol.for("apollo.devtools");
 
-const actor = createWindowActor();
+const actor = createWindowActor(window);
 
 declare global {
   type TCache = any;
