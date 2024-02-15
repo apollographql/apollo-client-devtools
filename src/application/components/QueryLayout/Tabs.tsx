@@ -1,14 +1,19 @@
 import { ReactNode } from "react";
 import { Tabs as TabsBase } from "../Tabs";
 
-interface TabsProps {
+interface TabsProps<TValue extends string> {
   children: ReactNode;
-  defaultValue?: string;
-  value?: string;
-  onChange?: (value: string) => void;
+  defaultValue?: TValue;
+  value?: TValue;
+  onChange?: (value: TValue) => void;
 }
 
-export function Tabs({ children, defaultValue, value, onChange }: TabsProps) {
+export function Tabs<TValue extends string = string>({
+  children,
+  defaultValue,
+  value,
+  onChange,
+}: TabsProps<TValue>) {
   return (
     <TabsBase
       className="[grid-area:tabs] lg:overflow-hidden lg:-my-2"
