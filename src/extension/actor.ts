@@ -12,7 +12,7 @@ interface Actor {
         ? [payload: TPayload]
         : []
     ) => void
-  ) => void;
+  ) => () => void;
   send: <TName extends Message["type"]>(
     name: TName,
     ...args: Extract<Message, { type: TName }> extends {
@@ -21,6 +21,7 @@ interface Actor {
       ? [payload: TPayload]
       : []
   ) => void;
+  proxy: (name: Message["type"], actor: Actor) => () => void;
 }
 
 interface MessageAdapter {
@@ -81,21 +82,23 @@ function createActor(adapter: MessageAdapter): Actor {
 
   adapter.addListener(handleMessage);
 
+  const on: Actor["on"] = (name, callback) => {
+    let listeners = messageListeners.get(name);
+
+    if (!listeners) {
+      listeners = new Set();
+      messageListeners.set(name, listeners);
+    }
+
+    listeners.add(callback);
+
+    return () => {
+      listeners!.delete(callback);
+    };
+  };
+
   return {
-    on: (name, callback) => {
-      let listeners = messageListeners.get(name);
-
-      if (!listeners) {
-        listeners = new Set();
-        messageListeners.set(name, listeners);
-      }
-
-      listeners.add(callback);
-
-      return () => {
-        listeners!.delete(callback);
-      };
-    },
+    on,
     send: (name, ...args) => {
       const [payload] = args;
 
@@ -103,6 +106,9 @@ function createActor(adapter: MessageAdapter): Actor {
         source: "apollo-client-devtools",
         message: { type: name, ...(payload ? { payload } : {}) } as Message,
       });
+    },
+    proxy: (name, actor) => {
+      return on(name, (...args) => actor.send(name, ...args));
     },
   };
 }
