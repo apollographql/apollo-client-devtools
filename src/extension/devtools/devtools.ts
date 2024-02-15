@@ -111,7 +111,7 @@ function sendMessageToClient(message: string) {
 }
 
 function startRequestInterval(ms = 500) {
-  let id: NodeJS.Timeout;
+  let id: number;
 
   if (devtoolsMachine.matches("connected")) {
     sendMessageToClient(REQUEST_DATA);
