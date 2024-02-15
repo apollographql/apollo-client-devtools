@@ -13,6 +13,7 @@ export type Message =
   | { type: "disconnectFromDevtools" }
   | { type: "explorerRequest"; payload: string }
   | { type: "explorerResponse"; payload: ExplorerResponse }
+  | { type: "explorerSubscriptionTermination" }
   | { type: "requestData" }
   | { type: "update"; payload: string };
 

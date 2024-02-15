@@ -10,6 +10,7 @@ export default new Promise(async ($export) => {
 
   devtools.proxy("connectToClient", tab);
   devtools.proxy("requestData", tab);
+  devtools.proxy("explorerSubscriptionTermination", tab);
 
   tab.proxy("clientNotFound", devtools);
   tab.proxy("connectToDevtools", devtools);

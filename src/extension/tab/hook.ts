@@ -24,7 +24,6 @@ import {
   getMainDefinition,
 } from "./helpers";
 import { ExplorerResponse, QueryResult } from "../../types";
-import { EXPLORER_SUBSCRIPTION_TERMINATION } from "../../application/components/Explorer/postMessageHelpers";
 import { getPrivateAccess } from "../../privateAccess";
 import { JSONObject } from "../../application/types/json";
 import { FetchPolicy } from "../../application/components/Explorer/Explorer";
@@ -223,7 +222,7 @@ function initializeHook() {
       definition.kind === "OperationDefinition" &&
       definition.operation === "subscription"
     ) {
-      clientRelay.listen(EXPLORER_SUBSCRIPTION_TERMINATION, () => {
+      actor.on("explorerSubscriptionTermination", () => {
         operationObservable?.unsubscribe();
       });
     }
