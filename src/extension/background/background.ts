@@ -1,4 +1,3 @@
-import { REQUEST_TAB_ID } from "../constants";
 import browser from "webextension-polyfill";
 
 const ports: Record<
@@ -15,11 +14,13 @@ function isNumeric(value: string) {
 }
 
 function registerTab(tabId: number) {
-  ports[tabId] = {
-    tab: null,
-    extension: null,
-    disconnect: null,
-  };
+  if (!ports[tabId]) {
+    ports[tabId] = {
+      tab: null,
+      extension: null,
+      disconnect: null,
+    };
+  }
 }
 
 function registerTabPort(tabId: number, port: browser.Runtime.Port) {
@@ -48,7 +49,7 @@ function connectPorts(tabId: number) {
   }
 
   const extensionPort = ports[tabId].extension;
-  const tabPort = ports[tabId].extension;
+  const tabPort = ports[tabId].tab;
 
   if (!extensionPort) {
     throw new Error("Attempted to connect extension port which does not exist");
@@ -104,49 +105,46 @@ function connectPorts(tabId: number) {
   tabPort.onDisconnect.addListener(disconnectPorts);
 }
 
+function connectTabPort(port: browser.Runtime.Port) {
+  if (port.sender?.tab?.id == null) {
+    return;
+  }
+
+  const tabId = port.sender.tab.id;
+
+  if (ports[tabId]?.tab) {
+    ports[tabId].disconnect?.();
+    ports[tabId].tab?.disconnect();
+  }
+
+  registerTab(tabId);
+  registerTabPort(tabId, port);
+
+  if (ports[tabId].extension) {
+    connectPorts(tabId);
+  }
+}
+
+function connectExtensionPort(port: browser.Runtime.Port) {
+  const tabId = +port.name;
+
+  registerTab(tabId);
+  registerExtensionPort(tabId, port);
+
+  if (ports[tabId].tab) {
+    connectPorts(tabId);
+  }
+}
+
 browser.runtime.onConnect.addListener((port) => {
   if (port.name === "tab") {
-    if (port.sender?.tab?.id == null) {
-      return;
-    }
-
-    const tabId = port.sender.tab.id;
-
-    if (ports[tabId]?.tab) {
-      ports[tabId].disconnect?.();
-      ports[tabId].tab?.disconnect();
-    }
-
-    registerTab(tabId);
-    registerTabPort(tabId, port);
-
-    if (ports[tabId].extension) {
-      connectPorts(tabId);
-    }
-
-    return;
+    return connectTabPort(port);
   }
 
   // The devtools port is identified by the tab id
   if (isNumeric(port.name)) {
-    const tabId = +port.name;
-
-    registerTab(tabId);
-    registerExtensionPort(tabId, port);
-
-    if (ports[tabId].tab) {
-      connectPorts(tabId);
-    }
-
-    return;
+    return connectExtensionPort(port);
   }
 
   throw new Error(`Unknown port ${port.name} connected`);
-});
-
-// This sends the tab id to the inspected tab.
-browser.runtime.onMessage.addListener(({ message }, sender) => {
-  if (message === REQUEST_TAB_ID) {
-    return Promise.resolve(sender.tab?.id);
-  }
 });
