@@ -5,22 +5,9 @@ import { isApolloClientDevtoolsMessage } from "./messages";
 interface Actor<Messages extends MessageFormat> {
   on: <TName extends Messages["type"]>(
     name: TName,
-    callback: (
-      ...args: Extract<Messages, { type: TName }> extends {
-        payload: infer TPayload;
-      }
-        ? [payload: TPayload]
-        : []
-    ) => void
+    callback: (message: Extract<Messages, { type: TName }>) => void
   ) => () => void;
-  send: <TName extends Messages["type"]>(
-    name: TName,
-    ...args: Extract<Messages, { type: TName }> extends {
-      payload: infer TPayload;
-    }
-      ? [payload: TPayload]
-      : []
-  ) => void;
+  send: (message: Messages) => void;
   proxy: (name: Messages["type"], actor: Actor<Messages>) => () => void;
 }
 
@@ -61,11 +48,11 @@ function createActor<Messages extends MessageFormat>(
 ): Actor<Messages> {
   const messageListeners = new Map<
     Messages["type"],
-    Set<(...args: unknown[]) => void>
+    Set<(message: Messages) => void>
   >();
 
   function handleMessage(message: unknown) {
-    if (!isApolloClientDevtoolsMessage(message)) {
+    if (!isApolloClientDevtoolsMessage<Messages>(message)) {
       return;
     }
 
@@ -73,11 +60,7 @@ function createActor<Messages extends MessageFormat>(
 
     if (listeners) {
       for (const listener of listeners) {
-        if ("payload" in message.message) {
-          listener(message.message.payload);
-        } else {
-          listener();
-        }
+        listener(message.message);
       }
     }
   }
@@ -85,11 +68,11 @@ function createActor<Messages extends MessageFormat>(
   adapter.addListener(handleMessage);
 
   const on: Actor<Messages>["on"] = (name, callback) => {
-    let listeners = messageListeners.get(name);
+    let listeners = messageListeners.get(name) as Set<typeof callback>;
 
     if (!listeners) {
       listeners = new Set();
-      messageListeners.set(name, listeners);
+      messageListeners.set(name, listeners as Set<(message: Messages) => void>);
     }
 
     listeners.add(callback);
@@ -101,31 +84,30 @@ function createActor<Messages extends MessageFormat>(
 
   return {
     on,
-    send: (name, ...args) => {
-      const [payload] = args;
-
+    send: (message) => {
       adapter.postMessage({
         source: "apollo-client-devtools",
-        message: {
-          type: name,
-          ...(payload ? { payload } : {}),
-        },
+        message,
       });
     },
     proxy: (name, actor) => {
-      return on(name, (...args) => actor.send(name, ...args));
+      return on(name, (message) => actor.send(message));
     },
   };
 }
 
-export function createPortActor<Messages extends MessageFormat>(
-  port: browser.Runtime.Port
-) {
+export function createPortActor<
+  Messages extends MessageFormat = {
+    type: "Error: Pass <Messages> to `createPortActor<Messages>()`";
+  },
+>(port: browser.Runtime.Port) {
   return createActor<Messages>(createPortMessageAdapter(port));
 }
 
-export function createWindowActor<Messages extends MessageFormat>(
-  window: Window
-) {
+export function createWindowActor<
+  Messages extends MessageFormat = {
+    type: "Error: Pass <Messages> to `createWindowActor<Messages>()`";
+  },
+>(window: Window) {
   return createActor<Messages>(createWindowMessageAdapter(window));
 }
