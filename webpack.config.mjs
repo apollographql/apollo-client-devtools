@@ -8,6 +8,11 @@ import packageJson from "./package.json" assert { type: "json" };
 
 const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
+const WEB_EXT_TARGETS = {
+  chrome: "chromium",
+  firefox: "firefox-desktop",
+};
+
 export default (env) => {
   const target = env.TARGET;
   const devOptions =
@@ -54,7 +59,7 @@ export default (env) => {
         runLint: false,
         sourceDir: path.resolve(__dirname, "build"),
         startUrl: "http://localhost:3000",
-        target: target === "chrome" ? "chromium" : target,
+        target: WEB_EXT_TARGETS[target],
       })
     );
   }
