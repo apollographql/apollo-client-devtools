@@ -1,0 +1,24 @@
+{
+  "version": "4.5.0",
+  "author": "Apollo",
+  "name": "Apollo Client Devtools",
+  "description": "GraphQL debugging tools for Apollo Client.",
+  "icons": {
+    "64": "images/logo64.png",
+    "128": "images/logo128.png",
+    "400": "images/logo400.png"
+  },
+  "page_action": {},
+  "devtools_page": "devtools.html",
+  "background": { "service_worker": "service_worker.js" },
+  "web_accessible_resources": [
+    {
+      "resources": ["panel.html", "devtools.html", "hook.js"],
+      "matches": ["*://*/*"]
+    }
+  ],
+  "content_scripts": [
+    { "matches": ["<all_urls>"], "js": ["tab.js"], "run_at": "document_start" }
+  ],
+  "manifest_version": 3
+}

@@ -12,7 +12,9 @@ import gql from "graphql-tag";
 import Observable from "zen-observable";
 import { OperationDefinitionNode } from "graphql/language";
 
-import { version as devtoolsVersion } from "../manifest.json";
+// All manifests should contain the same version number so it shouldn't matter
+// which one we import from.
+import { version as devtoolsVersion } from "../chrome/manifest.json";
 import Relay from "../../Relay";
 import {
   QueryInfo,

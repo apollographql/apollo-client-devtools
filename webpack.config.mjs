@@ -8,13 +8,23 @@ import packageJson from "./package.json" assert { type: "json" };
 
 const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
+const WEB_EXT_TARGETS = {
+  chrome: "chromium",
+  firefox: "firefox-desktop",
+};
+
 export default (env) => {
+  const target = env.TARGET;
   const devOptions =
     env.NODE_ENV === "development"
       ? {
           devtool: "inline-source-map",
         }
       : {};
+
+  if (!target) {
+    throw new Error("Must set a `TARGET`");
+  }
 
   const plugins = [
     new CopyPlugin({
@@ -32,8 +42,8 @@ export default (env) => {
           to: path.resolve(__dirname, "build/images"),
         },
         {
-          from: "./src/extension/manifest.json",
-          to: path.resolve(__dirname, "build"),
+          from: `./src/extension/${target}/manifest.json`,
+          to: path.resolve(__dirname, "build/manifest.json"),
         },
       ],
     }),
@@ -49,20 +59,25 @@ export default (env) => {
         runLint: false,
         sourceDir: path.resolve(__dirname, "build"),
         startUrl: "http://localhost:3000",
-        target: env.TARGET,
+        target: WEB_EXT_TARGETS[target],
       })
     );
   }
+
+  const entry =
+    target === "chrome"
+      ? { service_worker: "./src/extension/service_worker/service_worker.ts" }
+      : { background: "./src/extension/background/background.ts" };
 
   return {
     ...devOptions,
     mode: env.NODE_ENV,
     entry: {
       panel: "./src/extension/devtools/panel.ts",
-      background: "./src/extension/background/background.ts",
       devtools: "./src/extension/devtools/devtools.ts",
       tab: "./src/extension/tab/tab.ts",
       hook: "./src/extension/tab/hook.ts",
+      ...entry,
     },
     output: {
       path: path.join(__dirname, "build"),

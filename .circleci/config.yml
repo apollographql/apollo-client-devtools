@@ -10,7 +10,8 @@ jobs:
     steps:
       - checkout
       - run: npm ci
-      - run: npm run build
+      - run: npm run build -- --env TARGET=chrome
+      - run: npm run build -- --env TARGET=firefox
       - run: npm run type-check
       - run: npm run lint
 
