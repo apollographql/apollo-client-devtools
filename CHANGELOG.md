@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.6.0
+
+### Minor Changes
+
+- [#1225](https://github.com/apollographql/apollo-client-devtools/pull/1225) [`b63c467`](https://github.com/apollographql/apollo-client-devtools/commit/b63c467aa7751e69cffc5a9650c827d5271fe769) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Migrate the chrome extension to manifest v3.
+
 ## 4.5.0
 
 ### Minor Changes
