@@ -1,50 +1,23 @@
-import Relay from "../../Relay";
-import {
-  REQUEST_TAB_ID,
-  EXPLORER_RESPONSE,
-  UPDATE,
-  CONNECT_TO_DEVTOOLS,
-  CONNECT_TO_CLIENT_TIMEOUT,
-  DISCONNECT_FROM_DEVTOOLS,
-  CLIENT_NOT_FOUND,
-} from "../constants";
+import { createPortActor, createWindowActor } from "../actor";
 import browser from "webextension-polyfill";
-
-// Inspected tabs are unable to retrieve their own ids.
-// This requests the tab's id from the background script.
-// Once it resolves, we can create the tab's Relay.
-function requestId() {
-  return browser.runtime.sendMessage({ message: REQUEST_TAB_ID });
-}
 
 // eslint-disable-next-line no-async-promise-executor
 export default new Promise(async ($export) => {
-  const id = await requestId();
-  const tab = new Relay();
   const port = browser.runtime.connect({ name: "tab" });
 
-  tab.addConnection("background", (message) => {
-    port.postMessage(message);
-  });
+  const tab = createWindowActor();
+  const devtools = createPortActor(port);
 
-  port.onMessage.addListener(tab.broadcast);
+  devtools.proxy("connectToClient", tab);
+  devtools.proxy("requestData", tab);
 
-  window.addEventListener("message", (event) => {
-    tab.broadcast(event?.data);
-  });
+  tab.proxy("clientNotFound", devtools);
+  tab.proxy("connectToDevtools", devtools);
+  tab.proxy("disconnectFromDevtools", devtools);
+  tab.proxy("update", devtools);
 
-  tab.addConnection("client", (message) => {
-    window.postMessage(message, "*");
-  });
+  // tab.forward(EXPLORER_RESPONSE, `${devtools}:explorer`);
 
-  const devtools = `background:devtools-${id}`;
-  tab.forward(UPDATE, devtools);
-  tab.forward(CLIENT_NOT_FOUND, devtools);
-  tab.forward(CONNECT_TO_DEVTOOLS, devtools);
-  tab.forward(CONNECT_TO_CLIENT_TIMEOUT, devtools);
-  tab.forward(DISCONNECT_FROM_DEVTOOLS, devtools);
-  tab.forward(EXPLORER_RESPONSE, `${devtools}:explorer`);
-
-  const module = await Promise.resolve({ tab, id });
+  const module = await Promise.resolve({ tab });
   $export(module);
 });
