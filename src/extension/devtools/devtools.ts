@@ -1,14 +1,8 @@
 import { EXPLORER_SUBSCRIPTION_TERMINATION } from "../../application/components/Explorer/postMessageHelpers";
 import Relay from "../../Relay";
 import {
-  CONNECT_TO_CLIENT,
-  REQUEST_DATA,
   UPDATE,
   EXPLORER_REQUEST,
-  CONNECT_TO_DEVTOOLS,
-  CONNECT_TO_CLIENT_TIMEOUT,
-  DISCONNECT_FROM_DEVTOOLS,
-  CLIENT_NOT_FOUND,
   DEVTOOLS_STATE_CHANGED,
   INITIALIZE_PANEL,
   RETRY_CONNECTION,
@@ -17,6 +11,7 @@ import browser from "webextension-polyfill";
 import { QueryInfo } from "../tab/helpers";
 import { JSONObject } from "../../application/types/json";
 import { devtoolsMachine } from "../../application/machines";
+import { createPortActor } from "../actor";
 
 const inspectedTabId = browser.devtools.inspectedWindow.tabId;
 const devtools = new Relay();
@@ -24,25 +19,18 @@ const devtools = new Relay();
 let panelHidden = true;
 let connectTimeoutId: NodeJS.Timeout;
 
-const port = browser.runtime.connect({
-  name: inspectedTabId.toString(),
-});
-port.onMessage.addListener(devtools.broadcast);
-
-devtools.addConnection("background", (message) => {
-  try {
-    port.postMessage(message);
-  } catch (error) {
-    devtools.removeConnection("background");
-  }
-});
+const portActor = createPortActor(
+  browser.runtime.connect({
+    name: inspectedTabId.toString(),
+  })
+);
 
 // In case we can't connect to the tab, we should at least show something to the
 // user when we've attempted to connect a max number of times.
 function startConnectTimeout(attempts = 0) {
   connectTimeoutId = setTimeout(() => {
     if (attempts < 3) {
-      sendMessageToClient(CONNECT_TO_CLIENT);
+      portActor.send("connectToClient");
       startConnectTimeout(attempts + 1);
     } else {
       devtoolsMachine.send({ type: "timeout" });
@@ -53,11 +41,11 @@ function startConnectTimeout(attempts = 0) {
   }, 11_000);
 }
 
-devtools.listen(CONNECT_TO_DEVTOOLS, (event) => {
+portActor.on("connectToDevtools", (payload) => {
   devtoolsMachine.send({
     type: "connect",
     context: {
-      clientContext: JSON.parse(event.payload ?? "") as {
+      clientContext: JSON.parse(payload ?? "") as {
         queries: QueryInfo[];
         mutations: QueryInfo[];
         cache: Record<string, JSONObject>;
@@ -66,21 +54,21 @@ devtools.listen(CONNECT_TO_DEVTOOLS, (event) => {
   });
 });
 
-devtools.listen(CONNECT_TO_CLIENT_TIMEOUT, () => {
+portActor.on("connectToClientTimeout", () => {
   devtoolsMachine.send({ type: "timeout" });
 });
 
-devtools.listen(DISCONNECT_FROM_DEVTOOLS, () => {
+portActor.on("disconnectFromDevtools", () => {
   devtoolsMachine.send({ type: "disconnect" });
 });
 
-devtools.listen(CLIENT_NOT_FOUND, () => {
+portActor.on("clientNotFound", () => {
   clearTimeout(connectTimeoutId);
   devtoolsMachine.send({ type: "clientNotFound" });
 });
 
 devtoolsMachine.onTransition("retrying", () => {
-  sendMessageToClient(CONNECT_TO_CLIENT);
+  portActor.send("connectToClient");
 });
 
 devtoolsMachine.onTransition("connected", () => {
@@ -100,29 +88,21 @@ devtoolsMachine.onTransition("notFound", () => {
   unsubscribeFromAll();
 });
 
-sendMessageToClient(CONNECT_TO_CLIENT);
-
-function sendMessageToClient(message: string) {
-  devtools.send({
-    message,
-    to: `background:tab-${inspectedTabId}:client`,
-    payload: undefined,
-  });
-}
+portActor.send("connectToClient");
 
 function startRequestInterval(ms = 500) {
   let id: NodeJS.Timeout;
 
   if (devtoolsMachine.matches("connected")) {
-    sendMessageToClient(REQUEST_DATA);
-    id = setInterval(sendMessageToClient, ms, REQUEST_DATA);
+    portActor.send("requestData");
+    id = setInterval(() => portActor.send("requestData"), ms);
   }
 
   return () => clearInterval(id);
 }
 
 devtools.addConnection(EXPLORER_SUBSCRIPTION_TERMINATION, () => {
-  sendMessageToClient(EXPLORER_SUBSCRIPTION_TERMINATION);
+  portActor.send("explorerSubscriptionTermination");
 });
 
 const unsubscribers = new Set<() => void>();
@@ -175,7 +155,7 @@ async function createDevtoolsPanel() {
     }
 
     if (devtoolsMachine.matches("initialized")) {
-      sendMessageToClient(CONNECT_TO_CLIENT);
+      portActor.send("connectToClient");
       startConnectTimeout();
     }
 
@@ -191,7 +171,7 @@ async function createDevtoolsPanel() {
       },
     } = window;
 
-    removeUpdateListener = devtools.listen<string>(UPDATE, ({ payload }) => {
+    removeUpdateListener = portActor.on("update", (payload) => {
       const { queries, mutations, cache } = JSON.parse(payload ?? "") as {
         queries: QueryInfo[];
         mutations: QueryInfo[];
