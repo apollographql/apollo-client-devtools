@@ -129,7 +129,7 @@ export const App = () => {
       <BannerAlert />
       <Tabs
         value={selected}
-        onChange={(screen: Screens) => currentScreen(screen)}
+        onChange={(screen) => currentScreen(screen)}
         className="flex flex-col h-screen bg-primary dark:bg-primary-dark"
       >
         <Tabs.List className="flex items-center px-4">
