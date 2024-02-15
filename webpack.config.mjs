@@ -9,6 +9,7 @@ import packageJson from "./package.json" assert { type: "json" };
 const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
 export default (env) => {
+  const target = env.TARGET;
   const devOptions =
     env.NODE_ENV === "development"
       ? {
@@ -16,7 +17,9 @@ export default (env) => {
         }
       : {};
 
-  const manifestVersion = process.env.MANIFEST_VERSION || "2";
+  if (!target) {
+    throw new Error("Must set a `TARGET`");
+  }
 
   const plugins = [
     new CopyPlugin({
@@ -34,10 +37,7 @@ export default (env) => {
           to: path.resolve(__dirname, "build/images"),
         },
         {
-          from:
-            manifestVersion === "3"
-              ? "./src/extension/manifestv3.json"
-              : "./src/extension/manifest.json",
+          from: `./src/extension/${target}/manifest.json`,
           to: path.resolve(__dirname, "build/manifest.json"),
         },
       ],
@@ -54,7 +54,7 @@ export default (env) => {
         runLint: false,
         sourceDir: path.resolve(__dirname, "build"),
         startUrl: "http://localhost:3000",
-        target: env.TARGET,
+        target: target === "chrome" ? "chromium" : target,
       })
     );
   }
@@ -64,8 +64,8 @@ export default (env) => {
     mode: env.NODE_ENV,
     entry: {
       panel: "./src/extension/devtools/panel.ts",
-      [manifestVersion === "2" ? "background" : "service_worker"]:
-        manifestVersion === "2"
+      [target === "firefox" ? "background" : "service_worker"]:
+        target === "firefox"
           ? "./src/extension/background/background.ts"
           : "./src/extension/service_worker/service_worker.ts",
       devtools: "./src/extension/devtools/devtools.ts",

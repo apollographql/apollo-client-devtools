@@ -3,20 +3,20 @@
 // before publishing the extension.
 import fs from "fs";
 import { version } from "./package.json";
-import manifestv2 from "./src/extension/manifest.json";
-import manifestv3 from "./src/extension/manifestv3.json";
+import chromeManifest from "./src/extension/chrome/manifest.json";
+import firefoxManifest from "./src/extension/firefox/manifest.json";
 
-manifestv2.version = version;
-manifestv3.version = version;
+firefoxManifest.version = version;
+chromeManifest.version = version;
 
 const root = __dirname;
 
 fs.writeFileSync(
-  `${root}/src/extension/manifest.json`,
-  JSON.stringify(manifestv2)
+  `${root}/src/extension/firefox/manifest.json`,
+  JSON.stringify(firefoxManifest)
 );
 
 fs.writeFileSync(
-  `${root}/src/extension/manifestv3.json`,
-  JSON.stringify(manifestv3)
+  `${root}/src/extension/chrome/manifest.json`,
+  JSON.stringify(chromeManifest)
 );
