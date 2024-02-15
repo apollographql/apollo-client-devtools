@@ -21,9 +21,7 @@ function requestId() {
 export default new Promise(async ($export) => {
   const id = await requestId();
   const tab = new Relay();
-  const port = browser.runtime.connect({
-    name: `tab-${id}`,
-  });
+  const port = browser.runtime.connect({ name: "tab" });
 
   tab.addConnection("background", (message) => {
     port.postMessage(message);
