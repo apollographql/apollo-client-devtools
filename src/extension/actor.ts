@@ -2,6 +2,27 @@ import browser from "webextension-polyfill";
 import type { ApolloClientDevtoolsMessage, Message } from "./messages";
 import { isApolloClientDevtoolsMessage } from "./messages";
 
+interface Actor {
+  on: <TName extends Message["type"]>(
+    name: TName,
+    callback: (
+      ...args: Extract<Message, { type: TName }> extends {
+        payload: infer TPayload;
+      }
+        ? [payload: TPayload]
+        : []
+    ) => void
+  ) => void;
+  send: <TName extends Message["type"]>(
+    name: TName,
+    ...args: Extract<Message, { type: TName }> extends {
+      payload: infer TPayload;
+    }
+      ? [payload: TPayload]
+      : []
+  ) => void;
+}
+
 interface MessageAdapter {
   addListener: (listener: (message: unknown) => void) => void;
   postMessage: (message: ApolloClientDevtoolsMessage) => void;
@@ -34,51 +55,11 @@ function createPortMessageAdapter(port: browser.Runtime.Port): MessageAdapter {
   };
 }
 
-function createActor(adapter: MessageAdapter) {
+function createActor(adapter: MessageAdapter): Actor {
   const messageListeners = new Map<
     Message["type"],
     Set<(...args: unknown[]) => void>
   >();
-
-  function on<TName extends Message["type"]>(
-    name: TName,
-    callback: (
-      ...args: Extract<Message, { type: TName }> extends {
-        payload: infer TPayload;
-      }
-        ? [payload: TPayload]
-        : []
-    ) => void
-  ) {
-    let listeners = messageListeners.get(name);
-
-    if (!listeners) {
-      listeners = new Set();
-      messageListeners.set(name, listeners);
-    }
-
-    listeners.add(callback);
-
-    return () => {
-      listeners!.delete(callback);
-    };
-  }
-
-  function send<TName extends Message["type"]>(
-    name: TName,
-    ...args: Extract<Message, { type: TName }> extends {
-      payload: infer TPayload;
-    }
-      ? [payload: TPayload]
-      : []
-  ) {
-    const [payload] = args;
-
-    adapter.postMessage({
-      source: "apollo-client-devtools",
-      message: { type: name, ...(payload ? { payload } : {}) } as Message,
-    });
-  }
 
   function handleMessage(message: unknown) {
     if (!isApolloClientDevtoolsMessage(message)) {
@@ -100,7 +81,30 @@ function createActor(adapter: MessageAdapter) {
 
   adapter.addListener(handleMessage);
 
-  return { on, send };
+  return {
+    on: (name, callback) => {
+      let listeners = messageListeners.get(name);
+
+      if (!listeners) {
+        listeners = new Set();
+        messageListeners.set(name, listeners);
+      }
+
+      listeners.add(callback);
+
+      return () => {
+        listeners!.delete(callback);
+      };
+    },
+    send: (name, ...args) => {
+      const [payload] = args;
+
+      adapter.postMessage({
+        source: "apollo-client-devtools",
+        message: { type: name, ...(payload ? { payload } : {}) } as Message,
+      });
+    },
+  };
 }
 
 export function createPortActor(port: browser.Runtime.Port) {
