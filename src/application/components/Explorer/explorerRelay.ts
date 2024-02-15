@@ -64,18 +64,26 @@ export const sendExplorerRequest = (operation: string): void => {
 export const receiveExplorerRequests = (
   callback: (event: CustomEvent<MessageObj<string>>) => void
 ): (() => void) => {
-  window.addEventListener(EXPLORER_REQUEST, callback);
+  function handleEvent(event: Event) {
+    callback(event as CustomEvent<MessageObj<string>>);
+  }
+
+  window.addEventListener(EXPLORER_REQUEST, handleEvent);
   return () => {
-    window.removeEventListener(EXPLORER_REQUEST, callback);
+    window.removeEventListener(EXPLORER_REQUEST, handleEvent);
   };
 };
 
 export const receiveSubscriptionTerminationRequest = (
   callback: (event: CustomEvent<MessageObj<undefined>>) => void
 ): (() => void) => {
-  window.addEventListener(EXPLORER_SUBSCRIPTION_TERMINATION, callback);
+  function handleEvent(event: Event) {
+    callback(event as CustomEvent<MessageObj<undefined>>);
+  }
+
+  window.addEventListener(EXPLORER_SUBSCRIPTION_TERMINATION, handleEvent);
   return () => {
-    window.removeEventListener(EXPLORER_SUBSCRIPTION_TERMINATION, callback);
+    window.removeEventListener(EXPLORER_SUBSCRIPTION_TERMINATION, handleEvent);
   };
 };
 
@@ -95,7 +103,8 @@ export const sendResponseToExplorer = ({
 };
 
 export const receiveExplorerResponses = (): (() => void) => {
-  const handleResponse = ({ detail }: CustomEvent<MessageObj>) => {
+  const handleResponse = (event: Event) => {
+    const { detail } = event as CustomEvent<MessageObj>;
     explorer.broadcast(detail);
   };
 
