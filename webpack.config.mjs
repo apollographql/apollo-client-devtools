@@ -59,18 +59,20 @@ export default (env) => {
     );
   }
 
+  const entry =
+    target === "chrome"
+      ? { service_worker: "./src/extension/service_worker/service_worker.ts" }
+      : { background: "./src/extension/background/background.ts" };
+
   return {
     ...devOptions,
     mode: env.NODE_ENV,
     entry: {
       panel: "./src/extension/devtools/panel.ts",
-      [target === "firefox" ? "background" : "service_worker"]:
-        target === "firefox"
-          ? "./src/extension/background/background.ts"
-          : "./src/extension/service_worker/service_worker.ts",
       devtools: "./src/extension/devtools/devtools.ts",
       tab: "./src/extension/tab/tab.ts",
       hook: "./src/extension/tab/hook.ts",
+      ...entry,
     },
     output: {
       path: path.join(__dirname, "build"),
