@@ -2,7 +2,6 @@ import { ExplorerResponse } from "../types";
 
 export interface MessageFormat {
   type: string;
-  payload?: unknown;
 }
 
 export type ApolloClientDevtoolsMessage<Message extends MessageFormat> = {
