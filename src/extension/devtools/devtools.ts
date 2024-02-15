@@ -25,7 +25,7 @@ let panelHidden = true;
 let connectTimeoutId: NodeJS.Timeout;
 
 const port = browser.runtime.connect({
-  name: `devtools-${inspectedTabId}`,
+  name: inspectedTabId.toString(),
 });
 port.onMessage.addListener(devtools.broadcast);
 
