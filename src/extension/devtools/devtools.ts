@@ -12,6 +12,7 @@ import { QueryInfo } from "../tab/helpers";
 import { JSONObject } from "../../application/types/json";
 import { devtoolsMachine } from "../../application/machines";
 import { createPortActor } from "../actor";
+import { DevtoolsMessage } from "../messages";
 
 const inspectedTabId = browser.devtools.inspectedWindow.tabId;
 const devtools = new Relay();
@@ -19,7 +20,7 @@ const devtools = new Relay();
 let panelHidden = true;
 let connectTimeoutId: NodeJS.Timeout;
 
-const portActor = createPortActor(
+const portActor = createPortActor<DevtoolsMessage>(
   browser.runtime.connect({
     name: inspectedTabId.toString(),
   })
@@ -30,7 +31,7 @@ const portActor = createPortActor(
 function startConnectTimeout(attempts = 0) {
   connectTimeoutId = setTimeout(() => {
     if (attempts < 3) {
-      portActor.send("connectToClient");
+      portActor.send({ type: "connectToClient" });
       startConnectTimeout(attempts + 1);
     } else {
       devtoolsMachine.send({ type: "timeout" });
@@ -41,11 +42,11 @@ function startConnectTimeout(attempts = 0) {
   }, 11_000);
 }
 
-portActor.on("connectToDevtools", (payload) => {
+portActor.on("connectToDevtools", (message) => {
   devtoolsMachine.send({
     type: "connect",
     context: {
-      clientContext: JSON.parse(payload ?? "") as {
+      clientContext: JSON.parse(message.payload ?? "") as {
         queries: QueryInfo[];
         mutations: QueryInfo[];
         cache: Record<string, JSONObject>;
@@ -68,7 +69,7 @@ portActor.on("clientNotFound", () => {
 });
 
 devtoolsMachine.onTransition("retrying", () => {
-  portActor.send("connectToClient");
+  portActor.send({ type: "connectToClient" });
 });
 
 devtoolsMachine.onTransition("connected", () => {
@@ -88,21 +89,21 @@ devtoolsMachine.onTransition("notFound", () => {
   unsubscribeFromAll();
 });
 
-portActor.send("connectToClient");
+portActor.send({ type: "connectToClient" });
 
 function startRequestInterval(ms = 500) {
   let id: NodeJS.Timeout;
 
   if (devtoolsMachine.matches("connected")) {
-    portActor.send("requestData");
-    id = setInterval(() => portActor.send("requestData"), ms);
+    portActor.send({ type: "requestData" });
+    id = setInterval(() => portActor.send({ type: "requestData" }), ms);
   }
 
   return () => clearInterval(id);
 }
 
 devtools.addConnection(EXPLORER_SUBSCRIPTION_TERMINATION, () => {
-  portActor.send("explorerSubscriptionTermination");
+  portActor.send({ type: "explorerSubscriptionTermination" });
 });
 
 const unsubscribers = new Set<() => void>();
@@ -155,7 +156,7 @@ async function createDevtoolsPanel() {
     }
 
     if (devtoolsMachine.matches("initialized")) {
-      portActor.send("connectToClient");
+      portActor.send({ type: "connectToClient" });
       startConnectTimeout();
     }
 
@@ -171,8 +172,10 @@ async function createDevtoolsPanel() {
       },
     } = window;
 
-    removeUpdateListener = portActor.on("update", (payload) => {
-      const { queries, mutations, cache } = JSON.parse(payload ?? "") as {
+    removeUpdateListener = portActor.on("update", (message) => {
+      const { queries, mutations, cache } = JSON.parse(
+        message.payload ?? ""
+      ) as {
         queries: QueryInfo[];
         mutations: QueryInfo[];
         cache: Record<string, JSONObject>;

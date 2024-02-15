@@ -28,10 +28,11 @@ import { getPrivateAccess } from "../../privateAccess";
 import { JSONObject } from "../../application/types/json";
 import { FetchPolicy } from "../../application/components/Explorer/Explorer";
 import { createWindowActor } from "../actor";
+import { DevtoolsMessage } from "../messages";
 
 const DEVTOOLS_KEY = Symbol.for("apollo.devtools");
 
-const actor = createWindowActor(window);
+const actor = createWindowActor<DevtoolsMessage>(window);
 
 declare global {
   type TCache = any;
@@ -93,35 +94,28 @@ function initializeHook() {
 
   // Listen for tab refreshes
   window.onbeforeunload = () => {
-    actor.send("disconnectFromDevtools");
+    actor.send({ type: "disconnectFromDevtools" });
   };
 
   window.addEventListener("load", () => {
     if (hook.ApolloClient) {
-      actor.send(
-        "connectToDevtools",
-        JSON.stringify({
-          queries: hook.getQueries(),
-          mutations: hook.getMutations(),
-          cache: hook.getCache(),
-        })
-      );
+      sendHookDataToDevTools("connectToDevtools");
     }
   });
 
   function handleExplorerResponse(payload: ExplorerResponse) {
-    actor.send("explorerResponse", payload);
+    actor.send({ type: "explorerResponse", payload });
   }
 
   function sendHookDataToDevTools(eventName: "update" | "connectToDevtools") {
-    actor.send(
-      eventName,
-      JSON.stringify({
+    actor.send({
+      type: eventName,
+      payload: JSON.stringify({
         queries: hook.getQueries(),
         mutations: hook.getMutations(),
         cache: hook.getCache(),
-      })
-    );
+      }),
+    });
   }
 
   actor.on("connectToClient", () => {
@@ -133,13 +127,13 @@ function initializeHook() {
   });
 
   actor.on("requestData", () => sendHookDataToDevTools("update"));
-  actor.on("explorerRequest", (payload) => {
+  actor.on("explorerRequest", (message) => {
     const {
       operation: query,
       operationName,
       fetchPolicy,
       variables,
-    } = JSON.parse(payload ?? "") as {
+    } = JSON.parse(message.payload ?? "") as {
       operation: string;
       operationName: string | undefined;
       variables: JSONObject | undefined;
@@ -238,7 +232,7 @@ function initializeHook() {
     function initializeDevtoolsHook() {
       if (count++ > 10) {
         clearInterval(interval);
-        actor.send("clientNotFound");
+        actor.send({ type: "clientNotFound" });
       }
       if (window.__APOLLO_CLIENT__) {
         registerClient(window.__APOLLO_CLIENT__);
