@@ -291,7 +291,7 @@ function initializeHook() {
   const preExisting = window[DEVTOOLS_KEY];
   window[DEVTOOLS_KEY] = { push: registerClient };
   if (Array.isArray(preExisting)) {
-    preExisting.forEach(registerClient);
+    (preExisting as Array<ApolloClient<any>>).forEach(registerClient);
   }
 
   findClient();
