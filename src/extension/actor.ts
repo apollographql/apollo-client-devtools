@@ -121,9 +121,7 @@ function createActor<Messages extends MessageFormat>(
         message,
       });
     },
-    forward: (name, actor) => {
-      return on(name, (message) => actor.send(message));
-    },
+    forward: (name, actor) => on(name, actor.send),
   };
 }
 
