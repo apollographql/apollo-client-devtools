@@ -1,4 +1,3 @@
-import { EXPLORER_SUBSCRIPTION_TERMINATION } from "../../application/components/Explorer/postMessageHelpers";
 import Relay from "../../Relay";
 import { EXPLORER_REQUEST } from "../constants";
 import browser from "webextension-polyfill";
@@ -96,10 +95,6 @@ function startRequestInterval(ms = 500) {
   return () => clearInterval(id);
 }
 
-devtools.addConnection(EXPLORER_SUBSCRIPTION_TERMINATION, () => {
-  portActor.send({ type: "explorerSubscriptionTermination" });
-});
-
 const unsubscribers = new Set<() => void>();
 
 function unsubscribeFromAll() {
@@ -185,8 +180,8 @@ async function createDevtoolsPanel() {
     });
 
     removeSubscriptionTerminationListener =
-      receiveSubscriptionTerminationRequest(({ detail }) => {
-        devtools.broadcast(detail);
+      receiveSubscriptionTerminationRequest(() => {
+        portActor.send({ type: "explorerSubscriptionTermination" });
       });
 
     // Forward all Explorer requests to the client
