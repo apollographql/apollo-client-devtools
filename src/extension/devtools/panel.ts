@@ -14,7 +14,6 @@ declare global {
     __DEVTOOLS_APPLICATION__: {
       receiveExplorerRequests: typeof receiveExplorerRequests;
       receiveSubscriptionTerminationRequest: typeof receiveSubscriptionTerminationRequest;
-      sendResponseToExplorer: typeof sendResponseToExplorer;
     };
   }
 }
@@ -22,7 +21,6 @@ declare global {
 window.__DEVTOOLS_APPLICATION__ = {
   receiveExplorerRequests,
   receiveSubscriptionTerminationRequest,
-  sendResponseToExplorer,
 };
 
 const actor = createWindowActor<PanelMessage>(window);
@@ -45,3 +43,5 @@ actor.on("devtoolsStateChanged", (message) => {
 actor.on("update", (message) => {
   writeData(message.payload);
 });
+
+actor.on("explorerResponse", sendResponseToExplorer);

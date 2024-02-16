@@ -154,7 +154,6 @@ async function createDevtoolsPanel() {
       __DEVTOOLS_APPLICATION__: {
         receiveExplorerRequests,
         receiveSubscriptionTerminationRequest,
-        sendResponseToExplorer,
       },
     } = window;
 
@@ -173,7 +172,7 @@ async function createDevtoolsPanel() {
       });
     });
 
-    portActor.on("explorerResponse", sendResponseToExplorer);
+    portActor.forward("explorerResponse", panelActor);
 
     removeExplorerListener = receiveExplorerRequests(({ detail }) => {
       devtools.broadcast(detail);
