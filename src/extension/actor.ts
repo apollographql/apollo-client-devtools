@@ -1,14 +1,20 @@
 import browser from "webextension-polyfill";
 import type { MessageFormat } from "./messages";
 import { isApolloClientDevtoolsMessage } from "./messages";
+import { NoInfer } from "../types";
 
 export interface Actor<Messages extends MessageFormat> {
   on: <TName extends Messages["type"]>(
     name: TName,
-    callback: (message: Extract<Messages, { type: TName }>) => void
+    callback: Extract<Messages, { type: TName }> extends infer Message
+      ? (message: Message) => void
+      : never
   ) => () => void;
   send: (message: Messages) => void;
-  forward: (name: Messages["type"], actor: Actor<Messages>) => () => void;
+  forward: <TName extends Messages["type"]>(
+    name: TName,
+    actor: Actor<Extract<Messages, { type: NoInfer<TName> }>>
+  ) => () => void;
 }
 
 interface MessageAdapter {
