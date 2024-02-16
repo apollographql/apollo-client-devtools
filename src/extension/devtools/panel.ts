@@ -4,7 +4,6 @@ import {
   receiveSubscriptionTerminationRequest,
   sendResponseToExplorer,
 } from "../../application/components/Explorer/explorerRelay";
-import { DEVTOOLS_STATE_CHANGED, INITIALIZE_PANEL, UPDATE } from "../constants";
 import "./panel.css";
 import { devtoolsState } from "../../application/App";
 import { createWindowActor } from "../actor";
@@ -43,9 +42,6 @@ actor.on("devtoolsStateChanged", (message) => {
   }
 });
 
-window.addEventListener("message", (event) => {
-  switch (event.data.type) {
-    case UPDATE:
-      return writeData(event.data.payload);
-  }
+actor.on("update", (message) => {
+  writeData(message.payload);
 });
