@@ -178,8 +178,8 @@ async function createDevtoolsPanel() {
       });
     });
 
-    // Add connection so client can send to `background:devtools-${inspectedTabId}:explorer`
-    devtools.addConnection("explorer", sendResponseToExplorer);
+    portActor.on("explorerResponse", sendResponseToExplorer);
+
     removeExplorerListener = receiveExplorerRequests(({ detail }) => {
       devtools.broadcast(detail);
     });

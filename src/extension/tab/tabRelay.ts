@@ -17,8 +17,7 @@ export default new Promise(async ($export) => {
   tab.forward("connectToDevtools", devtools);
   tab.forward("disconnectFromDevtools", devtools);
   tab.forward("update", devtools);
-
-  // tab.forward(EXPLORER_RESPONSE, `${devtools}:explorer`);
+  tab.forward("explorerResponse", devtools);
 
   const module = await Promise.resolve({ tab });
   $export(module);
