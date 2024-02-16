@@ -27,7 +27,6 @@ document.createRange = () => {
 
 jest.mock("../explorerRelay", () => ({
   sendExplorerRequest: jest.fn(),
-  receiveExplorerResponses: jest.fn(),
   listenForResponse: jest.fn(),
 }));
 

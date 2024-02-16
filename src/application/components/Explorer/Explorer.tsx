@@ -9,7 +9,7 @@ import {
 import type { IntrospectionQuery } from "graphql";
 import { getIntrospectionQuery } from "graphql/utilities";
 import { colorTheme } from "../../theme";
-import { receiveExplorerResponses, listenForResponse } from "./explorerRelay";
+import { listenForResponse } from "./explorerRelay";
 import { FullWidthLayout } from "../Layouts/FullWidthLayout";
 import { QueryResult } from "../../../types";
 import {
@@ -129,10 +129,6 @@ export const Explorer = ({
     embeddedExplorerProps;
 
   const color = useReactiveVar(colorTheme);
-
-  // Subscribe to Explorer data responses
-  // Returns a cleanup method to useEffect
-  useEffect(() => receiveExplorerResponses());
 
   // Set embedded explorer iframe if loaded
   useEffect(() => {

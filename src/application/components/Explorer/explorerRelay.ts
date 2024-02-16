@@ -1,18 +1,8 @@
 import Relay from "../../../Relay";
-import { ExplorerResponse, QueryResult, MessageObj } from "../../../types";
-import { EXPLORER_RESPONSE } from "../../../extension/constants";
+import { ExplorerResponse, QueryResult } from "../../../types";
 import { EXPLORER_SUBSCRIPTION_TERMINATION } from "./postMessageHelpers";
 
 const explorer = new Relay();
-
-explorer.listen<ExplorerResponse>(EXPLORER_RESPONSE, ({ payload }) => {
-  if (payload) {
-    explorer.broadcast({
-      message: `explorer:response:${payload.operationName}`,
-      payload: payload.response,
-    });
-  }
-});
 
 export const listenForResponse = (
   cb: (result: QueryResult) => void,
@@ -41,24 +31,10 @@ export const sendResponseToExplorer = ({
 }: {
   payload: ExplorerResponse;
 }): void => {
-  window.dispatchEvent(
-    new CustomEvent(EXPLORER_RESPONSE, {
-      detail: {
-        message: EXPLORER_RESPONSE,
-        payload,
-      },
-    })
-  );
-};
-
-export const receiveExplorerResponses = (): (() => void) => {
-  const handleResponse = ({ detail }: CustomEvent<MessageObj>) => {
-    explorer.broadcast(detail);
-  };
-
-  window.addEventListener(EXPLORER_RESPONSE, handleResponse);
-
-  return () => {
-    window.removeEventListener(EXPLORER_RESPONSE, handleResponse);
-  };
+  if (payload) {
+    explorer.broadcast({
+      message: `explorer:response:${payload.operationName}`,
+      payload: payload.response,
+    });
+  }
 };
