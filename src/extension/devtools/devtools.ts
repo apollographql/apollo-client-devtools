@@ -1,17 +1,11 @@
 import { EXPLORER_SUBSCRIPTION_TERMINATION } from "../../application/components/Explorer/postMessageHelpers";
 import Relay from "../../Relay";
-import {
-  UPDATE,
-  EXPLORER_REQUEST,
-  DEVTOOLS_STATE_CHANGED,
-  INITIALIZE_PANEL,
-  RETRY_CONNECTION,
-} from "../constants";
+import { EXPLORER_REQUEST } from "../constants";
 import browser from "webextension-polyfill";
 import { QueryInfo } from "../tab/helpers";
 import { JSONObject } from "../../application/types/json";
 import { devtoolsMachine } from "../../application/machines";
-import { createPortActor, createWindowActor } from "../actor";
+import { Actor, createPortActor, createWindowActor } from "../actor";
 import { DevtoolsMessage, PanelMessage } from "../messages";
 
 const inspectedTabId = browser.devtools.inspectedWindow.tabId;
@@ -114,6 +108,7 @@ function unsubscribeFromAll() {
 }
 
 let connectedToPanel = false;
+let panelActor: Actor<PanelMessage>;
 
 async function createDevtoolsPanel() {
   const panel = await browser.devtools.panels.create(
@@ -129,9 +124,10 @@ async function createDevtoolsPanel() {
   let removeExplorerListener: () => void;
 
   panel.onShown.addListener((window) => {
+    panelActor ||= createWindowActor<PanelMessage>(window);
+
     if (!connectedToPanel) {
       const state = devtoolsMachine.getState();
-      const panelActor = createWindowActor<PanelMessage>(window);
 
       panelActor.send({
         type: "initializePanel",
@@ -176,13 +172,9 @@ async function createDevtoolsPanel() {
         cache: Record<string, JSONObject>;
       };
 
-      window.postMessage({
-        type: UPDATE,
-        payload: {
-          queries,
-          mutations,
-          cache: JSON.stringify(cache),
-        },
+      panelActor.send({
+        type: "update",
+        payload: { queries, mutations, cache },
       });
     });
 
