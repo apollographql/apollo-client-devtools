@@ -70,6 +70,9 @@ export type GetStates<
     ? State
     : never;
 
+export type GetContext<TMachine> =
+  TMachine extends Machine<any, any, infer Context> ? Context : never;
+
 export function createMachine<
   State extends string,
   EventName extends string,
