@@ -148,10 +148,7 @@ async function createDevtoolsPanel() {
     }
 
     const {
-      __DEVTOOLS_APPLICATION__: {
-        receiveExplorerRequests,
-        receiveSubscriptionTerminationRequest,
-      },
+      __DEVTOOLS_APPLICATION__: { receiveSubscriptionTerminationRequest },
     } = window;
 
     removeUpdateListener = portActor.on("update", (message) => {
@@ -169,11 +166,8 @@ async function createDevtoolsPanel() {
       });
     });
 
-    portActor.forward("explorerResponse", panelActor);
-
-    removeExplorerListener = receiveExplorerRequests(({ detail }) => {
-      portActor.send({ type: "explorerRequest", payload: detail.payload });
-    });
+    removeExplorerForward = portActor.forward("explorerResponse", panelActor);
+    removeExplorerListener = panelActor.forward("explorerRequest", portActor);
 
     removeSubscriptionTerminationListener =
       receiveSubscriptionTerminationRequest(() => {

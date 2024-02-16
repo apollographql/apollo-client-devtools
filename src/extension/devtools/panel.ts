@@ -12,14 +12,12 @@ import { PanelMessage } from "../messages";
 declare global {
   interface Window {
     __DEVTOOLS_APPLICATION__: {
-      receiveExplorerRequests: typeof receiveExplorerRequests;
       receiveSubscriptionTerminationRequest: typeof receiveSubscriptionTerminationRequest;
     };
   }
 }
 
 window.__DEVTOOLS_APPLICATION__ = {
-  receiveExplorerRequests,
   receiveSubscriptionTerminationRequest,
 };
 
@@ -45,3 +43,7 @@ actor.on("update", (message) => {
 });
 
 actor.on("explorerResponse", sendResponseToExplorer);
+
+receiveExplorerRequests(({ detail }) => {
+  actor.send({ type: "explorerRequest", payload: detail.payload });
+});

@@ -11,6 +11,11 @@ export type ApolloClientDevtoolsMessage<Message extends MessageFormat> = {
   message: Message;
 };
 
+type ExplorerRequestMessage = {
+  type: "explorerRequest";
+  payload: string;
+};
+
 type ExplorerResponseMessage = {
   type: "explorerResponse";
   payload: ExplorerResponse;
@@ -22,13 +27,14 @@ export type DevtoolsMessage =
   | { type: "connectToClientTimeout" }
   | { type: "connectToDevtools"; payload: string }
   | { type: "disconnectFromDevtools" }
-  | { type: "explorerRequest"; payload: string }
+  | ExplorerRequestMessage
   | ExplorerResponseMessage
   | { type: "explorerSubscriptionTermination" }
   | { type: "requestData" }
   | { type: "update"; payload: string };
 
 export type PanelMessage =
+  | ExplorerRequestMessage
   | ExplorerResponseMessage
   | {
       type: "initializePanel";
