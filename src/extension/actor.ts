@@ -46,6 +46,7 @@ function createPortMessageAdapter(port: browser.Runtime.Port): MessageAdapter {
 function createActor<Messages extends MessageFormat>(
   adapter: MessageAdapter
 ): Actor<Messages> {
+  let listening = false;
   const messageListeners = new Map<
     Messages["type"],
     Set<(message: Messages) => void>
@@ -65,7 +66,12 @@ function createActor<Messages extends MessageFormat>(
     }
   }
 
-  adapter.addListener(handleMessage);
+  function startListening() {
+    if (!listening) {
+      listening = true;
+      adapter.addListener(handleMessage);
+    }
+  }
 
   const on: Actor<Messages>["on"] = (name, callback) => {
     let listeners = messageListeners.get(name) as Set<typeof callback>;
@@ -76,6 +82,7 @@ function createActor<Messages extends MessageFormat>(
     }
 
     listeners.add(callback);
+    startListening();
 
     return () => {
       listeners!.delete(callback);
