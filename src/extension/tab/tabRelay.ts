@@ -12,6 +12,7 @@ export default new Promise(async ($export) => {
   devtools.forward("connectToClient", tab);
   devtools.forward("requestData", tab);
   devtools.forward("explorerSubscriptionTermination", tab);
+  devtools.forward("explorerRequest", tab);
 
   tab.forward("clientNotFound", devtools);
   tab.forward("connectToDevtools", devtools);
