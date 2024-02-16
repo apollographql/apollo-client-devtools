@@ -21,10 +21,6 @@ document.createRange = () => {
   return range;
 };
 
-jest.mock("../explorerRelay", () => ({
-  sendExplorerRequest: jest.fn(),
-}));
-
 const EmbeddedExplorerWrapper = () => {
   const [embeddedExplorerIFrame, setEmbeddedExplorerIFrame] =
     useState<HTMLIFrameElement | null>(null);
