@@ -82,7 +82,7 @@ export const receiveSubscriptionTerminationRequest = (
 export const sendResponseToExplorer = ({
   payload,
 }: {
-  payload: string;
+  payload: ExplorerResponse;
 }): void => {
   window.dispatchEvent(
     new CustomEvent(EXPLORER_RESPONSE, {
