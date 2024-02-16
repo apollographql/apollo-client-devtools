@@ -1,4 +1,6 @@
 import { ExplorerResponse } from "../types";
+import { GetStates, GetContext } from "../application/stateMachine";
+import { DevtoolsMachine } from "../application/machines";
 
 export interface MessageFormat {
   type: string;
@@ -20,6 +22,15 @@ export type DevtoolsMessage =
   | { type: "explorerSubscriptionTermination" }
   | { type: "requestData" }
   | { type: "update"; payload: string };
+
+export type PanelMessage =
+  | {
+      type: "initializePanel";
+      state: GetStates<DevtoolsMachine>;
+      payload: GetContext<DevtoolsMachine>["clientContext"];
+    }
+  | { type: "retryConnection" }
+  | { type: "devtoolsStateChanged"; state: GetStates<DevtoolsMachine> };
 
 export function isApolloClientDevtoolsMessage<Message extends MessageFormat>(
   message: unknown
