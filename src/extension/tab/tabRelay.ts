@@ -1,13 +1,13 @@
 import { createPortActor, createWindowActor } from "../actor";
 import browser from "webextension-polyfill";
-import { DevtoolsMessage } from "../messages";
+import { ClientMessage } from "../messages";
 
 // eslint-disable-next-line no-async-promise-executor
 export default new Promise(async ($export) => {
   const port = browser.runtime.connect({ name: "tab" });
 
-  const tab = createWindowActor<DevtoolsMessage>(window);
-  const devtools = createPortActor<DevtoolsMessage>(port);
+  const tab = createWindowActor<ClientMessage>(window);
+  const devtools = createPortActor<ClientMessage>(port);
 
   devtools.forward("connectToClient", tab);
   devtools.forward("requestData", tab);

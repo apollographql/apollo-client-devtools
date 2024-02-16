@@ -27,11 +27,11 @@ import { getPrivateAccess } from "../../privateAccess";
 import { JSONObject } from "../../application/types/json";
 import { FetchPolicy } from "../../application/components/Explorer/Explorer";
 import { createWindowActor } from "../actor";
-import { DevtoolsMessage } from "../messages";
+import { ClientMessage } from "../messages";
 
 const DEVTOOLS_KEY = Symbol.for("apollo.devtools");
 
-const actor = createWindowActor<DevtoolsMessage>(window);
+const actor = createWindowActor<ClientMessage>(window);
 
 declare global {
   type TCache = any;

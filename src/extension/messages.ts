@@ -25,7 +25,7 @@ type ExplorerSubscriptionTerminationMessage = {
   type: "explorerSubscriptionTermination";
 };
 
-export type DevtoolsMessage =
+export type ClientMessage =
   | { type: "clientNotFound" }
   | { type: "connectToClient" }
   | { type: "connectToClientTimeout" }

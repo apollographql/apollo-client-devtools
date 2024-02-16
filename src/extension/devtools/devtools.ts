@@ -3,7 +3,7 @@ import { QueryInfo } from "../tab/helpers";
 import { JSONObject } from "../../application/types/json";
 import { devtoolsMachine } from "../../application/machines";
 import { Actor, createPortActor, createWindowActor } from "../actor";
-import { DevtoolsMessage, PanelMessage } from "../messages";
+import { ClientMessage, PanelMessage } from "../messages";
 import { getPanelActor } from "./panelActor";
 
 const inspectedTabId = browser.devtools.inspectedWindow.tabId;
@@ -11,7 +11,7 @@ const inspectedTabId = browser.devtools.inspectedWindow.tabId;
 let panelHidden = true;
 let connectTimeoutId: NodeJS.Timeout;
 
-const portActor = createPortActor<DevtoolsMessage>(
+const portActor = createPortActor<ClientMessage>(
   browser.runtime.connect({
     name: inspectedTabId.toString(),
   })
