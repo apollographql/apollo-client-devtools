@@ -4,6 +4,7 @@ import { JSONObject } from "../../application/types/json";
 import { devtoolsMachine } from "../../application/machines";
 import { Actor, createPortActor, createWindowActor } from "../actor";
 import { DevtoolsMessage, PanelMessage } from "../messages";
+import { getPanelActor } from "./panelActor";
 
 const inspectedTabId = browser.devtools.inspectedWindow.tabId;
 
@@ -100,7 +101,6 @@ function unsubscribeFromAll() {
 }
 
 let connectedToPanel = false;
-let panelActor: Actor<PanelMessage>;
 
 async function createDevtoolsPanel() {
   const panel = await browser.devtools.panels.create(
@@ -116,7 +116,7 @@ async function createDevtoolsPanel() {
   let removeExplorerListener: () => void;
 
   panel.onShown.addListener((window) => {
-    panelActor ||= createWindowActor<PanelMessage>(window);
+    const panelActor = getPanelActor(window);
 
     if (!connectedToPanel) {
       const state = devtoolsMachine.getState();

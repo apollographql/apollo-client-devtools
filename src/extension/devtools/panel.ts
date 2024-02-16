@@ -6,10 +6,9 @@ import {
 } from "../../application/components/Explorer/explorerRelay";
 import "./panel.css";
 import { devtoolsState } from "../../application/App";
-import { createWindowActor } from "../actor";
-import { PanelMessage } from "../messages";
+import { getPanelActor } from "./panelActor";
 
-const actor = createWindowActor<PanelMessage>(window);
+const actor = getPanelActor(window);
 
 actor.on("initializePanel", (message) => {
   devtoolsState(message.state);
