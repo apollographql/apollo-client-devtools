@@ -22,7 +22,6 @@ import Logo from "@apollo/icons/logos/LogoSymbol.svg";
 import { BannerAlert, BannerAlertConfig } from "./components/BannerAlert";
 import { GetStates } from "./stateMachine";
 import { DevtoolsMachine } from "./machines";
-import { RETRY_CONNECTION } from "../extension/constants";
 import { ClientNotFoundModal } from "./components/ClientNotFoundModal";
 import { createWindowActor } from "../extension/actor";
 import { PanelMessage } from "../extension/messages";
@@ -126,7 +125,7 @@ export const App = () => {
         open={clientNotFoundModalOpen}
         onClose={() => setClientNotFoundModalOpen(false)}
         onRetry={() => {
-          window.postMessage({ type: RETRY_CONNECTION });
+          actor.send({ type: "retryConnection" });
           setClientNotFoundModalOpen(false);
         }}
       />
