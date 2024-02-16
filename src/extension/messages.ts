@@ -21,6 +21,10 @@ type ExplorerResponseMessage = {
   payload: ExplorerResponse;
 };
 
+type ExplorerSubscriptionTerminationMessage = {
+  type: "explorerSubscriptionTermination";
+};
+
 export type DevtoolsMessage =
   | { type: "clientNotFound" }
   | { type: "connectToClient" }
@@ -29,13 +33,14 @@ export type DevtoolsMessage =
   | { type: "disconnectFromDevtools" }
   | ExplorerRequestMessage
   | ExplorerResponseMessage
-  | { type: "explorerSubscriptionTermination" }
+  | ExplorerSubscriptionTerminationMessage
   | { type: "requestData" }
   | { type: "update"; payload: string };
 
 export type PanelMessage =
   | ExplorerRequestMessage
   | ExplorerResponseMessage
+  | ExplorerSubscriptionTerminationMessage
   | {
       type: "initializePanel";
       state: GetStates<DevtoolsMachine>;
