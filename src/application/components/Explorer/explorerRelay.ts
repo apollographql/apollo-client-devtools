@@ -1,9 +1,6 @@
 import Relay from "../../../Relay";
 import { ExplorerResponse, QueryResult, MessageObj } from "../../../types";
-import {
-  EXPLORER_RESPONSE,
-  EXPLORER_REQUEST,
-} from "../../../extension/constants";
+import { EXPLORER_RESPONSE } from "../../../extension/constants";
 import { EXPLORER_SUBSCRIPTION_TERMINATION } from "./postMessageHelpers";
 
 const explorer = new Relay();
@@ -37,26 +34,6 @@ export const listenForResponse = (
       }
     }
   );
-};
-
-export const sendSubscriptionTerminationRequest = (): void => {
-  window.dispatchEvent(
-    new CustomEvent(EXPLORER_SUBSCRIPTION_TERMINATION, {
-      detail: {
-        message: EXPLORER_SUBSCRIPTION_TERMINATION,
-        payload: undefined,
-      },
-    })
-  );
-};
-
-export const receiveSubscriptionTerminationRequest = (
-  callback: (event: CustomEvent<MessageObj<undefined>>) => void
-): (() => void) => {
-  window.addEventListener(EXPLORER_SUBSCRIPTION_TERMINATION, callback);
-  return () => {
-    window.removeEventListener(EXPLORER_SUBSCRIPTION_TERMINATION, callback);
-  };
 };
 
 export const sendResponseToExplorer = ({

@@ -1,8 +1,5 @@
 import { initDevTools, writeData, client } from "../../application";
-import {
-  receiveSubscriptionTerminationRequest,
-  sendResponseToExplorer,
-} from "../../application/components/Explorer/explorerRelay";
+import { sendResponseToExplorer } from "../../application/components/Explorer/explorerRelay";
 import "./panel.css";
 import { devtoolsState } from "../../application/App";
 import { getPanelActor } from "./panelActor";
@@ -29,7 +26,3 @@ actor.on("update", (message) => {
 });
 
 actor.on("explorerResponse", sendResponseToExplorer);
-
-receiveSubscriptionTerminationRequest(() => {
-  actor.send({ type: "explorerSubscriptionTermination" });
-});
