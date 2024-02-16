@@ -1,4 +1,3 @@
-import Relay from "../../Relay";
 import browser from "webextension-polyfill";
 import { QueryInfo } from "../tab/helpers";
 import { JSONObject } from "../../application/types/json";
@@ -7,7 +6,6 @@ import { Actor, createPortActor, createWindowActor } from "../actor";
 import { DevtoolsMessage, PanelMessage } from "../messages";
 
 const inspectedTabId = browser.devtools.inspectedWindow.tabId;
-const devtools = new Relay();
 
 let panelHidden = true;
 let connectTimeoutId: NodeJS.Timeout;
@@ -194,7 +192,6 @@ async function createDevtoolsPanel() {
     removeUpdateListener();
     removeReloadListener();
     removeExplorerListener();
-    devtools.removeConnection("explorer");
   });
 }
 
