@@ -21,11 +21,11 @@ import { SettingsModal } from "./components/Layouts/SettingsModal";
 import Logo from "@apollo/icons/logos/LogoSymbol.svg";
 import { BannerAlert, BannerAlertConfig } from "./components/BannerAlert";
 import { GetStates } from "./stateMachine";
-import { devtoolsMachine } from "./machines";
+import { DevtoolsMachine } from "./machines";
 import { RETRY_CONNECTION } from "../extension/constants";
 import { ClientNotFoundModal } from "./components/ClientNotFoundModal";
 
-type DevtoolsState = GetStates<typeof devtoolsMachine>;
+type DevtoolsState = GetStates<DevtoolsMachine>;
 
 export const devtoolsState = makeVar<DevtoolsState>("initialized");
 
