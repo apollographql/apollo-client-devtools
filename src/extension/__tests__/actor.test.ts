@@ -2,7 +2,7 @@ import { createActor } from "../actor";
 
 function createTestAdapter<Messages = unknown>() {
   let listener: ((message: unknown) => void) | null;
-  let removeListener = jest.fn(() => {
+  const removeListener = jest.fn(() => {
     listener = null;
   });
 
