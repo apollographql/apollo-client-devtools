@@ -7,6 +7,8 @@ import {
 import { DEVTOOLS_STATE_CHANGED, INITIALIZE_PANEL, UPDATE } from "../constants";
 import "./panel.css";
 import { devtoolsState } from "../../application/App";
+import { createWindowActor } from "../actor";
+import { PanelMessage } from "../messages";
 
 declare global {
   interface Window {
@@ -24,22 +26,26 @@ window.__DEVTOOLS_APPLICATION__ = {
   sendResponseToExplorer,
 };
 
+const actor = createWindowActor<PanelMessage>(window);
+
+actor.on("initializePanel", (message) => {
+  devtoolsState(message.state);
+  writeData(message.payload);
+
+  initDevTools();
+});
+
+actor.on("devtoolsStateChanged", (message) => {
+  devtoolsState(message.state);
+
+  if (message.state === "connected") {
+    client.resetStore();
+  }
+});
+
 window.addEventListener("message", (event) => {
   switch (event.data.type) {
     case UPDATE:
       return writeData(event.data.payload);
-    case INITIALIZE_PANEL: {
-      devtoolsState(event.data.state);
-      writeData(event.data.payload);
-
-      return initDevTools();
-    }
-    case DEVTOOLS_STATE_CHANGED: {
-      devtoolsState(event.data.state);
-
-      if (event.data.state === "connected") {
-        client.resetStore();
-      }
-    }
   }
 });
