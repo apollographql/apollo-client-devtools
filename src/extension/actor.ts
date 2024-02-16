@@ -8,7 +8,7 @@ export interface Actor<Messages extends MessageFormat> {
     callback: (message: Extract<Messages, { type: TName }>) => void
   ) => () => void;
   send: (message: Messages) => void;
-  proxy: (name: Messages["type"], actor: Actor<Messages>) => () => void;
+  forward: (name: Messages["type"], actor: Actor<Messages>) => () => void;
 }
 
 interface MessageAdapter {
@@ -90,7 +90,7 @@ function createActor<Messages extends MessageFormat>(
         message,
       });
     },
-    proxy: (name, actor) => {
+    forward: (name, actor) => {
       return on(name, (message) => actor.send(message));
     },
   };

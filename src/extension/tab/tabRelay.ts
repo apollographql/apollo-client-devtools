@@ -9,14 +9,14 @@ export default new Promise(async ($export) => {
   const tab = createWindowActor<DevtoolsMessage>(window);
   const devtools = createPortActor<DevtoolsMessage>(port);
 
-  devtools.proxy("connectToClient", tab);
-  devtools.proxy("requestData", tab);
-  devtools.proxy("explorerSubscriptionTermination", tab);
+  devtools.forward("connectToClient", tab);
+  devtools.forward("requestData", tab);
+  devtools.forward("explorerSubscriptionTermination", tab);
 
-  tab.proxy("clientNotFound", devtools);
-  tab.proxy("connectToDevtools", devtools);
-  tab.proxy("disconnectFromDevtools", devtools);
-  tab.proxy("update", devtools);
+  tab.forward("clientNotFound", devtools);
+  tab.forward("connectToDevtools", devtools);
+  tab.forward("disconnectFromDevtools", devtools);
+  tab.forward("update", devtools);
 
   // tab.forward(EXPLORER_RESPONSE, `${devtools}:explorer`);
 
