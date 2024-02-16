@@ -127,7 +127,8 @@ function createActor<Messages extends MessageFormat>(
         message,
       });
     },
-    forward: (name, actor) => on(name, actor.send),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    forward: (name, actor) => on(name, actor.send as unknown as any),
   };
 }
 
