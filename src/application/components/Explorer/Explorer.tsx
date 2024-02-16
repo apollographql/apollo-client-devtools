@@ -9,11 +9,7 @@ import {
 import type { IntrospectionQuery } from "graphql";
 import { getIntrospectionQuery } from "graphql/utilities";
 import { colorTheme } from "../../theme";
-import {
-  receiveExplorerResponses,
-  listenForResponse,
-  sendSubscriptionTerminationRequest,
-} from "./explorerRelay";
+import { receiveExplorerResponses, listenForResponse } from "./explorerRelay";
 import { FullWidthLayout } from "../Layouts/FullWidthLayout";
 import { QueryResult } from "../../../types";
 import {
@@ -74,7 +70,7 @@ function executeOperation({
         if (isSubscription) {
           const checkForSubscriptionTermination = (event: MessageEvent) => {
             if (event.data.name.startsWith(EXPLORER_SUBSCRIPTION_TERMINATION)) {
-              sendSubscriptionTerminationRequest();
+              actor.send({ type: "explorerSubscriptionTermination" });
               observer.complete();
               window.removeEventListener(
                 "message",
