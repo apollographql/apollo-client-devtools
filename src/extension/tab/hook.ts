@@ -15,7 +15,6 @@ import { OperationDefinitionNode } from "graphql/language";
 // All manifests should contain the same version number so it shouldn't matter
 // which one we import from.
 import { version as devtoolsVersion } from "../chrome/manifest.json";
-import Relay from "../../Relay";
 import {
   QueryInfo,
   getQueries,
@@ -84,12 +83,6 @@ function initializeHook() {
       return hook;
     },
     configurable: true,
-  });
-
-  const clientRelay = new Relay();
-
-  window.addEventListener("message", ({ data }) => {
-    clientRelay.broadcast(data);
   });
 
   // Listen for tab refreshes
