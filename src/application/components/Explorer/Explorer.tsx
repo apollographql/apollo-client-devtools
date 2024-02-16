@@ -33,7 +33,7 @@ import { GraphRefModal } from "./GraphRefModal";
 import { Button } from "../Button";
 import { getPanelActor } from "../../../extension/devtools/panelActor";
 
-const actor = getPanelActor(window);
+const panelWindow = getPanelActor(window);
 
 export enum FetchPolicy {
   NoCache = "no-cache",
@@ -61,9 +61,9 @@ function executeOperation({
       fetchPolicy,
     });
 
-    actor.send({ type: "explorerRequest", payload });
+    panelWindow.send({ type: "explorerRequest", payload });
 
-    const removeListener = actor.on("explorerResponse", (message) => {
+    const removeListener = panelWindow.on("explorerResponse", (message) => {
       const { payload } = message;
 
       if (payload.operationName !== operationName) {
@@ -75,7 +75,7 @@ function executeOperation({
       if (isSubscription) {
         const checkForSubscriptionTermination = (event: MessageEvent) => {
           if (event.data.name.startsWith(EXPLORER_SUBSCRIPTION_TERMINATION)) {
-            actor.send({ type: "explorerSubscriptionTermination" });
+            panelWindow.send({ type: "explorerSubscriptionTermination" });
             observer.complete();
             window.removeEventListener(
               "message",
