@@ -2,7 +2,7 @@ import browser from "webextension-polyfill";
 import type { MessageFormat } from "./messages";
 import { isApolloClientDevtoolsMessage } from "./messages";
 
-interface Actor<Messages extends MessageFormat> {
+export interface Actor<Messages extends MessageFormat> {
   on: <TName extends Messages["type"]>(
     name: TName,
     callback: (message: Extract<Messages, { type: TName }>) => void
