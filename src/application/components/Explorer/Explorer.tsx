@@ -9,7 +9,6 @@ import {
 import type { IntrospectionQuery } from "graphql";
 import { getIntrospectionQuery } from "graphql/utilities";
 import { colorTheme } from "../../theme";
-import { listenForResponse } from "./explorerRelay";
 import { FullWidthLayout } from "../Layouts/FullWidthLayout";
 import { QueryResult } from "../../../types";
 import {
@@ -64,29 +63,36 @@ function executeOperation({
 
     actor.send({ type: "explorerRequest", payload });
 
-    listenForResponse(
-      (response) => {
-        observer.next(response);
-        if (isSubscription) {
-          const checkForSubscriptionTermination = (event: MessageEvent) => {
-            if (event.data.name.startsWith(EXPLORER_SUBSCRIPTION_TERMINATION)) {
-              actor.send({ type: "explorerSubscriptionTermination" });
-              observer.complete();
-              window.removeEventListener(
-                "message",
-                checkForSubscriptionTermination
-              );
-            }
-          };
+    const removeListener = actor.on("explorerResponse", (message) => {
+      const { payload } = message;
 
-          window.addEventListener("message", checkForSubscriptionTermination);
-        } else {
-          observer.complete();
-        }
-      },
-      operationName,
-      !!isSubscription
-    );
+      if (payload.operationName !== operationName) {
+        return;
+      }
+
+      observer.next(payload.response);
+
+      if (isSubscription) {
+        const checkForSubscriptionTermination = (event: MessageEvent) => {
+          if (event.data.name.startsWith(EXPLORER_SUBSCRIPTION_TERMINATION)) {
+            actor.send({ type: "explorerSubscriptionTermination" });
+            observer.complete();
+            window.removeEventListener(
+              "message",
+              checkForSubscriptionTermination
+            );
+            removeListener();
+          }
+        };
+
+        window.addEventListener("message", checkForSubscriptionTermination);
+      } else {
+        observer.complete();
+        // Queries and Mutation can be closed after a single response comes back,
+        // but we need to listen until we are told to stop for Subscriptions
+        removeListener();
+      }
+    });
   });
 }
 
