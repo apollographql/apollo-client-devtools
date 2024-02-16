@@ -25,7 +25,7 @@ import { DevtoolsMachine } from "./machines";
 import { ClientNotFoundModal } from "./components/ClientNotFoundModal";
 import { getPanelActor } from "../extension/devtools/panelActor";
 
-const actor = getPanelActor(window);
+const panelWindow = getPanelActor(window);
 
 type DevtoolsState = GetStates<DevtoolsMachine>;
 
@@ -62,7 +62,7 @@ const ALERT_CONFIGS = {
           size="xs"
           variant="hidden"
           icon={IconSync}
-          onClick={() => actor.send({ type: "retryConnection" })}
+          onClick={() => panelWindow.send({ type: "retryConnection" })}
         >
           Retry connection
         </Button>
@@ -124,7 +124,7 @@ export const App = () => {
         open={clientNotFoundModalOpen}
         onClose={() => setClientNotFoundModalOpen(false)}
         onRetry={() => {
-          actor.send({ type: "retryConnection" });
+          panelWindow.send({ type: "retryConnection" });
           setClientNotFoundModalOpen(false);
         }}
       />
