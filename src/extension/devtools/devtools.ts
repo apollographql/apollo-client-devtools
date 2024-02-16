@@ -11,8 +11,8 @@ import browser from "webextension-polyfill";
 import { QueryInfo } from "../tab/helpers";
 import { JSONObject } from "../../application/types/json";
 import { devtoolsMachine } from "../../application/machines";
-import { createPortActor } from "../actor";
-import { DevtoolsMessage } from "../messages";
+import { createPortActor, createWindowActor } from "../actor";
+import { DevtoolsMessage, PanelMessage } from "../messages";
 
 const inspectedTabId = browser.devtools.inspectedWindow.tabId;
 const devtools = new Relay();
@@ -131,25 +131,20 @@ async function createDevtoolsPanel() {
   panel.onShown.addListener((window) => {
     if (!connectedToPanel) {
       const state = devtoolsMachine.getState();
+      const panelActor = createWindowActor<PanelMessage>(window);
 
-      window.postMessage({
-        type: INITIALIZE_PANEL,
+      panelActor.send({
+        type: "initializePanel",
         state: state.value,
         payload: state.context.clientContext,
       });
 
-      window.addEventListener("message", (event) => {
-        switch (event.data.type) {
-          case RETRY_CONNECTION:
-            return devtoolsMachine.send({ type: "retry" });
-        }
+      panelActor.on("retryConnection", () => {
+        devtoolsMachine.send({ type: "retry" });
       });
 
       devtoolsMachine.subscribe(({ state }) => {
-        window.postMessage({
-          type: DEVTOOLS_STATE_CHANGED,
-          state: state.value,
-        });
+        panelActor.send({ type: "devtoolsStateChanged", state: state.value });
       });
 
       connectedToPanel = true;
