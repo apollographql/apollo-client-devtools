@@ -116,23 +116,23 @@ async function createDevtoolsPanel() {
   let removeExplorerListener: () => void;
 
   panel.onShown.addListener((window) => {
-    const panelActor = getPanelActor(window);
+    const panelWindow = getPanelActor(window);
 
     if (!connectedToPanel) {
       const state = devtoolsMachine.getState();
 
-      panelActor.send({
+      panelWindow.send({
         type: "initializePanel",
         state: state.value,
         payload: state.context.clientContext,
       });
 
-      panelActor.on("retryConnection", () => {
+      panelWindow.on("retryConnection", () => {
         devtoolsMachine.send({ type: "retry" });
       });
 
       devtoolsMachine.subscribe(({ state }) => {
-        panelActor.send({ type: "devtoolsStateChanged", state: state.value });
+        panelWindow.send({ type: "devtoolsStateChanged", state: state.value });
       });
 
       connectedToPanel = true;
@@ -156,15 +156,15 @@ async function createDevtoolsPanel() {
         cache: Record<string, JSONObject>;
       };
 
-      panelActor.send({
+      panelWindow.send({
         type: "update",
         payload: { queries, mutations, cache },
       });
     });
 
-    removeExplorerForward = clientPort.forward("explorerResponse", panelActor);
-    removeExplorerListener = panelActor.forward("explorerRequest", clientPort);
-    removeSubscriptionTerminationListener = panelActor.forward(
+    removeExplorerForward = clientPort.forward("explorerResponse", panelWindow);
+    removeExplorerListener = panelWindow.forward("explorerRequest", clientPort);
+    removeSubscriptionTerminationListener = panelWindow.forward(
       "explorerSubscriptionTermination",
       clientPort
     );
