@@ -12,16 +12,22 @@ export interface Actor<Messages extends MessageFormat> {
 }
 
 interface MessageAdapter {
-  addListener: (listener: (message: unknown) => void) => void;
+  addListener: (listener: (message: unknown) => void) => () => void;
   postMessage: (message: unknown) => void;
 }
 
 function createWindowMessageAdapter(window: Window): MessageAdapter {
   return {
     addListener(listener) {
-      window.addEventListener("message", ({ data }) => {
+      function handleEvent({ data }: MessageEvent) {
         listener(data);
-      });
+      }
+
+      window.addEventListener("message", handleEvent);
+
+      return () => {
+        window.removeEventListener("message", handleEvent);
+      };
     },
     postMessage(message) {
       window.postMessage(message, "*");
@@ -36,6 +42,10 @@ function createPortMessageAdapter(port: browser.Runtime.Port): MessageAdapter {
       port.onDisconnect.addListener(() => {
         port.onMessage.removeListener(listener);
       });
+
+      return () => {
+        port.onMessage.removeListener(listener);
+      };
     },
     postMessage(message) {
       return port.postMessage(message);
@@ -46,7 +56,7 @@ function createPortMessageAdapter(port: browser.Runtime.Port): MessageAdapter {
 function createActor<Messages extends MessageFormat>(
   adapter: MessageAdapter
 ): Actor<Messages> {
-  let listening = false;
+  let removeListener: (() => void) | null = null;
   const messageListeners = new Map<
     Messages["type"],
     Set<(message: Messages) => void>
@@ -67,9 +77,15 @@ function createActor<Messages extends MessageFormat>(
   }
 
   function startListening() {
-    if (!listening) {
-      listening = true;
-      adapter.addListener(handleMessage);
+    if (!removeListener) {
+      removeListener = adapter.addListener(handleMessage);
+    }
+  }
+
+  function stopListening() {
+    if (removeListener) {
+      removeListener();
+      removeListener = null;
     }
   }
 
@@ -86,6 +102,14 @@ function createActor<Messages extends MessageFormat>(
 
     return () => {
       listeners!.delete(callback);
+
+      if (listeners.size === 0) {
+        messageListeners.delete(name);
+      }
+
+      if (messageListeners.size === 0) {
+        stopListening();
+      }
     };
   };
 
