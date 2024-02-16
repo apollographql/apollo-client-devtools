@@ -9,10 +9,6 @@ const ports: Record<
   }
 > = {};
 
-function isNumeric(value: string) {
-  return !isNaN(+value);
-}
-
 function registerTab(tabId: number) {
   if (!ports[tabId]) {
     ports[tabId] = {
@@ -142,7 +138,7 @@ browser.runtime.onConnect.addListener((port) => {
   }
 
   // The devtools port is identified by the tab id
-  if (isNumeric(port.name)) {
+  if (!isNaN(+port.name)) {
     return connectExtensionPort(port);
   }
 
