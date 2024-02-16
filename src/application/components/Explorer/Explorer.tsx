@@ -11,7 +11,6 @@ import { getIntrospectionQuery } from "graphql/utilities";
 import { colorTheme } from "../../theme";
 import {
   receiveExplorerResponses,
-  sendExplorerRequest,
   listenForResponse,
   sendSubscriptionTerminationRequest,
 } from "./explorerRelay";
@@ -37,6 +36,9 @@ import {
 } from "./postMessageAuthHelpers";
 import { GraphRefModal } from "./GraphRefModal";
 import { Button } from "../Button";
+import { getPanelActor } from "../../../extension/devtools/panelActor";
+
+const actor = getPanelActor(window);
 
 export enum FetchPolicy {
   NoCache = "no-cache",
@@ -64,7 +66,7 @@ function executeOperation({
       fetchPolicy,
     });
 
-    sendExplorerRequest(payload);
+    actor.send({ type: "explorerRequest", payload });
 
     listenForResponse(
       (response) => {
