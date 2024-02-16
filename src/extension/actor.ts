@@ -17,7 +17,7 @@ export interface Actor<Messages extends MessageFormat> {
   ) => () => void;
 }
 
-interface MessageAdapter {
+export interface MessageAdapter {
   addListener: (listener: (message: unknown) => void) => () => void;
   postMessage: (message: unknown) => void;
 }
@@ -59,7 +59,7 @@ function createPortMessageAdapter(port: browser.Runtime.Port): MessageAdapter {
   };
 }
 
-function createActor<Messages extends MessageFormat>(
+export function createActor<Messages extends MessageFormat>(
   adapter: MessageAdapter
 ): Actor<Messages> {
   let removeListener: (() => void) | null = null;
