@@ -5,7 +5,7 @@ const ports: Record<
   {
     tab: browser.Runtime.Port | null;
     extension: browser.Runtime.Port | null;
-    disconnect: (() => void) | null;
+    disconnectPorts: (() => void) | null;
   }
 > = {};
 
@@ -14,7 +14,7 @@ function registerTab(tabId: number) {
     ports[tabId] = {
       tab: null,
       extension: null,
-      disconnect: null,
+      disconnectPorts: null,
     };
   }
 }
@@ -23,7 +23,7 @@ function registerTabPort(tabId: number, port: browser.Runtime.Port) {
   ports[tabId].tab = port;
 
   port.onDisconnect.addListener(() => {
-    ports[tabId].disconnect?.();
+    ports[tabId].disconnectPorts?.();
     ports[tabId].tab = null;
   });
 }
@@ -32,7 +32,7 @@ function registerExtensionPort(tabId: number, port: browser.Runtime.Port) {
   ports[tabId].extension = port;
 
   port.onDisconnect.addListener(() => {
-    ports[tabId].disconnect?.();
+    ports[tabId].disconnectPorts?.();
     ports[tabId].extension = null;
   });
 }
@@ -55,7 +55,7 @@ function connectPorts(tabId: number) {
     throw new Error("Attempted to connect tab port which does not exist");
   }
 
-  if (ports[tabId].disconnect) {
+  if (ports[tabId].disconnectPorts) {
     throw new Error(
       `Attempted to connect already connected ports for tab ${tabId}`
     );
@@ -89,10 +89,10 @@ function connectPorts(tabId: number) {
     extensionPort!.onMessage.removeListener(extensionPortListener);
     tabPort!.onMessage.removeListener(tabPortListener);
 
-    ports[tabId].disconnect = null;
+    ports[tabId].disconnectPorts = null;
   }
 
-  ports[tabId].disconnect = disconnectPorts;
+  ports[tabId].disconnectPorts = disconnectPorts;
 
   extensionPort.onMessage.addListener(extensionPortListener);
   extensionPort.onDisconnect.addListener(disconnectPorts);
@@ -109,7 +109,7 @@ function connectTabPort(port: browser.Runtime.Port) {
   const tabId = port.sender.tab.id;
 
   if (ports[tabId]?.tab) {
-    ports[tabId].disconnect?.();
+    ports[tabId].disconnectPorts?.();
     ports[tabId].tab?.disconnect();
   }
 
