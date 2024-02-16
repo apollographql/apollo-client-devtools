@@ -78,7 +78,7 @@ describe("Cache component tests", () => {
       writeData({
         queries: [],
         mutations: [],
-        cache: JSON.stringify(CACHE_DATA),
+        cache: CACHE_DATA,
       });
     });
 
@@ -126,7 +126,7 @@ describe("Cache component tests", () => {
       writeData({
         queries: [],
         mutations: [],
-        cache: JSON.stringify(CACHE_DATA),
+        cache: CACHE_DATA,
       });
     });
 
