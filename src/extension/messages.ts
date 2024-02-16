@@ -30,7 +30,8 @@ export type PanelMessage =
       payload: GetContext<DevtoolsMachine>["clientContext"];
     }
   | { type: "retryConnection" }
-  | { type: "devtoolsStateChanged"; state: GetStates<DevtoolsMachine> };
+  | { type: "devtoolsStateChanged"; state: GetStates<DevtoolsMachine> }
+  | { type: "update"; payload: GetContext<DevtoolsMachine>["clientContext"] };
 
 export function isApolloClientDevtoolsMessage<Message extends MessageFormat>(
   message: unknown
