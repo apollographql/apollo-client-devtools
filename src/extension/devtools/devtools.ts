@@ -2,8 +2,8 @@ import browser from "webextension-polyfill";
 import { QueryInfo } from "../tab/helpers";
 import { JSONObject } from "../../application/types/json";
 import { devtoolsMachine } from "../../application/machines";
-import { Actor, createPortActor, createWindowActor } from "../actor";
-import { ClientMessage, PanelMessage } from "../messages";
+import { createPortActor } from "../actor";
+import { ClientMessage } from "../messages";
 import { getPanelActor } from "./panelActor";
 
 const inspectedTabId = browser.devtools.inspectedWindow.tabId;
