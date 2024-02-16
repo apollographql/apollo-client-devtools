@@ -24,6 +24,10 @@ import { GetStates } from "./stateMachine";
 import { DevtoolsMachine } from "./machines";
 import { RETRY_CONNECTION } from "../extension/constants";
 import { ClientNotFoundModal } from "./components/ClientNotFoundModal";
+import { createWindowActor } from "../extension/actor";
+import { PanelMessage } from "../extension/messages";
+
+const actor = createWindowActor<PanelMessage>(window);
 
 type DevtoolsState = GetStates<DevtoolsMachine>;
 
@@ -60,7 +64,7 @@ const ALERT_CONFIGS = {
           size="xs"
           variant="hidden"
           icon={IconSync}
-          onClick={() => window.postMessage({ type: RETRY_CONNECTION })}
+          onClick={() => actor.send({ type: "retryConnection" })}
         >
           Retry connection
         </Button>
