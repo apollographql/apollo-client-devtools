@@ -1,5 +1,4 @@
 import Relay from "../../Relay";
-import { EXPLORER_REQUEST } from "../constants";
 import browser from "webextension-polyfill";
 import { QueryInfo } from "../tab/helpers";
 import { JSONObject } from "../../application/types/json";
@@ -175,19 +174,13 @@ async function createDevtoolsPanel() {
     portActor.forward("explorerResponse", panelActor);
 
     removeExplorerListener = receiveExplorerRequests(({ detail }) => {
-      devtools.broadcast(detail);
+      portActor.send({ type: "explorerRequest", payload: detail.payload });
     });
 
     removeSubscriptionTerminationListener =
       receiveSubscriptionTerminationRequest(() => {
         portActor.send({ type: "explorerSubscriptionTermination" });
       });
-
-    // Forward all Explorer requests to the client
-    removeExplorerForward = devtools.forward(
-      EXPLORER_REQUEST,
-      `background:tab-${inspectedTabId}:client`
-    );
 
     panelHidden = false;
   });
