@@ -23,10 +23,9 @@ import { BannerAlert, BannerAlertConfig } from "./components/BannerAlert";
 import { GetStates } from "./stateMachine";
 import { DevtoolsMachine } from "./machines";
 import { ClientNotFoundModal } from "./components/ClientNotFoundModal";
-import { createWindowActor } from "../extension/actor";
-import { PanelMessage } from "../extension/messages";
+import { getPanelActor } from "../extension/devtools/panelActor";
 
-const actor = createWindowActor<PanelMessage>(window);
+const actor = getPanelActor(window);
 
 type DevtoolsState = GetStates<DevtoolsMachine>;
 
