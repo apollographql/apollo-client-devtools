@@ -1,6 +1,5 @@
 import { initDevTools, writeData, client } from "../../application";
 import {
-  receiveExplorerRequests,
   receiveSubscriptionTerminationRequest,
   sendResponseToExplorer,
 } from "../../application/components/Explorer/explorerRelay";
@@ -30,10 +29,6 @@ actor.on("update", (message) => {
 });
 
 actor.on("explorerResponse", sendResponseToExplorer);
-
-receiveExplorerRequests(({ detail }) => {
-  actor.send({ type: "explorerRequest", payload: detail.payload });
-});
 
 receiveSubscriptionTerminationRequest(() => {
   actor.send({ type: "explorerSubscriptionTermination" });

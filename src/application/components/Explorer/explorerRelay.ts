@@ -50,26 +50,6 @@ export const sendSubscriptionTerminationRequest = (): void => {
   );
 };
 
-export const sendExplorerRequest = (operation: string): void => {
-  window.dispatchEvent(
-    new CustomEvent(EXPLORER_REQUEST, {
-      detail: {
-        message: EXPLORER_REQUEST,
-        payload: operation,
-      },
-    })
-  );
-};
-
-export const receiveExplorerRequests = (
-  callback: (event: CustomEvent<MessageObj<string>>) => void
-): (() => void) => {
-  window.addEventListener(EXPLORER_REQUEST, callback);
-  return () => {
-    window.removeEventListener(EXPLORER_REQUEST, callback);
-  };
-};
-
 export const receiveSubscriptionTerminationRequest = (
   callback: (event: CustomEvent<MessageObj<undefined>>) => void
 ): (() => void) => {
