@@ -1,5 +1,4 @@
 import { initDevTools, writeData, client } from "../../application";
-import { sendResponseToExplorer } from "../../application/components/Explorer/explorerRelay";
 import "./panel.css";
 import { devtoolsState } from "../../application/App";
 import { getPanelActor } from "./panelActor";
@@ -24,5 +23,3 @@ actor.on("devtoolsStateChanged", (message) => {
 actor.on("update", (message) => {
   writeData(message.payload);
 });
-
-actor.on("explorerResponse", sendResponseToExplorer);
