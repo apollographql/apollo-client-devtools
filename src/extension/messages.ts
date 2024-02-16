@@ -24,6 +24,7 @@ export type DevtoolsMessage =
   | { type: "update"; payload: string };
 
 export type PanelMessage =
+  | { type: "explorerResponse"; payload: ExplorerResponse }
   | {
       type: "initializePanel";
       state: GetStates<DevtoolsMachine>;
