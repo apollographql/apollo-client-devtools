@@ -6,7 +6,7 @@ function createTestAdapter<Messages = unknown>() {
     listener = null;
   });
 
-  const adapter = {
+  return {
     mocks: { removeListener },
     simulatePlainMessage: (message: unknown) => {
       listener?.(message);
@@ -21,8 +21,6 @@ function createTestAdapter<Messages = unknown>() {
     }),
     postMessage: jest.fn(),
   };
-
-  return adapter;
 }
 
 test("sends messages to specified adapter in devtools message format", () => {
