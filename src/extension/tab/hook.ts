@@ -96,10 +96,6 @@ function initializeHook() {
     }
   });
 
-  function handleExplorerResponse(payload: ExplorerResponse) {
-    actor.send({ type: "explorerResponse", payload });
-  }
-
   function sendHookDataToDevTools(eventName: "update" | "connectToDevtools") {
     actor.send({
       type: eventName,
@@ -180,26 +176,29 @@ function initializeHook() {
 
     const operationObservable = operation?.subscribe(
       (response: QueryResult) => {
-        handleExplorerResponse({
-          operationName,
-          response,
+        actor.send({
+          type: "explorerResponse",
+          payload: { operationName, response },
         });
       },
       (error: ApolloError) => {
-        handleExplorerResponse({
-          operationName,
-          response: {
-            errors: error.graphQLErrors.length
-              ? error.graphQLErrors
-              : error.networkError && "result" in error.networkError
-                ? typeof error.networkError?.result === "string"
-                  ? error.networkError?.result
-                  : error.networkError?.result.errors ?? []
-                : [],
-            error: error,
-            data: null,
-            loading: false,
-            networkStatus: NetworkStatus.error,
+        actor.send({
+          type: "explorerResponse",
+          payload: {
+            operationName,
+            response: {
+              errors: error.graphQLErrors.length
+                ? error.graphQLErrors
+                : error.networkError && "result" in error.networkError
+                  ? typeof error.networkError?.result === "string"
+                    ? error.networkError?.result
+                    : error.networkError?.result.errors ?? []
+                  : [],
+              error: error,
+              data: null,
+              loading: false,
+              networkStatus: NetworkStatus.error,
+            },
           },
         });
       }
