@@ -22,7 +22,7 @@ import {
   getMutations,
   getMainDefinition,
 } from "./helpers";
-import { ExplorerResponse, QueryResult } from "../../types";
+import { QueryResult } from "../../types";
 import { getPrivateAccess } from "../../privateAccess";
 import { JSONObject } from "../../application/types/json";
 import { FetchPolicy } from "../../application/components/Explorer/Explorer";
