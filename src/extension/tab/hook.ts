@@ -31,7 +31,7 @@ import { ClientMessage } from "../messages";
 
 const DEVTOOLS_KEY = Symbol.for("apollo.devtools");
 
-const actor = createWindowActor<ClientMessage>(window);
+const tab = createWindowActor<ClientMessage>(window);
 
 declare global {
   type TCache = any;
@@ -87,7 +87,7 @@ function initializeHook() {
 
   // Listen for tab refreshes
   window.onbeforeunload = () => {
-    actor.send({ type: "disconnectFromDevtools" });
+    tab.send({ type: "disconnectFromDevtools" });
   };
 
   window.addEventListener("load", () => {
@@ -97,7 +97,7 @@ function initializeHook() {
   });
 
   function sendHookDataToDevTools(eventName: "update" | "connectToDevtools") {
-    actor.send({
+    tab.send({
       type: eventName,
       payload: JSON.stringify({
         queries: hook.getQueries(),
@@ -107,7 +107,7 @@ function initializeHook() {
     });
   }
 
-  actor.on("connectToClient", () => {
+  tab.on("connectToClient", () => {
     if (hook.ApolloClient) {
       sendHookDataToDevTools("connectToDevtools");
     } else {
@@ -115,8 +115,8 @@ function initializeHook() {
     }
   });
 
-  actor.on("requestData", () => sendHookDataToDevTools("update"));
-  actor.on("explorerRequest", (message) => {
+  tab.on("requestData", () => sendHookDataToDevTools("update"));
+  tab.on("explorerRequest", (message) => {
     const {
       operation: query,
       operationName,
@@ -176,13 +176,13 @@ function initializeHook() {
 
     const operationObservable = operation?.subscribe(
       (response: QueryResult) => {
-        actor.send({
+        tab.send({
           type: "explorerResponse",
           payload: { operationName, response },
         });
       },
       (error: ApolloError) => {
-        actor.send({
+        tab.send({
           type: "explorerResponse",
           payload: {
             operationName,
@@ -208,7 +208,7 @@ function initializeHook() {
       definition.kind === "OperationDefinition" &&
       definition.operation === "subscription"
     ) {
-      actor.on("explorerSubscriptionTermination", () => {
+      tab.on("explorerSubscriptionTermination", () => {
         operationObservable?.unsubscribe();
       });
     }
@@ -224,7 +224,7 @@ function initializeHook() {
     function initializeDevtoolsHook() {
       if (count++ > 10) {
         clearInterval(interval);
-        actor.send({ type: "clientNotFound" });
+        tab.send({ type: "clientNotFound" });
       }
       if (window.__APOLLO_CLIENT__) {
         registerClient(window.__APOLLO_CLIENT__);
