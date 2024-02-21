@@ -66,7 +66,7 @@ export type GetStates<TMachine> =
   TMachine extends Machine<infer State, SafeAny, SafeAny> ? State : never;
 
 export type GetContext<TMachine> =
-  TMachine extends Machine<any, any, infer Context> ? Context : never;
+  TMachine extends Machine<SafeAny, SafeAny, infer Context> ? Context : never;
 
 export function createMachine<
   State extends string,
