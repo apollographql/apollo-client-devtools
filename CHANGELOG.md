@@ -1,5 +1,19 @@
 # Changelog
 
+## 4.7.0
+
+### Minor Changes
+
+- [#1226](https://github.com/apollographql/apollo-client-devtools/pull/1226) [`7c89199`](https://github.com/apollographql/apollo-client-devtools/commit/7c8919966653a5ec894dc6bd3ae835c6a1eb49c6) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Rework the message passing between all areas of the devtools to provide more stability. In particular, the message passing has changed in the following ways:
+
+  - All messages now contain a `source` property set to `apollo-client-devtools`. This avoids potential clashes with events emitted from `window` that had nothing to do with the devtools. This also means that apps or other utilities that listen to messages on `window` know where the message originates.
+  - Strengthen the relationship in the background scripts between the tab and devtools ports.
+  - Add much better type safety for all messages sent through the various areas of the devtools.
+
+### Patch Changes
+
+- [#1228](https://github.com/apollographql/apollo-client-devtools/pull/1228) [`41db9be`](https://github.com/apollographql/apollo-client-devtools/commit/41db9be7a6bdedf2be42014ce52551aa58b7a47a) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Enable strict tsconfig
+
 ## 4.6.0
 
 ### Minor Changes
