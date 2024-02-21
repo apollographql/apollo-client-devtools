@@ -87,7 +87,7 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
         )}
         <QueryLayout.Tabs
           value={currentTab}
-          onChange={(value: QueryTabs) => setCurrentTab(value)}
+          onChange={(value) => setCurrentTab(value)}
         >
           <Tabs.List>
             <Tabs.Trigger value={QueryTabs.Variables}>Variables</Tabs.Trigger>

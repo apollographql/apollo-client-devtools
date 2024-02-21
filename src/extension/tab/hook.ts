@@ -15,7 +15,6 @@ import { OperationDefinitionNode } from "graphql/language";
 // All manifests should contain the same version number so it shouldn't matter
 // which one we import from.
 import { version as devtoolsVersion } from "../chrome/manifest.json";
-import Relay from "../../Relay";
 import {
   QueryInfo,
   getQueries,
@@ -23,23 +22,16 @@ import {
   getMutations,
   getMainDefinition,
 } from "./helpers";
-import { ExplorerResponse, QueryResult } from "../../types";
-import {
-  CONNECT_TO_CLIENT,
-  EXPLORER_REQUEST,
-  EXPLORER_RESPONSE,
-  REQUEST_DATA,
-  UPDATE,
-  CONNECT_TO_DEVTOOLS,
-  DISCONNECT_FROM_DEVTOOLS,
-  CLIENT_NOT_FOUND,
-} from "../constants";
-import { EXPLORER_SUBSCRIPTION_TERMINATION } from "../../application/components/Explorer/postMessageHelpers";
+import { QueryResult } from "../../types";
 import { getPrivateAccess } from "../../privateAccess";
 import { JSONObject } from "../../application/types/json";
 import { FetchPolicy } from "../../application/components/Explorer/Explorer";
+import { createWindowActor } from "../actor";
+import { ClientMessage } from "../messages";
 
 const DEVTOOLS_KEY = Symbol.for("apollo.devtools");
+
+const tab = createWindowActor<ClientMessage>(window);
 
 declare global {
   type TCache = any;
@@ -93,71 +85,44 @@ function initializeHook() {
     configurable: true,
   });
 
-  const clientRelay = new Relay();
-
-  clientRelay.addConnection("tab", (message) => {
-    window.postMessage(message, "*");
-  });
-
-  window.addEventListener("message", ({ data }) => {
-    clientRelay.broadcast(data);
-  });
-
-  function sendMessageToTab<TPayload>(message: string, payload?: TPayload) {
-    clientRelay.send({
-      to: "tab",
-      message,
-      payload,
-    });
-  }
-
   // Listen for tab refreshes
   window.onbeforeunload = () => {
-    sendMessageToTab(DISCONNECT_FROM_DEVTOOLS);
+    tab.send({ type: "disconnectFromDevtools" });
   };
 
   window.addEventListener("load", () => {
     if (hook.ApolloClient) {
-      sendHookDataToDevTools(CONNECT_TO_DEVTOOLS);
+      sendHookDataToDevTools("connectToDevtools");
     }
   });
 
-  function handleExplorerResponse(payload: ExplorerResponse) {
-    sendMessageToTab(EXPLORER_RESPONSE, payload);
-  }
-
-  function sendHookDataToDevTools(
-    eventName: typeof UPDATE | typeof CONNECT_TO_DEVTOOLS
-  ) {
-    // Tab Relay forwards this the devtools
-    sendMessageToTab(
-      eventName,
-      JSON.stringify({
+  function sendHookDataToDevTools(eventName: "update" | "connectToDevtools") {
+    tab.send({
+      type: eventName,
+      payload: JSON.stringify({
         queries: hook.getQueries(),
         mutations: hook.getMutations(),
         cache: hook.getCache(),
-      })
-    );
+      }),
+    });
   }
 
-  clientRelay.listen(CONNECT_TO_CLIENT, () => {
+  tab.on("connectToClient", () => {
     if (hook.ApolloClient) {
-      sendHookDataToDevTools(CONNECT_TO_DEVTOOLS);
+      sendHookDataToDevTools("connectToDevtools");
     } else {
-      // try finding client again, if it's found findClient will send the CREATE_DEVTOOLS_PANEL event
       findClient();
     }
   });
 
-  clientRelay.listen(REQUEST_DATA, () => sendHookDataToDevTools(UPDATE));
-
-  clientRelay.listen<string>(EXPLORER_REQUEST, ({ payload }) => {
+  tab.on("requestData", () => sendHookDataToDevTools("update"));
+  tab.on("explorerRequest", (message) => {
     const {
       operation: query,
       operationName,
       fetchPolicy,
       variables,
-    } = JSON.parse(payload ?? "") as {
+    } = JSON.parse(message.payload ?? "") as {
       operation: string;
       operationName: string | undefined;
       variables: JSONObject | undefined;
@@ -192,12 +157,12 @@ function initializeHook() {
         definition.kind === "OperationDefinition" &&
         definition.operation === "mutation"
       ) {
-        return new Observable((observer) => {
+        return new Observable<QueryResult>((observer) => {
           hook.ApolloClient?.mutate({
             mutation: clonedQueryAst,
             variables,
           }).then((result) => {
-            observer.next(result);
+            observer.next(result as QueryResult);
           });
         });
       } else {
@@ -211,26 +176,29 @@ function initializeHook() {
 
     const operationObservable = operation?.subscribe(
       (response: QueryResult) => {
-        handleExplorerResponse({
-          operationName,
-          response,
+        tab.send({
+          type: "explorerResponse",
+          payload: { operationName, response },
         });
       },
       (error: ApolloError) => {
-        handleExplorerResponse({
-          operationName,
-          response: {
-            errors: error.graphQLErrors.length
-              ? error.graphQLErrors
-              : error.networkError && "result" in error.networkError
-                ? typeof error.networkError?.result === "string"
-                  ? error.networkError?.result
-                  : error.networkError?.result.errors ?? []
-                : [],
-            error: error,
-            data: null,
-            loading: false,
-            networkStatus: NetworkStatus.error,
+        tab.send({
+          type: "explorerResponse",
+          payload: {
+            operationName,
+            response: {
+              errors: error.graphQLErrors.length
+                ? error.graphQLErrors
+                : error.networkError && "result" in error.networkError
+                  ? typeof error.networkError?.result === "string"
+                    ? error.networkError?.result
+                    : error.networkError?.result.errors ?? []
+                  : [],
+              error: error,
+              data: null,
+              loading: false,
+              networkStatus: NetworkStatus.error,
+            },
           },
         });
       }
@@ -240,7 +208,7 @@ function initializeHook() {
       definition.kind === "OperationDefinition" &&
       definition.operation === "subscription"
     ) {
-      clientRelay.listen(EXPLORER_SUBSCRIPTION_TERMINATION, () => {
+      tab.on("explorerSubscriptionTermination", () => {
         operationObservable?.unsubscribe();
       });
     }
@@ -256,7 +224,7 @@ function initializeHook() {
     function initializeDevtoolsHook() {
       if (count++ > 10) {
         clearInterval(interval);
-        sendMessageToTab(CLIENT_NOT_FOUND);
+        tab.send({ type: "clientNotFound" });
       }
       if (window.__APOLLO_CLIENT__) {
         registerClient(window.__APOLLO_CLIENT__);
@@ -285,13 +253,13 @@ function initializeHook() {
     clearInterval(interval);
     // incase initial update was missed because the client wasn't ready, send the create devtools event.
     // devtools checks to see if it's already created, so this won't create duplicate tabs
-    sendHookDataToDevTools(CONNECT_TO_DEVTOOLS);
+    sendHookDataToDevTools("connectToDevtools");
   }
 
   const preExisting = window[DEVTOOLS_KEY];
   window[DEVTOOLS_KEY] = { push: registerClient };
   if (Array.isArray(preExisting)) {
-    preExisting.forEach(registerClient);
+    (preExisting as Array<ApolloClient<any>>).forEach(registerClient);
   }
 
   findClient();

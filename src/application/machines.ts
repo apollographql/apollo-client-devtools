@@ -53,3 +53,5 @@ export const devtoolsMachine = createMachine({
     },
   },
 });
+
+export type DevtoolsMachine = typeof devtoolsMachine;

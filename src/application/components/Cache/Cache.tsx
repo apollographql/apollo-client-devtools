@@ -102,7 +102,7 @@ export function Cache() {
           <JSONTreeViewer
             data={cache[cacheId]}
             hideRoot={true}
-            valueRenderer={(valueAsString: ReactNode, value, key) => {
+            valueRenderer={(valueAsString, value, key) => {
               return (
                 <span
                   className={clsx({
@@ -114,7 +114,7 @@ export function Cache() {
                     }
                   }}
                 >
-                  {valueAsString}
+                  {valueAsString as ReactNode}
                 </span>
               );
             }}

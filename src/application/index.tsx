@@ -152,7 +152,7 @@ export const writeData = ({
 }: {
   queries: QueryInfo[];
   mutations: QueryInfo[];
-  cache: string;
+  cache: Record<string, unknown>;
 }) => {
   const filteredQueries = queries.map(getQueryData).filter(Boolean);
 
@@ -179,7 +179,7 @@ export const writeData = ({
       },
     },
   });
-  cacheVar(cache);
+  cacheVar(JSON.stringify(cache));
 };
 
 export const AppProvider = () => {

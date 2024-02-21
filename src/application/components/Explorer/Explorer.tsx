@@ -1,20 +1,9 @@
 import { useMemo } from "react";
 import { useState, useEffect } from "react";
-import {
-  Observable,
-  useReactiveVar,
-  FetchResult,
-  NetworkStatus,
-} from "@apollo/client";
+import { Observable, useReactiveVar, NetworkStatus } from "@apollo/client";
 import type { IntrospectionQuery } from "graphql";
 import { getIntrospectionQuery } from "graphql/utilities";
 import { colorTheme } from "../../theme";
-import {
-  receiveExplorerResponses,
-  sendExplorerRequest,
-  listenForResponse,
-  sendSubscriptionTerminationRequest,
-} from "./explorerRelay";
 import { FullWidthLayout } from "../Layouts/FullWidthLayout";
 import { QueryResult } from "../../../types";
 import {
@@ -37,6 +26,9 @@ import {
 } from "./postMessageAuthHelpers";
 import { GraphRefModal } from "./GraphRefModal";
 import { Button } from "../Button";
+import { getPanelActor } from "../../../extension/devtools/panelActor";
+
+const panelWindow = getPanelActor(window);
 
 export enum FetchPolicy {
   NoCache = "no-cache",
@@ -56,7 +48,7 @@ function executeOperation({
   fetchPolicy: FetchPolicy;
   isSubscription?: boolean;
 }) {
-  return new Observable<FetchResult>((observer) => {
+  return new Observable<QueryResult>((observer) => {
     const payload = JSON.stringify({
       operation,
       operationName,
@@ -64,31 +56,38 @@ function executeOperation({
       fetchPolicy,
     });
 
-    sendExplorerRequest(payload);
+    panelWindow.send({ type: "explorerRequest", payload });
 
-    listenForResponse(
-      (response) => {
-        observer.next(response);
-        if (isSubscription) {
-          const checkForSubscriptionTermination = (event: MessageEvent) => {
-            if (event.data.name.startsWith(EXPLORER_SUBSCRIPTION_TERMINATION)) {
-              sendSubscriptionTerminationRequest();
-              observer.complete();
-              window.removeEventListener(
-                "message",
-                checkForSubscriptionTermination
-              );
-            }
-          };
+    const removeListener = panelWindow.on("explorerResponse", (message) => {
+      const { payload } = message;
 
-          window.addEventListener("message", checkForSubscriptionTermination);
-        } else {
-          observer.complete();
-        }
-      },
-      operationName,
-      !!isSubscription
-    );
+      if (payload.operationName !== operationName) {
+        return;
+      }
+
+      observer.next(payload.response);
+
+      if (isSubscription) {
+        const checkForSubscriptionTermination = (event: MessageEvent) => {
+          if (event.data.name.startsWith(EXPLORER_SUBSCRIPTION_TERMINATION)) {
+            panelWindow.send({ type: "explorerSubscriptionTermination" });
+            observer.complete();
+            window.removeEventListener(
+              "message",
+              checkForSubscriptionTermination
+            );
+            removeListener();
+          }
+        };
+
+        window.addEventListener("message", checkForSubscriptionTermination);
+      } else {
+        observer.complete();
+        // Queries and Mutation can be closed after a single response comes back,
+        // but we need to listen until we are told to stop for Subscriptions
+        removeListener();
+      }
+    });
   });
 }
 
@@ -132,10 +131,6 @@ export const Explorer = ({
 
   const color = useReactiveVar(colorTheme);
 
-  // Subscribe to Explorer data responses
-  // Returns a cleanup method to useEffect
-  useEffect(() => receiveExplorerResponses());
-
   // Set embedded explorer iframe if loaded
   useEffect(() => {
     const iframe = document.getElementById(
@@ -177,7 +172,7 @@ export const Explorer = ({
         fetchPolicy: FetchPolicy.NoCache,
       });
 
-      observer.subscribe((response: QueryResult) => {
+      observer.subscribe((response) => {
         // If we have errors in the response it means we assume this was a graphql
         // response which means we did hit a graphql endpoint but introspection
         // was specifically disabled

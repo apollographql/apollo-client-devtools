@@ -21,11 +21,13 @@ import { SettingsModal } from "./components/Layouts/SettingsModal";
 import Logo from "@apollo/icons/logos/LogoSymbol.svg";
 import { BannerAlert, BannerAlertConfig } from "./components/BannerAlert";
 import { GetStates } from "./stateMachine";
-import { devtoolsMachine } from "./machines";
-import { RETRY_CONNECTION } from "../extension/constants";
+import { DevtoolsMachine } from "./machines";
 import { ClientNotFoundModal } from "./components/ClientNotFoundModal";
+import { getPanelActor } from "../extension/devtools/panelActor";
 
-type DevtoolsState = GetStates<typeof devtoolsMachine>;
+const panelWindow = getPanelActor(window);
+
+type DevtoolsState = GetStates<DevtoolsMachine>;
 
 export const devtoolsState = makeVar<DevtoolsState>("initialized");
 
@@ -60,7 +62,7 @@ const ALERT_CONFIGS = {
           size="xs"
           variant="hidden"
           icon={IconSync}
-          onClick={() => window.postMessage({ type: RETRY_CONNECTION })}
+          onClick={() => panelWindow.send({ type: "retryConnection" })}
         >
           Retry connection
         </Button>
@@ -122,14 +124,14 @@ export const App = () => {
         open={clientNotFoundModalOpen}
         onClose={() => setClientNotFoundModalOpen(false)}
         onRetry={() => {
-          window.postMessage({ type: RETRY_CONNECTION });
+          panelWindow.send({ type: "retryConnection" });
           setClientNotFoundModalOpen(false);
         }}
       />
       <BannerAlert />
       <Tabs
         value={selected}
-        onChange={(screen: Screens) => currentScreen(screen)}
+        onChange={(screen) => currentScreen(screen)}
         className="flex flex-col h-screen bg-primary dark:bg-primary-dark"
       >
         <Tabs.List className="flex items-center px-4">
