@@ -68,13 +68,15 @@ Before building the extension you should install dependencies:
 # Install dependencies
 > npm install
 
-# Build the extension
-> npm run build
-
-# Generate zipped distributables
-> npm run dist chrome
+# (Optional) build the extension for local use
+> npm run build -- --env TARGET=chrome
 # or
-> npm run dist firefox
+> npm run build -- --env TARGET=firefox
+
+# Or generate zipped distributables (already includes the above build step)
+> npm run dist:chrome
+# or
+> npm run dist:firefox
 ```
 
 ### Running the sample application
