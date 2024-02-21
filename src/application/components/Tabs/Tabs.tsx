@@ -6,27 +6,27 @@ import { Content } from "./Content";
 import { List } from "./List";
 import { Trigger } from "./Trigger";
 
-interface TabsProps {
+interface TabsProps<TValue extends string> {
   children: ReactNode;
   className?: string;
-  defaultValue?: string;
-  value?: string;
-  onChange?: (value: string) => void;
+  defaultValue?: TValue;
+  value?: TValue;
+  onChange?: (value: TValue) => void;
 }
 
-export function Tabs({
+export function Tabs<TValue extends string = string>({
   children,
   className,
   defaultValue,
   value,
   onChange,
-}: TabsProps) {
+}: TabsProps<TValue>) {
   return (
     <Root
       className={clsx(className, "flex data-orientation-horizontal:flex-col")}
       defaultValue={defaultValue}
       value={value}
-      onValueChange={onChange}
+      onValueChange={(value) => onChange?.(value as TValue)}
     >
       {children}
     </Root>

@@ -83,7 +83,7 @@ devtoolsMachine.onTransition("notFound", () => {
 clientPort.send({ type: "connectToClient" });
 
 function startRequestInterval(ms = 500) {
-  let id: NodeJS.Timeout;
+  let id: number;
 
   if (devtoolsMachine.matches("connected")) {
     clientPort.send({ type: "requestData" });

@@ -1,4 +1,4 @@
-import { NoInfer } from "../types";
+import { NoInfer, SafeAny } from "../types";
 
 interface Machine<
   State extends string,
@@ -62,12 +62,8 @@ type Event<
   Context extends Record<string, unknown>,
 > = { type: EventName; context?: Partial<Context> };
 
-export type GetStates<
-  TMachine extends Machine<string, string, Record<string, unknown>>,
-> =
-  TMachine extends Machine<infer State, string, Record<string, unknown>>
-    ? State
-    : never;
+export type GetStates<TMachine> =
+  TMachine extends Machine<infer State, SafeAny, SafeAny> ? State : never;
 
 export type GetContext<TMachine> =
   TMachine extends Machine<any, any, infer Context> ? Context : never;
