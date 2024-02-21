@@ -14,3 +14,8 @@ export interface MessageObj<TPayload = any> {
 }
 
 export type CustomEventListener<T = any> = (message: MessageObj<T>) => void;
+
+// Alias `any` in places that we are safe to use it (like an constraint) without
+// the need to disable eslint rules.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type SafeAny = any;

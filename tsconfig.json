@@ -8,8 +8,11 @@
     "module": "commonjs",
     "target": "es6",
     "jsx": "react-jsx",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true
   },
+  "$schema": "https://json.schemastore.org/tsconfig",
   "compileOnSave": true,
   "include": ["src/**/*", "test.setup.ts", "build.ts"],
   "exclude": [

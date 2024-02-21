@@ -192,12 +192,12 @@ function initializeHook() {
         definition.kind === "OperationDefinition" &&
         definition.operation === "mutation"
       ) {
-        return new Observable((observer) => {
+        return new Observable<QueryResult>((observer) => {
           hook.ApolloClient?.mutate({
             mutation: clonedQueryAst,
             variables,
           }).then((result) => {
-            observer.next(result);
+            observer.next(result as QueryResult);
           });
         });
       } else {
@@ -210,7 +210,7 @@ function initializeHook() {
     })();
 
     const operationObservable = operation?.subscribe(
-      (response: QueryResult) => {
+      (response) => {
         handleExplorerResponse({
           operationName,
           response,
@@ -291,7 +291,7 @@ function initializeHook() {
   const preExisting = window[DEVTOOLS_KEY];
   window[DEVTOOLS_KEY] = { push: registerClient };
   if (Array.isArray(preExisting)) {
-    preExisting.forEach(registerClient);
+    (preExisting as Array<ApolloClient<any>>).forEach(registerClient);
   }
 
   findClient();

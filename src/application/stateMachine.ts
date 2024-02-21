@@ -1,3 +1,5 @@
+import { SafeAny } from "../types";
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type NoInfer<T> = [T][T extends any ? 0 : never];
 
@@ -63,12 +65,8 @@ type Event<
   Context extends Record<string, unknown>,
 > = { type: EventName; context?: Partial<Context> };
 
-export type GetStates<
-  TMachine extends Machine<string, string, Record<string, unknown>>,
-> =
-  TMachine extends Machine<infer State, string, Record<string, unknown>>
-    ? State
-    : never;
+export type GetStates<TMachine> =
+  TMachine extends Machine<infer State, SafeAny, SafeAny> ? State : never;
 
 export function createMachine<
   State extends string,

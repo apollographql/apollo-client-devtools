@@ -1,11 +1,6 @@
 import { useMemo } from "react";
 import { useState, useEffect } from "react";
-import {
-  Observable,
-  useReactiveVar,
-  FetchResult,
-  NetworkStatus,
-} from "@apollo/client";
+import { Observable, useReactiveVar, NetworkStatus } from "@apollo/client";
 import type { IntrospectionQuery } from "graphql";
 import { getIntrospectionQuery } from "graphql/utilities";
 import { colorTheme } from "../../theme";
@@ -56,7 +51,7 @@ function executeOperation({
   fetchPolicy: FetchPolicy;
   isSubscription?: boolean;
 }) {
-  return new Observable<FetchResult>((observer) => {
+  return new Observable<QueryResult>((observer) => {
     const payload = JSON.stringify({
       operation,
       operationName,
@@ -177,7 +172,7 @@ export const Explorer = ({
         fetchPolicy: FetchPolicy.NoCache,
       });
 
-      observer.subscribe((response: QueryResult) => {
+      observer.subscribe((response) => {
         // If we have errors in the response it means we assume this was a graphql
         // response which means we did hit a graphql endpoint but introspection
         // was specifically disabled
