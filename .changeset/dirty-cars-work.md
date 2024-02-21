@@ -1,5 +1,5 @@
 ---
-"apollo-client-devtools": patch
+"apollo-client-devtools": minor
 ---
 
 Rework the message passing between all areas of the devtools to provide more stability. In particular, the message passing has changed in the following ways:
