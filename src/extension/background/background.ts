@@ -1,3 +1,6 @@
+// https://github.com/facebook/react/blob/4ea424e63d1a74ce57ef675b64a8c4eabfdb2fdc/packages/react-devtools-extensions/src/background/index.js
+// which is released under a MIT license (Copyright (c) Meta Platforms, Inc. and affiliates.) that can be found here:
+// https://github.com/facebook/react/blob/18a9dd1c60fdb711982f32ce5d91acfe8f158fe1/LICENSE
 import browser from "webextension-polyfill";
 
 const ports: Record<
