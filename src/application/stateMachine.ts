@@ -1,7 +1,4 @@
-import { SafeAny } from "../types";
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type NoInfer<T> = [T][T extends any ? 0 : never];
+import { NoInfer, SafeAny } from "../types";
 
 interface Machine<
   State extends string,
@@ -67,6 +64,9 @@ type Event<
 
 export type GetStates<TMachine> =
   TMachine extends Machine<infer State, SafeAny, SafeAny> ? State : never;
+
+export type GetContext<TMachine> =
+  TMachine extends Machine<SafeAny, SafeAny, infer Context> ? Context : never;
 
 export function createMachine<
   State extends string,

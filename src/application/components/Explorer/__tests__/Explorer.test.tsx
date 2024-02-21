@@ -1,12 +1,8 @@
 import React, { useState } from "react";
-import { within, screen } from "@testing-library/react";
-import { graphql } from "graphql";
-import { getIntrospectionQuery } from "graphql/utilities";
+import { screen } from "@testing-library/react";
 
 import { renderWithApolloClient } from "../../../utilities/testing/renderWithApolloClient";
-import { schemaWithMocks } from "../../../utilities/testing/fakeGraphQL";
 import { Explorer } from "../Explorer";
-import { listenForResponse } from "../explorerRelay";
 
 // Required to prevent an error in CodeMirror
 document.createRange = () => {
@@ -24,12 +20,6 @@ document.createRange = () => {
 
   return range;
 };
-
-jest.mock("../explorerRelay", () => ({
-  sendExplorerRequest: jest.fn(),
-  receiveExplorerResponses: jest.fn(),
-  listenForResponse: jest.fn(),
-}));
 
 const EmbeddedExplorerWrapper = () => {
   const [embeddedExplorerIFrame, setEmbeddedExplorerIFrame] =
@@ -60,19 +50,6 @@ describe("<Explorer />", () => {
     expect(iframe).toBeTruthy();
     expect(iframe.src).toEqual(
       "https://explorer.embed.apollographql.com/?sendRequestsFrom=parent&shouldPersistState=false&showHeadersAndEnvVars=false&shouldShowGlobalHeader=false&parentSupportsSubscriptions=true&theme=light"
-    );
-  });
-
-  // TODO: This test does nothing but stub an implementation of a function.
-  // Disabling until we can make it useful
-  test.skip("it retrieves a schema from an IntrospectionQuery", async () => {
-    (listenForResponse as any).mockImplementation(
-      (_: unknown, cb: (result: unknown) => void) => {
-        graphql({
-          schema: schemaWithMocks,
-          source: getIntrospectionQuery(),
-        }).then((result) => cb(result));
-      }
     );
   });
 });

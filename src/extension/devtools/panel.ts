@@ -1,45 +1,25 @@
 import { initDevTools, writeData, client } from "../../application";
-import {
-  receiveExplorerRequests,
-  receiveSubscriptionTerminationRequest,
-  sendResponseToExplorer,
-} from "../../application/components/Explorer/explorerRelay";
-import { DEVTOOLS_STATE_CHANGED, INITIALIZE_PANEL, UPDATE } from "../constants";
 import "./panel.css";
 import { devtoolsState } from "../../application/App";
+import { getPanelActor } from "./panelActor";
 
-declare global {
-  interface Window {
-    __DEVTOOLS_APPLICATION__: {
-      receiveExplorerRequests: typeof receiveExplorerRequests;
-      receiveSubscriptionTerminationRequest: typeof receiveSubscriptionTerminationRequest;
-      sendResponseToExplorer: typeof sendResponseToExplorer;
-    };
+const panelWindow = getPanelActor(window);
+
+panelWindow.on("initializePanel", (message) => {
+  devtoolsState(message.state);
+  writeData(message.payload);
+
+  initDevTools();
+});
+
+panelWindow.on("devtoolsStateChanged", (message) => {
+  devtoolsState(message.state);
+
+  if (message.state === "connected") {
+    client.resetStore();
   }
-}
+});
 
-window.__DEVTOOLS_APPLICATION__ = {
-  receiveExplorerRequests,
-  receiveSubscriptionTerminationRequest,
-  sendResponseToExplorer,
-};
-
-window.addEventListener("message", (event) => {
-  switch (event.data.type) {
-    case UPDATE:
-      return writeData(event.data.payload);
-    case INITIALIZE_PANEL: {
-      devtoolsState(event.data.state);
-      writeData(event.data.payload);
-
-      return initDevTools();
-    }
-    case DEVTOOLS_STATE_CHANGED: {
-      devtoolsState(event.data.state);
-
-      if (event.data.state === "connected") {
-        client.resetStore();
-      }
-    }
-  }
+panelWindow.on("update", (message) => {
+  writeData(message.payload);
 });
