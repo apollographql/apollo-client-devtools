@@ -49,6 +49,7 @@ export default (env) => {
     }),
     new webpack.DefinePlugin({
       VERSION: JSON.stringify(packageJson.version),
+      __IS_FIREFOX__: target === "firefox",
     }),
   ];
 
