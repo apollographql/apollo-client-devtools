@@ -1,6 +1,4 @@
 import browser from "webextension-polyfill";
-import { QueryInfo } from "../tab/helpers";
-import { JSONObject } from "../../application/types/json";
 import { devtoolsMachine } from "../../application/machines";
 import { createPortActor } from "../actor";
 import { ClientMessage } from "../messages";
@@ -37,11 +35,7 @@ clientPort.on("connectToDevtools", (message) => {
   devtoolsMachine.send({
     type: "connect",
     context: {
-      clientContext: JSON.parse(message.payload ?? "") as {
-        queries: QueryInfo[];
-        mutations: QueryInfo[];
-        cache: Record<string, JSONObject>;
-      },
+      clientContext: message.payload,
     },
   });
 });
@@ -148,13 +142,7 @@ async function createDevtoolsPanel() {
     }
 
     removeUpdateListener = clientPort.on("update", (message) => {
-      const { queries, mutations, cache } = JSON.parse(
-        message.payload ?? ""
-      ) as {
-        queries: QueryInfo[];
-        mutations: QueryInfo[];
-        cache: Record<string, JSONObject>;
-      };
+      const { queries, mutations, cache } = message.payload;
 
       panelWindow.send({
         type: "update",
