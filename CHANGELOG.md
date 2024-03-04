@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.8.0
+
+### Minor Changes
+
+- [#1232](https://github.com/apollographql/apollo-client-devtools/pull/1232) [`8ce6fef`](https://github.com/apollographql/apollo-client-devtools/commit/8ce6fef50589f1e5c8d200c631c722772a692082) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Changes the tab injection mechanism for better compatibility with websites that might have issues with hydration mismatches when using the old injection mechanism.
+
 ## 4.7.0
 
 ### Minor Changes
