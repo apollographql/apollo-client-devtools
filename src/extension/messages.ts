@@ -58,8 +58,7 @@ export type ClientDevtoolsMessage =
       type: "reactiveVar.register";
       payload: {
         displayName: string | undefined;
-        id: number;
-        initialValue: unknown;
+        value: unknown;
       };
     }
   | { type: "reactiveVar.update"; payload: { id: number; value: unknown } };

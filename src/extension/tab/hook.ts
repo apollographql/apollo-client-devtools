@@ -30,6 +30,9 @@ import { FetchPolicy } from "../../application/components/Explorer/Explorer";
 import { createWindowActor } from "../actor";
 import { ClientMessage } from "../messages";
 
+let idCounter = 0;
+type TrackableReactiveVar = ReactiveVar<unknown> & { __id: number };
+
 const DEVTOOLS_KEY = Symbol.for("apollo.devtools");
 const DEVTOOLS_VARS_KEY = Symbol.for("apollo.devtools.reactiveVars");
 
@@ -50,6 +53,7 @@ declare global {
 }
 
 type ReactiveVarInfo = {
+  id: number;
   displayName: string | undefined;
   value: unknown;
 };
@@ -65,7 +69,7 @@ type Hook = {
 
 function initializeHook() {
   const knownClients = new Set<ApolloClient<any>>();
-  const reactiveVars = new Set<ReactiveVar<unknown>>();
+  const reactiveVars = new Set<TrackableReactiveVar>();
   const hook: Hook = {
     ApolloClient: undefined,
     version: devtoolsVersion,
@@ -90,6 +94,7 @@ function initializeHook() {
     getCache: () => hook.ApolloClient?.cache.extract(true) ?? {},
     getReactiveVars: () =>
       [...reactiveVars].map((rv) => ({
+        id: rv.__id,
         displayName: rv.displayName,
         value: rv(),
       })),
@@ -274,7 +279,22 @@ function initializeHook() {
   }
 
   function registerReactiveVar(rv: ReactiveVar<unknown>) {
-    reactiveVars.add(rv);
+    const reactiveVar = rv as TrackableReactiveVar;
+    reactiveVar.__id = ++idCounter;
+    reactiveVars.add(reactiveVar);
+
+    tab.send({
+      type: "reactiveVar.register",
+      payload: { displayName: rv.displayName, value: rv() },
+    });
+
+    rv.onNextChange(function onNextChange(value) {
+      tab.send({
+        type: "reactiveVar.update",
+        payload: { id: reactiveVar.__id, value },
+      });
+      rv.onNextChange(onNextChange);
+    });
   }
 
   const preExisting = window[DEVTOOLS_KEY];
