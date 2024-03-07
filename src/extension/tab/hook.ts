@@ -284,7 +284,11 @@ function initializeHook() {
 
     tab.send({
       type: "reactiveVar.register",
-      payload: { displayName: rv.displayName, value: rv() },
+      payload: {
+        id: reactiveVar.__id,
+        displayName: rv.displayName,
+        value: rv(),
+      },
     });
 
     rv.onNextChange(function onNextChange(value) {
