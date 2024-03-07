@@ -1,6 +1,7 @@
 import { ExplorerResponse } from "../types";
 import { GetStates, GetContext } from "../application/stateMachine";
 import { DevtoolsMachine } from "../application/machines";
+import { ReactiveVarInfo } from "./tab/helpers";
 
 export interface MessageFormat {
   type: string;
@@ -39,6 +40,8 @@ export type ClientMessage =
   | ExplorerSubscriptionTerminationMessage
   | { type: "requestData" }
   | { type: "update"; payload: GetContext<DevtoolsMachine>["clientContext"] }
+  | { type: "getReactiveVars" }
+  | { type: "sendReactiveVars"; vars: ReactiveVarInfo[] }
   | ReactiveVarsMessage;
 
 export type PanelMessage =
