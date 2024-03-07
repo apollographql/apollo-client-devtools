@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import SaveIcon from "./SaveIcon";
 import cx from "classnames";
-import { useMutation } from "@apollo/client";
+import { useMutation, useReactiveVar } from "@apollo/client";
 import { GET_SAVED_COLORS } from "../queries";
 import {
   ADD_COLOR_TO_FAVORITES,
   REMOVE_COLOR_FROM_FAVORITES,
 } from "../mutations";
+import { counterVar } from "../vars";
 
 const Color = ({ className, contrast, hexCode, name, isSaved = false }) => {
+  const count = useReactiveVar(counterVar);
   const [saved, setSaved] = useState(isSaved);
   const variables = { color: { name, hex: hexCode, contrast } };
   const [addColor] = useMutation(ADD_COLOR_TO_FAVORITES, {
@@ -36,6 +38,7 @@ const Color = ({ className, contrast, hexCode, name, isSaved = false }) => {
   });
 
   function onClick() {
+    counterVar(counterVar() + 1);
     if (saved) {
       setSaved(false);
       removeColor();
@@ -58,6 +61,7 @@ const Color = ({ className, contrast, hexCode, name, isSaved = false }) => {
       </div>
       {name && <span className="color__name">{name}</span>}
       <span className="color__hexCode">{hexCode}</span>
+      <span>{count}</span>
     </div>
   );
 };
