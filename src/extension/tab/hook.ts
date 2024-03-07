@@ -49,12 +49,18 @@ declare global {
   }
 }
 
+type ReactiveVarInfo = {
+  displayName: string | undefined;
+  value: unknown;
+};
+
 type Hook = {
   ApolloClient: ApolloClient<any> | undefined;
   version: string;
   getQueries: () => QueryInfo[];
   getMutations: () => QueryInfo[];
   getCache: () => JSONObject;
+  getReactiveVars: () => ReactiveVarInfo[];
 };
 
 function initializeHook() {
@@ -82,6 +88,11 @@ function initializeHook() {
       );
     },
     getCache: () => hook.ApolloClient?.cache.extract(true) ?? {},
+    getReactiveVars: () =>
+      [...reactiveVars].map((rv) => ({
+        displayName: rv.displayName,
+        value: rv(),
+      })),
   };
 
   Object.defineProperty(window, "__APOLLO_DEVTOOLS_GLOBAL_HOOK__", {

@@ -5,3 +5,5 @@ build
 *.zip
 .DS_Store
 development/server/db.json
+.yalc
+yalc.lock
