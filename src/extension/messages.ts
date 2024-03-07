@@ -59,6 +59,7 @@ export type ReactiveVarsMessage =
   | {
       type: "reactiveVar.register";
       payload: {
+        id: number;
         displayName: string | undefined;
         value: unknown;
       };
