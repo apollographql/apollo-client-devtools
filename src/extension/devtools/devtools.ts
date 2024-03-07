@@ -131,6 +131,8 @@ async function createDevtoolsPanel() {
 
       clientPort.forward("reactiveVar.register", panelWindow);
       clientPort.forward("reactiveVar.update", panelWindow);
+      clientPort.forward("sendReactiveVars", panelWindow);
+      panelWindow.forward("getReactiveVars", clientPort);
 
       connectedToPanel = true;
     }

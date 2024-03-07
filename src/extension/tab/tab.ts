@@ -14,12 +14,16 @@ devtools.forward("connectToClient", tab);
 devtools.forward("requestData", tab);
 devtools.forward("explorerSubscriptionTermination", tab);
 devtools.forward("explorerRequest", tab);
+devtools.forward("getReactiveVars", tab);
 
 tab.forward("clientNotFound", devtools);
 tab.forward("connectToDevtools", devtools);
 tab.forward("disconnectFromDevtools", devtools);
 tab.forward("update", devtools);
 tab.forward("explorerResponse", devtools);
+tab.forward("sendReactiveVars", devtools);
+tab.forward("reactiveVar.register", devtools);
+tab.forward("reactiveVar.update", devtools);
 
 // We run the hook.js script on the page as a content script in Manifest v3
 // extensions (chrome for now). We do this using execution world MAIN.

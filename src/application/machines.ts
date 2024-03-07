@@ -17,7 +17,6 @@ export const devtoolsMachine = createMachine({
       queries: [] as QueryInfo[],
       mutations: [] as QueryInfo[],
       cache: {} as JSONObject,
-      reactiveVars: [] as ReactiveVarInfo[],
     },
   },
   states: {

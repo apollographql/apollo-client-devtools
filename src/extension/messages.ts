@@ -56,6 +56,8 @@ export type PanelMessage =
   | { type: "retryConnection" }
   | { type: "devtoolsStateChanged"; state: GetStates<DevtoolsMachine> }
   | { type: "update"; payload: GetContext<DevtoolsMachine>["clientContext"] }
+  | { type: "getReactiveVars" }
+  | { type: "sendReactiveVars"; vars: ReactiveVarInfo[] }
   | ReactiveVarsMessage;
 
 export type ReactiveVarsMessage =

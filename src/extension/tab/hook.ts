@@ -120,7 +120,6 @@ function initializeHook() {
         queries: hook.getQueries(),
         mutations: hook.getMutations(),
         cache: hook.getCache(),
-        reactiveVars: hook.getReactiveVars(),
       },
     });
   }
