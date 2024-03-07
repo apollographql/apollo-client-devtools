@@ -182,6 +182,33 @@ export const writeData = ({
   cacheVar(JSON.stringify(cache));
 };
 
+interface ReactiveVarConfig {
+  id: number;
+  displayName: string | undefined;
+  value: unknown;
+}
+
+const reactiveVarsVar = makeVar<ReactiveVarConfig[]>([]);
+
+export function registerReactiveVar(config: ReactiveVarConfig) {
+  reactiveVarsVar([...reactiveVarsVar(), config]);
+}
+
+export function updateReactiveVar(id: number, value: unknown) {
+  const vars = reactiveVarsVar();
+  const idx = vars.findIndex((rv) => rv.id === id);
+
+  if (idx === -1) {
+    return;
+  }
+
+  reactiveVarsVar([
+    ...vars.slice(0, idx),
+    { ...vars[idx], value },
+    ...vars.slice(idx + 1),
+  ]);
+}
+
 export const AppProvider = () => {
   useEffect(() =>
     listenForThemeChange((newColorTheme) => colorTheme(newColorTheme))

@@ -27,7 +27,7 @@ import { getPrivateAccess } from "../../privateAccess";
 import { JSONObject } from "../../application/types/json";
 import { FetchPolicy } from "../../application/components/Explorer/Explorer";
 import { createWindowActor } from "../actor";
-import { ClientMessage } from "../messages";
+import { ClientMessage, ClientDevtoolsMessage } from "../messages";
 
 interface ApolloClientMessage {
   type: string;
@@ -262,8 +262,8 @@ function initializeHook() {
     sendHookDataToDevTools("connectToDevtools");
   }
 
-  function handleClientMessage(message: ApolloClientMessage) {
-    console.log("client message", message);
+  function handleClientMessage(message: ClientDevtoolsMessage) {
+    tab.send(message);
   }
 
   const preExisting = window[DEVTOOLS_KEY];
