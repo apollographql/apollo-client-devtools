@@ -39,7 +39,7 @@ export type ClientMessage =
   | ExplorerSubscriptionTerminationMessage
   | { type: "requestData" }
   | { type: "update"; payload: GetContext<DevtoolsMachine>["clientContext"] }
-  | ClientDevtoolsMessage;
+  | ReactiveVarsMessage;
 
 export type PanelMessage =
   | ExplorerRequestMessage
@@ -53,10 +53,9 @@ export type PanelMessage =
   | { type: "retryConnection" }
   | { type: "devtoolsStateChanged"; state: GetStates<DevtoolsMachine> }
   | { type: "update"; payload: GetContext<DevtoolsMachine>["clientContext"] }
-  | ClientDevtoolsMessage;
+  | ReactiveVarsMessage;
 
-// Messages sent from the Apollo Client instance to the devtools
-export type ClientDevtoolsMessage =
+export type ReactiveVarsMessage =
   | {
       type: "reactiveVar.register";
       payload: {
