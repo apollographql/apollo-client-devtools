@@ -266,10 +266,6 @@ function initializeHook() {
     reactiveVars.add(rv);
   }
 
-  function handleClientMessage(message: ClientDevtoolsMessage) {
-    tab.send(message);
-  }
-
   const preExisting = window[DEVTOOLS_KEY];
   window[DEVTOOLS_KEY] = { push: registerClient };
   if (Array.isArray(preExisting)) {
