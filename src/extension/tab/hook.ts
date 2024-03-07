@@ -121,11 +121,11 @@ function initializeHook() {
   function sendHookDataToDevTools(eventName: "update" | "connectToDevtools") {
     tab.send({
       type: eventName,
-      payload: JSON.stringify({
+      payload: {
         queries: hook.getQueries(),
         mutations: hook.getMutations(),
         cache: hook.getCache(),
-      }),
+      },
     });
   }
 

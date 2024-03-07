@@ -29,13 +29,16 @@ export type ClientMessage =
   | { type: "clientNotFound" }
   | { type: "connectToClient" }
   | { type: "connectToClientTimeout" }
-  | { type: "connectToDevtools"; payload: string }
+  | {
+      type: "connectToDevtools";
+      payload: GetContext<DevtoolsMachine>["clientContext"];
+    }
   | { type: "disconnectFromDevtools" }
   | ExplorerRequestMessage
   | ExplorerResponseMessage
   | ExplorerSubscriptionTerminationMessage
   | { type: "requestData" }
-  | { type: "update"; payload: string }
+  | { type: "update"; payload: GetContext<DevtoolsMachine>["clientContext"] }
   | ClientDevtoolsMessage;
 
 export type PanelMessage =
