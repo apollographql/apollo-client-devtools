@@ -29,6 +29,11 @@ import { FetchPolicy } from "../../application/components/Explorer/Explorer";
 import { createWindowActor } from "../actor";
 import { ClientMessage } from "../messages";
 
+interface ApolloClientMessage {
+  type: string;
+  payload: Record<string, unknown>;
+}
+
 const DEVTOOLS_KEY = Symbol.for("apollo.devtools");
 
 const tab = createWindowActor<ClientMessage>(window);
@@ -40,6 +45,7 @@ declare global {
     __APOLLO_CLIENT__: ApolloClient<TCache>;
     [DEVTOOLS_KEY]?: {
       push(client: ApolloClient<any>): void;
+      send(message: ApolloClientMessage): void;
     };
   }
 }
@@ -256,8 +262,12 @@ function initializeHook() {
     sendHookDataToDevTools("connectToDevtools");
   }
 
+  function handleClientMessage(message: ApolloClientMessage) {
+    console.log("client message", message);
+  }
+
   const preExisting = window[DEVTOOLS_KEY];
-  window[DEVTOOLS_KEY] = { push: registerClient };
+  window[DEVTOOLS_KEY] = { push: registerClient, send: handleClientMessage };
   if (Array.isArray(preExisting)) {
     (preExisting as Array<ApolloClient<any>>).forEach(registerClient);
   }
