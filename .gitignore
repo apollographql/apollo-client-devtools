@@ -5,3 +5,7 @@ build
 *.zip
 .DS_Store
 development/server/db.json
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
