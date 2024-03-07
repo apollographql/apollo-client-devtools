@@ -279,6 +279,10 @@ function initializeHook() {
   }
 
   function registerReactiveVar(rv: ReactiveVar<unknown>) {
+    if (reactiveVars.has(rv as TrackableReactiveVar)) {
+      return;
+    }
+
     const reactiveVar = rv as TrackableReactiveVar;
     reactiveVar.__id = ++idCounter;
     reactiveVars.add(reactiveVar);
