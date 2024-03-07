@@ -1,3 +1,3 @@
-import { makeVar } from "@apollo/client/cache/devtools";
+import { makeVar } from "@apollo/client";
 
 export const counterVar = makeVar(0, { displayName: "counter" });
