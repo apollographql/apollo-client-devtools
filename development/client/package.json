@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@apollo/client": "3.9.6",
+    "@apollo/client": "0.0.0-pr-11647-20240307055025",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^11.0.0",
     "@testing-library/user-event": "^14.0.0",
