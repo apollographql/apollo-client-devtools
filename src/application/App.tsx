@@ -24,6 +24,7 @@ import { GetStates } from "./stateMachine";
 import { DevtoolsMachine } from "./machines";
 import { ClientNotFoundModal } from "./components/ClientNotFoundModal";
 import { getPanelActor } from "../extension/devtools/panelActor";
+import { ReactiveVars } from "./components/ReactiveVars";
 
 const panelWindow = getPanelActor(window);
 
@@ -157,6 +158,9 @@ export const App = () => {
             Mutations ({data?.mutationLog?.count ?? 0})
           </Tabs.Trigger>
           <Tabs.Trigger value={Screens.Cache}>Cache</Tabs.Trigger>
+          <Tabs.Trigger value={Screens.ReactiveVars}>
+            Reactive vars
+          </Tabs.Trigger>
           <Tabs.Trigger value={Screens.Explorer}>Explorer</Tabs.Trigger>
 
           <div className="flex-1 justify-end">
@@ -200,6 +204,12 @@ export const App = () => {
           value={Screens.Mutations}
         >
           <Mutations explorerIFrame={embeddedExplorerIFrame} />
+        </Tabs.Content>
+        <Tabs.Content
+          className="flex-1 overflow-hidden"
+          value={Screens.ReactiveVars}
+        >
+          <ReactiveVars />
         </Tabs.Content>
         <Tabs.Content className="flex-1 overflow-hidden" value={Screens.Cache}>
           <Cache />

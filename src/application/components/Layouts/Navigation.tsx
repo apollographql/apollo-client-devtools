@@ -5,6 +5,7 @@ export enum Screens {
   Queries = "queries",
   Mutations = "mutations",
   Explorer = "explorer",
+  ReactiveVars = "reactiveVars",
 }
 
 export const currentScreen = makeVar<Screens>(Screens.Queries);

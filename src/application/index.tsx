@@ -188,7 +188,7 @@ interface ReactiveVarConfig {
   value: unknown;
 }
 
-const reactiveVarsVar = makeVar<ReactiveVarConfig[]>([]);
+export const reactiveVarsVar = makeVar<ReactiveVarConfig[]>([]);
 
 export function registerReactiveVar(config: ReactiveVarConfig) {
   reactiveVarsVar([...reactiveVarsVar(), config]);
