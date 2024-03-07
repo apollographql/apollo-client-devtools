@@ -1,8 +1,25 @@
 // This script is injected into each tab.
-import "./tabRelay";
 import browser from "webextension-polyfill";
+import { ClientMessage } from "../messages";
+import { createPortActor, createWindowActor } from "../actor";
 
 declare const __IS_FIREFOX__: boolean;
+
+const tab = createWindowActor<ClientMessage>(window);
+const devtools = createPortActor<ClientMessage>(
+  browser.runtime.connect({ name: "tab" })
+);
+
+devtools.forward("connectToClient", tab);
+devtools.forward("requestData", tab);
+devtools.forward("explorerSubscriptionTermination", tab);
+devtools.forward("explorerRequest", tab);
+
+tab.forward("clientNotFound", devtools);
+tab.forward("connectToDevtools", devtools);
+tab.forward("disconnectFromDevtools", devtools);
+tab.forward("update", devtools);
+tab.forward("explorerResponse", devtools);
 
 // We run the hook.js script on the page as a content script in Manifest v3
 // extensions (chrome for now). We do this using execution world MAIN.
