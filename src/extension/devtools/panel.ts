@@ -31,11 +31,7 @@ panelWindow.on("update", (message) => {
 });
 
 panelWindow.on("reactiveVar.register", ({ payload }) => {
-  registerReactiveVar({
-    id: payload.id,
-    displayName: payload.displayName,
-    value: payload.initialValue,
-  });
+  registerReactiveVar(payload);
 });
 
 panelWindow.on("reactiveVar.update", ({ payload }) => {

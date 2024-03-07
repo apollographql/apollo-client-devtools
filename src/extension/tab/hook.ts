@@ -22,6 +22,7 @@ import {
   getQueriesLegacy,
   getMutations,
   getMainDefinition,
+  ReactiveVarInfo,
 } from "./helpers";
 import { QueryResult } from "../../types";
 import { getPrivateAccess } from "../../privateAccess";
@@ -51,12 +52,6 @@ declare global {
     };
   }
 }
-
-type ReactiveVarInfo = {
-  id: number;
-  displayName: string | undefined;
-  value: unknown;
-};
 
 type Hook = {
   ApolloClient: ApolloClient<any> | undefined;
@@ -125,6 +120,7 @@ function initializeHook() {
         queries: hook.getQueries(),
         mutations: hook.getMutations(),
         cache: hook.getCache(),
+        reactiveVars: hook.getReactiveVars(),
       },
     });
   }

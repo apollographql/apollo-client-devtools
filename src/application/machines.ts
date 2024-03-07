@@ -1,5 +1,5 @@
 import { createMachine } from "./stateMachine";
-import { QueryInfo } from "../extension/tab/helpers";
+import { QueryInfo, ReactiveVarInfo } from "../extension/tab/helpers";
 import { JSONObject } from "./types/json";
 
 export const devtoolsMachine = createMachine({
@@ -17,6 +17,7 @@ export const devtoolsMachine = createMachine({
       queries: [] as QueryInfo[],
       mutations: [] as QueryInfo[],
       cache: {} as JSONObject,
+      reactiveVars: [] as ReactiveVarInfo[],
     },
   },
   states: {

@@ -14,6 +14,12 @@ export type QueryInfo = {
   cachedData?: QueryData; // Not a member of the actual Apollo Client QueryInfo type
 };
 
+export type ReactiveVarInfo = {
+  id: number;
+  displayName: string | undefined;
+  value: unknown;
+};
+
 // Transform the map of observable queries into a list of QueryInfo objects usable by DevTools
 export function getQueries(
   observableQueries: Map<string, ObservableQuery>
