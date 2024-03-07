@@ -3,6 +3,7 @@ import {
   ApolloError,
   DocumentNode,
   NetworkStatus,
+  ReactiveVar,
 } from "@apollo/client";
 
 // Note that we are intentionally not using Apollo Client's gql and
@@ -27,14 +28,10 @@ import { getPrivateAccess } from "../../privateAccess";
 import { JSONObject } from "../../application/types/json";
 import { FetchPolicy } from "../../application/components/Explorer/Explorer";
 import { createWindowActor } from "../actor";
-import { ClientMessage, ClientDevtoolsMessage } from "../messages";
-
-interface ApolloClientMessage {
-  type: string;
-  payload: Record<string, unknown>;
-}
+import { ClientMessage } from "../messages";
 
 const DEVTOOLS_KEY = Symbol.for("apollo.devtools");
+const DEVTOOLS_VARS_KEY = Symbol.for("apollo.devtools.reactiveVars");
 
 const tab = createWindowActor<ClientMessage>(window);
 
@@ -45,7 +42,9 @@ declare global {
     __APOLLO_CLIENT__: ApolloClient<TCache>;
     [DEVTOOLS_KEY]?: {
       push(client: ApolloClient<any>): void;
-      send(message: ApolloClientMessage): void;
+    };
+    [DEVTOOLS_VARS_KEY]?: {
+      push(rv: ReactiveVar<unknown>): void;
     };
   }
 }
@@ -60,6 +59,7 @@ type Hook = {
 
 function initializeHook() {
   const knownClients = new Set<ApolloClient<any>>();
+  const reactiveVars = new Set<ReactiveVar<unknown>>();
   const hook: Hook = {
     ApolloClient: undefined,
     version: devtoolsVersion,
@@ -262,14 +262,24 @@ function initializeHook() {
     sendHookDataToDevTools("connectToDevtools");
   }
 
+  function registerReactiveVar(rv: ReactiveVar<unknown>) {
+    reactiveVars.add(rv);
+  }
+
   function handleClientMessage(message: ClientDevtoolsMessage) {
     tab.send(message);
   }
 
   const preExisting = window[DEVTOOLS_KEY];
-  window[DEVTOOLS_KEY] = { push: registerClient, send: handleClientMessage };
+  window[DEVTOOLS_KEY] = { push: registerClient };
   if (Array.isArray(preExisting)) {
     (preExisting as Array<ApolloClient<any>>).forEach(registerClient);
+  }
+
+  const existingVars = window[DEVTOOLS_VARS_KEY];
+  window[DEVTOOLS_VARS_KEY] = { push: registerReactiveVar };
+  if (Array.isArray(existingVars)) {
+    (existingVars as Array<ReactiveVar<unknown>>).forEach(registerReactiveVar);
   }
 
   findClient();
