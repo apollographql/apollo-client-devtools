@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.8.1
+
+### Patch Changes
+
+- [#1245](https://github.com/apollographql/apollo-client-devtools/pull/1245) [`cb22c6f`](https://github.com/apollographql/apollo-client-devtools/commit/cb22c6f11b0a7bbd5dd997b9f9e846ae23c6cfbc) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Don't `JSON.stringify` the Apollo Client instance data before sending it in the message payload when communicating between the various parts of the devtools extension. This was mostly redundant since message passing already relies on the [structured clone algorithm](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm).
+
+- [#1249](https://github.com/apollographql/apollo-client-devtools/pull/1249) [`a36f59d`](https://github.com/apollographql/apollo-client-devtools/commit/a36f59dc5b2db8a17e1d21cac11139c6d3aa3736) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Merge the tabRelay script with the tab script by extracting the body of the Promise callback into tab.ts. This behavior was no longer needed.
+
 ## 4.8.0
 
 ### Minor Changes
