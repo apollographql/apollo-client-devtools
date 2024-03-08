@@ -124,6 +124,9 @@ function initializeHook() {
     });
   }
 
+  tab.on("getReactiveVars", () => {
+    tab.send({ type: "sendReactiveVars", vars: hook.getReactiveVars() });
+  });
   tab.on("connectToClient", () => {
     if (hook.ApolloClient) {
       sendHookDataToDevTools("connectToDevtools");
