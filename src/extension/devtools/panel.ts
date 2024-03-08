@@ -4,6 +4,8 @@ import {
   client,
   registerReactiveVar,
   updateReactiveVar,
+  clearReactiveVars,
+  reactiveVarsVar,
 } from "../../application";
 import "./panel.css";
 import { devtoolsState } from "../../application/App";
@@ -24,6 +26,10 @@ panelWindow.on("devtoolsStateChanged", (message) => {
   if (message.state === "connected") {
     client.resetStore();
   }
+
+  if (message.state === "disconnected") {
+    reactiveVarsVar([]);
+  }
 });
 
 panelWindow.on("update", (message) => {
@@ -37,3 +43,9 @@ panelWindow.on("reactiveVar.register", ({ payload }) => {
 panelWindow.on("reactiveVar.update", ({ payload }) => {
   updateReactiveVar(payload.id, payload.value);
 });
+
+panelWindow.on("sendReactiveVars", ({ vars }) => {
+  reactiveVarsVar(vars);
+});
+
+panelWindow.send({ type: "getReactiveVars" });

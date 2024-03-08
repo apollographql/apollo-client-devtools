@@ -209,6 +209,10 @@ export function updateReactiveVar(id: number, value: unknown) {
   ]);
 }
 
+export const clearReactiveVars = () => {
+  reactiveVarsVar([]);
+};
+
 export const AppProvider = () => {
   useEffect(() =>
     listenForThemeChange((newColorTheme) => colorTheme(newColorTheme))
