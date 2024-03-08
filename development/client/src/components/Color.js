@@ -61,7 +61,11 @@ const Color = ({ className, contrast, hexCode, name, isSaved = false }) => {
       </div>
       {name && <span className="color__name">{name}</span>}
       <span className="color__hexCode">{hexCode}</span>
-      <span>{count}</span>
+      <div>
+        <button onClick={() => counterVar(counterVar() - 1)}>-</button>
+        <span>{count}</span>
+        <button onClick={() => counterVar(counterVar() + 1)}>+</button>
+      </div>
     </div>
   );
 };
