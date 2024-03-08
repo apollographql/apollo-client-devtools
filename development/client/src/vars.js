@@ -3,5 +3,17 @@ import { makeVar } from "@apollo/client";
 export const counterVar = makeVar(0, { displayName: "counter" });
 
 setTimeout(() => {
-  makeVar("first", { displayName: "dummy" });
-}, 10_000);
+  const dummy = makeVar(
+    { count: 0, root: true, nested: { value: true, name: "test" } },
+    { displayName: "dummy" }
+  );
+
+  setInterval(() => {
+    const value = dummy();
+    dummy({
+      count: value.count + 1,
+      root: !value.root,
+      nested: { value: !value.nested.value, name: "test" },
+    });
+  }, 2000);
+}, 5000);
