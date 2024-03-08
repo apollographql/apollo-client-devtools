@@ -9,7 +9,7 @@ type JSONTreeProps = ComponentPropsWithoutRef<typeof JSONTree>;
 
 type JSONTreeViewerProps = Pick<
   JSONTreeProps,
-  "data" | "hideRoot" | "valueRenderer"
+  "data" | "hideRoot" | "valueRenderer" | "labelRenderer"
 > & {
   className?: string;
   style?: CSSProperties;
