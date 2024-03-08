@@ -53,6 +53,7 @@ export function ReactiveVars() {
                 key={rv.id}
                 selected={selectedVar?.id === rv.id}
                 onClick={() => setSelected(rv.id)}
+                className="font-code h-8 text-sm"
               >
                 {rv.displayName || "(anonymous)"}
               </ListItem>
