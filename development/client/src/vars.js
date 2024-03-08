@@ -17,3 +17,9 @@ setTimeout(() => {
     });
   }, 2000);
 }, 5000);
+
+const clock = makeVar(new Date(), { displayName: "clock" });
+
+setInterval(() => {
+  clock(new Date());
+}, 1000);
