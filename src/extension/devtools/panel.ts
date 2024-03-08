@@ -35,17 +35,3 @@ panelWindow.on("devtoolsStateChanged", (message) => {
 panelWindow.on("update", (message) => {
   writeData(message.payload);
 });
-
-panelWindow.on("reactiveVar.register", ({ payload }) => {
-  registerReactiveVar(payload);
-});
-
-panelWindow.on("reactiveVar.update", ({ payload }) => {
-  updateReactiveVar(payload.id, payload.value);
-});
-
-panelWindow.on("sendReactiveVars", ({ vars }) => {
-  reactiveVarsVar(vars);
-});
-
-panelWindow.send({ type: "getReactiveVars" });
