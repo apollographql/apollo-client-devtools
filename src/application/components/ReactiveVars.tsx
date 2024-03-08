@@ -41,7 +41,7 @@ export function ReactiveVars() {
       {vars.map((rv) => {
         return (
           <li key={rv.id}>
-            {rv.displayName}
+            {rv.displayName || "(anonymous)"}
             <JSONTreeViewer
               hideRoot
               data={rv.value}

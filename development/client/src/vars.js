@@ -2,6 +2,8 @@ import { makeVar } from "@apollo/client";
 
 export const counterVar = makeVar(0, { displayName: "counter" });
 
+export const anonymous = makeVar("unknown");
+
 setTimeout(() => {
   const dummy = makeVar(
     { count: 0, root: true, nested: { value: true, name: "test" } },
