@@ -6,6 +6,7 @@ import {
   updateReactiveVar,
 } from "../index";
 import { useReactiveVar } from "@apollo/client";
+import { JSONTreeViewer } from "./JSONTreeViewer";
 
 const panelWindow = getPanelActor(window);
 
@@ -35,5 +36,22 @@ export function ReactiveVars() {
   useEffect(subscribeToRegistration, []);
   useEffect(subscribetoUpdates, []);
 
-  return <div>Reactive vars {vars.length}</div>;
+  return (
+    <ul>
+      {vars.map((rv) => {
+        return (
+          <li key={rv.id}>
+            {rv.displayName}
+            <JSONTreeViewer
+              hideRoot
+              data={rv.value}
+              labelRenderer={(keyPath) =>
+                keyPath.length === 0 ? null : <span>{keyPath[0]}:</span>
+              }
+            />
+          </li>
+        );
+      })}
+    </ul>
+  );
 }
