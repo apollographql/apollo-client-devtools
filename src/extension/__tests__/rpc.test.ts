@@ -1,45 +1,69 @@
-import { SafeAny } from "../../types";
-import { RPC, createRpcClient, createRpcHandler } from "../rpc";
+import { MessageAdapter } from "../messageAdapters";
+import { RPC, createRpcClient } from "../rpc";
 
-function createTestAdapter() {
-  let listener: ((message: unknown) => void) | null;
-  const removeListener = jest.fn(() => {
-    listener = null;
-  });
+interface TestAdapter extends MessageAdapter {
+  mocks: { listeners: Set<(message: unknown) => void> };
+  simulateMessage: (message: unknown) => void;
+  connect: (adapter: TestAdapter) => void;
+}
+
+function createTestAdapter(): TestAdapter {
+  let proxy: TestAdapter | undefined;
+  const listeners = new Set<(message: unknown) => void>();
 
   return {
-    mocks: { removeListener },
-    simulatePlainMessage: (message: unknown) => {
-      listener?.(message);
-    },
-    simulateDevtoolsMessage: (message: Record<string, SafeAny>) => {
-      listener?.({ source: "apollo-client-devtools", message });
+    mocks: { listeners },
+    simulateMessage: (message: unknown) => {
+      listeners.forEach((fn) => fn(message));
     },
     addListener: jest.fn((fn) => {
-      listener = fn;
+      listeners.add(fn);
 
-      return removeListener;
+      return () => listeners.delete(fn);
     }),
-    postMessage: jest.fn(),
+    postMessage: jest.fn((message) => {
+      proxy?.simulateMessage(message);
+    }),
+    connect: (adapter: TestAdapter) => {
+      proxy = adapter;
+    },
   };
+}
+
+function createBridge(adapter1: TestAdapter, adapter2: TestAdapter) {
+  adapter1.connect(adapter2);
+  adapter2.connect(adapter1);
 }
 
 test("can send and receive rpc messages", async () => {
   type Message = RPC<"add", { x: number; y: number }, number>;
-  const adapter = createTestAdapter();
-  const client = createRpcClient<Message>(adapter);
-  const handler = createRpcHandler<Message>(adapter);
+  // Since these are sent over separate instances in the real world, we want to
+  // simulate that as best as we can with separate adapters
+  const handlerAdapter = createTestAdapter();
+  const clientAdapter = createTestAdapter();
+  createBridge(clientAdapter, handlerAdapter);
 
-  const promise = client.request("add", { x: 1, y: 2 });
+  const client = createRpcClient<Message>(clientAdapter);
+  const handler = createRpcClient<Message>(handlerAdapter);
 
-  expect(adapter.postMessage).toHaveBeenCalledTimes(1);
-  expect(adapter.postMessage).toHaveBeenCalledWith({
+  handler.handle("add", ({ x, y }) => x + y);
+
+  const result = await client.request("add", { x: 1, y: 2 });
+
+  expect(result).toBe(3);
+
+  // Even though this is testing an implementation detail, we want to make sure
+  // the message format matches our devtools messages
+  expect(clientAdapter.postMessage).toHaveBeenCalledTimes(1);
+  expect(clientAdapter.postMessage).toHaveBeenCalledWith({
     source: "apollo-client-devtools",
     id: 1,
     message: { type: "add", params: { x: 1, y: 2 } },
   });
-
-  handler.on("add", ({ x, y }) => x + y);
-
-  await expect(promise).resolves.toBe(3);
+  expect(handlerAdapter.postMessage).toHaveBeenCalledTimes(1);
+  expect(handlerAdapter.postMessage).toHaveBeenCalledWith({
+    source: "apollo-client-devtools",
+    id: 1,
+    message: { result: 3 },
+  });
 });
