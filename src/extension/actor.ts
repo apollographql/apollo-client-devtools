@@ -2,6 +2,11 @@ import browser from "webextension-polyfill";
 import type { MessageFormat } from "./messages";
 import { isApolloClientDevtoolsMessage } from "./messages";
 import { NoInfer } from "../types";
+import {
+  MessageAdapter,
+  createPortMessageAdapter,
+  createWindowMessageAdapter,
+} from "./messageAdapters";
 
 export interface Actor<Messages extends MessageFormat> {
   on: <TName extends Messages["type"]>(
@@ -20,48 +25,6 @@ export interface Actor<Messages extends MessageFormat> {
     name: TName,
     actor: Actor<Extract<Messages, { type: NoInfer<TName> }>>
   ) => () => void;
-}
-
-export interface MessageAdapter {
-  addListener: (listener: (message: unknown) => void) => () => void;
-  postMessage: (message: unknown) => void;
-}
-
-function createWindowMessageAdapter(window: Window): MessageAdapter {
-  return {
-    addListener(listener) {
-      function handleEvent({ data }: MessageEvent) {
-        listener(data);
-      }
-
-      window.addEventListener("message", handleEvent);
-
-      return () => {
-        window.removeEventListener("message", handleEvent);
-      };
-    },
-    postMessage(message) {
-      window.postMessage(message, "*");
-    },
-  };
-}
-
-function createPortMessageAdapter(port: browser.Runtime.Port): MessageAdapter {
-  return {
-    addListener(listener) {
-      port.onMessage.addListener(listener);
-      port.onDisconnect.addListener(() => {
-        port.onMessage.removeListener(listener);
-      });
-
-      return () => {
-        port.onMessage.removeListener(listener);
-      };
-    },
-    postMessage(message) {
-      return port.postMessage(message);
-    },
-  };
 }
 
 export function createActor<Messages extends MessageFormat>(
