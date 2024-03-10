@@ -103,9 +103,6 @@ async function createDevtoolsPanel() {
     "panel.html"
   );
 
-  let removeClientForwarding: () => void;
-  let removePanelForwarding: () => void;
-
   panel.onShown.addListener((window) => {
     const panelWindow = getPanelActor(window);
 
@@ -126,6 +123,9 @@ async function createDevtoolsPanel() {
         panelWindow.send({ type: "devtoolsStateChanged", state: state.value });
       });
 
+      clientPort.forwardTo(panelWindow);
+      panelWindow.forwardTo(clientPort);
+
       connectedToPanel = true;
     }
 
@@ -138,18 +138,12 @@ async function createDevtoolsPanel() {
       unsubscribers.add(startRequestInterval());
     }
 
-    removeClientForwarding = clientPort.forwardTo(panelWindow);
-    removePanelForwarding = panelWindow.forwardTo(clientPort);
-
     panelHidden = false;
   });
 
   panel.onHidden.addListener(() => {
     panelHidden = true;
     unsubscribeFromAll();
-
-    removeClientForwarding();
-    removePanelForwarding();
   });
 }
 
