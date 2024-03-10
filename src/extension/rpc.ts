@@ -58,12 +58,10 @@ export function createRpcHandler<
         isApolloClientDevtoolsMessage(message) &&
         message.message.type === name
       ) {
-        const result = execute(message.message.params as RPCParams);
-
         adapter.postMessage({
           source: "apollo-client-devtools",
           id: message.id,
-          message: { result },
+          message: { result: execute(message.message.params as RPCParams) },
         });
       }
     });
