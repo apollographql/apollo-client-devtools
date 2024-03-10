@@ -226,31 +226,3 @@ test("forwards messages to another actor", () => {
     message: { type: "disconnect" },
   });
 });
-
-test("can send rpc messages and receive a response with .rpc", async () => {
-  type Message = { type: "add"; x: number; y: number };
-  const adapter = createTestAdapter<Message>();
-  const actor = createActor<Message>(adapter);
-  const reactor = createActor<Message>(adapter);
-
-  const promise = actor.rpc({ type: "add", x: 1, y: 2 });
-
-  expect(adapter.postMessage).toHaveBeenCalledTimes(1);
-  expect(adapter.postMessage).toHaveBeenCalledWith({
-    source: "apollo-client-devtools",
-    id: expect.any(Number),
-    message: { type: "add", x: 1, y: 2 },
-  });
-
-  // const id = adapter.postMessage.mock.calls[0][0].id;
-
-  reactor.handle("add", ({ x, y }) => x + y);
-
-  // adapter.simulateDevtoolsMessage({
-  //   source: "apollo-client-devtools",
-  //   id,
-  //   result: 3,
-  // });
-
-  await expect(promise).resolves.toBe(3);
-});

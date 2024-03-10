@@ -15,12 +15,7 @@ export interface Actor<Messages extends MessageFormat> {
       ? (message: Message) => void
       : never
   ) => () => void;
-  handle: (
-    name: Messages["type"],
-    callback: (message: Messages) => any | Promise<any>
-  ) => () => void;
   send: (message: Messages) => void;
-  rpc: (message: Messages) => Promise<any>;
   forward: <TName extends Messages["type"]>(
     name: TName,
     actor: Actor<Extract<Messages, { type: NoInfer<TName> }>>
@@ -30,7 +25,6 @@ export interface Actor<Messages extends MessageFormat> {
 export function createActor<Messages extends MessageFormat>(
   adapter: MessageAdapter
 ): Actor<Messages> {
-  let messageId = 0;
   let removeListener: (() => void) | null = null;
   const messageListeners = new Map<
     Messages["type"],
@@ -88,42 +82,17 @@ export function createActor<Messages extends MessageFormat>(
     };
   };
 
-  const actor = {
+  return {
     on,
-    handle: (message, execute) => {
-      actor.on(message, async (message) => {
-        const result = await Promise.resolve(execute(message));
-
-        actor.send({ ...message, result });
-      });
-    },
     send: (message) => {
       adapter.postMessage({
         source: "apollo-client-devtools",
         message,
       });
     },
-    rpc: (message) => {
-      return new Promise((resolve, reject) => {
-        const id = ++messageId;
-
-        const unsubscribe = actor.on(message.type, (message) => {
-          if (message.id !== id) {
-            return;
-          }
-
-          unsubscribe();
-          resolve(message.result);
-        });
-
-        actor.send({ ...message, id });
-      });
-    },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     forward: (name, actor) => on(name, actor.send as unknown as any),
   };
-
-  return actor;
 }
 
 export function createPortActor<
