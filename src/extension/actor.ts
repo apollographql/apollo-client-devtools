@@ -1,7 +1,7 @@
 import browser from "webextension-polyfill";
 import type { MessageFormat } from "./messages";
 import { isApolloClientDevtoolsMessage } from "./messages";
-import type { NoInfer, SafeAny } from "../types";
+import type { SafeAny } from "../types";
 import {
   MessageAdapter,
   createPortMessageAdapter,
@@ -15,12 +15,8 @@ export interface Actor<Messages extends MessageFormat> {
       ? (message: Message) => void
       : never
   ) => () => void;
-  bridge: (actor: Actor<SafeAny>) => () => void;
+  forwardTo: (actor: Actor<SafeAny>) => () => void;
   send: (message: Messages) => void;
-  forward: <TName extends Messages["type"]>(
-    name: TName,
-    actor: Actor<Extract<Messages, { type: NoInfer<TName> }>>
-  ) => () => void;
 }
 
 export function createActor<Messages extends MessageFormat>(
@@ -62,33 +58,34 @@ export function createActor<Messages extends MessageFormat>(
     }
   }
 
-  const on: Actor<Messages>["on"] = (name, callback) => {
-    let listeners = messageListeners.get(name) as Set<typeof callback>;
-
-    if (!listeners) {
-      listeners = new Set();
-      messageListeners.set(name, listeners as Set<(message: Messages) => void>);
-    }
-
-    listeners.add(callback);
-    startListening();
-
-    return () => {
-      listeners!.delete(callback);
-
-      if (listeners.size === 0) {
-        messageListeners.delete(name);
-      }
-
-      if (messageListeners.size === 0 && bridges.size === 0) {
-        stopListening();
-      }
-    };
-  };
-
   return {
-    on,
-    bridge: (actor) => {
+    on: (name, callback) => {
+      let listeners = messageListeners.get(name) as Set<typeof callback>;
+
+      if (!listeners) {
+        listeners = new Set();
+        messageListeners.set(
+          name,
+          listeners as Set<(message: Messages) => void>
+        );
+      }
+
+      listeners.add(callback);
+      startListening();
+
+      return () => {
+        listeners!.delete(callback);
+
+        if (listeners.size === 0) {
+          messageListeners.delete(name);
+        }
+
+        if (messageListeners.size === 0 && bridges.size === 0) {
+          stopListening();
+        }
+      };
+    },
+    forwardTo: (actor) => {
       bridges.add(actor.send);
       startListening();
 
@@ -106,8 +103,6 @@ export function createActor<Messages extends MessageFormat>(
         message,
       });
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    forward: (name, actor) => on(name, actor.send as unknown as any),
   };
 }
 
