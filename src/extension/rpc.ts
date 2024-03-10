@@ -93,21 +93,26 @@ export function createRpcHandler<
     }
   }
 
-  return function <TName extends Messages["__name"]>(
+  return function <
+    TName extends Messages["__name"],
+    TReturnType = Extract<Messages, { __name: TName }>["__returnType"],
+  >(
     name: TName,
     execute: (
       params: Extract<Messages, { __name: TName }>["__params"]
-    ) => Extract<Messages, { __name: TName }>["__returnType"]
+    ) => TReturnType | Promise<TReturnType>
   ) {
     if (listeners.has(name)) {
       throw new Error("Only one rpc handler can be registered per type");
     }
 
-    listeners.set(name, ({ id, message }) => {
+    listeners.set(name, async ({ id, message }) => {
+      const result = await Promise.resolve(execute(message.params));
+
       adapter.postMessage({
         source: "apollo-client-devtools",
         id,
-        message: { result: execute(message.params) },
+        message: { result },
       });
     });
 
