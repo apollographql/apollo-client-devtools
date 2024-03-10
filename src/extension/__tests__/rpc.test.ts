@@ -195,3 +195,37 @@ test("can unsubscribe from a handler by calling the returned function", () => {
 
   expect(add).not.toHaveBeenCalled();
 });
+
+test("removes listener on adapter when unsubscribing from last handler", () => {
+  type Message =
+    | RPC<"add", { x: number; y: number }, number>
+    | RPC<"shout", { text: string }, string>;
+
+  const adapter = createTestAdapter();
+  const handle = createRpcHandler<Message>(adapter);
+
+  const unsubscribeAdd = handle("add", ({ x, y }) => x + y);
+  const unsubscribeShout = handle("shout", ({ text }) => text.toUpperCase());
+
+  unsubscribeAdd();
+  expect(adapter.mocks.listeners.size).toBe(1);
+
+  unsubscribeShout();
+  expect(adapter.mocks.listeners.size).toBe(0);
+});
+
+test("re-adds listener on adapter when subscribing after unsubscribing", () => {
+  type Message = RPC<"add", { x: number; y: number }, number>;
+
+  const adapter = createTestAdapter();
+  const handle = createRpcHandler<Message>(adapter);
+
+  const add = ({ x, y }: { x: number; y: number }) => x + y;
+  const unsubscribe = handle("add", add);
+
+  unsubscribe();
+  expect(adapter.mocks.listeners.size).toBe(0);
+
+  handle("add", add);
+  expect(adapter.mocks.listeners.size).toBe(1);
+});
