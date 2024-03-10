@@ -273,3 +273,23 @@ test("does not forward non-devtools messages through bridge", () => {
   proxyAdapter.simulatePlainMessage({ type: "disconnect" });
   expect(actorAdapter.postMessage).not.toHaveBeenCalled();
 });
+
+test("can unsubscribe from bridge by calling the returned function", () => {
+  type Message = { type: "connect"; payload: string } | { type: "disconnect" };
+
+  const proxyAdapter = createTestAdapter<Message>();
+  const actorAdapter = createTestAdapter<Message>();
+  const proxy = createActor<Message>(proxyAdapter);
+  const actor = createActor<Message>(actorAdapter);
+
+  const unsubscribe = proxy.bridge(actor);
+
+  proxyAdapter.simulateDevtoolsMessage({ type: "connect", payload: "Hello!" });
+  expect(actorAdapter.postMessage).toHaveBeenCalled();
+
+  actorAdapter.postMessage.mockClear();
+  unsubscribe();
+
+  proxyAdapter.simulateDevtoolsMessage({ type: "disconnect" });
+  expect(actorAdapter.postMessage).not.toHaveBeenCalled();
+});
