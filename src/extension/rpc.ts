@@ -1,6 +1,9 @@
 import { SafeAny } from "../types";
 import { MessageAdapter } from "./messageAdapters";
-import { isApolloClientDevtoolsMessage } from "./messages";
+import {
+  ApolloClientDevtoolsMessage,
+  isApolloClientDevtoolsMessage,
+} from "./messages";
 
 type RPCParams = Record<string, unknown>;
 
@@ -47,7 +50,37 @@ export function createRpcClient<
 export function createRpcHandler<
   Messages extends RPC<string, RPCParams, SafeAny>,
 >(adapter: MessageAdapter) {
-  const activeTypes = new Set<string>();
+  const listeners = new Map<
+    string,
+    (
+      message: ApolloClientDevtoolsMessage<{ type: string; params: RPCParams }>
+    ) => void
+  >();
+  let removeListener: (() => void) | null = null;
+
+  function handleMessage(message: unknown) {
+    if (
+      isApolloClientDevtoolsMessage<{ type: string; params: RPCParams }>(
+        message
+      ) &&
+      message.id != null
+    ) {
+      listeners.get(message.message.type)?.(message);
+    }
+  }
+
+  function startListening() {
+    if (!removeListener) {
+      removeListener = adapter.addListener(handleMessage);
+    }
+  }
+
+  function stopListening() {
+    if (removeListener) {
+      removeListener();
+      removeListener = null;
+    }
+  }
 
   return function <TName extends Messages["__name"]>(
     name: TName,
@@ -55,29 +88,26 @@ export function createRpcHandler<
       params: Extract<Messages, { __name: TName }>["__params"]
     ) => Extract<Messages, { __name: TName }>["__returnType"]
   ) {
-    if (activeTypes.has(name)) {
+    if (listeners.has(name)) {
       throw new Error("Only one rpc handler can be registered per type");
     }
 
-    activeTypes.add(name);
-
-    const removeListener = adapter.addListener((message) => {
-      if (
-        isApolloClientDevtoolsMessage(message) &&
-        message.id != null &&
-        message.message.type === name
-      ) {
-        adapter.postMessage({
-          source: "apollo-client-devtools",
-          id: message.id,
-          message: { result: execute(message.message.params as RPCParams) },
-        });
-      }
+    listeners.set(name, (message) => {
+      adapter.postMessage({
+        source: "apollo-client-devtools",
+        id: message.id,
+        message: { result: execute(message.message.params as RPCParams) },
+      });
     });
 
+    startListening();
+
     return () => {
-      activeTypes.delete(name);
-      removeListener();
+      listeners.delete(name);
+
+      if (listeners.size === 0) {
+        stopListening();
+      }
     };
   };
 }

@@ -135,3 +135,34 @@ test("ignores messages that don't contain an id", () => {
 
   expect(callback).not.toHaveBeenCalled();
 });
+
+test("does not add listener to adapter until first subscribed handler", () => {
+  type Message = RPC<"add", { x: number; y: number }, number>;
+
+  const adapter = createTestAdapter();
+  const handle = createRpcHandler<Message>(adapter);
+
+  expect(adapter.addListener).not.toHaveBeenCalled();
+
+  handle("add", ({ x, y }) => x + y);
+
+  expect(adapter.addListener).toHaveBeenCalled();
+});
+
+test("adds a single listener regardless of active handlers", () => {
+  type Message =
+    | RPC<"add", { x: number; y: number }, number>
+    | RPC<"subtract", { x: number; y: number }, number>
+    | RPC<"shout", { text: string }, string>;
+
+  const adapter = createTestAdapter();
+  const handle = createRpcHandler<Message>(adapter);
+
+  expect(adapter.addListener).not.toHaveBeenCalled();
+
+  handle("add", ({ x, y }) => x + y);
+  handle("subtract", ({ x, y }) => x - y);
+  handle("shout", ({ text }) => text.toUpperCase());
+
+  expect(adapter.addListener).toHaveBeenCalledTimes(1);
+});
