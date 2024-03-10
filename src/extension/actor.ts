@@ -1,7 +1,7 @@
 import browser from "webextension-polyfill";
 import type { MessageFormat } from "./messages";
 import { isApolloClientDevtoolsMessage } from "./messages";
-import { NoInfer } from "../types";
+import type { NoInfer, SafeAny } from "../types";
 import {
   MessageAdapter,
   createPortMessageAdapter,
@@ -15,6 +15,7 @@ export interface Actor<Messages extends MessageFormat> {
       ? (message: Message) => void
       : never
   ) => () => void;
+  bridge: (actor: Actor<SafeAny>) => () => void;
   send: (message: Messages) => void;
   forward: <TName extends Messages["type"]>(
     name: TName,
@@ -30,6 +31,7 @@ export function createActor<Messages extends MessageFormat>(
     Messages["type"],
     Set<(message: Messages) => void>
   >();
+  const bridges = new Set<(message: Messages) => void>();
 
   function handleMessage(message: unknown) {
     if (!isApolloClientDevtoolsMessage<Messages>(message)) {
@@ -43,6 +45,8 @@ export function createActor<Messages extends MessageFormat>(
         listener(message.message);
       }
     }
+
+    bridges.forEach((bridge) => bridge(message.message));
   }
 
   function startListening() {
@@ -76,7 +80,7 @@ export function createActor<Messages extends MessageFormat>(
         messageListeners.delete(name);
       }
 
-      if (messageListeners.size === 0) {
+      if (messageListeners.size === 0 && bridges.size === 0) {
         stopListening();
       }
     };
@@ -84,6 +88,18 @@ export function createActor<Messages extends MessageFormat>(
 
   return {
     on,
+    bridge: (actor) => {
+      bridges.add(actor.send);
+      startListening();
+
+      return () => {
+        bridges.delete(actor.send);
+
+        if (messageListeners.size === 0 && bridges.size === 0) {
+          stopListening();
+        }
+      };
+    },
     send: (message) => {
       adapter.postMessage({
         source: "apollo-client-devtools",

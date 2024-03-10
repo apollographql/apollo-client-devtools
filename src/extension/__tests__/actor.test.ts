@@ -226,3 +226,50 @@ test("forwards messages to another actor", () => {
     message: { type: "disconnect" },
   });
 });
+
+test("can bridge messages between two actors", () => {
+  type Message = { type: "connect"; payload: string } | { type: "disconnect" };
+
+  const proxyAdapter = createTestAdapter<Message>();
+  const actorAdapter = createTestAdapter<Message>();
+  const proxy = createActor<Message>(proxyAdapter);
+  const actor = createActor<Message>(actorAdapter);
+
+  proxy.bridge(actor);
+
+  proxyAdapter.simulateDevtoolsMessage({ type: "connect", payload: "Hello!" });
+
+  expect(actorAdapter.postMessage).toHaveBeenCalledTimes(1);
+  expect(actorAdapter.postMessage).toHaveBeenCalledWith({
+    source: "apollo-client-devtools",
+    message: {
+      type: "connect",
+      payload: "Hello!",
+    },
+  });
+
+  proxyAdapter.simulateDevtoolsMessage({ type: "disconnect" });
+
+  expect(actorAdapter.postMessage).toHaveBeenCalledTimes(2);
+  expect(actorAdapter.postMessage).toHaveBeenCalledWith({
+    source: "apollo-client-devtools",
+    message: { type: "disconnect" },
+  });
+});
+
+test("does not forward non-devtools messages through bridge", () => {
+  type Message = { type: "connect"; payload: string } | { type: "disconnect" };
+
+  const proxyAdapter = createTestAdapter<Message>();
+  const actorAdapter = createTestAdapter<Message>();
+  const proxy = createActor<Message>(proxyAdapter);
+  const actor = createActor<Message>(actorAdapter);
+
+  proxy.bridge(actor);
+
+  proxyAdapter.simulatePlainMessage({ type: "connect", payload: "Hello!" });
+  expect(actorAdapter.postMessage).not.toHaveBeenCalled();
+
+  proxyAdapter.simulatePlainMessage({ type: "disconnect" });
+  expect(actorAdapter.postMessage).not.toHaveBeenCalled();
+});
