@@ -92,11 +92,11 @@ export function createRpcHandler<
       throw new Error("Only one rpc handler can be registered per type");
     }
 
-    listeners.set(name, (message) => {
+    listeners.set(name, ({ id, message }) => {
       adapter.postMessage({
         source: "apollo-client-devtools",
-        id: message.id,
-        message: { result: execute(message.message.params as RPCParams) },
+        id,
+        message: { result: execute(message.params) },
       });
     });
 
