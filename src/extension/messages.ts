@@ -10,6 +10,7 @@ export interface MessageFormat {
 export type ApolloClientDevtoolsMessage<
   Message extends Record<string, unknown>,
 > = {
+  id?: number;
   source: "apollo-client-devtools";
   message: Message;
 };
