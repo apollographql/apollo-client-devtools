@@ -47,13 +47,21 @@ export function createRpcClient<
 export function createRpcHandler<
   Messages extends RPC<string, RPCParams, SafeAny>,
 >(adapter: MessageAdapter) {
+  const activeTypes = new Set<string>();
+
   return function <TName extends Messages["__name"]>(
     name: TName,
     execute: (
       params: Extract<Messages, { __name: TName }>["__params"]
     ) => Extract<Messages, { __name: TName }>["__returnType"]
   ) {
-    return adapter.addListener((message) => {
+    if (activeTypes.has(name)) {
+      throw new Error("Only one rpc handler can be registered per type");
+    }
+
+    activeTypes.add(name);
+
+    const removeListener = adapter.addListener((message) => {
       if (
         isApolloClientDevtoolsMessage(message) &&
         message.message.type === name
@@ -65,5 +73,10 @@ export function createRpcHandler<
         });
       }
     });
+
+    return () => {
+      activeTypes.delete(name);
+      removeListener();
+    };
   };
 }

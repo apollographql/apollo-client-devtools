@@ -89,3 +89,15 @@ test("can handle multiple rpc messages", async () => {
   expect(result).toBe(3);
   expect(uppercase).toBe("HELLO");
 });
+
+test("only allows one handler per type", async () => {
+  type Message = RPC<"add", { x: number; y: number }, number>;
+
+  const handle = createRpcHandler<Message>(createTestAdapter());
+
+  handle("add", ({ x, y }) => x + y);
+
+  expect(() => {
+    handle("add", ({ x, y }) => x - y);
+  }).toThrow(new Error("Only one rpc handler can be registered per type"));
+});
