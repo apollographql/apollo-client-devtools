@@ -277,3 +277,24 @@ test("only adds single adapter listener when forwarding to multiple actors", () 
 
   expect(proxyAdapter.addListener).toHaveBeenCalledTimes(1);
 });
+
+test("removes adapter listener when unsubscribed from all bridges", () => {
+  type Message = { type: "connect"; payload: string };
+
+  const proxyAdapter = createTestAdapter<Message>();
+  const actorAdapter = createTestAdapter<Message>();
+  const proxy = createActor<Message>(proxyAdapter);
+  const actor = createActor<Message>(actorAdapter);
+  const actor2 = createActor<Message>(actorAdapter);
+
+  const unsubscribe1 = proxy.forwardTo(actor);
+  const unsubscribe2 = proxy.forwardTo(actor2);
+
+  expect(proxyAdapter.addListener).toHaveBeenCalledTimes(1);
+
+  unsubscribe1();
+  expect(proxyAdapter.mocks.removeListener).not.toHaveBeenCalled();
+
+  unsubscribe2();
+  expect(proxyAdapter.mocks.removeListener).toHaveBeenCalled();
+});
