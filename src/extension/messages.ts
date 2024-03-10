@@ -4,9 +4,12 @@ import { DevtoolsMachine } from "../application/machines";
 
 export interface MessageFormat {
   type: string;
+  [key: string]: unknown;
 }
 
-export type ApolloClientDevtoolsMessage<Message extends MessageFormat> = {
+export type ApolloClientDevtoolsMessage<
+  Message extends Record<string, unknown>,
+> = {
   source: "apollo-client-devtools";
   message: Message;
 };
@@ -53,9 +56,9 @@ export type PanelMessage =
   | { type: "devtoolsStateChanged"; state: GetStates<DevtoolsMachine> }
   | { type: "update"; payload: GetContext<DevtoolsMachine>["clientContext"] };
 
-export function isApolloClientDevtoolsMessage<Message extends MessageFormat>(
-  message: unknown
-): message is ApolloClientDevtoolsMessage<Message> {
+export function isApolloClientDevtoolsMessage<
+  Message extends Record<string, unknown>,
+>(message: unknown): message is ApolloClientDevtoolsMessage<Message> {
   return (
     typeof message === "object" &&
     message !== null &&
