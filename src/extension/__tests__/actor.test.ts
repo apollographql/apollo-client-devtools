@@ -23,7 +23,7 @@ function createTestAdapter<Messages = unknown>() {
   };
 }
 
-test("sends messages to specified adapter in devtools message format using .send", () => {
+test("sends messages to specified adapter in devtools message format", () => {
   type Message = { type: "test"; payload: string };
 
   const adapter = createTestAdapter();
