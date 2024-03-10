@@ -37,12 +37,17 @@ export function createRpcClient<
             options?.timeoutMs ?? DEFAULT_TIMEOUT
           );
         }),
-        new Promise((resolve) => {
+        new Promise((resolve, reject) => {
           const id = ++messageId;
 
           const removeListener = adapter.addListener((message) => {
             if (isApolloClientDevtoolsMessage(message) && message.id === id) {
-              resolve(message.message.result);
+              if ("error" in message.message) {
+                reject(message.message.error);
+              } else {
+                resolve(message.message.result);
+              }
+
               removeListener();
             }
           });
@@ -107,13 +112,21 @@ export function createRpcHandler<
     }
 
     listeners.set(name, async ({ id, message }) => {
-      const result = await Promise.resolve(execute(message.params));
+      try {
+        const result = await Promise.resolve(execute(message.params));
 
-      adapter.postMessage({
-        source: "apollo-client-devtools",
-        id,
-        message: { result },
-      });
+        adapter.postMessage({
+          source: "apollo-client-devtools",
+          id,
+          message: { result },
+        });
+      } catch (error) {
+        adapter.postMessage({
+          source: "apollo-client-devtools",
+          id,
+          message: { error },
+        });
+      }
     });
 
     startListening();

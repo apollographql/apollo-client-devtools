@@ -107,6 +107,44 @@ test("resolves async handlers", async () => {
   });
 });
 
+test("rejects when handler throws error", async () => {
+  type Message = RPC<"add", { x: number; y: number }, number>;
+  // Since these are sent over separate instances in the real world, we want to
+  // simulate that as best as we can with separate adapters
+  const handlerAdapter = createTestAdapter();
+  const clientAdapter = createTestAdapter();
+  createBridge(clientAdapter, handlerAdapter);
+
+  const client = createRpcClient<Message>(clientAdapter);
+  const handle = createRpcHandler<Message>(handlerAdapter);
+
+  handle("add", () => {
+    throw new Error("Could not add");
+  });
+
+  await expect(client.request("add", { x: 1, y: 2 })).rejects.toEqual(
+    new Error("Could not add")
+  );
+});
+
+test("rejects when async handler rejects", async () => {
+  type Message = RPC<"add", { x: number; y: number }, number>;
+  // Since these are sent over separate instances in the real world, we want to
+  // simulate that as best as we can with separate adapters
+  const handlerAdapter = createTestAdapter();
+  const clientAdapter = createTestAdapter();
+  createBridge(clientAdapter, handlerAdapter);
+
+  const client = createRpcClient<Message>(clientAdapter);
+  const handle = createRpcHandler<Message>(handlerAdapter);
+
+  handle("add", () => Promise.reject(new Error("Could not add")));
+
+  await expect(client.request("add", { x: 1, y: 2 })).rejects.toEqual(
+    new Error("Could not add")
+  );
+});
+
 test("can handle multiple rpc messages", async () => {
   type Message =
     | RPC<"add", { x: number; y: number }, number>
