@@ -44,9 +44,9 @@ test("can send and receive rpc messages", async () => {
   createBridge(clientAdapter, handlerAdapter);
 
   const client = createRpcClient<Message>(clientAdapter);
-  const handler = createRpcHandler<Message>(handlerAdapter);
+  const handle = createRpcHandler<Message>(handlerAdapter);
 
-  handler("add", ({ x, y }) => x + y);
+  handle("add", ({ x, y }) => x + y);
 
   const result = await client.request("add", { x: 1, y: 2 });
 
