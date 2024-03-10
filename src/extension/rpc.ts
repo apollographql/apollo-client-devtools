@@ -64,6 +64,7 @@ export function createRpcHandler<
     const removeListener = adapter.addListener((message) => {
       if (
         isApolloClientDevtoolsMessage(message) &&
+        message.id != null &&
         message.message.type === name
       ) {
         adapter.postMessage({

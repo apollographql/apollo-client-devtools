@@ -101,3 +101,37 @@ test("only allows one handler per type", async () => {
     handle("add", ({ x, y }) => x - y);
   }).toThrow(new Error("Only one rpc handler can be registered per type"));
 });
+
+test("ignores messages that don't originate from devtools", () => {
+  type Message = RPC<"add", { x: number; y: number }, number>;
+
+  const adapter = createTestAdapter();
+  const handle = createRpcHandler<Message>(adapter);
+
+  const callback = jest.fn();
+  handle("add", callback);
+
+  adapter.simulateMessage({ type: "add", x: 1, y: 2 });
+
+  expect(callback).not.toHaveBeenCalled();
+});
+
+// RPC messages always provide an `id`, but actor messages do not. In case an
+// actor message type collides with an rpc message type, we want to ignore the
+// actor message type.
+test("ignores messages that don't contain an id", () => {
+  type Message = RPC<"add", { x: number; y: number }, number>;
+
+  const adapter = createTestAdapter();
+  const handle = createRpcHandler<Message>(adapter);
+
+  const callback = jest.fn();
+  handle("add", callback);
+
+  adapter.simulateMessage({
+    source: "apollo-client-devtools",
+    message: { type: "add", x: 1, y: 2 },
+  });
+
+  expect(callback).not.toHaveBeenCalled();
+});
