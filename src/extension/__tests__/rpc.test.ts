@@ -67,3 +67,26 @@ test("can send and receive rpc messages", async () => {
     message: { result: 3 },
   });
 });
+
+test("can handle multiple rpc messages", async () => {
+  type Message =
+    | RPC<"add", { x: number; y: number }, number>
+    | RPC<"shout", { text: string }, string>;
+  // Since these are sent over separate instances in the real world, we want to
+  // simulate that as best as we can with separate adapters
+  const handlerAdapter = createTestAdapter();
+  const clientAdapter = createTestAdapter();
+  createBridge(clientAdapter, handlerAdapter);
+
+  const client = createRpcClient<Message>(clientAdapter);
+  const handle = createRpcHandler<Message>(handlerAdapter);
+
+  handle("add", ({ x, y }) => x + y);
+  handle("shout", ({ text }) => text.toUpperCase());
+
+  const result = await client.request("add", { x: 1, y: 2 });
+  const uppercase = await client.request("shout", { text: "hello" });
+
+  expect(result).toBe(3);
+  expect(uppercase).toBe("HELLO");
+});
