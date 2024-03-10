@@ -52,7 +52,7 @@ export function createActor<Messages extends MessageFormat>(
   }
 
   function stopListening() {
-    if (removeListener) {
+    if (removeListener && messageListeners.size === 0 && bridges.size === 0) {
       removeListener();
       removeListener = null;
     }
@@ -80,9 +80,7 @@ export function createActor<Messages extends MessageFormat>(
           messageListeners.delete(name);
         }
 
-        if (messageListeners.size === 0 && bridges.size === 0) {
-          stopListening();
-        }
+        stopListening();
       };
     },
     forwardTo: (actor) => {
@@ -91,10 +89,7 @@ export function createActor<Messages extends MessageFormat>(
 
       return () => {
         bridges.delete(actor.send);
-
-        if (messageListeners.size === 0 && bridges.size === 0) {
-          stopListening();
-        }
+        stopListening();
       };
     },
     send: (message) => {
