@@ -166,3 +166,32 @@ test("adds a single listener regardless of active handlers", () => {
 
   expect(adapter.addListener).toHaveBeenCalledTimes(1);
 });
+
+test("can unsubscribe from a handler by calling the returned function", () => {
+  type Message = RPC<"add", { x: number; y: number }, number>;
+
+  const adapter = createTestAdapter();
+  const handle = createRpcHandler<Message>(adapter);
+
+  const add = jest.fn();
+  const unsubscribe = handle("add", add);
+
+  adapter.simulateMessage({
+    source: "apollo-client-devtools",
+    id: 1,
+    message: { type: "add", params: { x: 1, y: 2 } },
+  });
+
+  expect(add).toHaveBeenCalledTimes(1);
+
+  add.mockClear();
+  unsubscribe();
+
+  adapter.simulateMessage({
+    source: "apollo-client-devtools",
+    id: 1,
+    message: { type: "add", params: { x: 1, y: 2 } },
+  });
+
+  expect(add).not.toHaveBeenCalled();
+});
