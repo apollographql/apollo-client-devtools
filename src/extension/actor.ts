@@ -27,7 +27,7 @@ export function createActor<Messages extends MessageFormat>(
     Messages["type"],
     Set<(message: Messages) => void>
   >();
-  const bridges = new Set<(message: Messages) => void>();
+  const proxies = new Set<(message: Messages) => void>();
 
   function handleMessage(message: unknown) {
     if (!isApolloClientDevtoolsMessage<Messages>(message)) {
@@ -42,7 +42,7 @@ export function createActor<Messages extends MessageFormat>(
       }
     }
 
-    bridges.forEach((bridge) => bridge(message.message));
+    proxies.forEach((forward) => forward(message.message));
   }
 
   function startListening() {
@@ -52,7 +52,7 @@ export function createActor<Messages extends MessageFormat>(
   }
 
   function stopListening() {
-    if (removeListener && messageListeners.size === 0 && bridges.size === 0) {
+    if (removeListener && messageListeners.size === 0 && proxies.size === 0) {
       removeListener();
       removeListener = null;
     }
@@ -84,11 +84,11 @@ export function createActor<Messages extends MessageFormat>(
       };
     },
     forwardTo: (actor) => {
-      bridges.add(actor.send);
+      proxies.add(actor.send);
       startListening();
 
       return () => {
-        bridges.delete(actor.send);
+        proxies.delete(actor.send);
         stopListening();
       };
     },
