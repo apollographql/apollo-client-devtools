@@ -16,9 +16,12 @@ export type RPC<Name extends string, Params extends RPCParams, ReturnType> = {
 export interface RpcClient<Messages extends RPC<string, RPCParams, SafeAny>> {
   request: <TName extends Messages["__name"]>(
     name: TName,
-    params: Extract<Messages, { __name: TName }>["__params"]
+    params: Extract<Messages, { __name: TName }>["__params"],
+    options?: { timeoutMs?: number }
   ) => Promise<Extract<Messages, { __name: TName }>["__returnType"]>;
 }
+
+const DEFAULT_TIMEOUT = 30_000;
 
 export function createRpcClient<
   Messages extends RPC<string, RPCParams, SafeAny>,
@@ -26,23 +29,31 @@ export function createRpcClient<
   let messageId = 0;
 
   return {
-    request: (name, params) => {
-      return new Promise((resolve) => {
-        const id = ++messageId;
+    request: (name, params, options) => {
+      return Promise.race([
+        new Promise((_, reject) => {
+          setTimeout(
+            () => reject(new Error("Timeout waiting for message")),
+            options?.timeoutMs ?? DEFAULT_TIMEOUT
+          );
+        }),
+        new Promise((resolve) => {
+          const id = ++messageId;
 
-        const removeListener = adapter.addListener((message) => {
-          if (isApolloClientDevtoolsMessage(message) && message.id === id) {
-            resolve(message.message.result);
-            removeListener();
-          }
-        });
+          const removeListener = adapter.addListener((message) => {
+            if (isApolloClientDevtoolsMessage(message) && message.id === id) {
+              resolve(message.message.result);
+              removeListener();
+            }
+          });
 
-        adapter.postMessage({
-          source: "apollo-client-devtools",
-          id,
-          message: { type: name, params },
-        });
-      });
+          adapter.postMessage({
+            source: "apollo-client-devtools",
+            id,
+            message: { type: name, params },
+          });
+        }),
+      ]);
     },
   };
 }

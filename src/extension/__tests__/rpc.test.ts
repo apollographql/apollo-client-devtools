@@ -229,3 +229,39 @@ test("re-adds listener on adapter when subscribing after unsubscribing", () => {
   handle("add", add);
   expect(adapter.mocks.listeners.size).toBe(1);
 });
+
+test("times out if no message received within default timeout", async () => {
+  jest.useFakeTimers();
+  type Message = RPC<"add", { x: number; y: number }, number>;
+
+  const adapter = createTestAdapter();
+  const client = createRpcClient<Message>(adapter);
+
+  const promise = client.request("add", { x: 1, y: 2 });
+
+  jest.advanceTimersByTime(30_000);
+
+  await expect(promise).rejects.toEqual(
+    new Error("Timeout waiting for message")
+  );
+
+  jest.useRealTimers();
+});
+
+test("times out if no message received within configured timeout", async () => {
+  jest.useFakeTimers();
+  type Message = RPC<"add", { x: number; y: number }, number>;
+
+  const adapter = createTestAdapter();
+  const client = createRpcClient<Message>(adapter);
+
+  const promise = client.request("add", { x: 1, y: 2 }, { timeoutMs: 1000 });
+
+  jest.advanceTimersByTime(1000);
+
+  await expect(promise).rejects.toEqual(
+    new Error("Timeout waiting for message")
+  );
+
+  jest.useRealTimers();
+});
