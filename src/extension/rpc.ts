@@ -15,13 +15,16 @@ export interface RpcClient<Messages extends RPC<string, RPCParams, SafeAny>> {
     name: TName,
     params: Extract<Messages, { __name: TName }>["__params"]
   ) => Promise<Extract<Messages, { __name: TName }>["__returnType"]>;
-  handle: <TName extends Messages["__name"]>(
+}
+
+export type RpcHandler<Messages extends RPC<string, RPCParams, SafeAny>> = {
+  <TName extends Messages["__name"]>(
     name: TName,
     callback: (
       params: Extract<Messages, { __name: TName }>["__params"]
     ) => Extract<Messages, { __name: TName }>["__returnType"]
-  ) => () => void;
-}
+  ): () => void;
+};
 
 export function createRpcClient<
   Messages extends RPC<string, RPCParams, SafeAny>,
@@ -47,21 +50,26 @@ export function createRpcClient<
         });
       });
     },
-    handle: (name, execute) => {
-      return adapter.addListener((message) => {
-        if (
-          isApolloClientDevtoolsMessage(message) &&
-          message.message.type === name
-        ) {
-          const result = execute(message.message.params as RPCParams);
+  };
+}
 
-          adapter.postMessage({
-            source: "apollo-client-devtools",
-            id: message.id,
-            message: { result },
-          });
-        }
-      });
-    },
+export function createRpcHandler<
+  Messages extends RPC<string, RPCParams, SafeAny>,
+>(adapter: MessageAdapter): RpcHandler<Messages> {
+  return (name, execute) => {
+    return adapter.addListener((message) => {
+      if (
+        isApolloClientDevtoolsMessage(message) &&
+        message.message.type === name
+      ) {
+        const result = execute(message.message.params as RPCParams);
+
+        adapter.postMessage({
+          source: "apollo-client-devtools",
+          id: message.id,
+          message: { result },
+        });
+      }
+    });
   };
 }
