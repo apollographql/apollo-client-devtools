@@ -374,7 +374,7 @@ test("times out if no message received within configured timeout", async () => {
   jest.useRealTimers();
 });
 
-test("forwards rpc messages from one adapter to another", () => {
+test("forwards rpc messages from one adapter to another with bridge", () => {
   const adapter1 = createTestAdapter();
   const adapter2 = createTestAdapter();
 
@@ -405,6 +405,41 @@ test("forwards rpc messages from one adapter to another", () => {
     id: 1,
     message: { type: "add", params: { x: 1, y: 2 } },
   });
+});
+
+test("unsubscribes connection on bridge when calling returned function", () => {
+  const adapter1 = createTestAdapter();
+  const adapter2 = createTestAdapter();
+
+  const unsubscribe = createRPCBridge(adapter1, adapter2);
+
+  adapter1.simulateRPCMessage({
+    id: 1,
+    message: { type: "add", params: { x: 1, y: 2 } },
+  });
+  expect(adapter2.postMessage).toHaveBeenCalled();
+
+  adapter2.simulateRPCMessage({
+    id: 1,
+    message: { type: "add", params: { x: 1, y: 2 } },
+  });
+  expect(adapter1.postMessage).toHaveBeenCalled();
+
+  (adapter1.postMessage as jest.Mock).mockClear();
+  (adapter2.postMessage as jest.Mock).mockClear();
+  unsubscribe();
+
+  adapter1.simulateRPCMessage({
+    id: 1,
+    message: { type: "add", params: { x: 1, y: 2 } },
+  });
+  expect(adapter2.postMessage).not.toHaveBeenCalled();
+
+  adapter2.simulateRPCMessage({
+    id: 1,
+    message: { type: "add", params: { x: 1, y: 2 } },
+  });
+  expect(adapter1.postMessage).not.toHaveBeenCalled();
 });
 
 test.each([MessageType.Event])(
