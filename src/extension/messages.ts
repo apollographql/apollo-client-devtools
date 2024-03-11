@@ -98,7 +98,7 @@ export function isRPCMessage<Message extends Record<string, unknown>>(
 
 export function isEventMessage<Message extends Record<string, unknown>>(
   message: unknown
-): message is ApolloClientDevtoolsRPCMessage<Message> {
+): message is ApolloClientDevtoolsEventMessage<Message> {
   return (
     isApolloClientDevtoolsMessage(message) && message.type === MessageType.Event
   );
