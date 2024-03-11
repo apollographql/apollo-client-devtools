@@ -56,13 +56,13 @@ export function createRpcClient<
           const removeListener = adapter.addListener((message) => {
             if (
               isRPCMessage(message) &&
-              "sourceId" in message.message &&
-              message.message.sourceId === id
+              "sourceId" in message.payload &&
+              message.payload.sourceId === id
             ) {
-              if ("error" in message.message) {
-                reject(message.message.error);
+              if ("error" in message.payload) {
+                reject(message.payload.error);
               } else {
-                resolve(message.message.result);
+                resolve(message.payload.result);
               }
 
               removeListener();
@@ -73,7 +73,7 @@ export function createRpcClient<
             source: "apollo-client-devtools",
             type: MessageType.RPC,
             id,
-            message: { type: name, params },
+            payload: { type: name, params },
           });
         }),
       ]);
@@ -96,7 +96,7 @@ export function createRpcHandler<
 
   function handleMessage(message: unknown) {
     if (isRPCMessage<{ type: string; params: RPCParams }>(message)) {
-      listeners.get(message.message.type)?.(message);
+      listeners.get(message.payload.type)?.(message);
     }
   }
 
@@ -126,22 +126,22 @@ export function createRpcHandler<
       throw new Error("Only one rpc handler can be registered per type");
     }
 
-    listeners.set(name, async ({ id, message }) => {
+    listeners.set(name, async ({ id, payload }) => {
       try {
-        const result = await Promise.resolve(execute(message.params));
+        const result = await Promise.resolve(execute(payload.params));
 
         adapter.postMessage({
           source: "apollo-client-devtools",
           type: MessageType.RPC,
           id: ++nextMessageId,
-          message: { sourceId: id, result },
+          payload: { sourceId: id, result },
         });
       } catch (error) {
         adapter.postMessage({
           source: "apollo-client-devtools",
           type: MessageType.RPC,
           id: ++nextMessageId,
-          message: { sourceId: id, error },
+          payload: { sourceId: id, error },
         });
       }
     });
