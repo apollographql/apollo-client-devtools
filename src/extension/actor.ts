@@ -1,12 +1,7 @@
 import browser from "webextension-polyfill";
-import type { ApolloClientDevtoolsMessage, MessageFormat } from "./messages";
+import type { MessageFormat } from "./messages";
 import { isApolloClientDevtoolsMessage } from "./messages";
-import type { SafeAny } from "../types";
-import {
-  MessageAdapter,
-  createPortMessageAdapter,
-  createWindowMessageAdapter,
-} from "./messageAdapters";
+import { NoInfer } from "../types";
 
 export interface Actor<Messages extends MessageFormat> {
   on: <TName extends Messages["type"]>(
@@ -15,9 +10,53 @@ export interface Actor<Messages extends MessageFormat> {
       ? (message: Message) => void
       : never
   ) => () => void;
-  forwardTo: (actor: Actor<SafeAny>) => () => void;
   send: (message: Messages) => void;
-  __forwardMessage: (message: ApolloClientDevtoolsMessage<SafeAny>) => void;
+  forward: <TName extends Messages["type"]>(
+    name: TName,
+    actor: Actor<Extract<Messages, { type: NoInfer<TName> }>>
+  ) => () => void;
+}
+
+export interface MessageAdapter {
+  addListener: (listener: (message: unknown) => void) => () => void;
+  postMessage: (message: unknown) => void;
+}
+
+function createWindowMessageAdapter(window: Window): MessageAdapter {
+  return {
+    addListener(listener) {
+      function handleEvent({ data }: MessageEvent) {
+        listener(data);
+      }
+
+      window.addEventListener("message", handleEvent);
+
+      return () => {
+        window.removeEventListener("message", handleEvent);
+      };
+    },
+    postMessage(message) {
+      window.postMessage(message, "*");
+    },
+  };
+}
+
+function createPortMessageAdapter(port: browser.Runtime.Port): MessageAdapter {
+  return {
+    addListener(listener) {
+      port.onMessage.addListener(listener);
+      port.onDisconnect.addListener(() => {
+        port.onMessage.removeListener(listener);
+      });
+
+      return () => {
+        port.onMessage.removeListener(listener);
+      };
+    },
+    postMessage(message) {
+      return port.postMessage(message);
+    },
+  };
 }
 
 export function createActor<Messages extends MessageFormat>(
@@ -27,9 +66,6 @@ export function createActor<Messages extends MessageFormat>(
   const messageListeners = new Map<
     Messages["type"],
     Set<(message: Messages) => void>
-  >();
-  const proxies = new Set<
-    (message: ApolloClientDevtoolsMessage<SafeAny>) => void
   >();
 
   function handleMessage(message: unknown) {
@@ -44,8 +80,6 @@ export function createActor<Messages extends MessageFormat>(
         listener(message.message);
       }
     }
-
-    proxies.forEach((forward) => forward(message));
   }
 
   function startListening() {
@@ -55,55 +89,46 @@ export function createActor<Messages extends MessageFormat>(
   }
 
   function stopListening() {
-    if (removeListener && messageListeners.size === 0 && proxies.size === 0) {
+    if (removeListener) {
       removeListener();
       removeListener = null;
     }
   }
 
-  return {
-    on: (name, callback) => {
-      let listeners = messageListeners.get(name) as Set<typeof callback>;
+  const on: Actor<Messages>["on"] = (name, callback) => {
+    let listeners = messageListeners.get(name) as Set<typeof callback>;
 
-      if (!listeners) {
-        listeners = new Set();
-        messageListeners.set(
-          name,
-          listeners as Set<(message: Messages) => void>
-        );
+    if (!listeners) {
+      listeners = new Set();
+      messageListeners.set(name, listeners as Set<(message: Messages) => void>);
+    }
+
+    listeners.add(callback);
+    startListening();
+
+    return () => {
+      listeners!.delete(callback);
+
+      if (listeners.size === 0) {
+        messageListeners.delete(name);
       }
 
-      listeners.add(callback);
-      startListening();
-
-      return () => {
-        listeners!.delete(callback);
-
-        if (listeners.size === 0) {
-          messageListeners.delete(name);
-        }
-
+      if (messageListeners.size === 0) {
         stopListening();
-      };
-    },
-    forwardTo: (actor) => {
-      proxies.add(actor.__forwardMessage);
-      startListening();
+      }
+    };
+  };
 
-      return () => {
-        proxies.delete(actor.__forwardMessage);
-        stopListening();
-      };
-    },
+  return {
+    on,
     send: (message) => {
       adapter.postMessage({
         source: "apollo-client-devtools",
         message,
       });
     },
-    // "Private" function used to forward the message untouched. This ensures
-    // rpc messages that make it through untouched
-    __forwardMessage: (message) => adapter.postMessage(message),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    forward: (name, actor) => on(name, actor.send as unknown as any),
   };
 }
 

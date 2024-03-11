@@ -196,7 +196,7 @@ test("re-adds listener on adapter when subscribing actor listener after disconne
   expect(adapter.addListener).toHaveBeenCalledTimes(1);
 });
 
-test("can forward messages between two actors", () => {
+test("forwards messages to another actor", () => {
   type Message = { type: "connect"; payload: string } | { type: "disconnect" };
 
   const proxyAdapter = createTestAdapter<Message>();
@@ -204,7 +204,8 @@ test("can forward messages between two actors", () => {
   const proxy = createActor<Message>(proxyAdapter);
   const actor = createActor<Message>(actorAdapter);
 
-  proxy.forwardTo(actor);
+  proxy.forward("connect", actor);
+  proxy.forward("disconnect", actor);
 
   proxyAdapter.simulateDevtoolsMessage({ type: "connect", payload: "Hello!" });
 
@@ -224,129 +225,4 @@ test("can forward messages between two actors", () => {
     source: "apollo-client-devtools",
     message: { type: "disconnect" },
   });
-});
-
-test("does not forward messages that do not original from devtools", () => {
-  type Message = { type: "connect"; payload: string } | { type: "disconnect" };
-
-  const proxyAdapter = createTestAdapter<Message>();
-  const actorAdapter = createTestAdapter<Message>();
-  const proxy = createActor<Message>(proxyAdapter);
-  const actor = createActor<Message>(actorAdapter);
-
-  proxy.forwardTo(actor);
-
-  proxyAdapter.simulatePlainMessage({ type: "connect", payload: "Hello!" });
-  expect(actorAdapter.postMessage).not.toHaveBeenCalled();
-
-  proxyAdapter.simulatePlainMessage({ type: "disconnect" });
-  expect(actorAdapter.postMessage).not.toHaveBeenCalled();
-});
-
-test("leaves forwarded messages untouched", () => {
-  type Message = { type: "connect"; payload: string } | { type: "disconnect" };
-
-  const proxyAdapter = createTestAdapter<Message>();
-  const actorAdapter = createTestAdapter<Message>();
-  const proxy = createActor<Message>(proxyAdapter);
-  const actor = createActor<Message>(actorAdapter);
-
-  proxy.forwardTo(actor);
-
-  proxyAdapter.simulatePlainMessage({
-    source: "apollo-client-devtools",
-    id: 1,
-    message: { result: 3 },
-  });
-
-  expect(actorAdapter.postMessage).toHaveBeenCalledTimes(1);
-  expect(actorAdapter.postMessage).toHaveBeenCalledWith({
-    source: "apollo-client-devtools",
-    id: 1,
-    message: { result: 3 },
-  });
-
-  proxyAdapter.simulateDevtoolsMessage({ type: "disconnect" });
-
-  expect(actorAdapter.postMessage).toHaveBeenCalledTimes(2);
-  expect(actorAdapter.postMessage).toHaveBeenCalledWith({
-    source: "apollo-client-devtools",
-    message: { type: "disconnect" },
-  });
-});
-
-test("can unsubscribe from forwarding by calling the returned function", () => {
-  type Message = { type: "connect"; payload: string } | { type: "disconnect" };
-
-  const proxyAdapter = createTestAdapter<Message>();
-  const actorAdapter = createTestAdapter<Message>();
-  const proxy = createActor<Message>(proxyAdapter);
-  const actor = createActor<Message>(actorAdapter);
-
-  const unsubscribe = proxy.forwardTo(actor);
-
-  proxyAdapter.simulateDevtoolsMessage({ type: "connect", payload: "Hello!" });
-  expect(actorAdapter.postMessage).toHaveBeenCalled();
-
-  actorAdapter.postMessage.mockClear();
-  unsubscribe();
-
-  proxyAdapter.simulateDevtoolsMessage({ type: "disconnect" });
-  expect(actorAdapter.postMessage).not.toHaveBeenCalled();
-});
-
-test("only adds single adapter listener when forwarding to multiple actors", () => {
-  type Message = { type: "connect"; payload: string } | { type: "disconnect" };
-
-  const proxyAdapter = createTestAdapter<Message>();
-  const actorAdapter = createTestAdapter<Message>();
-  const proxy = createActor<Message>(proxyAdapter);
-  const actor = createActor<Message>(actorAdapter);
-  const actor2 = createActor<Message>(actorAdapter);
-
-  proxy.forwardTo(actor);
-  proxy.forwardTo(actor2);
-
-  expect(proxyAdapter.addListener).toHaveBeenCalledTimes(1);
-});
-
-test("removes adapter listener when unsubscribed from all forwarding", () => {
-  type Message = { type: "connect"; payload: string };
-
-  const proxyAdapter = createTestAdapter<Message>();
-  const actorAdapter = createTestAdapter<Message>();
-  const proxy = createActor<Message>(proxyAdapter);
-  const actor = createActor<Message>(actorAdapter);
-  const actor2 = createActor<Message>(actorAdapter);
-
-  const unsubscribe1 = proxy.forwardTo(actor);
-  const unsubscribe2 = proxy.forwardTo(actor2);
-
-  expect(proxyAdapter.addListener).toHaveBeenCalledTimes(1);
-
-  unsubscribe1();
-  expect(proxyAdapter.mocks.removeListener).not.toHaveBeenCalled();
-
-  unsubscribe2();
-  expect(proxyAdapter.mocks.removeListener).toHaveBeenCalled();
-});
-
-test("adds and removes event listeners appropriately when using both .on and .forwardTo", () => {
-  type Message = { type: "connect"; payload: string };
-
-  const proxyAdapter = createTestAdapter<Message>();
-  const actorAdapter = createTestAdapter<Message>();
-  const proxy = createActor<Message>(proxyAdapter);
-  const actor = createActor<Message>(actorAdapter);
-
-  const unsubscribeFromEvent = actor.on("connect", jest.fn());
-  const unsubscribeFromForwarding = proxy.forwardTo(actor);
-
-  expect(proxyAdapter.addListener).toHaveBeenCalledTimes(1);
-
-  unsubscribeFromEvent();
-  expect(proxyAdapter.mocks.removeListener).not.toHaveBeenCalled();
-
-  unsubscribeFromForwarding();
-  expect(proxyAdapter.mocks.removeListener).toHaveBeenCalled();
 });
