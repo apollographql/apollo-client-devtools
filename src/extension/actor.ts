@@ -3,7 +3,7 @@ import type {
   ApolloClientDevtoolsEventMessage,
   MessageFormat,
 } from "./messages";
-import { MessageType, isApolloClientDevtoolsMessage } from "./messages";
+import { MessageType, isEventMessage } from "./messages";
 import { NoInfer } from "../types";
 import {
   MessageAdapter,
@@ -35,7 +35,7 @@ export function createActor<Messages extends MessageFormat>(
   >();
 
   function handleMessage(message: unknown) {
-    if (!isApolloClientDevtoolsMessage<Messages>(message)) {
+    if (!isEventMessage<Messages>(message)) {
       return;
     }
 

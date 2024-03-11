@@ -87,3 +87,19 @@ export function isApolloClientDevtoolsMessage<
     message.source === "apollo-client-devtools"
   );
 }
+
+export function isRPCMessage<Message extends Record<string, unknown>>(
+  message: unknown
+): message is ApolloClientDevtoolsRPCMessage<Message> {
+  return (
+    isApolloClientDevtoolsMessage(message) && message.type === MessageType.RPC
+  );
+}
+
+export function isEventMessage<Message extends Record<string, unknown>>(
+  message: unknown
+): message is ApolloClientDevtoolsRPCMessage<Message> {
+  return (
+    isApolloClientDevtoolsMessage(message) && message.type === MessageType.Event
+  );
+}

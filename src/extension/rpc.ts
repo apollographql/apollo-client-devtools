@@ -3,7 +3,7 @@ import { MessageAdapter } from "./messageAdapters";
 import {
   ApolloClientDevtoolsRPCMessage,
   MessageType,
-  isApolloClientDevtoolsMessage,
+  isRPCMessage,
 } from "./messages";
 
 type RPCParams = Record<string, unknown>;
@@ -55,10 +55,7 @@ export function createRpcClient<
           const id = ++messageId;
 
           const removeListener = adapter.addListener((message) => {
-            if (
-              isApolloClientDevtoolsMessage(message) &&
-              message.type === MessageType.RPC
-            ) {
+            if (isRPCMessage(message)) {
               if ("error" in message.message) {
                 reject(message.message.error);
               } else {
@@ -100,12 +97,7 @@ export function createRpcHandler<
   let removeListener: (() => void) | null = null;
 
   function handleMessage(message: unknown) {
-    if (
-      isApolloClientDevtoolsMessage<{ type: string; params: RPCParams }>(
-        message
-      ) &&
-      message.type === MessageType.RPC
-    ) {
+    if (isRPCMessage<{ type: string; params: RPCParams }>(message)) {
       listeners.get(message.message.type)?.(message);
     }
   }
