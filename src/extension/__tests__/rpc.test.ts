@@ -85,7 +85,7 @@ test("can send and receive rpc messages", async () => {
     source: "apollo-client-devtools",
     type: MessageType.RPC,
     id: 1,
-    message: { result: 3 },
+    message: { sourceId: 1, result: 3 },
   });
 });
 
@@ -126,7 +126,7 @@ test("resolves async handlers", async () => {
     source: "apollo-client-devtools",
     type: MessageType.RPC,
     id: 1,
-    message: { result: 3 },
+    message: { sourceId: 1, result: 3 },
   });
 });
 
