@@ -126,7 +126,7 @@ export function createRpcHandler<
     name: TName,
     execute: (
       params: Extract<Messages, { __name: TName }>["__params"]
-    ) => TReturnType | Promise<TReturnType>
+    ) => NoInfer<TReturnType> | Promise<NoInfer<TReturnType>>
   ) {
     if (listeners.has(name)) {
       throw new Error("Only one rpc handler can be registered per type");
