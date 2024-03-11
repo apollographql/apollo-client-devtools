@@ -55,7 +55,11 @@ export function createRpcClient<
           const id = ++messageId;
 
           const removeListener = adapter.addListener((message) => {
-            if (isRPCMessage(message)) {
+            if (
+              isRPCMessage(message) &&
+              "sourceId" in message.message &&
+              message.message.sourceId === id
+            ) {
               if ("error" in message.message) {
                 reject(message.message.error);
               } else {

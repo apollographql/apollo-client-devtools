@@ -142,6 +142,29 @@ test("resolves async handlers", async () => {
   });
 });
 
+test("does not mistakenly handle messages from different rpc calls", async () => {
+  type Message = RPC<"add", { x: number; y: number }, number>;
+  const clientAdapter = createTestAdapter();
+  const client = createRpcClient<Message>(clientAdapter);
+
+  const promise = client.request("add", { x: 1, y: 2 });
+
+  const { id } = clientAdapter.mocks
+    .messages[0] as ApolloClientDevtoolsRPCMessage<Record<string, any>>;
+
+  clientAdapter.simulateRPCMessage({
+    id: id + 1,
+    message: { sourceId: id + 1, result: 4 },
+  });
+
+  clientAdapter.simulateRPCMessage({
+    id,
+    message: { sourceId: id, result: 3 },
+  });
+
+  await expect(promise).resolves.toBe(3);
+});
+
 test("rejects when handler throws error", async () => {
   type Message = RPC<"add", { x: number; y: number }, number>;
   // Since these are sent over separate instances in the real world, we want to
