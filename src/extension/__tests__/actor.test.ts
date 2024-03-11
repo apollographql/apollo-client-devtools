@@ -112,7 +112,7 @@ test("ignores messages that don't originate from devtools", () => {
 });
 
 test.each([MessageType.RPC])(
-  "ignores messages that are %s event messages",
+  "ignores messages that are %s messages",
   (messageType) => {
     type Message = { type: "test" };
     const adapter = createTestAdapter();
