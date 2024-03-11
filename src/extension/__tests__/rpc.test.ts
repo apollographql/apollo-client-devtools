@@ -150,7 +150,7 @@ test("does not mistakenly handle messages from different rpc calls", async () =>
   const promise = client.request("add", { x: 1, y: 2 });
 
   const { id } = clientAdapter.mocks
-    .messages[0] as ApolloClientDevtoolsRPCMessage<Record<string, any>>;
+    .messages[0] as ApolloClientDevtoolsRPCMessage;
 
   clientAdapter.simulateRPCMessage({
     id: id + 1,
