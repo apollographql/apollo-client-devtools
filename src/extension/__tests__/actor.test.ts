@@ -243,6 +243,38 @@ test("does not forward messages that do not original from devtools", () => {
   expect(actorAdapter.postMessage).not.toHaveBeenCalled();
 });
 
+test("leaves forwarded messages untouched", () => {
+  type Message = { type: "connect"; payload: string } | { type: "disconnect" };
+
+  const proxyAdapter = createTestAdapter<Message>();
+  const actorAdapter = createTestAdapter<Message>();
+  const proxy = createActor<Message>(proxyAdapter);
+  const actor = createActor<Message>(actorAdapter);
+
+  proxy.forwardTo(actor);
+
+  proxyAdapter.simulatePlainMessage({
+    source: "apollo-client-devtools",
+    id: 1,
+    message: { result: 3 },
+  });
+
+  expect(actorAdapter.postMessage).toHaveBeenCalledTimes(1);
+  expect(actorAdapter.postMessage).toHaveBeenCalledWith({
+    source: "apollo-client-devtools",
+    id: 1,
+    message: { result: 3 },
+  });
+
+  proxyAdapter.simulateDevtoolsMessage({ type: "disconnect" });
+
+  expect(actorAdapter.postMessage).toHaveBeenCalledTimes(2);
+  expect(actorAdapter.postMessage).toHaveBeenCalledWith({
+    source: "apollo-client-devtools",
+    message: { type: "disconnect" },
+  });
+});
+
 test("can unsubscribe from forwarding by calling the returned function", () => {
   type Message = { type: "connect"; payload: string } | { type: "disconnect" };
 

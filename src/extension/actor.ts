@@ -1,5 +1,5 @@
 import browser from "webextension-polyfill";
-import type { MessageFormat } from "./messages";
+import type { ApolloClientDevtoolsMessage, MessageFormat } from "./messages";
 import { isApolloClientDevtoolsMessage } from "./messages";
 import type { SafeAny } from "../types";
 import {
@@ -17,6 +17,7 @@ export interface Actor<Messages extends MessageFormat> {
   ) => () => void;
   forwardTo: (actor: Actor<SafeAny>) => () => void;
   send: (message: Messages) => void;
+  __forwardMessage: (message: ApolloClientDevtoolsMessage<SafeAny>) => void;
 }
 
 export function createActor<Messages extends MessageFormat>(
@@ -27,7 +28,9 @@ export function createActor<Messages extends MessageFormat>(
     Messages["type"],
     Set<(message: Messages) => void>
   >();
-  const proxies = new Set<(message: Messages) => void>();
+  const proxies = new Set<
+    (message: ApolloClientDevtoolsMessage<SafeAny>) => void
+  >();
 
   function handleMessage(message: unknown) {
     if (!isApolloClientDevtoolsMessage<Messages>(message)) {
@@ -42,7 +45,7 @@ export function createActor<Messages extends MessageFormat>(
       }
     }
 
-    proxies.forEach((forward) => forward(message.message));
+    proxies.forEach((forward) => forward(message));
   }
 
   function startListening() {
@@ -84,11 +87,11 @@ export function createActor<Messages extends MessageFormat>(
       };
     },
     forwardTo: (actor) => {
-      proxies.add(actor.send);
+      proxies.add(actor.__forwardMessage);
       startListening();
 
       return () => {
-        proxies.delete(actor.send);
+        proxies.delete(actor.__forwardMessage);
         stopListening();
       };
     },
@@ -98,6 +101,9 @@ export function createActor<Messages extends MessageFormat>(
         message,
       });
     },
+    // "Private" function used to forward the message untouched. This ensures
+    // rpc messages that make it through untouched
+    __forwardMessage: (message) => adapter.postMessage(message),
   };
 }
 
