@@ -1,9 +1,16 @@
 import { MessageAdapter } from "../messageAdapters";
+import { ApolloClientDevtoolsRPCMessage, MessageType } from "../messages";
 import { RPC, createRpcClient, createRpcHandler } from "../rpc";
 
 interface TestAdapter extends MessageAdapter {
   mocks: { listeners: Set<(message: unknown) => void> };
   simulateMessage: (message: unknown) => void;
+  simulateRPCMessage: (
+    message: Omit<
+      ApolloClientDevtoolsRPCMessage<Record<string, unknown>>,
+      "type" | "source"
+    >
+  ) => void;
   connect: (adapter: TestAdapter) => void;
 }
 
@@ -13,8 +20,17 @@ function createTestAdapter(): TestAdapter {
 
   return {
     mocks: { listeners },
-    simulateMessage: (message: unknown) => {
+    simulateMessage: (message) => {
       listeners.forEach((fn) => fn(message));
+    },
+    simulateRPCMessage: (message) => {
+      listeners.forEach((fn) =>
+        fn({
+          ...message,
+          type: MessageType.RPC,
+          source: "apollo-client-devtools",
+        })
+      );
     },
     addListener: jest.fn((fn) => {
       listeners.add(fn);
@@ -200,7 +216,7 @@ test("ignores messages that don't originate from devtools", () => {
 // RPC messages always provide an `id`, but actor messages do not. In case an
 // actor message type collides with an rpc message type, we want to ignore the
 // actor message type.
-test("ignores messages that don't contain an id", () => {
+test("ignores messages that aren't rpc messages", () => {
   type Message = RPC<"add", { x: number; y: number }, number>;
 
   const adapter = createTestAdapter();
@@ -211,6 +227,7 @@ test("ignores messages that don't contain an id", () => {
 
   adapter.simulateMessage({
     source: "apollo-client-devtools",
+    type: MessageType.Event,
     message: { type: "add", x: 1, y: 2 },
   });
 
@@ -257,9 +274,7 @@ test("can unsubscribe from a handler by calling the returned function", () => {
   const add = jest.fn();
   const unsubscribe = handle("add", add);
 
-  adapter.simulateMessage({
-    source: "apollo-client-devtools",
-    type: MessageType.RPC,
+  adapter.simulateRPCMessage({
     id: 1,
     message: { type: "add", params: { x: 1, y: 2 } },
   });
@@ -269,10 +284,8 @@ test("can unsubscribe from a handler by calling the returned function", () => {
   add.mockClear();
   unsubscribe();
 
-  adapter.simulateMessage({
-    source: "apollo-client-devtools",
-    type: MessageType.RPC,
-    id: 1,
+  adapter.simulateRPCMessage({
+    id: 2,
     message: { type: "add", params: { x: 1, y: 2 } },
   });
 
