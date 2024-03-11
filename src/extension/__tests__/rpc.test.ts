@@ -11,7 +11,7 @@ interface TestAdapter
   extends MessageAdapter<
     ApolloClientDevtoolsRPCMessage<Record<string, unknown>>
   > {
-  mocks: { listeners: Set<(message: unknown) => void> };
+  mocks: { listeners: Set<(message: unknown) => void>; messages: unknown[] };
   simulateMessage: (message: unknown) => void;
   simulateRPCMessage: (
     message: Omit<
@@ -26,9 +26,10 @@ interface TestAdapter
 function createTestAdapter(): TestAdapter {
   let proxy: TestAdapter | undefined;
   const listeners = new Set<(message: unknown) => void>();
+  const messages: unknown[] = [];
 
   return {
-    mocks: { listeners },
+    mocks: { listeners, messages },
     simulateMessage: (message) => {
       listeners.forEach((fn) => fn(message));
     },
@@ -47,6 +48,7 @@ function createTestAdapter(): TestAdapter {
       return () => listeners.delete(fn);
     }),
     postMessage: jest.fn((message) => {
+      messages.push(message);
       proxy?.simulateMessage(message);
     }),
     // Connects two adapters so that a postMessage from one adapter calls
