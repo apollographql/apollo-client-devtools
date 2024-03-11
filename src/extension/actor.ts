@@ -25,7 +25,11 @@ export interface Actor<Messages extends MessageFormat> {
   ) => () => void;
 }
 
-export function createActor<Messages extends MessageFormat>(
+export function createActor<
+  Messages extends MessageFormat = {
+    type: "Error: Pass <Messages> to `createActor<Messages>()`";
+  },
+>(
   adapter: MessageAdapter<ApolloClientDevtoolsEventMessage<Messages>>
 ): Actor<Messages> {
   let removeListener: (() => void) | null = null;
