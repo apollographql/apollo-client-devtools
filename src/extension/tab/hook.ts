@@ -101,6 +101,14 @@ function initializeHook() {
     }
   });
 
+  handleRpc("getClientOperations", () => {
+    return {
+      queries: hook.getQueries(),
+      mutations: hook.getMutations(),
+      cache: hook.getCache(),
+    };
+  });
+
   function sendHookDataToDevTools(eventName: "connectToDevtools") {
     tab.send({
       type: eventName,
@@ -118,14 +126,6 @@ function initializeHook() {
     } else {
       findClient();
     }
-  });
-
-  handleRpc("getClientOperations", () => {
-    return {
-      queries: hook.getQueries(),
-      mutations: hook.getMutations(),
-      cache: hook.getCache(),
-    };
   });
 
   tab.on("explorerRequest", (message) => {
