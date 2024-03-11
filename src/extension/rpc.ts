@@ -31,6 +31,7 @@ export interface RpcClient<Messages extends RPC<string, RPCParams, SafeAny>> {
   ) => Promise<Extract<Messages, { __name: TName }>["__returnType"]>;
 }
 
+let nextMessageId = 0;
 const DEFAULT_TIMEOUT = 30_000;
 
 export function createRpcClient<
@@ -40,8 +41,6 @@ export function createRpcClient<
     ApolloClientDevtoolsRPCMessage<RPCRequestMessageFormat>
   >
 ): RpcClient<Messages> {
-  let messageId = 0;
-
   return {
     request: (name, params, options) => {
       return Promise.race([
@@ -52,7 +51,7 @@ export function createRpcClient<
           );
         }),
         new Promise((resolve, reject) => {
-          const id = ++messageId;
+          const id = ++nextMessageId;
 
           const removeListener = adapter.addListener((message) => {
             if (
@@ -139,14 +138,14 @@ export function createRpcHandler<
         adapter.postMessage({
           source: "apollo-client-devtools",
           type: MessageType.RPC,
-          id,
+          id: ++nextMessageId,
           message: { sourceId: id, result },
         });
       } catch (error) {
         adapter.postMessage({
           source: "apollo-client-devtools",
           type: MessageType.RPC,
-          id,
+          id: ++nextMessageId,
           message: { sourceId: id, error },
         });
       }
