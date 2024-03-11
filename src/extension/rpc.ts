@@ -1,4 +1,4 @@
-import { SafeAny } from "../types";
+import { NoInfer, SafeAny } from "../types";
 import { MessageAdapter } from "./messageAdapters";
 import {
   ApolloClientDevtoolsRPCMessage,
