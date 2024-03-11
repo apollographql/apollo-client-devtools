@@ -13,7 +13,11 @@ function createTestAdapter<Messages = unknown>() {
       listener?.(message);
     },
     simulateDevtoolsMessage: (message: Messages) => {
-      listener?.({ source: "apollo-client-devtools", message });
+      listener?.({
+        source: "apollo-client-devtools",
+        type: MessageType.Event,
+        message,
+      });
     },
     addListener: jest.fn((fn) => {
       listener = fn;
