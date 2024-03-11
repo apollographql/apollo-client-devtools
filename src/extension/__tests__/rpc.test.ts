@@ -96,7 +96,7 @@ test("resolves async handlers", async () => {
   const handle = createRpcHandler<Message>(handlerAdapter);
 
   handle("add", ({ x, y }) => {
-    return new Promise((resolve) => {
+    return new Promise<number>((resolve) => {
       setTimeout(() => {
         resolve(x + y);
       }, 10);
