@@ -48,6 +48,10 @@ function createTestAdapter(): TestAdapter {
     postMessage: jest.fn((message) => {
       proxy?.simulateMessage(message);
     }),
+    // Connects two adapters so that a postMessage from one adapter calls
+    // listeners on the proxy adapter. This isn't forwarding, but rather tries
+    // to simulate the window.postMessage(), window.addEventListener('message')
+    // behavior.
     connect: (adapter: TestAdapter) => {
       proxy = adapter;
     },
