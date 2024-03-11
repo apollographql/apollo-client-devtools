@@ -27,11 +27,16 @@ import { getPrivateAccess } from "../../privateAccess";
 import { JSONObject } from "../../application/types/json";
 import { FetchPolicy } from "../../application/components/Explorer/Explorer";
 import { createWindowActor } from "../actor";
-import { ClientMessage } from "../messages";
+import { ClientMessage, DevtoolsRPCMessage } from "../messages";
+import { createWindowMessageAdapter } from "../messageAdapters";
+import { createRpcHandler } from "../rpc";
 
 const DEVTOOLS_KEY = Symbol.for("apollo.devtools");
 
 const tab = createWindowActor<ClientMessage>(window);
+const handleRpc = createRpcHandler<DevtoolsRPCMessage>(
+  createWindowMessageAdapter(window)
+);
 
 declare global {
   type TCache = any;
@@ -113,6 +118,14 @@ function initializeHook() {
     } else {
       findClient();
     }
+  });
+
+  handleRpc("getClientOperations", () => {
+    return {
+      queries: hook.getQueries(),
+      mutations: hook.getMutations(),
+      cache: hook.getCache(),
+    };
   });
 
   tab.on("requestData", () => sendHookDataToDevTools("update"));

@@ -1,19 +1,23 @@
 import browser from "webextension-polyfill";
 import { devtoolsMachine } from "../../application/machines";
-import { createPortActor } from "../actor";
-import { ClientMessage } from "../messages";
+import { Actor, createActor } from "../actor";
+import { ClientMessage, DevtoolsRPCMessage, PanelMessage } from "../messages";
 import { getPanelActor } from "./panelActor";
+import { createPortMessageAdapter } from "../messageAdapters";
+import { createRpcClient } from "../rpc";
 
 const inspectedTabId = browser.devtools.inspectedWindow.tabId;
 
 let panelHidden = true;
 let connectTimeoutId: NodeJS.Timeout;
 
-const clientPort = createPortActor<ClientMessage>(
-  browser.runtime.connect({
-    name: inspectedTabId.toString(),
-  })
-);
+const port = browser.runtime.connect({
+  name: inspectedTabId.toString(),
+});
+
+const portAdapter = createPortMessageAdapter(port);
+const clientPort = createActor<ClientMessage>(portAdapter);
+const rpcClient = createRpcClient<DevtoolsRPCMessage>(portAdapter);
 
 // In case we can't connect to the tab, we should at least show something to the
 // user when we've attempted to connect a max number of times.
@@ -79,9 +83,17 @@ clientPort.send({ type: "connectToClient" });
 function startRequestInterval(ms = 500) {
   let id: NodeJS.Timeout;
 
+  async function getClientData() {
+    const payload = await rpcClient.request("getClientOperations", {});
+
+    if (panelWindow) {
+      panelWindow.send({ type: "update", payload });
+    }
+  }
+
   if (devtoolsMachine.matches("connected")) {
-    clientPort.send({ type: "requestData" });
-    id = setInterval(() => clientPort.send({ type: "requestData" }), ms);
+    getClientData();
+    id = setInterval(() => getClientData(), ms);
   }
 
   return () => clearInterval(id);
@@ -95,6 +107,7 @@ function unsubscribeFromAll() {
 }
 
 let connectedToPanel = false;
+let panelWindow: Actor<PanelMessage>;
 
 async function createDevtoolsPanel() {
   const panel = await browser.devtools.panels.create(
@@ -109,7 +122,7 @@ async function createDevtoolsPanel() {
   let removeExplorerListener: () => void;
 
   panel.onShown.addListener((window) => {
-    const panelWindow = getPanelActor(window);
+    panelWindow = getPanelActor(window);
 
     if (!connectedToPanel) {
       const state = devtoolsMachine.getState();

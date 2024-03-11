@@ -1,6 +1,7 @@
 import { ExplorerResponse } from "../types";
 import { GetStates, GetContext } from "../application/stateMachine";
 import { DevtoolsMachine } from "../application/machines";
+import { RPCMessage } from "./rpc";
 
 export interface MessageFormat {
   type: string;
@@ -76,6 +77,12 @@ export type PanelMessage =
   | { type: "retryConnection" }
   | { type: "devtoolsStateChanged"; state: GetStates<DevtoolsMachine> }
   | { type: "update"; payload: GetContext<DevtoolsMachine>["clientContext"] };
+
+export type DevtoolsRPCMessage = RPCMessage<
+  "getClientOperations",
+  Record<string, never>,
+  GetContext<DevtoolsMachine>["clientContext"]
+>;
 
 export function isApolloClientDevtoolsMessage<
   Message extends Record<string, unknown>,
