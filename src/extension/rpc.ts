@@ -10,7 +10,7 @@ type RPCParams = Record<string, unknown>;
 
 type RPCRequestMessageFormat = {
   type: string;
-  params: Record<string, unknown>;
+  params: RPCParams;
 };
 
 type RPCResponseMessageFormat =
