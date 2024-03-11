@@ -1,16 +1,20 @@
 import browser from "webextension-polyfill";
 import { ApolloClientDevtoolsMessage } from "./messages";
 
-export interface MessageAdapter {
+export interface MessageAdapter<
+  PostMessageFormat extends ApolloClientDevtoolsMessage<
+    Record<string, unknown>
+  >,
+> {
   addListener: (listener: (message: unknown) => void) => () => void;
-  postMessage: (
-    message: ApolloClientDevtoolsMessage<Record<string, unknown>>
-  ) => void;
+  postMessage: (message: PostMessageFormat) => void;
 }
 
-export function createPortMessageAdapter(
+export function createPortMessageAdapter<
+  PostMessageFormat extends Record<string, unknown> = Record<string, unknown>,
+>(
   port: browser.Runtime.Port
-): MessageAdapter {
+): MessageAdapter<ApolloClientDevtoolsMessage<PostMessageFormat>> {
   return {
     addListener(listener) {
       port.onMessage.addListener(listener);
@@ -28,7 +32,11 @@ export function createPortMessageAdapter(
   };
 }
 
-export function createWindowMessageAdapter(window: Window): MessageAdapter {
+export function createWindowMessageAdapter<
+  PostMessageFormat extends Record<string, unknown> = Record<string, unknown>,
+>(
+  window: Window
+): MessageAdapter<ApolloClientDevtoolsMessage<PostMessageFormat>> {
   return {
     addListener(listener) {
       function handleEvent({ data }: MessageEvent) {

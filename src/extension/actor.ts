@@ -1,5 +1,8 @@
 import browser from "webextension-polyfill";
-import type { MessageFormat } from "./messages";
+import type {
+  ApolloClientDevtoolsEventMessage,
+  MessageFormat,
+} from "./messages";
 import { MessageType, isApolloClientDevtoolsMessage } from "./messages";
 import { NoInfer } from "../types";
 import {
@@ -23,7 +26,7 @@ export interface Actor<Messages extends MessageFormat> {
 }
 
 export function createActor<Messages extends MessageFormat>(
-  adapter: MessageAdapter
+  adapter: MessageAdapter<ApolloClientDevtoolsEventMessage<Messages>>
 ): Actor<Messages> {
   let removeListener: (() => void) | null = null;
   const messageListeners = new Map<

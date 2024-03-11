@@ -2,7 +2,10 @@ import { MessageAdapter } from "../messageAdapters";
 import { ApolloClientDevtoolsRPCMessage, MessageType } from "../messages";
 import { RPC, createRpcClient, createRpcHandler } from "../rpc";
 
-interface TestAdapter extends MessageAdapter {
+interface TestAdapter
+  extends MessageAdapter<
+    ApolloClientDevtoolsRPCMessage<Record<string, unknown>>
+  > {
   mocks: { listeners: Set<(message: unknown) => void> };
   simulateMessage: (message: unknown) => void;
   simulateRPCMessage: (

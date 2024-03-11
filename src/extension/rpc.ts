@@ -8,6 +8,15 @@ import {
 
 type RPCParams = Record<string, unknown>;
 
+type RPCRequestMessageFormat = {
+  type: string;
+  params: Record<string, unknown>;
+};
+
+type RPCResponseMessageFormat =
+  | { sourceId: number; result: unknown }
+  | { sourceId: number; error: unknown };
+
 export type RPC<Name extends string, Params extends RPCParams, ReturnType> = {
   __name: Name;
   __params: Params;
@@ -26,7 +35,11 @@ const DEFAULT_TIMEOUT = 30_000;
 
 export function createRpcClient<
   Messages extends RPC<string, RPCParams, SafeAny>,
->(adapter: MessageAdapter): RpcClient<Messages> {
+>(
+  adapter: MessageAdapter<
+    ApolloClientDevtoolsRPCMessage<RPCRequestMessageFormat>
+  >
+): RpcClient<Messages> {
   let messageId = 0;
 
   return {
@@ -70,7 +83,11 @@ export function createRpcClient<
 
 export function createRpcHandler<
   Messages extends RPC<string, RPCParams, SafeAny>,
->(adapter: MessageAdapter) {
+>(
+  adapter: MessageAdapter<
+    ApolloClientDevtoolsRPCMessage<RPCResponseMessageFormat>
+  >
+) {
   const listeners = new Map<
     string,
     (
@@ -127,14 +144,14 @@ export function createRpcHandler<
           source: "apollo-client-devtools",
           type: MessageType.RPC,
           id,
-          message: { result },
+          message: { sourceId: id, result },
         });
       } catch (error) {
         adapter.postMessage({
           source: "apollo-client-devtools",
           type: MessageType.RPC,
           id,
-          message: { error },
+          message: { sourceId: id, error },
         });
       }
     });
