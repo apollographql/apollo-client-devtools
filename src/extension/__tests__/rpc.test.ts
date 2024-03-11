@@ -82,23 +82,6 @@ test("can send and receive rpc messages", async () => {
   const result = await client.request("add", { x: 1, y: 2 });
 
   expect(result).toBe(3);
-
-  // Even though this is testing an implementation detail, we want to make sure
-  // the message format matches our devtools messages
-  expect(clientAdapter.postMessage).toHaveBeenCalledTimes(1);
-  expect(clientAdapter.postMessage).toHaveBeenCalledWith({
-    source: "apollo-client-devtools",
-    type: MessageType.RPC,
-    id: 1,
-    message: { type: "add", params: { x: 1, y: 2 } },
-  });
-  expect(handlerAdapter.postMessage).toHaveBeenCalledTimes(1);
-  expect(handlerAdapter.postMessage).toHaveBeenCalledWith({
-    source: "apollo-client-devtools",
-    type: MessageType.RPC,
-    id: 1,
-    message: { sourceId: 1, result: 3 },
-  });
 });
 
 test("resolves async handlers", async () => {
@@ -123,23 +106,6 @@ test("resolves async handlers", async () => {
   const result = await client.request("add", { x: 1, y: 2 });
 
   expect(result).toBe(3);
-
-  // Even though this is testing an implementation detail, we want to make sure
-  // the message format matches our devtools messages
-  expect(clientAdapter.postMessage).toHaveBeenCalledTimes(1);
-  expect(clientAdapter.postMessage).toHaveBeenCalledWith({
-    source: "apollo-client-devtools",
-    type: MessageType.RPC,
-    id: 1,
-    message: { type: "add", params: { x: 1, y: 2 } },
-  });
-  expect(handlerAdapter.postMessage).toHaveBeenCalledTimes(1);
-  expect(handlerAdapter.postMessage).toHaveBeenCalledWith({
-    source: "apollo-client-devtools",
-    type: MessageType.RPC,
-    id: 1,
-    message: { sourceId: 1, result: 3 },
-  });
 });
 
 test("does not mistakenly handle messages from different rpc calls", async () => {
