@@ -111,6 +111,26 @@ test("ignores messages that don't originate from devtools", () => {
   expect(handleMessage).not.toHaveBeenCalled();
 });
 
+test.each([MessageType.RPC])(
+  "ignores messages that are %s event messages",
+  (messageType) => {
+    type Message = { type: "test" };
+    const adapter = createTestAdapter();
+    const actor = createActor<Message>(adapter);
+
+    const handleMessage = jest.fn();
+    actor.on("test", handleMessage);
+
+    adapter.simulatePlainMessage({
+      source: "apollo-client-devtools",
+      type: messageType,
+      message: { type: "test" },
+    });
+
+    expect(handleMessage).not.toHaveBeenCalled();
+  }
+);
+
 test("does not add listener to adapter until first subscribed actor listener", () => {
   type Message = { type: "test" };
 
