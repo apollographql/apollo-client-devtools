@@ -116,7 +116,6 @@ async function createDevtoolsPanel() {
     "panel.html"
   );
 
-  let removeUpdateListener: () => void;
   let removeExplorerForward: () => void;
   let removeSubscriptionTerminationListener: () => void;
   let removeExplorerListener: () => void;
@@ -153,15 +152,6 @@ async function createDevtoolsPanel() {
       unsubscribers.add(startRequestInterval());
     }
 
-    removeUpdateListener = clientPort.on("update", (message) => {
-      const { queries, mutations, cache } = message.payload;
-
-      panelWindow.send({
-        type: "update",
-        payload: { queries, mutations, cache },
-      });
-    });
-
     removeExplorerForward = clientPort.forward("explorerResponse", panelWindow);
     removeExplorerListener = panelWindow.forward("explorerRequest", clientPort);
     removeSubscriptionTerminationListener = panelWindow.forward(
@@ -178,7 +168,6 @@ async function createDevtoolsPanel() {
 
     removeExplorerForward();
     removeSubscriptionTerminationListener();
-    removeUpdateListener();
     removeExplorerListener();
   });
 }

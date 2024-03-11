@@ -101,7 +101,7 @@ function initializeHook() {
     }
   });
 
-  function sendHookDataToDevTools(eventName: "update" | "connectToDevtools") {
+  function sendHookDataToDevTools(eventName: "connectToDevtools") {
     tab.send({
       type: eventName,
       payload: {
@@ -128,7 +128,6 @@ function initializeHook() {
     };
   });
 
-  tab.on("requestData", () => sendHookDataToDevTools("update"));
   tab.on("explorerRequest", (message) => {
     const {
       operation: query,

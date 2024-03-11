@@ -61,9 +61,7 @@ export type ClientMessage =
   | { type: "disconnectFromDevtools" }
   | ExplorerRequestMessage
   | ExplorerResponseMessage
-  | ExplorerSubscriptionTerminationMessage
-  | { type: "requestData" }
-  | { type: "update"; payload: GetContext<DevtoolsMachine>["clientContext"] };
+  | ExplorerSubscriptionTerminationMessage;
 
 export type PanelMessage =
   | ExplorerRequestMessage
