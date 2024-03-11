@@ -2,7 +2,7 @@ import { MessageAdapter } from "../messageAdapters";
 import { ApolloClientDevtoolsRPCMessage, MessageType } from "../messages";
 import {
   RPC,
-  forwardRPCMessages,
+  createRPCBridge,
   createRpcClient,
   createRpcHandler,
 } from "../rpc";
@@ -371,18 +371,31 @@ test("times out if no message received within configured timeout", async () => {
 });
 
 test("forwards rpc messages from one adapter to another", () => {
-  const sourceAdapter = createTestAdapter();
-  const targetAdapter = createTestAdapter();
+  const adapter1 = createTestAdapter();
+  const adapter2 = createTestAdapter();
 
-  forwardRPCMessages(sourceAdapter, targetAdapter);
+  createRPCBridge(adapter1, adapter2);
 
-  sourceAdapter.simulateRPCMessage({
+  adapter1.simulateRPCMessage({
     id: 1,
     message: { type: "add", params: { x: 1, y: 2 } },
   });
 
-  expect(targetAdapter.postMessage).toHaveBeenCalledTimes(1);
-  expect(targetAdapter.postMessage).toHaveBeenCalledWith({
+  expect(adapter2.postMessage).toHaveBeenCalledTimes(1);
+  expect(adapter2.postMessage).toHaveBeenCalledWith({
+    source: "apollo-client-devtools",
+    type: MessageType.RPC,
+    id: 1,
+    message: { type: "add", params: { x: 1, y: 2 } },
+  });
+
+  adapter2.simulateRPCMessage({
+    id: 1,
+    message: { type: "add", params: { x: 1, y: 2 } },
+  });
+
+  expect(adapter1.postMessage).toHaveBeenCalledTimes(1);
+  expect(adapter1.postMessage).toHaveBeenCalledWith({
     source: "apollo-client-devtools",
     type: MessageType.RPC,
     id: 1,
@@ -393,17 +406,17 @@ test("forwards rpc messages from one adapter to another", () => {
 test.each([MessageType.Event])(
   "does not forward %s messages",
   (messageType) => {
-    const sourceAdapter = createTestAdapter();
-    const targetAdapter = createTestAdapter();
+    const adapter1 = createTestAdapter();
+    const adapter2 = createTestAdapter();
 
-    forwardRPCMessages(sourceAdapter, targetAdapter);
+    createRPCBridge(adapter1, adapter2);
 
-    sourceAdapter.simulateMessage({
+    adapter1.simulateMessage({
       id: 1,
       type: messageType,
       message: { type: "add", params: { x: 1, y: 2 } },
     });
 
-    expect(targetAdapter.postMessage).not.toHaveBeenCalled();
+    expect(adapter2.postMessage).not.toHaveBeenCalled();
   }
 );

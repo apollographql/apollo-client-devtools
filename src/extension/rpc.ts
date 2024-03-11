@@ -160,17 +160,28 @@ export function createRpcHandler<
   };
 }
 
-export function forwardRPCMessages(
-  sourceAdapter: MessageAdapter<
+export function createRPCBridge(
+  adapter1: MessageAdapter<
     ApolloClientDevtoolsRPCMessage<Record<string, unknown>>
   >,
-  targetAdapter: MessageAdapter<
+  adapter2: MessageAdapter<
     ApolloClientDevtoolsRPCMessage<Record<string, unknown>>
   >
 ) {
-  return sourceAdapter.addListener((message) => {
+  const removeListener1 = adapter1.addListener((message) => {
     if (isRPCMessage(message)) {
-      targetAdapter.postMessage(message);
+      adapter2.postMessage(message);
     }
   });
+
+  const removeListener2 = adapter2.addListener((message) => {
+    if (isRPCMessage(message)) {
+      adapter1.postMessage(message);
+    }
+  });
+
+  return () => {
+    removeListener1();
+    removeListener2();
+  };
 }
