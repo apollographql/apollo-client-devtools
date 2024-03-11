@@ -1,6 +1,11 @@
 import { MessageAdapter } from "../messageAdapters";
 import { ApolloClientDevtoolsRPCMessage, MessageType } from "../messages";
-import { RPC, createRpcClient, createRpcHandler } from "../rpc";
+import {
+  RPC,
+  forwardRPCMessages,
+  createRpcClient,
+  createRpcHandler,
+} from "../rpc";
 
 interface TestAdapter
   extends MessageAdapter<
@@ -364,3 +369,41 @@ test("times out if no message received within configured timeout", async () => {
 
   jest.useRealTimers();
 });
+
+test("forwards rpc messages from one adapter to another", () => {
+  const sourceAdapter = createTestAdapter();
+  const targetAdapter = createTestAdapter();
+
+  forwardRPCMessages(sourceAdapter, targetAdapter);
+
+  sourceAdapter.simulateRPCMessage({
+    id: 1,
+    message: { type: "add", params: { x: 1, y: 2 } },
+  });
+
+  expect(targetAdapter.postMessage).toHaveBeenCalledTimes(1);
+  expect(targetAdapter.postMessage).toHaveBeenCalledWith({
+    source: "apollo-client-devtools",
+    type: MessageType.RPC,
+    id: 1,
+    message: { type: "add", params: { x: 1, y: 2 } },
+  });
+});
+
+test.each([MessageType.Event])(
+  "does not forward %s messages",
+  (messageType) => {
+    const sourceAdapter = createTestAdapter();
+    const targetAdapter = createTestAdapter();
+
+    forwardRPCMessages(sourceAdapter, targetAdapter);
+
+    sourceAdapter.simulateMessage({
+      id: 1,
+      type: messageType,
+      message: { type: "add", params: { x: 1, y: 2 } },
+    });
+
+    expect(targetAdapter.postMessage).not.toHaveBeenCalled();
+  }
+);

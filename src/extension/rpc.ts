@@ -159,3 +159,18 @@ export function createRpcHandler<
     };
   };
 }
+
+export function forwardRPCMessages(
+  sourceAdapter: MessageAdapter<
+    ApolloClientDevtoolsRPCMessage<Record<string, unknown>>
+  >,
+  targetAdapter: MessageAdapter<
+    ApolloClientDevtoolsRPCMessage<Record<string, unknown>>
+  >
+) {
+  return sourceAdapter.addListener((message) => {
+    if (isRPCMessage(message)) {
+      targetAdapter.postMessage(message);
+    }
+  });
+}
