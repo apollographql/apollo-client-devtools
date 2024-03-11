@@ -13,7 +13,7 @@ export const enum MessageType {
 }
 
 export type ApolloClientDevtoolsRPCMessage<
-  Message extends Record<string, unknown>,
+  Message extends Record<string, unknown> = Record<string, unknown>,
 > = {
   source: "apollo-client-devtools";
   type: MessageType.RPC;
@@ -22,7 +22,7 @@ export type ApolloClientDevtoolsRPCMessage<
 };
 
 export type ApolloClientDevtoolsEventMessage<
-  Message extends Record<string, unknown>,
+  Message extends Record<string, unknown> = Record<string, unknown>,
 > = {
   source: "apollo-client-devtools";
   type: MessageType.Event;
@@ -30,7 +30,7 @@ export type ApolloClientDevtoolsEventMessage<
 };
 
 export type ApolloClientDevtoolsMessage<
-  Message extends Record<string, unknown>,
+  Message extends Record<string, unknown> = Record<string, unknown>,
 > =
   | ApolloClientDevtoolsEventMessage<Message>
   | ApolloClientDevtoolsRPCMessage<Message>;
