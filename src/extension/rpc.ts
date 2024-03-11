@@ -1,7 +1,8 @@
 import { SafeAny } from "../types";
 import { MessageAdapter } from "./messageAdapters";
 import {
-  ApolloClientDevtoolsMessage,
+  ApolloClientDevtoolsRPCMessage,
+  MessageType,
   isApolloClientDevtoolsMessage,
 } from "./messages";
 
@@ -41,7 +42,10 @@ export function createRpcClient<
           const id = ++messageId;
 
           const removeListener = adapter.addListener((message) => {
-            if (isApolloClientDevtoolsMessage(message) && message.id === id) {
+            if (
+              isApolloClientDevtoolsMessage(message) &&
+              message.type === MessageType.RPC
+            ) {
               if ("error" in message.message) {
                 reject(message.message.error);
               } else {
@@ -54,6 +58,7 @@ export function createRpcClient<
 
           adapter.postMessage({
             source: "apollo-client-devtools",
+            type: MessageType.RPC,
             id,
             message: { type: name, params },
           });
@@ -69,7 +74,10 @@ export function createRpcHandler<
   const listeners = new Map<
     string,
     (
-      message: ApolloClientDevtoolsMessage<{ type: string; params: RPCParams }>
+      message: ApolloClientDevtoolsRPCMessage<{
+        type: string;
+        params: RPCParams;
+      }>
     ) => void
   >();
   let removeListener: (() => void) | null = null;
@@ -79,7 +87,7 @@ export function createRpcHandler<
       isApolloClientDevtoolsMessage<{ type: string; params: RPCParams }>(
         message
       ) &&
-      message.id != null
+      message.type === MessageType.RPC
     ) {
       listeners.get(message.message.type)?.(message);
     }
@@ -117,12 +125,14 @@ export function createRpcHandler<
 
         adapter.postMessage({
           source: "apollo-client-devtools",
+          type: MessageType.RPC,
           id,
           message: { result },
         });
       } catch (error) {
         adapter.postMessage({
           source: "apollo-client-devtools",
+          type: MessageType.RPC,
           id,
           message: { error },
         });

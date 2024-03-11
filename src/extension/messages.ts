@@ -7,13 +7,33 @@ export interface MessageFormat {
   [key: string]: unknown;
 }
 
-export type ApolloClientDevtoolsMessage<
+export const enum MessageType {
+  RPC = "rpc",
+  Event = "event",
+}
+
+export type ApolloClientDevtoolsRPCMessage<
   Message extends Record<string, unknown>,
 > = {
-  id?: number;
   source: "apollo-client-devtools";
+  type: MessageType.RPC;
+  id: number;
   message: Message;
 };
+
+export type ApolloClientDevtoolsEventMessage<
+  Message extends Record<string, unknown>,
+> = {
+  source: "apollo-client-devtools";
+  type: MessageType.Event;
+  message: Message;
+};
+
+export type ApolloClientDevtoolsMessage<
+  Message extends Record<string, unknown>,
+> =
+  | ApolloClientDevtoolsEventMessage<Message>
+  | ApolloClientDevtoolsRPCMessage<Message>;
 
 type ExplorerRequestMessage = {
   type: "explorerRequest";

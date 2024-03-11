@@ -57,12 +57,14 @@ test("can send and receive rpc messages", async () => {
   expect(clientAdapter.postMessage).toHaveBeenCalledTimes(1);
   expect(clientAdapter.postMessage).toHaveBeenCalledWith({
     source: "apollo-client-devtools",
+    type: MessageType.RPC,
     id: 1,
     message: { type: "add", params: { x: 1, y: 2 } },
   });
   expect(handlerAdapter.postMessage).toHaveBeenCalledTimes(1);
   expect(handlerAdapter.postMessage).toHaveBeenCalledWith({
     source: "apollo-client-devtools",
+    type: MessageType.RPC,
     id: 1,
     message: { result: 3 },
   });
@@ -96,12 +98,14 @@ test("resolves async handlers", async () => {
   expect(clientAdapter.postMessage).toHaveBeenCalledTimes(1);
   expect(clientAdapter.postMessage).toHaveBeenCalledWith({
     source: "apollo-client-devtools",
+    type: MessageType.RPC,
     id: 1,
     message: { type: "add", params: { x: 1, y: 2 } },
   });
   expect(handlerAdapter.postMessage).toHaveBeenCalledTimes(1);
   expect(handlerAdapter.postMessage).toHaveBeenCalledWith({
     source: "apollo-client-devtools",
+    type: MessageType.RPC,
     id: 1,
     message: { result: 3 },
   });
@@ -255,6 +259,7 @@ test("can unsubscribe from a handler by calling the returned function", () => {
 
   adapter.simulateMessage({
     source: "apollo-client-devtools",
+    type: MessageType.RPC,
     id: 1,
     message: { type: "add", params: { x: 1, y: 2 } },
   });
@@ -266,6 +271,7 @@ test("can unsubscribe from a handler by calling the returned function", () => {
 
   adapter.simulateMessage({
     source: "apollo-client-devtools",
+    type: MessageType.RPC,
     id: 1,
     message: { type: "add", params: { x: 1, y: 2 } },
   });

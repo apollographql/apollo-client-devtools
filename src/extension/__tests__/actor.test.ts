@@ -1,4 +1,5 @@
 import { createActor } from "../actor";
+import { MessageType } from "../messages";
 
 function createTestAdapter<Messages = unknown>() {
   let listener: ((message: unknown) => void) | null;
@@ -33,6 +34,7 @@ test("sends messages to specified adapter in devtools message format", () => {
 
   expect(adapter.postMessage).toHaveBeenCalledWith({
     source: "apollo-client-devtools",
+    type: MessageType.Event,
     message: {
       type: "test",
       payload: "Hello",
@@ -212,6 +214,7 @@ test("forwards messages to another actor", () => {
   expect(actorAdapter.postMessage).toHaveBeenCalledTimes(1);
   expect(actorAdapter.postMessage).toHaveBeenCalledWith({
     source: "apollo-client-devtools",
+    type: MessageType.Event,
     message: {
       type: "connect",
       payload: "Hello!",
@@ -223,6 +226,7 @@ test("forwards messages to another actor", () => {
   expect(actorAdapter.postMessage).toHaveBeenCalledTimes(2);
   expect(actorAdapter.postMessage).toHaveBeenCalledWith({
     source: "apollo-client-devtools",
+    type: MessageType.Event,
     message: { type: "disconnect" },
   });
 });

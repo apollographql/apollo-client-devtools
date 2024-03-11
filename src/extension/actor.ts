@@ -1,6 +1,6 @@
 import browser from "webextension-polyfill";
 import type { MessageFormat } from "./messages";
-import { isApolloClientDevtoolsMessage } from "./messages";
+import { MessageType, isApolloClientDevtoolsMessage } from "./messages";
 import { NoInfer } from "../types";
 import {
   MessageAdapter,
@@ -87,6 +87,7 @@ export function createActor<Messages extends MessageFormat>(
     send: (message) => {
       adapter.postMessage({
         source: "apollo-client-devtools",
+        type: MessageType.Event,
         message,
       });
     },
