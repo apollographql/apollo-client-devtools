@@ -106,7 +106,6 @@ async function createDevtoolsPanel() {
   let removeUpdateListener: () => void;
   let removeExplorerForward: () => void;
   let removeSubscriptionTerminationListener: () => void;
-  let removeReloadListener: () => void;
   let removeExplorerListener: () => void;
 
   panel.onShown.addListener((window) => {
@@ -167,7 +166,6 @@ async function createDevtoolsPanel() {
     removeExplorerForward();
     removeSubscriptionTerminationListener();
     removeUpdateListener();
-    removeReloadListener();
     removeExplorerListener();
   });
 }
