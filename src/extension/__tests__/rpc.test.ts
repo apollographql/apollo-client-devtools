@@ -19,6 +19,7 @@ interface TestAdapter
       "type" | "source"
     >
   ) => void;
+  postMessage: jest.Mock<void, [message: unknown]>;
   connect: (adapter: TestAdapter) => void;
 }
 
@@ -425,8 +426,8 @@ test("unsubscribes connection on bridge when calling returned function", () => {
   });
   expect(adapter1.postMessage).toHaveBeenCalled();
 
-  (adapter1.postMessage as jest.Mock).mockClear();
-  (adapter2.postMessage as jest.Mock).mockClear();
+  adapter1.postMessage.mockClear();
+  adapter2.postMessage.mockClear();
   unsubscribe();
 
   adapter1.simulateRPCMessage({
