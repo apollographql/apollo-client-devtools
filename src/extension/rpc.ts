@@ -90,12 +90,7 @@ export function createRpcHandler<
 ) {
   const listeners = new Map<
     string,
-    (
-      message: ApolloClientDevtoolsRPCMessage<{
-        type: string;
-        params: RPCParams;
-      }>
-    ) => void
+    (message: ApolloClientDevtoolsRPCMessage<RPCRequestMessageFormat>) => void
   >();
   let removeListener: (() => void) | null = null;
 
