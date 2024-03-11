@@ -17,13 +17,19 @@ type RPCResponseMessageFormat =
   | { sourceId: number; result: unknown }
   | { sourceId: number; error: unknown };
 
-export type RPC<Name extends string, Params extends RPCParams, ReturnType> = {
+export type RPCMessage<
+  Name extends string,
+  Params extends RPCParams,
+  ReturnType,
+> = {
   __name: Name;
   __params: Params;
   __returnType: ReturnType;
 };
 
-export interface RpcClient<Messages extends RPC<string, RPCParams, SafeAny>> {
+export interface RpcClient<
+  Messages extends RPCMessage<string, RPCParams, SafeAny>,
+> {
   request: <TName extends Messages["__name"]>(
     name: TName,
     params: Extract<Messages, { __name: TName }>["__params"],
@@ -35,7 +41,7 @@ let nextMessageId = 0;
 const DEFAULT_TIMEOUT = 30_000;
 
 export function createRpcClient<
-  Messages extends RPC<string, RPCParams, SafeAny>,
+  Messages extends RPCMessage<string, RPCParams, SafeAny>,
 >(
   adapter: MessageAdapter<
     ApolloClientDevtoolsRPCMessage<RPCRequestMessageFormat>
@@ -82,7 +88,7 @@ export function createRpcClient<
 }
 
 export function createRpcHandler<
-  Messages extends RPC<string, RPCParams, SafeAny>,
+  Messages extends RPCMessage<string, RPCParams, SafeAny>,
 >(
   adapter: MessageAdapter<
     ApolloClientDevtoolsRPCMessage<RPCResponseMessageFormat>

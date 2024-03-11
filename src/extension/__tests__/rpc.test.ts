@@ -1,7 +1,7 @@
 import { MessageAdapter } from "../messageAdapters";
 import { ApolloClientDevtoolsRPCMessage, MessageType } from "../messages";
 import {
-  RPC,
+  RPCMessage,
   createRPCBridge,
   createRpcClient,
   createRpcHandler,
@@ -67,7 +67,7 @@ function createBridge(adapter1: TestAdapter, adapter2: TestAdapter) {
 }
 
 test("can send and receive rpc messages", async () => {
-  type Message = RPC<"add", { x: number; y: number }, number>;
+  type Message = RPCMessage<"add", { x: number; y: number }, number>;
   // Since these are sent over separate instances in the real world, we want to
   // simulate that as best as we can with separate adapters
   const handlerAdapter = createTestAdapter();
@@ -85,7 +85,7 @@ test("can send and receive rpc messages", async () => {
 });
 
 test("resolves async handlers", async () => {
-  type Message = RPC<"add", { x: number; y: number }, number>;
+  type Message = RPCMessage<"add", { x: number; y: number }, number>;
   // Since these are sent over separate instances in the real world, we want to
   // simulate that as best as we can with separate adapters
   const handlerAdapter = createTestAdapter();
@@ -109,7 +109,7 @@ test("resolves async handlers", async () => {
 });
 
 test("does not mistakenly handle messages from different rpc calls", async () => {
-  type Message = RPC<"add", { x: number; y: number }, number>;
+  type Message = RPCMessage<"add", { x: number; y: number }, number>;
   const clientAdapter = createTestAdapter();
   const client = createRpcClient<Message>(clientAdapter);
 
@@ -132,7 +132,7 @@ test("does not mistakenly handle messages from different rpc calls", async () =>
 });
 
 test("rejects when handler throws error", async () => {
-  type Message = RPC<"add", { x: number; y: number }, number>;
+  type Message = RPCMessage<"add", { x: number; y: number }, number>;
   // Since these are sent over separate instances in the real world, we want to
   // simulate that as best as we can with separate adapters
   const handlerAdapter = createTestAdapter();
@@ -152,7 +152,7 @@ test("rejects when handler throws error", async () => {
 });
 
 test("rejects when async handler rejects", async () => {
-  type Message = RPC<"add", { x: number; y: number }, number>;
+  type Message = RPCMessage<"add", { x: number; y: number }, number>;
   // Since these are sent over separate instances in the real world, we want to
   // simulate that as best as we can with separate adapters
   const handlerAdapter = createTestAdapter();
@@ -171,8 +171,8 @@ test("rejects when async handler rejects", async () => {
 
 test("can handle multiple rpc messages", async () => {
   type Message =
-    | RPC<"add", { x: number; y: number }, number>
-    | RPC<"shout", { text: string }, string>;
+    | RPCMessage<"add", { x: number; y: number }, number>
+    | RPCMessage<"shout", { text: string }, string>;
 
   const handlerAdapter = createTestAdapter();
   const clientAdapter = createTestAdapter();
@@ -192,7 +192,7 @@ test("can handle multiple rpc messages", async () => {
 });
 
 test("only allows one handler per type", async () => {
-  type Message = RPC<"add", { x: number; y: number }, number>;
+  type Message = RPCMessage<"add", { x: number; y: number }, number>;
 
   const handle = createRpcHandler<Message>(createTestAdapter());
 
@@ -204,7 +204,7 @@ test("only allows one handler per type", async () => {
 });
 
 test("ignores messages that don't originate from devtools", () => {
-  type Message = RPC<"add", { x: number; y: number }, number>;
+  type Message = RPCMessage<"add", { x: number; y: number }, number>;
 
   const adapter = createTestAdapter();
   const handle = createRpcHandler<Message>(adapter);
@@ -221,7 +221,7 @@ test("ignores messages that don't originate from devtools", () => {
 // actor message type collides with an rpc message type, we want to ignore the
 // actor message type.
 test("ignores messages that aren't rpc messages", () => {
-  type Message = RPC<"add", { x: number; y: number }, number>;
+  type Message = RPCMessage<"add", { x: number; y: number }, number>;
 
   const adapter = createTestAdapter();
   const handle = createRpcHandler<Message>(adapter);
@@ -239,7 +239,7 @@ test("ignores messages that aren't rpc messages", () => {
 });
 
 test("does not add listener to adapter until first subscribed handler", () => {
-  type Message = RPC<"add", { x: number; y: number }, number>;
+  type Message = RPCMessage<"add", { x: number; y: number }, number>;
 
   const adapter = createTestAdapter();
   const handle = createRpcHandler<Message>(adapter);
@@ -253,9 +253,9 @@ test("does not add listener to adapter until first subscribed handler", () => {
 
 test("adds a single listener regardless of active handlers", () => {
   type Message =
-    | RPC<"add", { x: number; y: number }, number>
-    | RPC<"subtract", { x: number; y: number }, number>
-    | RPC<"shout", { text: string }, string>;
+    | RPCMessage<"add", { x: number; y: number }, number>
+    | RPCMessage<"subtract", { x: number; y: number }, number>
+    | RPCMessage<"shout", { text: string }, string>;
 
   const adapter = createTestAdapter();
   const handle = createRpcHandler<Message>(adapter);
@@ -270,7 +270,7 @@ test("adds a single listener regardless of active handlers", () => {
 });
 
 test("can unsubscribe from a handler by calling the returned function", () => {
-  type Message = RPC<"add", { x: number; y: number }, number>;
+  type Message = RPCMessage<"add", { x: number; y: number }, number>;
 
   const adapter = createTestAdapter();
   const handle = createRpcHandler<Message>(adapter);
@@ -298,8 +298,8 @@ test("can unsubscribe from a handler by calling the returned function", () => {
 
 test("removes listener on adapter when unsubscribing from last handler", () => {
   type Message =
-    | RPC<"add", { x: number; y: number }, number>
-    | RPC<"shout", { text: string }, string>;
+    | RPCMessage<"add", { x: number; y: number }, number>
+    | RPCMessage<"shout", { text: string }, string>;
 
   const adapter = createTestAdapter();
   const handle = createRpcHandler<Message>(adapter);
@@ -315,7 +315,7 @@ test("removes listener on adapter when unsubscribing from last handler", () => {
 });
 
 test("re-adds listener on adapter when subscribing after unsubscribing", () => {
-  type Message = RPC<"add", { x: number; y: number }, number>;
+  type Message = RPCMessage<"add", { x: number; y: number }, number>;
 
   const adapter = createTestAdapter();
   const handle = createRpcHandler<Message>(adapter);
@@ -332,7 +332,7 @@ test("re-adds listener on adapter when subscribing after unsubscribing", () => {
 
 test("times out if no message received within default timeout", async () => {
   jest.useFakeTimers();
-  type Message = RPC<"add", { x: number; y: number }, number>;
+  type Message = RPCMessage<"add", { x: number; y: number }, number>;
 
   const adapter = createTestAdapter();
   const client = createRpcClient<Message>(adapter);
@@ -350,7 +350,7 @@ test("times out if no message received within default timeout", async () => {
 
 test("times out if no message received within configured timeout", async () => {
   jest.useFakeTimers();
-  type Message = RPC<"add", { x: number; y: number }, number>;
+  type Message = RPCMessage<"add", { x: number; y: number }, number>;
 
   const adapter = createTestAdapter();
   const client = createRpcClient<Message>(adapter);
