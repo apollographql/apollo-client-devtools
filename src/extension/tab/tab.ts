@@ -2,12 +2,21 @@
 import browser from "webextension-polyfill";
 import { ClientMessage } from "../messages";
 import { createPortActor, createWindowActor } from "../actor";
+import {
+  createPortMessageAdapter,
+  createWindowMessageAdapter,
+} from "../messageAdapters";
+import { createRPCBridge } from "../rpc";
 
 declare const __IS_FIREFOX__: boolean;
 
+const port = browser.runtime.connect({ name: "tab" });
 const tab = createWindowActor<ClientMessage>(window);
-const devtools = createPortActor<ClientMessage>(
-  browser.runtime.connect({ name: "tab" })
+const devtools = createPortActor<ClientMessage>(port);
+
+createRPCBridge(
+  createPortMessageAdapter(port),
+  createWindowMessageAdapter(window)
 );
 
 devtools.forward("connectToClient", tab);
