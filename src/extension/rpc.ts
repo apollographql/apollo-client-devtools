@@ -17,32 +17,20 @@ type RPCResponseMessageFormat =
   | { sourceId: number; result: unknown }
   | { sourceId: number; error: unknown };
 
-export type RPCMessage<
-  Name extends string,
-  Params extends RPCParams,
-  ReturnType,
-> = {
-  __name: Name;
-  __params: Params;
-  __returnType: ReturnType;
-};
+type MessageCollection = Record<string, (...parameters: [SafeAny]) => SafeAny>;
 
-export interface RpcClient<
-  Messages extends RPCMessage<string, RPCParams, SafeAny>,
-> {
-  request: <TName extends Messages["__name"]>(
+export interface RpcClient<Messages extends MessageCollection> {
+  request: <TName extends keyof Messages & string>(
     name: TName,
-    params: Extract<Messages, { __name: TName }>["__params"],
+    params: Parameters<Messages[TName]>[0],
     options?: { timeoutMs?: number }
-  ) => Promise<Extract<Messages, { __name: TName }>["__returnType"]>;
+  ) => Promise<Awaited<ReturnType<Messages[TName]>>>;
 }
 
 let nextMessageId = 0;
 const DEFAULT_TIMEOUT = 30_000;
 
-export function createRpcClient<
-  Messages extends RPCMessage<string, RPCParams, SafeAny>,
->(
+export function createRpcClient<Messages extends MessageCollection>(
   adapter: MessageAdapter<
     ApolloClientDevtoolsRPCMessage<RPCRequestMessageFormat>
   >
@@ -50,13 +38,13 @@ export function createRpcClient<
   return {
     request: (name, params, options) => {
       return Promise.race([
-        new Promise((_, reject) => {
+        new Promise<never>((_, reject) => {
           setTimeout(
             () => reject(new Error("Timeout waiting for message")),
             options?.timeoutMs ?? DEFAULT_TIMEOUT
           );
         }),
-        new Promise((resolve, reject) => {
+        new Promise<SafeAny>((resolve, reject) => {
           const id = ++nextMessageId;
 
           const removeListener = adapter.addListener((message) => {
@@ -87,9 +75,7 @@ export function createRpcClient<
   };
 }
 
-export function createRpcHandler<
-  Messages extends RPCMessage<string, RPCParams, SafeAny>,
->(
+export function createRpcHandler<Messages extends MessageCollection>(
   adapter: MessageAdapter<
     ApolloClientDevtoolsRPCMessage<RPCResponseMessageFormat>
   >
@@ -119,14 +105,13 @@ export function createRpcHandler<
     }
   }
 
-  return function <
-    TName extends Messages["__name"],
-    TReturnType = Extract<Messages, { __name: TName }>["__returnType"],
-  >(
+  return function <TName extends keyof Messages & string>(
     name: TName,
     execute: (
-      params: Extract<Messages, { __name: TName }>["__params"]
-    ) => NoInfer<TReturnType> | Promise<NoInfer<TReturnType>>
+      params: Parameters<Messages[TName]>[0]
+    ) =>
+      | NoInfer<Awaited<ReturnType<Messages[TName]>>>
+      | Promise<NoInfer<Awaited<ReturnType<Messages[TName]>>>>
   ) {
     if (listeners.has(name)) {
       throw new Error("Only one rpc handler can be registered per type");
