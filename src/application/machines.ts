@@ -1,5 +1,4 @@
 import { createMachine } from "./stateMachine";
-import type { QueryInfo } from "../extension/tab/helpers";
 
 export const devtoolsMachine = createMachine({
   initial: "initialized",
@@ -12,11 +11,12 @@ export const devtoolsMachine = createMachine({
       | { type: "retry" },
   },
   initialContext: {
-    clientContext: {
-      queries: [] as QueryInfo[],
-      mutations: [] as QueryInfo[],
-      cache: "{}",
-    },
+    // This value needs to be JSON stringified so that it can be sent through
+    // postMessage without error. Irregular cache data (such as `URL` instances
+    // stored in the cache) are not cloneable via the `structuredClone`
+    // algorithm.
+    // https://github.com/apollographql/apollo-client-devtools/issues/1258
+    clientContext: JSON.stringify({ queries: [], mutations: [], cache: {} }),
   },
   states: {
     initialized: {
