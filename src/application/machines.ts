@@ -15,7 +15,7 @@ export const devtoolsMachine = createMachine({
     clientContext: {
       queries: [] as QueryInfo[],
       mutations: [] as QueryInfo[],
-      cache: "",
+      cache: "{}",
     },
   },
   states: {
