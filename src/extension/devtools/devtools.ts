@@ -141,15 +141,7 @@ async function createDevtoolsPanel() {
       unsubscribers.add(startRequestInterval());
     }
 
-    removeUpdateListener = clientPort.on("update", (message) => {
-      const { queries, mutations, cache } = message.payload;
-
-      panelWindow.send({
-        type: "update",
-        payload: { queries, mutations, cache },
-      });
-    });
-
+    removeUpdateListener = clientPort.forward("update", panelWindow);
     removeExplorerForward = clientPort.forward("explorerResponse", panelWindow);
     removeExplorerListener = panelWindow.forward("explorerRequest", clientPort);
     removeSubscriptionTerminationListener = panelWindow.forward(

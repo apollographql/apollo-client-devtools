@@ -24,6 +24,7 @@ import type {
   WatchedQuery,
 } from "./types/gql";
 import type { QueryInfo } from "../extension/tab/helpers";
+import type { JSONObject } from "./types/json";
 
 const cache = new InMemoryCache({
   fragments: fragmentRegistry,
@@ -152,7 +153,7 @@ export const writeData = ({
 }: {
   queries: QueryInfo[];
   mutations: QueryInfo[];
-  cache: string;
+  cache: JSONObject;
 }) => {
   const filteredQueries = queries.map(getQueryData).filter(Boolean);
 
@@ -179,7 +180,7 @@ export const writeData = ({
       },
     },
   });
-  cacheVar(cache);
+  cacheVar(JSON.stringify(cache));
 };
 
 export const AppProvider = () => {
