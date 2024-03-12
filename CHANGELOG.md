@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.8.2
+
+### Patch Changes
+
+- [#1262](https://github.com/apollographql/apollo-client-devtools/pull/1262) [`122c3ee`](https://github.com/apollographql/apollo-client-devtools/commit/122c3ee883cf85078cee6efc31df63e5554c9147) Thanks [@phryneas](https://github.com/phryneas)! - prevent bundling Apollo Client in the hooks.js build
+
+- [#1259](https://github.com/apollographql/apollo-client-devtools/pull/1259) [`de55e20`](https://github.com/apollographql/apollo-client-devtools/commit/de55e2079d17de4e6bdc67582d0a22e577294dfd) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Fix an issue when sending cache data from the browser to the extension. This was particularly problematic when the cache contained `URL` instances which are not cloneable via the [structured clone algorithm](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm)
+
 ## 4.8.1
 
 ### Patch Changes
