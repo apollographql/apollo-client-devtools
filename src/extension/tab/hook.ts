@@ -94,19 +94,20 @@ function initializeHook() {
   function sendHookDataToDevTools(eventName: "update" | "connectToDevtools") {
     tab.send({
       type: eventName,
-      // We need to JSON stringify the payload here in case the cache contains
-      // references to `URL` instances (or other data) that is not cloneable via
-      // `structuredClone`, which `window.postMessage` uses to send messages.
-      // `JSON.stringify` does however serialize `URL`s into strings properly,
-      // so this should ensure that the cache data will be sent without
-      // errors.
-      //
-      // https://github.com/apollographql/apollo-client-devtools/issues/1258
-      payload: JSON.stringify({
+      payload: {
         queries: hook.getQueries(),
         mutations: hook.getMutations(),
-        cache: hook.getCache(),
-      }),
+
+        // We need to JSON stringify the cache here in case the cache contains
+        // references to `URL` instances which are not cloneable via
+        // `structuredClone` (which `window.postMessage` uses to send messages).
+        // `JSON.stringify` does however serialize `URL`s into strings properly,
+        // so this should ensure that the cache data will be sent without
+        // errors.
+        //
+        // https://github.com/apollographql/apollo-client-devtools/issues/1258
+        cache: JSON.stringify(hook.getCache()),
+      },
     });
   }
 
