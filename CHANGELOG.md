@@ -1,5 +1,15 @@
 # Changelog
 
+## 4.8.3
+
+### Patch Changes
+
+- [#1264](https://github.com/apollographql/apollo-client-devtools/pull/1264) [`66c05ae`](https://github.com/apollographql/apollo-client-devtools/commit/66c05ae4cc7231000769e8269e2987ba48c7a779) Thanks [@phryneas](https://github.com/phryneas)! - Enable "@typescript-eslint/consistent-type-imports" lint rule
+
+- [#1265](https://github.com/apollographql/apollo-client-devtools/pull/1265) [`df5300f`](https://github.com/apollographql/apollo-client-devtools/commit/df5300f245b82e6efc15f616724874fbbb0b8a2d) Thanks [@phryneas](https://github.com/phryneas)! - Use relative-CI to monitor build artefact sizes
+
+- [#1268](https://github.com/apollographql/apollo-client-devtools/pull/1268) [`4c98879`](https://github.com/apollographql/apollo-client-devtools/commit/4c98879162c918c5b90652609991a5a357ee4f63) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Revert change that removed JSON stringify on the entire set of client data. This is a followup to [#1259](https://github.com/apollographql/apollo-client-devtools/pull/1259) which only partially fixed the issue.
+
 ## 4.8.2
 
 ### Patch Changes
