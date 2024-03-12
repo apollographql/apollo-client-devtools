@@ -5,3 +5,4 @@ build
 *.zip
 .DS_Store
 development/server/db.json
+webpack-stats.json
