@@ -1,33 +1,28 @@
-import {
-  ApolloClient,
-  ApolloError,
-  DocumentNode,
-  NetworkStatus,
-} from "@apollo/client";
+import type { ApolloClient, ApolloError, DocumentNode } from "@apollo/client";
 
 // Note that we are intentionally not using Apollo Client's gql and
 // Observable exports, as we don't want Apollo Client and its dependencies
 // to be loaded into each browser tab, when this hook triggered.
 import gql from "graphql-tag";
 import Observable from "zen-observable";
-import { OperationDefinitionNode } from "graphql/language";
+import type { OperationDefinitionNode } from "graphql/language";
 
 // All manifests should contain the same version number so it shouldn't matter
 // which one we import from.
 import { version as devtoolsVersion } from "../chrome/manifest.json";
+import type { QueryInfo } from "./helpers";
 import {
-  QueryInfo,
   getQueries,
   getQueriesLegacy,
   getMutations,
   getMainDefinition,
 } from "./helpers";
-import { QueryResult } from "../../types";
+import type { QueryResult } from "../../types";
 import { getPrivateAccess } from "../../privateAccess";
-import { JSONObject } from "../../application/types/json";
-import { FetchPolicy } from "../../application/components/Explorer/Explorer";
+import type { JSONObject } from "../../application/types/json";
+import type { FetchPolicy } from "../../application/components/Explorer/Explorer";
 import { createWindowActor } from "../actor";
-import { ClientMessage } from "../messages";
+import type { ClientMessage } from "../messages";
 
 const DEVTOOLS_KEY = Symbol.for("apollo.devtools");
 
@@ -206,7 +201,7 @@ function initializeHook() {
               error: error,
               data: null,
               loading: false,
-              networkStatus: NetworkStatus.error,
+              networkStatus: 8, // NetworkStatus.error - we want to prevent importing the enum here
             },
           },
         });
