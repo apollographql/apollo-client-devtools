@@ -107,7 +107,8 @@ function initializeHook() {
         // references to `URL` instances which are not cloneable via
         // `structuredClone` (which `window.postMessage` uses to send messages).
         // `JSON.stringify` does however serialize `URL`s into strings properly,
-        // so this ensures that the cache data will be sent properly.
+        // so this should ensure that the cache data will be sent without
+        // errors.
         //
         // https://github.com/apollographql/apollo-client-devtools/issues/1258
         cache: JSON.stringify(hook.getCache()),
