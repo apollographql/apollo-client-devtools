@@ -1,19 +1,16 @@
 import { useEffect, useState, useRef } from "react";
-import type {
-  TypedDocumentNode} from "@apollo/client";
-import {
-  useReactiveVar,
-  gql,
-  useQuery,
-  makeVar
-} from "@apollo/client";
+import type { TypedDocumentNode } from "@apollo/client";
+import { useReactiveVar, gql, useQuery, makeVar } from "@apollo/client";
 
 import { currentScreen, Screens } from "./components/Layouts/Navigation";
 import { Queries } from "./components/Queries/Queries";
 import { Mutations } from "./components/Mutations/Mutations";
 import { Explorer } from "./components/Explorer/Explorer";
 import { Cache } from "./components/Cache/Cache";
-import type { GetOperationCounts, GetOperationCountsVariables } from "./types/gql";
+import type {
+  GetOperationCounts,
+  GetOperationCountsVariables,
+} from "./types/gql";
 import { Tabs } from "./components/Tabs";
 import { Button } from "./components/Button";
 import IconSettings from "@apollo/icons/default/IconSettings.svg";

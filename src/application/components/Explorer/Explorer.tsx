@@ -6,9 +6,7 @@ import { getIntrospectionQuery } from "graphql/utilities";
 import { colorTheme } from "../../theme";
 import { FullWidthLayout } from "../Layouts/FullWidthLayout";
 import type { QueryResult } from "../../../types";
-import type {
-  JSONValue,
-  IncomingMessageEvent} from "./postMessageHelpers";
+import type { JSONValue, IncomingMessageEvent } from "./postMessageHelpers";
 import {
   postMessageToEmbed,
   EMBEDDABLE_EXPLORER_URL,
@@ -18,7 +16,7 @@ import {
   EXPLORER_SUBSCRIPTION_RESPONSE,
   EXPLORER_SUBSCRIPTION_TERMINATION,
   SCHEMA_ERROR,
-  SCHEMA_RESPONSE
+  SCHEMA_RESPONSE,
 } from "./postMessageHelpers";
 import {
   EXPLORER_LISTENING_FOR_HANDSHAKE,

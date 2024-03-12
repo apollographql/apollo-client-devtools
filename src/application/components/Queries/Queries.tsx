@@ -6,7 +6,10 @@ import { ListItem } from "../ListItem";
 
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { RunInExplorerButton } from "./RunInExplorerButton";
-import type { GetWatchedQueries, GetWatchedQueriesVariables } from "../../types/gql";
+import type {
+  GetWatchedQueries,
+  GetWatchedQueriesVariables,
+} from "../../types/gql";
 import { Tabs } from "../Tabs";
 import { JSONTreeViewer } from "../JSONTreeViewer";
 import { QueryLayout } from "../QueryLayout";

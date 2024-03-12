@@ -1,13 +1,12 @@
 import { useEffect } from "react";
 import { createRoot } from "react-dom/client";
-import type {
-  TypedDocumentNode} from "@apollo/client";
+import type { TypedDocumentNode } from "@apollo/client";
 import {
   ApolloClient,
   ApolloProvider,
   InMemoryCache,
   makeVar,
-  gql
+  gql,
 } from "@apollo/client";
 import { getOperationName } from "@apollo/client/utilities";
 import { print } from "graphql/language/printer";

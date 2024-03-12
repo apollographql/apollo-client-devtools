@@ -1,4 +1,4 @@
-import type { Actor} from "../actor";
+import type { Actor } from "../actor";
 import { createWindowActor } from "../actor";
 import type { PanelMessage } from "../messages";
 

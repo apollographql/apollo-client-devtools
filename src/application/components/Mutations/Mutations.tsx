@@ -1,5 +1,5 @@
 import { Fragment, useState } from "react";
-import type { TypedDocumentNode} from "@apollo/client";
+import type { TypedDocumentNode } from "@apollo/client";
 import { gql, useQuery } from "@apollo/client";
 import { List } from "../List";
 import { ListItem } from "../ListItem";
