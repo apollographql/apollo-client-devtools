@@ -1,6 +1,6 @@
-import { ExplorerResponse } from "../types";
-import { GetStates, GetContext } from "../application/stateMachine";
-import { DevtoolsMachine } from "../application/machines";
+import type { ExplorerResponse } from "../types";
+import type { GetStates, GetContext } from "../application/stateMachine";
+import type { DevtoolsMachine } from "../application/machines";
 
 export interface MessageFormat {
   type: string;

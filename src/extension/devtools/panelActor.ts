@@ -1,5 +1,6 @@
-import { Actor, createWindowActor } from "../actor";
-import { PanelMessage } from "../messages";
+import type { Actor} from "../actor";
+import { createWindowActor } from "../actor";
+import type { PanelMessage } from "../messages";
 
 let panelActor: Actor<PanelMessage> | null = null;
 

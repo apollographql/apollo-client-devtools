@@ -1,4 +1,5 @@
-import { IncomingMessageEvent, postMessageToEmbed } from "./postMessageHelpers";
+import type { IncomingMessageEvent} from "./postMessageHelpers";
+import { postMessageToEmbed } from "./postMessageHelpers";
 
 export const SET_PARTIAL_AUTHENTICATION_TOKEN_FOR_PARENT =
   "SetPartialAuthenticationTokenForParent";

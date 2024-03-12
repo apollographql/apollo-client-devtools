@@ -1,4 +1,4 @@
-import { NoInfer, SafeAny } from "../types";
+import type { NoInfer, SafeAny } from "../types";
 
 interface Machine<
   State extends string,

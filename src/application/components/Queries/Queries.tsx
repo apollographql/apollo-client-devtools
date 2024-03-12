@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { gql, useQuery, TypedDocumentNode } from "@apollo/client";
+import type { TypedDocumentNode } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 import { List } from "../List";
 import { ListItem } from "../ListItem";
 
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { RunInExplorerButton } from "./RunInExplorerButton";
-import { GetWatchedQueries, GetWatchedQueriesVariables } from "../../types/gql";
+import type { GetWatchedQueries, GetWatchedQueriesVariables } from "../../types/gql";
 import { Tabs } from "../Tabs";
 import { JSONTreeViewer } from "../JSONTreeViewer";
 import { QueryLayout } from "../QueryLayout";

@@ -1,5 +1,5 @@
-import { QueryData } from "./scalars";
-import { Variables } from "./scalars";
+import type { QueryData } from "./scalars";
+import type { Variables } from "./scalars";
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {

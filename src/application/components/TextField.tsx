@@ -1,7 +1,7 @@
-import { ComponentPropsWithoutRef } from "react";
+import type { ComponentPropsWithoutRef } from "react";
 import { clsx } from "clsx";
 
-import { ExtendProps } from "../types/props";
+import type { ExtendProps } from "../types/props";
 
 type TextFieldProps = ExtendProps<
   ComponentPropsWithoutRef<"input">,

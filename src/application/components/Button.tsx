@@ -1,4 +1,4 @@
-import { ComponentPropsWithoutRef, ElementType } from "react";
+import type { ComponentPropsWithoutRef, ElementType } from "react";
 import { clsx } from "clsx";
 
 type NativeButtonProps = ComponentPropsWithoutRef<"button">;

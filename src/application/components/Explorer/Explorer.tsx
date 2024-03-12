@@ -5,7 +5,10 @@ import type { IntrospectionQuery } from "graphql";
 import { getIntrospectionQuery } from "graphql/utilities";
 import { colorTheme } from "../../theme";
 import { FullWidthLayout } from "../Layouts/FullWidthLayout";
-import { QueryResult } from "../../../types";
+import type { QueryResult } from "../../../types";
+import type {
+  JSONValue,
+  IncomingMessageEvent} from "./postMessageHelpers";
 import {
   postMessageToEmbed,
   EMBEDDABLE_EXPLORER_URL,
@@ -14,10 +17,8 @@ import {
   EXPLORER_SUBSCRIPTION_REQUEST,
   EXPLORER_SUBSCRIPTION_RESPONSE,
   EXPLORER_SUBSCRIPTION_TERMINATION,
-  JSONValue,
   SCHEMA_ERROR,
-  SCHEMA_RESPONSE,
-  IncomingMessageEvent,
+  SCHEMA_RESPONSE
 } from "./postMessageHelpers";
 import {
   EXPLORER_LISTENING_FOR_HANDSHAKE,

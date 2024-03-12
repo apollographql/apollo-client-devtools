@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { Trigger as TriggerBase } from "@radix-ui/react-tabs";
 
 interface TriggerProps {

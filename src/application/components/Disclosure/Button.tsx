@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { Disclosure } from "@headlessui/react";
 import IconChevronUp from "@apollo/icons/default/IconChevronUp.svg";
 import clsx from "clsx";
