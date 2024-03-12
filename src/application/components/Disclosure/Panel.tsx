@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { Disclosure, Transition } from "@headlessui/react";
 
 interface DisclosurePanelProps {

@@ -2,7 +2,7 @@ import { List } from "../../List";
 import { ListItem } from "../../ListItem";
 
 import { getRootCacheIds } from "../common/utils";
-import { JSONObject } from "../../../types/json";
+import type { JSONObject } from "../../../types/json";
 import HighlightMatch from "../../HighlightMatch";
 
 interface EntityListProps {

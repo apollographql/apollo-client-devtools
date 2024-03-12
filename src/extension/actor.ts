@@ -1,7 +1,7 @@
-import browser from "webextension-polyfill";
+import type browser from "webextension-polyfill";
 import type { MessageFormat } from "./messages";
 import { isApolloClientDevtoolsMessage } from "./messages";
-import { NoInfer } from "../types";
+import type { NoInfer } from "../types";
 
 export interface Actor<Messages extends MessageFormat> {
   on: <TName extends Messages["type"]>(

@@ -1,4 +1,4 @@
-import { ComponentPropsWithoutRef } from "react";
+import type { ComponentPropsWithoutRef } from "react";
 import clsx from "clsx";
 import CopyToClipboard from "react-copy-to-clipboard";
 import { Button } from "./Button";

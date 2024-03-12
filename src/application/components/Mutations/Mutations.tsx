@@ -1,11 +1,12 @@
 import { Fragment, useState } from "react";
-import { gql, TypedDocumentNode, useQuery } from "@apollo/client";
+import type { TypedDocumentNode } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 import { List } from "../List";
 import { ListItem } from "../ListItem";
 
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { RunInExplorerButton } from "../Queries/RunInExplorerButton";
-import { GetMutations, GetMutationsVariables } from "../../types/gql";
+import type { GetMutations, GetMutationsVariables } from "../../types/gql";
 import { JSONTreeViewer } from "../JSONTreeViewer";
 import { Tabs } from "../Tabs";
 import { QueryLayout } from "../QueryLayout";

@@ -1,4 +1,4 @@
-import { Variables } from "../../types/scalars";
+import type { Variables } from "../../types/scalars";
 import {
   postMessageToEmbed,
   SET_OPERATION,

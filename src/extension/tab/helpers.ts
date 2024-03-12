@@ -5,7 +5,7 @@ import type {
   OperationDefinitionNode,
   FragmentDefinitionNode,
 } from "graphql/language";
-import { QueryData, Variables } from "../../application/types/scalars";
+import type { QueryData, Variables } from "../../application/types/scalars";
 import { getPrivateAccess } from "../../privateAccess";
 
 export type QueryInfo = {

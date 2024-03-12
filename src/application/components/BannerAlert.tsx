@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { makeVar, useReactiveVar } from "@apollo/client";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { LoadingSpinner } from "./Explorer/LoadingSpinner";
 import IconCheck from "@apollo/icons/default/IconCheck.svg";
 import IconError from "@apollo/icons/default/IconError.svg";

@@ -1,5 +1,5 @@
 import { createMachine } from "./stateMachine";
-import { QueryInfo } from "../extension/tab/helpers";
+import type { QueryInfo } from "../extension/tab/helpers";
 
 export const devtoolsMachine = createMachine({
   initial: "initialized",

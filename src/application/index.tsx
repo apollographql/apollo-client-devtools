@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import { createRoot } from "react-dom/client";
+import type { TypedDocumentNode } from "@apollo/client";
 import {
   ApolloClient,
   ApolloProvider,
   InMemoryCache,
   makeVar,
   gql,
-  TypedDocumentNode,
 } from "@apollo/client";
 import { getOperationName } from "@apollo/client/utilities";
 import { print } from "graphql/language/printer";
@@ -15,7 +15,7 @@ import { colorTheme, listenForThemeChange } from "./theme";
 import { App } from "./App";
 import { fragmentRegistry } from "./fragmentRegistry";
 
-import {
+import type {
   GetAllMutations,
   GetAllMutationsVariables,
   GetQueries,
@@ -23,7 +23,7 @@ import {
   WatchedMutation,
   WatchedQuery,
 } from "./types/gql";
-import { QueryInfo } from "../extension/tab/helpers";
+import type { QueryInfo } from "../extension/tab/helpers";
 
 const cache = new InMemoryCache({
   fragments: fragmentRegistry,

@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { Tabs as TabsBase } from "../Tabs";
 
 interface TabsProps<TValue extends string> {

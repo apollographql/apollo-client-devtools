@@ -1,4 +1,4 @@
-import { CSSProperties, ComponentPropsWithoutRef } from "react";
+import type { CSSProperties, ComponentPropsWithoutRef } from "react";
 import { useReactiveVar } from "@apollo/client";
 import { JSONTree } from "react-json-tree";
 import { ColorTheme, colorTheme } from "../theme";

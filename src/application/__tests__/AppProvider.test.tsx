@@ -5,7 +5,7 @@ import { gql } from "@apollo/client";
 import matchMediaMock from "../utilities/testing/matchMedia";
 import { Mode, colorTheme } from "../theme";
 import { AppProvider, getQueryData, getMutationData } from "../index";
-import { QueryInfo } from "../../extension/tab/helpers";
+import type { QueryInfo } from "../../extension/tab/helpers";
 import { print, getIntrospectionQuery } from "graphql";
 
 const matchMedia = matchMediaMock();

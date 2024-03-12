@@ -1,12 +1,14 @@
-import { Fragment, useState, useMemo, ReactNode } from "react";
-import { gql, useQuery, TypedDocumentNode } from "@apollo/client";
+import type { ReactNode } from "react";
+import { Fragment, useState, useMemo } from "react";
+import type { TypedDocumentNode } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { SearchField } from "../SearchField";
 import { EntityList } from "./sidebar/EntityList";
 import { Loading } from "./common/Loading";
-import { GetCache, GetCacheVariables } from "../../types/gql";
-import { JSONObject } from "../../types/json";
+import type { GetCache, GetCacheVariables } from "../../types/gql";
+import type { JSONObject } from "../../types/json";
 import { JSONTreeViewer } from "../JSONTreeViewer";
 import clsx from "clsx";
 import { CopyButton } from "../CopyButton";
