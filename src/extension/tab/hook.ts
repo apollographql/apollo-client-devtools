@@ -102,7 +102,7 @@ function initializeHook() {
       payload: {
         queries: hook.getQueries(),
         mutations: hook.getMutations(),
-        cache: hook.getCache(),
+        cache: JSON.stringify(hook.getCache()),
       },
     });
   }
