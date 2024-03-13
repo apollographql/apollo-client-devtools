@@ -11,8 +11,8 @@ type RPCRequestMessageFormat = {
 };
 
 type RPCResponseMessageFormat =
-  | { sourceId: number; result: unknown }
-  | { sourceId: number; error: unknown };
+  | { sourceId: string; result: unknown }
+  | { sourceId: string; error: unknown };
 
 type MessageCollection = Record<string, (...parameters: [SafeAny]) => SafeAny>;
 
@@ -24,7 +24,6 @@ export interface RpcClient<Messages extends MessageCollection> {
   ) => Promise<Awaited<ReturnType<Messages[TName]>>>;
 }
 
-let nextMessageId = 0;
 const DEFAULT_TIMEOUT = 30_000;
 
 export function createRpcClient<Messages extends MessageCollection>(
@@ -42,7 +41,7 @@ export function createRpcClient<Messages extends MessageCollection>(
           );
         }),
         new Promise<SafeAny>((resolve, reject) => {
-          const id = ++nextMessageId;
+          const id = createId();
 
           const removeListener = adapter.addListener((message) => {
             if (
@@ -121,14 +120,14 @@ export function createRpcHandler<Messages extends MessageCollection>(
         adapter.postMessage({
           source: "apollo-client-devtools",
           type: MessageType.RPC,
-          id: ++nextMessageId,
+          id: createId(),
           payload: { sourceId: id, result },
         });
       } catch (error) {
         adapter.postMessage({
           source: "apollo-client-devtools",
           type: MessageType.RPC,
-          id: ++nextMessageId,
+          id: createId(),
           payload: { sourceId: id, error },
         });
       }
@@ -170,4 +169,15 @@ export function createRPCBridge(
     removeListener1();
     removeListener2();
   };
+}
+
+function createId() {
+  const chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const values = new Uint8Array(10);
+  crypto.getRandomValues(values);
+
+  return Array.from(values)
+    .map((number) => chars[number % chars.length])
+    .join("");
 }

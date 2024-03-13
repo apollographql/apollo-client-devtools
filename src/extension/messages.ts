@@ -17,7 +17,7 @@ export type ApolloClientDevtoolsRPCMessage<
 > = {
   source: "apollo-client-devtools";
   type: MessageType.RPC;
-  id: number;
+  id: string;
   payload: Message;
 };
 
