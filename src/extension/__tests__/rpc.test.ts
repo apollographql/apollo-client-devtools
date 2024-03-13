@@ -1,5 +1,6 @@
-import { MessageAdapter } from "../messageAdapters";
-import { ApolloClientDevtoolsRPCMessage, MessageType } from "../messages";
+import type { MessageAdapter } from "../messageAdapters";
+import type { ApolloClientDevtoolsRPCMessage } from "../messages";
+import { MessageType } from "../messages";
 import { createRPCBridge, createRpcClient, createRpcHandler } from "../rpc";
 
 interface TestAdapter

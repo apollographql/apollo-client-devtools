@@ -1,10 +1,7 @@
-import { NoInfer, SafeAny } from "../types";
-import { MessageAdapter } from "./messageAdapters";
-import {
-  ApolloClientDevtoolsRPCMessage,
-  MessageType,
-  isRPCMessage,
-} from "./messages";
+import type { NoInfer, SafeAny } from "../types";
+import type { MessageAdapter } from "./messageAdapters";
+import type { ApolloClientDevtoolsRPCMessage } from "./messages";
+import { MessageType, isRPCMessage } from "./messages";
 
 type RPCParams = Record<string, unknown>;
 

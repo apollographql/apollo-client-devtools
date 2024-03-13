@@ -1,5 +1,5 @@
-import browser from "webextension-polyfill";
-import { ApolloClientDevtoolsMessage } from "./messages";
+import type browser from "webextension-polyfill";
+import type { ApolloClientDevtoolsMessage } from "./messages";
 
 export interface MessageAdapter<
   PostMessageFormat extends ApolloClientDevtoolsMessage<
