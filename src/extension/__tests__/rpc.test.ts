@@ -420,6 +420,40 @@ test("times out if no message received within configured timeout", async () => {
   jest.useRealTimers();
 });
 
+test("resets timeout to default timeout after sending request", async () => {
+  jest.useFakeTimers();
+  type Message = {
+    add({ x, y }: { x: number; y: number }): number;
+  };
+
+  const adapter = createTestAdapter();
+  const client = createRpcClient<Message>(adapter);
+
+  const promise = client.withTimeout(1000).request("add", { x: 1, y: 2 });
+
+  jest.advanceTimersByTime(1000);
+
+  await expect(promise).rejects.toEqual(
+    new Error("Timeout waiting for message")
+  );
+
+  const promise2 = client.request("add", { x: 1, y: 2 });
+
+  jest.advanceTimersByTime(1000);
+
+  await expect(
+    Promise.race([promise2, Promise.resolve("first")])
+  ).resolves.toEqual("first");
+
+  jest.advanceTimersByTime(29_000);
+
+  await expect(promise2).rejects.toEqual(
+    new Error("Timeout waiting for message")
+  );
+
+  jest.useRealTimers();
+});
+
 test("forwards rpc messages from one adapter to another with bridge", () => {
   const adapter1 = createTestAdapter();
   const adapter2 = createTestAdapter();
