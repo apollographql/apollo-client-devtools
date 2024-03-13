@@ -38,16 +38,18 @@ export function createRpcClient<Messages extends MessageCollection>(
         }, options?.timeoutMs ?? DEFAULT_TIMEOUT);
 
         const removeListener = adapter.addListener((message) => {
-          if (isRPCResponseMessage(message) && message.sourceId === id) {
-            if ("error" in message) {
-              reject(message.error);
-            } else {
-              resolve(message.result);
-            }
-
-            clearTimeout(timeout);
-            removeListener();
+          if (!isRPCResponseMessage(message) || message.sourceId !== id) {
+            return;
           }
+
+          if ("error" in message) {
+            reject(message.error);
+          } else {
+            resolve(message.result);
+          }
+
+          clearTimeout(timeout);
+          removeListener();
         });
 
         adapter.postMessage({
