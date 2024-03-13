@@ -92,7 +92,7 @@ function startRequestInterval(ms = 500) {
     if (panelWindow) {
       panelWindow.send({
         type: "update",
-        payload: await rpcClient.request("getClientOperations", undefined),
+        payload: await rpcClient.request("getClientOperations"),
       });
     }
   }
