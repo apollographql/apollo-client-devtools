@@ -22,11 +22,16 @@ import { getPrivateAccess } from "../../privateAccess";
 import type { JSONObject } from "../../application/types/json";
 import type { FetchPolicy } from "../../application/components/Explorer/Explorer";
 import { createWindowActor } from "../actor";
-import type { ClientMessage } from "../messages";
+import type { ClientMessage, DevtoolsRPCMessage } from "../messages";
+import { createWindowMessageAdapter } from "../messageAdapters";
+import { createRpcHandler } from "../rpc";
 
 const DEVTOOLS_KEY = Symbol.for("apollo.devtools");
 
 const tab = createWindowActor<ClientMessage>(window);
+const handleRpc = createRpcHandler<DevtoolsRPCMessage>(
+  createWindowMessageAdapter(window)
+);
 
 declare global {
   type TCache = any;
@@ -91,24 +96,30 @@ function initializeHook() {
     }
   });
 
-  function sendHookDataToDevTools(eventName: "update" | "connectToDevtools") {
+  function getClientData() {
+    // We need to JSON stringify the data here in case the cache contains
+    // references to irregular data such as `URL` instances which are not
+    // cloneable via `structuredClone` (which `window.postMessage` uses to
+    // send messages). `JSON.stringify` does however serialize `URL`s into
+    // strings properly, so this should ensure that the cache data will be
+    // sent without errors.
+    //
+    // https://github.com/apollographql/apollo-client-devtools/issues/1258
+    return JSON.parse(
+      JSON.stringify({
+        queries: hook.getQueries(),
+        mutations: hook.getMutations(),
+        cache: hook.getCache(),
+      })
+    ) as { queries: QueryInfo[]; mutations: QueryInfo[]; cache: JSONObject };
+  }
+
+  handleRpc("getClientOperations", getClientData);
+
+  function sendHookDataToDevTools(eventName: "connectToDevtools") {
     tab.send({
       type: eventName,
-      // We need to JSON stringify the data here in case the cache contains
-      // references to irregular data such as `URL` instances which are not
-      // cloneable via `structuredClone` (which `window.postMessage` uses to
-      // send messages). `JSON.stringify` does however serialize `URL`s into
-      // strings properly, so this should ensure that the cache data will be
-      // sent without errors.
-      //
-      // https://github.com/apollographql/apollo-client-devtools/issues/1258
-      payload: JSON.parse(
-        JSON.stringify({
-          queries: hook.getQueries(),
-          mutations: hook.getMutations(),
-          cache: hook.getCache(),
-        })
-      ) as { queries: QueryInfo[]; mutations: QueryInfo[]; cache: JSONObject },
+      payload: getClientData(),
     });
   }
 
@@ -120,7 +131,6 @@ function initializeHook() {
     }
   });
 
-  tab.on("requestData", () => sendHookDataToDevTools("update"));
   tab.on("explorerRequest", (message) => {
     const {
       operation: query,

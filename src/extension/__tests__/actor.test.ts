@@ -1,4 +1,5 @@
 import { createActor } from "../actor";
+import { MessageType } from "../messages";
 
 function createTestAdapter<Messages = unknown>() {
   let listener: ((message: unknown) => void) | null;
@@ -12,7 +13,11 @@ function createTestAdapter<Messages = unknown>() {
       listener?.(message);
     },
     simulateDevtoolsMessage: (message: Messages) => {
-      listener?.({ source: "apollo-client-devtools", message });
+      listener?.({
+        source: "apollo-client-devtools",
+        type: MessageType.Event,
+        message,
+      });
     },
     addListener: jest.fn((fn) => {
       listener = fn;
@@ -33,6 +38,7 @@ test("sends messages to specified adapter in devtools message format", () => {
 
   expect(adapter.postMessage).toHaveBeenCalledWith({
     source: "apollo-client-devtools",
+    type: MessageType.Event,
     message: {
       type: "test",
       payload: "Hello",
@@ -104,6 +110,26 @@ test("ignores messages that don't originate from devtools", () => {
 
   expect(handleMessage).not.toHaveBeenCalled();
 });
+
+test.each([MessageType.RPCRequest, MessageType.RPCResponse])(
+  "ignores messages that are %s messages",
+  (messageType) => {
+    type Message = { type: "test" };
+    const adapter = createTestAdapter();
+    const actor = createActor<Message>(adapter);
+
+    const handleMessage = jest.fn();
+    actor.on("test", handleMessage);
+
+    adapter.simulatePlainMessage({
+      source: "apollo-client-devtools",
+      type: messageType,
+      message: { type: "test" },
+    });
+
+    expect(handleMessage).not.toHaveBeenCalled();
+  }
+);
 
 test("does not add listener to adapter until first subscribed actor listener", () => {
   type Message = { type: "test" };
@@ -212,6 +238,7 @@ test("forwards messages to another actor", () => {
   expect(actorAdapter.postMessage).toHaveBeenCalledTimes(1);
   expect(actorAdapter.postMessage).toHaveBeenCalledWith({
     source: "apollo-client-devtools",
+    type: MessageType.Event,
     message: {
       type: "connect",
       payload: "Hello!",
@@ -223,6 +250,7 @@ test("forwards messages to another actor", () => {
   expect(actorAdapter.postMessage).toHaveBeenCalledTimes(2);
   expect(actorAdapter.postMessage).toHaveBeenCalledWith({
     source: "apollo-client-devtools",
+    type: MessageType.Event,
     message: { type: "disconnect" },
   });
 });

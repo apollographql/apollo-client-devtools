@@ -1,18 +1,28 @@
 import browser from "webextension-polyfill";
 import { devtoolsMachine } from "../../application/machines";
+import type { Actor } from "../actor";
 import { createPortActor } from "../actor";
-import type { ClientMessage } from "../messages";
+import type {
+  ClientMessage,
+  DevtoolsRPCMessage,
+  PanelMessage,
+} from "../messages";
 import { getPanelActor } from "./panelActor";
+import { createPortMessageAdapter } from "../messageAdapters";
+import { createRpcClient } from "../rpc";
 
 const inspectedTabId = browser.devtools.inspectedWindow.tabId;
 
 let panelHidden = true;
 let connectTimeoutId: NodeJS.Timeout;
 
-const clientPort = createPortActor<ClientMessage>(
-  browser.runtime.connect({
-    name: inspectedTabId.toString(),
-  })
+const port = browser.runtime.connect({
+  name: inspectedTabId.toString(),
+});
+
+const clientPort = createPortActor<ClientMessage>(port);
+const rpcClient = createRpcClient<DevtoolsRPCMessage>(
+  createPortMessageAdapter(port)
 );
 
 // In case we can't connect to the tab, we should at least show something to the
@@ -79,9 +89,18 @@ clientPort.send({ type: "connectToClient" });
 function startRequestInterval(ms = 500) {
   let id: NodeJS.Timeout;
 
+  async function getClientData() {
+    if (panelWindow) {
+      panelWindow.send({
+        type: "update",
+        payload: await rpcClient.request("getClientOperations"),
+      });
+    }
+  }
+
   if (devtoolsMachine.matches("connected")) {
-    clientPort.send({ type: "requestData" });
-    id = setInterval(() => clientPort.send({ type: "requestData" }), ms);
+    getClientData();
+    id = setInterval(() => getClientData(), ms);
   }
 
   return () => clearInterval(id);
@@ -95,6 +114,7 @@ function unsubscribeFromAll() {
 }
 
 let connectedToPanel = false;
+let panelWindow: Actor<PanelMessage>;
 
 async function createDevtoolsPanel() {
   const panel = await browser.devtools.panels.create(
@@ -103,14 +123,12 @@ async function createDevtoolsPanel() {
     "panel.html"
   );
 
-  let removeUpdateListener: () => void;
   let removeExplorerForward: () => void;
   let removeSubscriptionTerminationListener: () => void;
-  let removeReloadListener: () => void;
   let removeExplorerListener: () => void;
 
   panel.onShown.addListener((window) => {
-    const panelWindow = getPanelActor(window);
+    panelWindow = getPanelActor(window);
 
     if (!connectedToPanel) {
       const state = devtoolsMachine.getState();
@@ -141,7 +159,6 @@ async function createDevtoolsPanel() {
       unsubscribers.add(startRequestInterval());
     }
 
-    removeUpdateListener = clientPort.forward("update", panelWindow);
     removeExplorerForward = clientPort.forward("explorerResponse", panelWindow);
     removeExplorerListener = panelWindow.forward("explorerRequest", clientPort);
     removeSubscriptionTerminationListener = panelWindow.forward(
@@ -158,8 +175,6 @@ async function createDevtoolsPanel() {
 
     removeExplorerForward();
     removeSubscriptionTerminationListener();
-    removeUpdateListener();
-    removeReloadListener();
     removeExplorerListener();
   });
 }

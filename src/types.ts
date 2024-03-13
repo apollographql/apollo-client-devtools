@@ -14,3 +14,7 @@ export type NoInfer<T> = [T][T extends any ? 0 : never];
 // the need to disable eslint rules.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type SafeAny = any;
+
+export type DistributiveOmit<T, K extends keyof T> = T extends unknown
+  ? Omit<T, K>
+  : never;

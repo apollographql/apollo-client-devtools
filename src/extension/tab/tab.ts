@@ -2,23 +2,30 @@
 import browser from "webextension-polyfill";
 import type { ClientMessage } from "../messages";
 import { createPortActor, createWindowActor } from "../actor";
+import {
+  createPortMessageAdapter,
+  createWindowMessageAdapter,
+} from "../messageAdapters";
+import { createRPCBridge } from "../rpc";
 
 declare const __IS_FIREFOX__: boolean;
 
+const port = browser.runtime.connect({ name: "tab" });
 const tab = createWindowActor<ClientMessage>(window);
-const devtools = createPortActor<ClientMessage>(
-  browser.runtime.connect({ name: "tab" })
+const devtools = createPortActor<ClientMessage>(port);
+
+createRPCBridge(
+  createPortMessageAdapter(port),
+  createWindowMessageAdapter(window)
 );
 
 devtools.forward("connectToClient", tab);
-devtools.forward("requestData", tab);
 devtools.forward("explorerSubscriptionTermination", tab);
 devtools.forward("explorerRequest", tab);
 
 tab.forward("clientNotFound", devtools);
 tab.forward("connectToDevtools", devtools);
 tab.forward("disconnectFromDevtools", devtools);
-tab.forward("update", devtools);
 tab.forward("explorerResponse", devtools);
 
 // We run the hook.js script on the page as a content script in Manifest v3

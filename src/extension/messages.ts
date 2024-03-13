@@ -1,15 +1,65 @@
-import type { ExplorerResponse } from "../types";
+import type { ExplorerResponse, SafeAny } from "../types";
 import type { GetStates, GetContext } from "../application/stateMachine";
 import type { DevtoolsMachine } from "../application/machines";
 
 export interface MessageFormat {
   type: string;
+  [key: string]: unknown;
 }
 
-export type ApolloClientDevtoolsMessage<Message extends MessageFormat> = {
+export const enum MessageType {
+  RPCRequest = "rpcRequest",
+  RPCResponse = "rpcResponse",
+  Event = "event",
+}
+
+export type RPCRequestMessage<Params extends SafeAny[] = unknown[]> = {
   source: "apollo-client-devtools";
+  type: MessageType.RPCRequest;
+  id: string;
+  name: string;
+  params: Params;
+};
+
+export type RPCErrorResponseMessage = {
+  source: "apollo-client-devtools";
+  type: MessageType.RPCResponse;
+  id: string;
+  sourceId: string;
+  error: unknown;
+};
+
+export type RPCSuccessResponseMessage<Result = unknown> = {
+  source: "apollo-client-devtools";
+  type: MessageType.RPCResponse;
+  id: string;
+  sourceId: string;
+  result: Result;
+};
+
+export type RPCResponseMessage<Result = unknown> =
+  | RPCSuccessResponseMessage<Result>
+  | RPCErrorResponseMessage;
+
+export type RPCMessage<
+  Params extends SafeAny[] = unknown[],
+  Result = unknown,
+> = RPCRequestMessage<Params> | RPCResponseMessage<Result>;
+
+export type ApolloClientDevtoolsEventMessage<
+  Message extends Record<string, unknown> = Record<string, unknown>,
+> = {
+  source: "apollo-client-devtools";
+  type: MessageType.Event;
   message: Message;
 };
+
+export type ApolloClientDevtoolsMessage<
+  Message extends Record<string, unknown> = Record<string, unknown>,
+> =
+  | ApolloClientDevtoolsEventMessage<Message>
+  | RPCRequestMessage
+  | RPCResponseMessage;
 
 type ExplorerRequestMessage = {
   type: "explorerRequest";
@@ -36,9 +86,7 @@ export type ClientMessage =
   | { type: "disconnectFromDevtools" }
   | ExplorerRequestMessage
   | ExplorerResponseMessage
-  | ExplorerSubscriptionTerminationMessage
-  | { type: "requestData" }
-  | { type: "update"; payload: GetContext<DevtoolsMachine>["clientContext"] };
+  | ExplorerSubscriptionTerminationMessage;
 
 export type PanelMessage =
   | ExplorerRequestMessage
@@ -53,7 +101,11 @@ export type PanelMessage =
   | { type: "devtoolsStateChanged"; state: GetStates<DevtoolsMachine> }
   | { type: "update"; payload: GetContext<DevtoolsMachine>["clientContext"] };
 
-export function isApolloClientDevtoolsMessage<Message extends MessageFormat>(
+export type DevtoolsRPCMessage = {
+  getClientOperations(): GetContext<DevtoolsMachine>["clientContext"];
+};
+
+function isDevtoolsMessage<Message extends Record<string, unknown>>(
   message: unknown
 ): message is ApolloClientDevtoolsMessage<Message> {
   return (
@@ -62,4 +114,26 @@ export function isApolloClientDevtoolsMessage<Message extends MessageFormat>(
     "source" in message &&
     message.source === "apollo-client-devtools"
   );
+}
+
+export function isRPCRequestMessage(
+  message: unknown
+): message is RPCRequestMessage {
+  return isDevtoolsMessage(message) && message.type === MessageType.RPCRequest;
+}
+
+export function isRPCResponseMessage(
+  message: unknown
+): message is RPCResponseMessage {
+  return isDevtoolsMessage(message) && message.type === MessageType.RPCResponse;
+}
+
+export function isRPCMessage(message: unknown): message is RPCMessage {
+  return isRPCRequestMessage(message) || isRPCResponseMessage(message);
+}
+
+export function isEventMessage<Message extends Record<string, unknown>>(
+  message: unknown
+): message is ApolloClientDevtoolsEventMessage<Message> {
+  return isDevtoolsMessage(message) && message.type === MessageType.Event;
 }

@@ -1,7 +1,15 @@
 import type browser from "webextension-polyfill";
-import type { MessageFormat } from "./messages";
-import { isApolloClientDevtoolsMessage } from "./messages";
+import type {
+  ApolloClientDevtoolsEventMessage,
+  MessageFormat,
+} from "./messages";
+import { MessageType, isEventMessage } from "./messages";
 import type { NoInfer } from "../types";
+import type { MessageAdapter } from "./messageAdapters";
+import {
+  createPortMessageAdapter,
+  createWindowMessageAdapter,
+} from "./messageAdapters";
 
 export interface Actor<Messages extends MessageFormat> {
   on: <TName extends Messages["type"]>(
@@ -17,50 +25,12 @@ export interface Actor<Messages extends MessageFormat> {
   ) => () => void;
 }
 
-export interface MessageAdapter {
-  addListener: (listener: (message: unknown) => void) => () => void;
-  postMessage: (message: unknown) => void;
-}
-
-function createWindowMessageAdapter(window: Window): MessageAdapter {
-  return {
-    addListener(listener) {
-      function handleEvent({ data }: MessageEvent) {
-        listener(data);
-      }
-
-      window.addEventListener("message", handleEvent);
-
-      return () => {
-        window.removeEventListener("message", handleEvent);
-      };
-    },
-    postMessage(message) {
-      window.postMessage(message, "*");
-    },
-  };
-}
-
-function createPortMessageAdapter(port: browser.Runtime.Port): MessageAdapter {
-  return {
-    addListener(listener) {
-      port.onMessage.addListener(listener);
-      port.onDisconnect.addListener(() => {
-        port.onMessage.removeListener(listener);
-      });
-
-      return () => {
-        port.onMessage.removeListener(listener);
-      };
-    },
-    postMessage(message) {
-      return port.postMessage(message);
-    },
-  };
-}
-
-export function createActor<Messages extends MessageFormat>(
-  adapter: MessageAdapter
+export function createActor<
+  Messages extends MessageFormat = {
+    type: "Error: Pass <Messages> to `createActor<Messages>()`";
+  },
+>(
+  adapter: MessageAdapter<ApolloClientDevtoolsEventMessage<Messages>>
 ): Actor<Messages> {
   let removeListener: (() => void) | null = null;
   const messageListeners = new Map<
@@ -69,7 +39,7 @@ export function createActor<Messages extends MessageFormat>(
   >();
 
   function handleMessage(message: unknown) {
-    if (!isApolloClientDevtoolsMessage<Messages>(message)) {
+    if (!isEventMessage<Messages>(message)) {
       return;
     }
 
@@ -124,6 +94,7 @@ export function createActor<Messages extends MessageFormat>(
     send: (message) => {
       adapter.postMessage({
         source: "apollo-client-devtools",
+        type: MessageType.Event,
         message,
       });
     },
