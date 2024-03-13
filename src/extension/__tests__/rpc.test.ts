@@ -210,6 +210,33 @@ test("only allows one handler per type", async () => {
   }).toThrow(new Error("Only one rpc handler can be registered per type"));
 });
 
+test("can handle any parameter format", async () => {
+  type Message = {
+    add({ x, y }: { x: number; y: number }): number;
+    shout(text: string): Promise<string>;
+    pushNextNumber(numbers: number[]): Promise<number[]>;
+  };
+
+  const handlerAdapter = createTestAdapter();
+  const clientAdapter = createTestAdapter();
+  createBridge(clientAdapter, handlerAdapter);
+
+  const client = createRpcClient<Message>(clientAdapter);
+  const handle = createRpcHandler<Message>(handlerAdapter);
+
+  handle("add", ({ x, y }) => x + y);
+  handle("shout", (text) => text.toUpperCase());
+  handle("pushNextNumber", (numbers) => [...numbers, 3]);
+
+  const result = await client.request("add", { x: 1, y: 2 });
+  const uppercase = await client.request("shout", "hello");
+  const numbers = await client.request("pushNextNumber", [1, 2]);
+
+  expect(result).toBe(3);
+  expect(uppercase).toBe("HELLO");
+  expect(numbers).toEqual([1, 2, 3]);
+});
+
 test("ignores messages that don't originate from devtools", () => {
   type Message = {
     add({ x, y }: { x: number; y: number }): number;
