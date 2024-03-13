@@ -466,8 +466,8 @@ test("resets timeout to default timeout after sending request", async () => {
 
   // wait for a tick, just to be sure the `finally` block has time to run
   await Promise.resolve();
-  expect(finished.has(promise1)).toBe(true);
-  expect(finished.has(promise2)).toBe(false);
+  expect(finished).toContain(promise1);
+  expect(finished).not.toContain(promise2);
 
   await expect(promise1).rejects.toEqual(
     new Error("Timeout waiting for message")
@@ -476,7 +476,7 @@ test("resets timeout to default timeout after sending request", async () => {
   jest.advanceTimersByTime(1000);
   // wait for a tick, just to be sure the `finally` block has time to run
   await Promise.resolve();
-  expect(finished.has(promise2)).toBe(true);
+  expect(finished).toContain(promise2);
   await expect(promise2).rejects.toEqual(
     new Error("Timeout waiting for message")
   );
@@ -492,13 +492,13 @@ test("resets timeout to default timeout after sending request", async () => {
 
   // wait for a tick, just to be sure the `finally` block has time to run
   await Promise.resolve();
-  expect(finished.has(promise3)).toBe(false);
+  expect(finished).not.toContain(promise3);
 
   jest.advanceTimersByTime(29_000);
 
   // wait for a tick, just to be sure the `finally` block has time to run
   await Promise.resolve();
-  expect(finished.has(promise3)).toBe(true);
+  expect(finished).toContain(promise3);
   await expect(promise3).rejects.toEqual(
     new Error("Timeout waiting for message")
   );
