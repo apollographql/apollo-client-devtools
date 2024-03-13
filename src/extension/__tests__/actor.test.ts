@@ -111,7 +111,7 @@ test("ignores messages that don't originate from devtools", () => {
   expect(handleMessage).not.toHaveBeenCalled();
 });
 
-test.each([MessageType.RPC])(
+test.each([MessageType.RPCRequest, MessageType.RPCResponse])(
   "ignores messages that are %s messages",
   (messageType) => {
     type Message = { type: "test" };
