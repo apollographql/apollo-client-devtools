@@ -12,13 +12,13 @@ import {
   isRPCResponseMessage,
 } from "./messages";
 
-type MessageCollection = Record<string, (...parameters: [SafeAny]) => SafeAny>;
+type MessageCollection = Record<string, (...parameters: SafeAny[]) => SafeAny>;
 
 export interface RpcClient<Messages extends MessageCollection> {
   withTimeout: (timeoutMs: number) => RpcClient<Messages>;
   request: <TName extends keyof Messages & string>(
     name: TName,
-    params: Parameters<Messages[TName]>[0]
+    ...params: Parameters<Messages[TName]>
   ) => Promise<Awaited<ReturnType<Messages[TName]>>>;
 }
 
@@ -34,7 +34,7 @@ export function createRpcClient<Messages extends MessageCollection>(
       timeout = timeoutMs;
       return client;
     },
-    request: (name, params) => {
+    request: (name, ...params) => {
       const configuredTimeout = timeout;
       timeout = DEFAULT_TIMEOUT;
 
@@ -103,7 +103,7 @@ export function createRpcHandler<Messages extends MessageCollection>(
   return function <TName extends keyof Messages & string>(
     name: TName,
     execute: (
-      params: Parameters<Messages[TName]>[0]
+      ...params: Parameters<Messages[TName]>
     ) =>
       | NoInfer<Awaited<ReturnType<Messages[TName]>>>
       | Promise<NoInfer<Awaited<ReturnType<Messages[TName]>>>>
@@ -114,7 +114,9 @@ export function createRpcHandler<Messages extends MessageCollection>(
 
     listeners.set(name, async ({ id, params }) => {
       try {
-        const result = await Promise.resolve(execute(params));
+        const result = await Promise.resolve(
+          execute(...(params as Parameters<Messages[TName]>))
+        );
 
         adapter.postMessage({
           source: "apollo-client-devtools",

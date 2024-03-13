@@ -1,4 +1,4 @@
-import type { ExplorerResponse } from "../types";
+import type { ExplorerResponse, SafeAny } from "../types";
 import type { GetStates, GetContext } from "../application/stateMachine";
 import type { DevtoolsMachine } from "../application/machines";
 
@@ -13,12 +13,12 @@ export const enum MessageType {
   Event = "event",
 }
 
-export type RPCRequestMessage<Params = unknown> = {
+export type RPCRequestMessage<Params extends SafeAny[] = unknown[]> = {
   source: "apollo-client-devtools";
   type: MessageType.RPCRequest;
   id: string;
   name: string;
-  params?: Params;
+  params: Params;
 };
 
 export type RPCErrorResponseMessage = {
@@ -41,9 +41,10 @@ export type RPCResponseMessage<Result = unknown> =
   | RPCSuccessResponseMessage<Result>
   | RPCErrorResponseMessage;
 
-export type RPCMessage<Params = unknown, Result = unknown> =
-  | RPCRequestMessage<Params>
-  | RPCResponseMessage<Result>;
+export type RPCMessage<
+  Params extends SafeAny[] = unknown[],
+  Result = unknown,
+> = RPCRequestMessage<Params> | RPCResponseMessage<Result>;
 
 export type ApolloClientDevtoolsEventMessage<
   Message extends Record<string, unknown> = Record<string, unknown>,

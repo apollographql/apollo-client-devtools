@@ -4,8 +4,7 @@ import type { RPCMessage, RPCRequestMessage } from "../messages";
 import { MessageType } from "../messages";
 import { createRPCBridge, createRpcClient, createRpcHandler } from "../rpc";
 
-interface TestAdapter
-  extends MessageAdapter<RPCMessage<Record<string, unknown>>> {
+interface TestAdapter extends MessageAdapter<RPCMessage> {
   mocks: { listeners: Set<(message: unknown) => void>; messages: unknown[] };
   simulateMessage: (message: unknown) => void;
   simulateRPCMessage: (message: DistributiveOmit<RPCMessage, "source">) => void;
@@ -325,7 +324,7 @@ test("can unsubscribe from a handler by calling the returned function", () => {
     id: "abc",
     type: MessageType.RPCRequest,
     name: "add",
-    params: { x: 1, y: 2 },
+    params: [{ x: 1, y: 2 }],
   });
 
   expect(add).toHaveBeenCalledTimes(1);
@@ -337,7 +336,7 @@ test("can unsubscribe from a handler by calling the returned function", () => {
     id: "xyz",
     type: MessageType.RPCRequest,
     name: "add",
-    params: { x: 1, y: 2 },
+    params: [{ x: 1, y: 2 }],
   });
 
   expect(add).not.toHaveBeenCalled();
@@ -464,7 +463,7 @@ test("forwards rpc messages from one adapter to another with bridge", () => {
     id: "abc",
     type: MessageType.RPCRequest,
     name: "add",
-    params: { x: 1, y: 2 },
+    params: [{ x: 1, y: 2 }],
   });
 
   expect(adapter2.postMessage).toHaveBeenCalledTimes(1);
@@ -473,14 +472,14 @@ test("forwards rpc messages from one adapter to another with bridge", () => {
     type: MessageType.RPCRequest,
     id: "abc",
     name: "add",
-    params: { x: 1, y: 2 },
+    params: [{ x: 1, y: 2 }],
   });
 
   adapter2.simulateRPCMessage({
     id: "xyz",
     type: MessageType.RPCRequest,
     name: "add",
-    params: { x: 1, y: 2 },
+    params: [{ x: 1, y: 2 }],
   });
 
   expect(adapter1.postMessage).toHaveBeenCalledTimes(1);
@@ -489,7 +488,7 @@ test("forwards rpc messages from one adapter to another with bridge", () => {
     type: MessageType.RPCRequest,
     id: "xyz",
     name: "add",
-    params: { x: 1, y: 2 },
+    params: [{ x: 1, y: 2 }],
   });
 });
 
@@ -503,7 +502,7 @@ test("unsubscribes connection on bridge when calling returned function", () => {
     id: "abc",
     type: MessageType.RPCRequest,
     name: "add",
-    params: { x: 1, y: 2 },
+    params: [{ x: 1, y: 2 }],
   });
   expect(adapter2.postMessage).toHaveBeenCalled();
 
@@ -511,7 +510,7 @@ test("unsubscribes connection on bridge when calling returned function", () => {
     id: "xyz",
     type: MessageType.RPCRequest,
     name: "add",
-    params: { x: 1, y: 2 },
+    params: [{ x: 1, y: 2 }],
   });
   expect(adapter1.postMessage).toHaveBeenCalled();
 
@@ -523,7 +522,7 @@ test("unsubscribes connection on bridge when calling returned function", () => {
     id: "def",
     type: MessageType.RPCRequest,
     name: "add",
-    params: { x: 1, y: 2 },
+    params: [{ x: 1, y: 2 }],
   });
   expect(adapter2.postMessage).not.toHaveBeenCalled();
 
@@ -531,7 +530,7 @@ test("unsubscribes connection on bridge when calling returned function", () => {
     id: "uvw",
     type: MessageType.RPCRequest,
     name: "add",
-    params: { x: 1, y: 2 },
+    params: [{ x: 1, y: 2 }],
   });
   expect(adapter1.postMessage).not.toHaveBeenCalled();
 });
