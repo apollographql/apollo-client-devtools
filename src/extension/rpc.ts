@@ -33,40 +33,37 @@ export function createRpcClient<Messages extends MessageCollection>(
 ): RpcClient<Messages> {
   return {
     request: (name, params, options) => {
-      return Promise.race([
-        new Promise<never>((_, reject) => {
-          setTimeout(
-            () => reject(new Error("Timeout waiting for message")),
-            options?.timeoutMs ?? DEFAULT_TIMEOUT
-          );
-        }),
-        new Promise<SafeAny>((resolve, reject) => {
-          const id = createId();
+      return new Promise<SafeAny>((resolve, reject) => {
+        const id = createId();
 
-          const removeListener = adapter.addListener((message) => {
-            if (
-              isRPCMessage(message) &&
-              "sourceId" in message.payload &&
-              message.payload.sourceId === id
-            ) {
-              if ("error" in message.payload) {
-                reject(message.payload.error);
-              } else {
-                resolve(message.payload.result);
-              }
-
-              removeListener();
+        const removeListener = adapter.addListener((message) => {
+          if (
+            isRPCMessage(message) &&
+            "sourceId" in message.payload &&
+            message.payload.sourceId === id
+          ) {
+            if ("error" in message.payload) {
+              reject(message.payload.error);
+            } else {
+              resolve(message.payload.result);
             }
-          });
 
-          adapter.postMessage({
-            source: "apollo-client-devtools",
-            type: MessageType.RPC,
-            id,
-            payload: { type: name, params },
-          });
-        }),
-      ]);
+            removeListener();
+          }
+        });
+
+        setTimeout(() => {
+          removeListener();
+          reject(new Error("Timeout waiting for message"));
+        }, options?.timeoutMs ?? DEFAULT_TIMEOUT);
+
+        adapter.postMessage({
+          source: "apollo-client-devtools",
+          type: MessageType.RPC,
+          id,
+          payload: { type: name, params },
+        });
+      });
     },
   };
 }
