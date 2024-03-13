@@ -36,6 +36,11 @@ export function createRpcClient<Messages extends MessageCollection>(
       return new Promise<SafeAny>((resolve, reject) => {
         const id = createId();
 
+        const timeout = setTimeout(() => {
+          removeListener();
+          reject(new Error("Timeout waiting for message"));
+        }, options?.timeoutMs ?? DEFAULT_TIMEOUT);
+
         const removeListener = adapter.addListener((message) => {
           if (
             isRPCMessage(message) &&
@@ -48,14 +53,10 @@ export function createRpcClient<Messages extends MessageCollection>(
               resolve(message.payload.result);
             }
 
+            clearTimeout(timeout);
             removeListener();
           }
         });
-
-        setTimeout(() => {
-          removeListener();
-          reject(new Error("Timeout waiting for message"));
-        }, options?.timeoutMs ?? DEFAULT_TIMEOUT);
 
         adapter.postMessage({
           source: "apollo-client-devtools",
