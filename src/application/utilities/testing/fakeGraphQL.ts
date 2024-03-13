@@ -1,6 +1,6 @@
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import { addMocksToSchema } from "@graphql-tools/mock";
-import { GraphQLFieldResolver } from "graphql";
+import type { GraphQLFieldResolver } from "graphql";
 
 interface Author {
   id: number;

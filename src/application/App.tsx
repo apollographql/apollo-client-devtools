@@ -1,27 +1,26 @@
 import { useEffect, useState, useRef } from "react";
-import {
-  useReactiveVar,
-  gql,
-  useQuery,
-  makeVar,
-  TypedDocumentNode,
-} from "@apollo/client";
+import type { TypedDocumentNode } from "@apollo/client";
+import { useReactiveVar, gql, useQuery, makeVar } from "@apollo/client";
 
 import { currentScreen, Screens } from "./components/Layouts/Navigation";
 import { Queries } from "./components/Queries/Queries";
 import { Mutations } from "./components/Mutations/Mutations";
 import { Explorer } from "./components/Explorer/Explorer";
 import { Cache } from "./components/Cache/Cache";
-import { GetOperationCounts, GetOperationCountsVariables } from "./types/gql";
+import type {
+  GetOperationCounts,
+  GetOperationCountsVariables,
+} from "./types/gql";
 import { Tabs } from "./components/Tabs";
 import { Button } from "./components/Button";
 import IconSettings from "@apollo/icons/default/IconSettings.svg";
 import IconSync from "@apollo/icons/small/IconSync.svg";
 import { SettingsModal } from "./components/Layouts/SettingsModal";
 import Logo from "@apollo/icons/logos/LogoSymbol.svg";
-import { BannerAlert, BannerAlertConfig } from "./components/BannerAlert";
-import { GetStates } from "./stateMachine";
-import { DevtoolsMachine } from "./machines";
+import type { BannerAlertConfig } from "./components/BannerAlert";
+import { BannerAlert } from "./components/BannerAlert";
+import type { GetStates } from "./stateMachine";
+import type { DevtoolsMachine } from "./machines";
 import { ClientNotFoundModal } from "./components/ClientNotFoundModal";
 import { getPanelActor } from "../extension/devtools/panelActor";
 

@@ -22,6 +22,14 @@ module.exports = {
     "testing-library/no-node-access": "off",
     "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/no-unused-vars": ["warn", { ignoreRestSiblings: true }],
+    "@typescript-eslint/consistent-type-imports": [
+      "error",
+      {
+        prefer: "type-imports",
+        disallowTypeAnnotations: false,
+        fixStyle: "separate-type-imports",
+      },
+    ],
   },
   settings: {
     react: {

@@ -1,6 +1,6 @@
 // This script is injected into each tab.
 import browser from "webextension-polyfill";
-import { ClientMessage } from "../messages";
+import type { ClientMessage } from "../messages";
 import { createPortActor, createWindowActor } from "../actor";
 import {
   createPortMessageAdapter,

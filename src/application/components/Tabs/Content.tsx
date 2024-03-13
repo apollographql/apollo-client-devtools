@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { Content as ContentBase } from "@radix-ui/react-tabs";
 import clsx from "clsx";
 

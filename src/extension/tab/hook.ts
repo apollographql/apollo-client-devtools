@@ -1,33 +1,28 @@
-import {
-  ApolloClient,
-  ApolloError,
-  DocumentNode,
-  NetworkStatus,
-} from "@apollo/client";
+import type { ApolloClient, ApolloError, DocumentNode } from "@apollo/client";
 
 // Note that we are intentionally not using Apollo Client's gql and
 // Observable exports, as we don't want Apollo Client and its dependencies
 // to be loaded into each browser tab, when this hook triggered.
 import gql from "graphql-tag";
 import Observable from "zen-observable";
-import { OperationDefinitionNode } from "graphql/language";
+import type { OperationDefinitionNode } from "graphql/language";
 
 // All manifests should contain the same version number so it shouldn't matter
 // which one we import from.
 import { version as devtoolsVersion } from "../chrome/manifest.json";
+import type { QueryInfo } from "./helpers";
 import {
-  QueryInfo,
   getQueries,
   getQueriesLegacy,
   getMutations,
   getMainDefinition,
 } from "./helpers";
-import { QueryResult } from "../../types";
+import type { QueryResult } from "../../types";
 import { getPrivateAccess } from "../../privateAccess";
-import { JSONObject } from "../../application/types/json";
-import { FetchPolicy } from "../../application/components/Explorer/Explorer";
+import type { JSONObject } from "../../application/types/json";
+import type { FetchPolicy } from "../../application/components/Explorer/Explorer";
 import { createWindowActor } from "../actor";
-import { ClientMessage, DevtoolsRPCMessage } from "../messages";
+import type { ClientMessage, DevtoolsRPCMessage } from "../messages";
 import { createWindowMessageAdapter } from "../messageAdapters";
 import { createRpcHandler } from "../rpc";
 
@@ -112,11 +107,21 @@ function initializeHook() {
   function sendHookDataToDevTools(eventName: "connectToDevtools") {
     tab.send({
       type: eventName,
-      payload: {
-        queries: hook.getQueries(),
-        mutations: hook.getMutations(),
-        cache: hook.getCache(),
-      },
+      // We need to JSON stringify the data here in case the cache contains
+      // references to irregular data such as `URL` instances which are not
+      // cloneable via `structuredClone` (which `window.postMessage` uses to
+      // send messages). `JSON.stringify` does however serialize `URL`s into
+      // strings properly, so this should ensure that the cache data will be
+      // sent without errors.
+      //
+      // https://github.com/apollographql/apollo-client-devtools/issues/1258
+      payload: JSON.parse(
+        JSON.stringify({
+          queries: hook.getQueries(),
+          mutations: hook.getMutations(),
+          cache: hook.getCache(),
+        })
+      ) as { queries: QueryInfo[]; mutations: QueryInfo[]; cache: JSONObject },
     });
   }
 
@@ -209,7 +214,7 @@ function initializeHook() {
               error: error,
               data: null,
               loading: false,
-              networkStatus: NetworkStatus.error,
+              networkStatus: 8, // NetworkStatus.error - we want to prevent importing the enum here
             },
           },
         });

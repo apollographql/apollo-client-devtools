@@ -1,6 +1,6 @@
 import { createMachine } from "./stateMachine";
-import { QueryInfo } from "../extension/tab/helpers";
-import { JSONObject } from "./types/json";
+import type { QueryInfo } from "../extension/tab/helpers";
+import type { JSONObject } from "./types/json";
 
 export const devtoolsMachine = createMachine({
   initial: "initialized",

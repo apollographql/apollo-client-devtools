@@ -1,12 +1,12 @@
-import browser from "webextension-polyfill";
+import type browser from "webextension-polyfill";
 import type {
   ApolloClientDevtoolsEventMessage,
   MessageFormat,
 } from "./messages";
 import { MessageType, isEventMessage } from "./messages";
-import { NoInfer } from "../types";
+import type { NoInfer } from "../types";
+import type { MessageAdapter } from "./messageAdapters";
 import {
-  MessageAdapter,
   createPortMessageAdapter,
   createWindowMessageAdapter,
 } from "./messageAdapters";

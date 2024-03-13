@@ -1,5 +1,23 @@
 # Changelog
 
+## 4.8.3
+
+### Patch Changes
+
+- [#1264](https://github.com/apollographql/apollo-client-devtools/pull/1264) [`66c05ae`](https://github.com/apollographql/apollo-client-devtools/commit/66c05ae4cc7231000769e8269e2987ba48c7a779) Thanks [@phryneas](https://github.com/phryneas)! - Enable "@typescript-eslint/consistent-type-imports" lint rule
+
+- [#1265](https://github.com/apollographql/apollo-client-devtools/pull/1265) [`df5300f`](https://github.com/apollographql/apollo-client-devtools/commit/df5300f245b82e6efc15f616724874fbbb0b8a2d) Thanks [@phryneas](https://github.com/phryneas)! - Use relative-CI to monitor build artefact sizes
+
+- [#1268](https://github.com/apollographql/apollo-client-devtools/pull/1268) [`4c98879`](https://github.com/apollographql/apollo-client-devtools/commit/4c98879162c918c5b90652609991a5a357ee4f63) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Revert change that removed JSON stringify on the entire set of client data. This is a followup to [#1259](https://github.com/apollographql/apollo-client-devtools/pull/1259) which only partially fixed the issue.
+
+## 4.8.2
+
+### Patch Changes
+
+- [#1262](https://github.com/apollographql/apollo-client-devtools/pull/1262) [`122c3ee`](https://github.com/apollographql/apollo-client-devtools/commit/122c3ee883cf85078cee6efc31df63e5554c9147) Thanks [@phryneas](https://github.com/phryneas)! - prevent bundling Apollo Client in the hooks.js build
+
+- [#1259](https://github.com/apollographql/apollo-client-devtools/pull/1259) [`de55e20`](https://github.com/apollographql/apollo-client-devtools/commit/de55e2079d17de4e6bdc67582d0a22e577294dfd) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Fix an issue when sending cache data from the browser to the extension. This was particularly problematic when the cache contained `URL` instances which are not cloneable via the [structured clone algorithm](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm)
+
 ## 4.8.1
 
 ### Patch Changes
