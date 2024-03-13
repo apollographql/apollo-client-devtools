@@ -215,6 +215,7 @@ test("can handle any parameter format", async () => {
     shout(text: string): string;
     join(strings: string[], delimeter: string): string;
     getFullName(user: { firstName: string; lastName: string }): string;
+    getStoredValues(): number[];
   };
 
   const handlerAdapter = createTestAdapter();
@@ -228,6 +229,7 @@ test("can handle any parameter format", async () => {
   handle("shout", (text) => text.toUpperCase());
   handle("join", (strings, delimeter) => strings.join(delimeter));
   handle("getFullName", (user) => user.firstName + " " + user.lastName);
+  handle("getStoredValues", () => [1, 2, 3]);
 
   const result = await client.request("add", 1, 2);
   const uppercase = await client.request("shout", "hello");
@@ -236,11 +238,13 @@ test("can handle any parameter format", async () => {
     firstName: "John",
     lastName: "Doe",
   });
+  const storedValues = await client.request("getStoredValues");
 
   expect(result).toBe(3);
   expect(uppercase).toBe("HELLO");
   expect(joined).toEqual("a,b,c");
   expect(fullName).toEqual("John Doe");
+  expect(storedValues).toEqual([1, 2, 3]);
 });
 
 test("ignores messages that don't originate from devtools", () => {
