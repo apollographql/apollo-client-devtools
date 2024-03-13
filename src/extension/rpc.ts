@@ -102,7 +102,7 @@ export function createRpcHandler<Messages extends MessageCollection>(
 
   return function <TName extends keyof Messages & string>(
     name: TName,
-    execute: (
+    handler: (
       ...params: Parameters<Messages[TName]>
     ) =>
       | NoInfer<Awaited<ReturnType<Messages[TName]>>>
@@ -115,7 +115,7 @@ export function createRpcHandler<Messages extends MessageCollection>(
     listeners.set(name, async ({ id, params }) => {
       try {
         const result = await Promise.resolve(
-          execute(...(params as Parameters<Messages[TName]>))
+          handler(...(params as Parameters<Messages[TName]>))
         );
 
         adapter.postMessage({
