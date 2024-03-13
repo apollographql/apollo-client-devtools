@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.9.0
+
+### Minor Changes
+
+- [#1256](https://github.com/apollographql/apollo-client-devtools/pull/1256) [`28140d8`](https://github.com/apollographql/apollo-client-devtools/commit/28140d87bf0040a4d8d12f7ef1353e31657b0faf) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Introduce rpc utilities to communicate between the extension scripts. Migrate the call to get client data into the devtools to use the rpc utilities.
+
 ## 4.8.3
 
 ### Patch Changes
