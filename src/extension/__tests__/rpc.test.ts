@@ -1,20 +1,14 @@
+import type { DistributiveOmit } from "../../types";
 import type { MessageAdapter } from "../messageAdapters";
-import type { ApolloClientDevtoolsRPCMessage } from "../messages";
+import type { RPCMessage, RPCRequestMessage } from "../messages";
 import { MessageType } from "../messages";
 import { createRPCBridge, createRpcClient, createRpcHandler } from "../rpc";
 
 interface TestAdapter
-  extends MessageAdapter<
-    ApolloClientDevtoolsRPCMessage<Record<string, unknown>>
-  > {
+  extends MessageAdapter<RPCMessage<Record<string, unknown>>> {
   mocks: { listeners: Set<(message: unknown) => void>; messages: unknown[] };
   simulateMessage: (message: unknown) => void;
-  simulateRPCMessage: (
-    message: Omit<
-      ApolloClientDevtoolsRPCMessage<Record<string, unknown>>,
-      "type" | "source"
-    >
-  ) => void;
+  simulateRPCMessage: (message: DistributiveOmit<RPCMessage, "source">) => void;
   postMessage: jest.Mock<void, [message: unknown]>;
   connect: (adapter: TestAdapter) => void;
 }
@@ -33,7 +27,6 @@ function createTestAdapter(): TestAdapter {
       listeners.forEach((fn) =>
         fn({
           ...message,
-          type: MessageType.RPC,
           source: "apollo-client-devtools",
         })
       );
@@ -117,17 +110,20 @@ test("does not mistakenly handle messages from different rpc calls", async () =>
 
   const promise = client.request("add", { x: 1, y: 2 });
 
-  const { id } = clientAdapter.mocks
-    .messages[0] as ApolloClientDevtoolsRPCMessage;
+  const { id } = clientAdapter.mocks.messages[0] as RPCRequestMessage;
 
   clientAdapter.simulateRPCMessage({
-    id: id + 1,
-    payload: { sourceId: id + 1, result: 4 },
+    id: id + "zzz",
+    type: MessageType.RPCResponse,
+    sourceId: id + "zzz",
+    result: 4,
   });
 
   clientAdapter.simulateRPCMessage({
+    type: MessageType.RPCResponse,
     id,
-    payload: { sourceId: id, result: 3 },
+    sourceId: id,
+    result: 3,
   });
 
   await expect(promise).resolves.toBe(3);
@@ -300,7 +296,9 @@ test("can unsubscribe from a handler by calling the returned function", () => {
 
   adapter.simulateRPCMessage({
     id: "abc",
-    payload: { type: "add", params: { x: 1, y: 2 } },
+    type: MessageType.RPCRequest,
+    name: "add",
+    params: { x: 1, y: 2 },
   });
 
   expect(add).toHaveBeenCalledTimes(1);
@@ -310,7 +308,9 @@ test("can unsubscribe from a handler by calling the returned function", () => {
 
   adapter.simulateRPCMessage({
     id: "xyz",
-    payload: { type: "add", params: { x: 1, y: 2 } },
+    type: MessageType.RPCRequest,
+    name: "add",
+    params: { x: 1, y: 2 },
   });
 
   expect(add).not.toHaveBeenCalled();
@@ -401,28 +401,34 @@ test("forwards rpc messages from one adapter to another with bridge", () => {
 
   adapter1.simulateRPCMessage({
     id: "abc",
-    payload: { type: "add", params: { x: 1, y: 2 } },
+    type: MessageType.RPCRequest,
+    name: "add",
+    params: { x: 1, y: 2 },
   });
 
   expect(adapter2.postMessage).toHaveBeenCalledTimes(1);
   expect(adapter2.postMessage).toHaveBeenCalledWith({
     source: "apollo-client-devtools",
-    type: MessageType.RPC,
+    type: MessageType.RPCRequest,
     id: "abc",
-    payload: { type: "add", params: { x: 1, y: 2 } },
+    name: "add",
+    params: { x: 1, y: 2 },
   });
 
   adapter2.simulateRPCMessage({
     id: "xyz",
-    payload: { type: "add", params: { x: 1, y: 2 } },
+    type: MessageType.RPCRequest,
+    name: "add",
+    params: { x: 1, y: 2 },
   });
 
   expect(adapter1.postMessage).toHaveBeenCalledTimes(1);
   expect(adapter1.postMessage).toHaveBeenCalledWith({
     source: "apollo-client-devtools",
-    type: MessageType.RPC,
+    type: MessageType.RPCRequest,
     id: "xyz",
-    payload: { type: "add", params: { x: 1, y: 2 } },
+    name: "add",
+    params: { x: 1, y: 2 },
   });
 });
 
@@ -434,13 +440,17 @@ test("unsubscribes connection on bridge when calling returned function", () => {
 
   adapter1.simulateRPCMessage({
     id: "abc",
-    payload: { type: "add", params: { x: 1, y: 2 } },
+    type: MessageType.RPCRequest,
+    name: "add",
+    params: { x: 1, y: 2 },
   });
   expect(adapter2.postMessage).toHaveBeenCalled();
 
   adapter2.simulateRPCMessage({
     id: "xyz",
-    payload: { type: "add", params: { x: 1, y: 2 } },
+    type: MessageType.RPCRequest,
+    name: "add",
+    params: { x: 1, y: 2 },
   });
   expect(adapter1.postMessage).toHaveBeenCalled();
 
@@ -450,13 +460,17 @@ test("unsubscribes connection on bridge when calling returned function", () => {
 
   adapter1.simulateRPCMessage({
     id: "def",
-    payload: { type: "add", params: { x: 1, y: 2 } },
+    type: MessageType.RPCRequest,
+    name: "add",
+    params: { x: 1, y: 2 },
   });
   expect(adapter2.postMessage).not.toHaveBeenCalled();
 
   adapter2.simulateRPCMessage({
     id: "uvw",
-    payload: { type: "add", params: { x: 1, y: 2 } },
+    type: MessageType.RPCRequest,
+    name: "add",
+    params: { x: 1, y: 2 },
   });
   expect(adapter1.postMessage).not.toHaveBeenCalled();
 });

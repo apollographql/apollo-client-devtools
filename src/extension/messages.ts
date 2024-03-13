@@ -8,18 +8,42 @@ export interface MessageFormat {
 }
 
 export const enum MessageType {
-  RPC = "rpc",
+  RPCRequest = "rpcRequest",
+  RPCResponse = "rpcResponse",
   Event = "event",
 }
 
-export type ApolloClientDevtoolsRPCMessage<
-  Message extends Record<string, unknown> = Record<string, unknown>,
-> = {
+export type RPCRequestMessage<Params = unknown> = {
   source: "apollo-client-devtools";
-  type: MessageType.RPC;
+  type: MessageType.RPCRequest;
   id: string;
-  payload: Message;
+  name: string;
+  params?: Params;
 };
+
+export type RPCErrorResponseMessage = {
+  source: "apollo-client-devtools";
+  type: MessageType.RPCResponse;
+  id: string;
+  sourceId: string;
+  error: unknown;
+};
+
+export type RPCSuccessResponseMessage<Result = unknown> = {
+  source: "apollo-client-devtools";
+  type: MessageType.RPCResponse;
+  id: string;
+  sourceId: string;
+  result: Result;
+};
+
+export type RPCResponseMessage<Result = unknown> =
+  | RPCSuccessResponseMessage<Result>
+  | RPCErrorResponseMessage;
+
+export type RPCMessage<Params = unknown, Result = unknown> =
+  | RPCRequestMessage<Params>
+  | RPCResponseMessage<Result>;
 
 export type ApolloClientDevtoolsEventMessage<
   Message extends Record<string, unknown> = Record<string, unknown>,
@@ -33,7 +57,8 @@ export type ApolloClientDevtoolsMessage<
   Message extends Record<string, unknown> = Record<string, unknown>,
 > =
   | ApolloClientDevtoolsEventMessage<Message>
-  | ApolloClientDevtoolsRPCMessage<Message>;
+  | RPCRequestMessage
+  | RPCResponseMessage;
 
 type ExplorerRequestMessage = {
   type: "explorerRequest";
@@ -90,12 +115,26 @@ export function isApolloClientDevtoolsMessage<
   );
 }
 
-export function isRPCMessage<Message extends Record<string, unknown>>(
+export function isRPCRequestMessage(
   message: unknown
-): message is ApolloClientDevtoolsRPCMessage<Message> {
+): message is RPCRequestMessage {
   return (
-    isApolloClientDevtoolsMessage(message) && message.type === MessageType.RPC
+    isApolloClientDevtoolsMessage(message) &&
+    message.type === MessageType.RPCRequest
   );
+}
+
+export function isRPCResponseMessage(
+  message: unknown
+): message is RPCResponseMessage {
+  return (
+    isApolloClientDevtoolsMessage(message) &&
+    message.type === MessageType.RPCResponse
+  );
+}
+
+export function isRPCMessage(message: unknown): message is RPCMessage {
+  return isRPCRequestMessage(message) || isRPCResponseMessage(message);
 }
 
 export function isEventMessage<Message extends Record<string, unknown>>(

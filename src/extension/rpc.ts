@@ -1,18 +1,16 @@
 import type { NoInfer, SafeAny } from "../types";
 import type { MessageAdapter } from "./messageAdapters";
-import type { ApolloClientDevtoolsRPCMessage } from "./messages";
-import { MessageType, isRPCMessage } from "./messages";
-
-type RPCParams = Record<string, unknown>;
-
-type RPCRequestMessageFormat = {
-  type: string;
-  params: RPCParams;
-};
-
-type RPCResponseMessageFormat =
-  | { sourceId: string; result: unknown }
-  | { sourceId: string; error: unknown };
+import type {
+  RPCMessage,
+  RPCRequestMessage,
+  RPCResponseMessage,
+} from "./messages";
+import {
+  MessageType,
+  isRPCMessage,
+  isRPCRequestMessage,
+  isRPCResponseMessage,
+} from "./messages";
 
 type MessageCollection = Record<string, (...parameters: [SafeAny]) => SafeAny>;
 
@@ -27,9 +25,7 @@ export interface RpcClient<Messages extends MessageCollection> {
 const DEFAULT_TIMEOUT = 30_000;
 
 export function createRpcClient<Messages extends MessageCollection>(
-  adapter: MessageAdapter<
-    ApolloClientDevtoolsRPCMessage<RPCRequestMessageFormat>
-  >
+  adapter: MessageAdapter<RPCRequestMessage>
 ): RpcClient<Messages> {
   return {
     request: (name, params, options) => {
@@ -42,15 +38,11 @@ export function createRpcClient<Messages extends MessageCollection>(
         }, options?.timeoutMs ?? DEFAULT_TIMEOUT);
 
         const removeListener = adapter.addListener((message) => {
-          if (
-            isRPCMessage(message) &&
-            "sourceId" in message.payload &&
-            message.payload.sourceId === id
-          ) {
-            if ("error" in message.payload) {
-              reject(message.payload.error);
+          if (isRPCResponseMessage(message) && message.sourceId === id) {
+            if ("error" in message) {
+              reject(message.error);
             } else {
-              resolve(message.payload.result);
+              resolve(message.result);
             }
 
             clearTimeout(timeout);
@@ -60,9 +52,10 @@ export function createRpcClient<Messages extends MessageCollection>(
 
         adapter.postMessage({
           source: "apollo-client-devtools",
-          type: MessageType.RPC,
+          type: MessageType.RPCRequest,
           id,
-          payload: { type: name, params },
+          name,
+          params,
         });
       });
     },
@@ -70,19 +63,14 @@ export function createRpcClient<Messages extends MessageCollection>(
 }
 
 export function createRpcHandler<Messages extends MessageCollection>(
-  adapter: MessageAdapter<
-    ApolloClientDevtoolsRPCMessage<RPCResponseMessageFormat>
-  >
+  adapter: MessageAdapter<RPCResponseMessage>
 ) {
-  const listeners = new Map<
-    string,
-    (message: ApolloClientDevtoolsRPCMessage<RPCRequestMessageFormat>) => void
-  >();
+  const listeners = new Map<string, (message: RPCRequestMessage) => void>();
   let removeListener: (() => void) | null = null;
 
   function handleMessage(message: unknown) {
-    if (isRPCMessage<RPCRequestMessageFormat>(message)) {
-      listeners.get(message.payload.type)?.(message);
+    if (isRPCRequestMessage(message)) {
+      listeners.get(message.name)?.(message);
     }
   }
 
@@ -111,22 +99,24 @@ export function createRpcHandler<Messages extends MessageCollection>(
       throw new Error("Only one rpc handler can be registered per type");
     }
 
-    listeners.set(name, async ({ id, payload }) => {
+    listeners.set(name, async ({ id, params }) => {
       try {
-        const result = await Promise.resolve(execute(payload.params));
+        const result = await Promise.resolve(execute(params));
 
         adapter.postMessage({
           source: "apollo-client-devtools",
-          type: MessageType.RPC,
+          type: MessageType.RPCResponse,
           id: createId(),
-          payload: { sourceId: id, result },
+          sourceId: id,
+          result,
         });
       } catch (error) {
         adapter.postMessage({
           source: "apollo-client-devtools",
-          type: MessageType.RPC,
+          type: MessageType.RPCResponse,
           id: createId(),
-          payload: { sourceId: id, error },
+          sourceId: id,
+          error,
         });
       }
     });
@@ -144,12 +134,8 @@ export function createRpcHandler<Messages extends MessageCollection>(
 }
 
 export function createRPCBridge(
-  adapter1: MessageAdapter<
-    ApolloClientDevtoolsRPCMessage<Record<string, unknown>>
-  >,
-  adapter2: MessageAdapter<
-    ApolloClientDevtoolsRPCMessage<Record<string, unknown>>
-  >
+  adapter1: MessageAdapter<RPCMessage>,
+  adapter2: MessageAdapter<RPCMessage>
 ) {
   const removeListener1 = adapter1.addListener((message) => {
     if (isRPCMessage(message)) {
