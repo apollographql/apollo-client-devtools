@@ -56,7 +56,7 @@ function createBridge(adapter1: TestAdapter, adapter2: TestAdapter) {
 
 test("can send and receive rpc messages", async () => {
   type Message = {
-    add({ x, y }: { x: number; y: number }): number;
+    add(x: number, y: number): number;
   };
   // Since these are sent over separate instances in the real world, we want to
   // simulate that as best as we can with separate adapters
@@ -67,16 +67,16 @@ test("can send and receive rpc messages", async () => {
   const client = createRpcClient<Message>(clientAdapter);
   const handle = createRpcHandler<Message>(handlerAdapter);
 
-  handle("add", ({ x, y }) => x + y);
+  handle("add", (x, y) => x + y);
 
-  const result = await client.request("add", { x: 1, y: 2 });
+  const result = await client.request("add", 1, 2);
 
   expect(result).toBe(3);
 });
 
 test("resolves async handlers", async () => {
   type Message = {
-    add({ x, y }: { x: number; y: number }): number;
+    add(x: number, y: number): number;
   };
   // Since these are sent over separate instances in the real world, we want to
   // simulate that as best as we can with separate adapters
@@ -87,7 +87,7 @@ test("resolves async handlers", async () => {
   const client = createRpcClient<Message>(clientAdapter);
   const handle = createRpcHandler<Message>(handlerAdapter);
 
-  handle("add", ({ x, y }) => {
+  handle("add", (x, y) => {
     return new Promise<number>((resolve) => {
       setTimeout(() => {
         resolve(x + y);
@@ -95,24 +95,24 @@ test("resolves async handlers", async () => {
     });
   });
 
-  const result = await client.request("add", { x: 1, y: 2 });
+  const result = await client.request("add", 1, 2);
 
   expect(result).toBe(3);
 });
 
 test("does not mistakenly handle messages from different rpc calls", async () => {
   type Message = {
-    add({ x, y }: { x: number; y: number }): number;
+    add(x: number, y: number): number;
   };
   const clientAdapter = createTestAdapter();
   const client = createRpcClient<Message>(clientAdapter);
 
-  const promise = client.request("add", { x: 1, y: 2 });
+  const promise = client.request("add", 1, 2);
 
   const { id } = clientAdapter.mocks.messages[0] as RPCRequestMessage;
 
   clientAdapter.simulateRPCMessage({
-    id: id + "zzz",
+    id: "zef",
     type: MessageType.RPCResponse,
     sourceId: id + "zzz",
     result: 4,
@@ -120,7 +120,7 @@ test("does not mistakenly handle messages from different rpc calls", async () =>
 
   clientAdapter.simulateRPCMessage({
     type: MessageType.RPCResponse,
-    id,
+    id: "abcdefg",
     sourceId: id,
     result: 3,
   });
@@ -130,7 +130,7 @@ test("does not mistakenly handle messages from different rpc calls", async () =>
 
 test("rejects when handler throws error", async () => {
   type Message = {
-    add({ x, y }: { x: number; y: number }): number;
+    add(x: number, y: number): number;
   };
   // Since these are sent over separate instances in the real world, we want to
   // simulate that as best as we can with separate adapters
@@ -145,14 +145,14 @@ test("rejects when handler throws error", async () => {
     throw new Error("Could not add");
   });
 
-  await expect(client.request("add", { x: 1, y: 2 })).rejects.toEqual(
+  await expect(client.request("add", 1, 2)).rejects.toEqual(
     new Error("Could not add")
   );
 });
 
 test("rejects when async handler rejects", async () => {
   type Message = {
-    add({ x, y }: { x: number; y: number }): number;
+    add(x: number, y: number): number;
   };
   // Since these are sent over separate instances in the real world, we want to
   // simulate that as best as we can with separate adapters
@@ -165,17 +165,17 @@ test("rejects when async handler rejects", async () => {
 
   handle("add", () => Promise.reject(new Error("Could not add")));
 
-  await expect(client.request("add", { x: 1, y: 2 })).rejects.toEqual(
+  await expect(client.request("add", 1, 2)).rejects.toEqual(
     new Error("Could not add")
   );
 });
 
 test("can handle multiple rpc messages", async () => {
   type Message = {
-    add({ x, y }: { x: number; y: number }): number;
+    add(x: number, y: number): number;
     // while we're at it, let's have this one return a Promise in the definition
     // it should not matter for the implementation
-    shout({ text }: { text: string }): Promise<string>;
+    shout(text: string): Promise<string>;
   };
 
   const handlerAdapter = createTestAdapter();
@@ -185,11 +185,11 @@ test("can handle multiple rpc messages", async () => {
   const client = createRpcClient<Message>(clientAdapter);
   const handle = createRpcHandler<Message>(handlerAdapter);
 
-  handle("add", ({ x, y }) => x + y);
-  handle("shout", ({ text }) => text.toUpperCase());
+  handle("add", (x, y) => x + y);
+  handle("shout", (text) => Promise.resolve(text.toUpperCase()));
 
-  const result = await client.request("add", { x: 1, y: 2 });
-  const uppercase = await client.request("shout", { text: "hello" });
+  const result = await client.request("add", 1, 2);
+  const uppercase = await client.request("shout", "hello");
 
   expect(result).toBe(3);
   expect(uppercase).toBe("HELLO");
@@ -211,9 +211,10 @@ test("only allows one handler per type", async () => {
 
 test("can handle any parameter format", async () => {
   type Message = {
-    add({ x, y }: { x: number; y: number }): number;
-    shout(text: string): Promise<string>;
-    pushNextNumber(numbers: number[]): Promise<number[]>;
+    add(x: number, y: number): number;
+    shout(text: string): string;
+    join(strings: string[], delimeter: string): string;
+    getFullName(user: { firstName: string; lastName: string }): string;
   };
 
   const handlerAdapter = createTestAdapter();
@@ -223,22 +224,28 @@ test("can handle any parameter format", async () => {
   const client = createRpcClient<Message>(clientAdapter);
   const handle = createRpcHandler<Message>(handlerAdapter);
 
-  handle("add", ({ x, y }) => x + y);
+  handle("add", (x, y) => x + y);
   handle("shout", (text) => text.toUpperCase());
-  handle("pushNextNumber", (numbers) => [...numbers, 3]);
+  handle("join", (strings, delimeter) => strings.join(delimeter));
+  handle("getFullName", (user) => user.firstName + " " + user.lastName);
 
-  const result = await client.request("add", { x: 1, y: 2 });
+  const result = await client.request("add", 1, 2);
   const uppercase = await client.request("shout", "hello");
-  const numbers = await client.request("pushNextNumber", [1, 2]);
+  const joined = await client.request("join", ["a", "b", "c"], ",");
+  const fullName = await client.request("getFullName", {
+    firstName: "John",
+    lastName: "Doe",
+  });
 
   expect(result).toBe(3);
   expect(uppercase).toBe("HELLO");
-  expect(numbers).toEqual([1, 2, 3]);
+  expect(joined).toEqual("a,b,c");
+  expect(fullName).toEqual("John Doe");
 });
 
 test("ignores messages that don't originate from devtools", () => {
   type Message = {
-    add({ x, y }: { x: number; y: number }): number;
+    add(x: number, y: number): number;
   };
 
   const adapter = createTestAdapter();
@@ -277,7 +284,7 @@ test("ignores messages that aren't rpc messages", () => {
 
 test("does not add listener to adapter until first subscribed handler", () => {
   type Message = {
-    add({ x, y }: { x: number; y: number }): number;
+    add(x: number, y: number): number;
   };
 
   const adapter = createTestAdapter();
@@ -285,16 +292,16 @@ test("does not add listener to adapter until first subscribed handler", () => {
 
   expect(adapter.addListener).not.toHaveBeenCalled();
 
-  handle("add", ({ x, y }) => x + y);
+  handle("add", (x, y) => x + y);
 
   expect(adapter.addListener).toHaveBeenCalled();
 });
 
 test("adds a single listener regardless of active handlers", () => {
   type Message = {
-    add({ x, y }: { x: number; y: number }): number;
-    subtract({ x, y }: { x: number; y: number }): number;
-    shout({ text }: { text: string }): string;
+    add(x: number, y: number): number;
+    subtract(x: number, y: number): number;
+    shout(text: string): string;
   };
 
   const adapter = createTestAdapter();
@@ -302,16 +309,16 @@ test("adds a single listener regardless of active handlers", () => {
 
   expect(adapter.addListener).not.toHaveBeenCalled();
 
-  handle("add", ({ x, y }) => x + y);
-  handle("subtract", ({ x, y }) => x - y);
-  handle("shout", ({ text }) => text.toUpperCase());
+  handle("add", (x, y) => x + y);
+  handle("subtract", (x, y) => x - y);
+  handle("shout", (text) => text.toUpperCase());
 
   expect(adapter.addListener).toHaveBeenCalledTimes(1);
 });
 
 test("can unsubscribe from a handler by calling the returned function", () => {
   type Message = {
-    add({ x, y }: { x: number; y: number }): number;
+    add(x: number, y: number): number;
   };
 
   const adapter = createTestAdapter();
@@ -344,14 +351,14 @@ test("can unsubscribe from a handler by calling the returned function", () => {
 
 test("removes listener on adapter when unsubscribing from last handler", () => {
   type Message = {
-    add({ x, y }: { x: number; y: number }): number;
+    add(x: number, y: number): number;
     shout({ text }: { text: string }): string;
   };
 
   const adapter = createTestAdapter();
   const handle = createRpcHandler<Message>(adapter);
 
-  const unsubscribeAdd = handle("add", ({ x, y }) => x + y);
+  const unsubscribeAdd = handle("add", (x, y) => x + y);
   const unsubscribeShout = handle("shout", ({ text }) => text.toUpperCase());
 
   unsubscribeAdd();
@@ -363,13 +370,13 @@ test("removes listener on adapter when unsubscribing from last handler", () => {
 
 test("re-adds listener on adapter when subscribing after unsubscribing", () => {
   type Message = {
-    add({ x, y }: { x: number; y: number }): number;
+    add(x: number, y: number): number;
   };
 
   const adapter = createTestAdapter();
   const handle = createRpcHandler<Message>(adapter);
 
-  const add = ({ x, y }: { x: number; y: number }) => x + y;
+  const add = (x: number, y: number) => x + y;
   const unsubscribe = handle("add", add);
 
   unsubscribe();
@@ -382,13 +389,13 @@ test("re-adds listener on adapter when subscribing after unsubscribing", () => {
 test("times out if no message received within default timeout", async () => {
   jest.useFakeTimers();
   type Message = {
-    add({ x, y }: { x: number; y: number }): number;
+    add(x: number, y: number): number;
   };
 
   const adapter = createTestAdapter();
   const client = createRpcClient<Message>(adapter);
 
-  const promise = client.request("add", { x: 1, y: 2 });
+  const promise = client.request("add", 1, 2);
 
   jest.advanceTimersByTime(30_000);
 
@@ -402,13 +409,13 @@ test("times out if no message received within default timeout", async () => {
 test("times out if no message received within configured timeout", async () => {
   jest.useFakeTimers();
   type Message = {
-    add({ x, y }: { x: number; y: number }): number;
+    add(x: number, y: number): number;
   };
 
   const adapter = createTestAdapter();
   const client = createRpcClient<Message>(adapter);
 
-  const promise = client.withTimeout(1000).request("add", { x: 1, y: 2 });
+  const promise = client.withTimeout(1000).request("add", 1, 2);
 
   jest.advanceTimersByTime(1000);
 
@@ -422,13 +429,13 @@ test("times out if no message received within configured timeout", async () => {
 test("resets timeout to default timeout after sending request", async () => {
   jest.useFakeTimers();
   type Message = {
-    add({ x, y }: { x: number; y: number }): number;
+    add(x: number, y: number): number;
   };
 
   const adapter = createTestAdapter();
   const client = createRpcClient<Message>(adapter);
 
-  const promise = client.withTimeout(1000).request("add", { x: 1, y: 2 });
+  const promise = client.withTimeout(1000).request("add", 1, 2);
 
   jest.advanceTimersByTime(1000);
 
@@ -436,7 +443,7 @@ test("resets timeout to default timeout after sending request", async () => {
     new Error("Timeout waiting for message")
   );
 
-  const promise2 = client.request("add", { x: 1, y: 2 });
+  const promise2 = client.request("add", 1, 2);
 
   jest.advanceTimersByTime(1000);
 
