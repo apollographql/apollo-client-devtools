@@ -105,9 +105,9 @@ export type DevtoolsRPCMessage = {
   getClientOperations(): GetContext<DevtoolsMachine>["clientContext"];
 };
 
-export function isApolloClientDevtoolsMessage<
-  Message extends Record<string, unknown>,
->(message: unknown): message is ApolloClientDevtoolsMessage<Message> {
+function isDevtoolsMessage<Message extends Record<string, unknown>>(
+  message: unknown
+): message is ApolloClientDevtoolsMessage<Message> {
   return (
     typeof message === "object" &&
     message !== null &&
@@ -119,19 +119,13 @@ export function isApolloClientDevtoolsMessage<
 export function isRPCRequestMessage(
   message: unknown
 ): message is RPCRequestMessage {
-  return (
-    isApolloClientDevtoolsMessage(message) &&
-    message.type === MessageType.RPCRequest
-  );
+  return isDevtoolsMessage(message) && message.type === MessageType.RPCRequest;
 }
 
 export function isRPCResponseMessage(
   message: unknown
 ): message is RPCResponseMessage {
-  return (
-    isApolloClientDevtoolsMessage(message) &&
-    message.type === MessageType.RPCResponse
-  );
+  return isDevtoolsMessage(message) && message.type === MessageType.RPCResponse;
 }
 
 export function isRPCMessage(message: unknown): message is RPCMessage {
@@ -141,7 +135,5 @@ export function isRPCMessage(message: unknown): message is RPCMessage {
 export function isEventMessage<Message extends Record<string, unknown>>(
   message: unknown
 ): message is ApolloClientDevtoolsEventMessage<Message> {
-  return (
-    isApolloClientDevtoolsMessage(message) && message.type === MessageType.Event
-  );
+  return isDevtoolsMessage(message) && message.type === MessageType.Event;
 }
