@@ -299,7 +299,7 @@ test("can unsubscribe from a handler by calling the returned function", () => {
   const unsubscribe = handle("add", add);
 
   adapter.simulateRPCMessage({
-    id: 1,
+    id: "abc",
     payload: { type: "add", params: { x: 1, y: 2 } },
   });
 
@@ -309,7 +309,7 @@ test("can unsubscribe from a handler by calling the returned function", () => {
   unsubscribe();
 
   adapter.simulateRPCMessage({
-    id: 2,
+    id: "xyz",
     payload: { type: "add", params: { x: 1, y: 2 } },
   });
 
@@ -400,7 +400,7 @@ test("forwards rpc messages from one adapter to another with bridge", () => {
   createRPCBridge(adapter1, adapter2);
 
   adapter1.simulateRPCMessage({
-    id: 1,
+    id: "abc",
     payload: { type: "add", params: { x: 1, y: 2 } },
   });
 
@@ -408,12 +408,12 @@ test("forwards rpc messages from one adapter to another with bridge", () => {
   expect(adapter2.postMessage).toHaveBeenCalledWith({
     source: "apollo-client-devtools",
     type: MessageType.RPC,
-    id: 1,
+    id: "abc",
     payload: { type: "add", params: { x: 1, y: 2 } },
   });
 
   adapter2.simulateRPCMessage({
-    id: 1,
+    id: "xyz",
     payload: { type: "add", params: { x: 1, y: 2 } },
   });
 
@@ -421,7 +421,7 @@ test("forwards rpc messages from one adapter to another with bridge", () => {
   expect(adapter1.postMessage).toHaveBeenCalledWith({
     source: "apollo-client-devtools",
     type: MessageType.RPC,
-    id: 1,
+    id: "xyz",
     payload: { type: "add", params: { x: 1, y: 2 } },
   });
 });
@@ -433,13 +433,13 @@ test("unsubscribes connection on bridge when calling returned function", () => {
   const unsubscribe = createRPCBridge(adapter1, adapter2);
 
   adapter1.simulateRPCMessage({
-    id: 1,
+    id: "abc",
     payload: { type: "add", params: { x: 1, y: 2 } },
   });
   expect(adapter2.postMessage).toHaveBeenCalled();
 
   adapter2.simulateRPCMessage({
-    id: 1,
+    id: "xyz",
     payload: { type: "add", params: { x: 1, y: 2 } },
   });
   expect(adapter1.postMessage).toHaveBeenCalled();
@@ -449,13 +449,13 @@ test("unsubscribes connection on bridge when calling returned function", () => {
   unsubscribe();
 
   adapter1.simulateRPCMessage({
-    id: 1,
+    id: "def",
     payload: { type: "add", params: { x: 1, y: 2 } },
   });
   expect(adapter2.postMessage).not.toHaveBeenCalled();
 
   adapter2.simulateRPCMessage({
-    id: 1,
+    id: "uvw",
     payload: { type: "add", params: { x: 1, y: 2 } },
   });
   expect(adapter1.postMessage).not.toHaveBeenCalled();
