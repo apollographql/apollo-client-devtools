@@ -439,25 +439,67 @@ test("resets timeout to default timeout after sending request", async () => {
   const adapter = createTestAdapter();
   const client = createRpcClient<Message>(adapter);
 
-  const promise = client.withTimeout(1000).request("add", 1, 2);
+  const t1 = client.withTimeout(1000);
+  const t2 = client.withTimeout(2000);
+
+  expect(client.timeout).toBe(30_000);
+  expect(t1.timeout).toBe(1000);
+  expect(t2.timeout).toBe(2000);
+
+  const finished = new Set<Promise<number>>();
+
+  const promise1 = t1.request("add", 1, 2);
+  promise1
+    .finally(() => finished.add(promise1))
+    .catch(() => {
+      /* prevent unhandled rejection warning */
+    });
+
+  const promise2 = t2.request("add", 1, 2);
+  promise2
+    .finally(() => finished.add(promise2))
+    .catch(() => {
+      /* prevent unhandled rejection warning */
+    });
 
   jest.advanceTimersByTime(1000);
 
-  await expect(promise).rejects.toEqual(
+  // wait for a tick, just to be sure the `finally` block has time to run
+  await Promise.resolve();
+  expect(finished.has(promise1)).toBe(true);
+  expect(finished.has(promise2)).toBe(false);
+
+  await expect(promise1).rejects.toEqual(
     new Error("Timeout waiting for message")
   );
 
-  const promise2 = client.request("add", 1, 2);
+  jest.advanceTimersByTime(1000);
+  // wait for a tick, just to be sure the `finally` block has time to run
+  await Promise.resolve();
+  expect(finished.has(promise2)).toBe(true);
+  await expect(promise2).rejects.toEqual(
+    new Error("Timeout waiting for message")
+  );
+
+  const promise3 = client.request("add", 1, 2);
+  promise3
+    .finally(() => finished.add(promise3))
+    .catch(() => {
+      /* prevent unhandled rejection warning */
+    });
 
   jest.advanceTimersByTime(1000);
 
-  await expect(
-    Promise.race([promise2, Promise.resolve("first")])
-  ).resolves.toEqual("first");
+  // wait for a tick, just to be sure the `finally` block has time to run
+  await Promise.resolve();
+  expect(finished.has(promise3)).toBe(false);
 
   jest.advanceTimersByTime(29_000);
 
-  await expect(promise2).rejects.toEqual(
+  // wait for a tick, just to be sure the `finally` block has time to run
+  await Promise.resolve();
+  expect(finished.has(promise3)).toBe(true);
+  await expect(promise3).rejects.toEqual(
     new Error("Timeout waiting for message")
   );
 
