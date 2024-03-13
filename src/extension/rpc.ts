@@ -81,7 +81,7 @@ export function createRpcHandler<Messages extends MessageCollection>(
   let removeListener: (() => void) | null = null;
 
   function handleMessage(message: unknown) {
-    if (isRPCMessage<{ type: string; params: RPCParams }>(message)) {
+    if (isRPCMessage<RPCRequestMessageFormat>(message)) {
       listeners.get(message.payload.type)?.(message);
     }
   }
