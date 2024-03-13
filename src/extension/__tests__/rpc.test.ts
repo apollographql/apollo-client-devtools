@@ -409,9 +409,9 @@ test("times out if no message received within configured timeout", async () => {
   const adapter = createTestAdapter();
   const client = createRpcClient<Message>(adapter);
 
-  const promise = client.request("add", { x: 1, y: 2 }, { timeoutMs: 1000 });
+  const promise = client.withTimeout(1000).request("add", { x: 1, y: 2 });
 
-  jest.advanceTimersByTime(1_000);
+  jest.advanceTimersByTime(1000);
 
   await expect(promise).rejects.toEqual(
     new Error("Timeout waiting for message")

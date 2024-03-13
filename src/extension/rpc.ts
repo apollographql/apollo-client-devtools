@@ -15,10 +15,10 @@ import {
 type MessageCollection = Record<string, (...parameters: [SafeAny]) => SafeAny>;
 
 export interface RpcClient<Messages extends MessageCollection> {
+  withTimeout: (timeoutMs: number) => RpcClient<Messages>;
   request: <TName extends keyof Messages & string>(
     name: TName,
-    params: Parameters<Messages[TName]>[0],
-    options?: { timeoutMs?: number }
+    params: Parameters<Messages[TName]>[0]
   ) => Promise<Awaited<ReturnType<Messages[TName]>>>;
 }
 
@@ -27,15 +27,24 @@ const DEFAULT_TIMEOUT = 30_000;
 export function createRpcClient<Messages extends MessageCollection>(
   adapter: MessageAdapter<RPCRequestMessage>
 ): RpcClient<Messages> {
-  return {
-    request: (name, params, options) => {
+  let timeout = DEFAULT_TIMEOUT;
+
+  const client: RpcClient<Messages> = {
+    withTimeout: (timeoutMs) => {
+      timeout = timeoutMs;
+      return client;
+    },
+    request: (name, params) => {
+      const configuredTimeout = timeout;
+      timeout = DEFAULT_TIMEOUT;
+
       return new Promise<SafeAny>((resolve, reject) => {
         const id = createId();
 
         const timeout = setTimeout(() => {
           removeListener();
           reject(new Error("Timeout waiting for message"));
-        }, options?.timeoutMs ?? DEFAULT_TIMEOUT);
+        }, configuredTimeout);
 
         const removeListener = adapter.addListener((message) => {
           if (!isRPCResponseMessage(message) || message.sourceId !== id) {
@@ -62,6 +71,8 @@ export function createRpcClient<Messages extends MessageCollection>(
       });
     },
   };
+
+  return client;
 }
 
 export function createRpcHandler<Messages extends MessageCollection>(
