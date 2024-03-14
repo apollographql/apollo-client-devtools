@@ -1,0 +1,7 @@
+<ul>
+  <li *ngFor="let product of (products | async)">
+    <b>{{product.id}} - {{ product.sku}}</b>
+    <p>Size: {{product?.dimensions?.size}}</p>
+    <p>Variation: {{product?.variation?.id + " - " + product?.variation?.name}}</p>
+  </li>
+</ul>
