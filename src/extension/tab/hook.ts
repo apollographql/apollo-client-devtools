@@ -116,6 +116,13 @@ function initializeHook() {
   }
 
   handleRpc("getClientOperations", getClientData);
+  handleRpc("connectToClient", async () => {
+    if (hook.ApolloClient) {
+      return getClientData();
+    }
+
+    return findClient().then(getClientData);
+  });
 
   function sendHookDataToDevTools(eventName: "connectToDevtools") {
     tab.send({

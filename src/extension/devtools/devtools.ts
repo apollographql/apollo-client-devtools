@@ -25,6 +25,30 @@ const rpcClient = createRpcClient<DevtoolsRPCMessage>(
   createPortMessageAdapter(port)
 );
 
+async function connectToClient(attempts = 0) {
+  if (attempts >= 3) {
+    return devtoolsMachine.send({ type: "timeout" });
+  }
+
+  try {
+    const clientContext = await rpcClient
+      .withTimeout(11_000)
+      .request("connectToClient");
+
+    devtoolsMachine.send({
+      type: "connect",
+      context: { clientContext },
+    });
+  } catch (e) {
+    // TODO: Extract message to a constant
+    if (e instanceof Error && e.message === "Client not found") {
+      return devtoolsMachine.send({ type: "clientNotFound" });
+    }
+
+    return connectToClient(attempts + 1);
+  }
+}
+
 // In case we can't connect to the tab, we should at least show something to the
 // user when we've attempted to connect a max number of times.
 function startConnectTimeout(attempts = 0) {

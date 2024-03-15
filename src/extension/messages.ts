@@ -103,6 +103,7 @@ export type PanelMessage =
 
 export type DevtoolsRPCMessage = {
   getClientOperations(): GetContext<DevtoolsMachine>["clientContext"];
+  connectToClient(): GetContext<DevtoolsMachine>["clientContext"];
 };
 
 function isDevtoolsMessage<Message extends Record<string, unknown>>(
