@@ -17,7 +17,8 @@ import {
   getMutations,
   getMainDefinition,
 } from "./helpers";
-import type { QueryResult } from "../../types";
+import type { SafeAny } from "../../types";
+import { type QueryResult } from "../../types";
 import { getPrivateAccess } from "../../privateAccess";
 import type { JSONObject } from "../../application/types/json";
 import type { FetchPolicy } from "../../application/components/Explorer/Explorer";
@@ -127,7 +128,7 @@ function initializeHook() {
     if (hook.ApolloClient) {
       sendHookDataToDevTools("connectToDevtools");
     } else {
-      findClient();
+      findClient().catch(() => {});
     }
   });
 
@@ -233,22 +234,26 @@ function initializeHook() {
    * Attempt to find the client on a 1-second interval for 10 seconds max
    */
   let interval: NodeJS.Timeout;
-  function findClient() {
-    let count = 0;
+  async function findClient() {
+    return new Promise<ApolloClient<SafeAny>>((resolve, reject) => {
+      let count = 0;
 
-    function initializeDevtoolsHook() {
-      if (count++ > 10) {
-        clearInterval(interval);
-        tab.send({ type: "clientNotFound" });
+      function initializeDevtoolsHook() {
+        if (count++ > 10) {
+          clearInterval(interval);
+          tab.send({ type: "clientNotFound" });
+          reject(new Error("Client not found"));
+        }
+        if (window.__APOLLO_CLIENT__) {
+          registerClient(window.__APOLLO_CLIENT__);
+          resolve(window.__APOLLO_CLIENT__);
+        }
       }
-      if (window.__APOLLO_CLIENT__) {
-        registerClient(window.__APOLLO_CLIENT__);
-      }
-    }
 
-    clearInterval(interval);
-    interval = setInterval(initializeDevtoolsHook, 1000);
-    initializeDevtoolsHook(); // call immediately to reduce lag if devtools are already available
+      clearInterval(interval);
+      interval = setInterval(initializeDevtoolsHook, 1000);
+      initializeDevtoolsHook(); // call immediately to reduce lag if devtools are already available
+    });
   }
 
   function registerClient(client: ApolloClient<any>) {
@@ -277,7 +282,7 @@ function initializeHook() {
     (preExisting as Array<ApolloClient<any>>).forEach(registerClient);
   }
 
-  findClient();
+  findClient().catch(() => {});
 }
 
 initializeHook();
