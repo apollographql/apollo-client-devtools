@@ -10,6 +10,7 @@ import type {
 import { getPanelActor } from "./panelActor";
 import { createPortMessageAdapter } from "../messageAdapters";
 import { createRpcClient } from "../rpc";
+import { CLIENT_NOT_FOUND } from "../errorMessages";
 
 const inspectedTabId = browser.devtools.inspectedWindow.tabId;
 
@@ -40,8 +41,7 @@ async function connectToClient(attempts = 0) {
       context: { clientContext },
     });
   } catch (e) {
-    // TODO: Extract message to a constant
-    if (e instanceof Error && e.message === "Client not found") {
+    if (e instanceof Error && e.message === CLIENT_NOT_FOUND) {
       return devtoolsMachine.send({ type: "clientNotFound" });
     }
 

@@ -26,6 +26,7 @@ import { createWindowActor } from "../actor";
 import type { ClientMessage, DevtoolsRPCMessage } from "../messages";
 import { createWindowMessageAdapter } from "../messageAdapters";
 import { createRpcHandler } from "../rpc";
+import { CLIENT_NOT_FOUND } from "../errorMessages";
 
 const DEVTOOLS_KEY = Symbol.for("apollo.devtools");
 
@@ -249,7 +250,7 @@ function initializeHook() {
         if (count++ > 10) {
           clearInterval(interval);
           tab.send({ type: "clientNotFound" });
-          reject(new Error("Client not found"));
+          reject(new Error(CLIENT_NOT_FOUND));
         }
         if (window.__APOLLO_CLIENT__) {
           registerClient(window.__APOLLO_CLIENT__);
