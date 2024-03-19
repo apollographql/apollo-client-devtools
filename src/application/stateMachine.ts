@@ -9,6 +9,7 @@ interface Machine<
   getState: () => CurrentState<State, Context>;
   subscribe: (listener: Listener<State, EventName, Context>) => () => void;
   onTransition: (state: State, listener: () => void) => () => void;
+  onLeave: (state: State, listener: () => void) => void;
   matches: (state: State) => boolean;
 }
 
@@ -77,6 +78,7 @@ export function createMachine<
 ): Machine<State, EventName, Context> {
   const listeners = new Set<Listener<State, EventName, Context>>();
   const stateListeners = new Map<State, Set<() => void>>();
+  const leaveListeners = new Map<State, Set<() => void>>();
 
   const current = {
     context: machine.initialContext ?? ({} as Context),
@@ -101,12 +103,14 @@ export function createMachine<
   }
 
   function transitionTo(state: State, sourceEvent: Event<EventName, Context>) {
+    const fromState = current.value;
     current.value = state;
 
     if (sourceEvent.context) {
       current.context = { ...current.context, ...sourceEvent.context };
     }
 
+    leaveListeners.get(fromState)?.forEach((listener) => listener());
     listeners.forEach((listener) =>
       listener({ state: current, event: sourceEvent })
     );
@@ -140,5 +144,16 @@ export function createMachine<
     return current.value === state;
   }
 
-  return { send, getState, subscribe, onTransition, matches };
+  function onLeave(state: State, listener: () => void) {
+    if (!stateListeners.has(state)) {
+      leaveListeners.set(state, new Set());
+    }
+
+    const listeners = leaveListeners.get(state)!;
+    listeners.add(listener);
+
+    return () => listeners?.delete(listener);
+  }
+
+  return { send, getState, subscribe, onTransition, onLeave, matches };
 }
