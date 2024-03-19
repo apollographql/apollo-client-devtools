@@ -33,7 +33,7 @@ async function connectToClient(attempts = 0) {
 
   try {
     const clientContext = await rpcClient
-      .withTimeout(11_000)
+      .withTimeout(15_000)
       .request("connectToClient");
 
     devtoolsMachine.send({
