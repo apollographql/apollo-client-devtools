@@ -189,7 +189,7 @@ test("maintains error name", async () => {
     await client.request("add", 1, 2);
     throw new Error("Should not reach");
   } catch (e) {
-    expect(e).toBeInstanceOf(Error);
+    expect(e).toBeInstanceOf(SyntaxError);
     expect((e as Error).name).toBe("SyntaxError");
   }
 });
