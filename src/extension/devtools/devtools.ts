@@ -1,4 +1,5 @@
 import browser from "webextension-polyfill";
+import type { DevtoolsMachine } from "../../application/machines";
 import { devtoolsMachine } from "../../application/machines";
 import type { Actor } from "../actor";
 import { createPortActor } from "../actor";
@@ -11,6 +12,7 @@ import { getPanelActor } from "./panelActor";
 import { createPortMessageAdapter } from "../messageAdapters";
 import { createRpcClient } from "../rpc";
 import { CLIENT_NOT_FOUND, RPC_MESSAGE_TIMEOUT } from "../errorMessages";
+import type { GetContext } from "../../application/stateMachine";
 
 const inspectedTabId = browser.devtools.inspectedWindow.tabId;
 
@@ -25,15 +27,21 @@ const rpcClient = createRpcClient<DevtoolsRPCMessage>(
   createPortMessageAdapter(port)
 );
 
+let connectToClientPromise: Promise<
+  GetContext<DevtoolsMachine>["clientContext"]
+> | null = null;
+
 async function connectToClient(attempts = 0) {
   if (attempts >= 3) {
     return devtoolsMachine.send({ type: "timeout" });
   }
 
   try {
-    const clientContext = await rpcClient
+    connectToClientPromise ||= rpcClient
       .withTimeout(15_000)
       .request("connectToClient");
+
+    const clientContext = await connectToClientPromise;
 
     devtoolsMachine.send({
       type: "connect",
@@ -49,6 +57,8 @@ async function connectToClient(attempts = 0) {
     }
 
     // TODO: Add error state for unknown error
+  } finally {
+    connectToClientPromise = null;
   }
 }
 
@@ -83,7 +93,7 @@ devtoolsMachine.onTransition("notFound", () => {
   unsubscribeFromAll();
 });
 
-// connectToClient();
+connectToClient();
 
 function startRequestInterval(ms = 500) {
   let id: NodeJS.Timeout;
