@@ -77,7 +77,7 @@ export function createMachine<
   machine: MachineConfig<State, EventName, Context>
 ): Machine<State, EventName, Context> {
   const listeners = new Set<Listener<State, EventName, Context>>();
-  const stateListeners = new Map<State, Set<() => void>>();
+  const transitionListeners = new Map<State, Set<() => void>>();
   const leaveListeners = new Map<State, Set<() => void>>();
 
   const current = {
@@ -114,7 +114,7 @@ export function createMachine<
     listeners.forEach((listener) =>
       listener({ state: current, event: sourceEvent })
     );
-    stateListeners.get(state)?.forEach((listener) => listener());
+    transitionListeners.get(state)?.forEach((listener) => listener());
   }
 
   function getState() {
@@ -130,11 +130,11 @@ export function createMachine<
   }
 
   function onTransition(state: State, listener: () => void) {
-    if (!stateListeners.has(state)) {
-      stateListeners.set(state, new Set());
+    if (!transitionListeners.has(state)) {
+      transitionListeners.set(state, new Set());
     }
 
-    const listeners = stateListeners.get(state)!;
+    const listeners = transitionListeners.get(state)!;
     listeners.add(listener);
 
     return () => listeners?.delete(listener);
@@ -145,7 +145,7 @@ export function createMachine<
   }
 
   function onLeave(state: State, listener: () => void) {
-    if (!stateListeners.has(state)) {
+    if (!transitionListeners.has(state)) {
       leaveListeners.set(state, new Set());
     }
 
