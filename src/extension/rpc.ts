@@ -49,7 +49,7 @@ export function createRpcClient<Messages extends MessageCollection>(
           }
 
           if ("error" in message) {
-            reject(message.error);
+            reject(new Error(message.error.message));
           } else {
             resolve(message.result);
           }
@@ -126,7 +126,16 @@ export function createRpcHandler<Messages extends MessageCollection>(
           type: MessageType.RPCResponse,
           id: createId(),
           sourceId: id,
-          error,
+          error: {
+            // Unfortunately raw error instances do not serialize properly when
+            // sending through the messaging system
+            // (window.postMessage/port.postMessage). As such, we send the raw
+            // message property itself and rewrap it back into an Error when
+            // listening for the response message. We do lose the stack trace in
+            // this process, but until we have a need for it, we can leave
+            // this as-is.
+            message: error instanceof Error ? error.message : String(error),
+          },
         });
       }
     });
