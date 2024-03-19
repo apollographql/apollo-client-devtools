@@ -75,7 +75,7 @@ clientPort.on("disconnectFromDevtools", () => {
   devtoolsMachine.send({ type: "disconnect" });
 });
 
-devtoolsMachine.onTransition("retrying", async () => {
+devtoolsMachine.onTransition("retrying", () => {
   connectToClient();
 });
 
