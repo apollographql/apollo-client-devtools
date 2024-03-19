@@ -132,14 +132,6 @@ function initializeHook() {
     });
   }
 
-  tab.on("connectToClient", () => {
-    if (hook.ApolloClient) {
-      sendHookDataToDevTools("connectToDevtools");
-    } else {
-      findClient().catch(() => {});
-    }
-  });
-
   tab.on("explorerRequest", (message) => {
     const {
       operation: query,
@@ -249,7 +241,6 @@ function initializeHook() {
       function initializeDevtoolsHook() {
         if (count++ > 10) {
           clearInterval(interval);
-          tab.send({ type: "clientNotFound" });
           reject(new Error(CLIENT_NOT_FOUND));
         }
         if (window.__APOLLO_CLIENT__) {

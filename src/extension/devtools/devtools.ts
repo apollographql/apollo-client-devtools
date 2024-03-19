@@ -10,12 +10,11 @@ import type {
 import { getPanelActor } from "./panelActor";
 import { createPortMessageAdapter } from "../messageAdapters";
 import { createRpcClient } from "../rpc";
-import { CLIENT_NOT_FOUND } from "../errorMessages";
+import { CLIENT_NOT_FOUND, RPC_MESSAGE_TIMEOUT } from "../errorMessages";
 
 const inspectedTabId = browser.devtools.inspectedWindow.tabId;
 
 let panelHidden = true;
-let connectTimeoutId: NodeJS.Timeout;
 
 const port = browser.runtime.connect({
   name: inspectedTabId.toString(),
@@ -45,24 +44,12 @@ async function connectToClient(attempts = 0) {
       return devtoolsMachine.send({ type: "clientNotFound" });
     }
 
-    return connectToClient(attempts + 1);
-  }
-}
-
-// In case we can't connect to the tab, we should at least show something to the
-// user when we've attempted to connect a max number of times.
-function startConnectTimeout(attempts = 0) {
-  connectTimeoutId = setTimeout(() => {
-    if (attempts < 3) {
-      clientPort.send({ type: "connectToClient" });
-      startConnectTimeout(attempts + 1);
-    } else {
-      devtoolsMachine.send({ type: "timeout" });
+    if (e instanceof Error && e.message === RPC_MESSAGE_TIMEOUT) {
+      return connectToClient(attempts + 1);
     }
-    // Pick a threshold above the time it takes to determine if the client is
-    // found on the page. This ensures we don't reset that counter and provide a
-    // proper "not found" message.
-  }, 11_000);
+
+    // TODO: Add error state for unknown error
+  }
 }
 
 clientPort.on("connectToDevtools", (message) => {
@@ -74,26 +61,15 @@ clientPort.on("connectToDevtools", (message) => {
   });
 });
 
-clientPort.on("connectToClientTimeout", () => {
-  devtoolsMachine.send({ type: "timeout" });
-});
-
 clientPort.on("disconnectFromDevtools", () => {
   devtoolsMachine.send({ type: "disconnect" });
 });
 
-clientPort.on("clientNotFound", () => {
-  clearTimeout(connectTimeoutId);
-  devtoolsMachine.send({ type: "clientNotFound" });
-});
-
-devtoolsMachine.onTransition("retrying", () => {
-  clientPort.send({ type: "connectToClient" });
+devtoolsMachine.onTransition("retrying", async () => {
+  connectToClient();
 });
 
 devtoolsMachine.onTransition("connected", () => {
-  clearTimeout(connectTimeoutId);
-
   if (!panelHidden) {
     unsubscribers.add(startRequestInterval());
   }
@@ -104,11 +80,10 @@ devtoolsMachine.onTransition("disconnected", () => {
 });
 
 devtoolsMachine.onTransition("notFound", () => {
-  clearTimeout(connectTimeoutId);
   unsubscribeFromAll();
 });
 
-clientPort.send({ type: "connectToClient" });
+// connectToClient();
 
 function startRequestInterval(ms = 500) {
   let id: NodeJS.Timeout;
@@ -175,8 +150,7 @@ async function createDevtoolsPanel() {
     }
 
     if (devtoolsMachine.matches("initialized")) {
-      clientPort.send({ type: "connectToClient" });
-      startConnectTimeout();
+      connectToClient();
     }
 
     if (devtoolsMachine.matches("connected") && panelHidden) {

@@ -19,11 +19,9 @@ createRPCBridge(
   createWindowMessageAdapter(window)
 );
 
-devtools.forward("connectToClient", tab);
 devtools.forward("explorerSubscriptionTermination", tab);
 devtools.forward("explorerRequest", tab);
 
-tab.forward("clientNotFound", devtools);
 tab.forward("connectToDevtools", devtools);
 tab.forward("disconnectFromDevtools", devtools);
 tab.forward("explorerResponse", devtools);
