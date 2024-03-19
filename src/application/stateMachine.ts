@@ -8,7 +8,10 @@ interface Machine<
   send: (event: Event<EventName, Context>) => void;
   getState: () => CurrentState<State, Context>;
   subscribe: (listener: Listener<State, EventName, Context>) => () => void;
-  onTransition: (state: State, listener: () => void) => () => void;
+  onTransition: (
+    state: State,
+    listener: () => void
+  ) => () => void | (() => void);
   onLeave: (state: State, listener: () => void) => void;
   matches: (state: State) => boolean;
 }
@@ -77,7 +80,7 @@ export function createMachine<
   machine: MachineConfig<State, EventName, Context>
 ): Machine<State, EventName, Context> {
   const listeners = new Set<Listener<State, EventName, Context>>();
-  const transitionListeners = new Map<State, Set<() => void>>();
+  const transitionListeners = new Map<State, Set<() => void | (() => void)>>();
   const leaveListeners = new Map<State, Set<() => void>>();
 
   const current = {
@@ -114,7 +117,16 @@ export function createMachine<
     listeners.forEach((listener) =>
       listener({ state: current, event: sourceEvent })
     );
-    transitionListeners.get(state)?.forEach((listener) => listener());
+    transitionListeners.get(state)?.forEach((listener) => {
+      const handleLeave = listener();
+
+      if (handleLeave) {
+        const unsubscribe = onLeave(state, (...args) => {
+          handleLeave(...args);
+          unsubscribe();
+        });
+      }
+    });
   }
 
   function getState() {
@@ -137,7 +149,9 @@ export function createMachine<
     const listeners = transitionListeners.get(state)!;
     listeners.add(listener);
 
-    return () => listeners?.delete(listener);
+    return () => {
+      listeners?.delete(listener);
+    };
   }
 
   function matches(state: State) {
@@ -145,14 +159,16 @@ export function createMachine<
   }
 
   function onLeave(state: State, listener: () => void) {
-    if (!transitionListeners.has(state)) {
+    if (!leaveListeners.has(state)) {
       leaveListeners.set(state, new Set());
     }
 
     const listeners = leaveListeners.get(state)!;
     listeners.add(listener);
 
-    return () => listeners?.delete(listener);
+    return () => {
+      listeners?.delete(listener);
+    };
   }
 
   return { send, getState, subscribe, onTransition, onLeave, matches };

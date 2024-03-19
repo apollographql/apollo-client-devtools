@@ -243,3 +243,119 @@ test("runs leave listeners before transition listeners", () => {
   expect(listener).toHaveBeenNthCalledWith(1, "onLeave");
   expect(listener).toHaveBeenNthCalledWith(2, "onTransition");
 });
+
+test("can return onLeave listener from onTransition", () => {
+  const machine = createMachine({
+    initial: "off",
+    types: {} as {
+      events: { type: "turnOn" } | { type: "turnOff" };
+    },
+    states: {
+      off: {
+        events: {
+          turnOn: "on",
+        },
+      },
+      on: {
+        events: {
+          turnOff: "off",
+        },
+      },
+    },
+  });
+
+  const listener = jest.fn();
+  machine.onTransition("on", () => {
+    return () => listener();
+  });
+
+  machine.send({ type: "turnOn" });
+  expect(listener).not.toHaveBeenCalled();
+
+  machine.send({ type: "turnOff" });
+  expect(listener).toHaveBeenCalledTimes(1);
+
+  machine.send({ type: "turnOn" });
+  expect(listener).toHaveBeenCalledTimes(1);
+
+  machine.send({ type: "turnOff" });
+  expect(listener).toHaveBeenCalledTimes(2);
+});
+
+test("only runs onLeave listener returned from onTransition once", () => {
+  const machine = createMachine({
+    initial: "off",
+    types: {} as {
+      events: { type: "turnOn" } | { type: "turnOff" };
+    },
+    states: {
+      off: {
+        events: {
+          turnOn: "on",
+        },
+      },
+      on: {
+        events: {
+          turnOff: "off",
+        },
+      },
+    },
+  });
+
+  let count = 0;
+  const listener = jest.fn();
+
+  machine.onTransition("on", () => {
+    if (count++ < 1) {
+      return () => listener();
+    }
+  });
+
+  machine.send({ type: "turnOn" });
+  machine.send({ type: "turnOff" });
+  expect(listener).toHaveBeenCalledTimes(1);
+
+  machine.send({ type: "turnOn" });
+  machine.send({ type: "turnOff" });
+  expect(listener).toHaveBeenCalledTimes(1);
+});
+
+test("can run returned onLeave and dedicated onLeave handler for a single state", () => {
+  const machine = createMachine({
+    initial: "off",
+    types: {} as {
+      events: { type: "turnOn" } | { type: "turnOff" };
+    },
+    states: {
+      off: {
+        events: {
+          turnOn: "on",
+        },
+      },
+      on: {
+        events: {
+          turnOff: "off",
+        },
+      },
+    },
+  });
+
+  const inlineListener = jest.fn();
+  const onLeaveListener = jest.fn();
+
+  machine.onTransition("on", () => {
+    return () => inlineListener();
+  });
+
+  machine.onLeave("on", onLeaveListener);
+
+  machine.send({ type: "turnOn" });
+  machine.send({ type: "turnOff" });
+  expect(inlineListener).toHaveBeenCalledTimes(1);
+  expect(onLeaveListener).toHaveBeenCalledTimes(1);
+
+  machine.send({ type: "turnOn" });
+  machine.send({ type: "turnOff" });
+  expect(inlineListener).toHaveBeenCalledTimes(2);
+  expect(onLeaveListener).toHaveBeenCalledTimes(2);
+});
