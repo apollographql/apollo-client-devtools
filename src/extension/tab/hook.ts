@@ -280,8 +280,6 @@ function initializeHook() {
   if (Array.isArray(preExisting)) {
     (preExisting as Array<ApolloClient<any>>).forEach(registerClient);
   }
-
-  findClient().catch(() => {});
 }
 
 initializeHook();
