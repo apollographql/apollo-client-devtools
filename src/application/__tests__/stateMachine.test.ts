@@ -214,3 +214,32 @@ test("can listen to transitions from a specific state", () => {
   expect(onListener).toHaveBeenCalledTimes(1);
   expect(offListener).toHaveBeenCalledTimes(1);
 });
+
+test("runs leave listeners before transition listeners", () => {
+  const machine = createMachine({
+    initial: "off",
+    types: {} as {
+      events: { type: "turnOn" } | { type: "turnOff" };
+    },
+    states: {
+      off: {
+        events: {
+          turnOn: "on",
+        },
+      },
+      on: {
+        events: {
+          turnOff: "off",
+        },
+      },
+    },
+  });
+
+  const listener = jest.fn();
+  machine.onLeave("off", () => listener("onLeave"));
+  machine.onTransition("on", () => listener("onTransition"));
+
+  machine.send({ type: "turnOn" });
+  expect(listener).toHaveBeenNthCalledWith(1, "onLeave");
+  expect(listener).toHaveBeenNthCalledWith(2, "onTransition");
+});
