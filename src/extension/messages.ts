@@ -1,6 +1,7 @@
 import type { ExplorerResponse, SafeAny } from "../types";
 import type { GetStates, GetContext } from "../application/stateMachine";
 import type { DevtoolsMachine } from "../application/machines";
+import type { ErrorLike } from "serialize-error";
 
 export interface MessageFormat {
   type: string;
@@ -26,7 +27,7 @@ export type RPCErrorResponseMessage = {
   type: MessageType.RPCResponse;
   id: string;
   sourceId: string;
-  error: { name?: string; message: string };
+  error: ErrorLike | string;
 };
 
 export type RPCSuccessResponseMessage<Result = unknown> = {

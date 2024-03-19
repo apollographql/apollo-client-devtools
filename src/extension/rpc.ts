@@ -1,3 +1,5 @@
+import type { ErrorLike } from "serialize-error";
+import { deserializeError, isErrorLike, serializeError } from "serialize-error";
 import type { NoInfer, SafeAny } from "../types";
 import { RPC_MESSAGE_TIMEOUT } from "./errorMessages";
 import type { MessageAdapter } from "./messageAdapters";
@@ -49,11 +51,9 @@ export function createRpcClient<Messages extends MessageCollection>(
           }
 
           if ("error" in message) {
-            const error = new Error(message.error.message);
-
-            if (message.error.name) {
-              error.name = message.error.name;
-            }
+            const error = isErrorLike(message.error)
+              ? deserializeError(message.error)
+              : new Error(message.error);
 
             reject(error);
           } else {
@@ -128,9 +128,7 @@ export function createRpcHandler<Messages extends MessageCollection>(
         });
       } catch (e) {
         const error =
-          e instanceof Error
-            ? { name: e.name, message: e.message }
-            : { message: String(e) };
+          e instanceof Error ? (serializeError(e) as ErrorLike) : String(e);
 
         adapter.postMessage({
           source: "apollo-client-devtools",
