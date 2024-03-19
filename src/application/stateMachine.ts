@@ -12,7 +12,7 @@ interface Machine<
     state: State,
     listener: () => void
   ) => () => void | (() => void);
-  onLeave: (state: State, listener: () => void) => void;
+  onLeave: (state: State, listener: () => void) => () => void;
   matches: (state: State) => boolean;
 }
 
