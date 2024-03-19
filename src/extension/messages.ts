@@ -26,7 +26,7 @@ export type RPCErrorResponseMessage = {
   type: MessageType.RPCResponse;
   id: string;
   sourceId: string;
-  error: { message: string };
+  error: { name?: string; message: string };
 };
 
 export type RPCSuccessResponseMessage<Result = unknown> = {

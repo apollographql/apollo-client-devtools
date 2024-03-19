@@ -171,6 +171,29 @@ test("rejects when async handler rejects", async () => {
   );
 });
 
+test("maintains error name", async () => {
+  type Message = {
+    add(x: number, y: number): number;
+  };
+
+  const handlerAdapter = createTestAdapter();
+  const clientAdapter = createTestAdapter();
+  createBridge(clientAdapter, handlerAdapter);
+
+  const client = createRpcClient<Message>(clientAdapter);
+  const handle = createRpcHandler<Message>(handlerAdapter);
+
+  handle("add", () => Promise.reject(new SyntaxError()));
+
+  try {
+    await client.request("add", 1, 2);
+    throw new Error("Should not reach");
+  } catch (e) {
+    expect(e).toBeInstanceOf(Error);
+    expect((e as Error).name).toBe("SyntaxError");
+  }
+});
+
 test("can handle multiple rpc messages", async () => {
   type Message = {
     add(x: number, y: number): number;
