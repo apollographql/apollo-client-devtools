@@ -1,4 +1,5 @@
 import type { NoInfer, SafeAny } from "../types";
+import { RPC_MESSAGE_TIMEOUT } from "./errorMessages";
 import type { MessageAdapter } from "./messageAdapters";
 import type {
   RPCMessage,
@@ -39,7 +40,7 @@ export function createRpcClient<Messages extends MessageCollection>(
 
         const timeout = setTimeout(() => {
           removeListener();
-          reject(new Error("Timeout waiting for message"));
+          reject(new Error(RPC_MESSAGE_TIMEOUT));
         }, this.timeout);
 
         const removeListener = adapter.addListener((message) => {
