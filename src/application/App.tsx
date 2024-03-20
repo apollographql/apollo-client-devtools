@@ -94,6 +94,9 @@ export const App = () => {
   const [clientNotFoundModalOpen, setClientNotFoundModalOpen] = useState(false);
   const selected = useReactiveVar<Screens>(currentScreen);
   const state = useReactiveVar(devtoolsState);
+  const [clients, setClients] = useState<Array<{ id: string; name: string }>>(
+    []
+  );
   const [embeddedExplorerIFrame, setEmbeddedExplorerIFrame] =
     useState<HTMLIFrameElement | null>(null);
 
@@ -122,7 +125,7 @@ export const App = () => {
 
   useEffect(() => {
     rpcClient.request("getClients").then((clients) => {
-      console.log(clients);
+      setClients(clients);
     });
   }, []);
 
@@ -168,15 +171,20 @@ export const App = () => {
           <Tabs.Trigger value={Screens.Explorer}>Explorer</Tabs.Trigger>
 
           <div className="flex flex-1 justify-end gap-2">
-            <Select
-              align="end"
-              size="sm"
-              defaultValue="1"
-              onValueChange={console.log}
-            >
-              <Select.Option value="1">First</Select.Option>
-              <Select.Option value="2">Second</Select.Option>
-            </Select>
+            {clients.length > 0 && (
+              <Select
+                align="end"
+                size="sm"
+                defaultValue={clients[0].id}
+                onValueChange={console.log}
+              >
+                {clients.map((client) => (
+                  <Select.Option key={client.id} value={client.id}>
+                    {client.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            )}
             <Button
               className="peer-[.is-explorer-button]:ml-2"
               size="sm"
