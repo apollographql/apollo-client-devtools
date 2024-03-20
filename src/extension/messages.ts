@@ -106,6 +106,10 @@ export type DevtoolsRPCMessage = {
   getClientOperations(): GetContext<DevtoolsMachine>["clientContext"];
 };
 
+export type PanelRPCMessage = {
+  getClients(): Array<{ id: string; name: string }>;
+};
+
 function isDevtoolsMessage<Message extends Record<string, unknown>>(
   message: unknown
 ): message is ApolloClientDevtoolsMessage<Message> {

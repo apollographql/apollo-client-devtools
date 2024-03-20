@@ -24,8 +24,10 @@ import type { DevtoolsMachine } from "./machines";
 import { ClientNotFoundModal } from "./components/ClientNotFoundModal";
 import { getPanelActor } from "../extension/devtools/panelActor";
 import { Select } from "./components/Select";
+import { getRpcClient } from "../extension/devtools/panelRpcClient";
 
 const panelWindow = getPanelActor(window);
+const rpcClient = getRpcClient(window);
 
 type DevtoolsState = GetStates<DevtoolsMachine>;
 
@@ -117,6 +119,12 @@ export const App = () => {
 
     return () => clearTimeout(timeout);
   }, [state]);
+
+  useEffect(() => {
+    rpcClient.request("getClients").then((clients) => {
+      console.log(clients);
+    });
+  }, []);
 
   return (
     <>

@@ -22,14 +22,18 @@ import { getPrivateAccess } from "../../privateAccess";
 import type { JSONObject } from "../../application/types/json";
 import type { FetchPolicy } from "../../application/components/Explorer/Explorer";
 import { createWindowActor } from "../actor";
-import type { ClientMessage, DevtoolsRPCMessage } from "../messages";
+import type {
+  ClientMessage,
+  DevtoolsRPCMessage,
+  PanelRPCMessage,
+} from "../messages";
 import { createWindowMessageAdapter } from "../messageAdapters";
 import { createRpcHandler } from "../rpc";
 
 const DEVTOOLS_KEY = Symbol.for("apollo.devtools");
 
 const tab = createWindowActor<ClientMessage>(window);
-const handleRpc = createRpcHandler<DevtoolsRPCMessage>(
+const handleRpc = createRpcHandler<DevtoolsRPCMessage & PanelRPCMessage>(
   createWindowMessageAdapter(window)
 );
 
@@ -115,6 +119,12 @@ function initializeHook() {
   }
 
   handleRpc("getClientOperations", getClientData);
+  handleRpc("getClients", () => {
+    return [...knownClients].map((_, index) => ({
+      id: String(index),
+      name: `Client ${index}`,
+    }));
+  });
 
   function sendHookDataToDevTools(eventName: "connectToDevtools") {
     tab.send({
