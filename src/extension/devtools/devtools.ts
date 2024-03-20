@@ -150,6 +150,8 @@ async function createDevtoolsPanel() {
         panelWindow.send({ type: "devtoolsStateChanged", state: state.value });
       });
 
+      clientPort.forward("registerClient", panelWindow);
+
       createRPCBridge(
         createPortMessageAdapter(port),
         createWindowMessageAdapter(window)

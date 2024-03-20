@@ -280,6 +280,13 @@ function initializeHook() {
     // incase initial update was missed because the client wasn't ready, send the create devtools event.
     // devtools checks to see if it's already created, so this won't create duplicate tabs
     sendHookDataToDevTools("connectToDevtools");
+    tab.send({
+      type: "registerClient",
+      payload: {
+        id: knownClients.get(client)!,
+        name: `Apollo Client ${knownClients.size - 1}`,
+      },
+    });
   }
 
   const preExisting = window[DEVTOOLS_KEY];
