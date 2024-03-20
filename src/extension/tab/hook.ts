@@ -308,8 +308,8 @@ function initializeHook() {
     client.stop = () => {
       const clientId = knownClients.get(client)!;
       knownClients.delete(client);
-      originalStop.call(client);
       tab.send({ type: "terminateClient", clientId });
+      originalStop.call(client);
     };
   }
 }
