@@ -142,10 +142,9 @@ async function createDevtoolsPanel() {
         devtoolsMachine.send("retry");
       });
 
-      const subscription = devtoolsMachine.subscribe(({ value }) => {
+      devtoolsMachine.subscribe(({ value }) => {
         panelWindow.send({ type: "devtoolsStateChanged", state: value });
       });
-      unsubscribers.add(subscription.unsubscribe);
 
       connectedToPanel = true;
     }
