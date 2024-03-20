@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import {
   ApolloClient,
   ApolloProvider,
@@ -7,6 +7,7 @@ import {
   makeVar,
   useReactiveVar,
 } from "@apollo/client";
+import { Launches } from "./components/Launches";
 
 function createClient() {
   return new ApolloClient({
@@ -39,6 +40,9 @@ function App() {
           Create client
         </button>
       </div>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Launches />
+      </Suspense>
     </ApolloProvider>
   );
 }
