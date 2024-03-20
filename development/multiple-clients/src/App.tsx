@@ -40,6 +40,16 @@ function App() {
         <button onClick={() => clientsVar([...clientsVar(), createClient()])}>
           Create new client
         </button>
+        <button
+          onClick={() => {
+            const client = clients[selectedClientIndex];
+            client.stop();
+
+            clientsVar(clientsVar().filter((c) => c !== client));
+          }}
+        >
+          Terminate client
+        </button>
       </div>
       <Suspense fallback={<div>Loading...</div>}>
         <Launches offset={selectedClientIndex} />
