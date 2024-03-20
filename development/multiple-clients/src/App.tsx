@@ -26,7 +26,7 @@ function App() {
   return (
     <ApolloProvider client={clients[selectedClientIndex]}>
       <select
-        value={0}
+        value={selectedClientIndex}
         onChange={(e) => setSelectedClientIndex(Number(e.target.value))}
       >
         {clients.map((_, index) => (
