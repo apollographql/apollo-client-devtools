@@ -124,9 +124,19 @@ export const App = () => {
 
   useEffect(() => {
     rpcClient.request("getClients").then(setClients);
+  }, []);
 
+  useEffect(() => {
     return panelWindow.on("registerClient", (message) => {
       setClients((clients) => [...clients, message.payload]);
+    });
+  }, []);
+
+  useEffect(() => {
+    return panelWindow.on("destroyClient", (message) => {
+      setClients((clients) =>
+        clients.filter((client) => client.id !== message.payload.clientId)
+      );
     });
   }, []);
 
