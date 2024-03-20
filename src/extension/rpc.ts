@@ -134,7 +134,7 @@ export function createRpcHandler<Messages extends MessageCollection>(
         adapter.postMessage({
           source: "apollo-client-devtools",
           type: MessageType.RPCResponse,
-          id: createId({ length: 10 }),
+          id: createId(),
           sourceId: id,
           error,
         });
