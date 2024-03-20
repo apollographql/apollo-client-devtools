@@ -16,8 +16,4 @@ module.exports = {
       "<rootDir>/src/__mocks__/fileMock.js",
     "\\.(css|less)$": "<rootDir>/src/__mocks__/styleMock.js",
   },
-  transformIgnorePatterns: ["node_modules/(?!(serialize-error)/)"],
-  transform: {
-    "node_modules/serialize-error/.+\\.(j|t)sx?$": "ts-jest",
-  },
 };

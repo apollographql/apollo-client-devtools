@@ -54,7 +54,6 @@
     "react-json-tree": "^0.18.0",
     "react-resizable-panels": "^1.0.0",
     "react-syntax-highlighter": "^15.5.0",
-    "serialize-error": "^11.0.3",
     "zen-observable": "^0.10.0"
   },
   "devDependencies": {
