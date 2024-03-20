@@ -14,6 +14,7 @@ import {
   isRPCRequestMessage,
   isRPCResponseMessage,
 } from "./messages";
+import { createId } from "../utils/createId";
 
 type MessageCollection = Record<string, (...parameters: SafeAny[]) => SafeAny>;
 
@@ -133,7 +134,7 @@ export function createRpcHandler<Messages extends MessageCollection>(
         adapter.postMessage({
           source: "apollo-client-devtools",
           type: MessageType.RPCResponse,
-          id: createId(),
+          id: createId({ length: 10 }),
           sourceId: id,
           error,
         });
@@ -172,15 +173,4 @@ export function createRPCBridge(
     removeListener1();
     removeListener2();
   };
-}
-
-function createId() {
-  const chars =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  const values = new Uint8Array(10);
-  crypto.getRandomValues(values);
-
-  return Array.from(values)
-    .map((number) => chars[number % chars.length])
-    .join("");
 }
