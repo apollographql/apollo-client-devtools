@@ -17,7 +17,7 @@ import {
   getMutations,
   getMainDefinition,
 } from "./helpers";
-import type { QueryResult } from "../../types";
+import type { QueryResult, SafeAny } from "../../types";
 import { getPrivateAccess } from "../../privateAccess";
 import type { JSONObject } from "../../application/types/json";
 import type { FetchPolicy } from "../../application/components/Explorer/Explorer";
@@ -58,10 +58,9 @@ type Hook = {
 };
 
 function initializeHook() {
-  const knownClients = new Set<{
-    id: string;
-    client: ApolloClient<createId>;
-  }>();
+  // Keep a reverse mapping of client -> id to ensure we don't register the same
+  // client multiple times.
+  const knownClients = new Map<ApolloClient<SafeAny>, string>();
   const hook: Hook = {
     ApolloClient: undefined,
     version: devtoolsVersion,
@@ -124,8 +123,8 @@ function initializeHook() {
 
   handleRpc("getClientOperations", getClientData);
   handleRpc("getClients", () => {
-    return [...knownClients].map((config, index) => ({
-      id: config.id,
+    return [...knownClients.entries()].map(([, id], index) => ({
+      id,
       name: `Apollo Client ${index}`,
     }));
   });
@@ -266,7 +265,9 @@ function initializeHook() {
   }
 
   function registerClient(client: ApolloClient<any>) {
-    knownClients.add({ id: createId(), client });
+    if (!knownClients.has(client)) {
+      knownClients.set(client, createId());
+    }
     hook.ApolloClient = client;
     // TODO: Repurpose this callback. The message it sent was not listened by
     // anything, so the broadcast was useless. Currently the devtools rely on
