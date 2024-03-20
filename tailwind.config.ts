@@ -14,14 +14,19 @@ export default {
     data: {
       "state-active": 'state="active"',
       "state-inactive": 'state="inactive"',
+      "state-checked": 'state="checked"',
+      "state-unchecked": 'state="unchecked"',
       "orientation-horizontal": 'orientation="horizontal"',
       "orientation-vertical": 'orientation="vertical"',
+      highlighted: "highlighted",
     },
     extend: {
       borderColor: {
         transparent: "transparent",
       },
       boxShadow: {
+        dropdown:
+          "0 4px 8px 0 rgba(0, 0, 0, 0.08), 0 0 0 0 rgba(18, 21, 26, 0.04)",
         modal:
           "0 16px 32px 0 rgba(0, 0, 0, 16), 0 0 0 0 rgba(18, 21, 26, 0.04)",
       },
