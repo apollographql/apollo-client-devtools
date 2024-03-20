@@ -13,6 +13,7 @@ function createClient() {
   return new ApolloClient({
     cache: new InMemoryCache(),
     link: new HttpLink({ uri: "https://spacex-production.up.railway.app/" }),
+    connectToDevTools: true,
   });
 }
 
