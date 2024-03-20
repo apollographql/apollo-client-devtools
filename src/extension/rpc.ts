@@ -1,4 +1,6 @@
 import type { NoInfer, SafeAny } from "../types";
+import { RPC_MESSAGE_TIMEOUT } from "./errorMessages";
+import { deserializeError, serializeError } from "./errorSerialization";
 import type { MessageAdapter } from "./messageAdapters";
 import type {
   RPCMessage,
@@ -39,7 +41,7 @@ export function createRpcClient<Messages extends MessageCollection>(
 
         const timeout = setTimeout(() => {
           removeListener();
-          reject(new Error("Timeout waiting for message"));
+          reject(new Error(RPC_MESSAGE_TIMEOUT));
         }, this.timeout);
 
         const removeListener = adapter.addListener((message) => {
@@ -48,7 +50,7 @@ export function createRpcClient<Messages extends MessageCollection>(
           }
 
           if ("error" in message) {
-            reject(message.error);
+            reject(deserializeError(message.error));
           } else {
             resolve(message.result);
           }
@@ -119,13 +121,13 @@ export function createRpcHandler<Messages extends MessageCollection>(
           sourceId: id,
           result,
         });
-      } catch (error) {
+      } catch (e) {
         adapter.postMessage({
           source: "apollo-client-devtools",
           type: MessageType.RPCResponse,
           id: createId(),
           sourceId: id,
-          error,
+          error: serializeError(e),
         });
       }
     });
