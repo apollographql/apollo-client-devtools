@@ -37,7 +37,7 @@ function App() {
       </select>
       <div>
         <button onClick={() => clientsVar([...clientsVar(), createClient()])}>
-          Create client
+          Create new client
         </button>
       </div>
       <Suspense fallback={<div>Loading...</div>}>
