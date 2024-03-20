@@ -1,5 +1,5 @@
 import browser from "webextension-polyfill";
-import { devtoolsMachine } from "../../application/machines";
+import { createDevtoolsMachine } from "../../application/machines";
 import type { Actor } from "../actor";
 import { createPortActor } from "../actor";
 import type {
@@ -10,8 +10,32 @@ import type {
 import { getPanelActor } from "./panelActor";
 import { createPortMessageAdapter } from "../messageAdapters";
 import { createRpcClient } from "../rpc";
+import { interpret } from "@xstate/fsm";
 
 const inspectedTabId = browser.devtools.inspectedWindow.tabId;
+
+const devtoolsMachine = interpret(
+  createDevtoolsMachine({
+    actions: {
+      connectToClient: () => {
+        clientPort.send({ type: "connectToClient" });
+      },
+      startRequestInterval: () => {
+        clearTimeout(connectTimeoutId);
+
+        if (!panelHidden) {
+          unsubscribers.add(startRequestInterval());
+        }
+      },
+      unsubscribeFromAll: (_, event) => {
+        if (event.type === "clientNotFound") {
+          clearTimeout(connectTimeoutId);
+        }
+        unsubscribeFromAll();
+      },
+    },
+  })
+).start();
 
 let panelHidden = true;
 let connectTimeoutId: NodeJS.Timeout;
@@ -33,7 +57,7 @@ function startConnectTimeout(attempts = 0) {
       clientPort.send({ type: "connectToClient" });
       startConnectTimeout(attempts + 1);
     } else {
-      devtoolsMachine.send({ type: "timeout" });
+      devtoolsMachine.send("timeout");
     }
     // Pick a threshold above the time it takes to determine if the client is
     // found on the page. This ensures we don't reset that counter and provide a
@@ -44,44 +68,21 @@ function startConnectTimeout(attempts = 0) {
 clientPort.on("connectToDevtools", (message) => {
   devtoolsMachine.send({
     type: "connect",
-    context: {
-      clientContext: message.payload,
-    },
+    clientContext: message.payload,
   });
 });
 
 clientPort.on("connectToClientTimeout", () => {
-  devtoolsMachine.send({ type: "timeout" });
+  devtoolsMachine.send("timeout");
 });
 
 clientPort.on("disconnectFromDevtools", () => {
-  devtoolsMachine.send({ type: "disconnect" });
+  devtoolsMachine.send("disconnect");
 });
 
 clientPort.on("clientNotFound", () => {
   clearTimeout(connectTimeoutId);
-  devtoolsMachine.send({ type: "clientNotFound" });
-});
-
-devtoolsMachine.onTransition("retrying", () => {
-  clientPort.send({ type: "connectToClient" });
-});
-
-devtoolsMachine.onTransition("connected", () => {
-  clearTimeout(connectTimeoutId);
-
-  if (!panelHidden) {
-    unsubscribers.add(startRequestInterval());
-  }
-});
-
-devtoolsMachine.onTransition("disconnected", () => {
-  unsubscribeFromAll();
-});
-
-devtoolsMachine.onTransition("notFound", () => {
-  clearTimeout(connectTimeoutId);
-  unsubscribeFromAll();
+  devtoolsMachine.send("clientNotFound");
 });
 
 clientPort.send({ type: "connectToClient" });
@@ -98,7 +99,7 @@ function startRequestInterval(ms = 500) {
     }
   }
 
-  if (devtoolsMachine.matches("connected")) {
+  if (devtoolsMachine.state.value === "connected") {
     getClientData();
     id = setInterval(() => getClientData(), ms);
   }
@@ -131,31 +132,29 @@ async function createDevtoolsPanel() {
     panelWindow = getPanelActor(window);
 
     if (!connectedToPanel) {
-      const state = devtoolsMachine.getState();
-
       panelWindow.send({
         type: "initializePanel",
-        state: state.value,
-        payload: state.context.clientContext,
+        state: devtoolsMachine.state.value,
+        payload: devtoolsMachine.state.context.clientContext,
       });
 
       panelWindow.on("retryConnection", () => {
-        devtoolsMachine.send({ type: "retry" });
+        devtoolsMachine.send("retry");
       });
 
-      devtoolsMachine.subscribe(({ state }) => {
-        panelWindow.send({ type: "devtoolsStateChanged", state: state.value });
+      devtoolsMachine.subscribe(({ value }) => {
+        panelWindow.send({ type: "devtoolsStateChanged", state: value });
       });
 
       connectedToPanel = true;
     }
 
-    if (devtoolsMachine.matches("initialized")) {
+    if (devtoolsMachine.state.value === "initialized") {
       clientPort.send({ type: "connectToClient" });
       startConnectTimeout();
     }
 
-    if (devtoolsMachine.matches("connected") && panelHidden) {
+    if (devtoolsMachine.state.value === "connected" && panelHidden) {
       unsubscribers.add(startRequestInterval());
     }
 

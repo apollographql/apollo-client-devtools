@@ -19,14 +19,11 @@ import { SettingsModal } from "./components/Layouts/SettingsModal";
 import Logo from "@apollo/icons/logos/LogoSymbol.svg";
 import type { BannerAlertConfig } from "./components/BannerAlert";
 import { BannerAlert } from "./components/BannerAlert";
-import type { GetStates } from "./stateMachine";
-import type { DevtoolsMachine } from "./machines";
+import type { StateValues as DevtoolsState } from "./machines";
 import { ClientNotFoundModal } from "./components/ClientNotFoundModal";
 import { getPanelActor } from "../extension/devtools/panelActor";
 
 const panelWindow = getPanelActor(window);
-
-type DevtoolsState = GetStates<DevtoolsMachine>;
 
 export const devtoolsState = makeVar<DevtoolsState>("initialized");
 
