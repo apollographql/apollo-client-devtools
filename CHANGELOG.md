@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.9.1
+
+### Patch Changes
+
+- [#1278](https://github.com/apollographql/apollo-client-devtools/pull/1278) [`e886145`](https://github.com/apollographql/apollo-client-devtools/commit/e8861451a854722cfe3983306597ee6e32e4b9ee) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Fix issue with error serialization when sending an error back through the message passing system. Unfortunately the raw error instance was lost in this process. This fix retains the error message when sending error messages in rpc calls.
+
 ## 4.9.0
 
 ### Minor Changes

@@ -1,4 +1,5 @@
 import type { DistributiveOmit } from "../../types";
+import { RPC_MESSAGE_TIMEOUT } from "../errorMessages";
 import type { MessageAdapter } from "../messageAdapters";
 import type { RPCMessage, RPCRequestMessage } from "../messages";
 import { MessageType } from "../messages";
@@ -168,6 +169,29 @@ test("rejects when async handler rejects", async () => {
   await expect(client.request("add", 1, 2)).rejects.toEqual(
     new Error("Could not add")
   );
+});
+
+test("maintains error name", async () => {
+  type Message = {
+    add(x: number, y: number): number;
+  };
+
+  const handlerAdapter = createTestAdapter();
+  const clientAdapter = createTestAdapter();
+  createBridge(clientAdapter, handlerAdapter);
+
+  const client = createRpcClient<Message>(clientAdapter);
+  const handle = createRpcHandler<Message>(handlerAdapter);
+
+  handle("add", () => Promise.reject(new SyntaxError()));
+
+  try {
+    await client.request("add", 1, 2);
+    throw new Error("Should not reach");
+  } catch (e) {
+    expect(e).toBeInstanceOf(SyntaxError);
+    expect((e as Error).name).toBe("SyntaxError");
+  }
 });
 
 test("can handle multiple rpc messages", async () => {
@@ -403,9 +427,7 @@ test("times out if no message received within default timeout", async () => {
 
   jest.advanceTimersByTime(30_000);
 
-  await expect(promise).rejects.toEqual(
-    new Error("Timeout waiting for message")
-  );
+  await expect(promise).rejects.toEqual(new Error(RPC_MESSAGE_TIMEOUT));
 
   jest.useRealTimers();
 });
@@ -423,9 +445,7 @@ test("times out if no message received within configured timeout", async () => {
 
   jest.advanceTimersByTime(1000);
 
-  await expect(promise).rejects.toEqual(
-    new Error("Timeout waiting for message")
-  );
+  await expect(promise).rejects.toEqual(new Error(RPC_MESSAGE_TIMEOUT));
 
   jest.useRealTimers();
 });
@@ -469,17 +489,13 @@ test("resets timeout to default timeout after sending request", async () => {
   expect(finished).toContain(promise1);
   expect(finished).not.toContain(promise2);
 
-  await expect(promise1).rejects.toEqual(
-    new Error("Timeout waiting for message")
-  );
+  await expect(promise1).rejects.toEqual(new Error(RPC_MESSAGE_TIMEOUT));
 
   jest.advanceTimersByTime(1000);
   // wait for a tick, just to be sure the `finally` block has time to run
   await Promise.resolve();
   expect(finished).toContain(promise2);
-  await expect(promise2).rejects.toEqual(
-    new Error("Timeout waiting for message")
-  );
+  await expect(promise2).rejects.toEqual(new Error(RPC_MESSAGE_TIMEOUT));
 
   const promise3 = client.request("add", 1, 2);
   promise3
@@ -499,9 +515,7 @@ test("resets timeout to default timeout after sending request", async () => {
   // wait for a tick, just to be sure the `finally` block has time to run
   await Promise.resolve();
   expect(finished).toContain(promise3);
-  await expect(promise3).rejects.toEqual(
-    new Error("Timeout waiting for message")
-  );
+  await expect(promise3).rejects.toEqual(new Error(RPC_MESSAGE_TIMEOUT));
 
   jest.useRealTimers();
 });
