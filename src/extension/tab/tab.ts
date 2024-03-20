@@ -28,6 +28,7 @@ tab.forward("connectToDevtools", devtools);
 tab.forward("disconnectFromDevtools", devtools);
 tab.forward("explorerResponse", devtools);
 tab.forward("registerClient", devtools);
+tab.forward("destroyClient", devtools);
 
 // We run the hook.js script on the page as a content script in Manifest v3
 // extensions (chrome for now). We do this using execution world MAIN.

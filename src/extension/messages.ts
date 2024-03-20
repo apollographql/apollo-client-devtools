@@ -81,6 +81,11 @@ type RegisterClientMessage = {
   payload: ApolloClientInfo;
 };
 
+type DestroyClientMessage = {
+  type: "destroyClient";
+  payload: { clientId: string };
+};
+
 export type ClientMessage =
   | { type: "clientNotFound" }
   | { type: "connectToClient" }
@@ -93,13 +98,15 @@ export type ClientMessage =
   | ExplorerRequestMessage
   | ExplorerResponseMessage
   | ExplorerSubscriptionTerminationMessage
-  | RegisterClientMessage;
+  | RegisterClientMessage
+  | DestroyClientMessage;
 
 export type PanelMessage =
   | ExplorerRequestMessage
   | ExplorerResponseMessage
   | ExplorerSubscriptionTerminationMessage
   | RegisterClientMessage
+  | DestroyClientMessage
   | {
       type: "initializePanel";
       state: GetStates<DevtoolsMachine>;

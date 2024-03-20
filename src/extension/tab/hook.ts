@@ -265,6 +265,8 @@ function initializeHook() {
       const id = createId();
       knownClients.set(client, id);
 
+      watchForTermination(client);
+
       tab.send({
         type: "registerClient",
         payload: {
@@ -299,6 +301,15 @@ function initializeHook() {
   }
 
   findClient();
+
+  function watchForTermination(client: ApolloClient<SafeAny>) {
+    const originalStop = client.stop;
+
+    client.stop = () => {
+      knownClients.delete(client);
+      originalStop.call(client);
+    };
+  }
 }
 
 initializeHook();
