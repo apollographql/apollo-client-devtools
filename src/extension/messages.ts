@@ -104,9 +104,6 @@ export type PanelMessage =
 
 export type DevtoolsRPCMessage = {
   getClientOperations(): GetContext<DevtoolsMachine>["clientContext"];
-};
-
-export type PanelRPCMessage = {
   getClients(): Array<{ id: string; name: string }>;
 };
 

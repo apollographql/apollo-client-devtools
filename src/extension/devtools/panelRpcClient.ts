@@ -1,11 +1,11 @@
 import { createWindowMessageAdapter } from "../messageAdapters";
-import type { PanelRPCMessage } from "../messages";
+import type { DevtoolsRPCMessage } from "../messages";
 import { createRpcClient, type RpcClient } from "../rpc";
 
-let rpcClient: RpcClient<PanelRPCMessage> | null = null;
+let rpcClient: RpcClient<DevtoolsRPCMessage> | null = null;
 
 export function getRpcClient(window: Window) {
-  return (rpcClient ||= createRpcClient<PanelRPCMessage>(
+  return (rpcClient ||= createRpcClient<DevtoolsRPCMessage>(
     createWindowMessageAdapter(window)
   ));
 }

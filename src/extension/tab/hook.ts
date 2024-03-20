@@ -22,11 +22,7 @@ import { getPrivateAccess } from "../../privateAccess";
 import type { JSONObject } from "../../application/types/json";
 import type { FetchPolicy } from "../../application/components/Explorer/Explorer";
 import { createWindowActor } from "../actor";
-import type {
-  ClientMessage,
-  DevtoolsRPCMessage,
-  PanelRPCMessage,
-} from "../messages";
+import type { ClientMessage, DevtoolsRPCMessage } from "../messages";
 import { createWindowMessageAdapter } from "../messageAdapters";
 import { createRpcHandler } from "../rpc";
 import { createId } from "../../utils/createId";
@@ -34,7 +30,7 @@ import { createId } from "../../utils/createId";
 const DEVTOOLS_KEY = Symbol.for("apollo.devtools");
 
 const tab = createWindowActor<ClientMessage>(window);
-const handleRpc = createRpcHandler<DevtoolsRPCMessage & PanelRPCMessage>(
+const handleRpc = createRpcHandler<DevtoolsRPCMessage>(
   createWindowMessageAdapter(window)
 );
 

@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { Select } from "./Select";
 import { getRpcClient } from "../../extension/devtools/panelRpcClient";
-import type { PanelRPCMessage } from "../../extension/messages";
+import type { DevtoolsRPCMessage } from "../../extension/messages";
 
 interface ClientSelectProps {
   onChange: (clientId: string) => void;
 }
 
-type ClientConfig = ReturnType<PanelRPCMessage["getClients"]>[number];
+type ClientConfig = ReturnType<DevtoolsRPCMessage["getClients"]>[number];
 
 const rpcClient = getRpcClient(window);
 
