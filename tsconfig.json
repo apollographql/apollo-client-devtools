@@ -21,6 +21,7 @@
     "dist",
     "build",
     "src/**/__tests__/**/*",
-    "development/**/__tests__/**/*"
+    "development/**/__tests__/**/*",
+    "development/multiple-clients/**/*"
   ]
 }

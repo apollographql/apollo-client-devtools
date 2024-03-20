@@ -23,8 +23,12 @@ import type { GetStates } from "./stateMachine";
 import type { DevtoolsMachine } from "./machines";
 import { ClientNotFoundModal } from "./components/ClientNotFoundModal";
 import { getPanelActor } from "../extension/devtools/panelActor";
+import type { ApolloClientInfo } from "../types";
+import { getRpcClient } from "../extension/devtools/panelRpcClient";
+import { Select } from "./components/Select";
 
 const panelWindow = getPanelActor(window);
+const rpcClient = getRpcClient(window);
 
 type DevtoolsState = GetStates<DevtoolsMachine>;
 
@@ -91,6 +95,7 @@ export const App = () => {
   const [clientNotFoundModalOpen, setClientNotFoundModalOpen] = useState(false);
   const selected = useReactiveVar<Screens>(currentScreen);
   const state = useReactiveVar(devtoolsState);
+  const [clients, setClients] = useState<ApolloClientInfo[]>([]);
   const [embeddedExplorerIFrame, setEmbeddedExplorerIFrame] =
     useState<HTMLIFrameElement | null>(null);
 
@@ -116,6 +121,24 @@ export const App = () => {
 
     return () => clearTimeout(timeout);
   }, [state]);
+
+  useEffect(() => {
+    rpcClient.request("getClients").then(setClients);
+  }, []);
+
+  useEffect(() => {
+    return panelWindow.on("registerClient", (message) => {
+      setClients((clients) => [...clients, message.payload]);
+    });
+  }, []);
+
+  useEffect(() => {
+    return panelWindow.on("terminateClient", (message) => {
+      setClients((clients) =>
+        clients.filter((client) => client.id !== message.clientId)
+      );
+    });
+  }, []);
 
   return (
     <>
@@ -158,9 +181,18 @@ export const App = () => {
           <Tabs.Trigger value={Screens.Cache}>Cache</Tabs.Trigger>
           <Tabs.Trigger value={Screens.Explorer}>Explorer</Tabs.Trigger>
 
-          <div className="flex-1 justify-end">
+          <div className="flex flex-1 justify-end gap-2">
+            {clients.length > 0 && (
+              <Select align="end" size="sm" defaultValue={clients[0].id}>
+                {clients.map((client) => (
+                  <Select.Option key={client.id} value={client.id}>
+                    {client.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            )}
             <Button
-              className="ml-auto peer-[.is-explorer-button]:ml-2"
+              className="peer-[.is-explorer-button]:ml-2"
               size="sm"
               variant="hidden"
               onClick={() => setSettingsOpen(true)}

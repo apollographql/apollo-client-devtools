@@ -1,4 +1,4 @@
-import type { ExplorerResponse, SafeAny } from "../types";
+import type { ApolloClientInfo, ExplorerResponse, SafeAny } from "../types";
 import type { GetStates, GetContext } from "../application/stateMachine";
 import type { DevtoolsMachine } from "../application/machines";
 import type { ErrorLike } from "serialize-error";
@@ -76,6 +76,16 @@ type ExplorerSubscriptionTerminationMessage = {
   type: "explorerSubscriptionTermination";
 };
 
+type RegisterClientMessage = {
+  type: "registerClient";
+  payload: ApolloClientInfo;
+};
+
+type DestroyClientMessage = {
+  type: "terminateClient";
+  clientId: string;
+};
+
 export type ClientMessage =
   | { type: "clientNotFound" }
   | { type: "connectToClient" }
@@ -87,12 +97,16 @@ export type ClientMessage =
   | { type: "disconnectFromDevtools" }
   | ExplorerRequestMessage
   | ExplorerResponseMessage
-  | ExplorerSubscriptionTerminationMessage;
+  | ExplorerSubscriptionTerminationMessage
+  | RegisterClientMessage
+  | DestroyClientMessage;
 
 export type PanelMessage =
   | ExplorerRequestMessage
   | ExplorerResponseMessage
   | ExplorerSubscriptionTerminationMessage
+  | RegisterClientMessage
+  | DestroyClientMessage
   | {
       type: "initializePanel";
       state: GetStates<DevtoolsMachine>;
@@ -104,6 +118,7 @@ export type PanelMessage =
 
 export type DevtoolsRPCMessage = {
   getClientOperations(): GetContext<DevtoolsMachine>["clientContext"];
+  getClients(): Array<ApolloClientInfo>;
 };
 
 function isDevtoolsMessage<Message extends Record<string, unknown>>(
