@@ -16,6 +16,8 @@ export default {
       "state-inactive": 'state="inactive"',
       "state-checked": 'state="checked"',
       "state-unchecked": 'state="unchecked"',
+      "state-open": 'state="open"',
+      "state-closed": 'state="closed"',
       "orientation-horizontal": 'orientation="horizontal"',
       "orientation-vertical": 'orientation="vertical"',
       highlighted: "highlighted",
