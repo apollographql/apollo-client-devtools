@@ -23,6 +23,7 @@ import type { GetStates } from "./stateMachine";
 import type { DevtoolsMachine } from "./machines";
 import { ClientNotFoundModal } from "./components/ClientNotFoundModal";
 import { getPanelActor } from "../extension/devtools/panelActor";
+import { Select } from "./components/Select";
 
 const panelWindow = getPanelActor(window);
 
@@ -158,9 +159,18 @@ export const App = () => {
           <Tabs.Trigger value={Screens.Cache}>Cache</Tabs.Trigger>
           <Tabs.Trigger value={Screens.Explorer}>Explorer</Tabs.Trigger>
 
-          <div className="flex-1 justify-end">
+          <div className="flex flex-1 justify-end gap-2">
+            <Select
+              align="end"
+              size="sm"
+              defaultValue="1"
+              onValueChange={console.log}
+            >
+              <Select.Option value="1">First</Select.Option>
+              <Select.Option value="2">Second</Select.Option>
+            </Select>
             <Button
-              className="ml-auto peer-[.is-explorer-button]:ml-2"
+              className="peer-[.is-explorer-button]:ml-2"
               size="sm"
               variant="hidden"
               onClick={() => setSettingsOpen(true)}
