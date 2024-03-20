@@ -23,11 +23,9 @@ import type { GetStates } from "./stateMachine";
 import type { DevtoolsMachine } from "./machines";
 import { ClientNotFoundModal } from "./components/ClientNotFoundModal";
 import { getPanelActor } from "../extension/devtools/panelActor";
-import { Select } from "./components/Select";
-import { getRpcClient } from "../extension/devtools/panelRpcClient";
+import { ClientSelect } from "./components/ClientSelect";
 
 const panelWindow = getPanelActor(window);
-const rpcClient = getRpcClient(window);
 
 type DevtoolsState = GetStates<DevtoolsMachine>;
 
@@ -94,9 +92,6 @@ export const App = () => {
   const [clientNotFoundModalOpen, setClientNotFoundModalOpen] = useState(false);
   const selected = useReactiveVar<Screens>(currentScreen);
   const state = useReactiveVar(devtoolsState);
-  const [clients, setClients] = useState<Array<{ id: string; name: string }>>(
-    []
-  );
   const [embeddedExplorerIFrame, setEmbeddedExplorerIFrame] =
     useState<HTMLIFrameElement | null>(null);
 
@@ -122,12 +117,6 @@ export const App = () => {
 
     return () => clearTimeout(timeout);
   }, [state]);
-
-  useEffect(() => {
-    rpcClient.request("getClients").then((clients) => {
-      setClients(clients);
-    });
-  }, []);
 
   return (
     <>
@@ -171,20 +160,7 @@ export const App = () => {
           <Tabs.Trigger value={Screens.Explorer}>Explorer</Tabs.Trigger>
 
           <div className="flex flex-1 justify-end gap-2">
-            {clients.length > 0 && (
-              <Select
-                align="end"
-                size="sm"
-                defaultValue={clients[0].id}
-                onValueChange={console.log}
-              >
-                {clients.map((client) => (
-                  <Select.Option key={client.id} value={client.id}>
-                    {client.name}
-                  </Select.Option>
-                ))}
-              </Select>
-            )}
+            <ClientSelect onChange={console.log} />
             <Button
               className="peer-[.is-explorer-button]:ml-2"
               size="sm"
