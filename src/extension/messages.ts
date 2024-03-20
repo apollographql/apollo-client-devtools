@@ -82,8 +82,8 @@ type RegisterClientMessage = {
 };
 
 type DestroyClientMessage = {
-  type: "destroyClient";
-  payload: { clientId: string };
+  type: "terminateClient";
+  clientId: string;
 };
 
 export type ClientMessage =

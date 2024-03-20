@@ -309,7 +309,7 @@ function initializeHook() {
       const clientId = knownClients.get(client)!;
       knownClients.delete(client);
       originalStop.call(client);
-      tab.send({ type: "destroyClient", payload: { clientId } });
+      tab.send({ type: "terminateClient", clientId });
     };
   }
 }

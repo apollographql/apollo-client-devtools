@@ -151,7 +151,7 @@ async function createDevtoolsPanel() {
       });
 
       clientPort.forward("registerClient", panelWindow);
-      clientPort.forward("destroyClient", panelWindow);
+      clientPort.forward("terminateClient", panelWindow);
 
       createRPCBridge(
         createPortMessageAdapter(port),

@@ -133,9 +133,9 @@ export const App = () => {
   }, []);
 
   useEffect(() => {
-    return panelWindow.on("destroyClient", (message) => {
+    return panelWindow.on("terminateClient", (message) => {
       setClients((clients) =>
-        clients.filter((client) => client.id !== message.payload.clientId)
+        clients.filter((client) => client.id !== message.clientId)
       );
     });
   }, []);
