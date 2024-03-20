@@ -42,7 +42,7 @@ function App() {
         </button>
       </div>
       <Suspense fallback={<div>Loading...</div>}>
-        <Launches />
+        <Launches offset={selectedClientIndex} />
       </Suspense>
     </ApolloProvider>
   );

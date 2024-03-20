@@ -9,21 +9,23 @@ interface LaunchesQuery {
   }>;
 }
 
-const LAUNCHES_QUERY: TypedDocumentNode<LaunchesQuery, { limit?: number }> =
-  gql`
-    query LaunchesQuery($limit: Int!) {
-      launches(limit: $limit) {
-        id
-        mission_name
-        launch_year
-        launch_success
-      }
+const LAUNCHES_QUERY: TypedDocumentNode<
+  LaunchesQuery,
+  { limit?: number; offset?: number }
+> = gql`
+  query LaunchesQuery($limit: Int, $offset: Int) {
+    launches(limit: $limit, offset: $offset) {
+      id
+      mission_name
+      launch_year
+      launch_success
     }
-  `;
+  }
+`;
 
-export function Launches() {
+export function Launches({ offset }: { offset: number }) {
   const { data } = useSuspenseQuery(LAUNCHES_QUERY, {
-    variables: { limit: 10 },
+    variables: { limit: 10, offset },
   });
 
   return (
