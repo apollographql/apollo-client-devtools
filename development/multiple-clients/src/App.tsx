@@ -34,9 +34,11 @@ function App() {
           </option>
         ))}
       </select>
-      <button onClick={() => clientsVar([...clientsVar(), createClient()])}>
-        Create client
-      </button>
+      <div>
+        <button onClick={() => clientsVar([...clientsVar(), createClient()])}>
+          Create client
+        </button>
+      </div>
     </ApolloProvider>
   );
 }
