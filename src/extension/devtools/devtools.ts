@@ -33,7 +33,7 @@ function startConnectTimeout(attempts = 0) {
       clientPort.send({ type: "connectToClient" });
       startConnectTimeout(attempts + 1);
     } else {
-      devtoolsMachine.send({ type: "timeout" });
+      devtoolsMachine.send("timeout");
     }
     // Pick a threshold above the time it takes to determine if the client is
     // found on the page. This ensures we don't reset that counter and provide a
@@ -44,44 +44,47 @@ function startConnectTimeout(attempts = 0) {
 clientPort.on("connectToDevtools", (message) => {
   devtoolsMachine.send({
     type: "connect",
-    context: {
-      clientContext: message.payload,
-    },
+    clientContext: message.payload,
   });
 });
 
 clientPort.on("connectToClientTimeout", () => {
-  devtoolsMachine.send({ type: "timeout" });
+  devtoolsMachine.send("timeout");
 });
 
 clientPort.on("disconnectFromDevtools", () => {
-  devtoolsMachine.send({ type: "disconnect" });
+  devtoolsMachine.send("disconnect");
 });
 
 clientPort.on("clientNotFound", () => {
   clearTimeout(connectTimeoutId);
-  devtoolsMachine.send({ type: "clientNotFound" });
+  devtoolsMachine.send("clientNotFound");
 });
 
-devtoolsMachine.onTransition("retrying", () => {
-  clientPort.send({ type: "connectToClient" });
-});
+devtoolsMachine.subscribe(({ value }) => {
+  switch (value) {
+    case "retrying": {
+      clientPort.send({ type: "connectToClient" });
+      break;
+    }
+    case "connected": {
+      clearTimeout(connectTimeoutId);
 
-devtoolsMachine.onTransition("connected", () => {
-  clearTimeout(connectTimeoutId);
-
-  if (!panelHidden) {
-    unsubscribers.add(startRequestInterval());
+      if (!panelHidden) {
+        unsubscribers.add(startRequestInterval());
+      }
+      break;
+    }
+    case "disconnected": {
+      unsubscribeFromAll();
+      break;
+    }
+    case "notFound": {
+      clearTimeout(connectTimeoutId);
+      unsubscribeFromAll();
+      break;
+    }
   }
-});
-
-devtoolsMachine.onTransition("disconnected", () => {
-  unsubscribeFromAll();
-});
-
-devtoolsMachine.onTransition("notFound", () => {
-  clearTimeout(connectTimeoutId);
-  unsubscribeFromAll();
 });
 
 clientPort.send({ type: "connectToClient" });
@@ -98,7 +101,7 @@ function startRequestInterval(ms = 500) {
     }
   }
 
-  if (devtoolsMachine.matches("connected")) {
+  if (devtoolsMachine.state.value === "connected") {
     getClientData();
     id = setInterval(() => getClientData(), ms);
   }
@@ -131,31 +134,30 @@ async function createDevtoolsPanel() {
     panelWindow = getPanelActor(window);
 
     if (!connectedToPanel) {
-      const state = devtoolsMachine.getState();
-
       panelWindow.send({
         type: "initializePanel",
-        state: state.value,
-        payload: state.context.clientContext,
+        state: devtoolsMachine.state.value,
+        payload: devtoolsMachine.state.context.clientContext,
       });
 
       panelWindow.on("retryConnection", () => {
-        devtoolsMachine.send({ type: "retry" });
+        devtoolsMachine.send("retry");
       });
 
-      devtoolsMachine.subscribe(({ state }) => {
-        panelWindow.send({ type: "devtoolsStateChanged", state: state.value });
+      const subscription = devtoolsMachine.subscribe(({ value }) => {
+        panelWindow.send({ type: "devtoolsStateChanged", state: value });
       });
+      unsubscribers.add(subscription.unsubscribe);
 
       connectedToPanel = true;
     }
 
-    if (devtoolsMachine.matches("initialized")) {
+    if (devtoolsMachine.state.value === "initialized") {
       clientPort.send({ type: "connectToClient" });
       startConnectTimeout();
     }
 
-    if (devtoolsMachine.matches("connected") && panelHidden) {
+    if (devtoolsMachine.state.value === "connected" && panelHidden) {
       unsubscribers.add(startRequestInterval());
     }
 
