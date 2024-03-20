@@ -29,6 +29,7 @@ import type {
 } from "../messages";
 import { createWindowMessageAdapter } from "../messageAdapters";
 import { createRpcHandler } from "../rpc";
+import { createId } from "../../utils/createId";
 
 const DEVTOOLS_KEY = Symbol.for("apollo.devtools");
 
@@ -57,7 +58,10 @@ type Hook = {
 };
 
 function initializeHook() {
-  const knownClients = new Set<ApolloClient<any>>();
+  const knownClients = new Set<{
+    id: string;
+    client: ApolloClient<createId>;
+  }>();
   const hook: Hook = {
     ApolloClient: undefined,
     version: devtoolsVersion,
@@ -120,9 +124,9 @@ function initializeHook() {
 
   handleRpc("getClientOperations", getClientData);
   handleRpc("getClients", () => {
-    return [...knownClients].map((_, index) => ({
-      id: String(index),
-      name: `Client ${index}`,
+    return [...knownClients].map((config, index) => ({
+      id: config.id,
+      name: `Apollo Client ${index}`,
     }));
   });
 
@@ -262,7 +266,7 @@ function initializeHook() {
   }
 
   function registerClient(client: ApolloClient<any>) {
-    knownClients.add(client);
+    knownClients.add({ id: createId(), client });
     hook.ApolloClient = client;
     // TODO: Repurpose this callback. The message it sent was not listened by
     // anything, so the broadcast was useless. Currently the devtools rely on
