@@ -1,18 +1,16 @@
 import { useEffect, useState } from "react";
 import { Select } from "./Select";
 import { getRpcClient } from "../../extension/devtools/panelRpcClient";
-import type { DevtoolsRPCMessage } from "../../extension/messages";
+import type { ApolloClientInfo } from "../../types";
 
 interface ClientSelectProps {
   onChange: (clientId: string) => void;
 }
 
-type ClientConfig = ReturnType<DevtoolsRPCMessage["getClients"]>[number];
-
 const rpcClient = getRpcClient(window);
 
 export function ClientSelect({ onChange }: ClientSelectProps) {
-  const [clients, setClients] = useState<ClientConfig[]>([]);
+  const [clients, setClients] = useState<ApolloClientInfo[]>([]);
 
   useEffect(() => {
     rpcClient.request("getClients").then(setClients);

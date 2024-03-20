@@ -1,4 +1,4 @@
-import type { ExplorerResponse, SafeAny } from "../types";
+import type { ApolloClientConfig, ExplorerResponse, SafeAny } from "../types";
 import type { GetStates, GetContext } from "../application/stateMachine";
 import type { DevtoolsMachine } from "../application/machines";
 import type { ErrorLike } from "serialize-error";
@@ -104,7 +104,7 @@ export type PanelMessage =
 
 export type DevtoolsRPCMessage = {
   getClientOperations(): GetContext<DevtoolsMachine>["clientContext"];
-  getClients(): Array<{ id: string; name: string }>;
+  getClients(): Array<ApolloClientConfig>;
 };
 
 function isDevtoolsMessage<Message extends Record<string, unknown>>(
