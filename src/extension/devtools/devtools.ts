@@ -1,5 +1,5 @@
 import browser from "webextension-polyfill";
-import { devtoolsMachine } from "../../application/machines";
+import { createDevtoolsMachine } from "../../application/machines";
 import type { Actor } from "../actor";
 import { createPortActor } from "../actor";
 import type {
@@ -10,8 +10,32 @@ import type {
 import { getPanelActor } from "./panelActor";
 import { createPortMessageAdapter } from "../messageAdapters";
 import { createRpcClient } from "../rpc";
+import { interpret } from "@xstate/fsm";
 
 const inspectedTabId = browser.devtools.inspectedWindow.tabId;
+
+const devtoolsMachine = interpret(
+  createDevtoolsMachine({
+    actions: {
+      connectToClient: () => {
+        clientPort.send({ type: "connectToClient" });
+      },
+      startRequestInterval: () => {
+        clearTimeout(connectTimeoutId);
+
+        if (!panelHidden) {
+          unsubscribers.add(startRequestInterval());
+        }
+      },
+      unsubscribeFromAll: (_, event) => {
+        if (event.type === "clientNotFound") {
+          clearTimeout(connectTimeoutId);
+        }
+        unsubscribeFromAll();
+      },
+    },
+  })
+).start();
 
 let panelHidden = true;
 let connectTimeoutId: NodeJS.Timeout;
@@ -59,32 +83,6 @@ clientPort.on("disconnectFromDevtools", () => {
 clientPort.on("clientNotFound", () => {
   clearTimeout(connectTimeoutId);
   devtoolsMachine.send("clientNotFound");
-});
-
-devtoolsMachine.subscribe(({ value }) => {
-  switch (value) {
-    case "retrying": {
-      clientPort.send({ type: "connectToClient" });
-      break;
-    }
-    case "connected": {
-      clearTimeout(connectTimeoutId);
-
-      if (!panelHidden) {
-        unsubscribers.add(startRequestInterval());
-      }
-      break;
-    }
-    case "disconnected": {
-      unsubscribeFromAll();
-      break;
-    }
-    case "notFound": {
-      clearTimeout(connectTimeoutId);
-      unsubscribeFromAll();
-      break;
-    }
-  }
 });
 
 clientPort.send({ type: "connectToClient" });
@@ -144,10 +142,9 @@ async function createDevtoolsPanel() {
         devtoolsMachine.send("retry");
       });
 
-      const subscription = devtoolsMachine.subscribe(({ value }) => {
+      devtoolsMachine.subscribe(({ value }) => {
         panelWindow.send({ type: "devtoolsStateChanged", state: value });
       });
-      unsubscribers.add(subscription.unsubscribe);
 
       connectedToPanel = true;
     }

@@ -1,7 +1,8 @@
 import type { QueryInfo } from "../extension/tab/helpers";
 import type { JSONObject } from "./types/json";
 
-import { createMachine, interpret, assign } from "@xstate/fsm";
+import type { StateMachine } from "@xstate/fsm";
+import { createMachine, assign } from "@xstate/fsm";
 
 export interface ClientContext {
   queries: QueryInfo[];
@@ -32,52 +33,69 @@ type State = {
   context: Context;
 };
 
-const machine = createMachine<Context, Events, State>({
-  initial: "initialized",
-  context: {
-    clientContext: {
-      queries: [],
-      mutations: [],
-      cache: {},
-    },
-  },
-  states: {
-    initialized: {
-      on: {
-        connect: "connected",
-        timeout: "timedout",
-        clientNotFound: "notFound",
-      },
-    },
-    retrying: {
-      on: {
-        connect: "connected",
-        clientNotFound: "notFound",
-      },
-    },
-    connected: {
-      on: {
-        disconnect: "disconnected",
-      },
-      entry: assign({
-        clientContext: (ctx, event) =>
-          "clientContext" in event ? event.clientContext : ctx.clientContext,
-      }),
-    },
-    disconnected: {
-      on: {
-        connect: "connected",
-        timeout: "timedout",
-        clientNotFound: "notFound",
-      },
-    },
-    timedout: {},
-    notFound: {
-      on: {
-        retry: "retrying",
-      },
-    },
-  },
-});
+type Actions = {
+  connectToClient: StateMachine.ActionFunction<Context, Events>;
+  startRequestInterval: StateMachine.ActionFunction<Context, Events>;
+  unsubscribeFromAll: StateMachine.ActionFunction<Context, Events>;
+};
 
-export const devtoolsMachine = interpret(machine).start();
+export function createDevtoolsMachine({ actions }: { actions: Actions }) {
+  return createMachine<Context, Events, State>(
+    {
+      initial: "initialized",
+      context: {
+        clientContext: {
+          queries: [],
+          mutations: [],
+          cache: {},
+        },
+      },
+      states: {
+        initialized: {
+          on: {
+            connect: "connected",
+            timeout: "timedout",
+            clientNotFound: "notFound",
+          },
+        },
+        retrying: {
+          on: {
+            connect: "connected",
+            clientNotFound: "notFound",
+          },
+          entry: "connectToClient",
+        },
+        connected: {
+          on: {
+            disconnect: "disconnected",
+          },
+          entry: [
+            "startRequestInterval",
+            assign({
+              clientContext: (ctx, event) =>
+                "clientContext" in event
+                  ? event.clientContext
+                  : ctx.clientContext,
+            }),
+          ],
+        },
+        disconnected: {
+          on: {
+            connect: "connected",
+            timeout: "timedout",
+            clientNotFound: "notFound",
+          },
+          entry: "unsubscribeFromAll",
+        },
+        timedout: {},
+        notFound: {
+          on: {
+            retry: "retrying",
+          },
+          entry: "unsubscribeFromAll",
+        },
+      },
+    },
+    { actions }
+  );
+}
