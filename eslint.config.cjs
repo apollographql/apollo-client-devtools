@@ -6,6 +6,7 @@ const testingLibrary = require("eslint-plugin-testing-library");
 const reactRecommended = require("eslint-plugin-react/configs/recommended");
 const jsxRuntime = require("eslint-plugin-react/configs/jsx-runtime");
 const hooksPlugin = require("eslint-plugin-react-hooks");
+const globals = require("globals");
 
 module.exports = tseslint.config(
   eslint.configs.recommended,
@@ -22,16 +23,20 @@ module.exports = tseslint.config(
     plugins: {
       "react-hooks": hooksPlugin,
     },
-    // @ts-ignore waiting for https://github.com/facebook/react/issues/28313
+    // @ts-expect-error waiting for https://github.com/facebook/react/issues/28313
     rules: hooksPlugin.configs.recommended.rules,
   },
+  // original config contained a reference to jest-dom, but didn't configure any rules - skipping
   {
-    // plugins: { jestDom},
-    // env: {
-    //   browser: true,
-    //   node: true,
-    //   webextensions: true,
-    // },
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: "module",
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+        ...globals.webextensions,
+      },
+    },
     rules: {
       "react/prop-types": 0,
       "react/no-unknown-property": "error",
