@@ -1,14 +1,12 @@
-// @ts-check
+import eslint from "@eslint/js";
+import tseslint from "typescript-eslint";
+import testingLibrary from "eslint-plugin-testing-library";
+import reactRecommended from "eslint-plugin-react/configs/recommended.js";
+import jsxRuntime from "eslint-plugin-react/configs/jsx-runtime.js";
+import hooksPlugin from "eslint-plugin-react-hooks";
+import globals from "globals";
 
-const eslint = require("@eslint/js");
-const tseslint = require("typescript-eslint");
-const testingLibrary = require("eslint-plugin-testing-library");
-const reactRecommended = require("eslint-plugin-react/configs/recommended");
-const jsxRuntime = require("eslint-plugin-react/configs/jsx-runtime");
-const hooksPlugin = require("eslint-plugin-react-hooks");
-const globals = require("globals");
-
-module.exports = tseslint.config(
+export default tseslint.config(
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
   reactRecommended,

@@ -13,7 +13,7 @@ const WEB_EXT_TARGETS = {
   firefox: "firefox-desktop",
 };
 
-export default (env) => {
+export default /** @returns {import("webpack").Configuration} */ (env) => {
   const target = env.TARGET;
   const devOptions =
     env.NODE_ENV === "development"
@@ -26,6 +26,7 @@ export default (env) => {
     throw new Error("Must set a `TARGET`");
   }
 
+  /** @type {import("webpack").WebpackPluginInstance[]} */
   const plugins = [
     new CopyPlugin({
       patterns: [

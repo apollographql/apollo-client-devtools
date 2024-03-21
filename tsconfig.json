@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "allowJs": true,
+    "checkJs": true,
     "sourceMap": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
@@ -21,6 +22,7 @@
     "node_modules",
     "dist",
     "build",
+    "./*.js",
     "src/**/__tests__/**/*",
     "development/**/__tests__/**/*"
   ]
