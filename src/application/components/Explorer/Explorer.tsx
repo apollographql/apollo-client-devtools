@@ -1,12 +1,12 @@
 import { useMemo } from "react";
 import { useState, useEffect } from "react";
-import { Observable, useReactiveVar, NetworkStatus } from "@apollo/client";
+import { Observable, useReactiveVar, NetworkStatus, gql } from "@apollo/client";
 import type { IntrospectionQuery } from "graphql";
 import { getIntrospectionQuery } from "graphql/utilities";
 import { colorTheme } from "../../theme";
 import { FullWidthLayout } from "../Layouts/FullWidthLayout";
 import type { QueryResult } from "../../../types";
-import type { JSONValue, IncomingMessageEvent } from "./postMessageHelpers";
+import type { IncomingMessageEvent } from "./postMessageHelpers";
 import {
   postMessageToEmbed,
   EMBEDDABLE_EXPLORER_URL,
@@ -26,6 +26,7 @@ import {
 import { GraphRefModal } from "./GraphRefModal";
 import { Button } from "../Button";
 import { getPanelActor } from "../../../extension/devtools/panelActor";
+import { JSONObject } from "../../types/json";
 
 const panelWindow = getPanelActor(window);
 
@@ -43,19 +44,20 @@ function executeOperation({
 }: {
   operation: string;
   operationName?: string;
-  variables?: JSONValue;
+  variables?: JSONObject;
   fetchPolicy: FetchPolicy;
   isSubscription?: boolean;
 }) {
   return new Observable<QueryResult>((observer) => {
-    const payload = JSON.stringify({
-      operation,
-      operationName,
-      variables,
-      fetchPolicy,
+    panelWindow.send({
+      type: "explorerRequest",
+      payload: {
+        operation: gql(operation),
+        operationName,
+        variables,
+        fetchPolicy,
+      },
     });
-
-    panelWindow.send({ type: "explorerRequest", payload });
 
     const removeListener = panelWindow.on("explorerResponse", (message) => {
       const { payload } = message;
@@ -166,7 +168,7 @@ export const Explorer = ({
       const observer = executeOperation({
         operation: getIntrospectionQuery(),
         operationName: "IntrospectionQuery",
-        variables: null,
+        variables: undefined,
         isSubscription: false,
         fetchPolicy: FetchPolicy.NoCache,
       });
@@ -220,7 +222,7 @@ export const Explorer = ({
           const observer = executeOperation({
             operation: event.data.operation,
             operationName: event.data.operationName,
-            variables: event.data.variables,
+            variables: event.data.variables ?? undefined,
             fetchPolicy: queryCache,
             isSubscription,
           });

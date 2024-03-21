@@ -1,5 +1,7 @@
 import type { ExplorerResponse, SafeAny } from "../types";
 import type { StateValues, ClientContext } from "../application/machines";
+import type { JSONObject } from "../application/types/json";
+import type { FetchPolicy, DocumentNode } from "@apollo/client";
 
 export interface MessageFormat {
   type: string;
@@ -62,7 +64,12 @@ export type ApolloClientDevtoolsMessage<
 
 type ExplorerRequestMessage = {
   type: "explorerRequest";
-  payload: string;
+  payload: {
+    operation: DocumentNode;
+    operationName: string | undefined;
+    variables: JSONObject | undefined;
+    fetchPolicy: FetchPolicy;
+  };
 };
 
 type ExplorerResponseMessage = {

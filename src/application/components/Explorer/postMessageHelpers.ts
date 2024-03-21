@@ -1,8 +1,7 @@
 import type { GraphQLError, IntrospectionQuery } from "graphql";
 
-export type JSONPrimitive = boolean | null | string | number;
-export type JSONObject = { [key in string]?: JSONValue };
-export type JSONValue = JSONPrimitive | JSONValue[] | JSONObject;
+import type { JSONValue, JSONPrimitive, JSONObject } from "../../types/json";
+export type { JSONValue, JSONPrimitive, JSONObject };
 
 export const EXPLORER_LISTENING_FOR_SCHEMA = "ExplorerListeningForSchema";
 export const EXPLORER_LISTENING_FOR_STATE = "ExplorerListeningForState";
@@ -84,7 +83,7 @@ export type ExplorerRequest = MessageEvent<{
   name: "ExplorerRequest";
   operationId: string;
   operation: string;
-  variables: JSONValue;
+  variables?: JSONObject | null;
   operationName?: string;
   headers: Record<string, string>;
   sandboxEndpointUrl?: string;
@@ -94,7 +93,7 @@ export type ExplorerSubscriptionRequest = MessageEvent<{
   name: "ExplorerSubscriptionRequest";
   operationId: string;
   operation: string;
-  variables: JSONValue;
+  variables?: JSONObject | null;
   operationName?: string;
   headers: Record<string, string>;
 }>;
