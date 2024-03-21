@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/consistent-type-imports */
+
 import type React from "react";
 import { useState } from "react";
 import { clsx } from "clsx";

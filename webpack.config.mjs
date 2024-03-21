@@ -73,6 +73,7 @@ export default (env) => {
   return {
     ...devOptions,
     mode: env.NODE_ENV,
+    target: "web",
     entry: {
       panel: "./src/extension/devtools/panel.ts",
       devtools: "./src/extension/devtools/devtools.ts",
@@ -83,6 +84,7 @@ export default (env) => {
     output: {
       path: path.join(__dirname, "build"),
       filename: "[name].js",
+      chunkFormat: "commonjs",
     },
     resolve: {
       extensions: [".mjs", ".js", ".ts", ".tsx", ".css"],
