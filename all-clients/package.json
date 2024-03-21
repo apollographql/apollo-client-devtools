@@ -50,7 +50,6 @@
     "@apollo-client/3.9.7": "npm:@apollo/client@3.9.7"
   },
   "devDependencies": {
-    "semver": "^7.6.0",
-    "zx": "^7.2.3"
+    "semver": "7.6.0"
   }
 }
