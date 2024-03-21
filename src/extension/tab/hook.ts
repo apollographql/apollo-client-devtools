@@ -9,7 +9,8 @@ import type { OperationDefinitionNode } from "graphql/language";
 
 // All manifests should contain the same version number so it shouldn't matter
 // which one we import from.
-import { version as devtoolsVersion } from "../chrome/manifest.json";
+import * as manifest from "../chrome/manifest.json";
+const { version: devtoolsVersion } = manifest;
 import type { QueryInfo } from "./helpers";
 import {
   getQueries,
@@ -24,14 +25,16 @@ import type { FetchPolicy } from "../../application/components/Explorer/Explorer
 import { createWindowActor } from "../actor";
 import type { ClientMessage, DevtoolsRPCMessage } from "../messages";
 import { createWindowMessageAdapter } from "../messageAdapters";
-import { createRpcHandler } from "../rpc";
+import { createRpcClient, createRpcHandler } from "../rpc";
+import type { ErrorCodesHandler } from "../background/errorcodes";
+import type { ErrorCodes } from "@apollo/client/invariantErrorCodes";
 
 const DEVTOOLS_KEY = Symbol.for("apollo.devtools");
 
 const tab = createWindowActor<ClientMessage>(window);
-const handleRpc = createRpcHandler<DevtoolsRPCMessage>(
-  createWindowMessageAdapter(window)
-);
+const messageAdapter = createWindowMessageAdapter(window);
+const handleRpc = createRpcHandler<DevtoolsRPCMessage>(messageAdapter);
+const rpcClient = createRpcClient<ErrorCodesHandler>(messageAdapter);
 
 declare global {
   type TCache = any;
@@ -269,6 +272,7 @@ function initializeHook() {
     // incase initial update was missed because the client wasn't ready, send the create devtools event.
     // devtools checks to see if it's already created, so this won't create duplicate tabs
     sendHookDataToDevTools("connectToDevtools");
+    loadErrorCodes(client.version);
   }
 
   const preExisting = window[DEVTOOLS_KEY];
@@ -281,3 +285,53 @@ function initializeHook() {
 }
 
 initializeHook();
+
+function loadErrorCodes(version: string) {
+  rpcClient
+    .request("getErrorCodes", version)
+    .catch(() => {})
+    .then((errorCodes) => {
+      if (!errorCodes) return;
+
+      const ApolloErrorMessageHandler = Symbol.for(
+        "ApolloErrorMessageHandler_" + version
+      );
+      const global = globalThis as typeof globalThis & {
+        [ApolloErrorMessageHandler]: typeof handler & ErrorCodes;
+      };
+
+      if (!global[ApolloErrorMessageHandler]) {
+        global[ApolloErrorMessageHandler] = handler as typeof handler &
+          ErrorCodes;
+      }
+
+      function handler(message: string | number, args: unknown[]) {
+        if (typeof message === "number") {
+          const definition = global[ApolloErrorMessageHandler]![message];
+          if (!message || !definition?.message) return;
+          message = definition.message;
+        }
+        return args.reduce<string>(
+          (msg, arg) => msg.replace(/%[sdfo]/, String(arg)),
+          String(message)
+        );
+      }
+
+      const globalHandler = global[ApolloErrorMessageHandler];
+      if (
+        // We will inject values if the global handler is the one injected by the devtools
+        globalHandler === handler ||
+        // or if it is an object with at least one numeric key.
+        // In this case we assume that it's the default handler of Apollo Client that is
+        // injected via `loadErrorMessageHandler`, which can only be called in ways that
+        // assign at least one numeric key to it.
+        Object.keys(globalHandler).some((key) => /^\d+$/.test(key))
+      ) {
+        // add loaded messages to global handler function
+        Object.assign(globalHandler, errorCodes, {
+          // do not overwrite existing error messages
+          ...globalHandler,
+        });
+      }
+    });
+}
