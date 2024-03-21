@@ -2,7 +2,7 @@
   "name": "apollo-client-devtools",
   "description": "Developer tools for Apollo Client, with Studio Explorer integration, cache inspection, and query watching.",
   "license": "MIT",
-  "version": "4.9.0",
+  "version": "4.9.1",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/apollographql/apollo-client-devtools.git"
@@ -42,6 +42,7 @@
     "@headlessui/react": "^1.7.17",
     "@headlessui/tailwindcss": "^0.2.0",
     "@radix-ui/react-tabs": "^1.0.2",
+    "@xstate/fsm": "^2.1.0",
     "clsx": "^2.1.0",
     "framer-motion": "^11.0.3",
     "graphql": "^16.0.0",

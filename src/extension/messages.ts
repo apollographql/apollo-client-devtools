@@ -1,6 +1,5 @@
 import type { ExplorerResponse, SafeAny } from "../types";
-import type { GetStates, GetContext } from "../application/stateMachine";
-import type { DevtoolsMachine } from "../application/machines";
+import type { StateValues, ClientContext } from "../application/machines";
 
 export interface MessageFormat {
   type: string;
@@ -81,7 +80,7 @@ export type ClientMessage =
   | { type: "connectToClientTimeout" }
   | {
       type: "connectToDevtools";
-      payload: GetContext<DevtoolsMachine>["clientContext"];
+      payload: ClientContext;
     }
   | { type: "disconnectFromDevtools" }
   | ExplorerRequestMessage
@@ -94,15 +93,15 @@ export type PanelMessage =
   | ExplorerSubscriptionTerminationMessage
   | {
       type: "initializePanel";
-      state: GetStates<DevtoolsMachine>;
-      payload: GetContext<DevtoolsMachine>["clientContext"];
+      state: StateValues;
+      payload: ClientContext;
     }
   | { type: "retryConnection" }
-  | { type: "devtoolsStateChanged"; state: GetStates<DevtoolsMachine> }
-  | { type: "update"; payload: GetContext<DevtoolsMachine>["clientContext"] };
+  | { type: "devtoolsStateChanged"; state: StateValues }
+  | { type: "update"; payload: ClientContext };
 
 export type DevtoolsRPCMessage = {
-  getClientOperations(): GetContext<DevtoolsMachine>["clientContext"];
+  getClientOperations(): ClientContext;
 };
 
 function isDevtoolsMessage<Message extends Record<string, unknown>>(
