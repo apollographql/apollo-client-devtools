@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@apollo-client/3.8.0-beta.0": "npm:@apollo/client@3.8.0-beta.0",
-    "@apollo-client/3.8.0-beta.1": "npm:@apollo/client@3.9.8",
+    "@apollo-client/3.8.0-beta.1": "npm:@apollo/client@3.8.0-beta.1",
     "@apollo-client/3.8.0-beta.2": "npm:@apollo/client@3.8.0-beta.2",
     "@apollo-client/3.8.0-beta.3": "npm:@apollo/client@3.8.0-beta.3",
     "@apollo-client/3.8.0-beta.4": "npm:@apollo/client@3.8.0-beta.4",
