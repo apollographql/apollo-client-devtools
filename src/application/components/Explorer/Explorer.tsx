@@ -26,7 +26,7 @@ import {
 import { GraphRefModal } from "./GraphRefModal";
 import { Button } from "../Button";
 import { getPanelActor } from "../../../extension/devtools/panelActor";
-import { JSONObject } from "../../types/json";
+import type { JSONObject } from "../../types/json";
 
 const panelWindow = getPanelActor(window);
 
