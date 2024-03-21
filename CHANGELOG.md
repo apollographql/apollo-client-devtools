@@ -1,5 +1,15 @@
 # Changelog
 
+## 4.10.0
+
+### Minor Changes
+
+- [#1281](https://github.com/apollographql/apollo-client-devtools/pull/1281) [`badb1f9`](https://github.com/apollographql/apollo-client-devtools/commit/badb1f9c72d05c1badebd94826064f810c21afb0) Thanks [@phryneas](https://github.com/phryneas)! - Add the ability for devtools to provide full error and log messages without the need to need to call `loadDevMessages` or `loadErrorMessages`.
+
+### Patch Changes
+
+- [#1293](https://github.com/apollographql/apollo-client-devtools/pull/1293) [`e417490`](https://github.com/apollographql/apollo-client-devtools/commit/e41749095dcc7a0a18b3ad1a672e0e593e9bc393) Thanks [@github-actions](https://github.com/apps/github-actions)! - add error codes for new Apollo Client version
+
 ## 4.9.1
 
 ### Patch Changes
