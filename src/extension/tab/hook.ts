@@ -25,11 +25,12 @@ import { createWindowActor } from "../actor";
 import type { ClientMessage, DevtoolsRPCMessage } from "../messages";
 import { createWindowMessageAdapter } from "../messageAdapters";
 import { createRpcHandler } from "../rpc";
+import type { PanelRpcMessages } from "../devtools/panelActor";
 
 const DEVTOOLS_KEY = Symbol.for("apollo.devtools");
 
 const tab = createWindowActor<ClientMessage>(window);
-const handleRpc = createRpcHandler<DevtoolsRPCMessage>(
+const handleRpc = createRpcHandler<DevtoolsRPCMessage & PanelRpcMessages>(
   createWindowMessageAdapter(window)
 );
 
@@ -115,6 +116,9 @@ function initializeHook() {
   }
 
   handleRpc("getClientOperations", getClientData);
+  handleRpc("getMemoryInternals", () =>
+    hook.ApolloClient?.getMemoryInternals?.()
+  );
 
   function sendHookDataToDevTools(eventName: "connectToDevtools") {
     tab.send({

@@ -22,6 +22,7 @@ import { BannerAlert } from "./components/BannerAlert";
 import type { StateValues as DevtoolsState } from "./machines";
 import { ClientNotFoundModal } from "./components/ClientNotFoundModal";
 import { getPanelActor } from "../extension/devtools/panelActor";
+import { Memory } from "./components/Memory/Memory";
 
 const panelWindow = getPanelActor(window);
 
@@ -154,6 +155,7 @@ export const App = () => {
           </Tabs.Trigger>
           <Tabs.Trigger value={Screens.Cache}>Cache</Tabs.Trigger>
           <Tabs.Trigger value={Screens.Explorer}>Explorer</Tabs.Trigger>
+          <Tabs.Trigger value={Screens.Memory}>Memory</Tabs.Trigger>
 
           <div className="flex-1 justify-end">
             <Button
@@ -199,6 +201,9 @@ export const App = () => {
         </Tabs.Content>
         <Tabs.Content className="flex-1 overflow-hidden" value={Screens.Cache}>
           <Cache />
+        </Tabs.Content>
+        <Tabs.Content className="flex-1 overflow-hidden" value={Screens.Memory}>
+          <Memory />
         </Tabs.Content>
       </Tabs>
     </>
