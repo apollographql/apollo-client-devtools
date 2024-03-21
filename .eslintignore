@@ -2,3 +2,4 @@ node_modules
 development
 dist
 build
+src/application/types/gql.ts

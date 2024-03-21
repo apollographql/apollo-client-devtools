@@ -25,6 +25,8 @@ import type {
 } from "./types/gql";
 import type { QueryInfo } from "../extension/tab/helpers";
 import type { JSONObject } from "./types/json";
+import { getPanelRpc } from "../extension/devtools/panelActor";
+import type { MemoryInternals } from "./types/scalars";
 
 const cache = new InMemoryCache({
   fragments: fragmentRegistry,
@@ -73,9 +75,18 @@ const cache = new InMemoryCache({
   },
 });
 
+const rpc = getPanelRpc(window);
+
 const cacheVar = makeVar<string | null>(null);
 export const client = new ApolloClient({
   cache,
+  resolvers: {
+    Query: {
+      memoryInternals(): Promise<MemoryInternals | undefined> {
+        return rpc.request("getMemoryInternals");
+      },
+    },
+  },
 });
 
 export const GET_QUERIES: TypedDocumentNode<GetQueries, GetQueriesVariables> =

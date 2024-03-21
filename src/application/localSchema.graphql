@@ -4,12 +4,16 @@ scalar QueryData
 "Represents variables for a query"
 scalar Variables
 
+"Memory internals are a very dynamic type... let's leave that to TS"
+scalar MemoryInternals
+
 type Query {
   cache: String!
   mutation(id: ID!): WatchedMutation
   mutationLog: MutationLog!
   watchedQueries: WatchedQueries!
   watchedQuery(id: ID!): WatchedQuery
+  memoryInternals: MemoryInternals
 }
 
 type WatchedMutation {
