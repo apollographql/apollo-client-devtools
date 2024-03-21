@@ -9,7 +9,8 @@ import type { OperationDefinitionNode } from "graphql/language";
 
 // All manifests should contain the same version number so it shouldn't matter
 // which one we import from.
-import { version as devtoolsVersion } from "../chrome/manifest.json";
+import * as manifest from "../chrome/manifest.json";
+const { version: devtoolsVersion } = manifest;
 import type { QueryInfo } from "./helpers";
 import {
   getQueries,
@@ -24,14 +25,16 @@ import type { FetchPolicy } from "../../application/components/Explorer/Explorer
 import { createWindowActor } from "../actor";
 import type { ClientMessage, DevtoolsRPCMessage } from "../messages";
 import { createWindowMessageAdapter } from "../messageAdapters";
-import { createRpcHandler } from "../rpc";
+import { createRpcClient, createRpcHandler } from "../rpc";
+import type { ErrorCodesHandler } from "../background/errorcodes";
+import { loadErrorCodes } from "./loadErrorCodes";
 
 const DEVTOOLS_KEY = Symbol.for("apollo.devtools");
 
 const tab = createWindowActor<ClientMessage>(window);
-const handleRpc = createRpcHandler<DevtoolsRPCMessage>(
-  createWindowMessageAdapter(window)
-);
+const messageAdapter = createWindowMessageAdapter(window);
+const handleRpc = createRpcHandler<DevtoolsRPCMessage>(messageAdapter);
+const rpcClient = createRpcClient<ErrorCodesHandler>(messageAdapter);
 
 declare global {
   type TCache = any;
@@ -269,6 +272,7 @@ function initializeHook() {
     // incase initial update was missed because the client wasn't ready, send the create devtools event.
     // devtools checks to see if it's already created, so this won't create duplicate tabs
     sendHookDataToDevTools("connectToDevtools");
+    loadErrorCodes(rpcClient, client.version);
   }
 
   const preExisting = window[DEVTOOLS_KEY];
