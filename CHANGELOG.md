@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.11.0
+
+### Minor Changes
+
+- [#1286](https://github.com/apollographql/apollo-client-devtools/pull/1286) [`11309f3`](https://github.com/apollographql/apollo-client-devtools/commit/11309f341b28d3b51299ef4a23f1201d4613b3eb) Thanks [@phryneas](https://github.com/phryneas)! - Change transpilation target to create a smaller and more modern DevTools build.
+
 ## 4.10.1
 
 ### Patch Changes
