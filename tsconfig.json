@@ -15,7 +15,7 @@
   },
   "$schema": "https://json.schemastore.org/tsconfig",
   "compileOnSave": true,
-  "include": ["src/**/*", "test.setup.ts", "build.ts"],
+  "include": ["src/**/*", "all-clients/**/*", "test.setup.ts", "build.ts"],
   "exclude": [
     "node_modules",
     "dist",

@@ -1,6 +1,7 @@
 {
   "extends": ["apollo-open-source"],
   "dependencyDashboard": true,
+  "ignorePaths": ["**/all-clients/**"],
   "packageRules": [
     {
       "groupName": "all @types",
