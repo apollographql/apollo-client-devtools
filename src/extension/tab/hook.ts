@@ -1,11 +1,12 @@
-import type { ApolloClient, ApolloError, DocumentNode } from "@apollo/client";
+import type { ApolloClient, ApolloError } from "@apollo/client";
 
 // Note that we are intentionally not using Apollo Client's gql and
 // Observable exports, as we don't want Apollo Client and its dependencies
 // to be loaded into each browser tab, when this hook triggered.
-import gql from "graphql-tag";
 import Observable from "zen-observable";
-import type { OperationDefinitionNode } from "graphql/language";
+import type { DefinitionNode } from "graphql/language";
+
+type Writable<T> = { -readonly [P in keyof T]: T[P] };
 
 // All manifests should contain the same version number so it shouldn't matter
 // which one we import from.
@@ -134,35 +135,28 @@ tab.on("connectToClient", () => {
 
 tab.on("explorerRequest", (message) => {
   const {
-    operation: query,
+    operation: queryAst,
     operationName,
     fetchPolicy,
     variables,
-  } = JSON.parse(message.payload ?? "") as {
-    operation: string;
-    operationName: string | undefined;
-    variables: JSONObject | undefined;
-    fetchPolicy: FetchPolicy;
-  };
+  } = message.payload;
 
-  const queryAst = gql(query);
-  const clonedQueryAst = JSON.parse(
-    JSON.stringify(queryAst)
-  ) as DocumentNode & { definitions: OperationDefinitionNode[] };
+  const clonedQueryAst = structuredClone(queryAst) as Writable<typeof queryAst>;
 
-  const filteredDefinitions = clonedQueryAst.definitions.reduce<
-    OperationDefinitionNode[]
-  >((acumm, curr: OperationDefinitionNode) => {
-    if (
-      (curr.kind === "OperationDefinition" &&
-        curr.name?.value === operationName) ||
-      curr.kind !== "OperationDefinition"
-    ) {
-      acumm.push(curr);
-    }
+  const filteredDefinitions = clonedQueryAst.definitions.reduce(
+    (acumm: DefinitionNode[], curr) => {
+      if (
+        (curr.kind === "OperationDefinition" &&
+          curr.name?.value === operationName) ||
+        curr.kind !== "OperationDefinition"
+      ) {
+        acumm.push(curr);
+      }
 
-    return acumm;
-  }, []);
+      return acumm;
+    },
+    []
+  );
 
   clonedQueryAst.definitions = filteredDefinitions;
 
