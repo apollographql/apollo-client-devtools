@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.10.1
+
+### Patch Changes
+
+- [#1287](https://github.com/apollographql/apollo-client-devtools/pull/1287) [`052f242`](https://github.com/apollographql/apollo-client-devtools/commit/052f24239376987b31778999dc3d98036ba38cf0) Thanks [@phryneas](https://github.com/phryneas)! - Move access to the `gql` helper into the background worker to reduce size of injected JavaScript.
+
 ## 4.10.0
 
 ### Minor Changes
