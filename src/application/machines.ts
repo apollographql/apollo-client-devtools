@@ -53,7 +53,12 @@ export function createDevtoolsMachine({ actions }: { actions: Actions }) {
       states: {
         initialized: {
           on: {
-            connect: "connected",
+            connect: {
+              target: "connected",
+              actions: assign({
+                clientContext: (_, event) => event.clientContext,
+              }),
+            },
             timeout: "timedout",
             clientNotFound: "notFound",
           },
@@ -69,15 +74,7 @@ export function createDevtoolsMachine({ actions }: { actions: Actions }) {
           on: {
             disconnect: "disconnected",
           },
-          entry: [
-            "startRequestInterval",
-            assign({
-              clientContext: (ctx, event) =>
-                "clientContext" in event
-                  ? event.clientContext
-                  : ctx.clientContext,
-            }),
-          ],
+          entry: ["startRequestInterval"],
         },
         disconnected: {
           on: {
