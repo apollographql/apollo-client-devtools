@@ -3,12 +3,12 @@
   "version": "0.0.0",
   "private": true,
   "dependencies": {
-    "@angular/common": "17.3.0",
-    "@angular/compiler": "17.3.0",
-    "@angular/core": "17.3.0",
-    "@angular/platform-browser": "17.3.0",
-    "@angular/platform-browser-dynamic": "17.3.0",
-    "@apollo/client": "3.9.7",
+    "@angular/common": "17.3.1",
+    "@angular/compiler": "17.3.1",
+    "@angular/core": "17.3.1",
+    "@angular/platform-browser": "17.3.1",
+    "@angular/platform-browser-dynamic": "17.3.1",
+    "@apollo/client": "3.9.9",
     "apollo-angular": "6.0.0",
     "graphql": "16.8.1",
     "graphql-ws": "5.15.0",
@@ -21,12 +21,12 @@
     "build": "ng build"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "17.3.0",
-    "@angular/cli": "17.3.0",
-    "@angular/compiler-cli": "17.3.0",
-    "@types/node": "20.11.28",
+    "@angular-devkit/build-angular": "17.3.1",
+    "@angular/cli": "17.3.1",
+    "@angular/compiler-cli": "17.3.1",
+    "@types/node": "20.11.30",
     "ts-node": "10.9.2",
     "tslint": "6.1.3",
-    "typescript": "5.4.2"
+    "typescript": "5.4.3"
   }
 }
