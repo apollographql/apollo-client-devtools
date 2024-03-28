@@ -19,7 +19,7 @@ import {
   getMutations,
   getMainDefinition,
 } from "./helpers";
-import type { QueryResult } from "../../types";
+import type { QueryResult, SafeAny } from "../../types";
 import { getPrivateAccess } from "../../privateAccess";
 import type { JSONObject } from "../../application/types/json";
 import { createWindowActor } from "../actor";
@@ -33,7 +33,7 @@ declare global {
   type TCache = any;
 
   interface Window {
-    __APOLLO_CLIENT__: ApolloClient<TCache>;
+    __APOLLO_CLIENT__?: ApolloClient<TCache>;
     [DEVTOOLS_KEY]?: {
       push(client: ApolloClient<any>): void;
     };
@@ -245,8 +245,31 @@ function findClient() {
   initializeDevtoolsHook(); // call immediately to reduce lag if devtools are already available
 }
 
+function watchForClientTermination(client: ApolloClient<any>) {
+  const originalStop = client.stop;
+
+  client.stop = () => {
+    knownClients.delete(client);
+
+    if (window.__APOLLO_CLIENT__ === client) {
+      window.__APOLLO_CLIENT__ = undefined;
+    }
+
+    if (hook.ApolloClient === client) {
+      hook.ApolloClient = undefined;
+    }
+
+    tab.send({ type: "disconnectFromDevtools" });
+    originalStop.call(client);
+  };
+}
+
 function registerClient(client: ApolloClient<any>) {
-  knownClients.add(client);
+  if (!knownClients.has(client)) {
+    knownClients.add(client);
+    watchForClientTermination(client);
+  }
+
   hook.ApolloClient = client;
   // TODO: Repurpose this callback. The message it sent was not listened by
   // anything, so the broadcast was useless. Currently the devtools rely on
