@@ -49,7 +49,15 @@ function Layout({ onChangeClient }) {
           <Link to="/favorites">Favorites</Link>
           <Link to="/lookup">Lookup</Link>
         </nav>
-        <div>
+        <div style={{ display: "flex", gap: "1rem" }}>
+          <button
+            onClick={() => {
+              client.stop();
+              onChangeClient(createClient());
+            }}
+          >
+            Recreate client
+          </button>
           <button
             onClick={() => {
               client.stop();
