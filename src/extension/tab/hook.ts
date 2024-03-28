@@ -22,7 +22,6 @@ import {
 import type { QueryResult } from "../../types";
 import { getPrivateAccess } from "../../privateAccess";
 import type { JSONObject } from "../../application/types/json";
-import type { FetchPolicy } from "../../application/components/Explorer/Explorer";
 import { createWindowActor } from "../actor";
 import type { ClientMessage, DevtoolsRPCMessage } from "../messages";
 import { createWindowMessageAdapter } from "../messageAdapters";
