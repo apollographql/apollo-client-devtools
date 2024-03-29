@@ -19,6 +19,7 @@ const devtoolsMachine = interpret(
     actions: {
       connectToClient: () => {
         clientPort.send({ type: "connectToClient" });
+        startConnectTimeout();
       },
       startRequestInterval: () => {
         clearTimeout(connectTimeoutId);
