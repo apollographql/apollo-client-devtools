@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.11.1
+
+### Patch Changes
+
+- [#1303](https://github.com/apollographql/apollo-client-devtools/pull/1303) [`df0d242`](https://github.com/apollographql/apollo-client-devtools/commit/df0d242edb9d4eb7ae81eee1c47572e52afe44ff) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Fix issue where terminating the client by calling `.stop` would not disconnect it from devtools making it difficult to track newly created clients.
+
 ## 4.11.0
 
 ### Minor Changes
