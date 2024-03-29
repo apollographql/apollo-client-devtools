@@ -19,7 +19,7 @@ import {
   getMutations,
   getMainDefinition,
 } from "./helpers";
-import type { QueryResult, SafeAny } from "../../types";
+import type { QueryResult } from "../../types";
 import { getPrivateAccess } from "../../privateAccess";
 import type { JSONObject } from "../../application/types/json";
 import { createWindowActor } from "../actor";
