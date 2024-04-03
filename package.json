@@ -38,7 +38,7 @@
   "dependencies": {
     "@apollo/brand": "^0.5.0",
     "@apollo/client": "^3.8.8",
-    "@apollo/icons": "^0.2.0",
+    "@apollo/icons": "^0.3.0",
     "@apollo/tailwind-preset": "^0.1.3",
     "@headlessui/react": "^1.7.17",
     "@headlessui/tailwindcss": "^0.2.0",
