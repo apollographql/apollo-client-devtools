@@ -21,7 +21,7 @@ jobs:
             echo "No new error codes were added."
             exit 0
           fi
-          cat <<EOF > ../.changeset/`md5 < errorcodes.json`.md
+          cat <<EOF > ../.changeset/errorcodes.md
           ---
           "apollo-client-devtools": patch
           ---
