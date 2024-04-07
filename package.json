@@ -73,7 +73,7 @@
     "@testing-library/user-event": "14.5.2",
     "@total-typescript/ts-reset": "0.5.1",
     "@types/archiver": "6.0.2",
-    "@types/chrome": "0.0.265",
+    "@types/chrome": "0.0.266",
     "@types/eslint__js": "8.42.3",
     "@types/jest": "29.5.12",
     "@types/react": "18.2.74",
