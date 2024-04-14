@@ -1,7 +1,7 @@
 import browser from "webextension-polyfill";
 import { createDevtoolsMachine } from "../../application/machines";
 import type { Actor } from "../actor";
-import { createActor, createPortActor } from "../actor";
+import { createActor } from "../actor";
 import type {
   ClientMessage,
   DevtoolsRPCMessage,
@@ -41,13 +41,9 @@ const devtoolsMachine = interpret(
 let panelHidden = true;
 let connectTimeoutId: NodeJS.Timeout;
 
-const port = browser.runtime.connect({
-  name: inspectedTabId.toString(),
+const portAdapter = createPortMessageAdapter(() => {
+  return browser.runtime.connect({ name: inspectedTabId.toString() });
 });
-
-const portAdapter = createPortMessageAdapter(port, () =>
-  browser.runtime.connect({ name: inspectedTabId.toString() })
-);
 const clientPort = createActor<ClientMessage>(portAdapter);
 const rpcClient = createRpcClient<DevtoolsRPCMessage>(portAdapter);
 

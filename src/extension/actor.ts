@@ -1,4 +1,3 @@
-import type browser from "webextension-polyfill";
 import type {
   ApolloClientDevtoolsEventMessage,
   MessageFormat,
@@ -6,10 +5,7 @@ import type {
 import { MessageType, isEventMessage } from "./messages";
 import type { NoInfer } from "../types";
 import type { MessageAdapter } from "./messageAdapters";
-import {
-  createPortMessageAdapter,
-  createWindowMessageAdapter,
-} from "./messageAdapters";
+import { createWindowMessageAdapter } from "./messageAdapters";
 
 export interface Actor<Messages extends MessageFormat> {
   on: <TName extends Messages["type"]>(
@@ -55,13 +51,6 @@ export function createActor<
   function startListening() {
     if (!removeListener) {
       removeListener = adapter.addListener(handleMessage);
-      adapter.onDisconnect(() => {
-        if (removeListener) {
-          stopListening();
-          console.log("start listening");
-          startListening();
-        }
-      });
     }
   }
 
@@ -108,14 +97,6 @@ export function createActor<
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     forward: (name, actor) => on(name, actor.send as unknown as any),
   };
-}
-
-export function createPortActor<
-  Messages extends MessageFormat = {
-    type: "Error: Pass <Messages> to `createPortActor<Messages>()`";
-  },
->(port: browser.Runtime.Port) {
-  return createActor<Messages>(createPortMessageAdapter(port));
 }
 
 export function createWindowActor<

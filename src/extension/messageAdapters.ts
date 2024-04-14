@@ -8,37 +8,45 @@ export interface MessageAdapter<
 > {
   addListener: (listener: (message: unknown) => void) => () => void;
   postMessage: (message: PostMessageFormat) => void;
-  onDisconnect: (listener: () => void) => void;
 }
 
 export function createPortMessageAdapter<
   PostMessageFormat extends Record<string, unknown> = Record<string, unknown>,
 >(
-  port: browser.Runtime.Port,
-  onDisconnect: () => browser.Runtime.Port
+  createPort: () => browser.Runtime.Port
 ): MessageAdapter<ApolloClientDevtoolsMessage<PostMessageFormat>> {
-  return {
-    addListener(listener) {
+  const listeners = new Set<(message: unknown) => void>();
+  let port = createPort();
+
+  function initializePort() {
+    listeners.forEach((listener) => {
       port.onMessage.addListener(listener);
-      port.onDisconnect.addListener(() => {
+    });
+
+    port.onDisconnect.addListener(() => {
+      listeners.forEach((listener) => {
         port.onMessage.removeListener(listener);
-        port = onDisconnect();
       });
 
+      port = createPort();
+      initializePort();
+    });
+  }
+
+  initializePort();
+
+  return {
+    addListener(listener) {
+      listeners.add(listener);
+      port.onMessage.addListener(listener);
+
       return () => {
+        listeners.delete(listener);
         port.onMessage.removeListener(listener);
       };
     },
     postMessage(message) {
       return port.postMessage(message);
-    },
-    onDisconnect: (listener) => {
-      function handleDisconnect() {
-        listener();
-        port.onDisconnect.removeListener(handleDisconnect);
-      }
-
-      port.onDisconnect.addListener(handleDisconnect);
     },
   };
 }
@@ -62,9 +70,6 @@ export function createWindowMessageAdapter<
     },
     postMessage(message) {
       window.postMessage(message, "*");
-    },
-    onDisconnect: () => {
-      // does nothing
     },
   };
 }
