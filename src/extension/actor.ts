@@ -55,6 +55,13 @@ export function createActor<
   function startListening() {
     if (!removeListener) {
       removeListener = adapter.addListener(handleMessage);
+      adapter.onDisconnect(() => {
+        if (removeListener) {
+          stopListening();
+          console.log("start listening");
+          startListening();
+        }
+      });
     }
   }
 

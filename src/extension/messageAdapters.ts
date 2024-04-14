@@ -8,18 +8,21 @@ export interface MessageAdapter<
 > {
   addListener: (listener: (message: unknown) => void) => () => void;
   postMessage: (message: PostMessageFormat) => void;
+  onDisconnect: (listener: () => void) => void;
 }
 
 export function createPortMessageAdapter<
   PostMessageFormat extends Record<string, unknown> = Record<string, unknown>,
 >(
-  port: browser.Runtime.Port
+  port: browser.Runtime.Port,
+  onDisconnect: () => browser.Runtime.Port
 ): MessageAdapter<ApolloClientDevtoolsMessage<PostMessageFormat>> {
   return {
     addListener(listener) {
       port.onMessage.addListener(listener);
       port.onDisconnect.addListener(() => {
         port.onMessage.removeListener(listener);
+        port = onDisconnect();
       });
 
       return () => {
@@ -28,6 +31,14 @@ export function createPortMessageAdapter<
     },
     postMessage(message) {
       return port.postMessage(message);
+    },
+    onDisconnect: (listener) => {
+      function handleDisconnect() {
+        listener();
+        port.onDisconnect.removeListener(handleDisconnect);
+      }
+
+      port.onDisconnect.addListener(handleDisconnect);
     },
   };
 }
@@ -51,6 +62,9 @@ export function createWindowMessageAdapter<
     },
     postMessage(message) {
       window.postMessage(message, "*");
+    },
+    onDisconnect: () => {
+      // does nothing
     },
   };
 }
