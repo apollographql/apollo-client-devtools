@@ -10,11 +10,19 @@ export interface MessageAdapter<
   postMessage: (message: PostMessageFormat) => void;
 }
 
+interface PortMessageAdapter<
+  PostMessageFormat extends ApolloClientDevtoolsMessage<
+    Record<string, unknown>
+  >,
+> extends MessageAdapter<PostMessageFormat> {
+  replacePort: (port: browser.Runtime.Port) => void;
+}
+
 export function createPortMessageAdapter<
   PostMessageFormat extends Record<string, unknown> = Record<string, unknown>,
 >(
   port: browser.Runtime.Port
-): MessageAdapter<ApolloClientDevtoolsMessage<PostMessageFormat>> {
+): PortMessageAdapter<ApolloClientDevtoolsMessage<PostMessageFormat>> {
   return {
     addListener(listener) {
       port.onMessage.addListener(listener);
@@ -28,6 +36,9 @@ export function createPortMessageAdapter<
     },
     postMessage(message) {
       return port.postMessage(message);
+    },
+    replacePort(newPort: browser.Runtime.Port) {
+      port = newPort;
     },
   };
 }

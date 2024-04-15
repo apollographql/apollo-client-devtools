@@ -1,7 +1,7 @@
 import browser from "webextension-polyfill";
 import { createDevtoolsMachine } from "../../application/machines";
 import type { Actor } from "../actor";
-import { createPortActor } from "../actor";
+import { createActor } from "../actor";
 import type {
   ClientMessage,
   DevtoolsRPCMessage,
@@ -44,11 +44,19 @@ let connectTimeoutId: NodeJS.Timeout;
 const port = browser.runtime.connect({
   name: inspectedTabId.toString(),
 });
+const portAdapter = createPortMessageAdapter(port);
 
-const clientPort = createPortActor<ClientMessage>(port);
-const rpcClient = createRpcClient<DevtoolsRPCMessage>(
-  createPortMessageAdapter(port)
-);
+port.onDisconnect.addListener(() => {
+  clearTimeout(connectTimeoutId);
+  unsubscribeFromAll();
+
+  portAdapter.replacePort(
+    browser.runtime.connect({ name: inspectedTabId.toString() })
+  );
+});
+
+const clientPort = createActor<ClientMessage>(portAdapter);
+const rpcClient = createRpcClient<DevtoolsRPCMessage>(portAdapter);
 
 // In case we can't connect to the tab, we should at least show something to the
 // user when we've attempted to connect a max number of times.
