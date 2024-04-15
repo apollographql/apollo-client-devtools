@@ -3,7 +3,6 @@
 // https://github.com/facebook/react/blob/18a9dd1c60fdb711982f32ce5d91acfe8f158fe1/LICENSE
 import browser from "webextension-polyfill";
 import "./errorcodes";
-import "./dynamicallyInjectContentScripts";
 
 const ports: Record<
   number,
