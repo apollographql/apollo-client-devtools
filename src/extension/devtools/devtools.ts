@@ -44,16 +44,28 @@ let connectTimeoutId: NodeJS.Timeout;
 const port = browser.runtime.connect({
   name: inspectedTabId.toString(),
 });
-const portAdapter = createPortMessageAdapter(port);
+const portAdapter = createPortMessageAdapter(port, {
+  onContextInvalidated: () => {
+    console.log("transition to reload state");
+    clearTimeout(connectTimeoutId);
+    unsubscribeFromAll();
+  },
+});
 
-port.onDisconnect.addListener(() => {
+function handleDisconnect() {
   clearTimeout(connectTimeoutId);
   unsubscribeFromAll();
 
-  portAdapter.replacePort(
-    browser.runtime.connect({ name: inspectedTabId.toString() })
-  );
-});
+  const newPort = browser.runtime.connect({ name: port.name });
+  portAdapter.replacePort(newPort);
+  newPort.onDisconnect.addListener(handleDisconnect);
+
+  if (!panelHidden) {
+    unsubscribers.add(startRequestInterval());
+  }
+}
+
+port.onDisconnect.addListener(handleDisconnect);
 
 const clientPort = createActor<ClientMessage>(portAdapter);
 const rpcClient = createRpcClient<DevtoolsRPCMessage>(portAdapter);

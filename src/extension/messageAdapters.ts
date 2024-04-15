@@ -21,7 +21,10 @@ interface PortMessageAdapter<
 export function createPortMessageAdapter<
   PostMessageFormat extends Record<string, unknown> = Record<string, unknown>,
 >(
-  port: browser.Runtime.Port
+  port: browser.Runtime.Port,
+  options: {
+    onContextInvalidated?: () => void;
+  } = Object.create(null)
 ): PortMessageAdapter<ApolloClientDevtoolsMessage<PostMessageFormat>> {
   let currentPort = port;
   const listeners = new Set<(message: unknown) => void>();
@@ -53,7 +56,18 @@ export function createPortMessageAdapter<
       };
     },
     postMessage(message) {
-      return currentPort.postMessage(message);
+      try {
+        console.log("send", message);
+        currentPort.postMessage(message);
+      } catch (e) {
+        if (
+          e instanceof Error &&
+          e.message.includes("Extension context invalidated")
+        ) {
+          console.log("onContextInvalidated");
+          options.onContextInvalidated?.();
+        }
+      }
     },
     replacePort(port: browser.Runtime.Port) {
       listeners.forEach((listener) =>
