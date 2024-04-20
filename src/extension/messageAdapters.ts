@@ -18,9 +18,6 @@ export function createPortMessageAdapter<
   return {
     addListener(listener) {
       port.onMessage.addListener(listener);
-      port.onDisconnect.addListener(() => {
-        port.onMessage.removeListener(listener);
-      });
 
       return () => {
         port.onMessage.removeListener(listener);
