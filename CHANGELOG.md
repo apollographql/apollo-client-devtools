@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.11.5
+
+### Patch Changes
+
+- [#1339](https://github.com/apollographql/apollo-client-devtools/pull/1339) [`6df9b7d`](https://github.com/apollographql/apollo-client-devtools/commit/6df9b7d2a1e4236eeabbc2e39f9db91da5e77193) Thanks [@github-actions](https://github.com/apps/github-actions)! - add error codes for new Apollo Client version
+
+- [#1335](https://github.com/apollographql/apollo-client-devtools/pull/1335) [`62e8bd6`](https://github.com/apollographql/apollo-client-devtools/commit/62e8bd6789f78b5c8b8ed962411677c2c8de53b6) Thanks [@hehaijin](https://github.com/hehaijin)! - Fixed a memory leak issue with devtools
+
 ## 4.11.4
 
 ### Patch Changes
