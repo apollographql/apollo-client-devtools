@@ -2,7 +2,6 @@ import type { ComponentPropsWithoutRef } from "react";
 import CopyToClipboard from "react-copy-to-clipboard";
 import { Button } from "./Button";
 import IconCopy from "@apollo/icons/default/IconCopy.svg";
-import { Tooltip } from "./Tooltip";
 
 type ButtonProps = ComponentPropsWithoutRef<typeof Button>;
 
@@ -20,16 +19,14 @@ export function CopyButton({
 }: CopyButtonProps) {
   return (
     <CopyToClipboard text={text}>
-      <Tooltip content="Copy">
-        <Button
-          {...rest}
-          aria-label="Copy"
-          className={className}
-          size={size}
-          variant="hidden"
-          icon={<IconCopy />}
-        />
-      </Tooltip>
+      <Button
+        {...rest}
+        aria-label="Copy"
+        className={className}
+        size={size}
+        variant="hidden"
+        icon={<IconCopy />}
+      />
     </CopyToClipboard>
   );
 }
