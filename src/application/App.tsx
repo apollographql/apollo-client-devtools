@@ -181,14 +181,17 @@ export const App = () => {
                 </GitHubIssueLink>
               </Button>
             </Tooltip>
-            <Button
-              size="sm"
-              variant="hidden"
-              onClick={() => setSettingsOpen(true)}
-            >
-              <IconSettings aria-hidden="true" className="w-4" />
-              <span className="sr-only">Settings</span>
-            </Button>
+
+            <Tooltip content="Settings">
+              <Button
+                size="sm"
+                variant="hidden"
+                onClick={() => setSettingsOpen(true)}
+              >
+                <IconSettings aria-hidden="true" className="w-4" />
+                <span className="sr-only">Settings</span>
+              </Button>
+            </Tooltip>
           </ButtonGroup>
           <SettingsModal open={settingsOpen} onOpen={setSettingsOpen} />
         </Tabs.List>
