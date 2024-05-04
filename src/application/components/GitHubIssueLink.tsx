@@ -8,7 +8,7 @@ interface GitHubIssueLinkProps {
   body?: string;
   labels?: string[];
   repository?: "apollo-client" | "apollo-client-devtools";
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 const WHITESPACE = /\s/g;
