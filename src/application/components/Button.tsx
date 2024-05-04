@@ -1,11 +1,13 @@
 import type { ComponentPropsWithoutRef, ElementType } from "react";
 import { clsx } from "clsx";
+import { Slot, Slottable } from "@radix-ui/react-slot";
 
 type NativeButtonProps = ComponentPropsWithoutRef<"button">;
 
 type ButtonSize = "md" | "sm" | "xs";
 
 interface ButtonProps extends NativeButtonProps {
+  asChild?: boolean;
   icon?: ElementType;
   variant: "primary" | "secondary" | "hidden";
   size: ButtonSize;
@@ -18,6 +20,7 @@ const ICON_SIZES = {
 } satisfies Record<ButtonSize, string>;
 
 export function Button({
+  asChild,
   className,
   children,
   variant,
@@ -25,8 +28,10 @@ export function Button({
   icon: Icon,
   ...props
 }: ButtonProps) {
+  const Component = asChild ? Slot : "button";
+
   return (
-    <button
+    <Component
       {...props}
       className={clsx(
         className,
@@ -46,8 +51,8 @@ export function Button({
         }
       )}
     >
-      {Icon && <Icon className={clsx(ICON_SIZES[size])} />}
-      {children}
-    </button>
+      {Icon && <Icon className={ICON_SIZES[size]} />}
+      <Slottable>{children}</Slottable>
+    </Component>
   );
 }
