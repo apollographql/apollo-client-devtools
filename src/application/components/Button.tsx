@@ -45,8 +45,8 @@ const button = cva(
           "dark:text-primary-dark",
           "hover:bg-button-secondaryHover",
           "hover:dark:bg-button-secondaryHover-dark",
-          "active:bg-selected",
-          "active:dark:bg-selected-dark",
+          "active:bg-button-secondarySelected",
+          "active:dark:bg-button-secondarySelected-dark",
         ],
         primary: [
           "text-white",
