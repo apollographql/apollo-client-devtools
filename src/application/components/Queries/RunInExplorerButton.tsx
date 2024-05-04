@@ -22,7 +22,7 @@ export const RunInExplorerButton = ({
     <Button
       variant="hidden"
       size="sm"
-      className="peer is-explorer-button ml-auto"
+      className="ml-auto"
       disabled={!embeddedExplorerIFrame}
       icon={<IconRun />}
       onClick={() => {
