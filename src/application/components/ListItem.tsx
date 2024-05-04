@@ -5,7 +5,7 @@ interface ListItemProps {
   className?: string;
   children?: ReactNode;
   selected?: boolean;
-  onClick?: ComponentPropsWithoutRef<"div">["onClick"];
+  onClick?: ComponentPropsWithoutRef<"li">["onClick"];
 }
 
 export function ListItem({
@@ -15,22 +15,30 @@ export function ListItem({
   onClick,
 }: ListItemProps) {
   return (
-    <div
+    <li
+      tabIndex={0}
       className={twMerge(
         className,
         "text-md text-primary dark:text-primary-dark",
         "transition-colors duration-200",
         "border-2 border-transparent flex items-center rounded-md cursor-pointer py-2 px-4",
-        "focus:border-focused focus:dark:border-focused-dark",
+        "focus-visible:outline-none",
+        "focus-visible:border-focused focus-visible:dark:border-focused-dark",
+        "focus-visible:ring-2 focus-visible:ring-focused focus-visible:dark:ring-focused",
         selected
           ? "font-semibold bg-neutral dark:bg-neutral-dark"
           : "hover:bg-button-secondaryHover hover:dark:bg-button-secondaryHover-dark"
       )}
       onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.currentTarget.click();
+        }
+      }}
     >
       <div className="overflow-hidden whitespace-nowrap text-ellipsis">
         {children}
       </div>
-    </div>
+    </li>
   );
 }
