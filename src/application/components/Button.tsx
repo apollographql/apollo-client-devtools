@@ -1,5 +1,5 @@
-import type { ComponentPropsWithoutRef, ElementType } from "react";
-import { forwardRef } from "react";
+import type { ComponentPropsWithoutRef, ReactElement } from "react";
+import { cloneElement, forwardRef, isValidElement } from "react";
 import { Slot, Slottable } from "@radix-ui/react-slot";
 import type { AsChildProps } from "../types/props";
 import { cva, type VariantProps } from "class-variance-authority";
@@ -11,16 +11,10 @@ type NativeButtonProps = ComponentPropsWithoutRef<"button">;
 type ButtonProps = AsChildProps<NativeButtonProps> &
   Variants & {
     className?: string;
-    icon?: ElementType;
+    icon?: ReactElement<{ "aria-hidden": boolean; className?: string }>;
   };
 
 type Variants = OmitNull<Required<VariantProps<typeof button>>>;
-
-const ICON_SIZES = {
-  xs: "w-3",
-  sm: "w-4",
-  md: "w-4",
-} satisfies Record<Variants["size"], string>;
 
 const button = cva(
   [
@@ -106,9 +100,19 @@ const button = cva(
   }
 );
 
+const iconSize = cva([], {
+  variants: {
+    size: {
+      xs: ["w-3"],
+      sm: ["w-4"],
+      md: ["w-4"],
+    },
+  },
+});
+
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   function Button(
-    { asChild, className, children, variant, size, icon: Icon, ...props },
+    { asChild, className, children, variant, size, icon, ...props },
     ref
   ) {
     const Component = asChild ? Slot : "button";
@@ -119,7 +123,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         className={twMerge(button({ variant, size }), className)}
       >
-        {Icon && <Icon className={ICON_SIZES[size]} />}
+        {isValidElement(icon) &&
+          cloneElement(icon, {
+            "aria-hidden": true,
+            className: twMerge(iconSize({ size }), icon.props.className),
+          })}
         <Slottable>{children}</Slottable>
       </Component>
     );
