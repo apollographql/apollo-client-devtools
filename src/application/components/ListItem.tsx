@@ -24,7 +24,6 @@ export function ListItem({
         "border-2 border-transparent flex items-center rounded-md cursor-pointer py-2 px-4",
         "focus-visible:outline-none",
         "focus-visible:border-focused focus-visible:dark:border-focused-dark",
-        "focus-visible:ring-2 focus-visible:ring-focused focus-visible:dark:ring-focused",
         selected
           ? "font-semibold bg-neutral dark:bg-neutral-dark"
           : "hover:bg-button-secondaryHover hover:dark:bg-button-secondaryHover-dark"
