@@ -1,17 +1,18 @@
 import type { ComponentPropsWithoutRef, ElementType } from "react";
 import { clsx } from "clsx";
 import { Slot, Slottable } from "@radix-ui/react-slot";
+import type { AsChildProps } from "../types/props";
 
 type NativeButtonProps = ComponentPropsWithoutRef<"button">;
 
 type ButtonSize = "md" | "sm" | "xs";
 
-interface ButtonProps extends NativeButtonProps {
-  asChild?: boolean;
+type ButtonProps = AsChildProps<NativeButtonProps> & {
+  className?: string;
   icon?: ElementType;
   variant: "primary" | "secondary" | "hidden";
   size: ButtonSize;
-}
+};
 
 const ICON_SIZES = {
   xs: "w-3",
