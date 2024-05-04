@@ -24,6 +24,11 @@ ${VERSION}
 `,
 } as const;
 
+export const LABELS = {
+  bug: "🐞 bug",
+  clientDiscovery: ":mag: apollo-client-discovery",
+};
+
 export function GitHubIssueLink({
   body = DEFAULT_BODY,
   className,
