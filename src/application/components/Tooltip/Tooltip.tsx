@@ -12,7 +12,10 @@ export function Tooltip({ content, children }: TooltipProps) {
     <Root>
       <Trigger asChild>{children}</Trigger>
       <Portal>
-        <Content className="shadow-popovers bg-black dark:bg-black-dark border-black dark:border-black-dark py-1 px-2 text-white dark:text-white-dark">
+        <Content
+          sideOffset={4}
+          className="shadow-popovers border rounded bg-black dark:bg-black-dark border-black dark:border-black-dark py-1 px-2 text-white dark:text-white-dark text-sm font-body"
+        >
           {content}
         </Content>
       </Portal>
