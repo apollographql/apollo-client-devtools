@@ -175,7 +175,12 @@ export const App = () => {
 
           <ButtonGroup className="ml-auto flex-1 justify-end">
             <Tooltip content="Report an issue">
-              <Button variant="hidden" size="sm" asChild>
+              <Button
+                aria-label="Report an issue"
+                variant="hidden"
+                size="sm"
+                asChild
+              >
                 <GitHubIssueLink labels={[LABELS.bug]} body={ISSUE_BODY}>
                   <IconGitHubSolid aria-hidden="true" className="w-4" />
                 </GitHubIssueLink>
@@ -184,12 +189,12 @@ export const App = () => {
 
             <Tooltip content="Settings">
               <Button
+                aria-label="Settings"
                 size="sm"
                 variant="hidden"
                 onClick={() => setSettingsOpen(true)}
               >
                 <IconSettings aria-hidden="true" className="w-4" />
-                <span className="sr-only">Settings</span>
               </Button>
             </Tooltip>
           </ButtonGroup>
