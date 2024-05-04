@@ -11,7 +11,7 @@ export function Footer({ className, children }: FooterProps) {
     <footer
       className={clsx(
         className,
-        "flex pt-6 justify-end has-[>:nth-child(2)]:justify-between"
+        "flex px-6 pt-4 pb-6 justify-end has-[>:nth-child(2)]:justify-between"
       )}
     >
       {children}
