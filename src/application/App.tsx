@@ -65,7 +65,7 @@ const ALERT_CONFIGS = {
         <Button
           size="xs"
           variant="hidden"
-          icon={IconSync}
+          icon={<IconSync />}
           onClick={() => panelWindow.send({ type: "retryConnection" })}
         >
           Retry connection
@@ -179,11 +179,10 @@ export const App = () => {
                 aria-label="Report an issue"
                 variant="hidden"
                 size="sm"
+                icon={<IconGitHubSolid />}
                 asChild
               >
-                <GitHubIssueLink labels={[LABELS.bug]} body={ISSUE_BODY}>
-                  <IconGitHubSolid aria-hidden="true" className="w-4" />
-                </GitHubIssueLink>
+                <GitHubIssueLink labels={[LABELS.bug]} body={ISSUE_BODY} />
               </Button>
             </Tooltip>
 
@@ -193,9 +192,8 @@ export const App = () => {
                 size="sm"
                 variant="hidden"
                 onClick={() => setSettingsOpen(true)}
-              >
-                <IconSettings aria-hidden="true" className="w-4" />
-              </Button>
+                icon={<IconSettings />}
+              />
             </Tooltip>
           </ButtonGroup>
           <SettingsModal open={settingsOpen} onOpen={setSettingsOpen} />
