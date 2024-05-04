@@ -24,7 +24,11 @@ import type { StateValues as DevtoolsState } from "./machines";
 import { ClientNotFoundModal } from "./components/ClientNotFoundModal";
 import { getPanelActor } from "../extension/devtools/panelActor";
 import { ButtonGroup } from "./components/ButtonGroup";
-import { GitHubIssueLink } from "./components/GitHubIssueLink";
+import {
+  GitHubIssueLink,
+  LABELS,
+  SECTIONS,
+} from "./components/GitHubIssueLink";
 
 const panelWindow = getPanelActor(window);
 
@@ -82,6 +86,16 @@ const GET_OPERATION_COUNTS: TypedDocumentNode<
       count
     }
   }
+`;
+
+const ISSUE_BODY = `
+<!-- Please provide a detailed description of the issue you are experiencing. It is most helpful if you are able to provide a minimal reproduction of the issue. -->
+
+### Link to Reproduction
+<!-- Please provide a link to the reproduction of the issue. -->
+
+${SECTIONS.apolloClientVersion}
+${SECTIONS.devtoolsVersion}
 `;
 
 export const App = () => {
@@ -160,7 +174,7 @@ export const App = () => {
 
           <ButtonGroup className="ml-auto flex-1 justify-end">
             <Button variant="hidden" size="sm" asChild>
-              <GitHubIssueLink>
+              <GitHubIssueLink labels={[LABELS.bug]} body={ISSUE_BODY}>
                 <IconGitHubSolid aria-hidden="true" className="w-4" />
               </GitHubIssueLink>
             </Button>
