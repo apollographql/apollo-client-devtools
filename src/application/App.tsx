@@ -29,6 +29,7 @@ import {
   LABELS,
   SECTIONS,
 } from "./components/GitHubIssueLink";
+import { Tooltip } from "./components/Tooltip";
 
 const panelWindow = getPanelActor(window);
 
@@ -173,11 +174,13 @@ export const App = () => {
           <Tabs.Trigger value={Screens.Explorer}>Explorer</Tabs.Trigger>
 
           <ButtonGroup className="ml-auto flex-1 justify-end">
-            <Button variant="hidden" size="sm" asChild>
-              <GitHubIssueLink labels={[LABELS.bug]} body={ISSUE_BODY}>
-                <IconGitHubSolid aria-hidden="true" className="w-4" />
-              </GitHubIssueLink>
-            </Button>
+            <Tooltip content="Report an issue">
+              <Button variant="hidden" size="sm" asChild>
+                <GitHubIssueLink labels={[LABELS.bug]} body={ISSUE_BODY}>
+                  <IconGitHubSolid aria-hidden="true" className="w-4" />
+                </GitHubIssueLink>
+              </Button>
+            </Tooltip>
             <Button
               size="sm"
               variant="hidden"
