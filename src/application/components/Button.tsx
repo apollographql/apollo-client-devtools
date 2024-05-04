@@ -40,6 +40,8 @@ const button = cva(
     "disabled:text-disabled",
     "disabled:dark:text-disabled-dark",
     "disabled:cursor-not-allowed",
+    "transition-colors",
+    "duration-200",
   ],
   {
     variants: {
