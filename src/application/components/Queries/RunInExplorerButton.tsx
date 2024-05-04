@@ -20,7 +20,7 @@ export const RunInExplorerButton = ({
 }: RunInExplorerButtonProps): JSX.Element | null => {
   return (
     <Button
-      variant="hidden"
+      variant="secondary"
       size="sm"
       className="ml-auto"
       disabled={!embeddedExplorerIFrame}
