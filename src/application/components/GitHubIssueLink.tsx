@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 declare const VERSION: string;
 
 interface GitHubIssueLinkProps {
+  className?: string;
   body?: string;
   labels?: string[];
   repository?: "apollo-client" | "apollo-client-devtools";
@@ -25,6 +26,7 @@ ${VERSION}
 
 export function GitHubIssueLink({
   body = DEFAULT_BODY,
+  className,
   repository = "apollo-client-devtools",
   labels,
   children,
@@ -41,6 +43,7 @@ export function GitHubIssueLink({
 
   return (
     <a
+      className={className}
       rel="noreferrer noopener"
       target="_blank"
       href={`https://github.com/apollographql/${repository}/issues/new?${params}`}
