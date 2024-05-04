@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { forwardRef } from "react";
 
 declare const VERSION: string;
 
@@ -29,13 +30,20 @@ export const LABELS = {
   clientDiscovery: ":mag: apollo-client-discovery",
 };
 
-export function GitHubIssueLink({
-  body = DEFAULT_BODY,
-  className,
-  repository = "apollo-client-devtools",
-  labels,
-  children,
-}: GitHubIssueLinkProps) {
+export const GitHubIssueLink = forwardRef<
+  HTMLAnchorElement,
+  GitHubIssueLinkProps
+>(function GitHubIssueLink(
+  {
+    body = DEFAULT_BODY,
+    className,
+    repository = "apollo-client-devtools",
+    labels,
+    children,
+    ...props
+  },
+  ref
+) {
   let params = "body=" + encodeURIComponent(body.trim());
 
   if (labels) {
@@ -48,6 +56,8 @@ export function GitHubIssueLink({
 
   return (
     <a
+      {...props}
+      ref={ref}
       className={className}
       rel="noreferrer noopener"
       target="_blank"
@@ -56,4 +66,4 @@ export function GitHubIssueLink({
       {children}
     </a>
   );
-}
+});
