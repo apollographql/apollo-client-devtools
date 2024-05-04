@@ -1,5 +1,5 @@
 import type { ReactNode, ComponentPropsWithoutRef } from "react";
-import { clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 interface ListItemProps {
   className?: string;
@@ -16,12 +16,14 @@ export function ListItem({
 }: ListItemProps) {
   return (
     <div
-      className={clsx(
+      className={twMerge(
         className,
+        "text-md text-primary dark:text-primary-dark",
+        "transition-colors duration-200",
         "border-2 border-transparent flex items-center rounded-md cursor-pointer py-2 px-4",
         "focus:border-focused focus:dark:border-focused-dark",
         selected
-          ? "text-white bg-selected dark:bg-selected-dark"
+          ? "font-semibold bg-neutral dark:bg-neutral-dark"
           : "hover:bg-button-secondaryHover hover:dark:bg-button-secondaryHover-dark"
       )}
       onClick={onClick}
