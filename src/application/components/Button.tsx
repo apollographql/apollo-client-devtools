@@ -78,9 +78,29 @@ const button = cva(
         ],
       },
       size: {
-        xs: ["p-2", "rounded", "text-sm", "font-semibold"],
-        sm: ["py-2", "px-3", "rounded", "text-sm", "font-semibold"],
-        md: ["py-2", "px-3", "rounded-lg", "text-md", "font-semibold"],
+        xs: [
+          "p-2",
+          "rounded",
+          "text-sm",
+          "font-semibold",
+          "has-[>svg:only-child]:p-1.5",
+        ],
+        sm: [
+          "py-2",
+          "px-3",
+          "rounded",
+          "text-sm",
+          "font-semibold",
+          "has-[>svg:only-child]:p-2",
+        ],
+        md: [
+          "py-2",
+          "px-3",
+          "rounded-lg",
+          "text-md",
+          "font-semibold",
+          "has-[>svg:only-child]:p-3",
+        ],
       },
     },
   }
