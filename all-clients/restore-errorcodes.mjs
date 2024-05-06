@@ -1,11 +1,12 @@
 export function restoreErrorCodes(
-  { allMessages, allConditions, allFiles, byVersion },
+  { allMessages, allConditions, allFiles, byVersion, errors },
   version
 ) {
   /** @type {import("@apollo/client/invariantErrorCodes.js").ErrorCodes} */
   const result = {};
 
-  const array = decodeBase64(byVersion[version]);
+  const id = byVersion[version];
+  const array = decodeBase64(errors[id]);
   for (let i = 0; i < array.length / 3; i++) {
     const entry = (result[i + 1] = {});
 

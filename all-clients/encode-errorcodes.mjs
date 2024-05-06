@@ -19,10 +19,12 @@ function getLookupArray() {
   return [array, lookup];
 }
 
+let nextErrorId = 0;
 const [allMessages, getMessageIndex] = getLookupArray();
 const [allFiles, getFileIndex] = getLookupArray();
 const [allConditions, getConditionIndex] = getLookupArray();
 const byVersion = {};
+const errors = {};
 
 const prefix = "@apollo-client/";
 for (const partialPath of Object.keys(pkg.dependencies).sort((a, b) =>
@@ -57,12 +59,17 @@ for (const partialPath of Object.keys(pkg.dependencies).sort((a, b) =>
     collected[code * 3 + 1] = getFileIndex(file);
     collected[code * 3 + 2] = getConditionIndex(condition);
   }
-  byVersion[version] = Buffer.from(collected).toString("base64");
+  const encoded = Buffer.from(collected).toString("base64");
+  const errorId = String(
+    Object.keys(errors).find((id) => errors[id] === encoded) ?? ++nextErrorId
+  );
+  errors[errorId] = encoded;
+  byVersion[version] = errorId;
 
   // we immediately restore to verify a full roundtrip
   assert.deepStrictEqual(
     restoreErrorCodes(
-      { allMessages, allConditions, allFiles, byVersion },
+      { allMessages, allConditions, allFiles, byVersion, errors },
       version
     ),
     Object.fromEntries(combinedEntries)
@@ -74,6 +81,7 @@ const encoded = JSON.stringify(
     allConditions,
     allFiles,
     byVersion,
+    errors,
   },
   undefined,
   2
