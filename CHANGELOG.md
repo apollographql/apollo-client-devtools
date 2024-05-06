@@ -1,5 +1,19 @@
 # Changelog
 
+## 4.12.0
+
+### Minor Changes
+
+- [#1348](https://github.com/apollographql/apollo-client-devtools/pull/1348) [`3aba499`](https://github.com/apollographql/apollo-client-devtools/commit/3aba499608743290edb6a9a80cebae7783218700) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Add a new button that makes it easier to report an issue in GitHub from the devtools.
+
+### Patch Changes
+
+- [#1349](https://github.com/apollographql/apollo-client-devtools/pull/1349) [`06a0b5a`](https://github.com/apollographql/apollo-client-devtools/commit/06a0b5ae8caafa33767327fb207e552e57dced59) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Fix some design issues to match latest design implementation
+
+- [#1352](https://github.com/apollographql/apollo-client-devtools/pull/1352) [`2761ff3`](https://github.com/apollographql/apollo-client-devtools/commit/2761ff3b21e14fea3da89fc588c7892b33e6e8eb) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Schedule next request to get client data only after the previous one had finished.
+
+- [#1353](https://github.com/apollographql/apollo-client-devtools/pull/1353) [`7da5963`](https://github.com/apollographql/apollo-client-devtools/commit/7da59635da78f3ef7eea9473c50e723735b8d17c) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Reduce bundle size of error codes by creating a lookup of unique error codes.
+
 ## 4.11.6
 
 ### Patch Changes
