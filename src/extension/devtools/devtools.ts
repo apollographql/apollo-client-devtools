@@ -92,14 +92,16 @@ function startRequestInterval(ms = 500) {
   let id: NodeJS.Timeout;
 
   async function getClientData() {
-    if (panelWindow) {
-      panelWindow.send({
-        type: "update",
-        payload: await rpcClient.request("getClientOperations"),
-      });
+    try {
+      if (panelWindow) {
+        panelWindow.send({
+          type: "update",
+          payload: await rpcClient.request("getClientOperations"),
+        });
+      }
+    } finally {
+      id = setTimeout(() => getClientData(), ms);
     }
-
-    id = setTimeout(() => getClientData(), ms);
   }
 
   if (devtoolsMachine.state.value === "connected") {
