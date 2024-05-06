@@ -100,7 +100,7 @@ function startRequestInterval(ms = 500) {
         });
       }
     } finally {
-      id = setTimeout(() => getClientData(), ms);
+      id = setTimeout(getClientData, ms);
     }
   }
 
