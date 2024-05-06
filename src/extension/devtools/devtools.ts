@@ -98,14 +98,15 @@ function startRequestInterval(ms = 500) {
         payload: await rpcClient.request("getClientOperations"),
       });
     }
+
+    id = setTimeout(() => getClientData(), ms);
   }
 
   if (devtoolsMachine.state.value === "connected") {
     getClientData();
-    id = setInterval(() => getClientData(), ms);
   }
 
-  return () => clearInterval(id);
+  return () => clearTimeout(id);
 }
 
 const unsubscribers = new Set<() => void>();
