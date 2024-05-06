@@ -107,7 +107,7 @@
     "terser-webpack-plugin": "5.3.10",
     "ts-jest": "29.1.2",
     "ts-loader": "9.5.1",
-    "tsx": "4.9.1",
+    "tsx": "4.9.3",
     "typescript": "5.4.5",
     "typescript-eslint": "7.8.0",
     "web-ext-plugin": "2.9.0",
