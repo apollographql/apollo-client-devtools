@@ -65,7 +65,7 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
                 key={`${name}-${id}`}
                 onClick={() => setSelected(id)}
                 selected={selected === id}
-                className="font-code h-8 text-sm"
+                className="font-code"
               >
                 {name}
               </ListItem>

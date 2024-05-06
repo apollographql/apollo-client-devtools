@@ -65,7 +65,7 @@ const ALERT_CONFIGS = {
         <Button
           size="xs"
           variant="hidden"
-          icon={IconSync}
+          icon={<IconSync />}
           onClick={() => panelWindow.send({ type: "retryConnection" })}
         >
           Retry connection
@@ -175,22 +175,25 @@ export const App = () => {
 
           <ButtonGroup className="ml-auto flex-1 justify-end">
             <Tooltip content="Report an issue">
-              <Button variant="hidden" size="sm" asChild>
-                <GitHubIssueLink labels={[LABELS.bug]} body={ISSUE_BODY}>
-                  <IconGitHubSolid aria-hidden="true" className="w-4" />
-                </GitHubIssueLink>
+              <Button
+                aria-label="Report an issue"
+                variant="hidden"
+                size="sm"
+                icon={<IconGitHubSolid />}
+                asChild
+              >
+                <GitHubIssueLink labels={[LABELS.bug]} body={ISSUE_BODY} />
               </Button>
             </Tooltip>
 
             <Tooltip content="Settings">
               <Button
+                aria-label="Settings"
                 size="sm"
                 variant="hidden"
                 onClick={() => setSettingsOpen(true)}
-              >
-                <IconSettings aria-hidden="true" className="w-4" />
-                <span className="sr-only">Settings</span>
-              </Button>
+                icon={<IconSettings />}
+              />
             </Tooltip>
           </ButtonGroup>
           <SettingsModal open={settingsOpen} onOpen={setSettingsOpen} />

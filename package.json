@@ -46,6 +46,7 @@
     "@radix-ui/react-tabs": "^1.0.2",
     "@radix-ui/react-tooltip": "^1.0.7",
     "@xstate/fsm": "^2.1.0",
+    "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "framer-motion": "^11.0.3",
     "graphql": "^16.0.0",
@@ -58,6 +59,7 @@
     "react-json-tree": "^0.18.0",
     "react-resizable-panels": "^1.0.0",
     "react-syntax-highlighter": "^15.5.0",
+    "tailwind-merge": "^2.3.0",
     "zen-observable": "^0.10.0"
   },
   "devDependencies": {

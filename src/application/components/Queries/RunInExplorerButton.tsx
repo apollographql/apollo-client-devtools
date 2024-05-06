@@ -20,10 +20,11 @@ export const RunInExplorerButton = ({
 }: RunInExplorerButtonProps): JSX.Element | null => {
   return (
     <Button
-      variant="hidden"
+      variant="secondary"
       size="sm"
-      className="peer is-explorer-button ml-auto"
+      className="ml-auto"
       disabled={!embeddedExplorerIFrame}
+      icon={<IconRun />}
       onClick={() => {
         if (embeddedExplorerIFrame) {
           // send a post message to the embedded explorer to fill the operation
@@ -39,7 +40,6 @@ export const RunInExplorerButton = ({
         }
       }}
     >
-      <IconRun aria-hidden className="w-4" />
       Run in Explorer
     </Button>
   );

@@ -28,7 +28,7 @@ export function EntityList({
             key={cacheId}
             onClick={() => setCacheId(cacheId)}
             selected={cacheId === selectedCacheId}
-            className="font-code h-8 text-sm"
+            className="font-code"
           >
             {searchTerm ? (
               <HighlightMatch searchTerm={searchTerm} value={cacheId} />
