@@ -5,7 +5,7 @@
   "dependencies": {
     "@apollo/client": "3.10.3",
     "@testing-library/jest-dom": "^6.0.0",
-    "@testing-library/react": "^11.0.0",
+    "@testing-library/react": "^15.0.0",
     "@testing-library/user-event": "^14.0.0",
     "@types/classnames": "^2.2.10",
     "@types/jest": "^29.0.0",
