@@ -9,7 +9,7 @@ export function List({ className, ...props }: ListProps) {
       {...props}
       className={clsx(
         className,
-        "overflow-y-auto flex flex-col gap-2 list-none"
+        "overflow-y-auto flex flex-col gap-1 list-none"
       )}
     />
   );

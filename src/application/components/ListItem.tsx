@@ -19,7 +19,7 @@ export function ListItem({
       tabIndex={0}
       className={twMerge(
         className,
-        "text-md text-primary dark:text-primary-dark",
+        "text-sm text-primary dark:text-primary-dark",
         "transition-colors duration-200",
         "border-2 border-transparent flex items-center rounded-md cursor-pointer py-2 px-4",
         "focus-visible:outline-none",
