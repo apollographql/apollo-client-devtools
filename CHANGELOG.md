@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.12.2
+
+### Patch Changes
+
+- [#1360](https://github.com/apollographql/apollo-client-devtools/pull/1360) [`e922d83`](https://github.com/apollographql/apollo-client-devtools/commit/e922d8320d2712cef74b0d43702545a9b5880f61) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Revert some changes to the list styles that made the text feel huge
+
 ## 4.12.1
 
 ### Patch Changes
