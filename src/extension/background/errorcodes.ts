@@ -13,7 +13,7 @@ browser.runtime.onConnect.addListener((port) => {
     const handleRpc = createRpcHandler<ErrorCodesHandler>(
       createPortMessageAdapter(port)
     );
-    handleRpc("getErrorCodes", (version: string) => {
+    handleRpc("getErrorCodes", (version) => {
       if (version in allErrorCodes.byVersion) {
         return restoreErrorCodes(allErrorCodes, version);
       }

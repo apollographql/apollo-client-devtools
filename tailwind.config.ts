@@ -23,7 +23,9 @@ export default {
       },
       boxShadow: {
         modal:
-          "0 16px 32px 0 rgba(0, 0, 0, 16), 0 0 0 0 rgba(18, 21, 26, 0.04)",
+          "0px 16px 32px 0px rgba(0, 0, 0, 0.12), 0px 0px 0px 0px rgba(18, 21, 26, 0.04)",
+        popovers:
+          "0px 4px 8px 0px rgba(0, 0, 0, 0.08), 0px 0px 0px 0px rgba(18, 21, 26, 0.04)",
       },
       ringWidth: {
         3: "3px",

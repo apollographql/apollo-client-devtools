@@ -1,7 +1,7 @@
 import { Button } from "./Button";
 import { ButtonGroup } from "./ButtonGroup";
 import { Disclosure } from "./Disclosure";
-import { GitHubIssueLink, SECTIONS } from "./GitHubIssueLink";
+import { GitHubIssueLink, SECTIONS, LABELS } from "./GitHubIssueLink";
 import { Modal } from "./Modal";
 
 interface ClientNotFoundModalProps {
@@ -149,7 +149,7 @@ export function ClientNotFoundModal({
                 If the value is <code>undefined</code>, this is most likely a
                 bug with Apollo Client. Please open a{" "}
                 <GitHubIssueLink
-                  labels={["🐞 bug"]}
+                  labels={[LABELS.bug]}
                   repository="apollo-client"
                   body={`
 <!-- Please provide a detailed description of the issue you are experiencing. It is most helpful if you are able to provide a minimal reproduction of the issue. -->
@@ -208,7 +208,7 @@ ${SECTIONS.devtoolsVersion}
             <Disclosure.Panel>
               This is likely a bug with Apollo Client Devtools. Please create a{" "}
               <GitHubIssueLink
-                labels={["🐞 bug", ":mag: apollo-client-discovery"]}
+                labels={[LABELS.bug, LABELS.clientDiscovery]}
                 body={`
 ${SECTIONS.default}
 ${SECTIONS.apolloClientVersion}

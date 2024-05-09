@@ -1,12 +1,14 @@
 import type { ReactNode } from "react";
+import { forwardRef } from "react";
 
 declare const VERSION: string;
 
 interface GitHubIssueLinkProps {
+  className?: string;
   body?: string;
   labels?: string[];
   repository?: "apollo-client" | "apollo-client-devtools";
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 const WHITESPACE = /\s/g;
@@ -23,12 +25,25 @@ ${VERSION}
 `,
 } as const;
 
-export function GitHubIssueLink({
-  body = DEFAULT_BODY,
-  repository = "apollo-client-devtools",
-  labels,
-  children,
-}: GitHubIssueLinkProps) {
+export const LABELS = {
+  bug: "🐞 bug",
+  clientDiscovery: ":mag: apollo-client-discovery",
+};
+
+export const GitHubIssueLink = forwardRef<
+  HTMLAnchorElement,
+  GitHubIssueLinkProps
+>(function GitHubIssueLink(
+  {
+    body = DEFAULT_BODY,
+    className,
+    repository = "apollo-client-devtools",
+    labels,
+    children,
+    ...props
+  },
+  ref
+) {
   let params = "body=" + encodeURIComponent(body.trim());
 
   if (labels) {
@@ -41,6 +56,9 @@ export function GitHubIssueLink({
 
   return (
     <a
+      {...props}
+      ref={ref}
+      className={className}
       rel="noreferrer noopener"
       target="_blank"
       href={`https://github.com/apollographql/${repository}/issues/new?${params}`}
@@ -48,4 +66,4 @@ export function GitHubIssueLink({
       {children}
     </a>
   );
-}
+});

@@ -1,3 +1,4 @@
+import { Button } from "../Button";
 import { Modal } from "../Modal";
 
 declare const VERSION: string;
@@ -25,6 +26,11 @@ export function SettingsModal({
           {VERSION}
         </a>
       </Modal.Body>
+      <Modal.Footer>
+        <Button variant="primary" size="md" onClick={() => onOpen(false)}>
+          Close
+        </Button>
+      </Modal.Footer>
     </Modal>
   );
 }

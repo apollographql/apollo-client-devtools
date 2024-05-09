@@ -13,7 +13,7 @@ export function Title({ className, children }: TitleProps) {
       as="h3"
       className={clsx(
         className,
-        "text-heading dark:text-heading-dark text-lg font-medium font-heading"
+        "text-heading dark:text-heading-dark text-xl font-medium font-heading"
       )}
     >
       {children}

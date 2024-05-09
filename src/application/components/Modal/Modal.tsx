@@ -51,7 +51,7 @@ export function Modal({
             >
               <Dialog.Panel
                 className={clsx(
-                  "relative transform overflow-hidden rounded-lg bg-primary dark:bg-primary-dark p-6 shadow-modal transition-all",
+                  "relative transform overflow-hidden rounded-lg bg-primary dark:bg-primary-dark shadow-modal transition-all",
                   {
                     "w-modal-sm": size === "sm",
                     "w-modal-md": size === "md",

@@ -14,6 +14,7 @@ import { print } from "graphql/language/printer";
 import { colorTheme, listenForThemeChange } from "./theme";
 import { App } from "./App";
 import { fragmentRegistry } from "./fragmentRegistry";
+import * as Tooltip from "@radix-ui/react-tooltip";
 
 import type {
   GetAllMutations,
@@ -189,9 +190,11 @@ export const AppProvider = () => {
   );
 
   return (
-    <ApolloProvider client={client}>
-      <App />
-    </ApolloProvider>
+    <Tooltip.Provider delayDuration={0}>
+      <ApolloProvider client={client}>
+        <App />
+      </ApolloProvider>
+    </Tooltip.Provider>
   );
 };
 

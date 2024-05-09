@@ -15,6 +15,7 @@ import { Tabs } from "./components/Tabs";
 import { Button } from "./components/Button";
 import IconSettings from "@apollo/icons/default/IconSettings.svg";
 import IconSync from "@apollo/icons/small/IconSync.svg";
+import IconGitHubSolid from "@apollo/icons/small/IconGitHubSolid.svg";
 import { SettingsModal } from "./components/Layouts/SettingsModal";
 import Logo from "@apollo/icons/logos/LogoSymbol.svg";
 import type { BannerAlertConfig } from "./components/BannerAlert";
@@ -22,6 +23,13 @@ import { BannerAlert } from "./components/BannerAlert";
 import type { StateValues as DevtoolsState } from "./machines";
 import { ClientNotFoundModal } from "./components/ClientNotFoundModal";
 import { getPanelActor } from "../extension/devtools/panelActor";
+import { ButtonGroup } from "./components/ButtonGroup";
+import {
+  GitHubIssueLink,
+  LABELS,
+  SECTIONS,
+} from "./components/GitHubIssueLink";
+import { Tooltip } from "./components/Tooltip";
 
 const panelWindow = getPanelActor(window);
 
@@ -57,7 +65,7 @@ const ALERT_CONFIGS = {
         <Button
           size="xs"
           variant="hidden"
-          icon={IconSync}
+          icon={<IconSync />}
           onClick={() => panelWindow.send({ type: "retryConnection" })}
         >
           Retry connection
@@ -79,6 +87,16 @@ const GET_OPERATION_COUNTS: TypedDocumentNode<
       count
     }
   }
+`;
+
+const ISSUE_BODY = `
+<!-- Please provide a detailed description of the issue you are experiencing. It is most helpful if you are able to provide a minimal reproduction of the issue. -->
+
+### Link to Reproduction
+<!-- Please provide a link to the reproduction of the issue. -->
+
+${SECTIONS.apolloClientVersion}
+${SECTIONS.devtoolsVersion}
 `;
 
 export const App = () => {
@@ -155,18 +173,30 @@ export const App = () => {
           <Tabs.Trigger value={Screens.Cache}>Cache</Tabs.Trigger>
           <Tabs.Trigger value={Screens.Explorer}>Explorer</Tabs.Trigger>
 
-          <div className="flex-1 justify-end">
-            <Button
-              className="ml-auto peer-[.is-explorer-button]:ml-2"
-              size="sm"
-              variant="hidden"
-              onClick={() => setSettingsOpen(true)}
-            >
-              <IconSettings aria-hidden="true" className="w-4" />
-              <span className="sr-only">Settings</span>
-            </Button>
-            <SettingsModal open={settingsOpen} onOpen={setSettingsOpen} />
-          </div>
+          <ButtonGroup className="ml-auto flex-1 justify-end">
+            <Tooltip content="Report an issue">
+              <Button
+                aria-label="Report an issue"
+                variant="hidden"
+                size="sm"
+                icon={<IconGitHubSolid />}
+                asChild
+              >
+                <GitHubIssueLink labels={[LABELS.bug]} body={ISSUE_BODY} />
+              </Button>
+            </Tooltip>
+
+            <Tooltip content="Settings">
+              <Button
+                aria-label="Settings"
+                size="sm"
+                variant="hidden"
+                onClick={() => setSettingsOpen(true)}
+                icon={<IconSettings />}
+              />
+            </Tooltip>
+          </ButtonGroup>
+          <SettingsModal open={settingsOpen} onOpen={setSettingsOpen} />
         </Tabs.List>
         {/**
          * We need to keep the iframe inside of the `Explorer` loaded at all times
