@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.12.3
+
+### Patch Changes
+
+- [#1362](https://github.com/apollographql/apollo-client-devtools/pull/1362) [`72b181e`](https://github.com/apollographql/apollo-client-devtools/commit/72b181ea8c65d2e9e4e23a9e3e12f2178d8339d7) Thanks [@hehaijin](https://github.com/hehaijin)! - Remove schema data from client message to devtool
+
 ## 4.12.2
 
 ### Patch Changes
