@@ -7,6 +7,7 @@ import type {
 } from "graphql/language";
 import type { QueryData, Variables } from "../../application/types/scalars";
 import { getPrivateAccess } from "../../privateAccess";
+import { getOperationName } from "@apollo/client/utilities";
 
 export type QueryInfo = {
   document: DocumentNode;
@@ -25,7 +26,10 @@ export function getQueries(
       const { document, variables } = observableQuery.queryInfo;
       const diff = observableQuery.queryInfo.getDiff();
       if (!document) return;
-
+      const name = getOperationName(document);
+      if (name === "IntrospectionQuery") {
+        return;
+      }
       queries.push({
         document,
         variables,
