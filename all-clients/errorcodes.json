@@ -84,7 +84,8 @@
     "Cache data may be lost when replacing the %s field of a %s object.\n\nThis could cause additional (usually avoidable) network requests to fetch data that were otherwise cached.\n\nTo address this problem (which is not a bug in Apollo Client), %sdefine a custom merge function for the %s field, so InMemoryCache can safely merge these objects:\n\n  existing: %o\n  incoming: %o\n\nFor more information about these options, please refer to the documentation:\n\n  * Ensuring entity objects have IDs: https://go.apollo.dev/c/generating-unique-identifiers\n  * Defining custom merge functions: https://go.apollo.dev/c/merging-non-normalized-objects\n",
     "Mock response maxUsageCount must be greater than 0, %s given",
     "useLoadableQuery: 'loadQuery' should not be called during render. To start a query during render, use the 'useBackgroundQuery' hook.",
-    "Unknown query %o requested in refetchQueries options.include array"
+    "Unknown query %o requested in refetchQueries options.include array",
+    "Expected a QueryRef object, but got something else instead."
   ],
   "allConditions": [
     null,
@@ -145,7 +146,9 @@
     "doc.kind === \"Document\"",
     "fragmentDef.kind === \"FragmentDefinition\"",
     "mockedResponse.maxUsageCount > 0",
-    "!calledDuringRender()"
+    "!calledDuringRender()",
+    "!queryRef || QUERY_REFERENCE_SYMBOL in queryRef",
+    "queryWithoutClientOnlyDirectives"
   ],
   "allFiles": [
     null,
@@ -187,7 +190,8 @@
     "@apollo/client/utilities/graphql/transform.js",
     "@apollo/client/utilities/graphql/DocumentTransform.js",
     "@apollo/client/react/hooks/useReadQuery.js",
-    "@apollo/client/react/hooks/useLoadableQuery.js"
+    "@apollo/client/react/hooks/useLoadableQuery.js",
+    "@apollo/client/react/internal/cache/QueryReference.js"
   ],
   "byVersion": {
     "3.8.0-beta.0": "1",
@@ -240,7 +244,8 @@
     "3.10.0": "14",
     "3.10.1": "14",
     "3.10.2": "14",
-    "3.10.3": "14"
+    "3.10.3": "14",
+    "3.10.4": "15"
   },
   "errors": {
     "1": "AQEBAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUECwUEDAYEDQYEDgYGDwYEEAcHBwgIBwgIEQkEEgkEEwkJFAkEFQkEFgoEFwoKGAoLGQoMGgoNGwoOHAoPHQoEHgoEHwoEIAsEIQsEIgwEIw0EJA4EJQ8QJg8RJxAEKBEEKRISKhMTKxQULBUVLBYWLRcXLhgYLxkEMBoEMRoEMhoEMxoENBsZNRwaNhwENx0EOB4bOR4cOh4dOx4ePB4fPR8gPiAhPyAiQCAjQSAkQiEEQyElByEIRCImRSIERiInRyIoRCIpSCIqSSIrSiIESyMETCQETSQE",
@@ -256,6 +261,7 @@
     "11": "AQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUETgUEDAYEDgYvDwYEBwgIBwgIEQkEEgkEEwkJFAkEFQkEFgoEFwoKGAowGQoMGgoxGwoOHAoPHQoEHgoEHwoEIAsEIQsEIgwEIw0EJA4EJQ8yJg8RJxAEKBEEKRISKhMtKxQULBUVLBYWLRcXLxkELiYsMBoEMRoEMhoEMxoENRwaNhwENx0EOB4bOR4uOh4dOx4ePB4fPR8gUh85ECUHPiAhPyAiQCAzQSA0QiEEQyElByEIRCI1RSIERiInRyI2RCI3SCIqSSI4SiIESyMETCQETSQE",
     "12": "AQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUETgUEDAYEDgYvDwYEBwgIBwgIEQkEEgkEEwkJFAkEFQkEFgoEFwoKGAowGQoMGgoxGwoOHAoPHQoEHgoEHwoEIAsEIQsEIgwEIw0EJA4EJQ8yJg8RJxAEKBEEKRISKhMtKxQULBUVLBYWLRcXUyc6LxkEMBoEMRoEMhoEMxoENRwaNhwENx0EOB4bOR4uOh4dOx4ePB4fPR8gUh85ECUHPiAhPyAiQCAzQSA0QiEEQyElByEIRCI1RSIERiInRyI2RCI3SCIqSSI4SiIESyMETCQETSQE",
     "13": "AQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEDAYEDgYvDwYEBwgIBwgIEQkEEgkEEwkJFAkEFQkEFgoEFwoKGAowGQoMGgoxGwoOHAoPHQoEHgoEHwoEIAsEIQsEIgwEIw0EJA4EJQ8yJg8RJxAEKBEEKRISKhMtKxQULBUVLBYWLRcXUyc6LxkEMBoEMRoEMhoEMxoENRwaNhwENx0EOB4bOR4uOh4dOx4ePB4fPR8gUh85ECUHPiAhPyAiQCAzQSA0QiEEQyElByEIRCI1RSIERiInRyI2RCI3SCIqSSI4SiIESyMETCQETSQE",
-    "14": "AQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEDAYEDgYvDwYEBwgIBwgIEQkEEgkEEwkJFAkEFQkEFgoEFwoKGAowGQoMGgoxGwoOHAoPHQoEHgoEVAoEIAsEIQsEIgwEIw0EJA4EJQ8yJg8RJxAEKBEEKRISKhMtKxQULBUVLBYWLRcXUyc6LxkEMBoEMRoEMhoEMxoENRwaNhwENx0EOB4bOR4uOh4dOx4ePB4fPR8gUh85ECUHPiAhPyAiQCAzQSA0QiEEQyElByEIRCI1RSIERiInRyI2RCI3SCIqSSI4SiIESyMETCQETSQE"
+    "14": "AQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEDAYEDgYvDwYEBwgIBwgIEQkEEgkEEwkJFAkEFQkEFgoEFwoKGAowGQoMGgoxGwoOHAoPHQoEHgoEVAoEIAsEIQsEIgwEIw0EJA4EJQ8yJg8RJxAEKBEEKRISKhMtKxQULBUVLBYWLRcXUyc6LxkEMBoEMRoEMhoEMxoENRwaNhwENx0EOB4bOR4uOh4dOx4ePB4fPR8gUh85ECUHPiAhPyAiQCAzQSA0QiEEQyElByEIRCI1RSIERiInRyI2RCI3SCIqSSI4SiIESyMETCQETSQE",
+    "15": "AQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEDAYEDgYvDwYEBwgIBwgIEQkEEgkEEwkJFAkEFQkEFgoEFwoKGAowGQoMGgoxGwoOHAoPHQoEHgoEVAoEIAsEIQsEIgwEIw0EJA4EJQ8yJg8RJxAEKBEEKRISKhMtKxQULBUVLBYWLRcXUyc6LxkEMBoEMRoEMhoEMxoENRwaNhwENx0EVSg7OB4bOR4uOh4dOx4ePB4fPR88Uh85ECUHPiAhPyAiQCAzQSA0QiEEQyElByEIRCI1RSIERiInRyI2RCI3SCIqSSI4SiIESyMETCQETSQE"
   }
 }
