@@ -31,6 +31,8 @@ import {
 } from "./components/GitHubIssueLink";
 import { Tooltip } from "./components/Tooltip";
 import { Badge } from "./components/Badge";
+import { HoverCard } from "./components/HoverCard";
+import { GitHubReleaseHoverCard } from "./components/GitHubReleaseHoverCard";
 
 const panelWindow = getPanelActor(window);
 
@@ -179,16 +181,18 @@ export const App = () => {
 
           <div className="ml-auto flex-1 justify-end flex items-center gap-2">
             {clientVersion && (
-              <Badge variant="info">
-                <a
-                  href={`https://github.com/apollographql/apollo-client/releases/tag/v${clientVersion}`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Apollo Client <span className="lowercase">v</span>
-                  {clientVersion}
-                </a>
-              </Badge>
+              <GitHubReleaseHoverCard version={clientVersion}>
+                <Badge variant="info" className="cursor-pointer">
+                  <a
+                    href={`https://github.com/apollographql/apollo-client/releases/tag/v${clientVersion}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Apollo Client <span className="lowercase">v</span>
+                    {clientVersion}
+                  </a>
+                </Badge>
+              </GitHubReleaseHoverCard>
             )}
             <ButtonGroup>
               <Tooltip content="Report an issue">
