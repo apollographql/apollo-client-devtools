@@ -4,6 +4,7 @@ import { twMerge } from "tailwind-merge";
 import { CodeBlock } from "./CodeBlock";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
+import type { ReactNode } from "react";
 
 interface MarkdownProps {
   className?: string;
@@ -11,30 +12,54 @@ interface MarkdownProps {
   componentOverrides?: NonNullable<Options["components"]>;
 }
 
+function Heading({
+  level,
+  className,
+  children,
+}: {
+  level: 2 | 3 | 4;
+  className?: string;
+  children?: ReactNode;
+}) {
+  const Element = `h${level}` as const;
+
+  return (
+    <Element
+      className={twMerge(
+        "font-heading text-heading dark:text-heading-dark font-medium mt-4 first:mt-0 mb-2",
+        className
+      )}
+    >
+      {children}
+    </Element>
+  );
+}
+
 const components: NonNullable<Options["components"]> = {
   h1: ({ children }) => (
-    <h2 className="text-lg font-medium text-heading font-heading dark:text-heading-dark">
+    <Heading level={2} className="text-lg">
       {children}
-    </h2>
+    </Heading>
   ),
   h2: ({ children }) => (
-    <h2 className="font-heading text-heading text-lg font-medium dark:text-heading-dark">
+    <Heading level={2} className="text-lg">
       {children}
-    </h2>
+    </Heading>
   ),
   h3: ({ children }) => (
-    <h3 className="font-heading text-heading text-md font-medium dark:text-heading-dark">
+    <Heading level={3} className="text-md">
       {children}
-    </h3>
+    </Heading>
+  ),
+  h4: ({ children }) => (
+    <Heading level={4} className="text-sm">
+      {children}
+    </Heading>
   ),
   ul: ({ children }) => (
     <ul className="list-disc pl-4 flex flex-col gap-2">{children}</ul>
   ),
-  li: ({ children }) => (
-    <li>
-      <div className="flex flex-col gap-2">{children}</div>
-    </li>
-  ),
+  p: ({ children }) => <p className="mt-2 first:mt-0">{children}</p>,
   a: ({ node, ...props }) => (
     <a
       {...props}
@@ -44,6 +69,14 @@ const components: NonNullable<Options["components"]> = {
     />
   ),
   pre: ({ children }) => children as JSX.Element,
+  details: ({ children }) => (
+    <details className="mt-2 first:mt-0 cursor-pointer">{children}</details>
+  ),
+  summary: ({ children }) => (
+    <summary className="[&>:is(h1,h2,h3,h4,h5,h6)]:inline has-[h1,h2,h3,h4,h5,h6]:mb-2">
+      {children}
+    </summary>
+  ),
   code: ({ children, className }) => {
     const language = className?.replace("language-", "");
     const isInline = language === undefined;
@@ -52,6 +85,7 @@ const components: NonNullable<Options["components"]> = {
       <code>{children}</code>
     ) : (
       <CodeBlock
+        className="mt-2 first:mt-0"
         code={children as string}
         language={language}
         copyable={false}
@@ -67,7 +101,7 @@ export function Markdown({
 }: MarkdownProps) {
   return (
     <ReactMarkdown
-      className={twMerge("flex flex-col gap-4", className)}
+      className={twMerge("flex flex-col", className)}
       components={{ ...components, ...componentOverrides }}
       remarkPlugins={[remarkGfm]}
       rehypePlugins={[rehypeRaw]}
