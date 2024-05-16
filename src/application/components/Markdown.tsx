@@ -2,6 +2,8 @@ import type { Options } from "react-markdown";
 import ReactMarkdown from "react-markdown";
 import { twMerge } from "tailwind-merge";
 import { CodeBlock } from "./CodeBlock";
+import rehypeRaw from "rehype-raw";
+import remarkGfm from "remark-gfm";
 
 interface MarkdownProps {
   className?: string;
@@ -67,6 +69,8 @@ export function Markdown({
     <ReactMarkdown
       className={twMerge("flex flex-col gap-4", className)}
       components={{ ...components, ...componentOverrides }}
+      remarkPlugins={[remarkGfm]}
+      rehypePlugins={[rehypeRaw]}
     >
       {children}
     </ReactMarkdown>
