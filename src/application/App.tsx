@@ -111,6 +111,8 @@ export const App = () => {
   const [embeddedExplorerIFrame, setEmbeddedExplorerIFrame] =
     useState<HTMLIFrameElement | null>(null);
 
+  const clientVersion = data?.clientVersion;
+
   useEffect(() => {
     let timeout: NodeJS.Timeout;
     // Don't show connected message on the first render if we are already
@@ -176,10 +178,16 @@ export const App = () => {
           <Tabs.Trigger value={Screens.Explorer}>Explorer</Tabs.Trigger>
 
           <div className="ml-auto flex-1 justify-end flex items-center gap-2">
-            {data?.clientVersion && (
+            {clientVersion && (
               <Badge variant="info">
-                Apollo Client <span className="lowercase">v</span>
-                {data.clientVersion}
+                <a
+                  href={`https://github.com/apollographql/apollo-client/releases/tag/v${clientVersion}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Apollo Client <span className="lowercase">v</span>
+                  {clientVersion}
+                </a>
               </Badge>
             )}
             <ButtonGroup>
