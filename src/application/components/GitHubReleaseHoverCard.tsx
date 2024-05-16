@@ -4,6 +4,7 @@ import { Badge } from "./Badge";
 import { Markdown } from "./Markdown";
 import { Spinner } from "./Spinner";
 import IconOutlink from "@apollo/icons/small/IconOutlink.svg";
+import IconBranch from "@apollo/icons/small/IconBranch.svg";
 
 interface GitHubReleaseHoverCardProps {
   children?: ReactNode;
@@ -99,14 +100,20 @@ function CardContents({ version }: { version: string }) {
           {release.name}{" "}
           {release.prerelease && <Badge variant="beta">Prerelease</Badge>}
         </h2>
-        <a
-          className="flex gap-1 items-center"
-          href={`https://github.com/apollographql/apollo-client/releases/tag/v${version}`}
-          target="_blank"
-          rel="noreferrer"
-        >
-          View release in GitHub <IconOutlink className="size-3" />
-        </a>
+        <div className="flex gap-4">
+          <a
+            className="flex gap-1 items-center"
+            href={`https://github.com/apollographql/apollo-client/releases/tag/v${version}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            View release in GitHub <IconOutlink className="size-3" />
+          </a>
+          <code className="inline-flex items-center gap-1">
+            <IconBranch className="size-3" />
+            {release.target_commitish}
+          </code>
+        </div>
       </header>
       <Markdown>{release.body}</Markdown>
     </div>
