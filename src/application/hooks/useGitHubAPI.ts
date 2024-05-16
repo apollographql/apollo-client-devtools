@@ -33,7 +33,7 @@ function reducer<T>(state: State<T>, action: Action<T>): State<T> {
   }
 }
 
-export function useGitHubApi<T>(url: string, options?: Options): State<T> {
+export function useGitHubApi<T>(path: string, options?: Options): State<T> {
   const [state, dispatch] = useReducer<Reducer<State<T>, Action<T>>>(reducer, {
     status: "pending",
     data: null,
@@ -44,7 +44,7 @@ export function useGitHubApi<T>(url: string, options?: Options): State<T> {
     let ignored = false;
     dispatch({ type: "load" });
 
-    fetchGitHub<T>(url, { cache: options?.cache }).then(
+    fetchGitHub<T>(path, { cache: options?.cache }).then(
       (data) => !ignored && dispatch({ type: "success", payload: data }),
       (error) => !ignored && dispatch({ type: "failed", error })
     );
@@ -52,19 +52,19 @@ export function useGitHubApi<T>(url: string, options?: Options): State<T> {
     return () => {
       ignored = true;
     };
-  }, [url, options?.cache]);
+  }, [path, options?.cache]);
 
   return state;
 }
 
 const cache = new Map<string, unknown>();
 
-async function fetchGitHub<T>(url: string, options?: Options) {
-  if (options?.cache && cache.has(url)) {
-    return cache.get(url) as T;
+async function fetchGitHub<T>(path: string, options?: Options) {
+  if (options?.cache && cache.has(path)) {
+    return cache.get(path) as T;
   }
 
-  const response = await fetch(url, {
+  const response = await fetch(`https://api.github.com${path}`, {
     headers: {
       Accept: "application/vnd.github+json",
       "X-GitHub-Api-Version": "2022-11-28",
@@ -74,7 +74,7 @@ async function fetchGitHub<T>(url: string, options?: Options) {
 
   if (response.ok) {
     if (options?.cache) {
-      cache.set(url, body);
+      cache.set(path, body);
     }
 
     return body as T;
