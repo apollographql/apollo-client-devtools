@@ -93,15 +93,13 @@ function CardContents({ version }: { version: string }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <header className="flex flex-col gap-2">
+      <header className="flex flex-col gap-2 bg-primary dark:bg-primary-dark">
         <h2 className="text-xl text-heading dark:text-heading-dark font-heading font-medium flex items-center gap-2">
           {release.name}{" "}
           {release.prerelease && <Badge variant="beta">Prerelease</Badge>}
         </h2>
       </header>
-      <Markdown className="flex-1 overflow-auto max-h-96">
-        {release.body}
-      </Markdown>
+      <Markdown>{release.body}</Markdown>
     </div>
   );
 }
