@@ -183,14 +183,8 @@ export const App = () => {
             {clientVersion && (
               <GitHubReleaseHoverCard version={clientVersion}>
                 <Badge variant="info" className="cursor-pointer">
-                  <a
-                    href={`https://github.com/apollographql/apollo-client/releases/tag/v${clientVersion}`}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Apollo Client <span className="lowercase">v</span>
-                    {clientVersion}
-                  </a>
+                  Apollo Client <span className="lowercase">v</span>
+                  {clientVersion}
                 </Badge>
               </GitHubReleaseHoverCard>
             )}

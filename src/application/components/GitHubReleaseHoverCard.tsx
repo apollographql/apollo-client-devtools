@@ -3,6 +3,7 @@ import { HoverCard } from "./HoverCard";
 import { Badge } from "./Badge";
 import { Markdown } from "./Markdown";
 import { Spinner } from "./Spinner";
+import IconOutlink from "@apollo/icons/small/IconOutlink.svg";
 
 interface GitHubReleaseHoverCardProps {
   children?: ReactNode;
@@ -18,8 +19,8 @@ export function GitHubReleaseHoverCard({
   }
 
   return (
-    <HoverCard>
-      <HoverCard.Trigger>{children}</HoverCard.Trigger>
+    <HoverCard openDelay={0}>
+      <HoverCard.Trigger asChild>{children}</HoverCard.Trigger>
       <HoverCard.Content>
         <CardContents version={version} />
       </HoverCard.Content>
@@ -94,10 +95,18 @@ function CardContents({ version }: { version: string }) {
   return (
     <div className="flex flex-col gap-4">
       <header className="flex flex-col gap-2 bg-primary dark:bg-primary-dark">
-        <h2 className="text-xl text-heading dark:text-heading-dark font-heading font-medium flex items-center gap-2">
+        <h2 className="text-2xl text-heading dark:text-heading-dark font-heading font-medium flex items-center gap-2">
           {release.name}{" "}
           {release.prerelease && <Badge variant="beta">Prerelease</Badge>}
         </h2>
+        <a
+          className="flex gap-1 items-center"
+          href={`https://github.com/apollographql/apollo-client/releases/tag/v${version}`}
+          target="_blank"
+          rel="noreferrer"
+        >
+          View release in GitHub <IconOutlink className="size-3" />
+        </a>
       </header>
       <Markdown>{release.body}</Markdown>
     </div>
