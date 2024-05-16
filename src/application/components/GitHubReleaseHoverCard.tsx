@@ -29,44 +29,44 @@ export function GitHubReleaseHoverCard({
 }
 
 type ReleaseState =
-  | { status: "pending"; release: null }
-  | { status: "success"; release: GitHubRelease }
-  | { status: "error"; release: null };
+  | { status: "pending"; data: null }
+  | { status: "success"; data: ReleaseData }
+  | { status: "error"; data: null };
 
 type Action =
   | { type: "load" }
-  | { type: "success"; release: GitHubRelease }
+  | { type: "success"; payload: ReleaseData }
   | { type: "failed" };
 
 function reducer(state: ReleaseState, action: Action): ReleaseState {
   switch (action.type) {
     case "load":
-      return { status: "pending", release: null };
+      return { status: "pending", data: null };
     case "success":
-      return { status: "success", release: action.release };
+      return { status: "success", data: action.payload };
     case "failed":
-      return { status: "error", release: null };
+      return { status: "error", data: null };
     default:
       return state;
   }
 }
 
 function CardContents({ version }: { version: string }) {
-  const [{ status, release }, dispatch] = useReducer(reducer, {
+  const [{ status, data }, dispatch] = useReducer(reducer, {
     status: "pending",
-    release: null,
+    data: null,
   });
 
   useEffect(() => {
     let ignored = false;
     dispatch({ type: "load" });
     getGitHubRelease(version).then(
-      (release) => {
+      (data) => {
         if (ignored) {
           return;
         }
 
-        dispatch({ type: "success", release });
+        dispatch({ type: "success", payload: data });
       },
       () => {
         if (!ignored) {
@@ -92,12 +92,20 @@ function CardContents({ version }: { version: string }) {
     return "Error";
   }
 
+  const { release, latest } = data;
+
   return (
     <div className="flex flex-col gap-8">
       <header className="flex flex-col gap-2 bg-primary dark:bg-primary-dark">
         <h2 className="text-2xl text-heading dark:text-heading-dark font-heading font-medium flex items-center gap-2">
           {release.name}{" "}
-          {release.prerelease && <Badge variant="beta">Pre-release</Badge>}
+          {release.prerelease ? (
+            <Badge variant="beta">Pre-release</Badge>
+          ) : latest ? (
+            <Badge variant="success">Latest</Badge>
+          ) : (
+            <Badge variant="warning">Outdated</Badge>
+          )}
         </h2>
         <div className="flex gap-4">
           <a
@@ -126,25 +134,40 @@ interface GitHubRelease {
   target_commitish: string;
 }
 
-const cache = new Map<string, GitHubRelease>();
+interface ReleaseData {
+  latest: boolean;
+  release: GitHubRelease;
+}
 
-async function getGitHubRelease(version: string): Promise<GitHubRelease> {
+const cache = new Map<string, ReleaseData>();
+
+async function getGitHubRelease(version: string): Promise<ReleaseData> {
   if (cache.has(version)) {
     return cache.get(version)!;
   }
 
-  return fetch(
-    `https://api.github.com/repos/apollographql/apollo-client/releases/tags/v${version}`,
-    {
-      headers: {
-        Accept: "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
-      },
-    }
-  )
-    .then((res) => res.json() as Promise<GitHubRelease>)
-    .then((release) => {
-      cache.set(version, release);
-      return release;
-    });
+  const headers = {
+    Accept: "application/vnd.github+json",
+    "X-GitHub-Api-Version": "2022-11-28",
+  };
+
+  const [release, latestRelease] = await Promise.all([
+    fetch(
+      `https://api.github.com/repos/apollographql/apollo-client/releases/tags/v${version}`,
+      { headers }
+    ).then((res) => res.json() as Promise<GitHubRelease>),
+    fetch(
+      `https://api.github.com/repos/apollographql/apollo-client/releases/latest`,
+      { headers }
+    ).then((res) => res.json() as Promise<GitHubRelease>),
+  ]);
+
+  const data = {
+    latest: release.name === latestRelease.name,
+    release,
+  };
+
+  cache.set(version, data);
+
+  return data;
 }
