@@ -4,7 +4,6 @@ import { Badge } from "./Badge";
 import { Markdown } from "./Markdown";
 import { Spinner } from "./Spinner";
 import IconOutlink from "@apollo/icons/small/IconOutlink.svg";
-import IconBranch from "@apollo/icons/small/IconBranch.svg";
 
 interface GitHubReleaseHoverCardProps {
   children?: ReactNode;
@@ -94,7 +93,7 @@ function CardContents({ version }: { version: string }) {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-8">
       <header className="flex flex-col gap-2 bg-primary dark:bg-primary-dark">
         <h2 className="text-2xl text-heading dark:text-heading-dark font-heading font-medium flex items-center gap-2">
           {release.name}{" "}
@@ -109,10 +108,6 @@ function CardContents({ version }: { version: string }) {
           >
             View release in GitHub <IconOutlink className="size-3" />
           </a>
-          <code className="inline-flex items-center gap-1">
-            <IconBranch className="size-3" />
-            {release.target_commitish}
-          </code>
         </div>
       </header>
       <Markdown>{release.body}</Markdown>
