@@ -34,7 +34,7 @@
   }
 
   :not(pre) > code {
-    @apply rounded py-1 px-2 text-sm text-code-a dark:text-code-a-dark;
+    @apply inline-block rounded py-px px-2 text-sm text-code-a dark:text-code-a-dark;
     @apply bg-secondary dark:bg-secondary-dark;
     @apply border border-primary dark:border-primary-dark;
   }
