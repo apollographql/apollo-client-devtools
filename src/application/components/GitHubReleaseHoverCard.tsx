@@ -79,9 +79,19 @@ function SnapshotCardContents({ version }: { version: string }) {
       </header>
 
       <section>
+        <div className="flex items-center gap-2">
+          <a href={pullRequest.html_url} target="_blank" rel="noreferrer">
+            #{pullRequest.number}
+          </a>{" "}
+          opened by
+          <a href={pullRequest.user.html_url} target="_blank" rel="noreferrer">
+            @{pullRequest.user.login}
+          </a>
+        </div>
         <h2 className="text-lg text-heading dark:text-heading-dark font-medium mb-2">
           <Markdown>{pullRequest.title}</Markdown>
         </h2>
+        <div className="flex"></div>
         <Markdown>{pullRequest.body}</Markdown>
       </section>
     </div>
@@ -165,11 +175,13 @@ interface GitHubPullRequest {
   closed_at: string;
   merged_at: string;
   merge_commit_sha: string;
+  html_url: string;
   user: {
     name: string;
     login: string;
     avatar_url: string;
     url: string;
+    html_url: string;
   };
 }
 
