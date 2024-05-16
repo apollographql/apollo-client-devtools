@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { forwardRef, type ReactNode } from "react";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 import { twMerge } from "tailwind-merge";
@@ -71,8 +71,12 @@ const badge = cva(
   }
 );
 
-export function Badge({ className, children, variant }: BadgeProps) {
-  return (
-    <span className={twMerge(badge({ variant }), className)}>{children}</span>
-  );
-}
+export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
+  ({ className, children, variant }, ref) => {
+    return (
+      <span className={twMerge(badge({ variant }), className)} ref={ref}>
+        {children}
+      </span>
+    );
+  }
+);
