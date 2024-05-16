@@ -72,9 +72,13 @@ const badge = cva(
 );
 
 export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
-  ({ className, children, variant }, ref) => {
+  ({ className, children, variant, ...props }, ref) => {
     return (
-      <span className={twMerge(badge({ variant }), className)} ref={ref}>
+      <span
+        {...props}
+        className={twMerge(badge({ variant }), className)}
+        ref={ref}
+      >
         {children}
       </span>
     );
