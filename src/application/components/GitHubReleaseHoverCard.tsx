@@ -11,6 +11,7 @@ import {
   parseSnapshotTimestamp,
 } from "../utilities/github";
 import { useGitHubApi } from "../hooks/useGitHubAPI";
+import { StatusBadge } from "./StatusBadge";
 
 interface GitHubReleaseHoverCardProps {
   children?: ReactNode;
@@ -91,7 +92,13 @@ function SnapshotCardContents({ version }: { version: string }) {
         <h2 className="text-lg text-heading dark:text-heading-dark font-medium mb-2">
           <Markdown>{pullRequest.title}</Markdown>
         </h2>
-        <div className="flex"></div>
+        <div className="flex mt-2 mb-4">
+          <StatusBadge
+            color={pullRequest.state === "open" ? "green" : "purple"}
+          >
+            {capitalize(pullRequest.state)}
+          </StatusBadge>
+        </div>
         <Markdown>{pullRequest.body}</Markdown>
       </section>
     </div>
@@ -207,4 +214,8 @@ function LoadingState() {
       <Spinner size="lg" />
     </div>
   );
+}
+
+function capitalize(str: string) {
+  return str.slice(0, 1).toUpperCase() + str.slice(1);
 }
