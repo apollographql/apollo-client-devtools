@@ -99,6 +99,12 @@ function CardContents({ version }: { version: string }) {
 
   const { release, latest } = data;
 
+  const publishDate = new Intl.DateTimeFormat(undefined, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(Date.parse(release.published_at));
+
   return (
     <div className="flex flex-col gap-8">
       <header className="flex flex-col gap-2 bg-primary dark:bg-primary-dark">
@@ -113,16 +119,17 @@ function CardContents({ version }: { version: string }) {
             <Badge variant="warning">Outdated</Badge>
           )}
         </h2>
-        <div className="flex gap-4">
-          <a
-            className="flex gap-1 items-center"
-            href={`https://github.com/apollographql/apollo-client/releases/tag/v${version}`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            View release in GitHub <IconOutlink className="size-3" />
-          </a>
+        <div className="flex gap-1 items-center text-xs font-bold uppercase text-secondary dark:text-secondary-dark">
+          Published {publishDate}
         </div>
+        <a
+          className="flex gap-1 items-center"
+          href={`https://github.com/apollographql/apollo-client/releases/tag/v${version}`}
+          target="_blank"
+          rel="noreferrer"
+        >
+          View release in GitHub <IconOutlink className="size-3" />
+        </a>
       </header>
       <Markdown>{release.body}</Markdown>
     </div>
