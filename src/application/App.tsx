@@ -31,7 +31,6 @@ import {
 } from "./components/GitHubIssueLink";
 import { Tooltip } from "./components/Tooltip";
 import { Badge } from "./components/Badge";
-import { HoverCard } from "./components/HoverCard";
 import { GitHubReleaseHoverCard } from "./components/GitHubReleaseHoverCard";
 
 const panelWindow = getPanelActor(window);
