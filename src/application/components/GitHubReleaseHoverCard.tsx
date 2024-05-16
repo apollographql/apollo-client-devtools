@@ -120,7 +120,7 @@ interface GitHubRelease {
   body: string;
   prerelease: boolean;
   created_at: string;
-  publishd_at: string;
+  published_at: string;
   target_commitish: string;
 }
 
