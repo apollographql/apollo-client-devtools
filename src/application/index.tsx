@@ -148,10 +148,12 @@ export function getMutationData(
 }
 
 export const writeData = ({
+  clientVersion,
   queries,
   mutations,
   cache,
 }: {
+  clientVersion: string | null;
   queries: QueryInfo[];
   mutations: QueryInfo[];
   cache: JSONObject;
@@ -181,6 +183,18 @@ export const writeData = ({
       },
     },
   });
+
+  client.writeQuery({
+    query: gql`
+      query ClientVersion {
+        clientVersion @client
+      }
+    `,
+    data: {
+      clientVersion,
+    },
+  });
+
   cacheVar(JSON.stringify(cache));
 };
 

@@ -81,6 +81,7 @@ const GET_OPERATION_COUNTS: TypedDocumentNode<
   GetOperationCountsVariables
 > = gql`
   query GetOperationCounts {
+    clientVersion @client
     watchedQueries @client {
       count
     }
@@ -175,9 +176,12 @@ export const App = () => {
           <Tabs.Trigger value={Screens.Explorer}>Explorer</Tabs.Trigger>
 
           <div className="ml-auto flex-1 justify-end flex items-center gap-2">
-            <Badge variant="info">
-              Apollo Client <span className="lowercase">v</span>3.10.4
-            </Badge>
+            {data?.clientVersion && (
+              <Badge variant="info">
+                Apollo Client <span className="lowercase">v</span>
+                {data.clientVersion}
+              </Badge>
+            )}
             <ButtonGroup>
               <Tooltip content="Report an issue">
                 <Button
