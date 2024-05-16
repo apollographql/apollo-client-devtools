@@ -108,11 +108,17 @@ function getClientData() {
   // https://github.com/apollographql/apollo-client-devtools/issues/1258
   return JSON.parse(
     JSON.stringify({
+      version: hook.ApolloClient?.version ?? null,
       queries: hook.getQueries(),
       mutations: hook.getMutations(),
       cache: hook.getCache(),
     })
-  ) as { queries: QueryInfo[]; mutations: QueryInfo[]; cache: JSONObject };
+  ) as {
+    version: string | null;
+    queries: QueryInfo[];
+    mutations: QueryInfo[];
+    cache: JSONObject;
+  };
 }
 
 handleRpc("getClientOperations", getClientData);
