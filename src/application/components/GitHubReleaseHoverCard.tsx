@@ -90,7 +90,11 @@ function CardContents({ version }: { version: string }) {
   }
 
   if (status === "error") {
-    return "Error";
+    return (
+      <div className="flex min-w-80 min-h-80 items-center justify-center text-md font-semibold">
+        Error: Could not load release from GitHub
+      </div>
+    );
   }
 
   const { release, latest } = data;
