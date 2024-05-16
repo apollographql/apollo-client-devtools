@@ -107,7 +107,7 @@ function CardContents({ version }: { version: string }) {
 
   return (
     <div className="flex flex-col gap-8">
-      <header className="flex flex-col gap-2 bg-primary dark:bg-primary-dark">
+      <header className="flex flex-col gap-1 bg-primary dark:bg-primary-dark">
         <h2 className="text-2xl text-heading dark:text-heading-dark font-heading font-medium flex items-center gap-2">
           <IconGitHub className="size-6" />
           {release.name}{" "}
