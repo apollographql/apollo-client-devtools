@@ -43,11 +43,7 @@ function SnapshotCardContents({ version }: { version: string }) {
   );
 
   if (status === "pending") {
-    return (
-      <div className="flex items-center justify-center min-w-80 min-h-80">
-        <Spinner size="lg" />
-      </div>
-    );
+    return <LoadingState />;
   }
 
   if (status === "error") {
@@ -107,11 +103,7 @@ function ReleaseCardContents({ version }: { version: string }) {
     currentRelease.status === "pending" ||
     latestRelease.status === "pending"
   ) {
-    return (
-      <div className="flex items-center justify-center min-w-80 min-h-80">
-        <Spinner size="lg" />
-      </div>
-    );
+    return <LoadingState />;
   }
 
   if (currentRelease.status === "error" || latestRelease.status === "error") {
@@ -193,6 +185,14 @@ function ErrorMessage({ message }: { message: string }) {
   return (
     <div className="flex min-w-80 min-h-80 items-center justify-center text-md font-semibold">
       {message}
+    </div>
+  );
+}
+
+function LoadingState() {
+  return (
+    <div className="flex items-center justify-center min-w-80 min-h-80">
+      <Spinner size="lg" />
     </div>
   );
 }
