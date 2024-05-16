@@ -98,7 +98,7 @@ function CardContents({ version }: { version: string }) {
       <header className="flex flex-col gap-2 bg-primary dark:bg-primary-dark">
         <h2 className="text-2xl text-heading dark:text-heading-dark font-heading font-medium flex items-center gap-2">
           {release.name}{" "}
-          {release.prerelease && <Badge variant="beta">Prerelease</Badge>}
+          {release.prerelease && <Badge variant="beta">Pre-release</Badge>}
         </h2>
         <div className="flex gap-4">
           <a
