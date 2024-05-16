@@ -52,9 +52,7 @@ function SnapshotCardContents({ version }: { version: string }) {
 
   if (status === "error") {
     return (
-      <div className="flex min-w-80 min-h-80 items-center justify-center text-md font-semibold">
-        Error: Could not load release from GitHub
-      </div>
+      <ErrorMessage message="Error: Could not load pull request from GitHub" />
     );
   }
 
@@ -117,11 +115,7 @@ function ReleaseCardContents({ version }: { version: string }) {
   }
 
   if (currentRelease.status === "error" || latestRelease.status === "error") {
-    return (
-      <div className="flex min-w-80 min-h-80 items-center justify-center text-md font-semibold">
-        Error: Could not load release from GitHub
-      </div>
-    );
+    return <ErrorMessage message="Error: Could not load release from GitHub" />;
   }
 
   const release = currentRelease.data;
@@ -193,4 +187,12 @@ function formatPublishDate(date: Date | number) {
     day: "numeric",
     year: "numeric",
   }).format(date);
+}
+
+function ErrorMessage({ message }: { message: string }) {
+  return (
+    <div className="flex min-w-80 min-h-80 items-center justify-center text-md font-semibold">
+      {message}
+    </div>
+  );
 }
