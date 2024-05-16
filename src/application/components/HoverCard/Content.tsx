@@ -11,7 +11,7 @@ export function Content({ className, children }: ContentProps) {
   return (
     <HoverCard.Portal>
       <HoverCard.Content
-        collisionPadding={16}
+        collisionPadding={20}
         sideOffset={2}
         className={twMerge(
           "bg-primary dark:bg-primary-dark border border-primary dark:border-primary-dark rounded-lg px-4 py-3 shadow-popovers text-sm max-w-96 overflow-auto max-h-[var(--radix-popper-available-height)] isolate",
