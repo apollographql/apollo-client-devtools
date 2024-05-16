@@ -182,10 +182,17 @@ export const App = () => {
           <div className="ml-auto flex-1 justify-end flex items-center gap-2">
             {clientVersion && (
               <GitHubReleaseHoverCard version={clientVersion}>
-                <Badge variant="info" className="cursor-pointer">
-                  Apollo Client <span className="lowercase">v</span>
-                  {clientVersion}
-                </Badge>
+                <a
+                  className="no-underline"
+                  href={`https://github.com/apollographql/apollo-client/releases/tag/v${clientVersion}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <Badge variant="info" className="cursor-pointer">
+                    Apollo Client <span className="lowercase">v</span>
+                    {clientVersion}
+                  </Badge>
+                </a>
               </GitHubReleaseHoverCard>
             )}
             <ButtonGroup>
