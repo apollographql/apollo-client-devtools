@@ -28,11 +28,11 @@ const spinner = cva(
         ],
       },
       size: {
-        tiny: ["w-3", "h-3"],
-        xs: ["w-4", "h-4"],
-        sm: ["w-6", "h-6"],
-        md: ["w-8", "h-8"],
-        lg: ["w-10", "h-10"],
+        tiny: ["size-3"],
+        xs: ["size-4"],
+        sm: ["w-6"],
+        md: ["size-8"],
+        lg: ["size-10"],
       },
     },
     defaultVariants: {
