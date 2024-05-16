@@ -123,7 +123,7 @@ function CardContents({ version }: { version: string }) {
           Published {publishDate}
         </div>
         <a
-          className="flex gap-1 items-center"
+          className="flex gap-1 items-center mt-2"
           href={`https://github.com/apollographql/apollo-client/releases/tag/v${version}`}
           target="_blank"
           rel="noreferrer"
