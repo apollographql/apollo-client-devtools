@@ -30,6 +30,7 @@ import {
   SECTIONS,
 } from "./components/GitHubIssueLink";
 import { Tooltip } from "./components/Tooltip";
+import { Badge } from "./components/Badge";
 
 const panelWindow = getPanelActor(window);
 
@@ -173,29 +174,34 @@ export const App = () => {
           <Tabs.Trigger value={Screens.Cache}>Cache</Tabs.Trigger>
           <Tabs.Trigger value={Screens.Explorer}>Explorer</Tabs.Trigger>
 
-          <ButtonGroup className="ml-auto flex-1 justify-end">
-            <Tooltip content="Report an issue">
-              <Button
-                aria-label="Report an issue"
-                variant="hidden"
-                size="sm"
-                icon={<IconGitHubSolid />}
-                asChild
-              >
-                <GitHubIssueLink labels={[LABELS.bug]} body={ISSUE_BODY} />
-              </Button>
-            </Tooltip>
+          <div className="ml-auto flex-1 justify-end flex items-center gap-2">
+            <Badge variant="info">
+              Apollo Client <span className="lowercase">v</span>3.10.4
+            </Badge>
+            <ButtonGroup>
+              <Tooltip content="Report an issue">
+                <Button
+                  aria-label="Report an issue"
+                  variant="hidden"
+                  size="sm"
+                  icon={<IconGitHubSolid />}
+                  asChild
+                >
+                  <GitHubIssueLink labels={[LABELS.bug]} body={ISSUE_BODY} />
+                </Button>
+              </Tooltip>
 
-            <Tooltip content="Settings">
-              <Button
-                aria-label="Settings"
-                size="sm"
-                variant="hidden"
-                onClick={() => setSettingsOpen(true)}
-                icon={<IconSettings />}
-              />
-            </Tooltip>
-          </ButtonGroup>
+              <Tooltip content="Settings">
+                <Button
+                  aria-label="Settings"
+                  size="sm"
+                  variant="hidden"
+                  onClick={() => setSettingsOpen(true)}
+                  icon={<IconSettings />}
+                />
+              </Tooltip>
+            </ButtonGroup>
+          </div>
           <SettingsModal open={settingsOpen} onOpen={setSettingsOpen} />
         </Tabs.List>
         {/**
