@@ -140,6 +140,11 @@ interface GitHubRelease {
   target_commitish: string;
 }
 
+interface GitHubError {
+  documentation_url: string;
+  message: string;
+}
+
 interface ReleaseData {
   latest: boolean;
   release: GitHubRelease;
@@ -157,15 +162,25 @@ async function getGitHubRelease(version: string): Promise<ReleaseData> {
     "X-GitHub-Api-Version": "2022-11-28",
   };
 
+  async function parseResponse(response: Response) {
+    const body = await response.json();
+
+    if (response.ok) {
+      return body as GitHubRelease;
+    }
+
+    throw new Error((body as GitHubError).message);
+  }
+
   const [release, latestRelease] = await Promise.all([
     fetch(
       `https://api.github.com/repos/apollographql/apollo-client/releases/tags/v${version}`,
       { headers }
-    ).then((res) => res.json() as Promise<GitHubRelease>),
+    ).then(parseResponse),
     fetch(
       `https://api.github.com/repos/apollographql/apollo-client/releases/latest`,
       { headers }
-    ).then((res) => res.json() as Promise<GitHubRelease>),
+    ).then(parseResponse),
   ]);
 
   const data = {
