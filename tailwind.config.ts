@@ -18,6 +18,9 @@ export default {
       "orientation-vertical": 'orientation="vertical"',
     },
     extend: {
+      colors: {
+        current: "currentColor",
+      },
       borderColor: {
         transparent: "transparent",
       },
