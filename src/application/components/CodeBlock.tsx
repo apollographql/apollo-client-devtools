@@ -13,6 +13,7 @@ interface SyntaxHighlighterProps {
   className?: string;
   language: Language;
   code: string;
+  copyable?: boolean;
 }
 
 const { code } = colors.tokens;
@@ -133,6 +134,7 @@ const getTheme = (mode: ColorTheme): PrismTheme => {
 export const CodeBlock = ({
   code,
   className,
+  copyable = true,
   language,
 }: SyntaxHighlighterProps) => {
   const theme = useReactiveVar(colorTheme);
@@ -169,17 +171,14 @@ export const CodeBlock = ({
           );
         }}
       </Highlight>
-      <CopyToClipboard text={code}>
-        <Button
-          size="sm"
-          variant="hidden"
-          data-testid="copy-query-strin"
-          className="sticky top-0"
-        >
-          <IconCopy className="w-4" />
-          Copy
-        </Button>
-      </CopyToClipboard>
+      {copyable && (
+        <CopyToClipboard text={code}>
+          <Button size="sm" variant="hidden" className="sticky top-0">
+            <IconCopy className="w-4" />
+            Copy
+          </Button>
+        </CopyToClipboard>
+      )}
     </div>
   );
 };
