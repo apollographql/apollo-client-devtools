@@ -5,6 +5,7 @@ import { Markdown } from "./Markdown";
 import { Spinner } from "./Spinner";
 import IconOutlink from "@apollo/icons/small/IconOutlink.svg";
 import IconGitHub from "@apollo/icons/default/IconGitHubSolid.svg";
+import IconBranch from "@apollo/icons/default/IconBranch.svg";
 import {
   isSnapshotRelease,
   parseSnapshotRelease,
@@ -64,8 +65,7 @@ function SnapshotCardContents({ version }: { version: string }) {
         {release && (
           <>
             <div className="flex gap-1 items-center text-xs font-bold uppercase text-secondary dark:text-secondary-dark">
-              Published{" "}
-              {formatPublishDate(parseSnapshotTimestamp(release.timestamp))}
+              Published {formatDate(parseSnapshotTimestamp(release.timestamp))}
             </div>
             <a
               className="flex gap-1 items-center mt-2"
@@ -88,23 +88,35 @@ function SnapshotCardContents({ version }: { version: string }) {
           <a href={pullRequest.html_url} target="_blank" rel="noreferrer">
             #{pullRequest.number}
           </a>{" "}
-          on {formatPublishDate(Date.parse(pullRequest.created_at))}:
+          on {formatDate(Date.parse(pullRequest.created_at))}:
         </div>
         <h2 className="text-lg text-heading dark:text-heading-dark font-medium mb-2">
           <Markdown>{pullRequest.title}</Markdown>
         </h2>
         <div className="flex mt-2 mb-6">
           {pullRequest.merged ? (
-            <StatusBadge className="text-sm" variant="rounded" color="purple">
-              Merged
-            </StatusBadge>
-          ) : (
             <StatusBadge
               className="text-sm"
-              variant="rounded"
-              color={pullRequest.state === "open" ? "green" : "red"}
+              variant="hidden"
+              color="purple"
+              icon={<IconBranch />}
             >
-              {capitalize(pullRequest.state)}
+              Merged {formatDate(Date.parse(pullRequest.merged_at))} into{" "}
+              <a
+                href={`https://github.com/apollographql/apollo-client/commit/${pullRequest.merge_commit_sha}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                {pullRequest.merge_commit_sha.slice(0, 7)}
+              </a>
+            </StatusBadge>
+          ) : pullRequest.state === "closed" ? (
+            <StatusBadge className="text-sm" variant="rounded" color="red">
+              Closed {formatDate(Date.parse(pullRequest.closed_at))}
+            </StatusBadge>
+          ) : (
+            <StatusBadge className="text-sm" variant="hidden" color="green">
+              Open
             </StatusBadge>
           )}
         </div>
@@ -153,7 +165,7 @@ function ReleaseCardContents({ version }: { version: string }) {
           )}
         </h2>
         <div className="flex gap-1 items-center text-xs font-bold uppercase text-secondary dark:text-secondary-dark">
-          Published {formatPublishDate(Date.parse(release.published_at))}
+          Published {formatDate(Date.parse(release.published_at))}
         </div>
         <a
           className="flex gap-1 items-center mt-2"
@@ -202,7 +214,7 @@ interface GitHubPullRequest {
   };
 }
 
-function formatPublishDate(date: Date | number) {
+function formatDate(date: Date | number) {
   return new Intl.DateTimeFormat(undefined, {
     month: "short",
     day: "numeric",
