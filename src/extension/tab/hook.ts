@@ -121,20 +121,12 @@ function getClientData() {
 
 handleRpc("getClientOperations", getClientData);
 
-function sendHookDataToDevTools(eventName: "connectToDevtools") {
-  tab.send({
-    type: eventName,
-    payload: getClientData(),
-  });
-}
-
-tab.on("connectToClient", () => {
-  if (hook.ApolloClient) {
-    sendHookDataToDevTools("connectToDevtools");
-  } else {
-    findClient();
-  }
-});
+// function sendHookDataToDevTools(eventName: "connectToDevtools") {
+//   tab.send({
+//     type: eventName,
+//     payload: getClientData(),
+//   });
+// }
 
 tab.on("explorerRequest", (message) => {
   const {
@@ -227,28 +219,6 @@ tab.on("explorerRequest", (message) => {
   }
 });
 
-/**
- * Attempt to find the client on a 1-second interval for 10 seconds max
- */
-let interval: NodeJS.Timeout;
-function findClient() {
-  let count = 0;
-
-  function initializeDevtoolsHook() {
-    if (count++ > 10) {
-      clearInterval(interval);
-      tab.send({ type: "clientNotFound" });
-    }
-    if (window.__APOLLO_CLIENT__) {
-      registerClient(window.__APOLLO_CLIENT__);
-    }
-  }
-
-  clearInterval(interval);
-  interval = setInterval(initializeDevtoolsHook, 1000);
-  initializeDevtoolsHook(); // call immediately to reduce lag if devtools are already available
-}
-
 function watchForClientTermination(client: ApolloClient<any>) {
   const originalStop = client.stop;
 
@@ -289,10 +259,9 @@ function registerClient(client: ApolloClient<any>) {
   //   }
   // });
 
-  clearInterval(interval);
   // incase initial update was missed because the client wasn't ready, send the create devtools event.
   // devtools checks to see if it's already created, so this won't create duplicate tabs
-  sendHookDataToDevTools("connectToDevtools");
+  // sendHookDataToDevTools("connectToDevtools");
   loadErrorCodes(rpcClient, client.version);
 }
 
