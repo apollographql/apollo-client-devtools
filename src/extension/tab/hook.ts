@@ -248,7 +248,7 @@ function watchForClientTermination(client: ApolloClient<any>) {
       hook.ApolloClient = undefined;
     }
 
-    tab.send({ type: "disconnectFromDevtools" });
+    tab.send({ type: "clientTerminated" });
     originalStop.call(client);
   };
 }

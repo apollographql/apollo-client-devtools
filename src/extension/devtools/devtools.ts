@@ -122,7 +122,7 @@ clientPort.on("connectToClientTimeout", () => {
   devtoolsMachine.send("timeout");
 });
 
-clientPort.on("disconnectFromDevtools", () => {
+clientPort.on("clientTerminated", () => {
   devtoolsMachine.send("disconnect");
 });
 
