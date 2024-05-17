@@ -317,5 +317,3 @@ Object.defineProperty(window, "__APOLLO_CLIENT__", {
 if (globalClient) {
   registerClient(globalClient);
 }
-
-findClient();
