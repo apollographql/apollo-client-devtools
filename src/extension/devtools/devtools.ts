@@ -18,10 +18,7 @@ const inspectedTabId = browser.devtools.inspectedWindow.tabId;
 const devtoolsMachine = interpret(
   createDevtoolsMachine({
     actions: {
-      connectToClient: () => {
-        // clientPort.send({ type: "connectToClient" });
-        // startConnectTimeout();
-      },
+      connectToClient,
       startRequestInterval: () => {
         clearTimeout(connectTimeoutId);
 
