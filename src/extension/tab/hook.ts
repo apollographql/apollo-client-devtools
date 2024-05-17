@@ -254,13 +254,13 @@ function watchForClientTermination(client: ApolloClient<any>) {
 }
 
 function registerClient(client: ApolloClient<any>) {
+  if (!hook.ApolloClient) {
+    hook.ApolloClient = client;
+  }
+
   if (!knownClients.has(client)) {
     knownClients.add(client);
     watchForClientTermination(client);
-  }
-
-  if (!hook.ApolloClient) {
-    hook.ApolloClient = client;
   }
 
   // TODO: Repurpose this callback. The message it sent was not listened by
