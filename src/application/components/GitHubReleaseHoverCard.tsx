@@ -6,6 +6,7 @@ import { Spinner } from "./Spinner";
 import IconOutlink from "@apollo/icons/small/IconOutlink.svg";
 import IconGitHub from "@apollo/icons/default/IconGitHubSolid.svg";
 import IconBranch from "@apollo/icons/default/IconBranch.svg";
+import type { SnapshotVersion } from "../utilities/github";
 import {
   isSnapshotRelease,
   parseSnapshotRelease,
@@ -37,10 +38,10 @@ export function GitHubReleaseHoverCard({
   );
 }
 
-function SnapshotCardContents({ version }: { version: string }) {
+function SnapshotCardContents({ version }: { version: SnapshotVersion }) {
   const release = parseSnapshotRelease(version);
   const { status, data: pullRequest } = useGitHubApi<GitHubPullRequest>(
-    `/repos/apollographql/apollo-client/pulls/${release?.prNumber}`,
+    `/repos/apollographql/apollo-client/pulls/${release.prNumber}`,
     { cache: true }
   );
 

@@ -186,7 +186,7 @@ export const App = () => {
                   className="no-underline"
                   href={
                     isSnapshotRelease(clientVersion)
-                      ? `https://github.com/apollographql/apollo-client/pull/${parseSnapshotRelease(clientVersion)!.prNumber}`
+                      ? `https://github.com/apollographql/apollo-client/pull/${parseSnapshotRelease(clientVersion).prNumber}`
                       : `https://github.com/apollographql/apollo-client/releases/tag/v${clientVersion}`
                   }
                   target="_blank"
