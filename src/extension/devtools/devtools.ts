@@ -116,6 +116,8 @@ clientPort.on("pageUnloaded", () => {
   devtoolsMachine.send("disconnect");
 });
 
+clientPort.on("clientRegistered", connectToClient);
+
 clientPort.on("clientTerminated", () => {
   devtoolsMachine.send("disconnect");
 });
