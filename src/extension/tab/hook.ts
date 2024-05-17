@@ -19,7 +19,7 @@ import {
   getMutations,
   getMainDefinition,
 } from "./helpers";
-import type { QueryResult } from "../../types";
+import type { QueryResult, SafeAny } from "../../types";
 import { getPrivateAccess } from "../../privateAccess";
 import type { JSONObject } from "../../application/types/json";
 import { createWindowActor } from "../actor";
@@ -299,6 +299,23 @@ const preExisting = window[DEVTOOLS_KEY];
 window[DEVTOOLS_KEY] = { push: registerClient };
 if (Array.isArray(preExisting)) {
   (preExisting as Array<ApolloClient<any>>).forEach(registerClient);
+}
+
+// Handles registering legacy clients (< v3.7) which do not use the new
+// registration mechanism above.
+let globalClient = window.__APOLLO_CLIENT__;
+Object.defineProperty(window, "__APOLLO_CLIENT__", {
+  get() {
+    return globalClient;
+  },
+  set(client: ApolloClient<SafeAny>) {
+    registerClient(client);
+    globalClient = client;
+  },
+});
+
+if (globalClient) {
+  registerClient(globalClient);
 }
 
 findClient();
