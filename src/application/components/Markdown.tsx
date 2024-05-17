@@ -4,6 +4,7 @@ import { twMerge } from "tailwind-merge";
 import { CodeBlock } from "./CodeBlock";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
+import remarkGithub from "remark-github";
 import type { ReactNode } from "react";
 
 interface MarkdownProps {
@@ -103,7 +104,10 @@ export function Markdown({
     <ReactMarkdown
       className={twMerge("flex flex-col", className)}
       components={{ ...components, ...componentOverrides }}
-      remarkPlugins={[remarkGfm]}
+      remarkPlugins={[
+        remarkGfm,
+        [remarkGithub, { repository: "apollographql/apollo-client" }],
+      ]}
       rehypePlugins={[rehypeRaw]}
     >
       {children}
