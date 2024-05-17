@@ -109,8 +109,6 @@ function connectToClient() {
   }
 }
 
-clientPort.on("pageLoaded", connectToClient);
-
 clientPort.on("pageUnloaded", () => {
   connectController.abort();
   devtoolsMachine.send("disconnect");

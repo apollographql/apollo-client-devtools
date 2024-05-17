@@ -22,7 +22,7 @@ createRPCBridge(
 devtools.forward("explorerSubscriptionTermination", tab);
 devtools.forward("explorerRequest", tab);
 
-tab.forward("pageLoaded", devtools);
+tab.forward("clientRegistered", devtools);
 tab.forward("clientTerminated", devtools);
 tab.forward("explorerResponse", devtools);
 

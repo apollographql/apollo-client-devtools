@@ -91,10 +91,6 @@ window.onbeforeunload = () => {
   tab.send({ type: "pageUnloaded" });
 };
 
-window.addEventListener("load", () => {
-  tab.send({ type: "pageLoaded" });
-});
-
 function getCurrentClient() {
   const client = hook.ApolloClient ?? window.__APOLLO_CLIENT__;
 

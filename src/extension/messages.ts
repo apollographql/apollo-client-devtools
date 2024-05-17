@@ -84,7 +84,6 @@ type ExplorerSubscriptionTerminationMessage = {
 export type ClientMessage =
   | { type: "clientRegistered" }
   | { type: "clientTerminated" }
-  | { type: "pageLoaded" }
   | { type: "pageUnloaded" }
   | ExplorerRequestMessage
   | ExplorerResponseMessage
