@@ -100,7 +100,7 @@ function getCurrentClient() {
   return hook.ApolloClient;
 }
 
-function getClientData() {
+handleRpc("getClientOperations", () => {
   const client = getCurrentClient();
 
   if (!client) {
@@ -127,9 +127,7 @@ function getClientData() {
     mutations: QueryInfo[];
     cache: JSONObject;
   };
-}
-
-handleRpc("getClientOperations", getClientData);
+});
 
 tab.on("explorerRequest", (message) => {
   const {
