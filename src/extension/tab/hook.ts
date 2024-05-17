@@ -95,8 +95,20 @@ window.addEventListener("load", () => {
   tab.send({ type: "pageLoaded" });
 });
 
+function getCurrentClient() {
+  const client = hook.ApolloClient ?? window.__APOLLO_CLIENT__;
+
+  if (client && !hook.ApolloClient) {
+    registerClient(client);
+  }
+
+  return hook.ApolloClient;
+}
+
 function getClientData() {
-  if (!hook.ApolloClient) {
+  const client = getCurrentClient();
+
+  if (!client) {
     return null;
   }
   // We need to JSON stringify the data here in case the cache contains
@@ -109,7 +121,7 @@ function getClientData() {
   // https://github.com/apollographql/apollo-client-devtools/issues/1258
   return JSON.parse(
     JSON.stringify({
-      clientVersion: hook.ApolloClient.version,
+      clientVersion: client.version,
       queries: hook.getQueries(),
       mutations: hook.getMutations(),
       cache: hook.getCache(),
