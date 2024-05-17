@@ -18,5 +18,6 @@ export default {
     "react-markdown": "<rootDir>/src/__mocks__/react-markdown.js",
     "rehype-raw": "<rootDir>/src/__mocks__/noop.js",
     "remark-gfm": "<rootDir>/src/__mocks__/noop.js",
+    "remark-github": "<rootDir>/src/__mocks__/noop.js",
   },
 };
