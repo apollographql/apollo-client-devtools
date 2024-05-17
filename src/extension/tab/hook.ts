@@ -92,6 +92,7 @@ window.onbeforeunload = () => {
 };
 
 window.addEventListener("load", () => {
+  tab.send({ type: "pageLoaded" });
   if (hook.ApolloClient) {
     sendHookDataToDevTools("connectToDevtools");
   }

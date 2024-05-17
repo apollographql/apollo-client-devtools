@@ -66,6 +66,10 @@ function startConnectTimeout(attempts = 0) {
   }, 11_000);
 }
 
+clientPort.on("pageLoaded", () => {
+  startConnectTimeout();
+});
+
 clientPort.on("connectToDevtools", (message) => {
   devtoolsMachine.send({
     type: "connect",

@@ -90,6 +90,7 @@ export type ClientMessage =
       payload: ClientContext;
     }
   | { type: "disconnectFromDevtools" }
+  | { type: "pageLoaded" }
   | ExplorerRequestMessage
   | ExplorerResponseMessage
   | ExplorerSubscriptionTerminationMessage;

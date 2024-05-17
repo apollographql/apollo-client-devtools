@@ -23,6 +23,7 @@ devtools.forward("connectToClient", tab);
 devtools.forward("explorerSubscriptionTermination", tab);
 devtools.forward("explorerRequest", tab);
 
+tab.forward("pageLoaded", devtools);
 tab.forward("clientNotFound", devtools);
 tab.forward("connectToDevtools", devtools);
 tab.forward("disconnectFromDevtools", devtools);
