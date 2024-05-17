@@ -94,13 +94,19 @@ function SnapshotCardContents({ version }: { version: string }) {
           <Markdown>{pullRequest.title}</Markdown>
         </h2>
         <div className="flex mt-2 mb-6">
-          <StatusBadge
-            className="text-sm"
-            variant="rounded"
-            color={pullRequest.state === "open" ? "green" : "purple"}
-          >
-            {capitalize(pullRequest.state)}
-          </StatusBadge>
+          {pullRequest.merged ? (
+            <StatusBadge className="text-sm" variant="rounded" color="purple">
+              Merged
+            </StatusBadge>
+          ) : (
+            <StatusBadge
+              className="text-sm"
+              variant="rounded"
+              color={pullRequest.state === "open" ? "green" : "red"}
+            >
+              {capitalize(pullRequest.state)}
+            </StatusBadge>
+          )}
         </div>
         <Markdown>{pullRequest.body}</Markdown>
       </section>
@@ -186,6 +192,7 @@ interface GitHubPullRequest {
   merged_at: string;
   merge_commit_sha: string;
   html_url: string;
+  merged: boolean;
   user: {
     name: string;
     login: string;
