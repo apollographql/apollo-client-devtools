@@ -86,7 +86,6 @@ Object.defineProperty(window, "__APOLLO_DEVTOOLS_GLOBAL_HOOK__", {
   configurable: true,
 });
 
-// Listen for tab refreshes
 window.onbeforeunload = () => {
   tab.send({ type: "pageUnloaded" });
 };
