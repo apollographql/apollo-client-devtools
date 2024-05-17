@@ -80,20 +80,19 @@ function SnapshotCardContents({ version }: { version: string }) {
       </header>
 
       <section>
-        <div className="flex items-center gap-2">
-          <a href={pullRequest.html_url} target="_blank" rel="noreferrer">
-            #{pullRequest.number}
-          </a>{" "}
-          opened by
+        <div className="mb-2">
           <a href={pullRequest.user.html_url} target="_blank" rel="noreferrer">
             @{pullRequest.user.login}
-          </a>
+          </a>{" "}
+          opened on {formatPublishDate(Date.parse(pullRequest.created_at))}
         </div>
         <h2 className="text-lg text-heading dark:text-heading-dark font-medium mb-2">
           <Markdown>{pullRequest.title}</Markdown>
         </h2>
-        <div className="flex mt-2 mb-4">
+        <div className="flex my-4">
           <StatusBadge
+            className="text-sm"
+            variant="rounded"
             color={pullRequest.state === "open" ? "green" : "purple"}
           >
             {capitalize(pullRequest.state)}
