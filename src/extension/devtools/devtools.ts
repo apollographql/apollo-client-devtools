@@ -139,10 +139,13 @@ function startRequestInterval(ms = 500) {
   async function getClientData() {
     try {
       if (panelWindow) {
-        panelWindow.send({
-          type: "update",
-          payload: await rpcClient.request("getClientOperations"),
-        });
+        const payload = await rpcClient.request("getClientOperations");
+
+        if (payload === null) {
+          return devtoolsMachine.send("disconnect");
+        }
+
+        panelWindow.send({ type: "update", payload });
       }
     } finally {
       id = setTimeout(getClientData, ms);
