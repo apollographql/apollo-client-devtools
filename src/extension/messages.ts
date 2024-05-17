@@ -86,6 +86,7 @@ export type ClientMessage =
   | { type: "connectToClientTimeout" }
   | { type: "disconnectFromDevtools" }
   | { type: "pageLoaded" }
+  | { type: "pageUnloaded" }
   | ExplorerRequestMessage
   | ExplorerResponseMessage
   | ExplorerSubscriptionTerminationMessage;

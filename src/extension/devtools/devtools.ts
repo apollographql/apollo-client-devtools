@@ -98,6 +98,10 @@ clientPort.on("pageLoaded", () => {
   connectToClient();
 });
 
+clientPort.on("pageUnloaded", () => {
+  devtoolsMachine.send("disconnect");
+});
+
 clientPort.on("connectToClientTimeout", () => {
   devtoolsMachine.send("timeout");
 });

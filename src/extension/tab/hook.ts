@@ -88,7 +88,7 @@ Object.defineProperty(window, "__APOLLO_DEVTOOLS_GLOBAL_HOOK__", {
 
 // Listen for tab refreshes
 window.onbeforeunload = () => {
-  tab.send({ type: "disconnectFromDevtools" });
+  tab.send({ type: "pageUnloaded" });
 };
 
 window.addEventListener("load", () => {
