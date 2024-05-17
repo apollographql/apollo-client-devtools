@@ -32,6 +32,7 @@ import {
 import { Tooltip } from "./components/Tooltip";
 import { Badge } from "./components/Badge";
 import { GitHubReleaseHoverCard } from "./components/GitHubReleaseHoverCard";
+import { isSnapshotRelease, parseSnapshotRelease } from "./utilities/github";
 
 const panelWindow = getPanelActor(window);
 
@@ -183,7 +184,11 @@ export const App = () => {
               <GitHubReleaseHoverCard version={clientVersion}>
                 <a
                   className="no-underline"
-                  href={`https://github.com/apollographql/apollo-client/releases/tag/v${clientVersion}`}
+                  href={
+                    isSnapshotRelease(clientVersion)
+                      ? `https://github.com/apollographql/apollo-client/pull/${parseSnapshotRelease(clientVersion)!.prNumber}`
+                      : `https://github.com/apollographql/apollo-client/releases/tag/v${clientVersion}`
+                  }
                   target="_blank"
                   rel="noreferrer"
                 >
