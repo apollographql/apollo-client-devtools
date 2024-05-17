@@ -20,24 +20,16 @@ const devtoolsMachine = interpret(
     actions: {
       connectToClient,
       startRequestInterval: () => {
-        clearTimeout(connectTimeoutId);
-
         if (!panelHidden) {
           unsubscribers.add(startRequestInterval());
         }
       },
-      unsubscribeFromAll: (_, event) => {
-        if (event.type === "clientNotFound") {
-          clearTimeout(connectTimeoutId);
-        }
-        unsubscribeFromAll();
-      },
+      unsubscribeFromAll,
     },
   })
 ).start();
 
 let panelHidden = true;
-let connectTimeoutId: NodeJS.Timeout;
 
 const port = browser.runtime.connect({
   name: inspectedTabId.toString(),
