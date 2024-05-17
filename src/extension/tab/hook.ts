@@ -276,7 +276,6 @@ function registerClient(client: ApolloClient<any>) {
 
   // incase initial update was missed because the client wasn't ready, send the create devtools event.
   // devtools checks to see if it's already created, so this won't create duplicate tabs
-  // sendHookDataToDevTools("connectToDevtools");
   loadErrorCodes(rpcClient, client.version);
 }
 
