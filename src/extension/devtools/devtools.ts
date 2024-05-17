@@ -1,4 +1,4 @@
-import browser, { devtools } from "webextension-polyfill";
+import browser from "webextension-polyfill";
 import { createDevtoolsMachine } from "../../application/machines";
 import type { Actor } from "../actor";
 import { createPortActor } from "../actor";
