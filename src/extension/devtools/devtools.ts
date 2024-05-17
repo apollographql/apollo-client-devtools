@@ -190,11 +190,6 @@ async function createDevtoolsPanel() {
       connectedToPanel = true;
     }
 
-    if (devtoolsMachine.state.value === "initialized") {
-      // clientPort.send({ type: "connectToClient" });
-      // startConnectTimeout();
-    }
-
     if (devtoolsMachine.state.value === "connected" && panelHidden) {
       unsubscribers.add(startRequestInterval());
     }
