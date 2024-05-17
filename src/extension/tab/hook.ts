@@ -131,13 +131,6 @@ function getClientData() {
 
 handleRpc("getClientOperations", getClientData);
 
-// function sendHookDataToDevTools(eventName: "connectToDevtools") {
-//   tab.send({
-//     type: eventName,
-//     payload: getClientData(),
-//   });
-// }
-
 tab.on("explorerRequest", (message) => {
   const {
     operation: queryAst,
