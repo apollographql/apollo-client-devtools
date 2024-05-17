@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.13.0
+
+### Minor Changes
+
+- [#1373](https://github.com/apollographql/apollo-client-devtools/pull/1373) [`23a8cf6`](https://github.com/apollographql/apollo-client-devtools/commit/23a8cf655043468c941c144e226c5a0b44fe3b19) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Show connected Apollo Client version in the devtools. Hovering over the version gives you the release notes for that version, or the pull request information if its a snapshot release.
+
 ## 4.12.4
 
 ### Patch Changes
