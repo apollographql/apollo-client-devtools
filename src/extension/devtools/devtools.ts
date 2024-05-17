@@ -52,10 +52,6 @@ const rpcClient = createRpcClient<DevtoolsRPCMessage>(
 );
 
 async function connectToClient(attempts = 0) {
-  if (connectedToContentScript) {
-    return;
-  }
-
   try {
     const clientContext = await rpcClient
       .withTimeout(1000)
