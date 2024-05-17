@@ -131,7 +131,7 @@ clientPort.on("clientNotFound", () => {
   devtoolsMachine.send("clientNotFound");
 });
 
-// clientPort.send({ type: "connectToClient" });
+connectToClient();
 
 function startRequestInterval(ms = 500) {
   let id: NodeJS.Timeout;
