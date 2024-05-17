@@ -30,6 +30,9 @@ import {
   SECTIONS,
 } from "./components/GitHubIssueLink";
 import { Tooltip } from "./components/Tooltip";
+import { Badge } from "./components/Badge";
+import { GitHubReleaseHoverCard } from "./components/GitHubReleaseHoverCard";
+import { isSnapshotRelease, parseSnapshotRelease } from "./utilities/github";
 
 const panelWindow = getPanelActor(window);
 
@@ -80,6 +83,7 @@ const GET_OPERATION_COUNTS: TypedDocumentNode<
   GetOperationCountsVariables
 > = gql`
   query GetOperationCounts {
+    clientVersion @client
     watchedQueries @client {
       count
     }
@@ -108,6 +112,8 @@ export const App = () => {
   const state = useReactiveVar(devtoolsState);
   const [embeddedExplorerIFrame, setEmbeddedExplorerIFrame] =
     useState<HTMLIFrameElement | null>(null);
+
+  const clientVersion = data?.clientVersion;
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
@@ -173,29 +179,50 @@ export const App = () => {
           <Tabs.Trigger value={Screens.Cache}>Cache</Tabs.Trigger>
           <Tabs.Trigger value={Screens.Explorer}>Explorer</Tabs.Trigger>
 
-          <ButtonGroup className="ml-auto flex-1 justify-end">
-            <Tooltip content="Report an issue">
-              <Button
-                aria-label="Report an issue"
-                variant="hidden"
-                size="sm"
-                icon={<IconGitHubSolid />}
-                asChild
-              >
-                <GitHubIssueLink labels={[LABELS.bug]} body={ISSUE_BODY} />
-              </Button>
-            </Tooltip>
+          <div className="ml-auto flex-1 justify-end flex items-center gap-2">
+            {clientVersion && (
+              <GitHubReleaseHoverCard version={clientVersion}>
+                <a
+                  className="no-underline"
+                  href={
+                    isSnapshotRelease(clientVersion)
+                      ? `https://github.com/apollographql/apollo-client/pull/${parseSnapshotRelease(clientVersion).prNumber}`
+                      : `https://github.com/apollographql/apollo-client/releases/tag/v${clientVersion}`
+                  }
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <Badge variant="info" className="cursor-pointer">
+                    Apollo Client <span className="lowercase">v</span>
+                    {clientVersion}
+                  </Badge>
+                </a>
+              </GitHubReleaseHoverCard>
+            )}
+            <ButtonGroup>
+              <Tooltip content="Report an issue">
+                <Button
+                  aria-label="Report an issue"
+                  variant="hidden"
+                  size="sm"
+                  icon={<IconGitHubSolid />}
+                  asChild
+                >
+                  <GitHubIssueLink labels={[LABELS.bug]} body={ISSUE_BODY} />
+                </Button>
+              </Tooltip>
 
-            <Tooltip content="Settings">
-              <Button
-                aria-label="Settings"
-                size="sm"
-                variant="hidden"
-                onClick={() => setSettingsOpen(true)}
-                icon={<IconSettings />}
-              />
-            </Tooltip>
-          </ButtonGroup>
+              <Tooltip content="Settings">
+                <Button
+                  aria-label="Settings"
+                  size="sm"
+                  variant="hidden"
+                  onClick={() => setSettingsOpen(true)}
+                  icon={<IconSettings />}
+                />
+              </Tooltip>
+            </ButtonGroup>
+          </div>
           <SettingsModal open={settingsOpen} onOpen={setSettingsOpen} />
         </Tabs.List>
         {/**

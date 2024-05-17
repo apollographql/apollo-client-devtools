@@ -42,6 +42,7 @@ export type MutationLog = {
 export type Query = {
   __typename: "Query";
   cache: Scalars["String"]["output"];
+  clientVersion: Maybe<Scalars["String"]["output"]>;
   mutation: Maybe<WatchedMutation>;
   mutationLog: MutationLog;
   watchedQueries: WatchedQueries;
@@ -82,6 +83,7 @@ export type WatchedQuery = {
 export type GetOperationCountsVariables = Exact<{ [key: string]: never }>;
 
 export type GetOperationCounts = {
+  clientVersion: string | null;
   watchedQueries: { __typename: "WatchedQueries"; count: number };
   mutationLog: { __typename: "MutationLog"; count: number };
 };
@@ -153,3 +155,7 @@ export type GetAllMutations = {
     }>;
   };
 };
+
+export type ClientVersionVariables = Exact<{ [key: string]: never }>;
+
+export type ClientVersion = { clientVersion: string | null };

@@ -5,6 +5,7 @@ import type { StateMachine } from "@xstate/fsm";
 import { createMachine, assign } from "@xstate/fsm";
 
 export interface ClientContext {
+  clientVersion: string | null;
   queries: QueryInfo[];
   mutations: QueryInfo[];
   cache: JSONObject;
@@ -45,6 +46,7 @@ export function createDevtoolsMachine({ actions }: { actions: Actions }) {
       initial: "initialized",
       context: {
         clientContext: {
+          clientVersion: null,
           queries: [],
           mutations: [],
           cache: {},

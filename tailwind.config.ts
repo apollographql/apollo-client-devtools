@@ -1,7 +1,12 @@
 import type { Config } from "tailwindcss";
+import { colors as rawColors } from "@apollo/brand";
 import { colors, typography, fontFamily } from "@apollo/tailwind-preset";
 import defaultConfig from "tailwindcss/defaultConfig";
 import headlessPlugin from "@headlessui/tailwindcss";
+
+function toColorValue(token: { base: string; dark: string }) {
+  return { ...token, DEFAULT: token.base };
+}
 
 export default {
   content: [
@@ -18,8 +23,14 @@ export default {
       "orientation-vertical": 'orientation="vertical"',
     },
     extend: {
+      colors: {
+        current: "currentColor",
+      },
       borderColor: {
         transparent: "transparent",
+        arrow: {
+          primary: toColorValue(rawColors.tokens.bg.primary),
+        },
       },
       boxShadow: {
         modal:

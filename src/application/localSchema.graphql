@@ -5,6 +5,7 @@ scalar QueryData
 scalar Variables
 
 type Query {
+  clientVersion: String
   cache: String!
   mutation(id: ID!): WatchedMutation
   mutationLog: MutationLog!

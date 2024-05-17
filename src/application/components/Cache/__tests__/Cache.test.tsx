@@ -76,6 +76,7 @@ describe("Cache component tests", () => {
       client.resetStore();
 
       writeData({
+        clientVersion: "3.10.0",
         queries: [],
         mutations: [],
         cache: CACHE_DATA,
@@ -124,6 +125,7 @@ describe("Cache component tests", () => {
   describe("Search", () => {
     beforeEach(() => {
       writeData({
+        clientVersion: "3.10.0",
         queries: [],
         mutations: [],
         cache: CACHE_DATA,
