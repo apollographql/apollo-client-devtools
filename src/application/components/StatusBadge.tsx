@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { cloneElement, type ReactElement, type ReactNode } from "react";
 import IconStatusDot from "@apollo/icons/default/IconStatusDot.svg";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
@@ -6,11 +6,12 @@ import type { OmitNull } from "../types/utils";
 import { twMerge } from "tailwind-merge";
 
 interface StatusBadgeProps extends IconVariants, ContainerVariants {
+  icon?: ReactElement<{ className: string }>;
   className?: string;
   children?: ReactNode;
 }
 
-type IconVariants = Required<OmitNull<VariantProps<typeof icon>>>;
+type IconVariants = Required<OmitNull<VariantProps<typeof iconStyles>>>;
 type ContainerVariants = Required<OmitNull<VariantProps<typeof container>>>;
 
 const container = cva(
@@ -41,7 +42,7 @@ const container = cva(
   }
 );
 
-const icon = cva(["size-4"], {
+const iconStyles = cva(["size-4"], {
   variants: {
     color: {
       blue: ["text-icon-info", "text-icon-info-dark"],
@@ -60,10 +61,13 @@ export function StatusBadge({
   children,
   color,
   variant,
+  icon = <IconStatusDot />,
 }: StatusBadgeProps) {
   return (
     <span className={twMerge(container({ variant }), className)}>
-      <IconStatusDot className={icon({ color })} />
+      {cloneElement(icon, {
+        className: twMerge(iconStyles({ color }), icon.props.className),
+      })}
       {children}
     </span>
   );
