@@ -94,32 +94,9 @@ async function connectToClient(attempts = 0): Promise<void> {
   }
 }
 
-// In case we can't connect to the tab, we should at least show something to the
-// user when we've attempted to connect a max number of times.
-// function startConnectTimeout(attempts = 0) {
-//   connectTimeoutId = setTimeout(() => {
-//     if (attempts < 3) {
-//       // clientPort.send({ type: "connectToClient" });
-//       startConnectTimeout(attempts + 1);
-//     } else {
-//       devtoolsMachine.send("timeout");
-//     }
-//     // Pick a threshold above the time it takes to determine if the client is
-//     // found on the page. This ensures we don't reset that counter and provide a
-//     // proper "not found" message.
-//   }, 11_000);
-// }
-
 clientPort.on("pageLoaded", () => {
   connectToClient();
 });
-
-// clientPort.on("connectToDevtools", (message) => {
-//   devtoolsMachine.send({
-//     type: "connect",
-//     clientContext: message.payload,
-//   });
-// });
 
 clientPort.on("connectToClientTimeout", () => {
   devtoolsMachine.send("timeout");
