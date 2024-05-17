@@ -44,7 +44,7 @@ let isConnectingToClient = false;
 let connectController = new AbortController();
 
 function connectToClient() {
-  if (isConnectingToClient) {
+  if (isConnectingToClient || devtoolsMachine.state.value === "connected") {
     return;
   }
 
