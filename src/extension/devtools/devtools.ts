@@ -116,19 +116,27 @@ connectToClient();
 
 function startRequestInterval(ms = 500) {
   let id: NodeJS.Timeout;
+  let failedAttempts = 0;
 
   async function getClientData() {
     try {
       if (panelWindow) {
         const payload = await rpcClient.request("getClientOperations");
+        failedAttempts = 0;
 
         if (payload === null) {
           return devtoolsMachine.send("disconnect");
         }
 
         panelWindow.send({ type: "update", payload });
+        id = setTimeout(getClientData, ms);
       }
-    } finally {
+    } catch (e) {
+      if (failedAttempts >= 3) {
+        return devtoolsMachine.send("timeout");
+      }
+
+      failedAttempts++;
       id = setTimeout(getClientData, ms);
     }
   }
