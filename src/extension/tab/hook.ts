@@ -96,6 +96,9 @@ window.addEventListener("load", () => {
 });
 
 function getClientData() {
+  if (!hook.ApolloClient) {
+    return null;
+  }
   // We need to JSON stringify the data here in case the cache contains
   // references to irregular data such as `URL` instances which are not
   // cloneable via `structuredClone` (which `window.postMessage` uses to
@@ -106,13 +109,13 @@ function getClientData() {
   // https://github.com/apollographql/apollo-client-devtools/issues/1258
   return JSON.parse(
     JSON.stringify({
-      clientVersion: hook.ApolloClient?.version ?? null,
+      clientVersion: hook.ApolloClient.version,
       queries: hook.getQueries(),
       mutations: hook.getMutations(),
       cache: hook.getCache(),
     })
   ) as {
-    clientVersion: string | null;
+    clientVersion: string;
     queries: QueryInfo[];
     mutations: QueryInfo[];
     cache: JSONObject;

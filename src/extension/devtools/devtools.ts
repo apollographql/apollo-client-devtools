@@ -62,7 +62,16 @@ async function connectToClient(attempts = 0) {
       .request("getClientOperations");
 
     connectedToContentScript = true;
-    devtoolsMachine.send({ type: "connect", clientContext });
+
+    if (clientContext) {
+      return devtoolsMachine.send({ type: "connect", clientContext });
+    }
+
+    if (attempts >= 10) {
+      devtoolsMachine.send("clientNotFound");
+    } else {
+      connectToClient(attempts + 1);
+    }
   } catch (e) {
     if (attempts >= 3) {
       devtoolsMachine.send("timeout");

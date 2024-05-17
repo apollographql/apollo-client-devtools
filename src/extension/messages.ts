@@ -104,7 +104,7 @@ export type PanelMessage =
   | { type: "update"; payload: ClientContext };
 
 export type DevtoolsRPCMessage = {
-  getClientOperations(): ClientContext;
+  getClientOperations(): ClientContext | null;
 };
 
 function isDevtoolsMessage<Message extends Record<string, unknown>>(
