@@ -53,44 +53,48 @@ const rpcClient = createRpcClient<DevtoolsRPCMessage>(
 
 let isConnectingToClient = false;
 
-async function connectToClient(attempts = 0): Promise<void> {
+function connectToClient() {
   if (isConnectingToClient) {
     return;
   }
 
-  isConnectingToClient = true;
+  connect();
 
-  try {
-    const clientContext = await rpcClient
-      .withTimeout(1000)
-      .request("getClientOperations");
+  async function connect(attempts = 0) {
+    isConnectingToClient = true;
 
-    if (clientContext) {
-      return devtoolsMachine.send({ type: "connect", clientContext });
+    try {
+      const clientContext = await rpcClient
+        .withTimeout(1000)
+        .request("getClientOperations");
+
+      if (clientContext) {
+        return devtoolsMachine.send({ type: "connect", clientContext });
+      }
+
+      if (attempts >= 10) {
+        devtoolsMachine.send("clientNotFound");
+      } else {
+        connect(attempts + 1);
+      }
+    } catch (e) {
+      const isTimeoutError =
+        e instanceof Error && e.message === RPC_MESSAGE_TIMEOUT;
+
+      if (isTimeoutError && attempts >= 3) {
+        return devtoolsMachine.send("timeout");
+      }
+
+      if (isTimeoutError) {
+        return connect(attempts + 1);
+      }
+
+      if (process.env.NODE_ENV === "development") {
+        console.error(e);
+      }
+    } finally {
+      isConnectingToClient = false;
     }
-
-    if (attempts >= 10) {
-      devtoolsMachine.send("clientNotFound");
-    } else {
-      connectToClient(attempts + 1);
-    }
-  } catch (e) {
-    const isTimeoutError =
-      e instanceof Error && e.message === RPC_MESSAGE_TIMEOUT;
-
-    if (isTimeoutError && attempts >= 3) {
-      return devtoolsMachine.send("timeout");
-    }
-
-    if (isTimeoutError) {
-      return connectToClient(attempts + 1);
-    }
-
-    if (process.env.NODE_ENV === "development") {
-      console.error(e);
-    }
-  } finally {
-    isConnectingToClient = false;
   }
 }
 
