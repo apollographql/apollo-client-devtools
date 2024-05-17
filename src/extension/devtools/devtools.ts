@@ -40,6 +40,10 @@ const rpcClient = createRpcClient<DevtoolsRPCMessage>(
   createPortMessageAdapter(port)
 );
 
+async function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 let isConnectingToClient = false;
 let connectController = new AbortController();
 
@@ -50,7 +54,9 @@ function connectToClient() {
 
   connectController = new AbortController();
   const signal = connectController.signal;
-  connect();
+  connect().finally(() => {
+    isConnectingToClient = false;
+  });
 
   async function connect(attempts = 0) {
     if (signal.aborted) {
@@ -75,7 +81,8 @@ function connectToClient() {
       if (attempts >= 10) {
         devtoolsMachine.send("clientNotFound");
       } else {
-        connect(attempts + 1);
+        await sleep(1000);
+        return connect(attempts + 1);
       }
     } catch (e) {
       // A timeout error indicates that we are unable to communicate with the
@@ -95,8 +102,6 @@ function connectToClient() {
       if (process.env.NODE_ENV === "development") {
         console.error(e);
       }
-    } finally {
-      isConnectingToClient = false;
     }
   }
 }
