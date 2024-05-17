@@ -261,6 +261,7 @@ function registerClient(client: ApolloClient<any>) {
   if (!knownClients.has(client)) {
     knownClients.add(client);
     watchForClientTermination(client);
+    tab.send({ type: "clientRegistered" });
   }
 
   // TODO: Repurpose this callback. The message it sent was not listened by
