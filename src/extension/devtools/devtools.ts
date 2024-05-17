@@ -89,6 +89,9 @@ function connectToClient() {
         connect(attempts + 1);
       }
     } catch (e) {
+      // A timeout error indicates that we are unable to communicate with the
+      // tab since we never got a message back. We'll attempt to connect up to 3
+      // times (~3 sec) before giving up and letting the user know.
       const isTimeoutError =
         e instanceof Error && e.message === RPC_MESSAGE_TIMEOUT;
 
