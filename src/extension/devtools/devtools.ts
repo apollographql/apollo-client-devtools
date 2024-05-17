@@ -38,7 +38,6 @@ const devtoolsMachine = interpret(
   })
 ).start();
 
-let connectedToContentScript = false;
 let panelHidden = true;
 let connectTimeoutId: NodeJS.Timeout;
 
@@ -51,13 +50,19 @@ const rpcClient = createRpcClient<DevtoolsRPCMessage>(
   createPortMessageAdapter(port)
 );
 
+let isConnectingToClient = false;
+
 async function connectToClient(attempts = 0) {
+  if (isConnectingToClient) {
+    return;
+  }
+
+  isConnectingToClient = true;
+
   try {
     const clientContext = await rpcClient
       .withTimeout(1000)
       .request("getClientOperations");
-
-    connectedToContentScript = true;
 
     if (clientContext) {
       return devtoolsMachine.send({ type: "connect", clientContext });
@@ -74,6 +79,8 @@ async function connectToClient(attempts = 0) {
     } else {
       connectToClient(attempts + 1);
     }
+  } finally {
+    isConnectingToClient = false;
   }
 }
 
