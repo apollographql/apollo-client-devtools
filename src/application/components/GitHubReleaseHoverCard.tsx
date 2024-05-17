@@ -93,7 +93,7 @@ function SnapshotCardContents({ version }: { version: string }) {
         <h2 className="text-lg text-heading dark:text-heading-dark font-medium mb-2">
           <Markdown>{pullRequest.title}</Markdown>
         </h2>
-        <div className="flex mt-2 mb-6">
+        <div className="flex mt-2">
           {pullRequest.merged ? (
             <StatusBadge
               className="text-sm"
@@ -111,16 +111,26 @@ function SnapshotCardContents({ version }: { version: string }) {
               </a>
             </StatusBadge>
           ) : pullRequest.state === "closed" ? (
-            <StatusBadge className="text-sm" variant="rounded" color="red">
+            <StatusBadge
+              className="text-sm"
+              variant="hidden"
+              color="red"
+              icon={<IconBranch />}
+            >
               Closed {formatDate(Date.parse(pullRequest.closed_at))}
             </StatusBadge>
           ) : (
-            <StatusBadge className="text-sm" variant="hidden" color="green">
+            <StatusBadge
+              className="text-sm"
+              variant="hidden"
+              color="green"
+              icon={<IconBranch />}
+            >
               Open
             </StatusBadge>
           )}
         </div>
-        <Markdown>{pullRequest.body}</Markdown>
+        <Markdown className="[&:not(:empty)]:mt-6">{pullRequest.body}</Markdown>
       </section>
     </div>
   );
