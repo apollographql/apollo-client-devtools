@@ -11,6 +11,7 @@ import { getPanelActor } from "./panelActor";
 import { createPortMessageAdapter } from "../messageAdapters";
 import { createRpcClient } from "../rpc";
 import { interpret } from "@xstate/fsm";
+import { RPC_MESSAGE_TIMEOUT } from "../errorMessages";
 
 const inspectedTabId = browser.devtools.inspectedWindow.tabId;
 
@@ -52,7 +53,7 @@ const rpcClient = createRpcClient<DevtoolsRPCMessage>(
 
 let isConnectingToClient = false;
 
-async function connectToClient(attempts = 0) {
+async function connectToClient(attempts = 0): Promise<void> {
   if (isConnectingToClient) {
     return;
   }
@@ -74,10 +75,19 @@ async function connectToClient(attempts = 0) {
       connectToClient(attempts + 1);
     }
   } catch (e) {
-    if (attempts >= 3) {
-      devtoolsMachine.send("timeout");
-    } else {
-      connectToClient(attempts + 1);
+    const isTimeoutError =
+      e instanceof Error && e.message === RPC_MESSAGE_TIMEOUT;
+
+    if (isTimeoutError && attempts >= 3) {
+      return devtoolsMachine.send("timeout");
+    }
+
+    if (isTimeoutError) {
+      return connectToClient(attempts + 1);
+    }
+
+    if (process.env.NODE_ENV === "development") {
+      console.error(e);
     }
   } finally {
     isConnectingToClient = false;
