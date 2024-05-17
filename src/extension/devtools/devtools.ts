@@ -52,21 +52,32 @@ const rpcClient = createRpcClient<DevtoolsRPCMessage>(
 );
 
 let isConnectingToClient = false;
+let connectController = new AbortController();
 
 function connectToClient() {
   if (isConnectingToClient) {
     return;
   }
 
+  connectController = new AbortController();
+  const signal = connectController.signal;
   connect();
 
   async function connect(attempts = 0) {
+    if (signal.aborted) {
+      return;
+    }
+
     isConnectingToClient = true;
 
     try {
       const clientContext = await rpcClient
         .withTimeout(1000)
         .request("getClientOperations");
+
+      if (signal.aborted) {
+        return;
+      }
 
       if (clientContext) {
         return devtoolsMachine.send({ type: "connect", clientContext });
@@ -103,6 +114,7 @@ clientPort.on("pageLoaded", () => {
 });
 
 clientPort.on("pageUnloaded", () => {
+  connectController.abort();
   devtoolsMachine.send("disconnect");
 });
 
