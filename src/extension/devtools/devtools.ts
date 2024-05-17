@@ -118,10 +118,6 @@ clientPort.on("pageUnloaded", () => {
   devtoolsMachine.send("disconnect");
 });
 
-clientPort.on("connectToClientTimeout", () => {
-  devtoolsMachine.send("timeout");
-});
-
 clientPort.on("clientTerminated", () => {
   devtoolsMachine.send("disconnect");
 });
