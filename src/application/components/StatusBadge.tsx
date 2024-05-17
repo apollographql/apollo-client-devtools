@@ -3,8 +3,10 @@ import IconStatusDot from "@apollo/icons/default/IconStatusDot.svg";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 import type { OmitNull } from "../types/utils";
+import { twMerge } from "tailwind-merge";
 
 interface StatusBadgeProps extends IconVariants, ContainerVariants {
+  className?: string;
   children?: ReactNode;
 }
 
@@ -53,9 +55,14 @@ const icon = cva(["size-4"], {
   },
 });
 
-export function StatusBadge({ children, color, variant }: StatusBadgeProps) {
+export function StatusBadge({
+  className,
+  children,
+  color,
+  variant,
+}: StatusBadgeProps) {
   return (
-    <span className={container({ variant })}>
+    <span className={twMerge(container({ variant }), className)}>
       <IconStatusDot className={icon({ color })} />
       {children}
     </span>
