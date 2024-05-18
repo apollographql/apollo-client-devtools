@@ -3,18 +3,18 @@
   "version": "0.0.0",
   "private": true,
   "dependencies": {
-    "@angular/common": "17.3.8",
-    "@angular/compiler": "17.3.8",
-    "@angular/core": "17.3.8",
-    "@angular/platform-browser": "17.3.8",
-    "@angular/platform-browser-dynamic": "17.3.8",
+    "@angular/common": "17.3.9",
+    "@angular/compiler": "17.3.9",
+    "@angular/core": "17.3.9",
+    "@angular/platform-browser": "17.3.9",
+    "@angular/platform-browser-dynamic": "17.3.9",
     "@apollo/client": "3.10.4",
     "apollo-angular": "7.0.1",
     "graphql": "16.8.1",
     "graphql-ws": "5.16.0",
     "rxjs": "7.8.1",
     "tslib": "2.6.2",
-    "zone.js": "0.14.5"
+    "zone.js": "0.14.6"
   },
   "scripts": {
     "start": "ng serve",
@@ -23,7 +23,7 @@
   "devDependencies": {
     "@angular-devkit/build-angular": "17.3.7",
     "@angular/cli": "17.3.7",
-    "@angular/compiler-cli": "17.3.8",
+    "@angular/compiler-cli": "17.3.9",
     "@types/node": "20.12.12",
     "ts-node": "10.9.2",
     "tslint": "6.1.3",
