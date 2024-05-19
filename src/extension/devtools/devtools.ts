@@ -99,6 +99,7 @@ clientPort.on("disconnectFromDevtools", () => {
 });
 
 clientPort.on("clientNotFound", () => {
+  clearTimeout(connectTimeoutId);
   devtoolsMachine.send("clientNotFound");
 });
 
