@@ -87,7 +87,7 @@ export function createDevtoolsMachine({ actions }: { actions: Actions }) {
             timeout: "timedout",
             clientNotFound: "notFound",
           },
-          entry: ["unsubscribeFromAll", "connectToClient"],
+          entry: ["unsubscribeFromAll"],
         },
         timedout: {},
         notFound: {

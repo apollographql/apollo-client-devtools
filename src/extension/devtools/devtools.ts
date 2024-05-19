@@ -84,6 +84,14 @@ clientPort.on("connectToClientTimeout", () => {
 
 clientPort.on("disconnectFromDevtools", () => {
   devtoolsMachine.send("disconnect");
+
+  // Give it 10 seconds to register a new client before we set it to
+  // clientNotFound
+  setTimeout(() => {
+    if (devtoolsMachine.state.value === "disconnected") {
+      devtoolsMachine.send("clientNotFound");
+    }
+  }, 10_000);
 });
 
 clientPort.on("clientNotFound", () => {
