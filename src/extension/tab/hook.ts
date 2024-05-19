@@ -310,7 +310,11 @@ Object.defineProperty(window, "__APOLLO_CLIENT__", {
   },
   set(client: ApolloClient<SafeAny> | undefined) {
     if (client) {
-      registerClient(client);
+      // We call this in a setTimeout because the client is not fully
+      // instantiated before the property on window is assigned since it
+      // connects from the constructor of ApolloClient. This allows
+      // initialization to finish before we register it.
+      setTimeout(() => registerClient(client));
     }
 
     globalClient = client;
