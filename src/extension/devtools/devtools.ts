@@ -85,10 +85,6 @@ clientPort.on("registerClient", async () => {
   devtoolsMachine.send({ type: "connect", clientContext });
 });
 
-clientPort.on("connectToClientTimeout", () => {
-  devtoolsMachine.send("timeout");
-});
-
 clientPort.on("disconnectFromDevtools", () => {
   clearTimeout(disconnectTimeoutId);
   devtoolsMachine.send("disconnect");

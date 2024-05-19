@@ -85,7 +85,6 @@ export type ClientMessage =
   | { type: "registerClient" }
   | { type: "clientNotFound" }
   | { type: "connectToClient" }
-  | { type: "connectToClientTimeout" }
   | {
       type: "connectToDevtools";
       payload: ClientContext;
