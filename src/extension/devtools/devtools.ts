@@ -80,9 +80,8 @@ clientPort.on("connectToDevtools", (message) => {
   });
 });
 
-clientPort.on("registerClient", async () => {
-  const clientContext = await rpcClient.request("getClientOperations");
-  devtoolsMachine.send({ type: "connect", clientContext });
+clientPort.on("registerClient", (message) => {
+  devtoolsMachine.send({ type: "connect", clientContext: message.payload });
 });
 
 clientPort.on("disconnectFromDevtools", () => {

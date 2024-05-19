@@ -261,7 +261,7 @@ function registerClient(client: ApolloClient<any>) {
   if (!knownClients.has(client)) {
     knownClients.add(client);
     watchForClientTermination(client);
-    tab.send({ type: "registerClient" });
+    tab.send({ type: "registerClient", payload: getClientData() });
   }
 
   hook.ApolloClient = client;
