@@ -91,12 +91,6 @@ window.onbeforeunload = () => {
   tab.send({ type: "disconnectFromDevtools" });
 };
 
-window.addEventListener("load", () => {
-  if (hook.ApolloClient) {
-    sendHookDataToDevTools("connectToDevtools");
-  }
-});
-
 function getClientData() {
   // We need to JSON stringify the data here in case the cache contains
   // references to irregular data such as `URL` instances which are not
