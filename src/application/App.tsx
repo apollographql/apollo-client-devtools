@@ -130,6 +130,7 @@ export const App = () => {
     const dismiss = BannerAlert.show(ALERT_CONFIGS[state]);
 
     if (state === "connected") {
+      setClientNotFoundModalOpen(false);
       timeout = setTimeout(dismiss, 2500);
     }
 
