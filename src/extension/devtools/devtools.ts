@@ -40,6 +40,7 @@ const devtoolsMachine = interpret(
 
 let panelHidden = true;
 let connectTimeoutId: NodeJS.Timeout;
+let disconnectTimeoutId: NodeJS.Timeout;
 
 const port = browser.runtime.connect({
   name: inspectedTabId.toString(),
@@ -49,6 +50,12 @@ const clientPort = createPortActor<ClientMessage>(port);
 const rpcClient = createRpcClient<DevtoolsRPCMessage>(
   createPortMessageAdapter(port)
 );
+
+devtoolsMachine.subscribe(({ value }) => {
+  if (value === "connected") {
+    clearTimeout(disconnectTimeoutId);
+  }
+});
 
 // In case we can't connect to the tab, we should at least show something to the
 // user when we've attempted to connect a max number of times.
@@ -83,19 +90,15 @@ clientPort.on("connectToClientTimeout", () => {
 });
 
 clientPort.on("disconnectFromDevtools", () => {
+  clearTimeout(disconnectTimeoutId);
   devtoolsMachine.send("disconnect");
 
-  // Give it 10 seconds to register a new client before we set it to
-  // clientNotFound
-  setTimeout(() => {
-    if (devtoolsMachine.state.value === "disconnected") {
-      devtoolsMachine.send("clientNotFound");
-    }
+  disconnectTimeoutId = setTimeout(() => {
+    devtoolsMachine.send("clientNotFound");
   }, 10_000);
 });
 
 clientPort.on("clientNotFound", () => {
-  clearTimeout(connectTimeoutId);
   devtoolsMachine.send("clientNotFound");
 });
 
