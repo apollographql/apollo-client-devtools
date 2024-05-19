@@ -308,8 +308,11 @@ Object.defineProperty(window, "__APOLLO_CLIENT__", {
   get() {
     return globalClient;
   },
-  set(client: ApolloClient<SafeAny>) {
-    registerClient(client);
+  set(client: ApolloClient<SafeAny> | undefined) {
+    if (client) {
+      registerClient(client);
+    }
+
     globalClient = client;
   },
 });
