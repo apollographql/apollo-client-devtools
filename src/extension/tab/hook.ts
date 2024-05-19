@@ -119,10 +119,7 @@ handleRpc("getClientOperations", getClientData);
 
 tab.on("connectToClient", () => {
   if (hook.ApolloClient) {
-    tab.send({
-      type: "connectToDevtools",
-      payload: getClientData(),
-    });
+    tab.send({ type: "connectToDevtools", payload: getClientData() });
   } else {
     findClient();
   }
