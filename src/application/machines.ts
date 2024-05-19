@@ -93,6 +93,7 @@ export function createDevtoolsMachine({ actions }: { actions: Actions }) {
         notFound: {
           on: {
             retry: "retrying",
+            connect: "connected",
           },
           entry: "unsubscribeFromAll",
         },
