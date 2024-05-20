@@ -98,6 +98,12 @@ clientPort.on("clientNotFound", () => {
   devtoolsMachine.send("clientNotFound");
 });
 
+clientPort.on("updateData", (message) => {
+  if (panelWindow) {
+    panelWindow.send({ type: "update", payload: message.payload });
+  }
+});
+
 clientPort.send({ type: "connectToClient" });
 
 function startRequestInterval(ms = 500) {

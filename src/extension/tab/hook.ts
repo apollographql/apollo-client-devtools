@@ -272,16 +272,11 @@ function registerClient(client: ApolloClient<any>) {
   }
 
   hook.ApolloClient = client;
-  // TODO: Repurpose this callback. The message it sent was not listened by
-  // anything, so the broadcast was useless. Currently the devtools rely on
-  // polling the client every second for updates, rather than relying on
-  // this callback to update the devtools state.
-  // client.__actionHookForDevTools(() => {
-  //   if (client !== hook.ApolloClient) {
-  //     // if the client has changed, don't send the action hook
-  //     return;
-  //   }
-  // });
+  client.__actionHookForDevTools(() => {
+    if (client === hook.ApolloClient) {
+      tab.send({ type: "updateData", payload: getClientData() });
+    }
+  });
 
   clearInterval(interval);
   loadErrorCodes(rpcClient, client.version);
