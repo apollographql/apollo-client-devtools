@@ -133,21 +133,6 @@ clientPort.on("updateData", (message) => {
 
 clientPort.send({ type: "connectToClient" });
 
-async function connectToClient() {
-  try {
-    const clientContext = await rpcClient.request("getClientOperations");
-
-    if (clientContext) {
-      clearTimeout(connectTimeoutId);
-      devtoolsMachine.send({ type: "connect", clientContext });
-    }
-  } catch (e) {
-    // do nothing
-  }
-}
-
-connectToClient();
-
 let connectedToPanel = false;
 let panelWindow: Actor<PanelMessage>;
 
