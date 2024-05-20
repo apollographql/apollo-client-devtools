@@ -21,11 +21,6 @@ const devtoolsMachine = interpret(
         clientPort.send({ type: "connectToClient" });
         startConnectTimeout();
       },
-      unsubscribeFromAll: (_, event) => {
-        if (event.type === "clientNotFound") {
-          clearTimeout(connectTimeoutId);
-        }
-      },
     },
   })
 ).start();
@@ -45,6 +40,9 @@ const rpcClient = createRpcClient<DevtoolsRPCMessage>(
 devtoolsMachine.subscribe(({ value }) => {
   if (value === "connected") {
     clearTimeout(disconnectTimeoutId);
+  }
+
+  if (value === "connected" || value === "notFound") {
     clearTimeout(connectTimeoutId);
   }
 });
