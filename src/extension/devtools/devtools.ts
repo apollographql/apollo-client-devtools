@@ -2,8 +2,14 @@ import browser from "webextension-polyfill";
 import { createDevtoolsMachine } from "../../application/machines";
 import type { Actor } from "../actor";
 import { createPortActor } from "../actor";
-import type { ClientMessage, PanelMessage } from "../messages";
+import type {
+  ClientMessage,
+  DevtoolsRPCMessage,
+  PanelMessage,
+} from "../messages";
 import { getPanelActor } from "./panelActor";
+import { createPortMessageAdapter } from "../messageAdapters";
+import { createRpcClient } from "../rpc";
 import { interpret } from "@xstate/fsm";
 
 const inspectedTabId = browser.devtools.inspectedWindow.tabId;
@@ -35,12 +41,42 @@ const port = browser.runtime.connect({
 });
 
 const clientPort = createPortActor<ClientMessage>(port);
+const rpcClient = createRpcClient<DevtoolsRPCMessage>(
+  createPortMessageAdapter(port)
+);
 
 devtoolsMachine.subscribe(({ value }) => {
   if (value === "connected") {
     clearTimeout(disconnectTimeoutId);
   }
 });
+
+function pollUntilNextUpdate() {
+  let id: NodeJS.Timeout;
+
+  async function poll() {
+    if (panelWindow) {
+      const clientContext = await rpcClient.request("getClientOperations");
+      panelWindow.send({ type: "update", payload: clientContext });
+    }
+
+    id = setTimeout(poll, 500);
+  }
+
+  const unsubscribe = clientPort.on("updateData", () => {
+    clearTimeout(id);
+    unsubscribe();
+  });
+
+  const subscription = devtoolsMachine.subscribe(({ value }) => {
+    if (value !== "connected") {
+      clearTimeout(id);
+      subscription.unsubscribe();
+    }
+  });
+
+  poll();
+}
 
 // In case we can't connect to the tab, we should at least show something to the
 // user when we've attempted to connect a max number of times.
@@ -67,6 +103,12 @@ clientPort.on("connectToDevtools", (message) => {
 
 clientPort.on("registerClient", (message) => {
   devtoolsMachine.send({ type: "connect", clientContext: message.payload });
+
+  // Unfortunately the action hook doesn't report updates if queries are kicked
+  // off immediately after the client is created. While we should fix this bug
+  // in Apollo Client itself, this ensures we show the latest client data until
+  // the action hook next pushes data.
+  pollUntilNextUpdate();
 });
 
 clientPort.on("disconnectFromDevtools", () => {
@@ -90,6 +132,21 @@ clientPort.on("updateData", (message) => {
 });
 
 clientPort.send({ type: "connectToClient" });
+
+async function connectToClient() {
+  try {
+    const clientContext = await rpcClient.request("getClientOperations");
+
+    if (clientContext) {
+      clearTimeout(connectTimeoutId);
+      devtoolsMachine.send({ type: "connect", clientContext });
+    }
+  } catch (e) {
+    // do nothing
+  }
+}
+
+connectToClient();
 
 let connectedToPanel = false;
 let panelWindow: Actor<PanelMessage>;
