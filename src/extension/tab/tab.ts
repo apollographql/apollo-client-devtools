@@ -24,7 +24,7 @@ devtools.forward("explorerSubscriptionTermination", tab);
 devtools.forward("explorerRequest", tab);
 
 tab.forward("registerClient", devtools);
-tab.forward("updateData", devtools);
+tab.forward("update", devtools);
 tab.forward("clientNotFound", devtools);
 tab.forward("connectToDevtools", devtools);
 tab.forward("disconnectFromDevtools", devtools);

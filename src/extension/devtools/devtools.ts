@@ -59,7 +59,7 @@ function pollUntilNextUpdate() {
     id = setTimeout(poll, 500);
   }
 
-  const unsubscribe = clientPort.on("updateData", () => {
+  const unsubscribe = clientPort.on("update", () => {
     clearTimeout(id);
     unsubscribe();
   });
@@ -121,7 +121,7 @@ clientPort.on("clientNotFound", () => {
   devtoolsMachine.send("clientNotFound");
 });
 
-clientPort.on("updateData", (message) => {
+clientPort.on("update", (message) => {
   if (panelWindow) {
     panelWindow.send({ type: "update", payload: message.payload });
   }

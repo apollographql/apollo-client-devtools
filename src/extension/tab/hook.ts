@@ -274,7 +274,7 @@ function registerClient(client: ApolloClient<any>) {
   hook.ApolloClient = client;
   client.__actionHookForDevTools(() => {
     if (client === hook.ApolloClient) {
-      tab.send({ type: "updateData", payload: getClientData() });
+      tab.send({ type: "update", payload: getClientData() });
     }
   });
 
