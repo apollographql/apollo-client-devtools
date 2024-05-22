@@ -19,7 +19,7 @@ import {
   getMutations,
   getMainDefinition,
 } from "./helpers";
-import type { QueryResult } from "../../types";
+import type { QueryResult, SafeAny } from "../../types";
 import { getPrivateAccess } from "../../privateAccess";
 import type { JSONObject } from "../../application/types/json";
 import { createWindowActor } from "../actor";
@@ -90,12 +90,6 @@ Object.defineProperty(window, "__APOLLO_DEVTOOLS_GLOBAL_HOOK__", {
 window.onbeforeunload = () => {
   tab.send({ type: "disconnectFromDevtools" });
 };
-
-window.addEventListener("load", () => {
-  if (hook.ApolloClient) {
-    sendHookDataToDevTools("connectToDevtools");
-  }
-});
 
 function getClientData() {
   // We need to JSON stringify the data here in case the cache contains
@@ -301,4 +295,26 @@ if (Array.isArray(preExisting)) {
   (preExisting as Array<ApolloClient<any>>).forEach(registerClient);
 }
 
-findClient();
+// Handles registering legacy clients (< v3.7) which do not use the new
+// registration mechanism above.
+let globalClient = window.__APOLLO_CLIENT__;
+Object.defineProperty(window, "__APOLLO_CLIENT__", {
+  get() {
+    return globalClient;
+  },
+  set(client: ApolloClient<SafeAny> | undefined) {
+    if (client) {
+      // We call this in a setTimeout because the client is not fully
+      // instantiated before the property on window is assigned since it
+      // connects from the constructor of ApolloClient. This allows
+      // initialization to finish before we register it.
+      setTimeout(() => registerClient(client));
+    }
+
+    globalClient = client;
+  },
+});
+
+if (globalClient) {
+  registerClient(globalClient);
+}
