@@ -268,6 +268,7 @@ function registerClient(client: ApolloClient<any>) {
   if (!knownClients.has(client)) {
     knownClients.add(client);
     watchForClientTermination(client);
+    tab.send({ type: "registerClient", payload: getClientData() });
   }
 
   hook.ApolloClient = client;
@@ -283,9 +284,6 @@ function registerClient(client: ApolloClient<any>) {
   // });
 
   clearInterval(interval);
-  // incase initial update was missed because the client wasn't ready, send the create devtools event.
-  // devtools checks to see if it's already created, so this won't create duplicate tabs
-  sendHookDataToDevTools("connectToDevtools");
   loadErrorCodes(rpcClient, client.version);
 }
 
