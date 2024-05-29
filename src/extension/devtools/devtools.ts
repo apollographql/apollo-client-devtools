@@ -74,7 +74,6 @@ clientPort.on("registerClient", (message) => {
 });
 
 clientPort.on("disconnectFromDevtools", () => {
-  clearTimeout(connectTimeoutId);
   devtoolsMachine.send("disconnect");
   startConnectTimeout();
 });
