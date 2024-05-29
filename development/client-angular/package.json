@@ -5,7 +5,7 @@
   "dependencies": {
     "@angular/common": "17.3.10",
     "@angular/compiler": "17.3.10",
-    "@angular/core": "17.3.10",
+    "@angular/core": "18.0.0",
     "@angular/platform-browser": "17.3.10",
     "@angular/platform-browser-dynamic": "17.3.10",
     "@apollo/client": "3.10.4",
