@@ -1,5 +1,17 @@
 # Changelog
 
+## 4.14.0
+
+### Minor Changes
+
+- [#1379](https://github.com/apollographql/apollo-client-devtools/pull/1379) [`eacfbef`](https://github.com/apollographql/apollo-client-devtools/commit/eacfbefe16021c0fa58e6df456405aba4c4f3fec) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Push data from the client to devtools instead of polling for changes.
+
+### Patch Changes
+
+- [#1390](https://github.com/apollographql/apollo-client-devtools/pull/1390) [`3b0f0ea`](https://github.com/apollographql/apollo-client-devtools/commit/3b0f0ea31fb1b9ed420b1730a233d9326fbcb7f3) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Automatically reconnect the ports when they disconnect.
+
+- [#1379](https://github.com/apollographql/apollo-client-devtools/pull/1379) [`eacfbef`](https://github.com/apollographql/apollo-client-devtools/commit/eacfbefe16021c0fa58e6df456405aba4c4f3fec) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Clear the data on screen when the client is no longer connected to the devtools.
+
 ## 4.13.1
 
 ### Patch Changes
