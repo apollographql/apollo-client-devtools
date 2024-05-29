@@ -91,11 +91,6 @@ clientPort.on("disconnectFromDevtools", () => {
   }, 10_000);
 });
 
-clientPort.on("clientNotFound", () => {
-  clearTimeout(connectTimeoutId);
-  devtoolsMachine.send("clientNotFound");
-});
-
 clientPort.send({ type: "connectToClient" });
 
 function startRequestInterval(ms = 500) {
