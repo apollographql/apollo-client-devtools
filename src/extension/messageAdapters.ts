@@ -10,21 +10,58 @@ export interface MessageAdapter<
   postMessage: (message: PostMessageFormat) => void;
 }
 
+interface PortMessageAdapter<
+  PostMessageFormat extends ApolloClientDevtoolsMessage<
+    Record<string, unknown>
+  >,
+> extends MessageAdapter<PostMessageFormat> {
+  replacePort: (port: browser.Runtime.Port) => void;
+}
+
 export function createPortMessageAdapter<
   PostMessageFormat extends Record<string, unknown> = Record<string, unknown>,
 >(
   port: browser.Runtime.Port
-): MessageAdapter<ApolloClientDevtoolsMessage<PostMessageFormat>> {
+): PortMessageAdapter<ApolloClientDevtoolsMessage<PostMessageFormat>> {
+  let currentPort = port;
+  const listeners = new Set<(message: unknown) => void>();
+
+  function handleDisconnect() {
+    listeners.forEach((listener) => {
+      currentPort.onMessage.removeListener(listener);
+    });
+  }
+
+  function initializePort() {
+    listeners.forEach((listener) =>
+      currentPort.onMessage.addListener(listener)
+    );
+    currentPort.onDisconnect.addListener(handleDisconnect);
+  }
+
+  initializePort();
+
   return {
     addListener(listener) {
-      port.onMessage.addListener(listener);
+      listeners.add(listener);
+      currentPort.onMessage.addListener(listener);
 
       return () => {
-        port.onMessage.removeListener(listener);
+        listeners.delete(listener);
+        currentPort.onMessage.removeListener(listener);
       };
     },
     postMessage(message) {
-      return port.postMessage(message);
+      return currentPort.postMessage(message);
+    },
+    replacePort(port) {
+      listeners.forEach((listener) =>
+        currentPort.onMessage.removeListener(listener)
+      );
+      currentPort.onDisconnect.removeListener(handleDisconnect);
+      currentPort = port;
+
+      initializePort();
     },
   };
 }
