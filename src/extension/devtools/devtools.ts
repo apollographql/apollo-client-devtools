@@ -17,10 +17,7 @@ const inspectedTabId = browser.devtools.inspectedWindow.tabId;
 const devtoolsMachine = interpret(
   createDevtoolsMachine({
     actions: {
-      connectToClient: () => {
-        clientPort.send({ type: "connectToClient" });
-        startConnectTimeout();
-      },
+      connectToClient,
       startRequestInterval: () => {
         clearTimeout(connectTimeoutId);
 
@@ -54,6 +51,11 @@ devtoolsMachine.subscribe(({ value }) => {
   }
 });
 
+function connectToClient() {
+  clientPort.send({ type: "connectToClient" });
+  startConnectTimeout();
+}
+
 function startConnectTimeout() {
   clearTimeout(connectTimeoutId);
 
@@ -78,7 +80,7 @@ clientPort.on("disconnectFromDevtools", () => {
   startConnectTimeout();
 });
 
-clientPort.send({ type: "connectToClient" });
+connectToClient();
 
 function startRequestInterval(ms = 500) {
   let id: NodeJS.Timeout;
@@ -146,8 +148,7 @@ async function createDevtoolsPanel() {
     }
 
     if (devtoolsMachine.state.value === "initialized") {
-      clientPort.send({ type: "connectToClient" });
-      startConnectTimeout();
+      connectToClient();
     }
 
     if (devtoolsMachine.state.value === "connected" && panelHidden) {
