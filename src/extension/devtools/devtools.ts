@@ -22,7 +22,7 @@ const devtoolsMachine = interpret(
         startConnectTimeout();
       },
       startRequestInterval: () => {
-        clearTimeout(disconnectTimeoutId);
+        clearTimeout(connectTimeoutId);
 
         if (!panelHidden) {
           unsubscribers.add(startRequestInterval());
@@ -30,7 +30,7 @@ const devtoolsMachine = interpret(
       },
       unsubscribeFromAll: (_, event) => {
         if (event.type === "clientNotFound") {
-          clearTimeout(disconnectTimeoutId);
+          clearTimeout(connectTimeoutId);
         }
         unsubscribeFromAll();
       },
@@ -39,7 +39,7 @@ const devtoolsMachine = interpret(
 ).start();
 
 let panelHidden = true;
-let disconnectTimeoutId: NodeJS.Timeout;
+let connectTimeoutId: NodeJS.Timeout;
 
 const portAdapter = createPortMessageAdapter(() =>
   browser.runtime.connect({ name: inspectedTabId.toString() })
@@ -50,14 +50,14 @@ const rpcClient = createRpcClient<DevtoolsRPCMessage>(portAdapter);
 
 devtoolsMachine.subscribe(({ value }) => {
   if (value === "connected") {
-    clearTimeout(disconnectTimeoutId);
+    clearTimeout(connectTimeoutId);
   }
 });
 
 function startConnectTimeout() {
-  clearTimeout(disconnectTimeoutId);
+  clearTimeout(connectTimeoutId);
 
-  disconnectTimeoutId = setTimeout(() => {
+  connectTimeoutId = setTimeout(() => {
     devtoolsMachine.send("clientNotFound");
   }, 10_000);
 }
@@ -74,7 +74,7 @@ clientPort.on("registerClient", (message) => {
 });
 
 clientPort.on("disconnectFromDevtools", () => {
-  clearTimeout(disconnectTimeoutId);
+  clearTimeout(connectTimeoutId);
   devtoolsMachine.send("disconnect");
   startConnectTimeout();
 });
