@@ -15,25 +15,23 @@ export function createPortMessageAdapter<
 >(
   createPort: () => browser.Runtime.Port
 ): MessageAdapter<ApolloClientDevtoolsMessage<PostMessageFormat>> {
-  let currentPort = createPort();
+  let port = createPort();
   const listeners = new Set<(message: unknown) => void>();
 
   function handleDisconnect() {
     listeners.forEach((listener) => {
-      currentPort.onMessage.removeListener(listener);
+      port.onMessage.removeListener(listener);
     });
 
-    currentPort.onDisconnect.removeListener(handleDisconnect);
-    currentPort = createPort();
+    port.onDisconnect.removeListener(handleDisconnect);
+    port = createPort();
 
     initializePort();
   }
 
   function initializePort() {
-    listeners.forEach((listener) =>
-      currentPort.onMessage.addListener(listener)
-    );
-    currentPort.onDisconnect.addListener(handleDisconnect);
+    listeners.forEach((listener) => port.onMessage.addListener(listener));
+    port.onDisconnect.addListener(handleDisconnect);
   }
 
   initializePort();
@@ -41,15 +39,15 @@ export function createPortMessageAdapter<
   return {
     addListener(listener) {
       listeners.add(listener);
-      currentPort.onMessage.addListener(listener);
+      port.onMessage.addListener(listener);
 
       return () => {
         listeners.delete(listener);
-        currentPort.onMessage.removeListener(listener);
+        port.onMessage.removeListener(listener);
       };
     },
     postMessage(message) {
-      return currentPort.postMessage(message);
+      return port.postMessage(message);
     },
   };
 }
