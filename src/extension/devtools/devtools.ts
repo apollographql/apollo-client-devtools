@@ -80,7 +80,7 @@ clientPort.on("registerClient", (message) => {
   devtoolsMachine.send({ type: "connect", clientContext: message.payload });
 });
 
-clientPort.on("disconnectFromDevtools", disconnectFromDevtools);
+clientPort.on("clientTerminated", disconnectFromDevtools);
 
 connectToClient();
 
