@@ -56,6 +56,11 @@ function connectToClient() {
   startConnectTimeout();
 }
 
+function disconnectFromDevtools() {
+  devtoolsMachine.send("disconnect");
+  startConnectTimeout();
+}
+
 function startConnectTimeout() {
   clearTimeout(connectTimeoutId);
 
@@ -75,10 +80,7 @@ clientPort.on("registerClient", (message) => {
   devtoolsMachine.send({ type: "connect", clientContext: message.payload });
 });
 
-clientPort.on("disconnectFromDevtools", () => {
-  devtoolsMachine.send("disconnect");
-  startConnectTimeout();
-});
+clientPort.on("disconnectFromDevtools", disconnectFromDevtools);
 
 connectToClient();
 
@@ -161,3 +163,5 @@ async function createDevtoolsPanel() {
 }
 
 createDevtoolsPanel();
+
+browser.devtools.network.onNavigated.addListener(disconnectFromDevtools);
