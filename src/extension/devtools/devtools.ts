@@ -147,10 +147,6 @@ async function createDevtoolsPanel() {
       connectedToPanel = true;
     }
 
-    if (devtoolsMachine.state.value === "initialized") {
-      connectToClient();
-    }
-
     if (devtoolsMachine.state.value === "connected" && panelHidden) {
       unsubscribers.add(startRequestInterval());
     }
