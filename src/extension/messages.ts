@@ -83,6 +83,7 @@ type ExplorerSubscriptionTerminationMessage = {
 
 export type ClientMessage =
   | { type: "registerClient"; payload: ClientContext }
+  | { type: "update"; payload: ClientContext }
   | { type: "clientNotFound" }
   | { type: "connectToClient" }
   | {

@@ -21,24 +21,10 @@ const devtoolsMachine = interpret(
         clientPort.send({ type: "connectToClient" });
         startConnectTimeout();
       },
-      startRequestInterval: () => {
-        clearTimeout(connectTimeoutId);
-
-        if (!panelHidden) {
-          unsubscribers.add(startRequestInterval());
-        }
-      },
-      unsubscribeFromAll: (_, event) => {
-        if (event.type === "clientNotFound") {
-          clearTimeout(connectTimeoutId);
-        }
-        unsubscribeFromAll();
-      },
     },
   })
 ).start();
 
-let panelHidden = true;
 let connectTimeoutId: NodeJS.Timeout;
 let disconnectTimeoutId: NodeJS.Timeout;
 
@@ -55,7 +41,38 @@ devtoolsMachine.subscribe(({ value }) => {
   if (value === "connected") {
     clearTimeout(disconnectTimeoutId);
   }
+
+  if (value === "connected" || value === "notFound") {
+    clearTimeout(connectTimeoutId);
+  }
 });
+
+function pollUntilNextUpdate() {
+  let id: NodeJS.Timeout;
+
+  async function poll() {
+    if (panelWindow) {
+      const clientContext = await rpcClient.request("getClientOperations");
+      panelWindow.send({ type: "update", payload: clientContext });
+    }
+
+    id = setTimeout(poll, 500);
+  }
+
+  const unsubscribe = clientPort.on("update", () => {
+    clearTimeout(id);
+    unsubscribe();
+  });
+
+  const subscription = devtoolsMachine.subscribe(({ value }) => {
+    if (value !== "connected") {
+      clearTimeout(id);
+      subscription.unsubscribe();
+    }
+  });
+
+  poll();
+}
 
 // In case we can't connect to the tab, we should at least show something to the
 // user when we've attempted to connect a max number of times.
@@ -82,6 +99,12 @@ clientPort.on("connectToDevtools", (message) => {
 
 clientPort.on("registerClient", (message) => {
   devtoolsMachine.send({ type: "connect", clientContext: message.payload });
+
+  // Unfortunately the action hook doesn't report updates if queries are kicked
+  // off immediately after the client is created. While we should fix this bug
+  // in Apollo Client itself, this ensures we show the latest client data until
+  // the action hook next pushes data.
+  pollUntilNextUpdate();
 });
 
 clientPort.on("disconnectFromDevtools", () => {
@@ -98,37 +121,13 @@ clientPort.on("clientNotFound", () => {
   devtoolsMachine.send("clientNotFound");
 });
 
+clientPort.on("update", (message) => {
+  if (panelWindow) {
+    panelWindow.send({ type: "update", payload: message.payload });
+  }
+});
+
 clientPort.send({ type: "connectToClient" });
-
-function startRequestInterval(ms = 500) {
-  let id: NodeJS.Timeout;
-
-  async function getClientData() {
-    try {
-      if (panelWindow) {
-        panelWindow.send({
-          type: "update",
-          payload: await rpcClient.request("getClientOperations"),
-        });
-      }
-    } finally {
-      id = setTimeout(getClientData, ms);
-    }
-  }
-
-  if (devtoolsMachine.state.value === "connected") {
-    getClientData();
-  }
-
-  return () => clearTimeout(id);
-}
-
-const unsubscribers = new Set<() => void>();
-
-function unsubscribeFromAll() {
-  unsubscribers.forEach((unsubscribe) => unsubscribe());
-  unsubscribers.clear();
-}
 
 let connectedToPanel = false;
 let panelWindow: Actor<PanelMessage>;
@@ -170,24 +169,15 @@ async function createDevtoolsPanel() {
       startConnectTimeout();
     }
 
-    if (devtoolsMachine.state.value === "connected" && panelHidden) {
-      unsubscribers.add(startRequestInterval());
-    }
-
     removeExplorerForward = clientPort.forward("explorerResponse", panelWindow);
     removeExplorerListener = panelWindow.forward("explorerRequest", clientPort);
     removeSubscriptionTerminationListener = panelWindow.forward(
       "explorerSubscriptionTermination",
       clientPort
     );
-
-    panelHidden = false;
   });
 
   panel.onHidden.addListener(() => {
-    panelHidden = true;
-    unsubscribeFromAll();
-
     removeExplorerForward();
     removeSubscriptionTerminationListener();
     removeExplorerListener();
