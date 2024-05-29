@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.13.1
+
+### Patch Changes
+
+- [#1378](https://github.com/apollographql/apollo-client-devtools/pull/1378) [`02e6fba`](https://github.com/apollographql/apollo-client-devtools/commit/02e6fbac34f37e6a55978f3fb60f320f16d433ce) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Fix intermittent issue where data would not show up in the devtools after refreshing the page while the Apollo devtools panel is open.
+
+- [#1375](https://github.com/apollographql/apollo-client-devtools/pull/1375) [`7267351`](https://github.com/apollographql/apollo-client-devtools/commit/7267351b1537684b57bea95d9699890e7399e83d) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Use `Object.defineProperty` to register legacy clients to avoid the need to search for the client in a loop in initialization.
+
 ## 4.13.0
 
 ### Minor Changes
