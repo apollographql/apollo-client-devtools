@@ -22,7 +22,7 @@ const devtoolsMachine = interpret(
         startConnectTimeout();
       },
       startRequestInterval: () => {
-        clearTimeout(connectTimeoutId);
+        clearTimeout(disconnectTimeoutId);
 
         if (!panelHidden) {
           unsubscribers.add(startRequestInterval());
@@ -30,7 +30,7 @@ const devtoolsMachine = interpret(
       },
       unsubscribeFromAll: (_, event) => {
         if (event.type === "clientNotFound") {
-          clearTimeout(connectTimeoutId);
+          clearTimeout(disconnectTimeoutId);
         }
         unsubscribeFromAll();
       },
@@ -39,7 +39,6 @@ const devtoolsMachine = interpret(
 ).start();
 
 let panelHidden = true;
-let connectTimeoutId: NodeJS.Timeout;
 let disconnectTimeoutId: NodeJS.Timeout;
 
 const portAdapter = createPortMessageAdapter(() =>
@@ -55,20 +54,12 @@ devtoolsMachine.subscribe(({ value }) => {
   }
 });
 
-// In case we can't connect to the tab, we should at least show something to the
-// user when we've attempted to connect a max number of times.
-function startConnectTimeout(attempts = 0) {
-  connectTimeoutId = setTimeout(() => {
-    if (attempts < 3) {
-      clientPort.send({ type: "connectToClient" });
-      startConnectTimeout(attempts + 1);
-    } else {
-      devtoolsMachine.send("timeout");
-    }
-    // Pick a threshold above the time it takes to determine if the client is
-    // found on the page. This ensures we don't reset that counter and provide a
-    // proper "not found" message.
-  }, 11_000);
+function startConnectTimeout() {
+  clearTimeout(disconnectTimeoutId);
+
+  disconnectTimeoutId = setTimeout(() => {
+    devtoolsMachine.send("clientNotFound");
+  }, 10_000);
 }
 
 clientPort.on("connectToDevtools", (message) => {
@@ -85,10 +76,7 @@ clientPort.on("registerClient", (message) => {
 clientPort.on("disconnectFromDevtools", () => {
   clearTimeout(disconnectTimeoutId);
   devtoolsMachine.send("disconnect");
-
-  disconnectTimeoutId = setTimeout(() => {
-    devtoolsMachine.send("clientNotFound");
-  }, 10_000);
+  startConnectTimeout();
 });
 
 clientPort.send({ type: "connectToClient" });
