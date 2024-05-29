@@ -1,7 +1,7 @@
 import browser from "webextension-polyfill";
 import { createDevtoolsMachine } from "../../application/machines";
 import type { Actor } from "../actor";
-import { createPortActor } from "../actor";
+import { createActor } from "../actor";
 import type {
   ClientMessage,
   DevtoolsRPCMessage,
@@ -13,6 +13,7 @@ import { createRpcClient } from "../rpc";
 import { interpret } from "@xstate/fsm";
 
 const inspectedTabId = browser.devtools.inspectedWindow.tabId;
+const portName = inspectedTabId.toString();
 
 const devtoolsMachine = interpret(
   createDevtoolsMachine({
@@ -25,17 +26,22 @@ const devtoolsMachine = interpret(
   })
 ).start();
 
+function handleDisconnect() {
+  const port = browser.runtime.connect({ name: portName });
+  portAdapter.replacePort(port);
+  port.onDisconnect.addListener(handleDisconnect);
+}
+
 let connectTimeoutId: NodeJS.Timeout;
 let disconnectTimeoutId: NodeJS.Timeout;
 
-const port = browser.runtime.connect({
-  name: inspectedTabId.toString(),
-});
+const port = browser.runtime.connect({ name: portName });
+const portAdapter = createPortMessageAdapter(port);
 
-const clientPort = createPortActor<ClientMessage>(port);
-const rpcClient = createRpcClient<DevtoolsRPCMessage>(
-  createPortMessageAdapter(port)
-);
+port.onDisconnect.addListener(handleDisconnect);
+
+const clientPort = createActor<ClientMessage>(portAdapter);
+const rpcClient = createRpcClient<DevtoolsRPCMessage>(portAdapter);
 
 devtoolsMachine.subscribe(({ value }) => {
   if (value === "connected") {
