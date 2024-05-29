@@ -10,21 +10,12 @@ import { createRPCBridge } from "../rpc";
 
 declare const __IS_FIREFOX__: boolean;
 
-const PORT_NAME = "tab";
-
-function handleDisconnect() {
-  const port = browser.runtime.connect({ name: PORT_NAME });
-  portAdapter.replacePort(port);
-  port.onDisconnect.addListener(handleDisconnect);
-}
-
-const port = browser.runtime.connect({ name: PORT_NAME });
-const portAdapter = createPortMessageAdapter(port);
+const portAdapter = createPortMessageAdapter(() =>
+  browser.runtime.connect({ name: "tab" })
+);
 
 const tab = createWindowActor<ClientMessage>(window);
 const devtools = createActor<ClientMessage>(portAdapter);
-
-port.onDisconnect.addListener(handleDisconnect);
 
 createRPCBridge(portAdapter, createWindowMessageAdapter(window));
 
