@@ -16,6 +16,7 @@ describe("<Queries />", () => {
       queryString: "query { hello }",
       variables: null,
       cachedData: null,
+      options: { fetchPolicy: "cache-first" },
     },
     {
       id: 1,
@@ -24,6 +25,7 @@ describe("<Queries />", () => {
       queryString: "query GetColors { colors }",
       variables: null,
       cachedData: null,
+      options: { fetchPolicy: "cache-first" },
     },
   ];
 
@@ -140,6 +142,7 @@ describe("<Queries />", () => {
               name: "GetColor",
               variables: { hex: "#000" },
               cachedData: { color: { name: "black" } },
+              options: { fetchPolicy: "network-only" },
             },
           ],
           count: 1,
@@ -177,6 +180,7 @@ describe("<Queries />", () => {
       name: "GetColor",
       variables: { hex: "#000" },
       cachedData: { color: { name: "black" } },
+      options: { fetchPolicy: "network-only" },
     } satisfies GetQueries["watchedQueries"]["queries"][number];
 
     client.writeQuery({
