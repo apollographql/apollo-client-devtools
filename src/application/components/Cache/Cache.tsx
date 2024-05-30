@@ -91,40 +91,42 @@ export function Cache() {
         ) : null}
       </Sidebar>
       <Main className="!overflow-auto">
-        <ButtonGroup>
-          <Tooltip content="Go back" delayDuration={500}>
-            <Button
-              aria-label="Go back"
-              icon={<IconChevronLeft />}
-              size="xs"
-              variant="hidden"
-              disabled={!history.canGoBack()}
-              onClick={() => history.back()}
-            />
-          </Tooltip>
-          <Tooltip content="Go forward" delayDuration={500}>
-            <Button
-              aria-label="Go forward"
-              icon={<IconChevronRight />}
-              size="xs"
-              variant="hidden"
-              disabled={!history.canGoForward()}
-              onClick={() => history.forward()}
-            />
-          </Tooltip>
-        </ButtonGroup>
+        <div className="flex items-start justify-between">
+          <ButtonGroup>
+            <Tooltip content="Go back" delayDuration={500}>
+              <Button
+                aria-label="Go back"
+                icon={<IconChevronLeft />}
+                size="xs"
+                variant="hidden"
+                disabled={!history.canGoBack()}
+                onClick={() => history.back()}
+              />
+            </Tooltip>
+            <Tooltip content="Go forward" delayDuration={500}>
+              <Button
+                aria-label="Go forward"
+                icon={<IconChevronRight />}
+                size="xs"
+                variant="hidden"
+                disabled={!history.canGoForward()}
+                onClick={() => history.forward()}
+              />
+            </Tooltip>
+          </ButtonGroup>
+          {dataExists && (
+            <CopyButton size="sm" text={JSON.stringify(cache[cacheId])} />
+          )}
+        </div>
         {dataExists ? (
-          <div className="flex items-start justify-between my-2 gap-2">
-            <div>
-              <div className="text-xs font-bold uppercase">Cache ID</div>
-              <h1
-                className="font-code font-medium text-xl text-heading dark:text-heading-dark break-all"
-                data-testid="cache-id"
-              >
-                {cacheId}
-              </h1>
-            </div>
-            <CopyButton size="md" text={JSON.stringify(cache[cacheId])} />
+          <div className="my-2">
+            <div className="text-xs font-bold uppercase">Cache ID</div>
+            <h1
+              className="font-code font-medium text-xl text-heading dark:text-heading-dark break-all"
+              data-testid="cache-id"
+            >
+              {cacheId}
+            </h1>
           </div>
         ) : (
           <EmptyMessage className="m-auto mt-20" />
