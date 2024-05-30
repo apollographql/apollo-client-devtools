@@ -20,6 +20,7 @@ import { isEmpty } from "../../utilities/isEmpty";
 enum QueryTabs {
   Variables = "Variables",
   CachedData = "CachedData",
+  Options = "Options",
 }
 
 const GET_WATCHED_QUERIES: TypedDocumentNode<
@@ -34,6 +35,7 @@ const GET_WATCHED_QUERIES: TypedDocumentNode<
         queryString
         variables
         cachedData
+        options
       }
     }
   }
@@ -99,6 +101,7 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
             <Tabs.Trigger value={QueryTabs.CachedData}>
               Cached Data
             </Tabs.Trigger>
+            <Tabs.Trigger value={QueryTabs.Options}>Options</Tabs.Trigger>
             <CopyButton
               className="ml-auto relative right-[6px]"
               size="sm"
@@ -117,6 +120,13 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
               hideRoot={!isEmpty(selectedQuery?.cachedData)}
               className="[&>li]:!pt-0"
               data={selectedQuery?.cachedData ?? {}}
+            />
+          </QueryLayout.TabContent>
+          <QueryLayout.TabContent value={QueryTabs.Options}>
+            <JSONTreeViewer
+              hideRoot={!isEmpty(selectedQuery?.options)}
+              className="[&>li]:!pt-0"
+              data={selectedQuery?.options ?? {}}
             />
           </QueryLayout.TabContent>
         </QueryLayout.Tabs>

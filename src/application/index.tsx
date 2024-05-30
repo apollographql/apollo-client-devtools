@@ -131,6 +131,7 @@ export function getQueryData(
     queryString: print(query.document),
     variables: query.variables ?? null,
     cachedData: query.cachedData ?? null,
+    options: query.options ?? null,
   };
 }
 
