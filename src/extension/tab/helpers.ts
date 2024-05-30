@@ -68,9 +68,9 @@ function getQueryOptions(observableQuery: ObservableQuery) {
       "returnPartialData",
       "refetchWritePolicy",
       "notifyOnNetworkStatusChange",
+      "fetchPolicy",
+      "errorPolicy",
     ]),
-    fetchPolicy: options.fetchPolicy ?? "cache-first",
-    errorPolicy: options.errorPolicy ?? "none",
     nextFetchPolicy:
       typeof options.nextFetchPolicy === "function"
         ? "<function>"
