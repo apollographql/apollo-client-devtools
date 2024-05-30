@@ -89,6 +89,7 @@ export const GET_QUERIES: TypedDocumentNode<GetQueries, GetQueriesVariables> =
           queryString
           variables
           cachedData
+          options
         }
         count
       }
