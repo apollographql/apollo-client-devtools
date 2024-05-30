@@ -45,13 +45,11 @@ function filterCache(cache: Cache, searchTerm: string) {
   );
 }
 
+const history = new History("ROOT_QUERY");
+
 export function Cache() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [history] = useState(() => new History("ROOT_QUERY"));
-
-  const cacheId = useSyncExternalStore(history.listen, () =>
-    history.getCurrent()
-  );
+  const cacheId = useSyncExternalStore(history.listen, history.getCurrent);
 
   const { loading, data } = useQuery(GET_CACHE);
   const cache = useMemo(
