@@ -21,6 +21,7 @@ export type QueryOptions = Pick<
   | "returnPartialData"
   | "refetchWritePolicy"
   | "notifyOnNetworkStatusChange"
+  | "nextFetchPolicy"
 >;
 
 export type QueryInfo = {
@@ -57,17 +58,32 @@ export function getQueries(
 }
 
 function getQueryOptions(observableQuery: ObservableQuery) {
-  return pick(observableQuery.options, [
-    "context",
-    "fetchPolicy",
-    "errorPolicy",
-    "pollInterval",
-    "partialRefetch",
-    "canonizeResults",
-    "returnPartialData",
-    "refetchWritePolicy",
-    "notifyOnNetworkStatusChange",
-  ]);
+  const { options } = observableQuery;
+
+  const queryOptions = {
+    ...pick(options, [
+      "context",
+      "pollInterval",
+      "partialRefetch",
+      "canonizeResults",
+      "returnPartialData",
+      "refetchWritePolicy",
+      "notifyOnNetworkStatusChange",
+      "nextFetchPolicy",
+    ]),
+    fetchPolicy: options.fetchPolicy ?? "cache-first",
+    errorPolicy: options.errorPolicy ?? "none",
+  };
+
+  if (
+    queryOptions.nextFetchPolicy &&
+    typeof queryOptions.nextFetchPolicy === "function"
+  ) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    queryOptions.nextFetchPolicy = "<function>" as any;
+  }
+
+  return queryOptions;
 }
 
 // Version of getQueries compatible with Apollo Client versions < 3.4.0
