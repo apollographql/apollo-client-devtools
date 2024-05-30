@@ -2,8 +2,8 @@ import type { ReactNode } from "react";
 import { Fragment, useState, useMemo, useSyncExternalStore } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { gql, useQuery } from "@apollo/client";
-import IconChevronLeft from "@apollo/icons/small/IconChevronLeft.svg";
-import IconChevronRight from "@apollo/icons/small/IconChevronRight.svg";
+import IconArrowLeft from "@apollo/icons/small/IconArrowLeft.svg";
+import IconArrowRight from "@apollo/icons/small/IconArrowRight.svg";
 
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { SearchField } from "../SearchField";
@@ -96,7 +96,7 @@ export function Cache() {
             <Tooltip content="Go back" delayDuration={500}>
               <Button
                 aria-label="Go back"
-                icon={<IconChevronLeft />}
+                icon={<IconArrowLeft />}
                 size="xs"
                 variant="hidden"
                 disabled={!history.canGoBack()}
@@ -106,7 +106,7 @@ export function Cache() {
             <Tooltip content="Go forward" delayDuration={500}>
               <Button
                 aria-label="Go forward"
-                icon={<IconChevronRight />}
+                icon={<IconArrowRight />}
                 size="xs"
                 variant="hidden"
                 disabled={!history.canGoForward()}
