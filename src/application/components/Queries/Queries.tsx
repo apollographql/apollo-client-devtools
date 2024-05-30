@@ -15,6 +15,7 @@ import { JSONTreeViewer } from "../JSONTreeViewer";
 import { QueryLayout } from "../QueryLayout";
 import { CopyButton } from "../CopyButton";
 import { EmptyMessage } from "../EmptyMessage";
+import { isEmpty } from "../../utilities/isEmpty";
 
 enum QueryTabs {
   Variables = "Variables",
@@ -106,12 +107,14 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
           </Tabs.List>
           <QueryLayout.TabContent value={QueryTabs.Variables}>
             <JSONTreeViewer
+              hideRoot={!isEmpty(selectedQuery?.variables)}
               className="[&>li]:!pt-0"
               data={selectedQuery?.variables ?? {}}
             />
           </QueryLayout.TabContent>
           <QueryLayout.TabContent value={QueryTabs.CachedData}>
             <JSONTreeViewer
+              hideRoot={!isEmpty(selectedQuery?.cachedData)}
               className="[&>li]:!pt-0"
               data={selectedQuery?.cachedData ?? {}}
             />
