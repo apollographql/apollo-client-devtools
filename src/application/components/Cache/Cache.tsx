@@ -65,6 +65,7 @@ export function Cache() {
   );
 
   const dataExists = Object.keys(cache).length > 0;
+  const cacheItem = cache[cacheId];
 
   return (
     <SidebarLayout>
@@ -116,9 +117,11 @@ export function Cache() {
                   />
                 </Tooltip>
               </ButtonGroup>
-              {dataExists && (
-                <CopyButton size="sm" text={JSON.stringify(cache[cacheId])} />
-              )}
+              <CopyButton
+                size="sm"
+                text={JSON.stringify(cache[cacheId])}
+                className={clsx({ invisible: !cacheItem })}
+              />
             </div>
             <div className="my-2">
               <div className="text-xs font-bold uppercase">Cache ID</div>
