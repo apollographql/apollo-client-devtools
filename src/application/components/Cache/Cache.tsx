@@ -139,9 +139,9 @@ export function Cache() {
 
         {loading ? (
           <Loading />
-        ) : dataExists ? (
+        ) : cacheItem ? (
           <JSONTreeViewer
-            data={cache[cacheId]}
+            data={cacheItem}
             hideRoot={true}
             valueRenderer={(valueAsString, value, key) => {
               return (
@@ -160,6 +160,8 @@ export function Cache() {
               );
             }}
           />
+        ) : dataExists ? (
+          <>This doesnt exist :(</>
         ) : null}
       </Main>
     </SidebarLayout>
