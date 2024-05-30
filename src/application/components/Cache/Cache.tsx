@@ -7,7 +7,6 @@ import IconArrowRight from "@apollo/icons/small/IconArrowRight.svg";
 
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { SearchField } from "../SearchField";
-import { EntityList } from "./sidebar/EntityList";
 import { Loading } from "./common/Loading";
 import type { GetCache, GetCacheVariables } from "../../types/gql";
 import type { JSONObject } from "../../types/json";
@@ -20,6 +19,10 @@ import { Button } from "../Button";
 import { ButtonGroup } from "../ButtonGroup";
 import { Tooltip } from "../Tooltip";
 import { Alert } from "../Alert";
+import { List } from "../List";
+import { ListItem } from "../ListItem";
+import { getRootCacheIds } from "./common/utils";
+import HighlightMatch from "../HighlightMatch";
 
 const { Sidebar, Main } = SidebarLayout;
 
@@ -65,6 +68,7 @@ export function Cache() {
 
   const dataExists = Object.keys(cache).length > 0;
   const cacheItem = cache[cacheId];
+  const cacheIds = getRootCacheIds(filteredCache);
 
   return (
     <SidebarLayout>
@@ -80,12 +84,24 @@ export function Cache() {
               value={searchTerm}
             />
             <div className="overflow-auto h-full">
-              <EntityList
-                data={filteredCache}
-                selectedCacheId={cacheId}
-                setCacheId={(cacheId) => history.push(cacheId)}
-                searchTerm={searchTerm}
-              />
+              <List>
+                {cacheIds.map((id) => {
+                  return (
+                    <ListItem
+                      key={id}
+                      onClick={() => history.push(id)}
+                      selected={id === cacheId}
+                      className="font-code"
+                    >
+                      {searchTerm ? (
+                        <HighlightMatch searchTerm={searchTerm} value={id} />
+                      ) : (
+                        id
+                      )}
+                    </ListItem>
+                  );
+                })}
+              </List>
             </div>
           </Fragment>
         ) : null}
