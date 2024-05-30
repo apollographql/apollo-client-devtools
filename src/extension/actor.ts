@@ -103,6 +103,14 @@ export function createActor<
   };
 }
 
+export function createPortActor<
+  Messages extends MessageFormat = {
+    type: "Error: Pass <Messages> to `createPortActor<Messages>()`";
+  },
+>(port: browser.Runtime.Port) {
+  return createActor<Messages>(createPortMessageAdapter(port));
+}
+
 export function createWindowActor<
   Messages extends MessageFormat = {
     type: "Error: Pass <Messages> to `createWindowActor<Messages>()`";
