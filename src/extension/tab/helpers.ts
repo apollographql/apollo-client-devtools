@@ -21,8 +21,7 @@ export type QueryOptions = Pick<
   | "returnPartialData"
   | "refetchWritePolicy"
   | "notifyOnNetworkStatusChange"
-  | "nextFetchPolicy"
->;
+> & { nextFetchPolicy?: string };
 
 export type QueryInfo = {
   document: DocumentNode;
@@ -69,18 +68,17 @@ function getQueryOptions(observableQuery: ObservableQuery) {
       "returnPartialData",
       "refetchWritePolicy",
       "notifyOnNetworkStatusChange",
-      "nextFetchPolicy",
     ]),
     fetchPolicy: options.fetchPolicy ?? "cache-first",
     errorPolicy: options.errorPolicy ?? "none",
+    nextFetchPolicy:
+      typeof options.nextFetchPolicy === "function"
+        ? "<function>"
+        : options.nextFetchPolicy,
   };
 
-  if (
-    queryOptions.nextFetchPolicy &&
-    typeof queryOptions.nextFetchPolicy === "function"
-  ) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    queryOptions.nextFetchPolicy = "<function>" as any;
+  if (queryOptions.nextFetchPolicy == null) {
+    delete queryOptions.nextFetchPolicy;
   }
 
   return queryOptions;
