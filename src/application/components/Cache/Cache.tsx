@@ -2,6 +2,8 @@ import type { ReactNode } from "react";
 import { Fragment, useState, useMemo, useSyncExternalStore } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { gql, useQuery } from "@apollo/client";
+import IconChevronLeft from "@apollo/icons/small/IconChevronLeft.svg";
+import IconChevronRight from "@apollo/icons/small/IconChevronRight.svg";
 
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { SearchField } from "../SearchField";
@@ -14,6 +16,9 @@ import clsx from "clsx";
 import { CopyButton } from "../CopyButton";
 import { EmptyMessage } from "../EmptyMessage";
 import { History } from "../../utilities/history";
+import { Button } from "../Button";
+import { ButtonGroup } from "../ButtonGroup";
+import { Tooltip } from "../Tooltip";
 
 const { Sidebar, Main } = SidebarLayout;
 
@@ -86,8 +91,30 @@ export function Cache() {
         ) : null}
       </Sidebar>
       <Main className="!overflow-auto">
+        <ButtonGroup>
+          <Tooltip content="Go back" delayDuration={500}>
+            <Button
+              aria-label="Go back"
+              icon={<IconChevronLeft />}
+              size="xs"
+              variant="hidden"
+              disabled={!history.canGoBack()}
+              onClick={() => history.back()}
+            />
+          </Tooltip>
+          <Tooltip content="Go forward" delayDuration={500}>
+            <Button
+              aria-label="Go forward"
+              icon={<IconChevronRight />}
+              size="xs"
+              variant="hidden"
+              disabled={!history.canGoForward()}
+              onClick={() => history.forward()}
+            />
+          </Tooltip>
+        </ButtonGroup>
         {dataExists ? (
-          <div className="flex items-start justify-between mb-2 gap-2">
+          <div className="flex items-start justify-between my-2 gap-2">
             <div>
               <div className="text-xs font-bold uppercase">Cache ID</div>
               <h1
