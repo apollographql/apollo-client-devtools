@@ -114,7 +114,6 @@ export type GetMutations = {
 export type GetWatchedQueriesVariables = Exact<{ [key: string]: never }>;
 
 export type GetWatchedQueries = {
-  clientVersion: string | null;
   watchedQueries: {
     __typename: "WatchedQueries";
     queries: Array<{
