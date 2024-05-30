@@ -16,6 +16,7 @@ import { QueryLayout } from "../QueryLayout";
 import { CopyButton } from "../CopyButton";
 import { EmptyMessage } from "../EmptyMessage";
 import { isEmpty } from "../../utilities/isEmpty";
+import { gt } from "semver";
 
 enum QueryTabs {
   Variables = "Variables",
@@ -28,6 +29,7 @@ const GET_WATCHED_QUERIES: TypedDocumentNode<
   GetWatchedQueriesVariables
 > = gql`
   query GetWatchedQueries {
+    clientVersion @client
     watchedQueries @client {
       queries {
         id
@@ -57,6 +59,8 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
       ? selectedQuery?.variables ?? {}
       : selectedQuery?.cachedData ?? {}
   );
+
+  const clientVersion = data?.clientVersion;
 
   return (
     <SidebarLayout>
@@ -101,7 +105,9 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
             <Tabs.Trigger value={QueryTabs.CachedData}>
               Cached Data
             </Tabs.Trigger>
-            <Tabs.Trigger value={QueryTabs.Options}>Options</Tabs.Trigger>
+            {clientVersion && gt(clientVersion, "3.4.0") && (
+              <Tabs.Trigger value={QueryTabs.Options}>Options</Tabs.Trigger>
+            )}
             <CopyButton
               className="ml-auto relative right-[6px]"
               size="sm"
