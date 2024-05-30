@@ -19,6 +19,7 @@ import { History } from "../../utilities/history";
 import { Button } from "../Button";
 import { ButtonGroup } from "../ButtonGroup";
 import { Tooltip } from "../Tooltip";
+import { Alert } from "../Alert";
 
 const { Sidebar, Main } = SidebarLayout;
 
@@ -89,7 +90,7 @@ export function Cache() {
           </Fragment>
         ) : null}
       </Sidebar>
-      <Main className="!overflow-auto">
+      <Main className="!overflow-auto flex flex-col">
         {dataExists ? (
           <>
             <div className="flex items-start justify-between">
@@ -159,7 +160,10 @@ export function Cache() {
             }}
           />
         ) : dataExists ? (
-          <>This doesnt exist :(</>
+          <Alert variant="error" className="mt-4">
+            This cache entry was either removed from the cache or does not
+            exist.
+          </Alert>
         ) : null}
       </Main>
     </SidebarLayout>
