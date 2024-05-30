@@ -98,7 +98,7 @@ export function Cache() {
                 aria-label="Go back"
                 icon={<IconArrowLeft />}
                 size="xs"
-                variant="hidden"
+                variant="secondary"
                 disabled={!history.canGoBack()}
                 onClick={() => history.back()}
               />
@@ -108,7 +108,7 @@ export function Cache() {
                 aria-label="Go forward"
                 icon={<IconArrowRight />}
                 size="xs"
-                variant="hidden"
+                variant="secondary"
                 disabled={!history.canGoForward()}
                 onClick={() => history.forward()}
               />
