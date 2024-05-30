@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Fragment, useState, useMemo } from "react";
+import { Fragment, useState, useMemo, useSyncExternalStore } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { gql, useQuery } from "@apollo/client";
 
@@ -13,6 +13,7 @@ import { JSONTreeViewer } from "../JSONTreeViewer";
 import clsx from "clsx";
 import { CopyButton } from "../CopyButton";
 import { EmptyMessage } from "../EmptyMessage";
+import { History } from "../../utilities/history";
 
 const { Sidebar, Main } = SidebarLayout;
 
@@ -41,7 +42,11 @@ function filterCache(cache: Cache, searchTerm: string) {
 
 export function Cache() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [cacheId, setCacheId] = useState("ROOT_QUERY");
+  const [history] = useState(() => new History("ROOT_QUERY"));
+
+  const cacheId = useSyncExternalStore(history.listen, () =>
+    history.getCurrent()
+  );
 
   const { loading, data } = useQuery(GET_CACHE);
   const cache = useMemo(
@@ -73,7 +78,7 @@ export function Cache() {
               <EntityList
                 data={filteredCache}
                 selectedCacheId={cacheId}
-                setCacheId={setCacheId}
+                setCacheId={(cacheId) => history.push(cacheId)}
                 searchTerm={searchTerm}
               />
             </div>
@@ -112,7 +117,7 @@ export function Cache() {
                   })}
                   onClick={() => {
                     if (key === "__ref") {
-                      setCacheId(value as string);
+                      history.push(value as string);
                     }
                   }}
                 >
