@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.14.1
+
+### Patch Changes
+
+- [#1397](https://github.com/apollographql/apollo-client-devtools/pull/1397) [`11a77fb`](https://github.com/apollographql/apollo-client-devtools/commit/11a77fb5d80a024c401c828c1dad2d972d105377) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Revert change to automatically reconnect ports from [#1390](https://github.com/apollographql/apollo-client-devtools/pull/1390)
+
+- [#1398](https://github.com/apollographql/apollo-client-devtools/pull/1398) [`bd5c0d0`](https://github.com/apollographql/apollo-client-devtools/commit/bd5c0d051c70f154f0f2acfdd768d77f1bb0d1a2) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Revert change that pushes events rather than polls for them. Reverts [#1379](https://github.com/apollographql/apollo-client-devtools/pull/1379)
+
 ## 4.14.0
 
 ### Minor Changes
