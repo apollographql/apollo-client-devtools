@@ -1,7 +1,7 @@
 // This script is injected into each tab.
 import browser from "webextension-polyfill";
 import type { ClientMessage } from "../messages";
-import { createActor, createWindowActor } from "../actor";
+import { createPortActor, createWindowActor } from "../actor";
 import {
   createPortMessageAdapter,
   createWindowMessageAdapter,
@@ -10,14 +10,14 @@ import { createRPCBridge } from "../rpc";
 
 declare const __IS_FIREFOX__: boolean;
 
-const portAdapter = createPortMessageAdapter(() =>
-  browser.runtime.connect({ name: "tab" })
-);
-
+const port = browser.runtime.connect({ name: "tab" });
 const tab = createWindowActor<ClientMessage>(window);
-const devtools = createActor<ClientMessage>(portAdapter);
+const devtools = createPortActor<ClientMessage>(port);
 
-createRPCBridge(portAdapter, createWindowMessageAdapter(window));
+createRPCBridge(
+  createPortMessageAdapter(port),
+  createWindowMessageAdapter(window)
+);
 
 devtools.forward("connectToClient", tab);
 devtools.forward("explorerSubscriptionTermination", tab);

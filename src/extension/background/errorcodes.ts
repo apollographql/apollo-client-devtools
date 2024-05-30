@@ -11,7 +11,7 @@ export type ErrorCodesHandler = {
 browser.runtime.onConnect.addListener((port) => {
   if (port.name === "tab") {
     const handleRpc = createRpcHandler<ErrorCodesHandler>(
-      createPortMessageAdapter(() => port)
+      createPortMessageAdapter(port)
     );
     handleRpc("getErrorCodes", (version) => {
       if (version in allErrorCodes.byVersion) {
