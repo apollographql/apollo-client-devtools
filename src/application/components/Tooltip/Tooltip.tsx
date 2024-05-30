@@ -5,12 +5,18 @@ interface TooltipProps {
   asChild?: boolean;
   content: ReactNode;
   children?: ReactNode;
+  delayDuration?: number;
   side?: "top" | "bottom" | "left" | "right";
 }
 
-export function Tooltip({ content, children, side = "bottom" }: TooltipProps) {
+export function Tooltip({
+  content,
+  children,
+  delayDuration,
+  side = "bottom",
+}: TooltipProps) {
   return (
-    <Root>
+    <Root delayDuration={delayDuration}>
       <Trigger asChild>{children}</Trigger>
       <Portal>
         <Content
