@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.14.2
+
+### Patch Changes
+
+- [#1404](https://github.com/apollographql/apollo-client-devtools/pull/1404) [`abf38d3`](https://github.com/apollographql/apollo-client-devtools/commit/abf38d34f2639f37b369d191504449e67c403f1b) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Reintroduce change to automatically reconnect the ports when they disconnect.
+
 ## 4.14.1
 
 ### Patch Changes
