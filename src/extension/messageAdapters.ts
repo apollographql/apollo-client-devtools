@@ -13,13 +13,36 @@ export interface MessageAdapter<
 export function createPortMessageAdapter<
   PostMessageFormat extends Record<string, unknown> = Record<string, unknown>,
 >(
-  port: browser.Runtime.Port
+  createPort: () => browser.Runtime.Port
 ): MessageAdapter<ApolloClientDevtoolsMessage<PostMessageFormat>> {
+  let port = createPort();
+  const listeners = new Set<(message: unknown) => void>();
+
+  function handleDisconnect() {
+    listeners.forEach((listener) => {
+      port.onMessage.removeListener(listener);
+    });
+
+    port.onDisconnect.removeListener(handleDisconnect);
+    port = createPort();
+
+    initializePort();
+  }
+
+  function initializePort() {
+    listeners.forEach((listener) => port.onMessage.addListener(listener));
+    port.onDisconnect.addListener(handleDisconnect);
+  }
+
+  initializePort();
+
   return {
     addListener(listener) {
+      listeners.add(listener);
       port.onMessage.addListener(listener);
 
       return () => {
+        listeners.delete(listener);
         port.onMessage.removeListener(listener);
       };
     },
