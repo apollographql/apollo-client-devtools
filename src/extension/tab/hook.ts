@@ -274,6 +274,7 @@ Object.defineProperty(window, "__APOLLO_CLIENT__", {
 
     globalClient = client;
   },
+  configurable: true,
 });
 
 if (globalClient) {
