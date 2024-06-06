@@ -86,11 +86,6 @@ Object.defineProperty(window, "__APOLLO_DEVTOOLS_GLOBAL_HOOK__", {
   configurable: true,
 });
 
-// Listen for tab refreshes
-window.onbeforeunload = () => {
-  tab.send({ type: "disconnectFromDevtools" });
-};
-
 function getClientData() {
   // We need to JSON stringify the data here in case the cache contains
   // references to irregular data such as `URL` instances which are not
@@ -117,18 +112,9 @@ function getClientData() {
 
 handleRpc("getClientOperations", getClientData);
 
-function sendHookDataToDevTools(eventName: "connectToDevtools") {
-  tab.send({
-    type: eventName,
-    payload: getClientData(),
-  });
-}
-
 tab.on("connectToClient", () => {
   if (hook.ApolloClient) {
-    sendHookDataToDevTools("connectToDevtools");
-  } else {
-    findClient();
+    tab.send({ type: "connectToDevtools", payload: getClientData() });
   }
 });
 
@@ -223,28 +209,6 @@ tab.on("explorerRequest", (message) => {
   }
 });
 
-/**
- * Attempt to find the client on a 1-second interval for 10 seconds max
- */
-let interval: NodeJS.Timeout;
-function findClient() {
-  let count = 0;
-
-  function initializeDevtoolsHook() {
-    if (count++ > 10) {
-      clearInterval(interval);
-      tab.send({ type: "clientNotFound" });
-    }
-    if (window.__APOLLO_CLIENT__) {
-      registerClient(window.__APOLLO_CLIENT__);
-    }
-  }
-
-  clearInterval(interval);
-  interval = setInterval(initializeDevtoolsHook, 1000);
-  initializeDevtoolsHook(); // call immediately to reduce lag if devtools are already available
-}
-
 function watchForClientTermination(client: ApolloClient<any>) {
   const originalStop = client.stop;
 
@@ -259,7 +223,7 @@ function watchForClientTermination(client: ApolloClient<any>) {
       hook.ApolloClient = undefined;
     }
 
-    tab.send({ type: "disconnectFromDevtools" });
+    tab.send({ type: "clientTerminated" });
     originalStop.call(client);
   };
 }
@@ -283,7 +247,6 @@ function registerClient(client: ApolloClient<any>) {
   //   }
   // });
 
-  clearInterval(interval);
   loadErrorCodes(rpcClient, client.version);
 }
 

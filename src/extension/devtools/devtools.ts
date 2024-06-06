@@ -17,10 +17,7 @@ const inspectedTabId = browser.devtools.inspectedWindow.tabId;
 const devtoolsMachine = interpret(
   createDevtoolsMachine({
     actions: {
-      connectToClient: () => {
-        clientPort.send({ type: "connectToClient" });
-        startConnectTimeout();
-      },
+      connectToClient,
       startRequestInterval: () => {
         clearTimeout(connectTimeoutId);
 
@@ -40,7 +37,6 @@ const devtoolsMachine = interpret(
 
 let panelHidden = true;
 let connectTimeoutId: NodeJS.Timeout;
-let disconnectTimeoutId: NodeJS.Timeout;
 
 const portAdapter = createPortMessageAdapter(() =>
   browser.runtime.connect({ name: inspectedTabId.toString() })
@@ -51,24 +47,26 @@ const rpcClient = createRpcClient<DevtoolsRPCMessage>(portAdapter);
 
 devtoolsMachine.subscribe(({ value }) => {
   if (value === "connected") {
-    clearTimeout(disconnectTimeoutId);
+    clearTimeout(connectTimeoutId);
   }
 });
 
-// In case we can't connect to the tab, we should at least show something to the
-// user when we've attempted to connect a max number of times.
-function startConnectTimeout(attempts = 0) {
+function connectToClient() {
+  clientPort.send({ type: "connectToClient" });
+  startConnectTimeout();
+}
+
+function disconnectFromDevtools() {
+  devtoolsMachine.send("disconnect");
+  startConnectTimeout();
+}
+
+function startConnectTimeout() {
+  clearTimeout(connectTimeoutId);
+
   connectTimeoutId = setTimeout(() => {
-    if (attempts < 3) {
-      clientPort.send({ type: "connectToClient" });
-      startConnectTimeout(attempts + 1);
-    } else {
-      devtoolsMachine.send("timeout");
-    }
-    // Pick a threshold above the time it takes to determine if the client is
-    // found on the page. This ensures we don't reset that counter and provide a
-    // proper "not found" message.
-  }, 11_000);
+    devtoolsMachine.send("clientNotFound");
+  }, 10_000);
 }
 
 clientPort.on("connectToDevtools", (message) => {
@@ -82,21 +80,9 @@ clientPort.on("registerClient", (message) => {
   devtoolsMachine.send({ type: "connect", clientContext: message.payload });
 });
 
-clientPort.on("disconnectFromDevtools", () => {
-  clearTimeout(disconnectTimeoutId);
-  devtoolsMachine.send("disconnect");
+clientPort.on("clientTerminated", disconnectFromDevtools);
 
-  disconnectTimeoutId = setTimeout(() => {
-    devtoolsMachine.send("clientNotFound");
-  }, 10_000);
-});
-
-clientPort.on("clientNotFound", () => {
-  clearTimeout(connectTimeoutId);
-  devtoolsMachine.send("clientNotFound");
-});
-
-clientPort.send({ type: "connectToClient" });
+connectToClient();
 
 function startRequestInterval(ms = 500) {
   let id: NodeJS.Timeout;
@@ -138,10 +124,6 @@ async function createDevtoolsPanel() {
     "panel.html"
   );
 
-  let removeExplorerForward: () => void;
-  let removeSubscriptionTerminationListener: () => void;
-  let removeExplorerListener: () => void;
-
   panel.onShown.addListener((window) => {
     panelWindow = getPanelActor(window);
 
@@ -160,24 +142,16 @@ async function createDevtoolsPanel() {
         panelWindow.send({ type: "devtoolsStateChanged", state: value });
       });
 
-      connectedToPanel = true;
-    }
+      clientPort.forward("explorerResponse", panelWindow);
+      panelWindow.forward("explorerRequest", clientPort);
+      panelWindow.forward("explorerSubscriptionTermination", clientPort);
 
-    if (devtoolsMachine.state.value === "initialized") {
-      clientPort.send({ type: "connectToClient" });
-      startConnectTimeout();
+      connectedToPanel = true;
     }
 
     if (devtoolsMachine.state.value === "connected" && panelHidden) {
       unsubscribers.add(startRequestInterval());
     }
-
-    removeExplorerForward = clientPort.forward("explorerResponse", panelWindow);
-    removeExplorerListener = panelWindow.forward("explorerRequest", clientPort);
-    removeSubscriptionTerminationListener = panelWindow.forward(
-      "explorerSubscriptionTermination",
-      clientPort
-    );
 
     panelHidden = false;
   });
@@ -185,11 +159,9 @@ async function createDevtoolsPanel() {
   panel.onHidden.addListener(() => {
     panelHidden = true;
     unsubscribeFromAll();
-
-    removeExplorerForward();
-    removeSubscriptionTerminationListener();
-    removeExplorerListener();
   });
 }
 
 createDevtoolsPanel();
+
+browser.devtools.network.onNavigated.addListener(disconnectFromDevtools);

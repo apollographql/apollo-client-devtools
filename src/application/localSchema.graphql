@@ -4,6 +4,9 @@ scalar QueryData
 "Represents variables for a query"
 scalar Variables
 
+"Represents options for a query"
+scalar QueryOptions
+
 type Query {
   clientVersion: String
   cache: String!
@@ -36,4 +39,5 @@ type WatchedQuery {
   queryString: String!
   cachedData: QueryData
   variables: Variables
+  options: QueryOptions
 }

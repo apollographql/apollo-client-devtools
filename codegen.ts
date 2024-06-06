@@ -26,6 +26,7 @@ const config: CodegenConfig = {
           ID: "number",
           QueryData: "./scalars#QueryData",
           Variables: "./scalars#Variables",
+          QueryOptions: "./scalars#QueryOptions",
         },
         skipTypeNameForRoot: true,
       },

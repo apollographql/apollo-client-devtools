@@ -89,6 +89,7 @@ export const GET_QUERIES: TypedDocumentNode<GetQueries, GetQueriesVariables> =
           queryString
           variables
           cachedData
+          options
         }
         count
       }
@@ -131,6 +132,7 @@ export function getQueryData(
     queryString: print(query.document),
     variables: query.variables ?? null,
     cachedData: query.cachedData ?? null,
+    options: query.options ?? null,
   };
 }
 

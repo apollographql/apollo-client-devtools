@@ -1,4 +1,4 @@
-import type { ObservableQuery } from "@apollo/client";
+import type { ObservableQuery, WatchQueryOptions } from "@apollo/client";
 import type { Cache } from "@apollo/client/cache";
 import type {
   DocumentNode,
@@ -8,11 +8,26 @@ import type {
 import type { QueryData, Variables } from "../../application/types/scalars";
 import { getPrivateAccess } from "../../privateAccess";
 import { getOperationName } from "@apollo/client/utilities";
+import { pick } from "../../application/utilities/pick";
+
+export type QueryOptions = Pick<
+  WatchQueryOptions,
+  | "context"
+  | "fetchPolicy"
+  | "errorPolicy"
+  | "pollInterval"
+  | "partialRefetch"
+  | "canonizeResults"
+  | "returnPartialData"
+  | "refetchWritePolicy"
+  | "notifyOnNetworkStatusChange"
+> & { nextFetchPolicy?: string };
 
 export type QueryInfo = {
   document: DocumentNode;
   variables?: Variables;
   cachedData?: QueryData; // Not a member of the actual Apollo Client QueryInfo type
+  options?: QueryOptions;
 };
 
 // Transform the map of observable queries into a list of QueryInfo objects usable by DevTools
@@ -34,10 +49,39 @@ export function getQueries(
         document,
         variables,
         cachedData: diff.result,
+        options: getQueryOptions(oc),
       });
     });
   }
   return queries;
+}
+
+function getQueryOptions(observableQuery: ObservableQuery) {
+  const { options } = observableQuery;
+
+  const queryOptions = {
+    ...pick(options, [
+      "context",
+      "pollInterval",
+      "partialRefetch",
+      "canonizeResults",
+      "returnPartialData",
+      "refetchWritePolicy",
+      "notifyOnNetworkStatusChange",
+      "fetchPolicy",
+      "errorPolicy",
+    ]),
+    nextFetchPolicy:
+      typeof options.nextFetchPolicy === "function"
+        ? "<function>"
+        : options.nextFetchPolicy,
+  };
+
+  if (queryOptions.nextFetchPolicy == null) {
+    delete queryOptions.nextFetchPolicy;
+  }
+
+  return queryOptions;
 }
 
 // Version of getQueries compatible with Apollo Client versions < 3.4.0

@@ -24,9 +24,8 @@ devtools.forward("explorerSubscriptionTermination", tab);
 devtools.forward("explorerRequest", tab);
 
 tab.forward("registerClient", devtools);
-tab.forward("clientNotFound", devtools);
 tab.forward("connectToDevtools", devtools);
-tab.forward("disconnectFromDevtools", devtools);
+tab.forward("clientTerminated", devtools);
 tab.forward("explorerResponse", devtools);
 
 // We run the hook.js script on the page as a content script in Manifest v3

@@ -12,6 +12,7 @@ import { Tabs } from "../Tabs";
 import { QueryLayout } from "../QueryLayout";
 import { CopyButton } from "../CopyButton";
 import { EmptyMessage } from "../EmptyMessage";
+import { isEmpty } from "../../utilities/isEmpty";
 
 const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
   gql`
@@ -85,6 +86,7 @@ export const Mutations = ({ explorerIFrame }: MutationsProps) => {
           </Tabs.List>
           <QueryLayout.TabContent value="variables">
             <JSONTreeViewer
+              hideRoot={!isEmpty(selectedMutation?.variables)}
               className="[&>li]:!pt-0"
               data={selectedMutation?.variables ?? {}}
             />
