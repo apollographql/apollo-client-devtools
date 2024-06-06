@@ -1,11 +1,12 @@
 import type { ReactNode } from "react";
-import { Fragment, useState, useMemo } from "react";
+import { Fragment, useState, useMemo, useSyncExternalStore } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { gql, useQuery } from "@apollo/client";
+import IconArrowLeft from "@apollo/icons/small/IconArrowLeft.svg";
+import IconArrowRight from "@apollo/icons/small/IconArrowRight.svg";
 
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { SearchField } from "../SearchField";
-import { EntityList } from "./sidebar/EntityList";
 import { Loading } from "./common/Loading";
 import type { GetCache, GetCacheVariables } from "../../types/gql";
 import type { JSONObject } from "../../types/json";
@@ -13,6 +14,15 @@ import { JSONTreeViewer } from "../JSONTreeViewer";
 import clsx from "clsx";
 import { CopyButton } from "../CopyButton";
 import { EmptyMessage } from "../EmptyMessage";
+import { History } from "../../utilities/history";
+import { Button } from "../Button";
+import { ButtonGroup } from "../ButtonGroup";
+import { Tooltip } from "../Tooltip";
+import { Alert } from "../Alert";
+import { List } from "../List";
+import { ListItem } from "../ListItem";
+import { getRootCacheIds } from "./common/utils";
+import HighlightMatch from "../HighlightMatch";
 
 const { Sidebar, Main } = SidebarLayout;
 
@@ -39,9 +49,11 @@ function filterCache(cache: Cache, searchTerm: string) {
   );
 }
 
+const history = new History("ROOT_QUERY");
+
 export function Cache() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [cacheId, setCacheId] = useState("ROOT_QUERY");
+  const cacheId = useSyncExternalStore(history.listen, history.getCurrent);
 
   const { loading, data } = useQuery(GET_CACHE);
   const cache = useMemo(
@@ -55,6 +67,8 @@ export function Cache() {
   );
 
   const dataExists = Object.keys(cache).length > 0;
+  const cacheItem = cache[cacheId];
+  const cacheIds = getRootCacheIds(filteredCache);
 
   return (
     <SidebarLayout>
@@ -70,20 +84,61 @@ export function Cache() {
               value={searchTerm}
             />
             <div className="overflow-auto h-full">
-              <EntityList
-                data={filteredCache}
-                selectedCacheId={cacheId}
-                setCacheId={setCacheId}
-                searchTerm={searchTerm}
-              />
+              <List>
+                {cacheIds.map((id) => {
+                  return (
+                    <ListItem
+                      key={id}
+                      onClick={() => history.push(id)}
+                      selected={id === cacheId}
+                      className="font-code"
+                    >
+                      {searchTerm ? (
+                        <HighlightMatch searchTerm={searchTerm} value={id} />
+                      ) : (
+                        id
+                      )}
+                    </ListItem>
+                  );
+                })}
+              </List>
             </div>
           </Fragment>
         ) : null}
       </Sidebar>
-      <Main className="!overflow-auto">
+      <Main className="!overflow-auto flex flex-col">
         {dataExists ? (
-          <div className="flex items-start justify-between mb-2 gap-2">
-            <div>
+          <>
+            <div className="flex items-start justify-between">
+              <ButtonGroup>
+                <Tooltip content="Go back" delayDuration={500}>
+                  <Button
+                    aria-label="Go back"
+                    icon={<IconArrowLeft />}
+                    size="xs"
+                    variant="secondary"
+                    disabled={!history.canGoBack()}
+                    onClick={() => history.back()}
+                  />
+                </Tooltip>
+                <Tooltip content="Go forward" delayDuration={500}>
+                  <Button
+                    aria-label="Go forward"
+                    icon={<IconArrowRight />}
+                    size="xs"
+                    variant="secondary"
+                    disabled={!history.canGoForward()}
+                    onClick={() => history.forward()}
+                  />
+                </Tooltip>
+              </ButtonGroup>
+              <CopyButton
+                size="sm"
+                text={JSON.stringify(cache[cacheId])}
+                className={clsx({ invisible: !cacheItem })}
+              />
+            </div>
+            <div className="my-2">
               <div className="text-xs font-bold uppercase">Cache ID</div>
               <h1
                 className="font-code font-medium text-xl text-heading dark:text-heading-dark break-all"
@@ -92,17 +147,16 @@ export function Cache() {
                 {cacheId}
               </h1>
             </div>
-            <CopyButton size="md" text={JSON.stringify(cache[cacheId])} />
-          </div>
+          </>
         ) : (
           <EmptyMessage className="m-auto mt-20" />
         )}
 
         {loading ? (
           <Loading />
-        ) : dataExists ? (
+        ) : cacheItem ? (
           <JSONTreeViewer
-            data={cache[cacheId]}
+            data={cacheItem}
             hideRoot={true}
             valueRenderer={(valueAsString, value, key) => {
               return (
@@ -112,7 +166,7 @@ export function Cache() {
                   })}
                   onClick={() => {
                     if (key === "__ref") {
-                      setCacheId(value as string);
+                      history.push(value as string);
                     }
                   }}
                 >
@@ -121,6 +175,11 @@ export function Cache() {
               );
             }}
           />
+        ) : dataExists ? (
+          <Alert variant="error" className="mt-4">
+            This cache entry was either removed from the cache or does not
+            exist.
+          </Alert>
         ) : null}
       </Main>
     </SidebarLayout>

@@ -15,7 +15,7 @@ panelWindow.on("initializePanel", (message) => {
 panelWindow.on("devtoolsStateChanged", (message) => {
   devtoolsState(message.state);
 
-  if (message.state !== "connected") {
+  if (message.state === "connected") {
     client.resetStore();
   }
 });
