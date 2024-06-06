@@ -122,10 +122,6 @@ async function createDevtoolsPanel() {
     "panel.html"
   );
 
-  let removeExplorerForward: () => void;
-  let removeSubscriptionTerminationListener: () => void;
-  let removeExplorerListener: () => void;
-
   panel.onShown.addListener((window) => {
     panelWindow = getPanelActor(window);
 
@@ -144,6 +140,10 @@ async function createDevtoolsPanel() {
         panelWindow.send({ type: "devtoolsStateChanged", state: value });
       });
 
+      clientPort.forward("explorerResponse", panelWindow);
+      panelWindow.forward("explorerRequest", clientPort);
+      panelWindow.forward("explorerSubscriptionTermination", clientPort);
+
       connectedToPanel = true;
     }
 
@@ -151,23 +151,12 @@ async function createDevtoolsPanel() {
       unsubscribers.add(startRequestInterval());
     }
 
-    removeExplorerForward = clientPort.forward("explorerResponse", panelWindow);
-    removeExplorerListener = panelWindow.forward("explorerRequest", clientPort);
-    removeSubscriptionTerminationListener = panelWindow.forward(
-      "explorerSubscriptionTermination",
-      clientPort
-    );
-
     panelHidden = false;
   });
 
   panel.onHidden.addListener(() => {
     panelHidden = true;
     unsubscribeFromAll();
-
-    removeExplorerForward();
-    removeSubscriptionTerminationListener();
-    removeExplorerListener();
   });
 }
 
