@@ -1,5 +1,23 @@
 # Changelog
 
+## 4.15.0
+
+### Minor Changes
+
+- [#1394](https://github.com/apollographql/apollo-client-devtools/pull/1394) [`84a9634`](https://github.com/apollographql/apollo-client-devtools/commit/84a963462291b78efc021620de58649c817ef194) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Add forward and back buttons to the cache tab to navigate the history of cache entries you've visited.
+
+- [#1395](https://github.com/apollographql/apollo-client-devtools/pull/1395) [`59a4500`](https://github.com/apollographql/apollo-client-devtools/commit/59a450008d3562c17ad91ff1553fb8be2cdb50dd) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Add an options tab when viewing a query to see the options set for that query.
+
+### Patch Changes
+
+- [#1407](https://github.com/apollographql/apollo-client-devtools/pull/1407) [`0e4600f`](https://github.com/apollographql/apollo-client-devtools/commit/0e4600f56c1736d75df59b972fd98048f333f809) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Make `window.__APOLLO_CLIENT__` configurable so it can be redefined.
+
+- [#1389](https://github.com/apollographql/apollo-client-devtools/pull/1389) [`526a5d2`](https://github.com/apollographql/apollo-client-devtools/commit/526a5d293c8901f12b9458687aeab25d145b8c20) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Remove unneeded setup/teardown of message forwarding in the panel and instead only setup the forwarding once.
+
+- [#1392](https://github.com/apollographql/apollo-client-devtools/pull/1392) [`c9764ea`](https://github.com/apollographql/apollo-client-devtools/commit/c9764ea3611d10299e85ffa13603b1875fdce08e) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Remove some redundant logic for connecting to the client instance from the devtools.
+
+- [#1391](https://github.com/apollographql/apollo-client-devtools/pull/1391) [`6d880dd`](https://github.com/apollographql/apollo-client-devtools/commit/6d880dd6dc0d6f6fbb735bea53f592914e9ca113) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Use browser.devtools.network to detect page navigation
+
 ## 4.14.2
 
 ### Patch Changes
