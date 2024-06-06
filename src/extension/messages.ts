@@ -88,7 +88,7 @@ export type ClientMessage =
       type: "connectToDevtools";
       payload: ClientContext;
     }
-  | { type: "disconnectFromDevtools" }
+  | { type: "clientTerminated" }
   | ExplorerRequestMessage
   | ExplorerResponseMessage
   | ExplorerSubscriptionTerminationMessage;

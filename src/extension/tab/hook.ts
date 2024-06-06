@@ -86,11 +86,6 @@ Object.defineProperty(window, "__APOLLO_DEVTOOLS_GLOBAL_HOOK__", {
   configurable: true,
 });
 
-// Listen for tab refreshes
-window.onbeforeunload = () => {
-  tab.send({ type: "disconnectFromDevtools" });
-};
-
 function getClientData() {
   // We need to JSON stringify the data here in case the cache contains
   // references to irregular data such as `URL` instances which are not
@@ -228,7 +223,7 @@ function watchForClientTermination(client: ApolloClient<any>) {
       hook.ApolloClient = undefined;
     }
 
-    tab.send({ type: "disconnectFromDevtools" });
+    tab.send({ type: "clientTerminated" });
     originalStop.call(client);
   };
 }
