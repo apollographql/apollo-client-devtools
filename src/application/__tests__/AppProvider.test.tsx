@@ -43,6 +43,7 @@ describe("<AppProvider />", () => {
         cachedData: {
           name: "Violet",
         },
+        options: { fetchPolicy: "network-only" },
       };
 
       const data = getQueryData(queryData, 0);
@@ -58,6 +59,9 @@ describe("<AppProvider />", () => {
         },
         cachedData: {
           name: "Violet",
+        },
+        options: {
+          fetchPolicy: "network-only",
         },
       });
     });

@@ -1,5 +1,4 @@
-import type { QueryData } from "./scalars";
-import type { Variables } from "./scalars";
+import type { QueryData, QueryOptions, Variables } from "./scalars";
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -29,6 +28,8 @@ export type Scalars = {
   Float: { input: number; output: number };
   /** Represents data for a specific query */
   QueryData: { input: QueryData; output: QueryData };
+  /** Represents options for a query */
+  QueryOptions: { input: QueryOptions; output: QueryOptions };
   /** Represents variables for a query */
   Variables: { input: Variables; output: Variables };
 };
@@ -76,6 +77,7 @@ export type WatchedQuery = {
   cachedData: Maybe<Scalars["QueryData"]["output"]>;
   id: Scalars["ID"]["output"];
   name: Maybe<Scalars["String"]["output"]>;
+  options: Maybe<Scalars["QueryOptions"]["output"]>;
   queryString: Scalars["String"]["output"];
   variables: Maybe<Scalars["Variables"]["output"]>;
 };
@@ -119,6 +121,7 @@ export type GetWatchedQueries = {
       queryString: string;
       variables: Variables | null;
       cachedData: QueryData | null;
+      options: QueryOptions | null;
     }>;
   };
 };
@@ -136,6 +139,7 @@ export type GetQueries = {
       queryString: string;
       variables: Variables | null;
       cachedData: QueryData | null;
+      options: QueryOptions | null;
     }>;
   };
 };

@@ -15,10 +15,12 @@ import { JSONTreeViewer } from "../JSONTreeViewer";
 import { QueryLayout } from "../QueryLayout";
 import { CopyButton } from "../CopyButton";
 import { EmptyMessage } from "../EmptyMessage";
+import { isEmpty } from "../../utilities/isEmpty";
 
 enum QueryTabs {
   Variables = "Variables",
   CachedData = "CachedData",
+  Options = "Options",
 }
 
 const GET_WATCHED_QUERIES: TypedDocumentNode<
@@ -33,6 +35,7 @@ const GET_WATCHED_QUERIES: TypedDocumentNode<
         queryString
         variables
         cachedData
+        options
       }
     }
   }
@@ -98,6 +101,7 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
             <Tabs.Trigger value={QueryTabs.CachedData}>
               Cached Data
             </Tabs.Trigger>
+            <Tabs.Trigger value={QueryTabs.Options}>Options</Tabs.Trigger>
             <CopyButton
               className="ml-auto relative right-[6px]"
               size="sm"
@@ -106,14 +110,23 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
           </Tabs.List>
           <QueryLayout.TabContent value={QueryTabs.Variables}>
             <JSONTreeViewer
+              hideRoot={!isEmpty(selectedQuery?.variables)}
               className="[&>li]:!pt-0"
               data={selectedQuery?.variables ?? {}}
             />
           </QueryLayout.TabContent>
           <QueryLayout.TabContent value={QueryTabs.CachedData}>
             <JSONTreeViewer
+              hideRoot={!isEmpty(selectedQuery?.cachedData)}
               className="[&>li]:!pt-0"
               data={selectedQuery?.cachedData ?? {}}
+            />
+          </QueryLayout.TabContent>
+          <QueryLayout.TabContent value={QueryTabs.Options}>
+            <JSONTreeViewer
+              hideRoot={!isEmpty(selectedQuery?.options)}
+              className="[&>li]:!pt-0"
+              data={selectedQuery?.options ?? {}}
             />
           </QueryLayout.TabContent>
         </QueryLayout.Tabs>
