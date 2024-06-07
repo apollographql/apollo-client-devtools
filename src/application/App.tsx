@@ -140,6 +140,7 @@ export const App = () => {
 
   return (
     <>
+      <SettingsModal open={settingsOpen} onOpen={setSettingsOpen} />
       <ClientNotFoundModal
         open={clientNotFoundModalOpen}
         onClose={() => setClientNotFoundModalOpen(false)}
@@ -180,8 +181,6 @@ export const App = () => {
             </Tabs.Trigger>
             <Tabs.Trigger value={Screens.Cache}>Cache</Tabs.Trigger>
             <Tabs.Trigger value={Screens.Explorer}>Explorer</Tabs.Trigger>
-
-            <SettingsModal open={settingsOpen} onOpen={setSettingsOpen} />
           </Tabs.List>
           <div className="ml-auto flex-1 justify-end flex items-center gap-2 h-full">
             {clientVersion && (
