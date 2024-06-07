@@ -18,13 +18,14 @@ const devtoolsMachine = interpret(
   createDevtoolsMachine({
     actions: {
       connectToClient,
-      unsubscribeFromAll,
+      unsubscribeFromAll: () => cancelRequestInterval?.(),
     },
   })
 ).start();
 
 let panelHidden = true;
 let connectTimeoutId: NodeJS.Timeout;
+let cancelRequestInterval: (() => void) | undefined;
 
 const portAdapter = createPortMessageAdapter(() =>
   browser.runtime.connect({ name: inspectedTabId.toString() })
@@ -38,7 +39,7 @@ devtoolsMachine.subscribe(({ value }) => {
     clearTimeout(connectTimeoutId);
 
     if (!panelHidden) {
-      unsubscribers.add(startRequestInterval());
+      cancelRequestInterval = startRequestInterval();
     }
   }
 });
@@ -99,13 +100,6 @@ function startRequestInterval(ms = 500) {
   return () => clearTimeout(id);
 }
 
-const unsubscribers = new Set<() => void>();
-
-function unsubscribeFromAll() {
-  unsubscribers.forEach((unsubscribe) => unsubscribe());
-  unsubscribers.clear();
-}
-
 let connectedToPanel = false;
 let panelWindow: Actor<PanelMessage>;
 
@@ -142,7 +136,7 @@ async function createDevtoolsPanel() {
     }
 
     if (devtoolsMachine.state.value === "connected" && panelHidden) {
-      unsubscribers.add(startRequestInterval());
+      cancelRequestInterval = startRequestInterval();
     }
 
     panelHidden = false;
@@ -150,7 +144,7 @@ async function createDevtoolsPanel() {
 
   panel.onHidden.addListener(() => {
     panelHidden = true;
-    unsubscribeFromAll();
+    cancelRequestInterval?.();
   });
 }
 
