@@ -18,7 +18,7 @@ const devtoolsMachine = interpret(
   createDevtoolsMachine({
     actions: {
       connectToClient,
-      unsubscribeFromAll: () => cancelRequestInterval?.(),
+      cancelRequestInterval: () => cancelRequestInterval?.(),
     },
   })
 ).start();

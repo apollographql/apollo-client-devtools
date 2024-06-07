@@ -36,7 +36,7 @@ type State = {
 
 type Actions = {
   connectToClient: StateMachine.ActionFunction<Context, Events>;
-  unsubscribeFromAll: StateMachine.ActionFunction<Context, Events>;
+  cancelRequestInterval: StateMachine.ActionFunction<Context, Events>;
 };
 
 export function createDevtoolsMachine({ actions }: { actions: Actions }) {
@@ -85,7 +85,7 @@ export function createDevtoolsMachine({ actions }: { actions: Actions }) {
             timeout: "timedout",
             clientNotFound: "notFound",
           },
-          entry: ["unsubscribeFromAll"],
+          entry: ["cancelRequestInterval"],
         },
         timedout: {},
         notFound: {
@@ -93,7 +93,7 @@ export function createDevtoolsMachine({ actions }: { actions: Actions }) {
             retry: "retrying",
             connect: "connected",
           },
-          entry: "unsubscribeFromAll",
+          entry: "cancelRequestInterval",
         },
       },
     },
