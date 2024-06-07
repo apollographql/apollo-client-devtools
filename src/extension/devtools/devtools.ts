@@ -19,6 +19,13 @@ const devtoolsMachine = interpret(
     actions: {
       connectToClient,
       cancelRequestInterval: () => cancelRequestInterval?.(),
+      startRequestInterval: () => {
+        clearTimeout(connectTimeoutId);
+
+        if (!panelHidden) {
+          cancelRequestInterval = startRequestInterval();
+        }
+      },
     },
   })
 ).start();
@@ -33,16 +40,6 @@ const portAdapter = createPortMessageAdapter(() =>
 
 const clientPort = createActor<ClientMessage>(portAdapter);
 const rpcClient = createRpcClient<DevtoolsRPCMessage>(portAdapter);
-
-devtoolsMachine.subscribe(({ value }) => {
-  if (value === "connected") {
-    clearTimeout(connectTimeoutId);
-
-    if (!panelHidden) {
-      cancelRequestInterval = startRequestInterval();
-    }
-  }
-});
 
 function connectToClient() {
   clientPort.send({ type: "connectToClient" });
