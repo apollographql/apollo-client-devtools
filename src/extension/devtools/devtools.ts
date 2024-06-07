@@ -19,8 +19,6 @@ const devtoolsMachine = interpret(
     actions: {
       connectToClient,
       startRequestInterval: () => {
-        clearTimeout(connectTimeoutId);
-
         if (!panelHidden) {
           unsubscribers.add(startRequestInterval());
         }
