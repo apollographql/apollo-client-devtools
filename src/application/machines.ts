@@ -10,12 +10,10 @@ export interface ClientContext {
   mutations: QueryInfo[];
   cache: JSONObject;
 }
-interface Context {
-  clientContext: ClientContext;
-}
+type Context = Record<string, never>;
 
 type Events =
-  | { type: "connect"; clientContext: ClientContext }
+  | { type: "connect" }
   | { type: "timeout" }
   | { type: "disconnect" }
   | { type: "clientNotFound" }
@@ -44,14 +42,6 @@ export function createDevtoolsMachine({ actions }: { actions: Actions }) {
   return createMachine<Context, Events, State>(
     {
       initial: "initialized",
-      context: {
-        clientContext: {
-          clientVersion: null,
-          queries: [],
-          mutations: [],
-          cache: {},
-        },
-      },
       states: {
         initialized: {
           on: {
@@ -71,15 +61,7 @@ export function createDevtoolsMachine({ actions }: { actions: Actions }) {
           on: {
             disconnect: "disconnected",
           },
-          entry: [
-            "startRequestInterval",
-            assign({
-              clientContext: (ctx, event) =>
-                "clientContext" in event
-                  ? event.clientContext
-                  : ctx.clientContext,
-            }),
-          ],
+          entry: ["startRequestInterval"],
         },
         disconnected: {
           on: {

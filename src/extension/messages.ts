@@ -82,12 +82,9 @@ type ExplorerSubscriptionTerminationMessage = {
 };
 
 export type ClientMessage =
-  | { type: "registerClient"; payload: ClientContext }
+  | { type: "registerClient" }
   | { type: "connectToClient" }
-  | {
-      type: "connectToDevtools";
-      payload: ClientContext;
-    }
+  | { type: "connectToDevtools" }
   | { type: "clientTerminated" }
   | ExplorerRequestMessage
   | ExplorerResponseMessage

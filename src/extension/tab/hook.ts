@@ -114,7 +114,7 @@ handleRpc("getClientOperations", getClientData);
 
 tab.on("connectToClient", () => {
   if (hook.ApolloClient) {
-    tab.send({ type: "connectToDevtools", payload: getClientData() });
+    tab.send({ type: "connectToDevtools" });
   }
 });
 
@@ -232,7 +232,7 @@ function registerClient(client: ApolloClient<any>) {
   if (!knownClients.has(client)) {
     knownClients.add(client);
     watchForClientTermination(client);
-    tab.send({ type: "registerClient", payload: getClientData() });
+    tab.send({ type: "registerClient" });
   }
 
   hook.ApolloClient = client;

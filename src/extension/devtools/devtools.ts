@@ -59,15 +59,12 @@ function startConnectTimeout() {
   }, 10_000);
 }
 
-clientPort.on("connectToDevtools", (message) => {
-  devtoolsMachine.send({
-    type: "connect",
-    clientContext: message.payload,
-  });
+clientPort.on("connectToDevtools", () => {
+  devtoolsMachine.send({ type: "connect" });
 });
 
-clientPort.on("registerClient", (message) => {
-  devtoolsMachine.send({ type: "connect", clientContext: message.payload });
+clientPort.on("registerClient", () => {
+  devtoolsMachine.send({ type: "connect" });
 });
 
 clientPort.on("clientTerminated", disconnectFromDevtools);
@@ -105,14 +102,14 @@ async function createDevtoolsPanel() {
     "panel.html"
   );
 
-  panel.onShown.addListener((window) => {
+  panel.onShown.addListener(async (window) => {
     panelWindow = getPanelActor(window);
 
     if (!connectedToPanel) {
       panelWindow.send({
         type: "initializePanel",
         state: devtoolsMachine.state.value,
-        payload: devtoolsMachine.state.context.clientContext,
+        payload: await rpcClient.request("getClientOperations"),
       });
 
       panelWindow.on("retryConnection", () => {
