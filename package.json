@@ -43,6 +43,7 @@
     "@headlessui/react": "^2.1.0",
     "@headlessui/tailwindcss": "^0.2.0",
     "@radix-ui/react-hover-card": "^1.1.1",
+    "@radix-ui/react-select": "^2.0.0",
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-tabs": "^1.1.0",
     "@radix-ui/react-tooltip": "^1.1.1",
