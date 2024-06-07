@@ -17,6 +17,8 @@ export default {
   plugins: [headlessPlugin],
   theme: {
     data: {
+      "state-open": 'state="open"',
+      "state-closed": 'state="closed"',
       "state-active": 'state="active"',
       "state-inactive": 'state="inactive"',
       "orientation-horizontal": 'orientation="horizontal"',
