@@ -18,11 +18,6 @@ const devtoolsMachine = interpret(
   createDevtoolsMachine({
     actions: {
       connectToClient,
-      startRequestInterval: () => {
-        if (!panelHidden) {
-          unsubscribers.add(startRequestInterval());
-        }
-      },
       unsubscribeFromAll,
     },
   })
@@ -41,6 +36,10 @@ const rpcClient = createRpcClient<DevtoolsRPCMessage>(portAdapter);
 devtoolsMachine.subscribe(({ value }) => {
   if (value === "connected") {
     clearTimeout(connectTimeoutId);
+
+    if (!panelHidden) {
+      unsubscribers.add(startRequestInterval());
+    }
   }
 });
 
