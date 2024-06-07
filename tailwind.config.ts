@@ -25,6 +25,7 @@ export default {
       "state-inactive": 'state="inactive"',
       "orientation-horizontal": 'orientation="horizontal"',
       "orientation-vertical": 'orientation="vertical"',
+      highlighted: "highlighted",
     },
     extend: {
       colors: {
