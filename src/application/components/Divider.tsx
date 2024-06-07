@@ -22,5 +22,10 @@ export const Divider = ({
   className,
   orientation = "horizontal",
 }: DividerProps) => {
-  return <hr className={twMerge(divider({ orientation }), className)} />;
+  return (
+    <hr
+      aria-orientation={orientation}
+      className={twMerge(divider({ orientation }), className)}
+    />
+  );
 };
