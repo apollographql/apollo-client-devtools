@@ -23,12 +23,7 @@ const devtoolsMachine = interpret(
           unsubscribers.add(startRequestInterval());
         }
       },
-      unsubscribeFromAll: (_, event) => {
-        if (event.type === "clientNotFound") {
-          clearTimeout(connectTimeoutId);
-        }
-        unsubscribeFromAll();
-      },
+      unsubscribeFromAll,
     },
   })
 ).start();
