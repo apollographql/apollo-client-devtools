@@ -64,7 +64,12 @@ export const Select = ({
         </SelectBase.Icon>
       </SelectBase.Trigger>
       <SelectBase.Portal>
-        <SelectBase.Content align={align} sideOffset={6} position="popper">
+        <SelectBase.Content
+          align={align}
+          sideOffset={6}
+          position="popper"
+          className="border border-primary bg-primary dark:bg-primary-dark dark:border-primary-dark shadow-dropdown overflow-hidden rounded-lg w-80 max-h-[calc(100vh-8rem)]"
+        >
           <SelectBase.ScrollUpButton className="flex items-center justify-center cursor-default py-2 pointer-events-none">
             <IconChevronUp className="w-4" />
           </SelectBase.ScrollUpButton>
