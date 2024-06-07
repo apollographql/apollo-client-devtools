@@ -90,9 +90,7 @@ function startRequestInterval(ms = 500) {
     }
   }
 
-  if (devtoolsMachine.state.value === "connected") {
-    getClientData();
-  }
+  getClientData();
 
   return () => clearTimeout(id);
 }
