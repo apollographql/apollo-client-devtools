@@ -25,7 +25,7 @@ type Variants = OmitNull<Required<VariantProps<typeof select>>>;
 
 const select = cva(
   [
-    "group flex gap-4 items-center bg-input dark:bg-input-dark border border-primary dark:border-primary-dark",
+    "group flex justify-between gap-4 items-center bg-input dark:bg-input-dark border border-primary dark:border-primary-dark",
     "hover:border-hover dark:hover:border-hover-dark transition-colors ease-out",
     "focus:border-focused dark:focus:border-focused-dark focus-visible:outline-none",
     "disabled:bg-disabled dark:disabled:bg-disabled-dark disabled:border-disabled dark:disabled:border-disabled-dark disabled:text-disabled dark:disabled:text-disabled-dark",
