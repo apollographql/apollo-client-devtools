@@ -19,6 +19,8 @@ export default {
     data: {
       "state-open": 'state="open"',
       "state-closed": 'state="closed"',
+      "state-checked": 'state="checked"',
+      "state-unchecked": 'state="unchecked"',
       "state-active": 'state="active"',
       "state-inactive": 'state="inactive"',
       "orientation-horizontal": 'orientation="horizontal"',
