@@ -2,7 +2,7 @@ import type { QueryInfo } from "../extension/tab/helpers";
 import type { JSONObject } from "./types/json";
 
 import type { StateMachine } from "@xstate/fsm";
-import { createMachine, assign } from "@xstate/fsm";
+import { createMachine } from "@xstate/fsm";
 
 export interface ClientContext {
   clientVersion: string | null;

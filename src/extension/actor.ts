@@ -1,4 +1,3 @@
-import type browser from "webextension-polyfill";
 import type {
   ApolloClientDevtoolsEventMessage,
   MessageFormat,
@@ -6,10 +5,7 @@ import type {
 import { MessageType, isEventMessage } from "./messages";
 import type { NoInfer } from "../types";
 import type { MessageAdapter } from "./messageAdapters";
-import {
-  createPortMessageAdapter,
-  createWindowMessageAdapter,
-} from "./messageAdapters";
+import { createWindowMessageAdapter } from "./messageAdapters";
 
 export interface Actor<Messages extends MessageFormat> {
   on: <TName extends Messages["type"]>(
