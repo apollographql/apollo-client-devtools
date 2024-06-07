@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import IconChevronDown from "@apollo/icons/default/IconChevronDown.svg";
 import IconChevronUp from "@apollo/icons/default/IconChevronUp.svg";
 import * as SelectBase from "@radix-ui/react-select";
+import { twMerge } from "tailwind-merge";
 import { Option } from "./Option";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
@@ -10,6 +11,7 @@ import type { OmitNull } from "../../types/utils";
 interface SelectProps extends SelectBase.SelectTriggerProps {
   align?: "start" | "center" | "end";
   children?: ReactNode;
+  className?: string;
   defaultValue?: string;
   disabled?: boolean;
   name?: string;
@@ -42,6 +44,7 @@ const select = cva(
 export const Select = ({
   align,
   children,
+  className,
   defaultValue,
   disabled,
   name,
@@ -57,7 +60,10 @@ export const Select = ({
       defaultValue={defaultValue}
       onValueChange={onValueChange}
     >
-      <SelectBase.Trigger disabled={disabled} className={select({ size })}>
+      <SelectBase.Trigger
+        disabled={disabled}
+        className={twMerge(select({ size }), className)}
+      >
         <SelectBase.Value placeholder={placeholder ?? "Select..."} />
         <SelectBase.Icon className="group-data-state-open:rotate-180 transition-transform">
           <IconChevronDown className="w-4" />
