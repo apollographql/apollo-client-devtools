@@ -157,12 +157,12 @@ export const App = () => {
         onChange={(screen) => currentScreen(screen)}
         className="flex flex-col h-screen bg-primary dark:bg-primary-dark"
       >
-        <Tabs.List className="flex items-center px-4">
+        <div className="flex items-center border-b border-b-primary dark:border-b-primary-dark gap-4 px-4">
           <a
             href="https://go.apollo.dev/c/docs"
             target="_blank"
             title="Apollo Client developer documentation"
-            className="block pr-4 border-r border-primary dark:border-primary-dark"
+            className="block"
             rel="noreferrer"
           >
             <Logo
@@ -173,15 +173,19 @@ export const App = () => {
               className="text-icon-primary dark:text-icon-primary-dark"
             />
           </a>
-          <Tabs.Trigger value={Screens.Queries}>
-            Queries ({data?.watchedQueries?.count ?? 0})
-          </Tabs.Trigger>
-          <Tabs.Trigger value={Screens.Mutations}>
-            Mutations ({data?.mutationLog?.count ?? 0})
-          </Tabs.Trigger>
-          <Tabs.Trigger value={Screens.Cache}>Cache</Tabs.Trigger>
-          <Tabs.Trigger value={Screens.Explorer}>Explorer</Tabs.Trigger>
+          <Divider orientation="vertical" />
+          <Tabs.List className="-mb-px">
+            <Tabs.Trigger value={Screens.Queries}>
+              Queries ({data?.watchedQueries?.count ?? 0})
+            </Tabs.Trigger>
+            <Tabs.Trigger value={Screens.Mutations}>
+              Mutations ({data?.mutationLog?.count ?? 0})
+            </Tabs.Trigger>
+            <Tabs.Trigger value={Screens.Cache}>Cache</Tabs.Trigger>
+            <Tabs.Trigger value={Screens.Explorer}>Explorer</Tabs.Trigger>
 
+            <SettingsModal open={settingsOpen} onOpen={setSettingsOpen} />
+          </Tabs.List>
           <div className="ml-auto flex-1 justify-end flex items-center gap-2 h-full">
             {clientVersion && (
               <GitHubReleaseHoverCard version={clientVersion}>
@@ -232,8 +236,7 @@ export const App = () => {
               </Tooltip>
             </ButtonGroup>
           </div>
-          <SettingsModal open={settingsOpen} onOpen={setSettingsOpen} />
-        </Tabs.List>
+        </div>
         {/**
          * We need to keep the iframe inside of the `Explorer` loaded at all times
          * so that we don't reload the iframe when we come to this tab
