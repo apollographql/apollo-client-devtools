@@ -95,7 +95,6 @@ export function createDevtoolsMachine({ actions }: { actions: Actions }) {
             retry: "retrying",
             connect: "connected",
           },
-          entry: "cancelRequestInterval",
         },
       },
     },
