@@ -33,6 +33,8 @@ import { Tooltip } from "./components/Tooltip";
 import { Badge } from "./components/Badge";
 import { GitHubReleaseHoverCard } from "./components/GitHubReleaseHoverCard";
 import { isSnapshotRelease, parseSnapshotRelease } from "./utilities/github";
+import { Select } from "./components/Select";
+import { Divider } from "./components/Divider";
 
 const panelWindow = getPanelActor(window);
 
@@ -177,7 +179,7 @@ export const App = () => {
           <Tabs.Trigger value={Screens.Cache}>Cache</Tabs.Trigger>
           <Tabs.Trigger value={Screens.Explorer}>Explorer</Tabs.Trigger>
 
-          <div className="ml-auto flex-1 justify-end flex items-center gap-2">
+          <div className="ml-auto flex-1 justify-end flex items-center gap-2 h-full">
             {clientVersion && (
               <GitHubReleaseHoverCard version={clientVersion}>
                 <a
@@ -197,6 +199,12 @@ export const App = () => {
                 </a>
               </GitHubReleaseHoverCard>
             )}
+            <Select size="sm" className="w-40">
+              <Select.Option value="a">Client 1</Select.Option>
+              <Select.Option value="b">Client 2</Select.Option>
+              <Select.Option value="c">Client 3</Select.Option>
+            </Select>
+            <Divider orientation="vertical" className="mx-2" />
             <ButtonGroup>
               <Tooltip content="Report an issue">
                 <Button
