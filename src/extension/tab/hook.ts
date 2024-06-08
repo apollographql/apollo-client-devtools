@@ -243,7 +243,10 @@ function registerClient(client: ApolloClient<any>) {
     });
   }
 
-  hook.ApolloClient = client;
+  if (!hook.ApolloClient) {
+    hook.ApolloClient = client;
+  }
+
   // TODO: Repurpose this callback. The message it sent was not listened by
   // anything, so the broadcast was useless. Currently the devtools rely on
   // polling the client every second for updates, rather than relying on
