@@ -40,6 +40,7 @@
     "@apollo/client": "^3.8.8",
     "@apollo/icons": "^0.3.2",
     "@apollo/tailwind-preset": "^0.1.13",
+    "@graphql-codegen/typescript-resolvers": "^4.1.0",
     "@headlessui/react": "^2.1.0",
     "@headlessui/tailwindcss": "^0.2.0",
     "@radix-ui/react-hover-card": "^1.1.1",
