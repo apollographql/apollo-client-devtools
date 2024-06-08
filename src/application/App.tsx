@@ -121,6 +121,11 @@ export const App = () => {
 
   const clientVersion = data?.clientVersion;
   const clients = data?.clients ?? [];
+  const clientIds = clients.map((c) => c.id);
+
+  if (client && !clientIds.includes(client.id)) {
+    setClient(clients[0]);
+  }
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
