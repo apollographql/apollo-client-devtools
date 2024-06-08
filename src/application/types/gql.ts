@@ -44,7 +44,6 @@ export type Client = {
   __typename: "Client";
   id: Scalars["String"]["output"];
   name: Scalars["String"]["output"];
-  selected: Scalars["Boolean"]["output"];
   version: Scalars["String"]["output"];
 };
 

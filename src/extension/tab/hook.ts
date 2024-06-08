@@ -118,7 +118,6 @@ handleRpc("getClients", () => {
   return [...knownClients.entries()].map(([client, id], index) => ({
     id,
     name: `Apollo Client ${index}`,
-    selected: hook.ApolloClient === client,
     version: client.version,
   }));
 });
@@ -255,7 +254,6 @@ function registerClient(client: ApolloClient<any>) {
       payload: {
         id,
         name: `Apollo Client ${knownClients.size + 1}`,
-        selected: hook.ApolloClient === client,
         version: client.version,
       },
     });
