@@ -13,6 +13,7 @@ import { Queries } from "./components/Queries/Queries";
 import { Mutations } from "./components/Mutations/Mutations";
 import { Explorer } from "./components/Explorer/Explorer";
 import { Cache } from "./components/Cache/Cache";
+import type { ClientQuery, ClientQueryVariables } from "./types/gql";
 import { type AppQuery, type AppQueryVariables } from "./types/gql";
 import { Tabs } from "./components/Tabs";
 import { Button } from "./components/Button";
@@ -94,7 +95,21 @@ const APP_QUERY: TypedDocumentNode<AppQuery, AppQueryVariables> = gql`
     }
     clients {
       id
+    }
+  }
+`;
+
+const CLIENT_QUERY: TypedDocumentNode<ClientQuery, ClientQueryVariables> = gql`
+  query ClientQuery($id: ID!) {
+    client(id: $id) {
+      id
       version
+      queries {
+        total
+      }
+      mutations {
+        total
+      }
     }
   }
 `;
@@ -112,19 +127,27 @@ export const App = () => {
   const mountedRef = useRef(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const { data } = useSuspenseQuery(APP_QUERY);
-  const [client, setClient] = useState<Client | undefined>(data.clients[0]);
+  const [selectedClientId, setSelectedClientId] = useState<string | undefined>(
+    data.clients[0]?.id
+  );
   const [clientNotFoundModalOpen, setClientNotFoundModalOpen] = useState(false);
   const selected = useReactiveVar<Screens>(currentScreen);
   const state = useReactiveVar(devtoolsState);
   const [embeddedExplorerIFrame, setEmbeddedExplorerIFrame] =
     useState<HTMLIFrameElement | null>(null);
 
-  const clientVersion = data?.clientVersion;
+  const { data: clientData } = useQuery(CLIENT_QUERY, {
+    variables: { id: selectedClientId as string },
+    skip: !selectedClientId,
+  });
+
+  const client = clientData?.client;
+  const clientVersion = clientData?.client.version;
   const clients = data?.clients ?? [];
   const clientIds = clients.map((c) => c.id);
 
-  if (client && !clientIds.includes(client.id)) {
-    setClient(clients[0]);
+  if (selectedClientId && !clientIds.includes(selectedClientId)) {
+    setSelectedClientId(clientIds[0]);
   }
 
   useEffect(() => {
@@ -187,10 +210,10 @@ export const App = () => {
           <Divider orientation="vertical" />
           <Tabs.List className="-mb-px">
             <Tabs.Trigger value={Screens.Queries}>
-              Queries ({data?.watchedQueries?.count ?? 0})
+              Queries ({client?.queries.total ?? 0})
             </Tabs.Trigger>
             <Tabs.Trigger value={Screens.Mutations}>
-              Mutations ({data?.mutationLog?.count ?? 0})
+              Mutations ({client?.mutations.total ?? 0})
             </Tabs.Trigger>
             <Tabs.Trigger value={Screens.Cache}>Cache</Tabs.Trigger>
             <Tabs.Trigger value={Screens.Explorer}>Explorer</Tabs.Trigger>
@@ -219,10 +242,8 @@ export const App = () => {
               <Select
                 size="sm"
                 className="w-44"
-                value={client?.id}
-                onValueChange={(id) => {
-                  setClient(clients.find((c) => c.id === id));
-                }}
+                value={selectedClientId}
+                onValueChange={setSelectedClientId}
               >
                 {clients.map((client, index) => (
                   <Select.Option key={client.id} value={client.id}>
