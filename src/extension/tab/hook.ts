@@ -127,6 +127,8 @@ function getClientInfo(client: ApolloClient<unknown>): ApolloClientInfo {
   return {
     id: knownClients.get(client)!,
     version: client.version,
+    queryCount: getQueriesForClient(client).length,
+    mutationCount: getMutationsForClient(client).length,
   };
 }
 
