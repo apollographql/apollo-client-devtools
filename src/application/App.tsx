@@ -86,13 +86,6 @@ const ALERT_CONFIGS = {
 
 const APP_QUERY: TypedDocumentNode<AppQuery, AppQueryVariables> = gql`
   query AppQuery {
-    clientVersion @client
-    watchedQueries @client {
-      count
-    }
-    mutationLog @client {
-      count
-    }
     clients {
       id
     }
@@ -113,8 +106,6 @@ const CLIENT_QUERY: TypedDocumentNode<ClientQuery, ClientQueryVariables> = gql`
     }
   }
 `;
-
-type Client = AppQuery["clients"][number];
 
 const ISSUE_BODY = `
 <!-- Please provide a detailed description of the issue you are experiencing. It is most helpful if you are able to provide a minimal reproduction of the issue. -->
