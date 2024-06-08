@@ -77,12 +77,17 @@ export type MutationLog = {
 export type Query = {
   __typename?: "Query";
   cache: Scalars["String"]["output"];
+  client: Client;
   clientVersion?: Maybe<Scalars["String"]["output"]>;
   clients: Array<Client>;
   mutation?: Maybe<WatchedMutation>;
   mutationLog: MutationLog;
   watchedQueries: WatchedQueries;
   watchedQuery?: Maybe<WatchedQuery>;
+};
+
+export type QueryClientArgs = {
+  id: Scalars["ID"]["input"];
 };
 
 export type QueryMutationArgs = {
@@ -382,6 +387,12 @@ export type QueryResolvers<
     ResolversParentTypes["Query"] = ResolversParentTypes["Query"],
 > = {
   cache?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  client?: Resolver<
+    ResolversTypes["Client"],
+    ParentType,
+    ContextType,
+    RequireFields<QueryClientArgs, "id">
+  >;
   clientVersion?: Resolver<
     Maybe<ResolversTypes["String"]>,
     ParentType,

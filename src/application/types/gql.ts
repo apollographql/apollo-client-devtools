@@ -68,12 +68,17 @@ export type MutationLog = {
 export type Query = {
   __typename: "Query";
   cache: Scalars["String"]["output"];
+  client: Client;
   clientVersion: Maybe<Scalars["String"]["output"]>;
   clients: Array<Client>;
   mutation: Maybe<WatchedMutation>;
   mutationLog: MutationLog;
   watchedQueries: WatchedQueries;
   watchedQuery: Maybe<WatchedQuery>;
+};
+
+export type QueryclientArgs = {
+  id: Scalars["ID"]["input"];
 };
 
 export type QuerymutationArgs = {

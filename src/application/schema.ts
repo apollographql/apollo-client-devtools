@@ -17,6 +17,7 @@ function createResolvers(rpcClient: RpcClient<DevtoolsRPCMessage>): Resolvers {
   return {
     Query: {
       clients: () => rpcClient.request("getClients"),
+      client: (_, { id }) => rpcClient.request("getClient", id),
     },
     Client: {
       queries: (client) => client,
