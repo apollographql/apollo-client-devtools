@@ -8,8 +8,11 @@ import type {
   PanelMessage,
 } from "../messages";
 import { getPanelActor } from "./panelActor";
-import { createPortMessageAdapter } from "../messageAdapters";
-import { createRpcClient } from "../rpc";
+import {
+  createPortMessageAdapter,
+  createWindowMessageAdapter,
+} from "../messageAdapters";
+import { createRPCBridge, createRpcClient } from "../rpc";
 import { interpret } from "@xstate/fsm";
 
 const inspectedTabId = browser.devtools.inspectedWindow.tabId;
@@ -106,6 +109,8 @@ async function createDevtoolsPanel() {
     panelWindow = getPanelActor(window);
 
     if (!connectedToPanel) {
+      createRPCBridge(createWindowMessageAdapter(window), portAdapter);
+
       panelWindow.send({
         type: "initializePanel",
         state: devtoolsMachine.state.value,
