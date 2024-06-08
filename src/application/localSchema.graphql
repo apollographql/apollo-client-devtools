@@ -19,7 +19,6 @@ type Query {
 
 type Client {
   id: String!
-  name: String!
   version: String!
 }
 

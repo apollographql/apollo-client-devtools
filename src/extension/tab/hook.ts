@@ -19,7 +19,7 @@ import {
   getMutations,
   getMainDefinition,
 } from "./helpers";
-import type { QueryResult, SafeAny } from "../../types";
+import type { ApolloClientInfo, QueryResult, SafeAny } from "../../types";
 import { getPrivateAccess } from "../../privateAccess";
 import type { JSONObject } from "../../application/types/json";
 import { createWindowActor } from "../actor";
@@ -113,13 +113,24 @@ function getClientData() {
   };
 }
 
+function getClientInfo(client: ApolloClient<unknown>): ApolloClientInfo {
+  return {
+    id: knownClients.get(client)!,
+    version: client.version,
+  };
+}
+
 handleRpc("getClientOperations", getClientData);
 handleRpc("getClients", () => {
-  return [...knownClients.entries()].map(([client, id], index) => ({
-    id,
-    name: `Apollo Client ${index}`,
-    version: client.version,
-  }));
+  return [...knownClients.keys()].map(getClientInfo);
+});
+
+handleRpc("getClient", (clientId) => {
+  const [client] = [...knownClients.entries()].find(
+    ([, id]) => id === clientId
+  )!;
+
+  return getClientInfo(client);
 });
 
 tab.on("connectToClient", () => {
