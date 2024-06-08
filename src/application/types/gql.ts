@@ -156,6 +156,7 @@ export type AppQuery = {
   clientVersion: string | null;
   watchedQueries: { __typename: "WatchedQueries"; count: number };
   mutationLog: { __typename: "MutationLog"; count: number };
+  clients: Array<{ __typename: "Client"; id: string; version: string }>;
 };
 
 export type ApolloErrorAlertDisclosurePanel_error = {

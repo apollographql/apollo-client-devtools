@@ -86,6 +86,10 @@ const APP_QUERY: TypedDocumentNode<AppQuery, AppQueryVariables> = gql`
     mutationLog @client {
       count
     }
+    clients {
+      id
+      version
+    }
   }
 `;
 
@@ -107,6 +111,7 @@ export const App = () => {
     useState<HTMLIFrameElement | null>(null);
 
   const clientVersion = data?.clientVersion;
+  const clients = data?.clients ?? [];
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
@@ -196,11 +201,15 @@ export const App = () => {
                 </a>
               </GitHubReleaseHoverCard>
             )}
-            <Select size="sm" className="w-40">
-              <Select.Option value="a">Client 1</Select.Option>
-              <Select.Option value="b">Client 2</Select.Option>
-              <Select.Option value="c">Client 3</Select.Option>
-            </Select>
+            {clients.length > 1 && (
+              <Select size="sm" className="w-44">
+                {clients.map((client, index) => (
+                  <Select.Option key={client.id} value={client.id}>
+                    Apollo Client {index}
+                  </Select.Option>
+                ))}
+              </Select>
+            )}
             <Divider orientation="vertical" className="mx-2" />
             <ButtonGroup>
               <Tooltip content="Report an issue">
