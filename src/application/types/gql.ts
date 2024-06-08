@@ -43,7 +43,6 @@ export type Scalars = {
 export type Client = {
   __typename: "Client";
   id: Scalars["String"]["output"];
-  name: Scalars["String"]["output"];
   version: Scalars["String"]["output"];
 };
 

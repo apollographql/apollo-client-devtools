@@ -21,6 +21,5 @@ export type DistributiveOmit<T, K extends keyof T> = T extends unknown
 
 export interface ApolloClientInfo {
   id: string;
-  name: string;
   version: string;
 }

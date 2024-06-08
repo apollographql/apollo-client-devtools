@@ -52,7 +52,6 @@ export type Scalars = {
 export type Client = {
   __typename?: "Client";
   id: Scalars["String"]["output"];
-  name: Scalars["String"]["output"];
   version: Scalars["String"]["output"];
 };
 
@@ -315,7 +314,6 @@ export type ClientResolvers<
     ResolversParentTypes["Client"] = ResolversParentTypes["Client"],
 > = {
   id?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  name?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   version?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
