@@ -23,4 +23,5 @@ export interface ApolloClientInfo {
   id: string;
   name: string;
   selected: boolean;
+  version: string;
 }

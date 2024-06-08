@@ -119,6 +119,7 @@ handleRpc("getClients", () => {
     id,
     name: `Apollo Client ${index}`,
     selected: hook.ApolloClient === client,
+    version: client.version,
   }));
 });
 
@@ -255,6 +256,7 @@ function registerClient(client: ApolloClient<any>) {
         id,
         name: `Apollo Client ${knownClients.size + 1}`,
         selected: hook.ApolloClient === client,
+        version: client.version,
       },
     });
   }
