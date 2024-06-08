@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { createRoot } from "react-dom/client";
-import type { TypedDocumentNode } from "@apollo/client";
+import type { Reference, TypedDocumentNode } from "@apollo/client";
 import {
   ApolloClient,
   ApolloProvider,
@@ -328,6 +328,19 @@ export const addClient = (clientData: ApolloClientInfo) => {
         });
 
         return ref ? [...clients, ref] : clients;
+      },
+    },
+  });
+};
+
+export const removeClient = (clientId: string) => {
+  client.cache.modify({
+    id: "ROOT_QUERY",
+    fields: {
+      clients: (clients, { readField }) => {
+        return clients.filter(
+          (client: Reference) => readField("id", client) !== clientId
+        );
       },
     },
   });
