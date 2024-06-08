@@ -190,7 +190,7 @@ export function getQueryData(query: QueryDetails): WatchedQuery | undefined {
   }
 
   return {
-    id: Number(query.id),
+    id: String(query.id),
     __typename: "WatchedQuery",
     name,
     queryString: print(query.document),
@@ -208,7 +208,7 @@ export function getMutationData(
   key: number
 ): WatchedMutation {
   return {
-    id: key,
+    id: String(key),
     __typename: "WatchedMutation",
     name: getOperationName(mutation.document),
     mutationString: print(mutation.document),

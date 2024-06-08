@@ -65,7 +65,7 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
   const { data } = useQuery(GET_WATCHED_QUERIES, { returnPartialData: true });
 
   const queries = data?.watchedQueries.queries ?? [];
-  const selectedQuery = queries.find((query) => query.id === selected);
+  const selectedQuery = queries.find((query) => Number(query.id) === selected);
   const [currentTab, setCurrentTab] = useState<QueryTabs>(QueryTabs.Variables);
   const copyButtonText = JSON.stringify(
     currentTab === QueryTabs.Variables
@@ -87,8 +87,8 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
             return (
               <ListItem
                 key={`${name}-${id}`}
-                onClick={() => setSelected(id)}
-                selected={selected === id}
+                onClick={() => setSelected(Number(id))}
+                selected={selected === Number(id)}
                 className="font-code"
               >
                 <div className="w-full flex items-center justify-between gap-2">

@@ -56,7 +56,7 @@ export const Mutations = ({ explorerIFrame }: MutationsProps) => {
 
   const mutations = data?.mutationLog.mutations ?? [];
   const selectedMutation = mutations.find(
-    (mutation) => mutation.id === selected
+    (mutation) => Number(mutation.id) === selected
   );
 
   if (!selectedMutation && mutations.length > 0) {
@@ -72,8 +72,8 @@ export const Mutations = ({ explorerIFrame }: MutationsProps) => {
               <ListItem
                 key={`${name}-${id}`}
                 className="font-code"
-                onClick={() => setSelected(id)}
-                selected={selected === id}
+                onClick={() => setSelected(Number(id))}
+                selected={selected === Number(id)}
               >
                 <div className="w-full flex items-center justify-between gap-2">
                   <span className="flex-1 overflow-hidden text-ellipsis">
