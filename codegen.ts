@@ -22,6 +22,7 @@ const config: CodegenConfig = {
         },
         nonOptionalTypename: true,
         omitOperationSuffix: true,
+        useTypeImports: true,
         scalars: {
           ID: "number",
           QueryData: "./scalars#QueryData",
