@@ -152,12 +152,7 @@ export type WatchedQuery = {
 
 export type AppQueryVariables = Exact<{ [key: string]: never }>;
 
-export type AppQuery = {
-  clientVersion: string | null;
-  watchedQueries: { __typename: "WatchedQueries"; count: number };
-  mutationLog: { __typename: "MutationLog"; count: number };
-  clients: Array<{ __typename: "Client"; id: string }>;
-};
+export type AppQuery = { clients: Array<{ __typename: "Client"; id: string }> };
 
 export type ClientQueryVariables = Exact<{
   id: Scalars["ID"]["input"];
