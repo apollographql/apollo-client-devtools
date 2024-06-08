@@ -51,6 +51,7 @@ const config: CodegenConfig = {
         mappers: {
           Client: "../../types.ts#ApolloClientInfo",
           ClientQueries: "../../types.ts#ApolloClientInfo",
+          ClientMutations: "../../types.ts#ApolloClientInfo",
         },
       },
       plugins: [

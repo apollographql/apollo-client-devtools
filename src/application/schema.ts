@@ -21,9 +21,13 @@ function createResolvers(rpcClient: RpcClient<DevtoolsRPCMessage>): Resolvers {
     },
     Client: {
       queries: (client) => client,
+      mutations: (client) => client,
     },
     ClientQueries: {
       total: (client) => client.queryCount,
+    },
+    ClientMutations: {
+      total: (client) => client.mutationCount,
     },
   };
 }

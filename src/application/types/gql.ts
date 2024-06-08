@@ -43,13 +43,18 @@ export type Scalars = {
 export type Client = {
   __typename: "Client";
   id: Scalars["String"]["output"];
+  mutations: ClientMutations;
   queries: ClientQueries;
   version: Scalars["String"]["output"];
 };
 
+export type ClientMutations = {
+  __typename: "ClientMutations";
+  total: Scalars["Int"]["output"];
+};
+
 export type ClientQueries = {
   __typename: "ClientQueries";
-  items: Array<WatchedQuery>;
   total: Scalars["Int"]["output"];
 };
 

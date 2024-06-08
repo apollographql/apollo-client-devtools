@@ -52,13 +52,18 @@ export type Scalars = {
 export type Client = {
   __typename?: "Client";
   id: Scalars["String"]["output"];
+  mutations: ClientMutations;
   queries: ClientQueries;
   version: Scalars["String"]["output"];
 };
 
+export type ClientMutations = {
+  __typename?: "ClientMutations";
+  total: Scalars["Int"]["output"];
+};
+
 export type ClientQueries = {
   __typename?: "ClientQueries";
-  items: Array<WatchedQuery>;
   total: Scalars["Int"]["output"];
 };
 
@@ -268,6 +273,7 @@ export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = {
 export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars["Boolean"]["output"]>;
   Client: ResolverTypeWrapper<ApolloClientInfo>;
+  ClientMutations: ResolverTypeWrapper<ApolloClientInfo>;
   ClientQueries: ResolverTypeWrapper<ApolloClientInfo>;
   GraphQLErrorPath: ResolverTypeWrapper<Scalars["GraphQLErrorPath"]["output"]>;
   GraphQLErrorSourceLocation: ResolverTypeWrapper<GraphQlErrorSourceLocation>;
@@ -299,6 +305,7 @@ export type ResolversTypes = {
 export type ResolversParentTypes = {
   Boolean: Scalars["Boolean"]["output"];
   Client: ApolloClientInfo;
+  ClientMutations: ApolloClientInfo;
   ClientQueries: ApolloClientInfo;
   GraphQLErrorPath: Scalars["GraphQLErrorPath"]["output"];
   GraphQLErrorSourceLocation: GraphQlErrorSourceLocation;
@@ -328,8 +335,22 @@ export type ClientResolvers<
     ResolversParentTypes["Client"] = ResolversParentTypes["Client"],
 > = {
   id?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  mutations?: Resolver<
+    ResolversTypes["ClientMutations"],
+    ParentType,
+    ContextType
+  >;
   queries?: Resolver<ResolversTypes["ClientQueries"], ParentType, ContextType>;
   version?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ClientMutationsResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["ClientMutations"] = ResolversParentTypes["ClientMutations"],
+> = {
+  total?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -338,11 +359,6 @@ export type ClientQueriesResolvers<
   ParentType extends
     ResolversParentTypes["ClientQueries"] = ResolversParentTypes["ClientQueries"],
 > = {
-  items?: Resolver<
-    Array<ResolversTypes["WatchedQuery"]>,
-    ParentType,
-    ContextType
-  >;
   total?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -586,6 +602,7 @@ export type WatchedQueryResolvers<
 
 export type Resolvers<ContextType = any> = {
   Client?: ClientResolvers<ContextType>;
+  ClientMutations?: ClientMutationsResolvers<ContextType>;
   ClientQueries?: ClientQueriesResolvers<ContextType>;
   GraphQLErrorPath?: GraphQLScalarType;
   GraphQLErrorSourceLocation?: GraphQlErrorSourceLocationResolvers<ContextType>;
