@@ -49,7 +49,14 @@ export type Scalars = {
 export type Client = {
   __typename?: "Client";
   id: Scalars["String"]["output"];
+  queries: ClientQueries;
   version: Scalars["String"]["output"];
+};
+
+export type ClientQueries = {
+  __typename?: "ClientQueries";
+  items: Array<WatchedQuery>;
+  total: Scalars["Int"]["output"];
 };
 
 export type MutationLog = {
@@ -210,6 +217,7 @@ export type DirectiveResolverFn<
 export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars["Boolean"]["output"]>;
   Client: ResolverTypeWrapper<ApolloClientInfo>;
+  ClientQueries: ResolverTypeWrapper<ApolloClientInfo>;
   ID: ResolverTypeWrapper<Scalars["ID"]["output"]>;
   Int: ResolverTypeWrapper<Scalars["Int"]["output"]>;
   MutationLog: ResolverTypeWrapper<MutationLog>;
@@ -227,6 +235,7 @@ export type ResolversTypes = {
 export type ResolversParentTypes = {
   Boolean: Scalars["Boolean"]["output"];
   Client: ApolloClientInfo;
+  ClientQueries: ApolloClientInfo;
   ID: Scalars["ID"]["output"];
   Int: Scalars["Int"]["output"];
   MutationLog: MutationLog;
@@ -246,7 +255,22 @@ export type ClientResolvers<
     ResolversParentTypes["Client"] = ResolversParentTypes["Client"],
 > = {
   id?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  queries?: Resolver<ResolversTypes["ClientQueries"], ParentType, ContextType>;
   version?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ClientQueriesResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["ClientQueries"] = ResolversParentTypes["ClientQueries"],
+> = {
+  items?: Resolver<
+    Array<ResolversTypes["WatchedQuery"]>,
+    ParentType,
+    ContextType
+  >;
+  total?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -373,6 +397,7 @@ export type WatchedQueryResolvers<
 
 export type Resolvers<ContextType = any> = {
   Client?: ClientResolvers<ContextType>;
+  ClientQueries?: ClientQueriesResolvers<ContextType>;
   MutationLog?: MutationLogResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   QueryData?: GraphQLScalarType;
