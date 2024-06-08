@@ -43,6 +43,11 @@ const config: CodegenConfig = {
         defaultScalarType: "unknown",
         rootValueType: "never",
         useTypeImports: true,
+        scalars: {
+          QueryData: "./scalars#QueryData",
+          Variables: "./scalars#Variables",
+          QueryOptions: "./scalars#QueryOptions",
+        },
       },
       plugins: [
         {
