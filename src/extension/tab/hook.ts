@@ -55,6 +55,28 @@ const tab = createWindowActor<ClientMessage>(window);
 const messageAdapter = createWindowMessageAdapter(window);
 const handleRpc = createRpcHandler<DevtoolsRPCMessage>(messageAdapter);
 const rpcClient = createRpcClient<ErrorCodesHandler>(messageAdapter);
+
+function getQueriesForClient(client: ApolloClient<unknown> | undefined) {
+  const ac = getPrivateAccess(client);
+  if (ac?.queryManager.getObservableQueries) {
+    return getQueries(ac.queryManager.getObservableQueries("active"));
+  } else {
+    return getQueriesLegacy(ac?.queryManager["queries"]);
+  }
+}
+
+function getMutationsForClient(client: ApolloClient<unknown> | undefined) {
+  const ac = getPrivateAccess(client);
+
+  return getMutations(
+    (ac?.queryManager.mutationStore?.getStore
+      ? // @ts-expect-error Apollo Client 3.0 - 3.2
+        ac.queryManager.mutationStore?.getStore()
+      : // Apollo Client 3.3
+        ac?.queryManager.mutationStore) ?? {}
+  );
+}
+
 // Keep a reverse mapping of client -> id to ensure we don't register the same
 // client multiple times.
 const knownClients = new Map<ApolloClient<SafeAny>, string>();
@@ -62,22 +84,10 @@ const hook: Hook = {
   ApolloClient: undefined,
   version: devtoolsVersion,
   getQueries() {
-    const ac = getPrivateAccess(hook.ApolloClient);
-    if (ac?.queryManager.getObservableQueries) {
-      return getQueries(ac.queryManager.getObservableQueries("active"));
-    } else {
-      return getQueriesLegacy(ac?.queryManager["queries"]);
-    }
+    return getQueriesForClient(hook.ApolloClient);
   },
   getMutations: () => {
-    const ac = getPrivateAccess(hook.ApolloClient);
-    return getMutations(
-      (ac?.queryManager.mutationStore?.getStore
-        ? // @ts-expect-error Apollo Client 3.0 - 3.2
-          ac.queryManager.mutationStore?.getStore()
-        : // Apollo Client 3.3
-          ac?.queryManager.mutationStore) ?? {}
-    );
+    return getMutationsForClient(hook.ApolloClient);
   },
   getCache: () => hook.ApolloClient?.cache.extract(true) ?? {},
 };
