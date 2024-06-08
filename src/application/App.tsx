@@ -7,10 +7,7 @@ import { Queries } from "./components/Queries/Queries";
 import { Mutations } from "./components/Mutations/Mutations";
 import { Explorer } from "./components/Explorer/Explorer";
 import { Cache } from "./components/Cache/Cache";
-import type {
-  GetOperationCounts,
-  GetOperationCountsVariables,
-} from "./types/gql";
+import type { AppQuery, AppQueryVariables } from "./types/gql";
 import { Tabs } from "./components/Tabs";
 import { Button } from "./components/Button";
 import IconSettings from "@apollo/icons/default/IconSettings.svg";
@@ -80,11 +77,8 @@ const ALERT_CONFIGS = {
   },
 } satisfies Record<DevtoolsState, BannerAlertConfig>;
 
-const GET_OPERATION_COUNTS: TypedDocumentNode<
-  GetOperationCounts,
-  GetOperationCountsVariables
-> = gql`
-  query GetOperationCounts {
+const APP_QUERY: TypedDocumentNode<AppQuery, AppQueryVariables> = gql`
+  query AppQuery {
     clientVersion @client
     watchedQueries @client {
       count
@@ -105,7 +99,7 @@ ${SECTIONS.devtoolsVersion}
 export const App = () => {
   const mountedRef = useRef(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const { data } = useQuery(GET_OPERATION_COUNTS);
+  const { data } = useQuery(APP_QUERY);
   const [clientNotFoundModalOpen, setClientNotFoundModalOpen] = useState(false);
   const selected = useReactiveVar<Screens>(currentScreen);
   const state = useReactiveVar(devtoolsState);

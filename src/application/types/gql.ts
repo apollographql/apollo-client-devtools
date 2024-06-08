@@ -150,9 +150,9 @@ export type WatchedQuery = {
   variables: Maybe<Scalars["Variables"]["output"]>;
 };
 
-export type GetOperationCountsVariables = Exact<{ [key: string]: never }>;
+export type AppQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetOperationCounts = {
+export type AppQuery = {
   clientVersion: string | null;
   watchedQueries: { __typename: "WatchedQueries"; count: number };
   mutationLog: { __typename: "MutationLog"; count: number };
