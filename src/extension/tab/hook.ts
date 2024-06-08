@@ -28,6 +28,7 @@ import { createWindowMessageAdapter } from "../messageAdapters";
 import { createRpcClient, createRpcHandler } from "../rpc";
 import type { ErrorCodesHandler } from "../background/errorcodes";
 import { loadErrorCodes } from "./loadErrorCodes";
+import { createId } from "../../utils/createId";
 
 declare global {
   type TCache = any;
@@ -54,7 +55,9 @@ const tab = createWindowActor<ClientMessage>(window);
 const messageAdapter = createWindowMessageAdapter(window);
 const handleRpc = createRpcHandler<DevtoolsRPCMessage>(messageAdapter);
 const rpcClient = createRpcClient<ErrorCodesHandler>(messageAdapter);
-const knownClients = new Set<ApolloClient<any>>();
+// Keep a reverse mapping of client -> id to ensure we don't register the same
+// client multiple times.
+const knownClients = new Map<ApolloClient<SafeAny>, string>();
 const hook: Hook = {
   ApolloClient: undefined,
   version: devtoolsVersion,
@@ -213,6 +216,7 @@ function watchForClientTermination(client: ApolloClient<any>) {
   const originalStop = client.stop;
 
   client.stop = () => {
+    const clientId = knownClients.get(client)!;
     knownClients.delete(client);
 
     if (window.__APOLLO_CLIENT__ === client) {
@@ -223,16 +227,20 @@ function watchForClientTermination(client: ApolloClient<any>) {
       hook.ApolloClient = undefined;
     }
 
-    tab.send({ type: "clientTerminated" });
+    tab.send({ type: "clientTerminated", clientId });
     originalStop.call(client);
   };
 }
 
 function registerClient(client: ApolloClient<any>) {
   if (!knownClients.has(client)) {
-    knownClients.add(client);
+    const id = createId();
+    knownClients.set(client, id);
     watchForClientTermination(client);
-    tab.send({ type: "registerClient" });
+    tab.send({
+      type: "registerClient",
+      payload: { id, name: `Apollo Client ${knownClients.size + 1}` },
+    });
   }
 
   hook.ApolloClient = client;

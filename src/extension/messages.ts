@@ -1,4 +1,4 @@
-import type { ExplorerResponse, SafeAny } from "../types";
+import type { ApolloClientInfo, ExplorerResponse, SafeAny } from "../types";
 import type { StateValues } from "../application/machines";
 import type { JSONObject } from "../application/types/json";
 import type { FetchPolicy, DocumentNode } from "@apollo/client";
@@ -91,10 +91,10 @@ interface ClientContext {
 }
 
 export type ClientMessage =
-  | { type: "registerClient" }
+  | { type: "registerClient"; payload: ApolloClientInfo }
   | { type: "connectToClient" }
   | { type: "connectToDevtools" }
-  | { type: "clientTerminated" }
+  | { type: "clientTerminated"; clientId: string }
   | ExplorerRequestMessage
   | ExplorerResponseMessage
   | ExplorerSubscriptionTerminationMessage;
@@ -114,6 +114,7 @@ export type PanelMessage =
 
 export type DevtoolsRPCMessage = {
   getClientOperations(): ClientContext;
+  getClients(): ApolloClientInfo[];
 };
 
 function isDevtoolsMessage<Message extends Record<string, unknown>>(
