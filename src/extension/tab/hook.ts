@@ -114,6 +114,12 @@ function getClientData() {
 }
 
 handleRpc("getClientOperations", getClientData);
+handleRpc("getClients", () => {
+  return [...knownClients.entries()].map(([, id], index) => ({
+    id,
+    name: `Apollo Client ${index}`,
+  }));
+});
 
 tab.on("connectToClient", () => {
   if (hook.ApolloClient) {
