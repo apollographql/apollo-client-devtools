@@ -114,7 +114,7 @@ export type AppQuery = {
   clientVersion: string | null;
   watchedQueries: { __typename: "WatchedQueries"; count: number };
   mutationLog: { __typename: "MutationLog"; count: number };
-  clients: Array<{ __typename: "Client"; id: string; version: string }>;
+  clients: Array<{ __typename: "Client"; id: string }>;
 };
 
 export type ClientQueryVariables = Exact<{
@@ -125,6 +125,7 @@ export type ClientQuery = {
   client: {
     __typename: "Client";
     id: string;
+    version: string;
     queries: { __typename: "ClientQueries"; total: number };
     mutations: { __typename: "ClientMutations"; total: number };
   };
