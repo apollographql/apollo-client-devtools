@@ -33,6 +33,9 @@ const config: CodegenConfig = {
         skipTypeNameForRoot: true,
       },
       plugins: ["typescript", "typescript-operations"],
+      hooks: {
+        afterOneFileWrite: ["prettier --write"],
+      },
     },
     "./src/application/types/resolvers.ts": {
       config: {
