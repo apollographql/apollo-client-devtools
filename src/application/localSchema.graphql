@@ -20,7 +20,6 @@ type Query {
 type Client {
   id: String!
   name: String!
-  selected: Boolean!
   version: String!
 }
 

@@ -50,7 +50,6 @@ export type Client = {
   __typename?: "Client";
   id: Scalars["String"]["output"];
   name: Scalars["String"]["output"];
-  selected: Scalars["Boolean"]["output"];
   version: Scalars["String"]["output"];
 };
 
@@ -249,7 +248,6 @@ export type ClientResolvers<
 > = {
   id?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   name?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  selected?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>;
   version?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
