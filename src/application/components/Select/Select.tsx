@@ -33,7 +33,7 @@ const select = cva(
   {
     variants: {
       size: {
-        sm: ["py-1", "px-3", "rounded", "h-8"],
+        sm: ["py-1", "px-3", "rounded", "h-8", "text-sm"],
         md: ["py-2", "px-3", "rounded-lg", "h-10"],
         lg: ["p-3", "rounded-lg", "h-12"],
       },
