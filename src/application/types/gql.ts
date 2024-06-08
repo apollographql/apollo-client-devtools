@@ -351,3 +351,9 @@ export type GetAllMutations = {
 export type ClientVersionVariables = Exact<{ [key: string]: never }>;
 
 export type ClientVersion = { clientVersion: string | null };
+
+export type ClientFields = {
+  __typename: "Client";
+  id: string;
+  version: string;
+};
