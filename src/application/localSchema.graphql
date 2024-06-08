@@ -23,6 +23,12 @@ type Query {
 type Client {
   id: String!
   version: String!
+  queries: ClientQueries!
+}
+
+type ClientQueries {
+  total: Int!
+  items: [WatchedQuery!]!
 }
 
 type WatchedMutation {

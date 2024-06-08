@@ -50,6 +50,7 @@ const config: CodegenConfig = {
         },
         mappers: {
           Client: "../../types.ts#ApolloClientInfo",
+          ClientQueries: "../../types.ts#ApolloClientInfo",
         },
       },
       plugins: [
