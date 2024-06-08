@@ -270,14 +270,7 @@ function registerClient(client: ApolloClient<any>) {
       hook.ApolloClient = client;
     }
 
-    tab.send({
-      type: "registerClient",
-      payload: {
-        id,
-        name: `Apollo Client ${knownClients.size + 1}`,
-        version: client.version,
-      },
-    });
+    tab.send({ type: "registerClient", payload: getClientInfo(client) });
   }
 
   // TODO: Repurpose this callback. The message it sent was not listened by
