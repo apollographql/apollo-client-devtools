@@ -36,11 +36,12 @@ export type Scalars = {
   Variables: { input: Variables; output: Variables };
 };
 
-export type ApolloClient = {
-  __typename: "ApolloClient";
+export type Client = {
+  __typename: "Client";
   id: Scalars["String"]["output"];
   name: Scalars["String"]["output"];
   selected: Scalars["Boolean"]["output"];
+  version: Scalars["String"]["output"];
 };
 
 export type MutationLog = {
@@ -53,7 +54,7 @@ export type Query = {
   __typename: "Query";
   cache: Scalars["String"]["output"];
   clientVersion: Maybe<Scalars["String"]["output"]>;
-  clients: Array<ApolloClient>;
+  clients: Array<Client>;
   mutation: Maybe<WatchedMutation>;
   mutationLog: MutationLog;
   watchedQueries: WatchedQueries;

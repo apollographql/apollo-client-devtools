@@ -7,6 +7,7 @@ import type {
   GraphQLScalarType,
   GraphQLScalarTypeConfig,
 } from "graphql";
+import type { ApolloClientInfo } from "../../types.ts";
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -45,11 +46,12 @@ export type Scalars = {
   Variables: { input: Variables; output: Variables };
 };
 
-export type ApolloClient = {
-  __typename?: "ApolloClient";
+export type Client = {
+  __typename?: "Client";
   id: Scalars["String"]["output"];
   name: Scalars["String"]["output"];
   selected: Scalars["Boolean"]["output"];
+  version: Scalars["String"]["output"];
 };
 
 export type MutationLog = {
@@ -62,7 +64,7 @@ export type Query = {
   __typename?: "Query";
   cache: Scalars["String"]["output"];
   clientVersion?: Maybe<Scalars["String"]["output"]>;
-  clients: Array<ApolloClient>;
+  clients: Array<Client>;
   mutation?: Maybe<WatchedMutation>;
   mutationLog: MutationLog;
   watchedQueries: WatchedQueries;
@@ -208,8 +210,8 @@ export type DirectiveResolverFn<
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
-  ApolloClient: ResolverTypeWrapper<ApolloClient>;
   Boolean: ResolverTypeWrapper<Scalars["Boolean"]["output"]>;
+  Client: ResolverTypeWrapper<ApolloClientInfo>;
   ID: ResolverTypeWrapper<Scalars["ID"]["output"]>;
   Int: ResolverTypeWrapper<Scalars["Int"]["output"]>;
   MutationLog: ResolverTypeWrapper<MutationLog>;
@@ -225,8 +227,8 @@ export type ResolversTypes = {
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
-  ApolloClient: ApolloClient;
   Boolean: Scalars["Boolean"]["output"];
+  Client: ApolloClientInfo;
   ID: Scalars["ID"]["output"];
   Int: Scalars["Int"]["output"];
   MutationLog: MutationLog;
@@ -240,14 +242,15 @@ export type ResolversParentTypes = {
   WatchedQuery: WatchedQuery;
 };
 
-export type ApolloClientResolvers<
+export type ClientResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes["ApolloClient"] = ResolversParentTypes["ApolloClient"],
+    ResolversParentTypes["Client"] = ResolversParentTypes["Client"],
 > = {
   id?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   name?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   selected?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>;
+  version?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -276,11 +279,7 @@ export type QueryResolvers<
     ParentType,
     ContextType
   >;
-  clients?: Resolver<
-    Array<ResolversTypes["ApolloClient"]>,
-    ParentType,
-    ContextType
-  >;
+  clients?: Resolver<Array<ResolversTypes["Client"]>, ParentType, ContextType>;
   mutation?: Resolver<
     Maybe<ResolversTypes["WatchedMutation"]>,
     ParentType,
@@ -377,7 +376,7 @@ export type WatchedQueryResolvers<
 };
 
 export type Resolvers<ContextType = any> = {
-  ApolloClient?: ApolloClientResolvers<ContextType>;
+  Client?: ClientResolvers<ContextType>;
   MutationLog?: MutationLogResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   QueryData?: GraphQLScalarType;

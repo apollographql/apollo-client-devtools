@@ -46,6 +46,9 @@ const config: CodegenConfig = {
           Variables: "./scalars#Variables",
           QueryOptions: "./scalars#QueryOptions",
         },
+        mappers: {
+          Client: "../../types.ts#ApolloClientInfo",
+        },
       },
       plugins: [
         {
