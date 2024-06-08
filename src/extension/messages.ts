@@ -95,17 +95,23 @@ type RegisterClientMessage = {
   payload: ApolloClientInfo;
 };
 
+type ClientTerminatedMessage = {
+  type: "clientTerminated";
+  clientId: string;
+};
+
 export type ClientMessage =
   | RegisterClientMessage
   | { type: "connectToClient" }
   | { type: "connectToDevtools" }
-  | { type: "clientTerminated"; clientId: string }
+  | ClientTerminatedMessage
   | ExplorerRequestMessage
   | ExplorerResponseMessage
   | ExplorerSubscriptionTerminationMessage;
 
 export type PanelMessage =
   | RegisterClientMessage
+  | ClientTerminatedMessage
   | ExplorerRequestMessage
   | ExplorerResponseMessage
   | ExplorerSubscriptionTerminationMessage
