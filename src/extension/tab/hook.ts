@@ -115,9 +115,10 @@ function getClientData() {
 
 handleRpc("getClientOperations", getClientData);
 handleRpc("getClients", () => {
-  return [...knownClients.entries()].map(([, id], index) => ({
+  return [...knownClients.entries()].map(([client, id], index) => ({
     id,
     name: `Apollo Client ${index}`,
+    selected: hook.ApolloClient === client,
   }));
 });
 
@@ -243,14 +244,19 @@ function registerClient(client: ApolloClient<any>) {
     const id = createId();
     knownClients.set(client, id);
     watchForClientTermination(client);
+
+    if (!hook.ApolloClient) {
+      hook.ApolloClient = client;
+    }
+
     tab.send({
       type: "registerClient",
-      payload: { id, name: `Apollo Client ${knownClients.size + 1}` },
+      payload: {
+        id,
+        name: `Apollo Client ${knownClients.size + 1}`,
+        selected: hook.ApolloClient === client,
+      },
     });
-  }
-
-  if (!hook.ApolloClient) {
-    hook.ApolloClient = client;
   }
 
   // TODO: Repurpose this callback. The message it sent was not listened by
