@@ -8,6 +8,7 @@ import {
   makeVar,
   gql,
 } from "@apollo/client";
+import { SchemaLink } from "@apollo/client/link/schema";
 import { getOperationName } from "@apollo/client/utilities";
 import { print } from "graphql/language/printer";
 
@@ -26,6 +27,12 @@ import type {
 } from "./types/gql";
 import type { QueryInfo } from "../extension/tab/helpers";
 import type { JSONObject } from "./types/json";
+import { getRpcClient } from "../extension/devtools/panelRpcClient";
+import { createSchemaWithRpcClient } from "./schema";
+
+const rpcClient = getRpcClient(window);
+const schema = createSchemaWithRpcClient(rpcClient);
+const link = new SchemaLink({ schema });
 
 const cache = new InMemoryCache({
   fragments: fragmentRegistry,
@@ -75,9 +82,7 @@ const cache = new InMemoryCache({
 });
 
 const cacheVar = makeVar<string | null>(null);
-export const client = new ApolloClient({
-  cache,
-});
+export const client = new ApolloClient({ cache, link });
 
 export const GET_QUERIES: TypedDocumentNode<GetQueries, GetQueriesVariables> =
   gql`
