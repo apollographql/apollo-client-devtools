@@ -137,7 +137,10 @@ export const App = () => {
   const clients = data?.clients ?? [];
   const clientIds = clients.map((c) => c.id);
 
-  if (selectedClientId && !clientIds.includes(selectedClientId)) {
+  if (
+    (selectedClientId && !clientIds.includes(selectedClientId)) ||
+    (!selectedClientId && clientIds.length > 0)
+  ) {
     setSelectedClientId(clientIds[0]);
   }
 
