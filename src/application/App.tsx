@@ -1,13 +1,19 @@
 import { useEffect, useState, useRef } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
-import { useReactiveVar, gql, useQuery, makeVar } from "@apollo/client";
+import {
+  useReactiveVar,
+  gql,
+  useQuery,
+  makeVar,
+  useSuspenseQuery,
+} from "@apollo/client";
 
 import { currentScreen, Screens } from "./components/Layouts/Navigation";
 import { Queries } from "./components/Queries/Queries";
 import { Mutations } from "./components/Mutations/Mutations";
 import { Explorer } from "./components/Explorer/Explorer";
 import { Cache } from "./components/Cache/Cache";
-import type { AppQuery, AppQueryVariables } from "./types/gql";
+import { type AppQuery, type AppQueryVariables } from "./types/gql";
 import { Tabs } from "./components/Tabs";
 import { Button } from "./components/Button";
 import IconSettings from "@apollo/icons/default/IconSettings.svg";
@@ -93,6 +99,8 @@ const APP_QUERY: TypedDocumentNode<AppQuery, AppQueryVariables> = gql`
   }
 `;
 
+type Client = AppQuery["clients"][number];
+
 const ISSUE_BODY = `
 ${SECTIONS.defaultDescription}
 ${SECTIONS.reproduction}
@@ -103,7 +111,8 @@ ${SECTIONS.devtoolsVersion}
 export const App = () => {
   const mountedRef = useRef(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const { data } = useQuery(APP_QUERY);
+  const { data } = useSuspenseQuery(APP_QUERY);
+  const [client, setClient] = useState<Client | undefined>(data.clients[0]);
   const [clientNotFoundModalOpen, setClientNotFoundModalOpen] = useState(false);
   const selected = useReactiveVar<Screens>(currentScreen);
   const state = useReactiveVar(devtoolsState);
@@ -202,7 +211,14 @@ export const App = () => {
               </GitHubReleaseHoverCard>
             )}
             {clients.length > 1 && (
-              <Select size="sm" className="w-44">
+              <Select
+                size="sm"
+                className="w-44"
+                value={client?.id}
+                onValueChange={(id) => {
+                  setClient(clients.find((c) => c.id === id));
+                }}
+              >
                 {clients.map((client, index) => (
                   <Select.Option key={client.id} value={client.id}>
                     Apollo Client {index}
