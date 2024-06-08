@@ -34,6 +34,25 @@ const config: CodegenConfig = {
       },
       plugins: ["typescript", "typescript-operations"],
     },
+    "./src/application/types/resolvers.ts": {
+      config: {
+        defaultScalarType: "unknown",
+        rootValueType: "never",
+        useTypeImports: true,
+      },
+      plugins: [
+        {
+          add: {
+            content: "/* eslint-disable @typescript-eslint/ban-types */",
+          },
+        },
+        "typescript",
+        "typescript-resolvers",
+      ],
+      hooks: {
+        afterOneFileWrite: ["prettier --write"],
+      },
+    },
   },
   hooks: {
     afterAllFileWrite: ["prettier --write"],
