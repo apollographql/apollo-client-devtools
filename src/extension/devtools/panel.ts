@@ -1,4 +1,4 @@
-import { initDevTools, writeData, client } from "../../application";
+import { initDevTools, writeData, client, addClient } from "../../application";
 import "./panel.css";
 import { devtoolsState } from "../../application/App";
 import { getPanelActor } from "./panelActor";
@@ -22,4 +22,8 @@ panelWindow.on("devtoolsStateChanged", (message) => {
 
 panelWindow.on("update", (message) => {
   writeData(message.payload);
+});
+
+panelWindow.on("registerClient", (message) => {
+  addClient(message.payload);
 });

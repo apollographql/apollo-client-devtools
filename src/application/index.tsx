@@ -29,6 +29,7 @@ import type { QueryInfo } from "../extension/tab/helpers";
 import type { JSONObject } from "./types/json";
 import { getRpcClient } from "../extension/devtools/panelRpcClient";
 import { createSchemaWithRpcClient } from "./schema";
+import type { ApolloClientInfo } from "../types";
 
 const rpcClient = getRpcClient(window);
 const schema = createSchemaWithRpcClient(rpcClient);
@@ -203,6 +204,31 @@ export const writeData = ({
   });
 
   cacheVar(JSON.stringify(cache));
+};
+
+export const addClient = (clientData: ApolloClientInfo) => {
+  client.cache.modify({
+    id: "ROOT_QUERY",
+    fields: {
+      clients: (clients) => {
+        const ref = client.writeFragment({
+          fragment: gql`
+            fragment ClientFields on Client {
+              id
+              version
+            }
+          `,
+          id: client.cache.identify({
+            __typename: "Client",
+            id: clientData.id,
+          }),
+          data: clientData,
+        });
+
+        return ref ? [...clients, ref] : clients;
+      },
+    },
+  });
 };
 
 export const AppProvider = () => {
