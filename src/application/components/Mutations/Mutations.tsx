@@ -38,7 +38,7 @@ export const Mutations = ({ explorerIFrame }: MutationsProps) => {
 
   const mutations = data?.mutationLog.mutations ?? [];
   const selectedMutation = mutations.find(
-    (mutation) => mutation.id === selected
+    (mutation) => Number(mutation.id) === selected
   );
 
   return (
@@ -50,8 +50,8 @@ export const Mutations = ({ explorerIFrame }: MutationsProps) => {
               <ListItem
                 key={`${name}-${id}`}
                 className="font-code h-8 text-sm"
-                onClick={() => setSelected(id)}
-                selected={selected === id}
+                onClick={() => setSelected(Number(id))}
+                selected={selected === Number(id)}
               >
                 {name}
               </ListItem>
