@@ -90,8 +90,13 @@ interface ClientContext {
   cache: JSONObject;
 }
 
+type RegisterClientMessage = {
+  type: "registerClient";
+  payload: ApolloClientInfo;
+};
+
 export type ClientMessage =
-  | { type: "registerClient"; payload: ApolloClientInfo }
+  | RegisterClientMessage
   | { type: "connectToClient" }
   | { type: "connectToDevtools" }
   | { type: "clientTerminated"; clientId: string }
@@ -100,6 +105,7 @@ export type ClientMessage =
   | ExplorerSubscriptionTerminationMessage;
 
 export type PanelMessage =
+  | RegisterClientMessage
   | ExplorerRequestMessage
   | ExplorerResponseMessage
   | ExplorerSubscriptionTerminationMessage
