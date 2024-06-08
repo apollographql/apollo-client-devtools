@@ -15,6 +15,7 @@ type Query {
   watchedQueries: WatchedQueries!
   watchedQuery(id: ID!): WatchedQuery
   clients: [Client!]!
+  client(id: ID!): Client!
 }
 
 type Client {
