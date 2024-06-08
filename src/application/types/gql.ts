@@ -23,7 +23,7 @@ export type Incremental<T> =
     };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: number; output: number };
+  ID: { input: string; output: string };
   String: { input: string; output: string };
   Boolean: { input: boolean; output: boolean };
   Int: { input: number; output: number };
@@ -117,6 +117,19 @@ export type AppQuery = {
   clients: Array<{ __typename: "Client"; id: string; version: string }>;
 };
 
+export type ClientQueryVariables = Exact<{
+  id: Scalars["ID"]["input"];
+}>;
+
+export type ClientQuery = {
+  client: {
+    __typename: "Client";
+    id: string;
+    queries: { __typename: "ClientQueries"; total: number };
+    mutations: { __typename: "ClientMutations"; total: number };
+  };
+};
+
 export type GetCacheVariables = Exact<{ [key: string]: never }>;
 
 export type GetCache = { cache: string };
@@ -128,7 +141,7 @@ export type GetMutations = {
     __typename: "MutationLog";
     mutations: Array<{
       __typename: "WatchedMutation";
-      id: number;
+      id: string;
       name: string | null;
       mutationString: string;
       variables: Variables | null;
@@ -143,7 +156,7 @@ export type GetWatchedQueries = {
     __typename: "WatchedQueries";
     queries: Array<{
       __typename: "WatchedQuery";
-      id: number;
+      id: string;
       name: string | null;
       queryString: string;
       variables: Variables | null;
@@ -161,7 +174,7 @@ export type GetQueries = {
     count: number;
     queries: Array<{
       __typename: "WatchedQuery";
-      id: number;
+      id: string;
       name: string | null;
       queryString: string;
       variables: Variables | null;
@@ -179,7 +192,7 @@ export type GetAllMutations = {
     count: number;
     mutations: Array<{
       __typename: "WatchedMutation";
-      id: number;
+      id: string;
       name: string | null;
       mutationString: string;
       variables: Variables | null;
