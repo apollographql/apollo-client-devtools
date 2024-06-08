@@ -17,6 +17,13 @@ type Query {
   mutationLog: MutationLog!
   watchedQueries: WatchedQueries!
   watchedQuery(id: ID!): WatchedQuery
+  clients: [ApolloClient!]!
+}
+
+type ApolloClient {
+  id: String!
+  name: String!
+  selected: Boolean!
 }
 
 type WatchedMutation {
