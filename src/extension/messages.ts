@@ -128,6 +128,7 @@ export type DevtoolsRPCMessage = {
   getClientOperations(): ClientContext;
   getClients(): ApolloClientInfo[];
   getClient(id: string): ApolloClientInfo;
+  getQueries(clientId: string): QueryInfo[];
 };
 
 function isDevtoolsMessage<Message extends Record<string, unknown>>(

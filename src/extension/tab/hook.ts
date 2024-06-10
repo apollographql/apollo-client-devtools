@@ -138,12 +138,20 @@ handleRpc("getClients", () => {
 });
 
 handleRpc("getClient", (clientId) => {
+  return getClientInfo(getClientById(clientId));
+});
+
+handleRpc("getQueries", (clientId) =>
+  getQueriesForClient(getClientById(clientId))
+);
+
+function getClientById(clientId: string) {
   const [client] = [...knownClients.entries()].find(
     ([, id]) => id === clientId
   )!;
 
-  return getClientInfo(client);
-});
+  return client;
+}
 
 tab.on("connectToClient", () => {
   if (hook.ApolloClient) {
