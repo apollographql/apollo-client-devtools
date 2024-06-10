@@ -152,18 +152,6 @@ export type GetWatchedQueriesVariables = Exact<{
 }>;
 
 export type GetWatchedQueries = {
-  watchedQueries: {
-    __typename: "WatchedQueries";
-    queries: Array<{
-      __typename: "WatchedQuery";
-      id: string;
-      name: string | null;
-      queryString: string;
-      variables: Variables | null;
-      cachedData: QueryData | null;
-      options: QueryOptions | null;
-    }>;
-  };
   client: {
     __typename: "Client";
     id: string;
@@ -176,17 +164,8 @@ export type GetWatchedQueries = {
         name: string | null;
         queryString: string;
         variables: Variables | null;
-      }>;
-    };
-    mutations: {
-      __typename: "ClientMutations";
-      total: number;
-      items: Array<{
-        __typename: "WatchedMutation";
-        id: string;
-        name: string | null;
-        mutationString: string;
-        variables: Variables | null;
+        cachedData: QueryData | null;
+        options: QueryOptions | null;
       }>;
     };
   };
