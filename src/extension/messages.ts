@@ -51,6 +51,7 @@ export type RPCMessage<
 export type ApolloClientDevtoolsEventMessage<
   Message extends Record<string, unknown> = Record<string, unknown>,
 > = {
+  id: string;
   source: "apollo-client-devtools";
   type: MessageType.Event;
   message: Message;

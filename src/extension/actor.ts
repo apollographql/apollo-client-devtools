@@ -6,6 +6,7 @@ import { MessageType, isEventMessage } from "./messages";
 import type { NoInfer } from "../types";
 import type { MessageAdapter } from "./messageAdapters";
 import { createWindowMessageAdapter } from "./messageAdapters";
+import { createId } from "../utils/createId";
 
 export interface Actor<Messages extends MessageFormat> {
   on: <TName extends Messages["type"]>(
@@ -89,6 +90,7 @@ export function createActor<
     on,
     send: (message) => {
       adapter.postMessage({
+        id: createId(),
         source: "apollo-client-devtools",
         type: MessageType.Event,
         message,
