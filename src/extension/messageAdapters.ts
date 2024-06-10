@@ -81,6 +81,9 @@ export function createWindowMessageAdapter<
     },
     postMessage(message) {
       sentMessageIds.add(message.id);
+      // Avoid memory leaks by always cleaning up this ID in case this message
+      // adapter doesn't have a listener attached to it.
+      setTimeout(() => sentMessageIds.delete(message.id), 10);
       window.postMessage(message, "*");
     },
   };
