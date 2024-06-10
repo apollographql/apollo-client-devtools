@@ -145,6 +145,10 @@ handleRpc("getQueries", (clientId) =>
   getQueriesForClient(getClientById(clientId))
 );
 
+handleRpc("getMutations", (clientId) =>
+  getMutationsForClient(getClientById(clientId))
+);
+
 function getClientById(clientId: string) {
   const [client] = [...knownClients.entries()].find(
     ([, id]) => id === clientId

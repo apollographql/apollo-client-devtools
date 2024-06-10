@@ -59,6 +59,7 @@ export type Client = {
 
 export type ClientMutations = {
   __typename?: "ClientMutations";
+  items: Array<WatchedMutation>;
   total: Scalars["Int"]["output"];
 };
 
@@ -351,6 +352,11 @@ export type ClientMutationsResolvers<
   ParentType extends
     ResolversParentTypes["ClientMutations"] = ResolversParentTypes["ClientMutations"],
 > = {
+  items?: Resolver<
+    Array<ResolversTypes["WatchedMutation"]>,
+    ParentType,
+    ContextType
+  >;
   total?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };

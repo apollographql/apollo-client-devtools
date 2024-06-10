@@ -3,7 +3,7 @@ import type { RpcClient } from "../extension/rpc";
 import typeDefs from "./localSchema.graphql";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import type { Resolvers } from "./types/resolvers";
-import { getQueryData } from ".";
+import { getMutationData, getQueryData } from ".";
 
 export function createSchemaWithRpcClient(
   rpcClient: RpcClient<DevtoolsRPCMessage>
@@ -34,6 +34,11 @@ function createResolvers(rpcClient: RpcClient<DevtoolsRPCMessage>): Resolvers {
     },
     ClientMutations: {
       total: (client) => client.mutationCount,
+      items: async (client) => {
+        const queries = await rpcClient.request("getMutations", client.id);
+
+        return queries.map(getMutationData);
+      },
     },
   };
 }
