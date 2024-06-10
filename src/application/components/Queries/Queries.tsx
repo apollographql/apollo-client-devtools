@@ -35,19 +35,23 @@ const GET_WATCHED_QUERIES: TypedDocumentNode<
   GetWatchedQueries,
   GetWatchedQueriesVariables
 > = gql`
-  query GetWatchedQueries {
-    watchedQueries @client {
+  query GetWatchedQueries($clientId: ID!) {
+    client(id: $clientId) {
+      id
       queries {
-        id
-        name
-        queryString
-        variables
-        cachedData
-        options
-        networkStatus
-        pollInterval
-        error {
-          ...ApolloErrorAlertDisclosurePanel_error
+        total
+        items {
+          id
+          name
+          queryString
+          variables
+          cachedData
+          options
+          networkStatus
+          pollInterval
+          error {
+            ...ApolloErrorAlertDisclosurePanel_error
+          }
         }
       }
     }
@@ -57,14 +61,19 @@ const GET_WATCHED_QUERIES: TypedDocumentNode<
 `;
 
 interface QueriesProps {
+  clientId: string | undefined;
   explorerIFrame: HTMLIFrameElement | null;
 }
 
-export const Queries = ({ explorerIFrame }: QueriesProps) => {
+export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
   const [selected, setSelected] = useState(1);
-  const { data } = useQuery(GET_WATCHED_QUERIES, { returnPartialData: true });
+  const { data } = useQuery(GET_WATCHED_QUERIES, {
+    returnPartialData: true,
+    variables: { clientId: clientId as string },
+    skip: clientId == null,
+  });
 
-  const queries = data?.watchedQueries.queries ?? [];
+  const queries = data?.client.queries.items ?? [];
   const selectedQuery = queries.find((query) => Number(query.id) === selected);
   const [currentTab, setCurrentTab] = useState<QueryTabs>(QueryTabs.Variables);
   const copyButtonText = JSON.stringify(

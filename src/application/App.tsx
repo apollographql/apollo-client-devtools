@@ -293,7 +293,10 @@ export const App = () => {
           className="flex-1 overflow-hidden"
           value={Screens.Queries}
         >
-          <Queries explorerIFrame={embeddedExplorerIFrame} />
+          <Queries
+            clientId={selectedClientId}
+            explorerIFrame={embeddedExplorerIFrame}
+          />
         </Tabs.Content>
         <Tabs.Content
           className="flex-1 overflow-hidden"

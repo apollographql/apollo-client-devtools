@@ -238,37 +238,6 @@ export type GetWatchedQueriesVariables = Exact<{
 }>;
 
 export type GetWatchedQueries = {
-  watchedQueries: {
-    __typename: "WatchedQueries";
-    queries: Array<{
-      __typename: "WatchedQuery";
-      id: string;
-      name: string | null;
-      queryString: string;
-      variables: Variables | null;
-      cachedData: QueryData | null;
-      options: QueryOptions | null;
-      networkStatus: number;
-      pollInterval: number | null;
-      error: {
-        __typename: "SerializedApolloError";
-        clientErrors: Array<string>;
-        protocolErrors: Array<string>;
-        networkError: {
-          __typename: "SerializedError";
-          message: string;
-          name: string;
-          stack: string | null;
-        } | null;
-        graphQLErrors: Array<{
-          __typename: "SerializedGraphQLError";
-          message: string;
-          path: GraphQLErrorPath | null;
-          extensions: JSON | null;
-        }>;
-      } | null;
-    }>;
-  };
   client: {
     __typename: "Client";
     id: string;
@@ -281,17 +250,27 @@ export type GetWatchedQueries = {
         name: string | null;
         queryString: string;
         variables: Variables | null;
-      }>;
-    };
-    mutations: {
-      __typename: "ClientMutations";
-      total: number;
-      items: Array<{
-        __typename: "WatchedMutation";
-        id: string;
-        name: string | null;
-        mutationString: string;
-        variables: Variables | null;
+        cachedData: QueryData | null;
+        options: QueryOptions | null;
+        networkStatus: number;
+        pollInterval: number | null;
+        error: {
+          __typename: "SerializedApolloError";
+          clientErrors: Array<string>;
+          protocolErrors: Array<string>;
+          networkError: {
+            __typename: "SerializedError";
+            message: string;
+            name: string;
+            stack: string | null;
+          } | null;
+          graphQLErrors: Array<{
+            __typename: "SerializedGraphQLError";
+            message: string;
+            path: GraphQLErrorPath | null;
+            extensions: JSON | null;
+          }>;
+        } | null;
       }>;
     };
   };
