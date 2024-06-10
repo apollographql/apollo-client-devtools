@@ -51,6 +51,7 @@ export type ClientMutations = {
 
 export type ClientQueries = {
   __typename: "ClientQueries";
+  items: Array<WatchedQuery>;
   total: Scalars["Int"]["output"];
 };
 
@@ -145,7 +146,9 @@ export type GetMutations = {
   };
 };
 
-export type GetWatchedQueriesVariables = Exact<{ [key: string]: never }>;
+export type GetWatchedQueriesVariables = Exact<{
+  clientId: Scalars["ID"]["input"];
+}>;
 
 export type GetWatchedQueries = {
   watchedQueries: {
@@ -159,6 +162,21 @@ export type GetWatchedQueries = {
       cachedData: QueryData | null;
       options: QueryOptions | null;
     }>;
+  };
+  client: {
+    __typename: "Client";
+    id: string;
+    queries: {
+      __typename: "ClientQueries";
+      total: number;
+      items: Array<{
+        __typename: "WatchedQuery";
+        id: string;
+        name: string | null;
+        queryString: string;
+        variables: Variables | null;
+      }>;
+    };
   };
 };
 
