@@ -46,6 +46,7 @@ export type Client = {
 
 export type ClientMutations = {
   __typename: "ClientMutations";
+  items: Array<WatchedMutation>;
   total: Scalars["Int"]["output"];
 };
 
@@ -174,6 +175,17 @@ export type GetWatchedQueries = {
         id: string;
         name: string | null;
         queryString: string;
+        variables: Variables | null;
+      }>;
+    };
+    mutations: {
+      __typename: "ClientMutations";
+      total: number;
+      items: Array<{
+        __typename: "WatchedMutation";
+        id: string;
+        name: string | null;
+        mutationString: string;
         variables: Variables | null;
       }>;
     };
