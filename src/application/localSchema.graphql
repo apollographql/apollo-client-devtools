@@ -30,6 +30,7 @@ type Client {
 
 type ClientQueries {
   total: Int!
+  items: [WatchedQuery!]!
 }
 
 type ClientMutations {
