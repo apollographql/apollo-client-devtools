@@ -18,18 +18,13 @@ const devtoolsMachine = interpret(
   createDevtoolsMachine({
     actions: {
       connectToClient,
+      cancelRequestInterval: () => cancelRequestInterval?.(),
       startRequestInterval: () => {
         clearTimeout(connectTimeoutId);
 
         if (!panelHidden) {
-          unsubscribers.add(startRequestInterval());
+          cancelRequestInterval = startRequestInterval();
         }
-      },
-      unsubscribeFromAll: (_, event) => {
-        if (event.type === "clientNotFound") {
-          clearTimeout(connectTimeoutId);
-        }
-        unsubscribeFromAll();
       },
     },
   })
@@ -37,6 +32,7 @@ const devtoolsMachine = interpret(
 
 let panelHidden = true;
 let connectTimeoutId: NodeJS.Timeout;
+let cancelRequestInterval: (() => void) | undefined;
 
 const portAdapter = createPortMessageAdapter(() =>
   browser.runtime.connect({ name: inspectedTabId.toString() })
@@ -44,12 +40,6 @@ const portAdapter = createPortMessageAdapter(() =>
 
 const clientPort = createActor<ClientMessage>(portAdapter);
 const rpcClient = createRpcClient<DevtoolsRPCMessage>(portAdapter);
-
-devtoolsMachine.subscribe(({ value }) => {
-  if (value === "connected") {
-    clearTimeout(connectTimeoutId);
-  }
-});
 
 function connectToClient() {
   clientPort.send({ type: "connectToClient" });
@@ -69,15 +59,12 @@ function startConnectTimeout() {
   }, 10_000);
 }
 
-clientPort.on("connectToDevtools", (message) => {
-  devtoolsMachine.send({
-    type: "connect",
-    clientContext: message.payload,
-  });
+clientPort.on("connectToDevtools", () => {
+  devtoolsMachine.send({ type: "connect" });
 });
 
-clientPort.on("registerClient", (message) => {
-  devtoolsMachine.send({ type: "connect", clientContext: message.payload });
+clientPort.on("registerClient", () => {
+  devtoolsMachine.send({ type: "connect" });
 });
 
 clientPort.on("clientTerminated", disconnectFromDevtools);
@@ -100,18 +87,9 @@ function startRequestInterval(ms = 500) {
     }
   }
 
-  if (devtoolsMachine.state.value === "connected") {
-    getClientData();
-  }
+  getClientData();
 
   return () => clearTimeout(id);
-}
-
-const unsubscribers = new Set<() => void>();
-
-function unsubscribeFromAll() {
-  unsubscribers.forEach((unsubscribe) => unsubscribe());
-  unsubscribers.clear();
 }
 
 let connectedToPanel = false;
@@ -124,14 +102,14 @@ async function createDevtoolsPanel() {
     "panel.html"
   );
 
-  panel.onShown.addListener((window) => {
+  panel.onShown.addListener(async (window) => {
     panelWindow = getPanelActor(window);
 
     if (!connectedToPanel) {
       panelWindow.send({
         type: "initializePanel",
         state: devtoolsMachine.state.value,
-        payload: devtoolsMachine.state.context.clientContext,
+        payload: await rpcClient.request("getClientOperations"),
       });
 
       panelWindow.on("retryConnection", () => {
@@ -150,7 +128,7 @@ async function createDevtoolsPanel() {
     }
 
     if (devtoolsMachine.state.value === "connected" && panelHidden) {
-      unsubscribers.add(startRequestInterval());
+      cancelRequestInterval = startRequestInterval();
     }
 
     panelHidden = false;
@@ -158,7 +136,7 @@ async function createDevtoolsPanel() {
 
   panel.onHidden.addListener(() => {
     panelHidden = true;
-    unsubscribeFromAll();
+    cancelRequestInterval?.();
   });
 }
 

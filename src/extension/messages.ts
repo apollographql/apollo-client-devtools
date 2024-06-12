@@ -1,7 +1,8 @@
 import type { ExplorerResponse, SafeAny } from "../types";
-import type { StateValues, ClientContext } from "../application/machines";
+import type { StateValues } from "../application/machines";
 import type { JSONObject } from "../application/types/json";
 import type { FetchPolicy, DocumentNode } from "@apollo/client";
+import type { QueryInfo } from "./tab/helpers";
 
 export interface MessageFormat {
   type: string;
@@ -81,13 +82,17 @@ type ExplorerSubscriptionTerminationMessage = {
   type: "explorerSubscriptionTermination";
 };
 
+interface ClientContext {
+  clientVersion: string | null;
+  queries: QueryInfo[];
+  mutations: QueryInfo[];
+  cache: JSONObject;
+}
+
 export type ClientMessage =
-  | { type: "registerClient"; payload: ClientContext }
+  | { type: "registerClient" }
   | { type: "connectToClient" }
-  | {
-      type: "connectToDevtools";
-      payload: ClientContext;
-    }
+  | { type: "connectToDevtools" }
   | { type: "clientTerminated" }
   | ExplorerRequestMessage
   | ExplorerResponseMessage
