@@ -57,9 +57,19 @@ export function createWindowMessageAdapter<
 >(
   window: Window
 ): MessageAdapter<ApolloClientDevtoolsMessage<PostMessageFormat>> {
+  const sentMessageIds = new Set<string>();
+
   return {
     addListener(listener) {
       function handleEvent({ data }: MessageEvent) {
+        // We don't want to trigger listeners for a message sent from this
+        // adapter. This prevents situations where e.g. rpc messages were
+        // accidentally echoing the rpc request back to the sender rather
+        // than just the rpc response.
+        if (sentMessageIds.has(data.id)) {
+          return sentMessageIds.delete(data.id);
+        }
+
         listener(data);
       }
 
@@ -70,6 +80,10 @@ export function createWindowMessageAdapter<
       };
     },
     postMessage(message) {
+      sentMessageIds.add(message.id);
+      // Avoid memory leaks by always cleaning up this ID in case this message
+      // adapter doesn't have a listener attached to it.
+      setTimeout(() => sentMessageIds.delete(message.id), 10);
       window.postMessage(message, "*");
     },
   };

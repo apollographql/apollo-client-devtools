@@ -37,6 +37,7 @@ test("sends messages to specified adapter in devtools message format", () => {
   actor.send({ type: "test", payload: "Hello" });
 
   expect(adapter.postMessage).toHaveBeenCalledWith({
+    id: expect.any(String),
     source: "apollo-client-devtools",
     type: MessageType.Event,
     message: {
@@ -237,6 +238,7 @@ test("forwards messages to another actor", () => {
 
   expect(actorAdapter.postMessage).toHaveBeenCalledTimes(1);
   expect(actorAdapter.postMessage).toHaveBeenCalledWith({
+    id: expect.any(String),
     source: "apollo-client-devtools",
     type: MessageType.Event,
     message: {
@@ -249,6 +251,7 @@ test("forwards messages to another actor", () => {
 
   expect(actorAdapter.postMessage).toHaveBeenCalledTimes(2);
   expect(actorAdapter.postMessage).toHaveBeenCalledWith({
+    id: expect.any(String),
     source: "apollo-client-devtools",
     type: MessageType.Event,
     message: { type: "disconnect" },
