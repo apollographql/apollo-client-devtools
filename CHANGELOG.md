@@ -1,5 +1,15 @@
 # Changelog
 
+## 4.15.1
+
+### Patch Changes
+
+- [#1409](https://github.com/apollographql/apollo-client-devtools/pull/1409) [`2b4ffcf`](https://github.com/apollographql/apollo-client-devtools/commit/2b4ffcf6e1d456ebb509e54a5971dddb7685c7f9) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Refactor away some redundancy on starting/cancelling the request interval to get client data from the devtools scripts.
+
+- [#1409](https://github.com/apollographql/apollo-client-devtools/pull/1409) [`2b4ffcf`](https://github.com/apollographql/apollo-client-devtools/commit/2b4ffcf6e1d456ebb509e54a5971dddb7685c7f9) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Clear the data on screen when the client is no longer connected to the devtools.
+
+- [#1413](https://github.com/apollographql/apollo-client-devtools/pull/1413) [`9157cd2`](https://github.com/apollographql/apollo-client-devtools/commit/9157cd2eeb05976c21163ae74e2efbbcd4c60bdd) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Fix issue where messages sent via the `window` adapter could be echoed back to the sender.
+
 ## 4.15.0
 
 ### Minor Changes
