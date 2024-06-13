@@ -55,6 +55,9 @@ const cache = new InMemoryCache({
     ClientQueries: {
       merge: true,
     },
+    ClientMutations: {
+      merge: true,
+    },
     Query: {
       fields: {
         watchedQueries(_ = { queries: [], count: 0 }) {
