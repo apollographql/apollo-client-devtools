@@ -112,13 +112,11 @@ function getClientData() {
     JSON.stringify({
       clientVersion: hook.ApolloClient?.version ?? null,
       queries: hook.getQueries(),
-      mutations: hook.getMutations(),
       cache: hook.getCache(),
     })
   ) as {
     clientVersion: string | null;
     queries: QueryDetails[];
-    mutations: MutationDetails[];
     cache: JSONObject;
   };
 }

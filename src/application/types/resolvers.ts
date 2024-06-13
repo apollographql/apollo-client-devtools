@@ -75,12 +75,6 @@ export type GraphQlErrorSourceLocation = {
   line: Scalars["Int"]["output"];
 };
 
-export type MutationLog = {
-  __typename?: "MutationLog";
-  count: Scalars["Int"]["output"];
-  mutations: Array<WatchedMutation>;
-};
-
 export type Query = {
   __typename?: "Query";
   cache: Scalars["String"]["output"];
@@ -88,7 +82,6 @@ export type Query = {
   clientVersion?: Maybe<Scalars["String"]["output"]>;
   clients: Array<Client>;
   mutation?: Maybe<WatchedMutation>;
-  mutationLog: MutationLog;
   watchedQueries: WatchedQueries;
   watchedQuery?: Maybe<WatchedQuery>;
 };
@@ -282,7 +275,6 @@ export type ResolversTypes = {
   ID: ResolverTypeWrapper<Scalars["ID"]["output"]>;
   Int: ResolverTypeWrapper<Scalars["Int"]["output"]>;
   JSON: ResolverTypeWrapper<Scalars["JSON"]["output"]>;
-  MutationLog: ResolverTypeWrapper<MutationLog>;
   Query: ResolverTypeWrapper<never>;
   QueryData: ResolverTypeWrapper<Scalars["QueryData"]["output"]>;
   QueryOptions: ResolverTypeWrapper<Scalars["QueryOptions"]["output"]>;
@@ -314,7 +306,6 @@ export type ResolversParentTypes = {
   ID: Scalars["ID"]["output"];
   Int: Scalars["Int"]["output"];
   JSON: Scalars["JSON"]["output"];
-  MutationLog: MutationLog;
   Query: never;
   QueryData: Scalars["QueryData"]["output"];
   QueryOptions: Scalars["QueryOptions"]["output"];
@@ -395,20 +386,6 @@ export interface JsonScalarConfig
   name: "JSON";
 }
 
-export type MutationLogResolvers<
-  ContextType = any,
-  ParentType extends
-    ResolversParentTypes["MutationLog"] = ResolversParentTypes["MutationLog"],
-> = {
-  count?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
-  mutations?: Resolver<
-    Array<ResolversTypes["WatchedMutation"]>,
-    ParentType,
-    ContextType
-  >;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
 export type QueryResolvers<
   ContextType = any,
   ParentType extends
@@ -432,11 +409,6 @@ export type QueryResolvers<
     ParentType,
     ContextType,
     RequireFields<QueryMutationArgs, "id">
-  >;
-  mutationLog?: Resolver<
-    ResolversTypes["MutationLog"],
-    ParentType,
-    ContextType
   >;
   watchedQueries?: Resolver<
     ResolversTypes["WatchedQueries"],
@@ -619,7 +591,6 @@ export type Resolvers<ContextType = any> = {
   GraphQLErrorPath?: GraphQLScalarType;
   GraphQLErrorSourceLocation?: GraphQlErrorSourceLocationResolvers<ContextType>;
   JSON?: GraphQLScalarType;
-  MutationLog?: MutationLogResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   QueryData?: GraphQLScalarType;
   QueryOptions?: GraphQLScalarType;

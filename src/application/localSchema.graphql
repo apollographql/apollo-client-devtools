@@ -14,7 +14,6 @@ type Query {
   clientVersion: String
   cache: String!
   mutation(id: ID!): WatchedMutation
-  mutationLog: MutationLog!
   watchedQueries: WatchedQueries!
   watchedQuery(id: ID!): WatchedQuery
   clients: [Client!]!
@@ -48,11 +47,6 @@ type WatchedMutation {
 }
 
 union WatchedMutationError = SerializedError | SerializedApolloError
-
-type MutationLog {
-  count: Int!
-  mutations: [WatchedMutation!]!
-}
 
 type WatchedQueries {
   count: Int!
