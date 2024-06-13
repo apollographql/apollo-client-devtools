@@ -1,3 +1,6 @@
+"Represents JSON cache data"
+scalar Cache
+
 "Represents data for a specific query"
 scalar QueryData
 
@@ -21,6 +24,7 @@ type Client {
   version: String!
   queries: ClientQueries!
   mutations: ClientMutations!
+  cache: Cache!
 }
 
 type ClientQueries {

@@ -1,3 +1,4 @@
+import type { Cache } from "./scalars";
 import type { GraphQLErrorPath } from "./scalars";
 import type { JSON } from "./scalars";
 import type { QueryData } from "./scalars";
@@ -30,6 +31,8 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean };
   Int: { input: number; output: number };
   Float: { input: number; output: number };
+  /** Represents JSON cache data */
+  Cache: { input: Cache; output: Cache };
   GraphQLErrorPath: { input: GraphQLErrorPath; output: GraphQLErrorPath };
   JSON: { input: JSON; output: JSON };
   /** Represents data for a specific query */
@@ -42,6 +45,7 @@ export type Scalars = {
 
 export type Client = {
   __typename: "Client";
+  cache: Scalars["Cache"]["output"];
   id: Scalars["String"]["output"];
   mutations: ClientMutations;
   queries: ClientQueries;

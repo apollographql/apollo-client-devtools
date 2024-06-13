@@ -39,6 +39,8 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean };
   Int: { input: number; output: number };
   Float: { input: number; output: number };
+  /** Represents JSON cache data */
+  Cache: { input: unknown; output: unknown };
   GraphQLErrorPath: { input: unknown; output: unknown };
   JSON: { input: unknown; output: unknown };
   /** Represents data for a specific query */
@@ -51,6 +53,7 @@ export type Scalars = {
 
 export type Client = {
   __typename?: "Client";
+  cache: Scalars["Cache"]["output"];
   id: Scalars["String"]["output"];
   mutations: ClientMutations;
   queries: ClientQueries;
@@ -255,6 +258,7 @@ export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = {
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars["Boolean"]["output"]>;
+  Cache: ResolverTypeWrapper<Scalars["Cache"]["output"]>;
   Client: ResolverTypeWrapper<ApolloClientInfo>;
   ClientMutations: ResolverTypeWrapper<ApolloClientInfo>;
   ClientQueries: ResolverTypeWrapper<ApolloClientInfo>;
@@ -286,6 +290,7 @@ export type ResolversTypes = {
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
   Boolean: Scalars["Boolean"]["output"];
+  Cache: Scalars["Cache"]["output"];
   Client: ApolloClientInfo;
   ClientMutations: ApolloClientInfo;
   ClientQueries: ApolloClientInfo;
@@ -310,11 +315,17 @@ export type ResolversParentTypes = {
   WatchedQuery: WatchedQuery;
 };
 
+export interface CacheScalarConfig
+  extends GraphQLScalarTypeConfig<ResolversTypes["Cache"], any> {
+  name: "Cache";
+}
+
 export type ClientResolvers<
   ContextType = any,
   ParentType extends
     ResolversParentTypes["Client"] = ResolversParentTypes["Client"],
 > = {
+  cache?: Resolver<ResolversTypes["Cache"], ParentType, ContextType>;
   id?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   mutations?: Resolver<
     ResolversTypes["ClientMutations"],
@@ -551,6 +562,7 @@ export type WatchedQueryResolvers<
 };
 
 export type Resolvers<ContextType = any> = {
+  Cache?: GraphQLScalarType;
   Client?: ClientResolvers<ContextType>;
   ClientMutations?: ClientMutationsResolvers<ContextType>;
   ClientQueries?: ClientQueriesResolvers<ContextType>;
