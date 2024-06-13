@@ -69,24 +69,7 @@ const cache = new InMemoryCache({
 const cacheVar = makeVar<string | null>(null);
 export const client = new ApolloClient({ cache, link });
 
-export const writeData = ({
-  clientVersion,
-  cache,
-}: {
-  clientVersion: string | null;
-  cache: JSONObject;
-}) => {
-  client.writeQuery({
-    query: gql`
-      query ClientVersion {
-        clientVersion @client
-      }
-    `,
-    data: {
-      clientVersion,
-    },
-  });
-
+export const writeData = ({ cache }: { cache: JSONObject }) => {
   cacheVar(JSON.stringify(cache));
 };
 
