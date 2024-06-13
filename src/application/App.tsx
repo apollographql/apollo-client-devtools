@@ -130,6 +130,7 @@ export const App = () => {
   const { data: clientData } = useQuery(CLIENT_QUERY, {
     variables: { id: selectedClientId as string },
     skip: !selectedClientId,
+    pollInterval: 1000,
   });
 
   const client = clientData?.client;
