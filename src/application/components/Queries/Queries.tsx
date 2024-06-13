@@ -71,6 +71,8 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
     returnPartialData: true,
     variables: { clientId: clientId as string },
     skip: clientId == null,
+    fetchPolicy: "cache-and-network",
+    pollInterval: 1000,
   });
 
   const queries = data?.client.queries.items ?? [];
