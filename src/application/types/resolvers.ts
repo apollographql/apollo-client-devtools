@@ -81,16 +81,11 @@ export type Query = {
   client: Client;
   clientVersion?: Maybe<Scalars["String"]["output"]>;
   clients: Array<Client>;
-  mutation?: Maybe<WatchedMutation>;
   watchedQueries: WatchedQueries;
   watchedQuery?: Maybe<WatchedQuery>;
 };
 
 export type QueryClientArgs = {
-  id: Scalars["ID"]["input"];
-};
-
-export type QueryMutationArgs = {
   id: Scalars["ID"]["input"];
 };
 
@@ -404,12 +399,6 @@ export type QueryResolvers<
     ContextType
   >;
   clients?: Resolver<Array<ResolversTypes["Client"]>, ParentType, ContextType>;
-  mutation?: Resolver<
-    Maybe<ResolversTypes["WatchedMutation"]>,
-    ParentType,
-    ContextType,
-    RequireFields<QueryMutationArgs, "id">
-  >;
   watchedQueries?: Resolver<
     ResolversTypes["WatchedQueries"],
     ParentType,

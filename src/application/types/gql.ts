@@ -72,16 +72,11 @@ export type Query = {
   client: Client;
   clientVersion: Maybe<Scalars["String"]["output"]>;
   clients: Array<Client>;
-  mutation: Maybe<WatchedMutation>;
   watchedQueries: WatchedQueries;
   watchedQuery: Maybe<WatchedQuery>;
 };
 
 export type QueryclientArgs = {
-  id: Scalars["ID"]["input"];
-};
-
-export type QuerymutationArgs = {
   id: Scalars["ID"]["input"];
 };
 

@@ -13,7 +13,6 @@ scalar GraphQLErrorPath
 type Query {
   clientVersion: String
   cache: String!
-  mutation(id: ID!): WatchedMutation
   watchedQueries: WatchedQueries!
   watchedQuery(id: ID!): WatchedQuery
   clients: [Client!]!
