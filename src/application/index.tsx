@@ -69,9 +69,6 @@ const cache = new InMemoryCache({
         watchedQueries(_ = { queries: [], count: 0 }) {
           return _;
         },
-        mutationLog(_ = { mutations: [], count: 0 }) {
-          return _;
-        },
         watchedQuery(_, { toReference, args, canRead }) {
           const ref = toReference({
             __typename: "WatchedQuery",
