@@ -13,7 +13,6 @@ scalar GraphQLErrorPath
 type Query {
   clientVersion: String
   cache: String!
-  watchedQueries: WatchedQueries!
   clients: [Client!]!
   client(id: ID!): Client!
 }

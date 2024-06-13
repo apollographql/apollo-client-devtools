@@ -72,7 +72,6 @@ export type Query = {
   client: Client;
   clientVersion: Maybe<Scalars["String"]["output"]>;
   clients: Array<Client>;
-  watchedQueries: WatchedQueries;
 };
 
 export type QueryclientArgs = {
@@ -271,45 +270,6 @@ export type SerializedErrorAlertDisclosureItem_error = {
   message: string;
   name: string;
   stack: string | null;
-};
-
-export type GetQueriesVariables = Exact<{ [key: string]: never }>;
-
-export type GetQueries = {
-  watchedQueries: {
-    __typename: "WatchedQueries";
-    count: number;
-    queries: Array<{
-      __typename: "WatchedQuery";
-      id: string;
-      name: string | null;
-      queryString: string;
-      variables: Variables | null;
-      cachedData: QueryData | null;
-      options: QueryOptions | null;
-      networkStatus: number;
-      pollInterval: number | null;
-      error: {
-        __typename: "SerializedApolloError";
-        message: string;
-        clientErrors: Array<string>;
-        name: string;
-        protocolErrors: Array<string>;
-        networkError: {
-          __typename: "SerializedError";
-          message: string;
-          name: string;
-          stack: string | null;
-        } | null;
-        graphQLErrors: Array<{
-          __typename: "SerializedGraphQLError";
-          message: string;
-          path: GraphQLErrorPath | null;
-          extensions: JSON | null;
-        }>;
-      } | null;
-    }>;
-  };
 };
 
 export type ClientVersionVariables = Exact<{ [key: string]: never }>;

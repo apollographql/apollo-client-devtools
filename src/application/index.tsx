@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { createRoot } from "react-dom/client";
-import type { Reference, TypedDocumentNode } from "@apollo/client";
+import type { Reference } from "@apollo/client";
 import {
   ApolloClient,
   ApolloProvider,
@@ -9,26 +9,12 @@ import {
   gql,
 } from "@apollo/client";
 import { SchemaLink } from "@apollo/client/link/schema";
-import { getOperationName } from "@apollo/client/utilities";
-import { print } from "graphql/language/printer";
 
 import { colorTheme, listenForThemeChange } from "./theme";
 import { App } from "./App";
 import { fragmentRegistry } from "./fragmentRegistry";
 import * as Tooltip from "@radix-ui/react-tooltip";
 
-import type {
-  GetQueries,
-  GetQueriesVariables,
-  WatchedQuery,
-  SerializedApolloError as GQLSerializedApolloError,
-  SerializedError as GQLSerializedError,
-} from "./types/gql";
-import type {
-  QueryDetails,
-  SerializedApolloError,
-  SerializedError,
-} from "../extension/tab/helpers";
 import type { JSONObject } from "./types/json";
 import { getRpcClient } from "../extension/devtools/panelRpcClient";
 import { createSchemaWithRpcClient } from "./schema";
@@ -66,9 +52,6 @@ const cache = new InMemoryCache({
     },
     Query: {
       fields: {
-        watchedQueries(_ = { queries: [], count: 0 }) {
-          return _;
-        },
         cache() {
           return cacheVar();
         },
@@ -86,112 +69,13 @@ const cache = new InMemoryCache({
 const cacheVar = makeVar<string | null>(null);
 export const client = new ApolloClient({ cache, link });
 
-export const GET_QUERIES: TypedDocumentNode<GetQueries, GetQueriesVariables> =
-  gql`
-    query GetQueries {
-      watchedQueries @client {
-        queries {
-          id
-          name
-          queryString
-          variables
-          cachedData
-          options
-          networkStatus
-          pollInterval
-          error {
-            message
-            clientErrors
-            name
-            networkError {
-              message
-              name
-              stack
-            }
-            graphQLErrors {
-              message
-              path
-              extensions
-            }
-            protocolErrors
-          }
-        }
-        count
-      }
-    }
-  `;
-
-export function getQueryData(query: QueryDetails): WatchedQuery | undefined {
-  // TODO: The current designs do not account for non-cached data.
-  // We need a workaround to show that data + we should surface
-  // the FetchPolicy.
-  const name = getOperationName(query.document);
-  if (name === "IntrospectionQuery") {
-    return;
-  }
-
-  return {
-    id: String(query.id),
-    __typename: "WatchedQuery",
-    name,
-    queryString: print(query.document),
-    variables: query.variables ?? null,
-    cachedData: query.cachedData ?? null,
-    options: query.options ?? null,
-    networkStatus: (query.networkStatus as number) ?? null,
-    pollInterval: query.pollInterval ?? null,
-    error: query.error ? toGQLSerializedApolloError(query.error) : null,
-  };
-}
-
-function toGQLSerializedError(error: SerializedError): GQLSerializedError {
-  return {
-    ...error,
-    stack: error.stack ?? null,
-    __typename: "SerializedError",
-  };
-}
-
-function toGQLSerializedApolloError(
-  apolloError: SerializedApolloError
-): GQLSerializedApolloError {
-  return {
-    ...apolloError,
-    networkError: apolloError.networkError
-      ? toGQLSerializedError(apolloError.networkError)
-      : null,
-    graphQLErrors: apolloError.graphQLErrors.map((graphQLError) => ({
-      __typename: "SerializedGraphQLError",
-      path: graphQLError.path ?? null,
-      message: graphQLError.message,
-      extensions: (graphQLError.extensions as JSONObject) ?? null,
-    })),
-    __typename: "SerializedApolloError",
-  };
-}
-
 export const writeData = ({
   clientVersion,
-  queries,
   cache,
 }: {
   clientVersion: string | null;
-  queries: QueryDetails[];
   cache: JSONObject;
 }) => {
-  const filteredQueries = queries.map(getQueryData).filter(Boolean);
-
-  client.writeQuery({
-    query: GET_QUERIES,
-    data: {
-      watchedQueries: {
-        __typename: "WatchedQueries",
-        queries: filteredQueries,
-        count: filteredQueries.length,
-      },
-    },
-  });
-
   client.writeQuery({
     query: gql`
       query ClientVersion {
