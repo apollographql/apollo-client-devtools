@@ -72,7 +72,6 @@ export type Query = {
   client: Client;
   clientVersion?: Maybe<Scalars["String"]["output"]>;
   clients: Array<Client>;
-  watchedQueries: WatchedQueries;
 };
 
 export type QueryClientArgs = {
@@ -306,11 +305,6 @@ export type QueryResolvers<
     ContextType
   >;
   clients?: Resolver<Array<ResolversTypes["Client"]>, ParentType, ContextType>;
-  watchedQueries?: Resolver<
-    ResolversTypes["WatchedQueries"],
-    ParentType,
-    ContextType
-  >;
 };
 
 export interface QueryDataScalarConfig

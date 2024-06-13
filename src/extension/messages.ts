@@ -85,7 +85,6 @@ type ExplorerSubscriptionTerminationMessage = {
 
 interface ClientContext {
   clientVersion: string | null;
-  queries: QueryInfo[];
   cache: JSONObject;
 }
 

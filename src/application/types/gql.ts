@@ -62,7 +62,6 @@ export type Query = {
   client: Client;
   clientVersion: Maybe<Scalars["String"]["output"]>;
   clients: Array<Client>;
-  watchedQueries: WatchedQueries;
 };
 
 export type QueryclientArgs = {
@@ -158,24 +157,6 @@ export type GetWatchedQueries = {
         options: QueryOptions | null;
       }>;
     };
-  };
-};
-
-export type GetQueriesVariables = Exact<{ [key: string]: never }>;
-
-export type GetQueries = {
-  watchedQueries: {
-    __typename: "WatchedQueries";
-    count: number;
-    queries: Array<{
-      __typename: "WatchedQuery";
-      id: string;
-      name: string | null;
-      queryString: string;
-      variables: Variables | null;
-      cachedData: QueryData | null;
-      options: QueryOptions | null;
-    }>;
   };
 };
 

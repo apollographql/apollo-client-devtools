@@ -3,7 +3,6 @@ import type { RpcClient } from "../extension/rpc";
 import typeDefs from "./localSchema.graphql";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import type { Resolvers } from "./types/resolvers";
-import { getQueryData } from ".";
 import { getOperationName } from "@apollo/client/utilities";
 import { print } from "graphql";
 
@@ -31,7 +30,23 @@ function createResolvers(rpcClient: RpcClient<DevtoolsRPCMessage>): Resolvers {
       items: async (client) => {
         const queries = await rpcClient.request("getQueries", client.id);
 
-        return queries.map(getQueryData).filter(Boolean);
+        return queries
+          .map((query, index) => {
+            const name = getOperationName(query.document);
+            if (name === "IntrospectionQuery") {
+              return;
+            }
+
+            return {
+              id: String(index),
+              name,
+              queryString: print(query.document),
+              variables: query.variables ?? null,
+              cachedData: query.cachedData ?? null,
+              options: query.options ?? null,
+            };
+          })
+          .filter(Boolean);
       },
     },
     ClientMutations: {
