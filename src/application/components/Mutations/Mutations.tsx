@@ -22,20 +22,24 @@ import { ApolloErrorAlertDisclosurePanel } from "../ApolloErrorAlertDisclosurePa
 
 const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
   gql`
-    query GetMutations {
-      mutationLog @client {
+    query GetMutations($id: ID!) {
+      client(id: $id) {
+        id
         mutations {
-          id
-          name
-          mutationString
-          variables
-          loading
-          error {
-            ... on SerializedError {
-              ...SerializedErrorAlertDisclosureItem_error
-            }
-            ... on SerializedApolloError {
-              ...ApolloErrorAlertDisclosurePanel_error
+          total
+          items {
+            id
+            name
+            mutationString
+            variables
+            loading
+            error {
+              ... on SerializedError {
+                ...SerializedErrorAlertDisclosureItem_error
+              }
+              ... on SerializedApolloError {
+                ...ApolloErrorAlertDisclosurePanel_error
+              }
             }
           }
         }
@@ -47,14 +51,20 @@ const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
   `;
 
 interface MutationsProps {
+  clientId: string | undefined;
   explorerIFrame: HTMLIFrameElement | null;
 }
 
-export const Mutations = ({ explorerIFrame }: MutationsProps) => {
+export const Mutations = ({ clientId, explorerIFrame }: MutationsProps) => {
   const [selected, setSelected] = useState<number>(0);
-  const { data } = useQuery(GET_MUTATIONS);
+  const { data } = useQuery(GET_MUTATIONS, {
+    variables: { id: clientId as string },
+    skip: clientId == null,
+    fetchPolicy: "cache-and-network",
+    pollInterval: 1000,
+  });
 
-  const mutations = data?.mutationLog.mutations ?? [];
+  const mutations = data?.client.mutations?.items ?? [];
   const selectedMutation = mutations.find(
     (mutation) => Number(mutation.id) === selected
   );

@@ -192,44 +192,51 @@ export type GetCacheVariables = Exact<{ [key: string]: never }>;
 
 export type GetCache = { cache: string };
 
-export type GetMutationsVariables = Exact<{ [key: string]: never }>;
+export type GetMutationsVariables = Exact<{
+  id: Scalars["ID"]["input"];
+}>;
 
 export type GetMutations = {
-  mutationLog: {
-    __typename: "MutationLog";
-    mutations: Array<{
-      __typename: "WatchedMutation";
-      id: string;
-      name: string | null;
-      mutationString: string;
-      variables: Variables | null;
-      loading: boolean;
-      error:
-        | {
-            __typename: "SerializedApolloError";
-            clientErrors: Array<string>;
-            protocolErrors: Array<string>;
-            networkError: {
+  client: {
+    __typename: "Client";
+    id: string;
+    mutations: {
+      __typename: "ClientMutations";
+      total: number;
+      items: Array<{
+        __typename: "WatchedMutation";
+        id: string;
+        name: string | null;
+        mutationString: string;
+        variables: Variables | null;
+        loading: boolean;
+        error:
+          | {
+              __typename: "SerializedApolloError";
+              clientErrors: Array<string>;
+              protocolErrors: Array<string>;
+              networkError: {
+                __typename: "SerializedError";
+                message: string;
+                name: string;
+                stack: string | null;
+              } | null;
+              graphQLErrors: Array<{
+                __typename: "SerializedGraphQLError";
+                message: string;
+                path: GraphQLErrorPath | null;
+                extensions: JSON | null;
+              }>;
+            }
+          | {
               __typename: "SerializedError";
               message: string;
               name: string;
               stack: string | null;
-            } | null;
-            graphQLErrors: Array<{
-              __typename: "SerializedGraphQLError";
-              message: string;
-              path: GraphQLErrorPath | null;
-              extensions: JSON | null;
-            }>;
-          }
-        | {
-            __typename: "SerializedError";
-            message: string;
-            name: string;
-            stack: string | null;
-          }
-        | null;
-    }>;
+            }
+          | null;
+      }>;
+    };
   };
 };
 
