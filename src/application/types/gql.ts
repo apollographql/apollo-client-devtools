@@ -1,3 +1,4 @@
+import type { Cache } from "./scalars";
 import type { QueryData } from "./scalars";
 import type { QueryOptions } from "./scalars";
 import type { Variables } from "./scalars";
@@ -28,6 +29,8 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean };
   Int: { input: number; output: number };
   Float: { input: number; output: number };
+  /** Represents JSON cache data */
+  Cache: { input: Cache; output: Cache };
   /** Represents data for a specific query */
   QueryData: { input: QueryData; output: QueryData };
   /** Represents options for a query */
@@ -38,6 +41,7 @@ export type Scalars = {
 
 export type Client = {
   __typename: "Client";
+  cache: Scalars["Cache"]["output"];
   id: Scalars["String"]["output"];
   mutations: ClientMutations;
   queries: ClientQueries;

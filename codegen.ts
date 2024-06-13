@@ -24,6 +24,7 @@ const config: CodegenConfig = {
         omitOperationSuffix: true,
         useTypeImports: true,
         scalars: {
+          Cache: "./scalars#Cache",
           QueryData: "./scalars#QueryData",
           Variables: "./scalars#Variables",
           QueryOptions: "./scalars#QueryOptions",
