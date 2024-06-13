@@ -56,12 +56,6 @@ export type ClientQueries = {
   total: Scalars["Int"]["output"];
 };
 
-export type MutationLog = {
-  __typename: "MutationLog";
-  count: Scalars["Int"]["output"];
-  mutations: Array<WatchedMutation>;
-};
-
 export type Query = {
   __typename: "Query";
   cache: Scalars["String"]["output"];
@@ -69,7 +63,6 @@ export type Query = {
   clientVersion: Maybe<Scalars["String"]["output"]>;
   clients: Array<Client>;
   mutation: Maybe<WatchedMutation>;
-  mutationLog: MutationLog;
   watchedQueries: WatchedQueries;
   watchedQuery: Maybe<WatchedQuery>;
 };
@@ -192,22 +185,6 @@ export type GetQueries = {
       variables: Variables | null;
       cachedData: QueryData | null;
       options: QueryOptions | null;
-    }>;
-  };
-};
-
-export type GetAllMutationsVariables = Exact<{ [key: string]: never }>;
-
-export type GetAllMutations = {
-  mutationLog: {
-    __typename: "MutationLog";
-    count: number;
-    mutations: Array<{
-      __typename: "WatchedMutation";
-      id: string;
-      name: string | null;
-      mutationString: string;
-      variables: Variables | null;
     }>;
   };
 };

@@ -18,11 +18,8 @@ import { fragmentRegistry } from "./fragmentRegistry";
 import * as Tooltip from "@radix-ui/react-tooltip";
 
 import type {
-  GetAllMutations,
-  GetAllMutationsVariables,
   GetQueries,
   GetQueriesVariables,
-  WatchedMutation,
   WatchedQuery,
 } from "./types/gql";
 import type { QueryInfo } from "../extension/tab/helpers";
@@ -108,23 +105,6 @@ export const GET_QUERIES: TypedDocumentNode<GetQueries, GetQueriesVariables> =
     }
   `;
 
-export const GET_MUTATIONS: TypedDocumentNode<
-  GetAllMutations,
-  GetAllMutationsVariables
-> = gql`
-  query GetAllMutations {
-    mutationLog @client {
-      mutations {
-        id
-        name
-        mutationString
-        variables
-      }
-      count
-    }
-  }
-`;
-
 export function getQueryData(
   query: QueryInfo,
   key: number
@@ -148,28 +128,13 @@ export function getQueryData(
   };
 }
 
-export function getMutationData(
-  mutation: QueryInfo,
-  key: number
-): WatchedMutation {
-  return {
-    id: String(key),
-    __typename: "WatchedMutation",
-    name: getOperationName(mutation.document),
-    mutationString: print(mutation.document),
-    variables: mutation.variables ?? null,
-  };
-}
-
 export const writeData = ({
   clientVersion,
   queries,
-  mutations,
   cache,
 }: {
   clientVersion: string | null;
   queries: QueryInfo[];
-  mutations: QueryInfo[];
   cache: JSONObject;
 }) => {
   const filteredQueries = queries.map(getQueryData).filter(Boolean);
@@ -181,19 +146,6 @@ export const writeData = ({
         __typename: "WatchedQueries",
         queries: filteredQueries,
         count: filteredQueries.length,
-      },
-    },
-  });
-
-  const mappedMutations = mutations.map(getMutationData);
-
-  client.writeQuery({
-    query: GET_MUTATIONS,
-    data: {
-      mutationLog: {
-        __typename: "MutationLog",
-        mutations: mappedMutations,
-        count: mappedMutations.length,
       },
     },
   });

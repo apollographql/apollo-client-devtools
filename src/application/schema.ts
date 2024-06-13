@@ -3,7 +3,9 @@ import type { RpcClient } from "../extension/rpc";
 import typeDefs from "./localSchema.graphql";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import type { Resolvers } from "./types/resolvers";
-import { getMutationData, getQueryData } from ".";
+import { getQueryData } from ".";
+import { getOperationName } from "@apollo/client/utilities";
+import { print } from "graphql";
 
 export function createSchemaWithRpcClient(
   rpcClient: RpcClient<DevtoolsRPCMessage>
@@ -37,7 +39,13 @@ function createResolvers(rpcClient: RpcClient<DevtoolsRPCMessage>): Resolvers {
       items: async (client) => {
         const queries = await rpcClient.request("getMutations", client.id);
 
-        return queries.map(getMutationData);
+        return queries.map((mutation, index) => ({
+          id: String(index),
+          __typename: "WatchedMutation",
+          name: getOperationName(mutation.document),
+          mutationString: print(mutation.document),
+          variables: mutation.variables ?? null,
+        }));
       },
     },
   };
