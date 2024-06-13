@@ -68,12 +68,6 @@ const cache = new InMemoryCache({
 
           return canRead(ref) ? ref : _;
         },
-        mutation(_, { toReference, args }) {
-          return toReference({
-            __typename: "WatchedMutation",
-            id: args?.id,
-          });
-        },
         cache() {
           return cacheVar();
         },
