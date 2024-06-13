@@ -132,18 +132,25 @@ export type GetCacheVariables = Exact<{ [key: string]: never }>;
 
 export type GetCache = { cache: string };
 
-export type GetMutationsVariables = Exact<{ [key: string]: never }>;
+export type GetMutationsVariables = Exact<{
+  id: Scalars["ID"]["input"];
+}>;
 
 export type GetMutations = {
-  mutationLog: {
-    __typename: "MutationLog";
-    mutations: Array<{
-      __typename: "WatchedMutation";
-      id: string;
-      name: string | null;
-      mutationString: string;
-      variables: Variables | null;
-    }>;
+  client: {
+    __typename: "Client";
+    id: string;
+    mutations: {
+      __typename: "ClientMutations";
+      total: number;
+      items: Array<{
+        __typename: "WatchedMutation";
+        id: string;
+        name: string | null;
+        mutationString: string;
+        variables: Variables | null;
+      }>;
+    };
   };
 };
 

@@ -305,7 +305,10 @@ export const App = () => {
           className="flex-1 overflow-hidden"
           value={Screens.Mutations}
         >
-          <Mutations explorerIFrame={embeddedExplorerIFrame} />
+          <Mutations
+            clientId={selectedClientId}
+            explorerIFrame={embeddedExplorerIFrame}
+          />
         </Tabs.Content>
         <Tabs.Content className="flex-1 overflow-hidden" value={Screens.Cache}>
           <Cache />
