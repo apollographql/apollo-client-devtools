@@ -70,7 +70,6 @@ export type Query = {
   __typename?: "Query";
   cache: Scalars["String"]["output"];
   client: Client;
-  clientVersion?: Maybe<Scalars["String"]["output"]>;
   clients: Array<Client>;
 };
 
@@ -298,11 +297,6 @@ export type QueryResolvers<
     ParentType,
     ContextType,
     RequireFields<QueryClientArgs, "id">
-  >;
-  clientVersion?: Resolver<
-    Maybe<ResolversTypes["String"]>,
-    ParentType,
-    ContextType
   >;
   clients?: Resolver<Array<ResolversTypes["Client"]>, ParentType, ContextType>;
 };

@@ -108,13 +108,7 @@ function getClientData() {
   // sent without errors.
   //
   // https://github.com/apollographql/apollo-client-devtools/issues/1258
-  return JSON.parse(
-    JSON.stringify({
-      clientVersion: hook.ApolloClient?.version ?? null,
-      cache: hook.getCache(),
-    })
-  ) as {
-    clientVersion: string | null;
+  return JSON.parse(JSON.stringify({ cache: hook.getCache() })) as {
     cache: JSONObject;
   };
 }

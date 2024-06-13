@@ -60,7 +60,6 @@ export type Query = {
   __typename: "Query";
   cache: Scalars["String"]["output"];
   client: Client;
-  clientVersion: Maybe<Scalars["String"]["output"]>;
   clients: Array<Client>;
 };
 
@@ -159,10 +158,6 @@ export type GetWatchedQueries = {
     };
   };
 };
-
-export type ClientVersionVariables = Exact<{ [key: string]: never }>;
-
-export type ClientVersion = { clientVersion: string | null };
 
 export type ClientFields = {
   __typename: "Client";
