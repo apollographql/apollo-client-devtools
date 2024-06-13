@@ -44,6 +44,13 @@ const cache = new InMemoryCache({
         },
       },
     },
+    Client: {
+      fields: {
+        cache: {
+          merge: true,
+        },
+      },
+    },
     ClientQueries: {
       merge: true,
     },
