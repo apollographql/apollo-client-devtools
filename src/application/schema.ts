@@ -24,6 +24,7 @@ function createResolvers(rpcClient: RpcClient<DevtoolsRPCMessage>): Resolvers {
     Client: {
       queries: (client) => client,
       mutations: (client) => client,
+      cache: (client) => rpcClient.request("getCache", client.id),
     },
     ClientQueries: {
       total: (client) => client.queryCount,
