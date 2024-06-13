@@ -82,14 +82,9 @@ export type Query = {
   clientVersion?: Maybe<Scalars["String"]["output"]>;
   clients: Array<Client>;
   watchedQueries: WatchedQueries;
-  watchedQuery?: Maybe<WatchedQuery>;
 };
 
 export type QueryClientArgs = {
-  id: Scalars["ID"]["input"];
-};
-
-export type QueryWatchedQueryArgs = {
   id: Scalars["ID"]["input"];
 };
 
@@ -403,12 +398,6 @@ export type QueryResolvers<
     ResolversTypes["WatchedQueries"],
     ParentType,
     ContextType
-  >;
-  watchedQuery?: Resolver<
-    Maybe<ResolversTypes["WatchedQuery"]>,
-    ParentType,
-    ContextType,
-    RequireFields<QueryWatchedQueryArgs, "id">
   >;
 };
 

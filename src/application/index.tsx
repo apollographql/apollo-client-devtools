@@ -69,14 +69,6 @@ const cache = new InMemoryCache({
         watchedQueries(_ = { queries: [], count: 0 }) {
           return _;
         },
-        watchedQuery(_, { toReference, args, canRead }) {
-          const ref = toReference({
-            __typename: "WatchedQuery",
-            id: args?.id,
-          });
-
-          return canRead(ref) ? ref : _;
-        },
         cache() {
           return cacheVar();
         },
