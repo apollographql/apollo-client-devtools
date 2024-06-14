@@ -5,7 +5,6 @@ import {
   ApolloClient,
   ApolloProvider,
   InMemoryCache,
-  makeVar,
   gql,
 } from "@apollo/client";
 import { SchemaLink } from "@apollo/client/link/schema";
@@ -15,7 +14,6 @@ import { App } from "./App";
 import { fragmentRegistry } from "./fragmentRegistry";
 import * as Tooltip from "@radix-ui/react-tooltip";
 
-import type { JSONObject } from "./types/json";
 import { getRpcClient } from "../extension/devtools/panelRpcClient";
 import { createSchemaWithRpcClient } from "./schema";
 import type { ApolloClientInfo } from "../types";
@@ -57,13 +55,6 @@ const cache = new InMemoryCache({
     ClientMutations: {
       merge: true,
     },
-    Query: {
-      fields: {
-        cache() {
-          return cacheVar();
-        },
-      },
-    },
     SerializedApolloError: {
       keyFields: false,
     },
@@ -73,12 +64,7 @@ const cache = new InMemoryCache({
   },
 });
 
-const cacheVar = makeVar<string | null>(null);
 export const client = new ApolloClient({ cache, link });
-
-export const writeData = ({ cache }: { cache: JSONObject }) => {
-  cacheVar(JSON.stringify(cache));
-};
 
 export const addClient = (clientData: ApolloClientInfo) => {
   client.cache.modify({

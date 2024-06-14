@@ -14,7 +14,6 @@ scalar JSON
 scalar GraphQLErrorPath
 
 type Query {
-  cache: String!
   clients: [Client!]!
   client(id: ID!): Client!
 }

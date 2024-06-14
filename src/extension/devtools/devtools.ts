@@ -80,10 +80,10 @@ function startRequestInterval(ms = 500) {
   async function getClientData() {
     try {
       if (panelWindow) {
-        panelWindow.send({
-          type: "update",
-          payload: await rpcClient.request("getClientOperations"),
-        });
+        // panelWindow.send({
+        //   type: "update",
+        //   payload: await rpcClient.request("getClientOperations"),
+        // });
       }
     } finally {
       id = setTimeout(getClientData, ms);

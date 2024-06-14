@@ -1,6 +1,5 @@
 import {
   initDevTools,
-  writeData,
   client,
   addClient,
   removeClient,
@@ -13,7 +12,6 @@ const panelWindow = getPanelActor(window);
 
 panelWindow.on("initializePanel", (message) => {
   devtoolsState(message.state);
-  writeData(message.payload);
 
   initDevTools();
 });
@@ -27,7 +25,7 @@ panelWindow.on("devtoolsStateChanged", (message) => {
 });
 
 panelWindow.on("update", (message) => {
-  writeData(message.payload);
+  // writeData(message.payload);
 });
 
 panelWindow.on("registerClient", (message) => {
