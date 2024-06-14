@@ -173,9 +173,13 @@ export type ApolloErrorAlertDisclosurePanel_error = {
   }>;
 };
 
-export type GetCacheVariables = Exact<{ [key: string]: never }>;
+export type GetCacheVariables = Exact<{
+  id: Scalars["ID"]["input"];
+}>;
 
-export type GetCache = { cache: string };
+export type GetCache = {
+  client: { __typename: "Client"; id: string; cache: Cache };
+};
 
 export type GetMutationsVariables = Exact<{
   id: Scalars["ID"]["input"];

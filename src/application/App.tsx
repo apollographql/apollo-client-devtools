@@ -309,7 +309,7 @@ export const App = () => {
           />
         </Tabs.Content>
         <Tabs.Content className="flex-1 overflow-hidden" value={Screens.Cache}>
-          <Cache />
+          <Cache clientId={selectedClientId} />
         </Tabs.Content>
       </Tabs>
     </>
