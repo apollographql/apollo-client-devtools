@@ -2,11 +2,7 @@ import browser from "webextension-polyfill";
 import { createDevtoolsMachine } from "../../application/machines";
 import type { Actor } from "../actor";
 import { createActor } from "../actor";
-import type {
-  ClientMessage,
-  DevtoolsRPCMessage,
-  PanelMessage,
-} from "../messages";
+import type { ClientMessage, PanelMessage } from "../messages";
 import { getPanelActor } from "./panelActor";
 import {
   createPortMessageAdapter,
