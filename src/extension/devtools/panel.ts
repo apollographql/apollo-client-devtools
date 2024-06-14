@@ -24,10 +24,6 @@ panelWindow.on("devtoolsStateChanged", (message) => {
   }
 });
 
-panelWindow.on("update", (message) => {
-  // writeData(message.payload);
-});
-
 panelWindow.on("registerClient", (message) => {
   addClient(message.payload);
 });

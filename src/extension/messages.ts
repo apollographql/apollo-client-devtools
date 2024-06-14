@@ -83,10 +83,6 @@ type ExplorerSubscriptionTerminationMessage = {
   type: "explorerSubscriptionTermination";
 };
 
-interface ClientContext {
-  cache: JSONObject;
-}
-
 type RegisterClientMessage = {
   type: "registerClient";
   payload: ApolloClientInfo;
@@ -112,17 +108,11 @@ export type PanelMessage =
   | ExplorerRequestMessage
   | ExplorerResponseMessage
   | ExplorerSubscriptionTerminationMessage
-  | {
-      type: "initializePanel";
-      state: StateValues;
-      payload: ClientContext;
-    }
+  | { type: "initializePanel"; state: StateValues }
   | { type: "retryConnection" }
-  | { type: "devtoolsStateChanged"; state: StateValues }
-  | { type: "update"; payload: ClientContext };
+  | { type: "devtoolsStateChanged"; state: StateValues };
 
 export type DevtoolsRPCMessage = {
-  getClientOperations(): ClientContext;
   getClients(): ApolloClientInfo[];
   getClient(id: string): ApolloClientInfo;
   getQueries(clientId: string): QueryInfo[];

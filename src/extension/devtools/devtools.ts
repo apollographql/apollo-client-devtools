@@ -12,7 +12,7 @@ import {
   createPortMessageAdapter,
   createWindowMessageAdapter,
 } from "../messageAdapters";
-import { createRPCBridge, createRpcClient } from "../rpc";
+import { createRPCBridge } from "../rpc";
 import { interpret } from "@xstate/fsm";
 
 const inspectedTabId = browser.devtools.inspectedWindow.tabId;
@@ -42,7 +42,6 @@ const portAdapter = createPortMessageAdapter(() =>
 );
 
 const clientPort = createActor<ClientMessage>(portAdapter);
-const rpcClient = createRpcClient<DevtoolsRPCMessage>(portAdapter);
 
 function connectToClient() {
   clientPort.send({ type: "connectToClient" });
@@ -114,7 +113,6 @@ async function createDevtoolsPanel() {
       panelWindow.send({
         type: "initializePanel",
         state: devtoolsMachine.state.value,
-        payload: await rpcClient.request("getClientOperations"),
       });
 
       panelWindow.on("retryConnection", () => {

@@ -99,20 +99,6 @@ Object.defineProperty(window, "__APOLLO_DEVTOOLS_GLOBAL_HOOK__", {
   configurable: true,
 });
 
-function getClientData() {
-  // We need to JSON stringify the data here in case the cache contains
-  // references to irregular data such as `URL` instances which are not
-  // cloneable via `structuredClone` (which `window.postMessage` uses to
-  // send messages). `JSON.stringify` does however serialize `URL`s into
-  // strings properly, so this should ensure that the cache data will be
-  // sent without errors.
-  //
-  // https://github.com/apollographql/apollo-client-devtools/issues/1258
-  return JSON.parse(JSON.stringify({ cache: hook.getCache() })) as {
-    cache: JSONObject;
-  };
-}
-
 function getClientInfo(client: ApolloClient<unknown>): ApolloClientInfo {
   return {
     id: knownClients.get(client)!,
@@ -122,7 +108,6 @@ function getClientInfo(client: ApolloClient<unknown>): ApolloClientInfo {
   };
 }
 
-handleRpc("getClientOperations", getClientData);
 handleRpc("getClients", () => {
   return [...knownClients.keys()].map(getClientInfo);
 });
