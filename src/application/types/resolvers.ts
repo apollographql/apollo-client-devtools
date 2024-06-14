@@ -71,7 +71,6 @@ export type ClientQueries = {
 
 export type Query = {
   __typename?: "Query";
-  cache: Scalars["String"]["output"];
   client: Client;
   clients: Array<Client>;
 };
@@ -302,7 +301,6 @@ export type QueryResolvers<
   ParentType extends
     ResolversParentTypes["Query"] = ResolversParentTypes["Query"],
 > = {
-  cache?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   client?: Resolver<
     ResolversTypes["Client"],
     ParentType,

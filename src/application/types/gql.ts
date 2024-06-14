@@ -62,7 +62,6 @@ export type ClientQueries = {
 
 export type Query = {
   __typename: "Query";
-  cache: Scalars["String"]["output"];
   client: Client;
   clients: Array<Client>;
 };

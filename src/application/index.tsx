@@ -54,22 +54,10 @@ const cache = new InMemoryCache({
     ClientMutations: {
       merge: true,
     },
-    Query: {
-      fields: {
-        cache() {
-          return cacheVar();
-        },
-      },
-    },
   },
 });
 
-const cacheVar = makeVar<string | null>(null);
 export const client = new ApolloClient({ cache, link });
-
-export const writeData = ({ cache }: { cache: JSONObject }) => {
-  cacheVar(JSON.stringify(cache));
-};
 
 export const addClient = (clientData: ApolloClientInfo) => {
   client.cache.modify({
