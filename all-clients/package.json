@@ -59,7 +59,8 @@
     "@apollo-client/3.10.2": "npm:@apollo/client@3.10.2",
     "@apollo-client/3.10.3": "npm:@apollo/client@3.10.3",
     "@apollo-client/3.10.4": "npm:@apollo/client@3.10.4",
-    "@apollo-client/3.10.5": "npm:@apollo/client@3.10.5"
+    "@apollo-client/3.10.5": "npm:@apollo/client@3.10.5",
+    "@apollo-client/3.10.6": "npm:@apollo/client@3.10.6"
   },
   "devDependencies": {
     "semver": "7.6.0"
