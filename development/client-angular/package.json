@@ -10,7 +10,7 @@
     "@angular/platform-browser-dynamic": "17.3.11",
     "@apollo/client": "3.10.6",
     "apollo-angular": "7.0.2",
-    "graphql": "16.8.2",
+    "graphql": "16.9.0",
     "graphql-ws": "5.16.0",
     "rxjs": "7.8.1",
     "tslib": "2.6.3",
