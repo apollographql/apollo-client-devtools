@@ -8,7 +8,7 @@ interface HeaderProps {
 
 export function Header({ className, children }: HeaderProps) {
   return (
-    <header className={clsx(className, "flex pt-6 px-6 pb-4 gap-2")}>
+    <header className={clsx(className, "flex flex-col pt-6 px-6 pb-4 gap-2")}>
       {children}
     </header>
   );
