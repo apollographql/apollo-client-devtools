@@ -4,6 +4,7 @@ import { Fragment } from "react";
 import { clsx } from "clsx";
 
 import { Body } from "./Body";
+import { Description } from "./Description";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { Title } from "./Title";
@@ -73,6 +74,7 @@ export function Modal({
 }
 
 Modal.Body = Body;
+Modal.Description = Description;
 Modal.Footer = Footer;
 Modal.Header = Header;
 Modal.Title = Title;
