@@ -152,11 +152,8 @@ export function ClientNotFoundModal({
                   labels={[LABELS.bug]}
                   repository="apollo-client"
                   body={`
-<!-- Please provide a detailed description of the issue you are experiencing. It is most helpful if you are able to provide a minimal reproduction of the issue. -->
-
-### Link to Reproduction
-<!-- Please provide a link to the reproduction of the issue. -->
-
+${SECTIONS.defaultDescription}
+${SECTIONS.reproduction}
 ${SECTIONS.apolloClientVersion}
 ${SECTIONS.devtoolsVersion}
 `}
