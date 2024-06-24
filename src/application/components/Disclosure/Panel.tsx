@@ -1,5 +1,8 @@
 import type { ReactNode } from "react";
-import { Disclosure, Transition } from "@headlessui/react";
+import {
+  DisclosurePanel as BaseDisclosurePanel,
+  Transition,
+} from "@headlessui/react";
 
 interface DisclosurePanelProps {
   children: ReactNode;
@@ -15,9 +18,9 @@ export function DisclosurePanel({ children }: DisclosurePanelProps) {
       leaveFrom="transform opacity-100"
       leaveTo="transform opacity-0"
     >
-      <Disclosure.Panel className="border border-t-0 border-primary dark:border-primary-dark rounded-b p-4">
+      <BaseDisclosurePanel className="border border-t-0 border-primary dark:border-primary-dark rounded-b p-4">
         {children}
-      </Disclosure.Panel>
+      </BaseDisclosurePanel>
     </Transition>
   );
 }
