@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Dialog } from "@headlessui/react";
+import { DialogTitle } from "@headlessui/react";
 import { clsx } from "clsx";
 
 interface TitleProps {
@@ -9,7 +9,7 @@ interface TitleProps {
 
 export function Title({ className, children }: TitleProps) {
   return (
-    <Dialog.Title
+    <DialogTitle
       as="h3"
       className={clsx(
         className,
@@ -17,6 +17,6 @@ export function Title({ className, children }: TitleProps) {
       )}
     >
       {children}
-    </Dialog.Title>
+    </DialogTitle>
   );
 }
