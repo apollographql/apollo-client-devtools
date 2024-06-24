@@ -53,7 +53,7 @@ ${SECTIONS.apolloClientVersion}
 ${SECTIONS.devtoolsVersion}
 `}
           >
-            file an issue
+            create an issue
           </GitHubIssueLink>{" "}
           if you believe you have reached this in error.
         </Modal.Description>
@@ -244,14 +244,13 @@ ${SECTIONS.devtoolsVersion}
           <GitHubIssueLink
             className="no-underline"
             labels={[LABELS.bug]}
-            repository="apollo-client"
             body={`
 ${SECTIONS.defaultDescription}
 ${SECTIONS.apolloClientVersion}
 ${SECTIONS.devtoolsVersion}
 `}
           >
-            File an issue
+            <span>Create an issue</span>
           </GitHubIssueLink>
         </Button>
         <ButtonGroup>
