@@ -210,7 +210,7 @@ ${SECTIONS.devtoolsVersion}
               <GitHubIssueLink
                 labels={[LABELS.bug, LABELS.clientDiscovery]}
                 body={`
-${SECTIONS.default}
+${SECTIONS.defaultDescription}
 ${SECTIONS.apolloClientVersion}
 ${SECTIONS.devtoolsVersion}
 `}

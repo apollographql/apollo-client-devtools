@@ -12,16 +12,19 @@ interface GitHubIssueLinkProps {
 }
 
 const WHITESPACE = /\s/g;
-const DEFAULT_BODY =
-  "<!-- Please provide a detailed description of the issue you are experiencing and the steps to reproduce it.-->\n";
+const DEFAULT_DESCRIPTION =
+  "<!-- Please provide a detailed description of the issue you are experiencing. It is most helpful if you are able to provide a minimal reproduction of the issue. -->\n";
 
 export const SECTIONS = {
-  default: DEFAULT_BODY,
+  defaultDescription: DEFAULT_DESCRIPTION,
   apolloClientVersion: `### \`@apollo/client\` version
 <!-- Please provide the version of \`@apollo/client\` you are using. -->
 `,
   devtoolsVersion: `### Apollo Client Devtools version
 ${VERSION}
+`,
+  reproduction: `### Link to Reproduction
+<!-- Please provide a link to the reproduction of the issue. -->
 `,
 } as const;
 
@@ -35,7 +38,7 @@ export const GitHubIssueLink = forwardRef<
   GitHubIssueLinkProps
 >(function GitHubIssueLink(
   {
-    body = DEFAULT_BODY,
+    body = DEFAULT_DESCRIPTION,
     className,
     repository = "apollo-client-devtools",
     labels,
