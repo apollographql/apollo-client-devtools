@@ -3,6 +3,7 @@ import { ButtonGroup } from "./ButtonGroup";
 import { Disclosure } from "./Disclosure";
 import { GitHubIssueLink, SECTIONS, LABELS } from "./GitHubIssueLink";
 import { Modal } from "./Modal";
+import IconGitHubSolid from "@apollo/icons/small/IconGitHubSolid.svg";
 
 interface ClientNotFoundModalProps {
   open: boolean;
@@ -31,19 +32,33 @@ export function ClientNotFoundModal({
     <Modal open={open} onClose={onClose} size="xl">
       <Modal.Header>
         <Modal.Title>Could not find client</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <p>
+        <Modal.Description>
           An Apollo Client instance was not found, either because an Apollo
           Client instance was never created, or because it could not be
           discovered. This is most commonly fixed by setting the{" "}
           <ConnectToDevToolsOptionLink /> to <code>true</code>.
-        </p>
-        <p className="mt-4">
+        </Modal.Description>
+        <Modal.Description>
           If this was reached in error, please try one of the following
           suggestions or click the &quot;Retry&quot; button to try looking for
           the client again.
-        </p>
+        </Modal.Description>
+        <Modal.Description>
+          Please{" "}
+          <GitHubIssueLink
+            labels={[LABELS.bug]}
+            body={`
+${SECTIONS.defaultDescription}
+${SECTIONS.apolloClientVersion}
+${SECTIONS.devtoolsVersion}
+`}
+          >
+            file an issue
+          </GitHubIssueLink>{" "}
+          if you believe you have reached this in error.
+        </Modal.Description>
+      </Modal.Header>
+      <Modal.Body>
         <div className="mt-4 flex flex-col gap-2">
           <Disclosure>
             <Disclosure.Button>
@@ -220,6 +235,25 @@ ${SECTIONS.devtoolsVersion}
         </div>
       </Modal.Body>
       <Modal.Footer>
+        <Button
+          asChild
+          size="md"
+          variant="secondary"
+          icon={<IconGitHubSolid />}
+        >
+          <GitHubIssueLink
+            className="no-underline"
+            labels={[LABELS.bug]}
+            repository="apollo-client"
+            body={`
+${SECTIONS.defaultDescription}
+${SECTIONS.apolloClientVersion}
+${SECTIONS.devtoolsVersion}
+`}
+          >
+            File an issue
+          </GitHubIssueLink>
+        </Button>
         <ButtonGroup>
           <Button type="button" size="md" variant="secondary" onClick={onClose}>
             Close
