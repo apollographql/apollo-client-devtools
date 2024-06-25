@@ -1,4 +1,9 @@
-import type { ObservableQuery, WatchQueryOptions } from "@apollo/client";
+import type {
+  ApolloError,
+  NetworkStatus,
+  ObservableQuery,
+  WatchQueryOptions,
+} from "@apollo/client";
 import type { Cache } from "@apollo/client/cache";
 import type {
   DocumentNode,
@@ -9,6 +14,7 @@ import type { QueryData, Variables } from "../../application/types/scalars";
 import { getPrivateAccess } from "../../privateAccess";
 import { getOperationName } from "@apollo/client/utilities";
 import { pick } from "../../application/utilities/pick";
+import type { GraphQLFormattedError } from "graphql";
 
 export type QueryOptions = Pick<
   WatchQueryOptions,
@@ -23,11 +29,20 @@ export type QueryOptions = Pick<
   | "notifyOnNetworkStatusChange"
 > & { nextFetchPolicy?: string };
 
+interface SerializedApolloError extends Pick<ApolloError, "message" | "name"> {
+  clientErrors: string[];
+  networkError?: string;
+  graphqlErrors: GraphQLFormattedError[];
+  protocolErrors: string[];
+}
+
 export type QueryInfo = {
   document: DocumentNode;
   variables?: Variables;
   cachedData?: QueryData; // Not a member of the actual Apollo Client QueryInfo type
   options?: QueryOptions;
+  networkStatus?: NetworkStatus;
+  error?: SerializedApolloError;
 };
 
 // Transform the map of observable queries into a list of QueryInfo objects usable by DevTools
@@ -45,15 +60,32 @@ export function getQueries(
       if (name === "IntrospectionQuery") {
         return;
       }
+      const { networkStatus, error } = observableQuery.getCurrentResult(false);
+
       queries.push({
         document,
         variables,
         cachedData: diff.result,
         options: getQueryOptions(oc),
+        networkStatus,
+        error: error ? serializeApolloError(error) : undefined,
       });
     });
   }
   return queries;
+}
+
+function serializeApolloError(error: ApolloError) {
+  return {
+    clientErrors: error.clientErrors.map((e) => e.message),
+    name: error.name,
+    networkError: error.networkError?.message,
+    message: error.message,
+    graphqlErrors: error.graphQLErrors.map((e) =>
+      e.constructor.name === "GraphQLError" ? e.toJSON() : e
+    ),
+    protocolErrors: error.protocolErrors.map((e) => e.message),
+  };
 }
 
 function getQueryOptions(observableQuery: ObservableQuery) {
