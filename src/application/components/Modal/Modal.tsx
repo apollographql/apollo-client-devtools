@@ -1,4 +1,9 @@
-import { Dialog, Transition } from "@headlessui/react";
+import {
+  Dialog,
+  DialogPanel,
+  Transition,
+  TransitionChild,
+} from "@headlessui/react";
 import type { ReactNode } from "react";
 import { Fragment } from "react";
 import { clsx } from "clsx";
@@ -25,9 +30,9 @@ export function Modal({
   size,
 }: ModalProps) {
   return (
-    <Transition.Root show={open} as={Fragment}>
+    <Transition show={open} as={Fragment}>
       <Dialog onClose={onClose}>
-        <Transition.Child
+        <TransitionChild
           as={Fragment}
           enter="ease-out duration-300"
           enterFrom="opacity-0"
@@ -37,11 +42,11 @@ export function Modal({
           leaveTo="opacity-0"
         >
           <div className="fixed inset-0 bg-black-300/50" />
-        </Transition.Child>
+        </TransitionChild>
 
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
           <div className="flex min-h-full items-center justify-center p-4">
-            <Transition.Child
+            <TransitionChild
               as={Fragment}
               enter="ease-out duration-300"
               enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
@@ -50,7 +55,7 @@ export function Modal({
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel
+              <DialogPanel
                 className={clsx(
                   "relative transform overflow-hidden rounded-lg bg-primary dark:bg-primary-dark shadow-modal transition-all",
                   {
@@ -64,12 +69,12 @@ export function Modal({
                 <div className={clsx(className, "flex flex-col")}>
                   {children}
                 </div>
-              </Dialog.Panel>
-            </Transition.Child>
+              </DialogPanel>
+            </TransitionChild>
           </div>
         </div>
       </Dialog>
-    </Transition.Root>
+    </Transition>
   );
 }
 
