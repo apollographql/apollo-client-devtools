@@ -125,62 +125,66 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
                 embeddedExplorerIFrame={explorerIFrame}
               />
             </QueryLayout.Header>
-            <QueryLayout.QueryString code={selectedQuery.queryString} />
-            {selectedQuery.error && (
-              <AlertDisclosure variant="error">
-                <AlertDisclosure.Button>
-                  Query completed with errors
-                </AlertDisclosure.Button>
-                <AlertDisclosure.Panel>
-                  <ul className="flex flex-col gap-3">
-                    {selectedQuery.error.networkError && (
-                      <ErrorMessageAlertItem>
-                        [Network]: {selectedQuery.error.networkError}
-                      </ErrorMessageAlertItem>
-                    )}
-                    {selectedQuery.error.graphQLErrors.map(
-                      (graphQLError, idx) => (
-                        <ErrorMessageAlertItem key={`gql-${idx}`}>
-                          <div>[GraphQL]: {graphQLError.message}</div>
-                          {graphQLError.path && (
-                            <div className="text-xs mt-4">
-                              path: [
-                              {graphQLError.path.map((segment, idx, arr) => {
-                                return (
-                                  <>
-                                    {typeof segment === "number"
-                                      ? segment
-                                      : `"${segment}"`}
-                                    {idx !== arr.length - 1 && ", "}
-                                  </>
-                                );
-                              })}
-                              ]
-                            </div>
-                          )}
-                          {graphQLError.extensions && (
-                            <GraphQLErrorExtensions
-                              className="mt-4"
-                              extensions={graphQLError.extensions}
-                            />
-                          )}
+            <QueryLayout.Content>
+              {selectedQuery.error && (
+                <AlertDisclosure className="mb-2" variant="error">
+                  <AlertDisclosure.Button>
+                    Query completed with errors
+                  </AlertDisclosure.Button>
+                  <AlertDisclosure.Panel>
+                    <ul className="flex flex-col gap-3">
+                      {selectedQuery.error.networkError && (
+                        <ErrorMessageAlertItem>
+                          [Network]: {selectedQuery.error.networkError}
                         </ErrorMessageAlertItem>
-                      )
-                    )}
-                    {selectedQuery.error.protocolErrors.map((message, idx) => (
-                      <ErrorMessageAlertItem key={`protocol-${idx}`}>
-                        [Protocol]: {message}
-                      </ErrorMessageAlertItem>
-                    ))}
-                    {selectedQuery.error.clientErrors.map((message, idx) => (
-                      <ErrorMessageAlertItem key={`client-${idx}`}>
-                        [Client]: {message}
-                      </ErrorMessageAlertItem>
-                    ))}
-                  </ul>
-                </AlertDisclosure.Panel>
-              </AlertDisclosure>
-            )}
+                      )}
+                      {selectedQuery.error.graphQLErrors.map(
+                        (graphQLError, idx) => (
+                          <ErrorMessageAlertItem key={`gql-${idx}`}>
+                            <div>[GraphQL]: {graphQLError.message}</div>
+                            {graphQLError.path && (
+                              <div className="text-xs mt-4">
+                                path: [
+                                {graphQLError.path.map((segment, idx, arr) => {
+                                  return (
+                                    <>
+                                      {typeof segment === "number"
+                                        ? segment
+                                        : `"${segment}"`}
+                                      {idx !== arr.length - 1 && ", "}
+                                    </>
+                                  );
+                                })}
+                                ]
+                              </div>
+                            )}
+                            {graphQLError.extensions && (
+                              <GraphQLErrorExtensions
+                                className="mt-4"
+                                extensions={graphQLError.extensions}
+                              />
+                            )}
+                          </ErrorMessageAlertItem>
+                        )
+                      )}
+                      {selectedQuery.error.protocolErrors.map(
+                        (message, idx) => (
+                          <ErrorMessageAlertItem key={`protocol-${idx}`}>
+                            [Protocol]: {message}
+                          </ErrorMessageAlertItem>
+                        )
+                      )}
+                      {selectedQuery.error.clientErrors.map((message, idx) => (
+                        <ErrorMessageAlertItem key={`client-${idx}`}>
+                          [Client]: {message}
+                        </ErrorMessageAlertItem>
+                      ))}
+                    </ul>
+                  </AlertDisclosure.Panel>
+                </AlertDisclosure>
+              )}
+              <QueryLayout.QueryString code={selectedQuery.queryString} />
+            </QueryLayout.Content>
           </>
         ) : (
           <EmptyMessage className="m-auto mt-20" />
