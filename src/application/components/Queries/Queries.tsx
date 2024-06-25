@@ -1,9 +1,10 @@
 import { useState } from "react";
-import type { NetworkStatus, TypedDocumentNode } from "@apollo/client";
-import { gql, useQuery } from "@apollo/client";
+import type { TypedDocumentNode } from "@apollo/client";
+import { NetworkStatus, gql, useQuery } from "@apollo/client";
 import { isNetworkRequestInFlight } from "@apollo/client/core/networkStatus";
 import { List } from "../List";
 import { ListItem } from "../ListItem";
+import IconErrorSolid from "@apollo/icons/default/IconErrorSolid.svg";
 
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { RunInExplorerButton } from "./RunInExplorerButton";
@@ -157,6 +158,12 @@ interface QueryStatusIconProps {
 const QueryStatusIcon = ({ networkStatus }: QueryStatusIconProps) => {
   if (isNetworkRequestInFlight(networkStatus)) {
     return <Spinner size="xs" />;
+  }
+
+  if (networkStatus === NetworkStatus.error) {
+    return (
+      <IconErrorSolid className="size-4 text-icon-error dark:text-icon-error-dark" />
+    );
   }
 
   return null;
