@@ -160,6 +160,20 @@ export type GetQueries = {
       variables: Variables | null;
       cachedData: QueryData | null;
       options: QueryOptions | null;
+      networkStatus: number;
+      error: {
+        __typename: "SerializedApolloError";
+        message: string;
+        clientErrors: Array<string>;
+        name: string;
+        networkError: string | null;
+        protocolErrors: Array<string>;
+        graphQLErrors: Array<{
+          __typename: "SerializedGraphQLError";
+          message: string;
+          path: Array<string> | null;
+        }>;
+      } | null;
     }>;
   };
 };

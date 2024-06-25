@@ -71,6 +71,12 @@ const cache = new InMemoryCache({
         },
       },
     },
+    SerializedApolloError: {
+      keyFields: false,
+    },
+    SerializedGraphQLError: {
+      keyFields: false,
+    },
   },
 });
 
@@ -90,6 +96,18 @@ export const GET_QUERIES: TypedDocumentNode<GetQueries, GetQueriesVariables> =
           variables
           cachedData
           options
+          networkStatus
+          error {
+            message
+            clientErrors
+            name
+            networkError
+            graphQLErrors {
+              message
+              path
+            }
+            protocolErrors
+          }
         }
         count
       }
@@ -142,7 +160,7 @@ export function getQueryData(
           clientErrors: query.error.clientErrors,
           networkError: query.error.networkError ?? null,
           protocolErrors: query.error.protocolErrors,
-          graphqlErrors: query.error.graphQLErrors.map((graphQLError) => ({
+          graphQLErrors: query.error.graphQLErrors.map((graphQLError) => ({
             __typename: "SerializedGraphQLError",
             path: graphQLError.path?.map((s) => s.toString()) ?? null,
             message: graphQLError.message,
