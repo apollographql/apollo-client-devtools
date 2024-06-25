@@ -40,6 +40,12 @@ export type Scalars = {
   Variables: { input: Variables; output: Variables };
 };
 
+export type GraphQLErrorSourceLocation = {
+  __typename: "GraphQLErrorSourceLocation";
+  column: Scalars["Int"]["output"];
+  line: Scalars["Int"]["output"];
+};
+
 export type MutationLog = {
   __typename: "MutationLog";
   count: Scalars["Int"]["output"];
@@ -84,6 +90,7 @@ export type SerializedError = {
 export type SerializedGraphQLError = {
   __typename: "SerializedGraphQLError";
   extensions: Maybe<Scalars["JSON"]["output"]>;
+  locations: Maybe<Array<GraphQLErrorSourceLocation>>;
   message: Scalars["String"]["output"];
   path: Maybe<Scalars["GraphQLErrorPath"]["output"]>;
 };
