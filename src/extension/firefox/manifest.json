@@ -1,5 +1,5 @@
 {
-  "version": "4.15.3",
+  "version": "4.15.4",
   "author": "Apollo",
   "name": "Apollo Client Devtools",
   "description": "GraphQL debugging tools for Apollo Client.",
