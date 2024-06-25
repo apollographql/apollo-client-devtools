@@ -127,24 +127,44 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
                   <ul className="flex flex-col gap-3">
                     {selectedQuery.error.networkError && (
                       <ErrorMessageAlertItem>
-                        {selectedQuery.error.networkError}
+                        [Network]: {selectedQuery.error.networkError}
                       </ErrorMessageAlertItem>
                     )}
                     {selectedQuery.error.graphQLErrors.map(
                       (graphQLError, idx) => (
                         <ErrorMessageAlertItem key={`gql-${idx}`}>
-                          {graphQLError.message}
+                          <div className="flex gap-4 items-start justify-between">
+                            <span>[GraphQL]: {graphQLError.message}</span>
+                            {graphQLError.path && (
+                              <span className="text-xs">
+                                Path: [
+                                {graphQLError.path.map((segment, idx, arr) => {
+                                  const asNumber = Number(segment);
+                                  const isNumber =
+                                    !isNaN(asNumber) && isFinite(asNumber);
+
+                                  return (
+                                    <>
+                                      {isNumber ? asNumber : `"${segment}"`}
+                                      {idx !== arr.length - 1 && ", "}
+                                    </>
+                                  );
+                                })}
+                                ]
+                              </span>
+                            )}
+                          </div>
                         </ErrorMessageAlertItem>
                       )
                     )}
                     {selectedQuery.error.protocolErrors.map((message, idx) => (
                       <ErrorMessageAlertItem key={`protocol-${idx}`}>
-                        {message}
+                        [Protocol]: {message}
                       </ErrorMessageAlertItem>
                     ))}
                     {selectedQuery.error.clientErrors.map((message, idx) => (
                       <ErrorMessageAlertItem key={`client-${idx}`}>
-                        {message}
+                        [Client]: {message}
                       </ErrorMessageAlertItem>
                     ))}
                   </ul>
