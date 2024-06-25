@@ -121,7 +121,7 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
             {selectedQuery.error && (
               <AlertDisclosure variant="error">
                 <AlertDisclosure.Button>
-                  This query completed with errors
+                  Query completed with errors
                 </AlertDisclosure.Button>
                 <AlertDisclosure.Panel>
                   <ul className="flex flex-col gap-3">
@@ -133,27 +133,25 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
                     {selectedQuery.error.graphQLErrors.map(
                       (graphQLError, idx) => (
                         <ErrorMessageAlertItem key={`gql-${idx}`}>
-                          <div className="flex gap-4 items-start justify-between">
-                            <span>[GraphQL]: {graphQLError.message}</span>
-                            {graphQLError.path && (
-                              <span className="text-xs">
-                                Path: [
-                                {graphQLError.path.map((segment, idx, arr) => {
-                                  const asNumber = Number(segment);
-                                  const isNumber =
-                                    !isNaN(asNumber) && isFinite(asNumber);
+                          <div>[GraphQL]: {graphQLError.message}</div>
+                          {graphQLError.path && (
+                            <div className="text-xs mt-4">
+                              Path: [
+                              {graphQLError.path.map((segment, idx, arr) => {
+                                const asNumber = Number(segment);
+                                const isNumber =
+                                  !isNaN(asNumber) && isFinite(asNumber);
 
-                                  return (
-                                    <>
-                                      {isNumber ? asNumber : `"${segment}"`}
-                                      {idx !== arr.length - 1 && ", "}
-                                    </>
-                                  );
-                                })}
-                                ]
-                              </span>
-                            )}
-                          </div>
+                                return (
+                                  <>
+                                    {isNumber ? asNumber : `"${segment}"`}
+                                    {idx !== arr.length - 1 && ", "}
+                                  </>
+                                );
+                              })}
+                              ]
+                            </div>
+                          )}
                         </ErrorMessageAlertItem>
                       )
                     )}
