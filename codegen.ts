@@ -28,6 +28,7 @@ const config: CodegenConfig = {
           Variables: "./scalars#Variables",
           QueryOptions: "./scalars#QueryOptions",
           JSON: "./scalars#JSON",
+          GraphQLErrorPath: "./scalars#GraphQLErrorPath",
         },
         skipTypeNameForRoot: true,
       },

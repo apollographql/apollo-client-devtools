@@ -8,6 +8,7 @@ scalar Variables
 scalar QueryOptions
 
 scalar JSON
+scalar GraphQLErrorPath
 
 type Query {
   clientVersion: String
@@ -57,6 +58,6 @@ type SerializedApolloError {
 
 type SerializedGraphQLError {
   message: String!
-  path: JSON
+  path: GraphQLErrorPath
   extensions: JSON
 }

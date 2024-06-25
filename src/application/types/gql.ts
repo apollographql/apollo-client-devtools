@@ -1,3 +1,4 @@
+import type { GraphQLErrorPath } from "./scalars";
 import type { JSON } from "./scalars";
 import type { QueryData } from "./scalars";
 import type { QueryOptions } from "./scalars";
@@ -29,6 +30,7 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean };
   Int: { input: number; output: number };
   Float: { input: number; output: number };
+  GraphQLErrorPath: { input: GraphQLErrorPath; output: GraphQLErrorPath };
   JSON: { input: JSON; output: JSON };
   /** Represents data for a specific query */
   QueryData: { input: QueryData; output: QueryData };
@@ -76,7 +78,7 @@ export type SerializedGraphQLError = {
   __typename: "SerializedGraphQLError";
   extensions: Maybe<Scalars["JSON"]["output"]>;
   message: Scalars["String"]["output"];
-  path: Maybe<Scalars["JSON"]["output"]>;
+  path: Maybe<Scalars["GraphQLErrorPath"]["output"]>;
 };
 
 export type WatchedMutation = {
@@ -154,7 +156,7 @@ export type GetWatchedQueries = {
         graphQLErrors: Array<{
           __typename: "SerializedGraphQLError";
           message: string;
-          path: JSON | null;
+          path: GraphQLErrorPath | null;
           extensions: JSON | null;
         }>;
       } | null;
@@ -187,7 +189,7 @@ export type GetQueries = {
         graphQLErrors: Array<{
           __typename: "SerializedGraphQLError";
           message: string;
-          path: JSON | null;
+          path: GraphQLErrorPath | null;
           extensions: JSON | null;
         }>;
       } | null;
