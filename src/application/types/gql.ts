@@ -151,6 +151,7 @@ export type GetWatchedQueries = {
         graphQLErrors: Array<{
           __typename: "SerializedGraphQLError";
           message: string;
+          path: Array<string> | null;
         }>;
       } | null;
     }>;
