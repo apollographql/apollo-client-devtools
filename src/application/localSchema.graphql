@@ -57,6 +57,6 @@ type SerializedApolloError {
 
 type SerializedGraphQLError {
   message: String!
-  path: [String!]
+  path: JSON
   extensions: JSON
 }

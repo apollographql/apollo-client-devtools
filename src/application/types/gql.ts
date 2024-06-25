@@ -76,7 +76,7 @@ export type SerializedGraphQLError = {
   __typename: "SerializedGraphQLError";
   extensions: Maybe<Scalars["JSON"]["output"]>;
   message: Scalars["String"]["output"];
-  path: Maybe<Array<Scalars["String"]["output"]>>;
+  path: Maybe<Scalars["JSON"]["output"]>;
 };
 
 export type WatchedMutation = {
@@ -154,7 +154,8 @@ export type GetWatchedQueries = {
         graphQLErrors: Array<{
           __typename: "SerializedGraphQLError";
           message: string;
-          path: Array<string> | null;
+          path: JSON | null;
+          extensions: JSON | null;
         }>;
       } | null;
     }>;
@@ -186,7 +187,7 @@ export type GetQueries = {
         graphQLErrors: Array<{
           __typename: "SerializedGraphQLError";
           message: string;
-          path: Array<string> | null;
+          path: JSON | null;
           extensions: JSON | null;
         }>;
       } | null;
