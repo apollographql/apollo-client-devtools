@@ -35,13 +35,14 @@ export function ClientNotFoundModal({
         <Modal.Description>
           An Apollo Client instance was not found, either because an Apollo
           Client instance was never created, or because it could not be
-          discovered. This is most commonly fixed by setting the{" "}
-          <ConnectToDevToolsOptionLink /> to <code>true</code>.
+          discovered. You can often solve this issue by setting the{" "}
+          <ConnectToDevToolsOptionLink /> in your <code>ApolloClient</code>{" "}
+          instance to <code>true</code>.
         </Modal.Description>
         <Modal.Description>
-          If this was reached in error, please try one of the following
-          suggestions or click the &quot;Retry&quot; button to try looking for
-          the client again.
+          If you&apos;ve already set the <ConnectToDevToolsOptionLink />, please
+          try one of the following suggestions or click the <code>Retry</code>{" "}
+          button to look for the client again.
         </Modal.Description>
         <Modal.Description>
           Please{" "}
@@ -55,7 +56,8 @@ ${SECTIONS.devtoolsVersion}
           >
             create an issue
           </GitHubIssueLink>{" "}
-          if you believe you have reached this in error.
+          if you have followed the suggestions and continue to see this message.
+          This is likely a bug with Apollo Client Devtools.
         </Modal.Description>
       </Modal.Header>
       <Modal.Body>
