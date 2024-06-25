@@ -57,7 +57,7 @@ ${SECTIONS.devtoolsVersion}
             create an issue
           </GitHubIssueLink>{" "}
           if you have followed the suggestions and continue to see this message.
-          This is likely a bug with Apollo Client Devtools.
+          This could be a bug with Apollo Client Devtools.
         </Modal.Description>
       </Modal.Header>
       <Modal.Body>
@@ -220,7 +220,7 @@ ${SECTIONS.devtoolsVersion}
               I&apos;ve exhausted all other options
             </Disclosure.Button>
             <Disclosure.Panel>
-              This is likely a bug with Apollo Client Devtools. Please create a{" "}
+              This could be a bug with Apollo Client Devtools. Please create a{" "}
               <GitHubIssueLink
                 labels={[LABELS.bug, LABELS.clientDiscovery]}
                 body={`
