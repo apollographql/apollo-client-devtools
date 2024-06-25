@@ -163,9 +163,9 @@ export function getQueryData(
           protocolErrors: query.error.protocolErrors,
           graphQLErrors: query.error.graphQLErrors.map((graphQLError) => ({
             __typename: "SerializedGraphQLError",
-            path: graphQLError.path?.map((s) => s.toString()) ?? null,
+            path: graphQLError.path ?? null,
             message: graphQLError.message,
-            extensions: graphQLError.extensions ?? null,
+            extensions: (graphQLError.extensions as JSONObject) ?? null,
           })),
         }
       : null,

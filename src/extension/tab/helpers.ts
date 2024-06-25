@@ -15,7 +15,6 @@ import { getPrivateAccess } from "../../privateAccess";
 import { getOperationName } from "@apollo/client/utilities";
 import { pick } from "../../application/utilities/pick";
 import type { GraphQLFormattedError } from "graphql";
-import type { JSONObject } from "../../application/types/json";
 
 export type QueryOptions = Pick<
   WatchQueryOptions,
@@ -34,9 +33,7 @@ interface SerializedApolloError extends Pick<ApolloError, "message" | "name"> {
   clientErrors: string[];
   networkError?: string;
   graphQLErrors: Array<
-    Pick<GraphQLFormattedError, "message" | "path"> & {
-      extensions?: JSONObject;
-    }
+    Pick<GraphQLFormattedError, "message" | "path" | "extensions">
   >;
   protocolErrors: string[];
 }
@@ -80,7 +77,7 @@ export function getQueries(
   return queries;
 }
 
-function serializeApolloError(error: ApolloError) {
+function serializeApolloError(error: ApolloError): SerializedApolloError {
   return {
     clientErrors: error.clientErrors.map((e) => e.message),
     name: error.name,
