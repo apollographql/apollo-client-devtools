@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.15.4
+
+### Patch Changes
+
+- [#1426](https://github.com/apollographql/apollo-client-devtools/pull/1426) [`73e7755`](https://github.com/apollographql/apollo-client-devtools/commit/73e775584dfcd37ae479fbc5c0ffe4148ab6a203) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Make creating an issue more prominent in the client not found modal by adding a tertiary "Create an issue" button and adding a sentence linking to an issue in the intro paragraph.
+
 ## 4.15.3
 
 ### Patch Changes
