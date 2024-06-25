@@ -3,6 +3,7 @@ import { ButtonGroup } from "./ButtonGroup";
 import { Disclosure } from "./Disclosure";
 import { GitHubIssueLink, SECTIONS, LABELS } from "./GitHubIssueLink";
 import { Modal } from "./Modal";
+import IconGitHubSolid from "@apollo/icons/small/IconGitHubSolid.svg";
 
 interface ClientNotFoundModalProps {
   open: boolean;
@@ -31,19 +32,35 @@ export function ClientNotFoundModal({
     <Modal open={open} onClose={onClose} size="xl">
       <Modal.Header>
         <Modal.Title>Could not find client</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <p>
+        <Modal.Description>
           An Apollo Client instance was not found, either because an Apollo
           Client instance was never created, or because it could not be
-          discovered. This is most commonly fixed by setting the{" "}
-          <ConnectToDevToolsOptionLink /> to <code>true</code>.
-        </p>
-        <p className="mt-4">
-          If this was reached in error, please try one of the following
-          suggestions or click the &quot;Retry&quot; button to try looking for
-          the client again.
-        </p>
+          discovered. You can often solve this issue by setting the{" "}
+          <ConnectToDevToolsOptionLink /> in your <code>ApolloClient</code>{" "}
+          instance to <code>true</code>.
+        </Modal.Description>
+        <Modal.Description>
+          If you&apos;ve already set the <ConnectToDevToolsOptionLink />, please
+          try one of the following suggestions or click the <code>Retry</code>{" "}
+          button to look for the client again.
+        </Modal.Description>
+        <Modal.Description>
+          Please{" "}
+          <GitHubIssueLink
+            labels={[LABELS.bug]}
+            body={`
+${SECTIONS.defaultDescription}
+${SECTIONS.apolloClientVersion}
+${SECTIONS.devtoolsVersion}
+`}
+          >
+            create an issue
+          </GitHubIssueLink>{" "}
+          if you have followed the suggestions and continue to see this message.
+          This could be a bug with Apollo Client Devtools.
+        </Modal.Description>
+      </Modal.Header>
+      <Modal.Body>
         <div className="mt-4 flex flex-col gap-2">
           <Disclosure>
             <Disclosure.Button>
@@ -152,11 +169,8 @@ export function ClientNotFoundModal({
                   labels={[LABELS.bug]}
                   repository="apollo-client"
                   body={`
-<!-- Please provide a detailed description of the issue you are experiencing. It is most helpful if you are able to provide a minimal reproduction of the issue. -->
-
-### Link to Reproduction
-<!-- Please provide a link to the reproduction of the issue. -->
-
+${SECTIONS.defaultDescription}
+${SECTIONS.reproduction}
 ${SECTIONS.apolloClientVersion}
 ${SECTIONS.devtoolsVersion}
 `}
@@ -206,11 +220,11 @@ ${SECTIONS.devtoolsVersion}
               I&apos;ve exhausted all other options
             </Disclosure.Button>
             <Disclosure.Panel>
-              This is likely a bug with Apollo Client Devtools. Please create a{" "}
+              This could be a bug with Apollo Client Devtools. Please create a{" "}
               <GitHubIssueLink
                 labels={[LABELS.bug, LABELS.clientDiscovery]}
                 body={`
-${SECTIONS.default}
+${SECTIONS.defaultDescription}
 ${SECTIONS.apolloClientVersion}
 ${SECTIONS.devtoolsVersion}
 `}
@@ -223,6 +237,24 @@ ${SECTIONS.devtoolsVersion}
         </div>
       </Modal.Body>
       <Modal.Footer>
+        <Button
+          asChild
+          size="md"
+          variant="secondary"
+          icon={<IconGitHubSolid />}
+        >
+          <GitHubIssueLink
+            className="no-underline"
+            labels={[LABELS.bug]}
+            body={`
+${SECTIONS.defaultDescription}
+${SECTIONS.apolloClientVersion}
+${SECTIONS.devtoolsVersion}
+`}
+          >
+            <span>Create an issue</span>
+          </GitHubIssueLink>
+        </Button>
         <ButtonGroup>
           <Button type="button" size="md" variant="secondary" onClick={onClose}>
             Close
