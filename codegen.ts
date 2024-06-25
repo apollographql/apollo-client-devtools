@@ -27,6 +27,7 @@ const config: CodegenConfig = {
           QueryData: "./scalars#QueryData",
           Variables: "./scalars#Variables",
           QueryOptions: "./scalars#QueryOptions",
+          JSON: "./scalars#JSON",
         },
         skipTypeNameForRoot: true,
       },

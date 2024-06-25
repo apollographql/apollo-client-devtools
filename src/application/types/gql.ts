@@ -1,3 +1,4 @@
+import type { JSON } from "./scalars";
 import type { QueryData } from "./scalars";
 import type { QueryOptions } from "./scalars";
 import type { Variables } from "./scalars";
@@ -28,6 +29,7 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean };
   Int: { input: number; output: number };
   Float: { input: number; output: number };
+  JSON: { input: JSON; output: JSON };
   /** Represents data for a specific query */
   QueryData: { input: QueryData; output: QueryData };
   /** Represents options for a query */
@@ -72,6 +74,7 @@ export type SerializedApolloError = {
 
 export type SerializedGraphQLError = {
   __typename: "SerializedGraphQLError";
+  extensions: Maybe<Scalars["JSON"]["output"]>;
   message: Scalars["String"]["output"];
   path: Maybe<Array<Scalars["String"]["output"]>>;
 };

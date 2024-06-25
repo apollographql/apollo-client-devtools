@@ -7,6 +7,8 @@ scalar Variables
 "Represents options for a query"
 scalar QueryOptions
 
+scalar JSON
+
 type Query {
   clientVersion: String
   cache: String!
@@ -56,4 +58,5 @@ type SerializedApolloError {
 type SerializedGraphQLError {
   message: String!
   path: [String!]
+  extensions: JSON
 }
