@@ -16,29 +16,39 @@ import { isEmpty } from "../../utilities/isEmpty";
 
 const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
   gql`
-    query GetMutations {
-      mutationLog @client {
+    query GetMutations($id: ID!) {
+      client(id: $id) {
+        id
         mutations {
-          id
-          name
-          mutationString
-          variables
+          total
+          items {
+            id
+            name
+            mutationString
+            variables
+          }
         }
       }
     }
   `;
 
 interface MutationsProps {
+  clientId: string | undefined;
   explorerIFrame: HTMLIFrameElement | null;
 }
 
-export const Mutations = ({ explorerIFrame }: MutationsProps) => {
+export const Mutations = ({ clientId, explorerIFrame }: MutationsProps) => {
   const [selected, setSelected] = useState<number>(0);
-  const { data } = useQuery(GET_MUTATIONS);
+  const { data } = useQuery(GET_MUTATIONS, {
+    variables: { id: clientId as string },
+    skip: clientId == null,
+    fetchPolicy: "cache-and-network",
+    pollInterval: 1000,
+  });
 
-  const mutations = data?.mutationLog.mutations ?? [];
+  const mutations = data?.client.mutations?.items ?? [];
   const selectedMutation = mutations.find(
-    (mutation) => mutation.id === selected
+    (mutation) => Number(mutation.id) === selected
   );
 
   return (
@@ -50,8 +60,8 @@ export const Mutations = ({ explorerIFrame }: MutationsProps) => {
               <ListItem
                 key={`${name}-${id}`}
                 className="font-code h-8 text-sm"
-                onClick={() => setSelected(id)}
-                selected={selected === id}
+                onClick={() => setSelected(Number(id))}
+                selected={selected === Number(id)}
               >
                 {name}
               </ListItem>

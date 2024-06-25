@@ -27,30 +27,41 @@ const GET_WATCHED_QUERIES: TypedDocumentNode<
   GetWatchedQueries,
   GetWatchedQueriesVariables
 > = gql`
-  query GetWatchedQueries {
-    watchedQueries @client {
+  query GetWatchedQueries($clientId: ID!) {
+    client(id: $clientId) {
+      id
       queries {
-        id
-        name
-        queryString
-        variables
-        cachedData
-        options
+        total
+        items {
+          id
+          name
+          queryString
+          variables
+          cachedData
+          options
+        }
       }
     }
   }
 `;
 
 interface QueriesProps {
+  clientId: string | undefined;
   explorerIFrame: HTMLIFrameElement | null;
 }
 
-export const Queries = ({ explorerIFrame }: QueriesProps) => {
+export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
   const [selected, setSelected] = useState<number>(0);
-  const { data } = useQuery(GET_WATCHED_QUERIES, { returnPartialData: true });
+  const { data } = useQuery(GET_WATCHED_QUERIES, {
+    returnPartialData: true,
+    variables: { clientId: clientId as string },
+    skip: clientId == null,
+    fetchPolicy: "cache-and-network",
+    pollInterval: 1000,
+  });
 
-  const queries = data?.watchedQueries.queries ?? [];
-  const selectedQuery = queries.find((query) => query.id === selected);
+  const queries = data?.client.queries.items ?? [];
+  const selectedQuery = queries.find((query) => Number(query.id) === selected);
   const [currentTab, setCurrentTab] = useState<QueryTabs>(QueryTabs.Variables);
   const copyButtonText = JSON.stringify(
     currentTab === QueryTabs.Variables
@@ -66,8 +77,8 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
             return (
               <ListItem
                 key={`${name}-${id}`}
-                onClick={() => setSelected(id)}
-                selected={selected === id}
+                onClick={() => setSelected(Number(id))}
+                selected={selected === Number(id)}
                 className="font-code"
               >
                 {name}

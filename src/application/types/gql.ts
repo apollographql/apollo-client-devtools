@@ -1,4 +1,7 @@
-import type { QueryData, QueryOptions, Variables } from "./scalars";
+import type { Cache } from "./scalars";
+import type { QueryData } from "./scalars";
+import type { QueryOptions } from "./scalars";
+import type { Variables } from "./scalars";
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -21,11 +24,13 @@ export type Incremental<T> =
     };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: number; output: number };
+  ID: { input: string; output: string };
   String: { input: string; output: string };
   Boolean: { input: boolean; output: boolean };
   Int: { input: number; output: number };
   Float: { input: number; output: number };
+  /** Represents JSON cache data */
+  Cache: { input: Cache; output: Cache };
   /** Represents data for a specific query */
   QueryData: { input: QueryData; output: QueryData };
   /** Represents options for a query */
@@ -34,27 +39,34 @@ export type Scalars = {
   Variables: { input: Variables; output: Variables };
 };
 
-export type MutationLog = {
-  __typename: "MutationLog";
-  count: Scalars["Int"]["output"];
-  mutations: Array<WatchedMutation>;
+export type Client = {
+  __typename: "Client";
+  cache: Scalars["Cache"]["output"];
+  id: Scalars["String"]["output"];
+  mutations: ClientMutations;
+  queries: ClientQueries;
+  version: Scalars["String"]["output"];
+};
+
+export type ClientMutations = {
+  __typename: "ClientMutations";
+  items: Array<WatchedMutation>;
+  total: Scalars["Int"]["output"];
+};
+
+export type ClientQueries = {
+  __typename: "ClientQueries";
+  items: Array<WatchedQuery>;
+  total: Scalars["Int"]["output"];
 };
 
 export type Query = {
   __typename: "Query";
-  cache: Scalars["String"]["output"];
-  clientVersion: Maybe<Scalars["String"]["output"]>;
-  mutation: Maybe<WatchedMutation>;
-  mutationLog: MutationLog;
-  watchedQueries: WatchedQueries;
-  watchedQuery: Maybe<WatchedQuery>;
+  client: Client;
+  clients: Array<Client>;
 };
 
-export type QuerymutationArgs = {
-  id: Scalars["ID"]["input"];
-};
-
-export type QuerywatchedQueryArgs = {
+export type QueryclientArgs = {
   id: Scalars["ID"]["input"];
 };
 
@@ -82,84 +94,80 @@ export type WatchedQuery = {
   variables: Maybe<Scalars["Variables"]["output"]>;
 };
 
-export type GetOperationCountsVariables = Exact<{ [key: string]: never }>;
+export type AppQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetOperationCounts = {
-  clientVersion: string | null;
-  watchedQueries: { __typename: "WatchedQueries"; count: number };
-  mutationLog: { __typename: "MutationLog"; count: number };
+export type AppQuery = { clients: Array<{ __typename: "Client"; id: string }> };
+
+export type ClientQueryVariables = Exact<{
+  id: Scalars["ID"]["input"];
+}>;
+
+export type ClientQuery = {
+  client: {
+    __typename: "Client";
+    id: string;
+    version: string;
+    queries: { __typename: "ClientQueries"; total: number };
+    mutations: { __typename: "ClientMutations"; total: number };
+  };
 };
 
-export type GetCacheVariables = Exact<{ [key: string]: never }>;
+export type GetCacheVariables = Exact<{
+  id: Scalars["ID"]["input"];
+}>;
 
-export type GetCache = { cache: string };
+export type GetCache = {
+  client: { __typename: "Client"; id: string; cache: Cache };
+};
 
-export type GetMutationsVariables = Exact<{ [key: string]: never }>;
+export type GetMutationsVariables = Exact<{
+  id: Scalars["ID"]["input"];
+}>;
 
 export type GetMutations = {
-  mutationLog: {
-    __typename: "MutationLog";
-    mutations: Array<{
-      __typename: "WatchedMutation";
-      id: number;
-      name: string | null;
-      mutationString: string;
-      variables: Variables | null;
-    }>;
+  client: {
+    __typename: "Client";
+    id: string;
+    mutations: {
+      __typename: "ClientMutations";
+      total: number;
+      items: Array<{
+        __typename: "WatchedMutation";
+        id: string;
+        name: string | null;
+        mutationString: string;
+        variables: Variables | null;
+      }>;
+    };
   };
 };
 
-export type GetWatchedQueriesVariables = Exact<{ [key: string]: never }>;
+export type GetWatchedQueriesVariables = Exact<{
+  clientId: Scalars["ID"]["input"];
+}>;
 
 export type GetWatchedQueries = {
-  watchedQueries: {
-    __typename: "WatchedQueries";
-    queries: Array<{
-      __typename: "WatchedQuery";
-      id: number;
-      name: string | null;
-      queryString: string;
-      variables: Variables | null;
-      cachedData: QueryData | null;
-      options: QueryOptions | null;
-    }>;
+  client: {
+    __typename: "Client";
+    id: string;
+    queries: {
+      __typename: "ClientQueries";
+      total: number;
+      items: Array<{
+        __typename: "WatchedQuery";
+        id: string;
+        name: string | null;
+        queryString: string;
+        variables: Variables | null;
+        cachedData: QueryData | null;
+        options: QueryOptions | null;
+      }>;
+    };
   };
 };
 
-export type GetQueriesVariables = Exact<{ [key: string]: never }>;
-
-export type GetQueries = {
-  watchedQueries: {
-    __typename: "WatchedQueries";
-    count: number;
-    queries: Array<{
-      __typename: "WatchedQuery";
-      id: number;
-      name: string | null;
-      queryString: string;
-      variables: Variables | null;
-      cachedData: QueryData | null;
-      options: QueryOptions | null;
-    }>;
-  };
+export type ClientFields = {
+  __typename: "Client";
+  id: string;
+  version: string;
 };
-
-export type GetAllMutationsVariables = Exact<{ [key: string]: never }>;
-
-export type GetAllMutations = {
-  mutationLog: {
-    __typename: "MutationLog";
-    count: number;
-    mutations: Array<{
-      __typename: "WatchedMutation";
-      id: number;
-      name: string | null;
-      mutationString: string;
-      variables: Variables | null;
-    }>;
-  };
-};
-
-export type ClientVersionVariables = Exact<{ [key: string]: never }>;
-
-export type ClientVersion = { clientVersion: string | null };

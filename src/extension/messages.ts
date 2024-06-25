@@ -1,4 +1,4 @@
-import type { ExplorerResponse, SafeAny } from "../types";
+import type { ApolloClientInfo, ExplorerResponse, SafeAny } from "../types";
 import type { StateValues } from "../application/machines";
 import type { JSONObject } from "../application/types/json";
 import type { FetchPolicy, DocumentNode } from "@apollo/client";
@@ -83,37 +83,41 @@ type ExplorerSubscriptionTerminationMessage = {
   type: "explorerSubscriptionTermination";
 };
 
-interface ClientContext {
-  clientVersion: string | null;
-  queries: QueryInfo[];
-  mutations: QueryInfo[];
-  cache: JSONObject;
-}
+type RegisterClientMessage = {
+  type: "registerClient";
+  payload: ApolloClientInfo;
+};
+
+type ClientTerminatedMessage = {
+  type: "clientTerminated";
+  clientId: string;
+};
 
 export type ClientMessage =
-  | { type: "registerClient" }
+  | RegisterClientMessage
   | { type: "connectToClient" }
   | { type: "connectToDevtools" }
-  | { type: "clientTerminated" }
+  | ClientTerminatedMessage
   | ExplorerRequestMessage
   | ExplorerResponseMessage
   | ExplorerSubscriptionTerminationMessage;
 
 export type PanelMessage =
+  | RegisterClientMessage
+  | ClientTerminatedMessage
   | ExplorerRequestMessage
   | ExplorerResponseMessage
   | ExplorerSubscriptionTerminationMessage
-  | {
-      type: "initializePanel";
-      state: StateValues;
-      payload: ClientContext;
-    }
+  | { type: "initializePanel"; state: StateValues }
   | { type: "retryConnection" }
-  | { type: "devtoolsStateChanged"; state: StateValues }
-  | { type: "update"; payload: ClientContext };
+  | { type: "devtoolsStateChanged"; state: StateValues };
 
 export type DevtoolsRPCMessage = {
-  getClientOperations(): ClientContext;
+  getClients(): ApolloClientInfo[];
+  getClient(id: string): ApolloClientInfo;
+  getQueries(clientId: string): QueryInfo[];
+  getMutations(clientId: string): QueryInfo[];
+  getCache(clientId: string): JSONObject;
 };
 
 function isDevtoolsMessage<Message extends Record<string, unknown>>(

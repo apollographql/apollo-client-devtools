@@ -1,3 +1,6 @@
+"Represents JSON cache data"
+scalar Cache
+
 "Represents data for a specific query"
 scalar QueryData
 
@@ -8,12 +11,26 @@ scalar Variables
 scalar QueryOptions
 
 type Query {
-  clientVersion: String
-  cache: String!
-  mutation(id: ID!): WatchedMutation
-  mutationLog: MutationLog!
-  watchedQueries: WatchedQueries!
-  watchedQuery(id: ID!): WatchedQuery
+  clients: [Client!]!
+  client(id: ID!): Client!
+}
+
+type Client {
+  id: String!
+  version: String!
+  queries: ClientQueries!
+  mutations: ClientMutations!
+  cache: Cache!
+}
+
+type ClientQueries {
+  total: Int!
+  items: [WatchedQuery!]!
+}
+
+type ClientMutations {
+  total: Int!
+  items: [WatchedMutation!]!
 }
 
 type WatchedMutation {
@@ -21,11 +38,6 @@ type WatchedMutation {
   name: String
   mutationString: String!
   variables: Variables
-}
-
-type MutationLog {
-  count: Int!
-  mutations: [WatchedMutation!]!
 }
 
 type WatchedQueries {

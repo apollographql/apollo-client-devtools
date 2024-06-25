@@ -17,10 +17,15 @@ export default {
   plugins: [headlessPlugin],
   theme: {
     data: {
+      "state-open": 'state="open"',
+      "state-closed": 'state="closed"',
+      "state-checked": 'state="checked"',
+      "state-unchecked": 'state="unchecked"',
       "state-active": 'state="active"',
       "state-inactive": 'state="inactive"',
       "orientation-horizontal": 'orientation="horizontal"',
       "orientation-vertical": 'orientation="vertical"',
+      highlighted: "highlighted",
     },
     extend: {
       colors: {
@@ -33,6 +38,8 @@ export default {
         },
       },
       boxShadow: {
+        dropdown:
+          "0 4px 8px 0 rgba(0, 0, 0, 0.08), 0 0 0 0 rgba(18, 21, 26, 0.04)",
         modal:
           "0px 16px 32px 0px rgba(0, 0, 0, 0.12), 0px 0px 0px 0px rgba(18, 21, 26, 0.04)",
         popovers:

@@ -2,14 +2,13 @@ import browser from "webextension-polyfill";
 import { createDevtoolsMachine } from "../../application/machines";
 import type { Actor } from "../actor";
 import { createActor } from "../actor";
-import type {
-  ClientMessage,
-  DevtoolsRPCMessage,
-  PanelMessage,
-} from "../messages";
+import type { ClientMessage, PanelMessage } from "../messages";
 import { getPanelActor } from "./panelActor";
-import { createPortMessageAdapter } from "../messageAdapters";
-import { createRpcClient } from "../rpc";
+import {
+  createPortMessageAdapter,
+  createWindowMessageAdapter,
+} from "../messageAdapters";
+import { createRPCBridge } from "../rpc";
 import { interpret } from "@xstate/fsm";
 
 const inspectedTabId = browser.devtools.inspectedWindow.tabId;
@@ -39,7 +38,6 @@ const portAdapter = createPortMessageAdapter(() =>
 );
 
 const clientPort = createActor<ClientMessage>(portAdapter);
-const rpcClient = createRpcClient<DevtoolsRPCMessage>(portAdapter);
 
 function connectToClient() {
   clientPort.send({ type: "connectToClient" });
@@ -77,10 +75,10 @@ function startRequestInterval(ms = 500) {
   async function getClientData() {
     try {
       if (panelWindow) {
-        panelWindow.send({
-          type: "update",
-          payload: await rpcClient.request("getClientOperations"),
-        });
+        // panelWindow.send({
+        //   type: "update",
+        //   payload: await rpcClient.request("getClientOperations"),
+        // });
       }
     } finally {
       id = setTimeout(getClientData, ms);
@@ -106,10 +104,11 @@ async function createDevtoolsPanel() {
     panelWindow = getPanelActor(window);
 
     if (!connectedToPanel) {
+      createRPCBridge(createWindowMessageAdapter(window), portAdapter);
+
       panelWindow.send({
         type: "initializePanel",
         state: devtoolsMachine.state.value,
-        payload: await rpcClient.request("getClientOperations"),
       });
 
       panelWindow.on("retryConnection", () => {
@@ -123,6 +122,8 @@ async function createDevtoolsPanel() {
       clientPort.forward("explorerResponse", panelWindow);
       panelWindow.forward("explorerRequest", clientPort);
       panelWindow.forward("explorerSubscriptionTermination", clientPort);
+      clientPort.forward("registerClient", panelWindow);
+      clientPort.forward("clientTerminated", panelWindow);
 
       connectedToPanel = true;
     }
