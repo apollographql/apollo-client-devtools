@@ -32,7 +32,7 @@ export type QueryOptions = Pick<
 interface SerializedApolloError extends Pick<ApolloError, "message" | "name"> {
   clientErrors: string[];
   networkError?: string;
-  graphqlErrors: GraphQLFormattedError[];
+  graphQLErrors: Pick<GraphQLFormattedError, "message" | "path">[];
   protocolErrors: string[];
 }
 
@@ -81,7 +81,7 @@ function serializeApolloError(error: ApolloError) {
     name: error.name,
     networkError: error.networkError?.message,
     message: error.message,
-    graphqlErrors: error.graphQLErrors.map((e) =>
+    graphQLErrors: error.graphQLErrors.map((e) =>
       e.constructor.name === "GraphQLError" ? e.toJSON() : e
     ),
     protocolErrors: error.protocolErrors.map((e) => e.message),

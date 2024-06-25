@@ -133,6 +133,22 @@ export function getQueryData(
     variables: query.variables ?? null,
     cachedData: query.cachedData ?? null,
     options: query.options ?? null,
+    networkStatus: (query.networkStatus as number) ?? null,
+    error: query.error
+      ? {
+          __typename: "SerializedApolloError",
+          message: query.error.message,
+          name: query.error.name,
+          clientErrors: query.error.clientErrors,
+          networkError: query.error.networkError ?? null,
+          protocolErrors: query.error.protocolErrors,
+          graphqlErrors: query.error.graphQLErrors.map((graphQLError) => ({
+            __typename: "SerializedGraphQLError",
+            path: graphQLError.path?.map((s) => s.toString()) ?? null,
+            message: graphQLError.message,
+          })),
+        }
+      : null,
   };
 }
 

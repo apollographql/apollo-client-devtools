@@ -7,9 +7,6 @@ scalar Variables
 "Represents options for a query"
 scalar QueryOptions
 
-"Represents raw JSON data"
-scalar JSON
-
 type Query {
   clientVersion: String
   cache: String!
@@ -58,12 +55,5 @@ type SerializedApolloError {
 
 type SerializedGraphQLError {
   message: String!
-  locations: [GraphQLErrorSourceLocation!]
   path: [String!]
-  extensions: JSON
-}
-
-type GraphQLErrorSourceLocation {
-  line: Int!
-  column: Int!
 }
