@@ -19,6 +19,7 @@ import { CopyButton } from "../CopyButton";
 import { EmptyMessage } from "../EmptyMessage";
 import { isEmpty } from "../../utilities/isEmpty";
 import { Spinner } from "../Spinner";
+import { StatusBadge } from "../StatusBadge";
 
 enum QueryTabs {
   Variables = "Variables",
@@ -96,7 +97,18 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
         {selectedQuery ? (
           <>
             <QueryLayout.Header>
-              <QueryLayout.Title>{selectedQuery.name}</QueryLayout.Title>
+              <QueryLayout.Title className="flex gap-6 items-center">
+                {selectedQuery.name}
+                {isNetworkRequestInFlight(selectedQuery.networkStatus) && (
+                  <StatusBadge
+                    color={"blue"}
+                    variant="hidden"
+                    icon={<Spinner size="xs" />}
+                  >
+                    {getNetworkStatusLabel(selectedQuery.networkStatus)}
+                  </StatusBadge>
+                )}
+              </QueryLayout.Title>
               <RunInExplorerButton
                 operation={selectedQuery.queryString}
                 variables={selectedQuery.variables ?? undefined}
@@ -153,6 +165,20 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
 
 interface QueryStatusIconProps {
   networkStatus: NetworkStatus;
+}
+
+const NETWORK_STATUS_LABELS: Record<NetworkStatus, string> = {
+  [NetworkStatus.loading]: "Loading",
+  [NetworkStatus.setVariables]: "Loading new variables",
+  [NetworkStatus.fetchMore]: "Loading more",
+  [NetworkStatus.refetch]: "Refetching",
+  [NetworkStatus.poll]: "Polling",
+  [NetworkStatus.error]: "Error",
+  [NetworkStatus.ready]: "Ready",
+} as const;
+
+function getNetworkStatusLabel(networkStatus: NetworkStatus) {
+  return NETWORK_STATUS_LABELS[networkStatus];
 }
 
 const QueryStatusIcon = ({ networkStatus }: QueryStatusIconProps) => {
