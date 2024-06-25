@@ -142,6 +142,17 @@ export type GetWatchedQueries = {
       variables: Variables | null;
       cachedData: QueryData | null;
       options: QueryOptions | null;
+      networkStatus: number;
+      error: {
+        __typename: "SerializedApolloError";
+        networkError: string | null;
+        clientErrors: Array<string>;
+        protocolErrors: Array<string>;
+        graphQLErrors: Array<{
+          __typename: "SerializedGraphQLError";
+          message: string;
+        }>;
+      } | null;
     }>;
   };
 };

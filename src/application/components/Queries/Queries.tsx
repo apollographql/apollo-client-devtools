@@ -1,6 +1,7 @@
 import { useState } from "react";
-import type { TypedDocumentNode } from "@apollo/client";
+import type { NetworkStatus, TypedDocumentNode } from "@apollo/client";
 import { gql, useQuery } from "@apollo/client";
+import { isNetworkRequestInFlight } from "@apollo/client/core/networkStatus";
 import { List } from "../List";
 import { ListItem } from "../ListItem";
 
@@ -16,6 +17,7 @@ import { QueryLayout } from "../QueryLayout";
 import { CopyButton } from "../CopyButton";
 import { EmptyMessage } from "../EmptyMessage";
 import { isEmpty } from "../../utilities/isEmpty";
+import { Spinner } from "../Spinner";
 
 enum QueryTabs {
   Variables = "Variables",
@@ -36,6 +38,16 @@ const GET_WATCHED_QUERIES: TypedDocumentNode<
         variables
         cachedData
         options
+        networkStatus
+        error {
+          networkError
+          clientErrors
+          graphQLErrors {
+            message
+            path
+          }
+          protocolErrors
+        }
       }
     }
   }
@@ -62,7 +74,7 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
     <SidebarLayout>
       <SidebarLayout.Sidebar>
         <List className="h-full">
-          {queries.map(({ name, id }) => {
+          {queries.map(({ name, id, networkStatus }) => {
             return (
               <ListItem
                 key={`${name}-${id}`}
@@ -70,7 +82,10 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
                 selected={selected === id}
                 className="font-code"
               >
-                {name}
+                <div className="w-full flex items-center justify-between">
+                  {name}
+                  <QueryStatusIcon networkStatus={networkStatus} />
+                </div>
               </ListItem>
             );
           })}
@@ -133,4 +148,16 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
       </QueryLayout>
     </SidebarLayout>
   );
+};
+
+interface QueryStatusIconProps {
+  networkStatus: NetworkStatus;
+}
+
+const QueryStatusIcon = ({ networkStatus }: QueryStatusIconProps) => {
+  if (isNetworkRequestInFlight(networkStatus)) {
+    return <Spinner size="xs" />;
+  }
+
+  return null;
 };
