@@ -1,4 +1,7 @@
-import type { QueryData, QueryOptions, Variables } from "./scalars";
+import type { JSON } from "./scalars";
+import type { QueryData } from "./scalars";
+import type { QueryOptions } from "./scalars";
+import type { Variables } from "./scalars";
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -26,12 +29,20 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean };
   Int: { input: number; output: number };
   Float: { input: number; output: number };
+  /** Represents raw JSON data */
+  JSON: { input: JSON; output: JSON };
   /** Represents data for a specific query */
   QueryData: { input: QueryData; output: QueryData };
   /** Represents options for a query */
   QueryOptions: { input: QueryOptions; output: QueryOptions };
   /** Represents variables for a query */
   Variables: { input: Variables; output: Variables };
+};
+
+export type GraphQLErrorSourceLocation = {
+  __typename: "GraphQLErrorSourceLocation";
+  column: Scalars["Int"]["output"];
+  line: Scalars["Int"]["output"];
 };
 
 export type MutationLog = {
@@ -58,6 +69,24 @@ export type QuerywatchedQueryArgs = {
   id: Scalars["ID"]["input"];
 };
 
+export type SerializedApolloError = {
+  __typename: "SerializedApolloError";
+  clientErrors: Array<Scalars["String"]["output"]>;
+  graphqlErrors: Array<SerializedGraphQLError>;
+  message: Scalars["String"]["output"];
+  name: Scalars["String"]["output"];
+  networkError: Maybe<Scalars["String"]["output"]>;
+  protocolErrors: Array<Scalars["String"]["output"]>;
+};
+
+export type SerializedGraphQLError = {
+  __typename: "SerializedGraphQLError";
+  extensions: Maybe<Scalars["JSON"]["output"]>;
+  locations: Maybe<Array<GraphQLErrorSourceLocation>>;
+  message: Scalars["String"]["output"];
+  path: Maybe<Array<Scalars["String"]["output"]>>;
+};
+
 export type WatchedMutation = {
   __typename: "WatchedMutation";
   id: Scalars["ID"]["output"];
@@ -75,8 +104,10 @@ export type WatchedQueries = {
 export type WatchedQuery = {
   __typename: "WatchedQuery";
   cachedData: Maybe<Scalars["QueryData"]["output"]>;
+  error: Maybe<SerializedApolloError>;
   id: Scalars["ID"]["output"];
   name: Maybe<Scalars["String"]["output"]>;
+  networkStatus: Scalars["Int"]["output"];
   options: Maybe<Scalars["QueryOptions"]["output"]>;
   queryString: Scalars["String"]["output"];
   variables: Maybe<Scalars["Variables"]["output"]>;
