@@ -63,7 +63,7 @@ export type QuerywatchedQueryArgs = {
 export type SerializedApolloError = {
   __typename: "SerializedApolloError";
   clientErrors: Array<Scalars["String"]["output"]>;
-  graphqlErrors: Array<SerializedGraphQLError>;
+  graphQLErrors: Array<SerializedGraphQLError>;
   message: Scalars["String"]["output"];
   name: Scalars["String"]["output"];
   networkError: Maybe<Scalars["String"]["output"]>;
