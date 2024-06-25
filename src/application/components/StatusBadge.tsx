@@ -15,7 +15,14 @@ type IconVariants = Required<OmitNull<VariantProps<typeof iconStyles>>>;
 type ContainerVariants = Required<OmitNull<VariantProps<typeof container>>>;
 
 const container = cva(
-  ["inline-flex", "items-center", "font-normal", "text-md", "gap-2"],
+  [
+    "inline-flex",
+    "items-center",
+    "font-body",
+    "font-normal",
+    "text-md",
+    "gap-2",
+  ],
   {
     variants: {
       variant: {
