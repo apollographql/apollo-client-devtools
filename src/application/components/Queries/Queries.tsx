@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { useState } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { NetworkStatus, gql, useQuery } from "@apollo/client";
@@ -20,6 +21,7 @@ import { EmptyMessage } from "../EmptyMessage";
 import { isEmpty } from "../../utilities/isEmpty";
 import { Spinner } from "../Spinner";
 import { StatusBadge } from "../StatusBadge";
+import { AlertDisclosure } from "../AlertDisclosure";
 
 enum QueryTabs {
   Variables = "Variables",
@@ -116,6 +118,39 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
               />
             </QueryLayout.Header>
             <QueryLayout.QueryString code={selectedQuery.queryString} />
+            {selectedQuery.error && (
+              <AlertDisclosure variant="error">
+                <AlertDisclosure.Button>
+                  This query completed with errors
+                </AlertDisclosure.Button>
+                <AlertDisclosure.Panel>
+                  <ul className="flex flex-col gap-3">
+                    {selectedQuery.error.networkError && (
+                      <ErrorMessageAlertItem>
+                        {selectedQuery.error.networkError}
+                      </ErrorMessageAlertItem>
+                    )}
+                    {selectedQuery.error.graphQLErrors.map(
+                      (graphQLError, idx) => (
+                        <ErrorMessageAlertItem key={`gql-${idx}`}>
+                          {graphQLError.message}
+                        </ErrorMessageAlertItem>
+                      )
+                    )}
+                    {selectedQuery.error.protocolErrors.map((message, idx) => (
+                      <ErrorMessageAlertItem key={`protocol-${idx}`}>
+                        {message}
+                      </ErrorMessageAlertItem>
+                    ))}
+                    {selectedQuery.error.clientErrors.map((message, idx) => (
+                      <ErrorMessageAlertItem key={`client-${idx}`}>
+                        {message}
+                      </ErrorMessageAlertItem>
+                    ))}
+                  </ul>
+                </AlertDisclosure.Panel>
+              </AlertDisclosure>
+            )}
           </>
         ) : (
           <EmptyMessage className="m-auto mt-20" />
@@ -193,4 +228,12 @@ const QueryStatusIcon = ({ networkStatus }: QueryStatusIconProps) => {
   }
 
   return null;
+};
+
+const ErrorMessageAlertItem = ({ children }: { children: ReactNode }) => {
+  return (
+    <li className="border-l-2 border-l-warning dark:border-l-warning-dark px-4 font-code text-sm font-normal text-error dark:text-error-dark">
+      {children}
+    </li>
+  );
 };
