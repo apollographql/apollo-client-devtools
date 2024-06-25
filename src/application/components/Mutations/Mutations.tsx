@@ -70,7 +70,9 @@ export const Mutations = ({ explorerIFrame }: MutationsProps) => {
                 embeddedExplorerIFrame={explorerIFrame}
               />
             </QueryLayout.Header>
-            <QueryLayout.QueryString code={selectedMutation.mutationString} />
+            <QueryLayout.Content>
+              <QueryLayout.QueryString code={selectedMutation.mutationString} />
+            </QueryLayout.Content>
           </>
         ) : (
           <EmptyMessage className="m-auto mt-20" />
