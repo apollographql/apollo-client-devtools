@@ -1,6 +1,6 @@
 import { forwardRef, type ReactNode } from "react";
 import { Disclosure } from "@headlessui/react";
-import IconChevronUp from "@apollo/icons/default/IconChevronUp.svg";
+import IconChevronDown from "@apollo/icons/default/IconChevronDown.svg";
 import clsx from "clsx";
 import type { AlertProps } from "../Alert";
 import { Alert } from "../Alert";
@@ -20,7 +20,7 @@ export function AlertDisclosureButton({
         return (
           <div className="flex justify-between items-center">
             <span>{children}</span>
-            <IconChevronUp
+            <IconChevronDown
               className={clsx("w-4 transition-transform", {
                 "rotate-180": open,
               })}
