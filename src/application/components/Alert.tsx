@@ -7,7 +7,8 @@ import { twMerge } from "tailwind-merge";
 
 type Variants = OmitNull<Required<VariantProps<typeof alert>>>;
 
-interface AlertProps extends Variants {
+export interface AlertProps extends Variants {
+  as?: "button" | "div";
   children?: ReactNode;
   className?: string;
 }
@@ -34,13 +35,18 @@ const ICONS: Record<Variants["variant"], ElementType> = {
   error: IconErrorSolid,
 };
 
-export function Alert({ children, className, variant }: AlertProps) {
+export function Alert({
+  as: Element = "div",
+  children,
+  className,
+  variant,
+}: AlertProps) {
   const Icon = ICONS[variant];
 
   return (
-    <div className={twMerge(alert({ variant }), className)}>
+    <Element className={twMerge(alert({ variant }), className)}>
       <Icon className="size-6" />
       <div className="flex-1 font-body text-md font-normal">{children}</div>
-    </div>
+    </Element>
   );
 }
