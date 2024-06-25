@@ -49,6 +49,7 @@ const GET_WATCHED_QUERIES: TypedDocumentNode<
           graphQLErrors {
             message
             path
+            extensions
           }
           protocolErrors
         }

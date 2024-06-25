@@ -187,6 +187,7 @@ export type GetQueries = {
           __typename: "SerializedGraphQLError";
           message: string;
           path: Array<string> | null;
+          extensions: JSON | null;
         }>;
       } | null;
     }>;

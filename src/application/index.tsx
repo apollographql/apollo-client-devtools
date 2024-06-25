@@ -105,6 +105,7 @@ export const GET_QUERIES: TypedDocumentNode<GetQueries, GetQueriesVariables> =
             graphQLErrors {
               message
               path
+              extensions
             }
             protocolErrors
           }
@@ -164,6 +165,7 @@ export function getQueryData(
             __typename: "SerializedGraphQLError",
             path: graphQLError.path?.map((s) => s.toString()) ?? null,
             message: graphQLError.message,
+            extensions: graphQLError.extensions ?? null,
           })),
         }
       : null,
