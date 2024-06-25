@@ -8,7 +8,7 @@ export function QueryString({ code }: QueryStringProps) {
   return (
     <div
       data-testid="query"
-      className="[grid-area:content] max-h-[500px] lg:max-h-none"
+      className="flex-1 min-h-28 max-h-[500px] lg:max-h-none overflow-auto"
     >
       <CodeBlock language="graphql" code={code} className="max-h-full" />
     </div>
