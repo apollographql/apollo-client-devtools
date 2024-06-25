@@ -146,13 +146,11 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
                             <div className="text-xs mt-4">
                               path: [
                               {graphQLError.path.map((segment, idx, arr) => {
-                                const asNumber = Number(segment);
-                                const isNumber =
-                                  !isNaN(asNumber) && isFinite(asNumber);
-
                                 return (
                                   <>
-                                    {isNumber ? asNumber : `"${segment}"`}
+                                    {typeof segment === "number"
+                                      ? segment
+                                      : `"${segment}"`}
                                     {idx !== arr.length - 1 && ", "}
                                   </>
                                 );
