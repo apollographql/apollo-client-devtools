@@ -131,7 +131,7 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
                     Query completed with errors
                   </AlertDisclosure.Button>
                   <AlertDisclosure.Panel>
-                    <ul className="flex flex-col gap-3">
+                    <ul className="flex flex-col gap-4">
                       {networkError && (
                         <ErrorMessageAlertItem>
                           <div>
@@ -139,7 +139,7 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
                             {networkError.message}
                           </div>
                           {networkError.stack && (
-                            <div className="mt-4">
+                            <div className="mt-3">
                               <JSONTreeViewer
                                 key={selectedQuery.id}
                                 className="text-xs"
@@ -157,7 +157,7 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
                           <ErrorMessageAlertItem key={`gql-${idx}`}>
                             <div>[GraphQL]: {graphQLError.message}</div>
                             {graphQLError.path && (
-                              <div className="text-xs mt-4">
+                              <div className="text-xs mt-3">
                                 path: [
                                 {graphQLError.path.map((segment, idx, arr) => {
                                   return (
