@@ -46,6 +46,7 @@ const GET_WATCHED_QUERIES: TypedDocumentNode<
         error {
           networkError {
             message
+            name
             stack
           }
           clientErrors
@@ -133,7 +134,10 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
                     <ul className="flex flex-col gap-3">
                       {networkError && (
                         <ErrorMessageAlertItem>
-                          <div>[Network]: {networkError.message}</div>
+                          <div>
+                            [Network]: {networkError.name}:{" "}
+                            {networkError.message}
+                          </div>
                           {networkError.stack && (
                             <div className="mt-4">
                               <JSONTreeViewer

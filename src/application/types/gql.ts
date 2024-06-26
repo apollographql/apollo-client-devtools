@@ -162,6 +162,7 @@ export type GetWatchedQueries = {
         networkError: {
           __typename: "SerializedError";
           message: string;
+          name: string;
           stack: string | null;
         } | null;
         graphQLErrors: Array<{
@@ -199,6 +200,7 @@ export type GetQueries = {
         networkError: {
           __typename: "SerializedError";
           message: string;
+          name: string;
           stack: string | null;
         } | null;
         graphQLErrors: Array<{
