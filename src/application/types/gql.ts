@@ -127,6 +127,24 @@ export type GetOperationCounts = {
   mutationLog: { __typename: "MutationLog"; count: number };
 };
 
+export type ApolloErrorAlertDisclosurePanel_error = {
+  __typename: "SerializedApolloError";
+  clientErrors: Array<string>;
+  protocolErrors: Array<string>;
+  networkError: {
+    __typename: "SerializedError";
+    message: string;
+    name: string;
+    stack: string | null;
+  } | null;
+  graphQLErrors: Array<{
+    __typename: "SerializedGraphQLError";
+    message: string;
+    path: GraphQLErrorPath | null;
+    extensions: JSON | null;
+  }>;
+};
+
 export type GetCacheVariables = Exact<{ [key: string]: never }>;
 
 export type GetCache = { cache: string };
