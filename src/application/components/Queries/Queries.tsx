@@ -141,6 +141,7 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
                           {networkError.stack && (
                             <div className="mt-4">
                               <JSONTreeViewer
+                                key={selectedQuery.id}
                                 className="text-xs"
                                 data={networkError.stack.split("\n").slice(1)}
                                 keyPath={["Stack trace"]}
@@ -173,6 +174,7 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
                             )}
                             {graphQLError.extensions && (
                               <JSONTreeViewer
+                                key={selectedQuery.id}
                                 className="mt-4 text-xs"
                                 data={graphQLError.extensions}
                                 keyPath={["extensions"]}
