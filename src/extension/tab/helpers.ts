@@ -58,7 +58,7 @@ export type MutationInfo = {
   document: DocumentNode;
   variables?: Variables;
   loading: boolean;
-  error: SerializedError | null;
+  error: SerializedApolloError | SerializedError | null;
 };
 
 // Transform the map of observable queries into a list of QueryInfo objects usable by DevTools
@@ -189,11 +189,27 @@ export function getMutations(
       document: mutation,
       variables,
       loading,
-      error: error
-        ? { message: error.name, name: error.name, stack: error.stack }
-        : null,
+      error: getSerializedMutationError(error),
     };
   });
+}
+
+function serializeError(error: Error) {
+  return { message: error.name, name: error.name, stack: error.stack };
+}
+
+function isApolloError(error: Error): error is ApolloError {
+  return error.name === "ApolloError";
+}
+
+function getSerializedMutationError(error: Error | null) {
+  if (!error) {
+    return null;
+  }
+
+  return isApolloError(error)
+    ? serializeApolloError(error)
+    : serializeError(error);
 }
 
 export function getMainDefinition(
