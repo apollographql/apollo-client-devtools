@@ -23,8 +23,15 @@ import type {
   GetQueriesVariables,
   WatchedMutation,
   WatchedQuery,
+  SerializedApolloError as GQLSerializedApolloError,
+  SerializedError as GQLSerializedError,
 } from "./types/gql";
-import type { MutationInfo, QueryInfo } from "../extension/tab/helpers";
+import type {
+  MutationInfo,
+  QueryInfo,
+  SerializedApolloError,
+  SerializedError,
+} from "../extension/tab/helpers";
 import type { JSONObject } from "./types/json";
 
 const cache = new InMemoryCache({
@@ -133,9 +140,27 @@ export const GET_MUTATIONS: TypedDocumentNode<
         variables
         loading
         error {
-          message
-          name
-          stack
+          ... on SerializedError {
+            message
+            name
+            stack
+          }
+          ... on SerializedApolloError {
+            message
+            clientErrors
+            name
+            networkError {
+              message
+              name
+              stack
+            }
+            graphQLErrors {
+              message
+              path
+              extensions
+            }
+            protocolErrors
+          }
         }
       }
       count
@@ -155,9 +180,6 @@ export function getQueryData(
     return;
   }
 
-  const { error } = query;
-  const networkError = error?.networkError;
-
   return {
     id: key,
     __typename: "WatchedQuery",
@@ -168,29 +190,7 @@ export function getQueryData(
     options: query.options ?? null,
     networkStatus: (query.networkStatus as number) ?? null,
     pollInterval: query.pollInterval ?? null,
-    error: error
-      ? {
-          __typename: "SerializedApolloError",
-          message: error.message,
-          name: error.name,
-          clientErrors: error.clientErrors,
-          networkError: networkError
-            ? {
-                __typename: "SerializedError",
-                message: networkError.message,
-                stack: networkError.stack ?? null,
-                name: networkError.name,
-              }
-            : null,
-          protocolErrors: error.protocolErrors,
-          graphQLErrors: error.graphQLErrors.map((graphQLError) => ({
-            __typename: "SerializedGraphQLError",
-            path: graphQLError.path ?? null,
-            message: graphQLError.message,
-            extensions: (graphQLError.extensions as JSONObject) ?? null,
-          })),
-        }
-      : null,
+    error: query.error ? toGQLSerializedApolloError(query.error) : null,
   };
 }
 
@@ -205,14 +205,50 @@ export function getMutationData(
     mutationString: print(mutation.document),
     variables: mutation.variables ?? null,
     loading: mutation.loading,
-    error: mutation.error
-      ? {
-          ...mutation.error,
-          stack: mutation.error.stack ?? null,
-          __typename: "SerializedError",
-        }
-      : null,
+    error: getMutationError(mutation.error),
   };
+}
+
+function isApolloError(error: Error): error is SerializedApolloError {
+  return error.name === "ApolloError";
+}
+
+function toGQLSerializedError(error: SerializedError): GQLSerializedError {
+  return {
+    ...error,
+    stack: error.stack ?? null,
+    __typename: "SerializedError",
+  };
+}
+
+function toGQLSerializedApolloError(
+  apolloError: SerializedApolloError
+): GQLSerializedApolloError {
+  return {
+    ...apolloError,
+    networkError: apolloError.networkError
+      ? toGQLSerializedError(apolloError.networkError)
+      : null,
+    graphQLErrors: apolloError.graphQLErrors.map((graphQLError) => ({
+      __typename: "SerializedGraphQLError",
+      path: graphQLError.path ?? null,
+      message: graphQLError.message,
+      extensions: (graphQLError.extensions as JSONObject) ?? null,
+    })),
+    __typename: "SerializedApolloError",
+  };
+}
+
+function getMutationError(
+  error: MutationInfo["error"]
+): GQLSerializedError | GQLSerializedApolloError | null {
+  if (!error) {
+    return null;
+  }
+
+  return isApolloError(error)
+    ? toGQLSerializedApolloError(error)
+    : toGQLSerializedError(error);
 }
 
 export const writeData = ({
