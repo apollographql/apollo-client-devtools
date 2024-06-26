@@ -24,6 +24,8 @@ type WatchedMutation {
   name: String
   mutationString: String!
   variables: Variables
+  loading: Boolean!
+  error: SerializedError
 }
 
 type MutationLog {

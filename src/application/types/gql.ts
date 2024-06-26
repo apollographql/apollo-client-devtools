@@ -90,7 +90,9 @@ export type SerializedGraphQLError = {
 
 export type WatchedMutation = {
   __typename: "WatchedMutation";
+  error: Maybe<SerializedError>;
   id: Scalars["ID"]["output"];
+  loading: Scalars["Boolean"]["output"];
   mutationString: Scalars["String"]["output"];
   name: Maybe<Scalars["String"]["output"]>;
   variables: Maybe<Scalars["Variables"]["output"]>;
