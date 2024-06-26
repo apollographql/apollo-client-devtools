@@ -3,6 +3,7 @@ import type { ApolloErrorAlertDisclosurePanel_error } from "../types/gql";
 import { AlertDisclosure } from "./AlertDisclosure";
 import { ErrorAlertDisclosureItem } from "./ErrorAlertDisclosureItem";
 import { JSONTreeViewer } from "./JSONTreeViewer";
+import { SerializedErrorAlertDisclosureItem } from "./SerializedErrorAlertDisclosureItem";
 
 interface ApolloErrorAlertDisclosureItemProps {
   error: ApolloErrorAlertDisclosurePanel_error;
@@ -17,22 +18,10 @@ export function ApolloErrorAlertDisclosurePanel({
     <AlertDisclosure.Panel>
       <ul className="flex flex-col gap-4">
         {networkError && (
-          <ErrorAlertDisclosureItem>
-            <div>
-              [Network]: {networkError.name}: {networkError.message}
-            </div>
-            {networkError.stack && (
-              <div className="mt-3">
-                <JSONTreeViewer
-                  className="text-xs"
-                  data={networkError.stack.split("\n").slice(1)}
-                  keyPath={["Stack trace"]}
-                  theme="alertError"
-                  shouldExpandNodeInitially={() => false}
-                />
-              </div>
-            )}
-          </ErrorAlertDisclosureItem>
+          <SerializedErrorAlertDisclosureItem
+            error={networkError}
+            prefix="[Network]"
+          />
         )}
         {graphQLErrors.map((graphQLError, idx) => (
           <ErrorAlertDisclosureItem key={`gql-${idx}`}>
@@ -80,9 +69,7 @@ ApolloErrorAlertDisclosurePanel.fragments = {
   error: gql`
     fragment ApolloErrorAlertDisclosurePanel_error on SerializedApolloError {
       networkError {
-        message
-        name
-        stack
+        ...SerializedErrorAlertDisclosureItem_error
       }
       clientErrors
       graphQLErrors {
@@ -92,5 +79,7 @@ ApolloErrorAlertDisclosurePanel.fragments = {
       }
       protocolErrors
     }
+
+    ${SerializedErrorAlertDisclosureItem.fragments.error}
   `,
 };
