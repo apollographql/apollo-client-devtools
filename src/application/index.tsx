@@ -131,6 +131,12 @@ export const GET_MUTATIONS: TypedDocumentNode<
         name
         mutationString
         variables
+        loading
+        error {
+          message
+          name
+          stack
+        }
       }
       count
     }
@@ -198,6 +204,14 @@ export function getMutationData(
     name: getOperationName(mutation.document),
     mutationString: print(mutation.document),
     variables: mutation.variables ?? null,
+    loading: mutation.loading,
+    error: mutation.error
+      ? {
+          ...mutation.error,
+          stack: mutation.error.stack ?? null,
+          __typename: "SerializedError",
+        }
+      : null,
   };
 }
 
