@@ -29,7 +29,7 @@ export type QueryOptions = Pick<
   | "notifyOnNetworkStatusChange"
 > & { nextFetchPolicy?: string };
 
-interface SerializedApolloError extends Pick<ApolloError, "message"> {
+export interface SerializedApolloError extends Pick<ApolloError, "message"> {
   name: "ApolloError";
   clientErrors: string[];
   networkError?: SerializedError;
@@ -39,7 +39,7 @@ interface SerializedApolloError extends Pick<ApolloError, "message"> {
   protocolErrors: string[];
 }
 
-interface SerializedError {
+export interface SerializedError {
   message: string;
   name: string;
   stack?: string;
