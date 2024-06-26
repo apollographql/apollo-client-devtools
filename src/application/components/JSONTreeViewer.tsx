@@ -8,7 +8,7 @@ import { JSONTree } from "react-json-tree";
 import { ColorTheme, colorTheme } from "../theme";
 import { colors } from "@apollo/brand";
 import { clsx } from "clsx";
-import type { Base16Theme } from "base16";
+import type { Base16Theme } from "react-base16-styling";
 
 type JSONTreeProps = ComponentPropsWithoutRef<typeof JSONTree>;
 
