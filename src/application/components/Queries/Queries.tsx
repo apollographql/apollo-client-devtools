@@ -132,7 +132,7 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
                       <span>
                         Polling{" "}
                         <span className="text-sm">
-                          ({selectedQuery.pollInterval}ms)
+                          ({selectedQuery.pollInterval} ms)
                         </span>
                       </span>
                     )}
@@ -240,7 +240,7 @@ const QueryStatusIcon = ({
 
   if (networkStatus === NetworkStatus.ready && pollInterval) {
     return (
-      <Tooltip content={`Polling (${pollInterval}ms)`}>
+      <Tooltip content={`Polling (${pollInterval} ms)`}>
         <span>
           <IconTime className="size-4" />
         </span>
