@@ -144,6 +144,8 @@ export function getQueryData(
     return;
   }
 
+  const { error } = query;
+
   return {
     id: key,
     __typename: "WatchedQuery",
@@ -153,15 +155,15 @@ export function getQueryData(
     cachedData: query.cachedData ?? null,
     options: query.options ?? null,
     networkStatus: (query.networkStatus as number) ?? null,
-    error: query.error
+    error: error
       ? {
           __typename: "SerializedApolloError",
-          message: query.error.message,
-          name: query.error.name,
-          clientErrors: query.error.clientErrors,
-          networkError: query.error.networkError ?? null,
-          protocolErrors: query.error.protocolErrors,
-          graphQLErrors: query.error.graphQLErrors.map((graphQLError) => ({
+          message: error.message,
+          name: error.name,
+          clientErrors: error.clientErrors,
+          networkError: error.networkError ?? null,
+          protocolErrors: error.protocolErrors,
+          graphQLErrors: error.graphQLErrors.map((graphQLError) => ({
             __typename: "SerializedGraphQLError",
             path: graphQLError.path ?? null,
             message: graphQLError.message,
