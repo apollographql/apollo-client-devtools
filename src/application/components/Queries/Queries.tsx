@@ -111,7 +111,7 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
                 {isNetworkRequestInFlight(selectedQuery.networkStatus) && (
                   <StatusBadge
                     color={"blue"}
-                    variant="hidden"
+                    variant="rounded"
                     icon={<Spinner size="xs" />}
                   >
                     {getNetworkStatusLabel(selectedQuery.networkStatus)}
