@@ -3,6 +3,7 @@ import type { TypedDocumentNode } from "@apollo/client";
 import { gql, useQuery } from "@apollo/client";
 import { List } from "../List";
 import { ListItem } from "../ListItem";
+import IconErrorSolid from "@apollo/icons/default/IconErrorSolid.svg";
 
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { RunInExplorerButton } from "../Queries/RunInExplorerButton";
@@ -15,6 +16,8 @@ import { EmptyMessage } from "../EmptyMessage";
 import { isEmpty } from "../../utilities/isEmpty";
 import { Spinner } from "../Spinner";
 import { StatusBadge } from "../StatusBadge";
+import { AlertDisclosure } from "../AlertDisclosure";
+import { ErrorAlertDisclosureItem } from "../ErrorAlertDisclosureItem";
 
 const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
   gql`
@@ -26,6 +29,11 @@ const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
           mutationString
           variables
           loading
+          error {
+            message
+            name
+            stack
+          }
         }
       }
     }
@@ -48,7 +56,7 @@ export const Mutations = ({ explorerIFrame }: MutationsProps) => {
     <SidebarLayout>
       <SidebarLayout.Sidebar>
         <List className="h-full">
-          {mutations.map(({ name, id, loading }) => {
+          {mutations.map(({ name, id, loading, error }) => {
             return (
               <ListItem
                 key={`${name}-${id}`}
@@ -58,7 +66,11 @@ export const Mutations = ({ explorerIFrame }: MutationsProps) => {
               >
                 <div className="w-full flex items-center justify-between">
                   {name}
-                  {loading && <Spinner size="xs" />}
+                  {loading ? (
+                    <Spinner size="xs" />
+                  ) : error ? (
+                    <IconErrorSolid className="size-4 text-icon-error dark:text-icon-error-dark" />
+                  ) : null}
                 </div>
               </ListItem>
             );
@@ -71,7 +83,7 @@ export const Mutations = ({ explorerIFrame }: MutationsProps) => {
             <QueryLayout.Header>
               <QueryLayout.Title className="flex gap-6 items-center">
                 {selectedMutation.name}
-                {selectedMutation.loading && (
+                {selectedMutation.loading ? (
                   <StatusBadge
                     color="blue"
                     variant="rounded"
@@ -79,7 +91,7 @@ export const Mutations = ({ explorerIFrame }: MutationsProps) => {
                   >
                     Loading
                   </StatusBadge>
-                )}
+                ) : null}
               </QueryLayout.Title>
               <RunInExplorerButton
                 operation={selectedMutation.mutationString}
@@ -88,6 +100,37 @@ export const Mutations = ({ explorerIFrame }: MutationsProps) => {
               />
             </QueryLayout.Header>
             <QueryLayout.Content>
+              {selectedMutation.error && (
+                <AlertDisclosure className="mb-2" variant="error">
+                  <AlertDisclosure.Button>
+                    Mutation completed with errors
+                  </AlertDisclosure.Button>
+                  <AlertDisclosure.Panel>
+                    <ul className="flex flex-col gap-4">
+                      <ErrorAlertDisclosureItem>
+                        <div>
+                          {selectedMutation.error.name}:{" "}
+                          {selectedMutation.error.message}
+                        </div>
+                        {selectedMutation.error.stack && (
+                          <div className="mt-3">
+                            <JSONTreeViewer
+                              key={selectedMutation.id}
+                              className="text-xs"
+                              data={selectedMutation.error.stack
+                                .split("\n")
+                                .slice(1)}
+                              keyPath={["Stack trace"]}
+                              theme="alertError"
+                              shouldExpandNodeInitially={() => false}
+                            />
+                          </div>
+                        )}
+                      </ErrorAlertDisclosureItem>
+                    </ul>
+                  </AlertDisclosure.Panel>
+                </AlertDisclosure>
+              )}
               <QueryLayout.QueryString code={selectedMutation.mutationString} />
             </QueryLayout.Content>
           </>

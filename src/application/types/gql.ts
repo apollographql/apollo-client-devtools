@@ -141,6 +141,12 @@ export type GetMutations = {
       mutationString: string;
       variables: Variables | null;
       loading: boolean;
+      error: {
+        __typename: "SerializedError";
+        message: string;
+        name: string;
+        stack: string | null;
+      } | null;
     }>;
   };
 };
