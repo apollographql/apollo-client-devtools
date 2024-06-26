@@ -99,11 +99,7 @@ function serializeApolloError(error: ApolloError): SerializedApolloError {
     clientErrors: error.clientErrors.map((e) => e.message),
     name: error.name,
     networkError: error.networkError
-      ? {
-          message: error.networkError.message,
-          name: error.networkError.name,
-          stack: error.networkError.stack,
-        }
+      ? serializeError(error.networkError)
       : undefined,
     message: error.message,
     graphQLErrors: error.graphQLErrors.map((e) =>
