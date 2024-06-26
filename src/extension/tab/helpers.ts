@@ -192,7 +192,7 @@ export function getMutations(
 }
 
 function serializeError(error: Error) {
-  return { message: error.name, name: error.name, stack: error.stack };
+  return { message: error.message, name: error.name, stack: error.stack };
 }
 
 function isApolloError(error: Error): error is ApolloError {
