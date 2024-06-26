@@ -110,6 +110,7 @@ export type WatchedQuery = {
   name: Maybe<Scalars["String"]["output"]>;
   networkStatus: Scalars["Int"]["output"];
   options: Maybe<Scalars["QueryOptions"]["output"]>;
+  pollInterval: Maybe<Scalars["Int"]["output"]>;
   queryString: Scalars["String"]["output"];
   variables: Maybe<Scalars["Variables"]["output"]>;
 };
@@ -191,6 +192,7 @@ export type GetQueries = {
       cachedData: QueryData | null;
       options: QueryOptions | null;
       networkStatus: number;
+      pollInterval: number | null;
       error: {
         __typename: "SerializedApolloError";
         message: string;

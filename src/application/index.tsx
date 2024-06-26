@@ -97,6 +97,7 @@ export const GET_QUERIES: TypedDocumentNode<GetQueries, GetQueriesVariables> =
           cachedData
           options
           networkStatus
+          pollInterval
           error {
             message
             clientErrors
@@ -160,6 +161,7 @@ export function getQueryData(
     cachedData: query.cachedData ?? null,
     options: query.options ?? null,
     networkStatus: (query.networkStatus as number) ?? null,
+    pollInterval: query.pollInterval ?? null,
     error: error
       ? {
           __typename: "SerializedApolloError",

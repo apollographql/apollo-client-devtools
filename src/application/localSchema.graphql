@@ -45,6 +45,7 @@ type WatchedQuery {
   options: QueryOptions
   networkStatus: Int!
   error: SerializedApolloError
+  pollInterval: Int
 }
 
 type SerializedApolloError {

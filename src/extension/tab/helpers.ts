@@ -45,6 +45,7 @@ export type QueryInfo = {
   options?: QueryOptions;
   networkStatus?: NetworkStatus;
   error?: SerializedApolloError;
+  pollInterval?: number;
 };
 
 // Transform the map of observable queries into a list of QueryInfo objects usable by DevTools
@@ -62,6 +63,8 @@ export function getQueries(
       if (name === "IntrospectionQuery") {
         return;
       }
+
+      const { pollingInfo } = observableQuery;
       const { networkStatus, error } = observableQuery.getCurrentResult(false);
 
       queries.push({
@@ -71,6 +74,7 @@ export function getQueries(
         options: getQueryOptions(oc),
         networkStatus,
         error: error ? serializeApolloError(error) : undefined,
+        pollInterval: pollingInfo && Math.floor(pollingInfo.interval),
       });
     });
   }
