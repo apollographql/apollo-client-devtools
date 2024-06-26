@@ -57,6 +57,8 @@ export type QueryInfo = {
 export type MutationInfo = {
   document: DocumentNode;
   variables?: Variables;
+  loading: boolean;
+  error: SerializedError | null;
 };
 
 // Transform the map of observable queries into a list of QueryInfo objects usable by DevTools
@@ -165,8 +167,15 @@ export function getQueriesLegacy(
   return queries;
 }
 
+interface MutationStoreValue {
+  mutation: DocumentNode;
+  variables: Variables;
+  loading: boolean;
+  error: Error | null;
+}
+
 export function getMutations(
-  mutationsObj: Record<string, { mutation: DocumentNode; variables: Variables }>
+  mutationsObj: Record<string, MutationStoreValue>
 ): MutationInfo[] {
   const keys = Object.keys(mutationsObj);
 
@@ -175,10 +184,14 @@ export function getMutations(
   }
 
   return keys.map((key) => {
-    const { mutation, variables } = mutationsObj[key];
+    const { mutation, variables, loading, error } = mutationsObj[key];
     return {
       document: mutation,
       variables,
+      loading,
+      error: error
+        ? { message: error.name, name: error.name, stack: error.stack }
+        : null,
     };
   });
 }
