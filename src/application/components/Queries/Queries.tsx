@@ -153,9 +153,11 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
                               </div>
                             )}
                             {graphQLError.extensions && (
-                              <GraphQLErrorExtensions
-                                className="mt-4"
-                                extensions={graphQLError.extensions}
+                              <JSONTreeViewer
+                                className="mt-4 text-xs"
+                                data={graphQLError.extensions}
+                                keyPath={["extensions"]}
+                                theme="alertError"
                               />
                             )}
                           </ErrorMessageAlertItem>
@@ -263,22 +265,5 @@ const ErrorMessageAlertItem = ({ children }: { children: ReactNode }) => {
     <li className="border-l-2 border-l-warning dark:border-l-warning-dark px-4 font-code text-sm font-normal text-error dark:text-error-dark">
       {children}
     </li>
-  );
-};
-
-const GraphQLErrorExtensions = ({
-  className,
-  extensions,
-}: {
-  className?: string;
-  extensions: JSONObject;
-}) => {
-  return (
-    <JSONTreeViewer
-      className={className}
-      data={extensions}
-      keyPath={["extensions"]}
-      theme="alertError"
-    />
   );
 };
