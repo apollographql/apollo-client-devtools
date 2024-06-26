@@ -22,7 +22,6 @@ import { isEmpty } from "../../utilities/isEmpty";
 import { Spinner } from "../Spinner";
 import { StatusBadge } from "../StatusBadge";
 import { AlertDisclosure } from "../AlertDisclosure";
-import type { JSONObject } from "../Explorer/postMessageHelpers";
 
 enum QueryTabs {
   Variables = "Variables",
