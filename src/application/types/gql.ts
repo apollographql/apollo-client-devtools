@@ -77,6 +77,7 @@ export type SerializedApolloError = {
 export type SerializedError = {
   __typename: "SerializedError";
   message: Scalars["String"]["output"];
+  name: Scalars["String"]["output"];
   stack: Maybe<Scalars["String"]["output"]>;
 };
 

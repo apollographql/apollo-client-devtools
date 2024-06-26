@@ -58,6 +58,7 @@ type SerializedApolloError {
 
 type SerializedError {
   message: String!
+  name: String!
   stack: String
 }
 

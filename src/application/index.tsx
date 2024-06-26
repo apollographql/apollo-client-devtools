@@ -103,6 +103,7 @@ export const GET_QUERIES: TypedDocumentNode<GetQueries, GetQueriesVariables> =
             name
             networkError {
               message
+              name
               stack
             }
             graphQLErrors {
@@ -170,6 +171,7 @@ export function getQueryData(
                 __typename: "SerializedError",
                 message: networkError.message,
                 stack: networkError.stack ?? null,
+                name: networkError.name,
               }
             : null,
           protocolErrors: error.protocolErrors,
