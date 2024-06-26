@@ -6,6 +6,7 @@ import { isNetworkRequestInFlight } from "@apollo/client/core/networkStatus";
 import { List } from "../List";
 import { ListItem } from "../ListItem";
 import IconErrorSolid from "@apollo/icons/default/IconErrorSolid.svg";
+import IconTime from "@apollo/icons/default/IconTime.svg";
 
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { RunInExplorerButton } from "./RunInExplorerButton";
@@ -22,6 +23,7 @@ import { isEmpty } from "../../utilities/isEmpty";
 import { Spinner } from "../Spinner";
 import { StatusBadge } from "../StatusBadge";
 import { AlertDisclosure } from "../AlertDisclosure";
+import { Tooltip } from "../Tooltip";
 
 enum QueryTabs {
   Variables = "Variables",
@@ -87,7 +89,7 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
     <SidebarLayout>
       <SidebarLayout.Sidebar>
         <List className="h-full">
-          {queries.map(({ name, id, networkStatus }) => {
+          {queries.map(({ name, id, networkStatus, pollInterval }) => {
             return (
               <ListItem
                 key={`${name}-${id}`}
@@ -97,7 +99,10 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
               >
                 <div className="w-full flex items-center justify-between">
                   {name}
-                  <QueryStatusIcon networkStatus={networkStatus} />
+                  <QueryStatusIcon
+                    networkStatus={networkStatus}
+                    pollInterval={pollInterval}
+                  />
                 </div>
               </ListItem>
             );
@@ -277,6 +282,7 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
 
 interface QueryStatusIconProps {
   networkStatus: NetworkStatus;
+  pollInterval?: number | null;
 }
 
 const NETWORK_STATUS_LABELS: Record<NetworkStatus, string> = {
@@ -293,7 +299,10 @@ function getNetworkStatusLabel(networkStatus: NetworkStatus) {
   return NETWORK_STATUS_LABELS[networkStatus];
 }
 
-const QueryStatusIcon = ({ networkStatus }: QueryStatusIconProps) => {
+const QueryStatusIcon = ({
+  networkStatus,
+  pollInterval,
+}: QueryStatusIconProps) => {
   if (isNetworkRequestInFlight(networkStatus)) {
     return <Spinner size="xs" />;
   }
@@ -301,6 +310,16 @@ const QueryStatusIcon = ({ networkStatus }: QueryStatusIconProps) => {
   if (networkStatus === NetworkStatus.error) {
     return (
       <IconErrorSolid className="size-4 text-icon-error dark:text-icon-error-dark" />
+    );
+  }
+
+  if (networkStatus === NetworkStatus.ready && pollInterval) {
+    return (
+      <Tooltip content={`Polling (${pollInterval}ms)`}>
+        <span>
+          <IconTime className="size-4" />
+        </span>
+      </Tooltip>
     );
   }
 
