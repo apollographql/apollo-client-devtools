@@ -255,8 +255,8 @@ interface QueryStatusIconProps {
 
 const NETWORK_STATUS_LABELS: Record<NetworkStatus, string> = {
   [NetworkStatus.loading]: "Loading",
-  [NetworkStatus.setVariables]: "Loading new variables",
-  [NetworkStatus.fetchMore]: "Loading more",
+  [NetworkStatus.setVariables]: "Changing variables",
+  [NetworkStatus.fetchMore]: "Loading next",
   [NetworkStatus.refetch]: "Refetching",
   [NetworkStatus.poll]: "Polling",
   [NetworkStatus.error]: "Error",
