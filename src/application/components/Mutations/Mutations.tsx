@@ -71,10 +71,12 @@ export const Mutations = ({ explorerIFrame }: MutationsProps) => {
                 onClick={() => setSelected(id)}
                 selected={selected === id}
               >
-                <div className="w-full flex items-center justify-between">
-                  {name}
+                <div className="w-full flex items-center justify-between gap-2">
+                  <span className="flex-1 overflow-hidden text-ellipsis">
+                    {name}
+                  </span>
                   {loading ? (
-                    <Spinner size="xs" />
+                    <Spinner size="xs" className="shrink-0" />
                   ) : error ? (
                     <IconErrorSolid className="size-4 text-icon-error dark:text-icon-error-dark" />
                   ) : null}

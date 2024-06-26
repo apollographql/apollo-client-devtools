@@ -87,8 +87,10 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
                 selected={selected === id}
                 className="font-code"
               >
-                <div className="w-full flex items-center justify-between">
-                  {name}
+                <div className="w-full flex items-center justify-between gap-2">
+                  <span className="flex-1 overflow-hidden text-ellipsis">
+                    {name}
+                  </span>
                   <QueryStatusIcon
                     networkStatus={networkStatus}
                     pollInterval={pollInterval}
@@ -229,12 +231,12 @@ const QueryStatusIcon = ({
   pollInterval,
 }: QueryStatusIconProps) => {
   if (isNetworkRequestInFlight(networkStatus)) {
-    return <Spinner size="xs" />;
+    return <Spinner size="xs" className="shrink-0" />;
   }
 
   if (networkStatus === NetworkStatus.error) {
     return (
-      <IconErrorSolid className="size-4 text-icon-error dark:text-icon-error-dark" />
+      <IconErrorSolid className="size-4 text-icon-error dark:text-icon-error-dark shrink-0" />
     );
   }
 
@@ -242,7 +244,7 @@ const QueryStatusIcon = ({
     return (
       <Tooltip content={`Polling (${pollInterval} ms)`}>
         <span>
-          <IconTime className="size-4" />
+          <IconTime className="size-4 shrink-0" />
         </span>
       </Tooltip>
     );
