@@ -24,7 +24,7 @@ import type {
   WatchedMutation,
   WatchedQuery,
 } from "./types/gql";
-import type { QueryInfo } from "../extension/tab/helpers";
+import type { MutationInfo, QueryInfo } from "../extension/tab/helpers";
 import type { JSONObject } from "./types/json";
 
 const cache = new InMemoryCache({
@@ -189,7 +189,7 @@ export function getQueryData(
 }
 
 export function getMutationData(
-  mutation: QueryInfo,
+  mutation: MutationInfo,
   key: number
 ): WatchedMutation {
   return {
@@ -209,7 +209,7 @@ export const writeData = ({
 }: {
   clientVersion: string | null;
   queries: QueryInfo[];
-  mutations: QueryInfo[];
+  mutations: MutationInfo[];
   cache: JSONObject;
 }) => {
   const filteredQueries = queries.map(getQueryData).filter(Boolean);

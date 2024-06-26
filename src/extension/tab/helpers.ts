@@ -48,6 +48,11 @@ export type QueryInfo = {
   pollInterval?: number;
 };
 
+export type MutationInfo = {
+  document: DocumentNode;
+  variables?: Variables;
+};
+
 // Transform the map of observable queries into a list of QueryInfo objects usable by DevTools
 export function getQueries(
   observableQueries: Map<string, ObservableQuery>
@@ -152,7 +157,7 @@ export function getQueriesLegacy(
 
 export function getMutations(
   mutationsObj: Record<string, { mutation: DocumentNode; variables: Variables }>
-): QueryInfo[] {
+): MutationInfo[] {
   const keys = Object.keys(mutationsObj);
 
   if (keys.length === 0) {
