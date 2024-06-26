@@ -25,8 +25,10 @@ type WatchedMutation {
   mutationString: String!
   variables: Variables
   loading: Boolean!
-  error: SerializedError
+  error: WatchedMutationError
 }
+
+union WatchedMutationError = SerializedError | SerializedApolloError
 
 type MutationLog {
   count: Int!
