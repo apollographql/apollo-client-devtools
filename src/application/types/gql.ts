@@ -70,8 +70,14 @@ export type SerializedApolloError = {
   graphQLErrors: Array<SerializedGraphQLError>;
   message: Scalars["String"]["output"];
   name: Scalars["String"]["output"];
-  networkError: Maybe<Scalars["String"]["output"]>;
+  networkError: Maybe<SerializedError>;
   protocolErrors: Array<Scalars["String"]["output"]>;
+};
+
+export type SerializedError = {
+  __typename: "SerializedError";
+  message: Scalars["String"]["output"];
+  stack: Maybe<Scalars["String"]["output"]>;
 };
 
 export type SerializedGraphQLError = {
@@ -150,9 +156,9 @@ export type GetWatchedQueries = {
       networkStatus: number;
       error: {
         __typename: "SerializedApolloError";
-        networkError: string | null;
         clientErrors: Array<string>;
         protocolErrors: Array<string>;
+        networkError: { __typename: "SerializedError"; message: string } | null;
         graphQLErrors: Array<{
           __typename: "SerializedGraphQLError";
           message: string;
@@ -184,8 +190,12 @@ export type GetQueries = {
         message: string;
         clientErrors: Array<string>;
         name: string;
-        networkError: string | null;
         protocolErrors: Array<string>;
+        networkError: {
+          __typename: "SerializedError";
+          message: string;
+          stack: string | null;
+        } | null;
         graphQLErrors: Array<{
           __typename: "SerializedGraphQLError";
           message: string;

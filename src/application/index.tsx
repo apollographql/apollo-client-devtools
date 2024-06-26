@@ -101,7 +101,10 @@ export const GET_QUERIES: TypedDocumentNode<GetQueries, GetQueriesVariables> =
             message
             clientErrors
             name
-            networkError
+            networkError {
+              message
+              stack
+            }
             graphQLErrors {
               message
               path
@@ -145,6 +148,7 @@ export function getQueryData(
   }
 
   const { error } = query;
+  const networkError = error?.networkError;
 
   return {
     id: key,
@@ -161,7 +165,13 @@ export function getQueryData(
           message: error.message,
           name: error.name,
           clientErrors: error.clientErrors,
-          networkError: error.networkError ?? null,
+          networkError: networkError
+            ? {
+                __typename: "SerializedError",
+                message: networkError.message,
+                stack: networkError.stack ?? null,
+              }
+            : null,
           protocolErrors: error.protocolErrors,
           graphQLErrors: error.graphQLErrors.map((graphQLError) => ({
             __typename: "SerializedGraphQLError",

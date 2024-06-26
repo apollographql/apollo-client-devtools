@@ -51,9 +51,14 @@ type SerializedApolloError {
   message: String!
   clientErrors: [String!]!
   name: String!
-  networkError: String
+  networkError: SerializedError
   graphQLErrors: [SerializedGraphQLError!]!
   protocolErrors: [String!]!
+}
+
+type SerializedError {
+  message: String!
+  stack: String
 }
 
 type SerializedGraphQLError {

@@ -44,7 +44,9 @@ const GET_WATCHED_QUERIES: TypedDocumentNode<
         options
         networkStatus
         error {
-          networkError
+          networkError {
+            message
+          }
           clientErrors
           graphQLErrors {
             message
@@ -128,7 +130,7 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
                     <ul className="flex flex-col gap-3">
                       {selectedQuery.error.networkError && (
                         <ErrorMessageAlertItem>
-                          [Network]: {selectedQuery.error.networkError}
+                          [Network]: {selectedQuery.error.networkError.message}
                         </ErrorMessageAlertItem>
                       )}
                       {selectedQuery.error.graphQLErrors.map(
