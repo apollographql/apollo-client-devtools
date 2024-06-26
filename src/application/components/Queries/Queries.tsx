@@ -23,7 +23,7 @@ import { Spinner } from "../Spinner";
 import { StatusBadge } from "../StatusBadge";
 import { AlertDisclosure } from "../AlertDisclosure";
 import { Tooltip } from "../Tooltip";
-import { ErrorAlertDisclosureItem } from "../ErrorAlertDisclosureItem";
+import { ApolloErrorAlertDisclosurePanel } from "../ApolloErrorAlertDisclosurePanel";
 
 enum QueryTabs {
   Variables = "Variables",
@@ -47,22 +47,13 @@ const GET_WATCHED_QUERIES: TypedDocumentNode<
         networkStatus
         pollInterval
         error {
-          networkError {
-            message
-            name
-            stack
-          }
-          clientErrors
-          graphQLErrors {
-            message
-            path
-            extensions
-          }
-          protocolErrors
+          ...ApolloErrorAlertDisclosurePanel_error
         }
       }
     }
   }
+
+  ${ApolloErrorAlertDisclosurePanel.fragments.error}
 `;
 
 interface QueriesProps {
@@ -82,7 +73,6 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
       : selectedQuery?.cachedData ?? {}
   );
 
-  const networkError = selectedQuery?.error?.networkError;
   const pollInterval = selectedQuery?.pollInterval;
 
   return (
@@ -161,74 +151,9 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
                   <AlertDisclosure.Button>
                     Query completed with errors
                   </AlertDisclosure.Button>
-                  <AlertDisclosure.Panel>
-                    <ul className="flex flex-col gap-4">
-                      {networkError && (
-                        <ErrorAlertDisclosureItem>
-                          <div>
-                            [Network]: {networkError.name}:{" "}
-                            {networkError.message}
-                          </div>
-                          {networkError.stack && (
-                            <div className="mt-3">
-                              <JSONTreeViewer
-                                key={selectedQuery.id}
-                                className="text-xs"
-                                data={networkError.stack.split("\n").slice(1)}
-                                keyPath={["Stack trace"]}
-                                theme="alertError"
-                                shouldExpandNodeInitially={() => false}
-                              />
-                            </div>
-                          )}
-                        </ErrorAlertDisclosureItem>
-                      )}
-                      {selectedQuery.error.graphQLErrors.map(
-                        (graphQLError, idx) => (
-                          <ErrorAlertDisclosureItem key={`gql-${idx}`}>
-                            <div>[GraphQL]: {graphQLError.message}</div>
-                            {graphQLError.path && (
-                              <div className="text-xs mt-3">
-                                path: [
-                                {graphQLError.path.map((segment, idx, arr) => {
-                                  return (
-                                    <>
-                                      {typeof segment === "number"
-                                        ? segment
-                                        : `"${segment}"`}
-                                      {idx !== arr.length - 1 && ", "}
-                                    </>
-                                  );
-                                })}
-                                ]
-                              </div>
-                            )}
-                            {graphQLError.extensions && (
-                              <JSONTreeViewer
-                                key={selectedQuery.id}
-                                className="mt-4 text-xs"
-                                data={graphQLError.extensions}
-                                keyPath={["extensions"]}
-                                theme="alertError"
-                              />
-                            )}
-                          </ErrorAlertDisclosureItem>
-                        )
-                      )}
-                      {selectedQuery.error.protocolErrors.map(
-                        (message, idx) => (
-                          <ErrorAlertDisclosureItem key={`protocol-${idx}`}>
-                            [Protocol]: {message}
-                          </ErrorAlertDisclosureItem>
-                        )
-                      )}
-                      {selectedQuery.error.clientErrors.map((message, idx) => (
-                        <ErrorAlertDisclosureItem key={`client-${idx}`}>
-                          [Client]: {message}
-                        </ErrorAlertDisclosureItem>
-                      ))}
-                    </ul>
-                  </AlertDisclosure.Panel>
+                  <ApolloErrorAlertDisclosurePanel
+                    error={selectedQuery.error}
+                  />
                 </AlertDisclosure>
               )}
               <QueryLayout.QueryString code={selectedQuery.queryString} />
