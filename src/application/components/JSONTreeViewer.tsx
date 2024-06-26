@@ -54,7 +54,7 @@ const THEMES = {
     base0E: code.d,
     base0F: code.b,
   },
-  errorAlert: {
+  alertError: {
     base00: { base: "transparent", dark: "transparent" },
     base01: bg.secondary,
     base02: bg.selected,
