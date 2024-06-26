@@ -81,6 +81,7 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
   );
 
   const networkError = selectedQuery?.error?.networkError;
+  const pollInterval = selectedQuery?.pollInterval;
 
   return (
     <SidebarLayout>
@@ -109,22 +110,22 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
             <QueryLayout.Header>
               <QueryLayout.Title className="flex gap-6 items-center">
                 {selectedQuery.name}
-                {typeof selectedQuery.pollInterval === "number" ? (
+                {typeof pollInterval === "number" ? (
                   <StatusBadge
-                    color={selectedQuery.pollInterval === 0 ? "red" : "green"}
+                    color={pollInterval === 0 ? "red" : "green"}
                     variant="rounded"
                     icon={
-                      isNetworkRequestInFlight(selectedQuery.networkStatus) ? (
+                      selectedQuery.networkStatus === NetworkStatus.poll ? (
                         <Spinner size="xs" />
                       ) : undefined
                     }
                   >
-                    {selectedQuery.pollInterval === 0 ? (
+                    {pollInterval === 0 ? (
                       "Stopped polling"
                     ) : (
                       <span>
                         Polling{" "}
-                        <span className="text-secondary dark:text-secondary-dark text-xs">
+                        <span className="text-sm">
                           ({selectedQuery.pollInterval}ms)
                         </span>
                       </span>
