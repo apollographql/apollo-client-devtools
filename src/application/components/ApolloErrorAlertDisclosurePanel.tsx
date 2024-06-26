@@ -32,7 +32,9 @@ export function ApolloErrorAlertDisclosurePanel({
                 {graphQLError.path.map((segment, idx, arr) => {
                   return (
                     <>
-                      {typeof segment === "number" ? segment : `"${segment}"`}
+                      <span className="text-code-g dark:text-code-g-dark">
+                        {typeof segment === "number" ? segment : `"${segment}"`}
+                      </span>
                       {idx !== arr.length - 1 && ", "}
                     </>
                   );
