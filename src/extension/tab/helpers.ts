@@ -29,7 +29,8 @@ export type QueryOptions = Pick<
   | "notifyOnNetworkStatusChange"
 > & { nextFetchPolicy?: string };
 
-interface SerializedApolloError extends Pick<ApolloError, "message" | "name"> {
+interface SerializedApolloError extends Pick<ApolloError, "message"> {
+  name: "ApolloError";
   clientErrors: string[];
   networkError?: SerializedError;
   graphQLErrors: Array<
@@ -97,7 +98,7 @@ export function getQueries(
 function serializeApolloError(error: ApolloError): SerializedApolloError {
   return {
     clientErrors: error.clientErrors.map((e) => e.message),
-    name: error.name,
+    name: "ApolloError",
     networkError: error.networkError
       ? serializeError(error.networkError)
       : undefined,
