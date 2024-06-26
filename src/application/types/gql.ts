@@ -156,6 +156,7 @@ export type GetWatchedQueries = {
       cachedData: QueryData | null;
       options: QueryOptions | null;
       networkStatus: number;
+      pollInterval: number | null;
       error: {
         __typename: "SerializedApolloError";
         clientErrors: Array<string>;

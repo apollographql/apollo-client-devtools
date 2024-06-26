@@ -43,6 +43,7 @@ const GET_WATCHED_QUERIES: TypedDocumentNode<
         cachedData
         options
         networkStatus
+        pollInterval
         error {
           networkError {
             message
@@ -108,7 +109,28 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
             <QueryLayout.Header>
               <QueryLayout.Title className="flex gap-6 items-center">
                 {selectedQuery.name}
-                {isNetworkRequestInFlight(selectedQuery.networkStatus) && (
+                {typeof selectedQuery.pollInterval === "number" ? (
+                  <StatusBadge
+                    color={selectedQuery.pollInterval === 0 ? "red" : "green"}
+                    variant="rounded"
+                    icon={
+                      isNetworkRequestInFlight(selectedQuery.networkStatus) ? (
+                        <Spinner size="xs" />
+                      ) : undefined
+                    }
+                  >
+                    {selectedQuery.pollInterval === 0 ? (
+                      "Stopped polling"
+                    ) : (
+                      <span>
+                        Polling{" "}
+                        <span className="text-secondary dark:text-secondary-dark text-xs">
+                          ({selectedQuery.pollInterval}ms)
+                        </span>
+                      </span>
+                    )}
+                  </StatusBadge>
+                ) : isNetworkRequestInFlight(selectedQuery.networkStatus) ? (
                   <StatusBadge
                     color="blue"
                     variant="rounded"
@@ -116,7 +138,7 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
                   >
                     {getNetworkStatusLabel(selectedQuery.networkStatus)}
                   </StatusBadge>
-                )}
+                ) : null}
               </QueryLayout.Title>
               <RunInExplorerButton
                 operation={selectedQuery.queryString}
