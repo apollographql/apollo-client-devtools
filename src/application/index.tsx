@@ -36,6 +36,9 @@ import type { JSONObject } from "./types/json";
 
 const cache = new InMemoryCache({
   fragments: fragmentRegistry,
+  possibleTypes: {
+    WatchedMutationError: ["SerializedError", "SerializedApolloError"],
+  },
   typePolicies: {
     WatchedQuery: {
       fields: {
