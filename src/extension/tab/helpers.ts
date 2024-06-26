@@ -31,11 +31,17 @@ export type QueryOptions = Pick<
 
 interface SerializedApolloError extends Pick<ApolloError, "message" | "name"> {
   clientErrors: string[];
-  networkError?: { message: string; name: string; stack?: string };
+  networkError?: SerializedError;
   graphQLErrors: Array<
     Pick<GraphQLFormattedError, "message" | "path" | "extensions">
   >;
   protocolErrors: string[];
+}
+
+interface SerializedError {
+  message: string;
+  name: string;
+  stack?: string;
 }
 
 export type QueryInfo = {
