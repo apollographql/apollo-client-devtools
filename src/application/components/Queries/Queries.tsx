@@ -75,6 +75,10 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
 
   const pollInterval = selectedQuery?.pollInterval;
 
+  if (!selectedQuery && queries.length > 0) {
+    setSelected(0);
+  }
+
   return (
     <SidebarLayout>
       <SidebarLayout.Sidebar>

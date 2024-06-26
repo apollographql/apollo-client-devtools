@@ -59,6 +59,10 @@ export const Mutations = ({ explorerIFrame }: MutationsProps) => {
     (mutation) => mutation.id === selected
   );
 
+  if (!selectedMutation && mutations.length > 0) {
+    setSelected(0);
+  }
+
   return (
     <SidebarLayout>
       <SidebarLayout.Sidebar>
