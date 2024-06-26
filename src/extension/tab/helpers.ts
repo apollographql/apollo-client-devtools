@@ -141,16 +141,20 @@ export function getQueriesLegacy(
       document: DocumentNode;
       variables: Variables;
       diff: Cache.DiffResult<any>;
+      networkStatus?: NetworkStatus;
     }
   >
 ): QueryInfo[] {
   let queries: QueryInfo[] = [];
   if (queryMap) {
-    queries = [...queryMap.values()].map(({ document, variables, diff }) => ({
-      document,
-      variables,
-      cachedData: diff?.result,
-    }));
+    queries = [...queryMap.values()].map(
+      ({ document, variables, diff, networkStatus }) => ({
+        document,
+        variables,
+        cachedData: diff?.result,
+        networkStatus,
+      })
+    );
   }
   return queries;
 }
