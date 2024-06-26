@@ -110,7 +110,18 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
             <QueryLayout.Header>
               <QueryLayout.Title className="flex gap-6 items-center">
                 {selectedQuery.name}
-                {typeof pollInterval === "number" ? (
+                {isNetworkRequestInFlight(selectedQuery.networkStatus) &&
+                selectedQuery.networkStatus !== NetworkStatus.poll ? (
+                  <>
+                    <StatusBadge
+                      color="blue"
+                      variant="rounded"
+                      icon={<Spinner size="xs" />}
+                    >
+                      {getNetworkStatusLabel(selectedQuery.networkStatus)}
+                    </StatusBadge>
+                  </>
+                ) : typeof pollInterval === "number" ? (
                   <StatusBadge
                     color={pollInterval === 0 ? "red" : "green"}
                     variant="rounded"
@@ -130,14 +141,6 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
                         </span>
                       </span>
                     )}
-                  </StatusBadge>
-                ) : isNetworkRequestInFlight(selectedQuery.networkStatus) ? (
-                  <StatusBadge
-                    color="blue"
-                    variant="rounded"
-                    icon={<Spinner size="xs" />}
-                  >
-                    {getNetworkStatusLabel(selectedQuery.networkStatus)}
                   </StatusBadge>
                 ) : null}
               </QueryLayout.Title>
