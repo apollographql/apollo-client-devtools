@@ -140,6 +140,7 @@ export type GetMutations = {
       name: string | null;
       mutationString: string;
       variables: Variables | null;
+      loading: boolean;
     }>;
   };
 };

@@ -13,6 +13,8 @@ import { QueryLayout } from "../QueryLayout";
 import { CopyButton } from "../CopyButton";
 import { EmptyMessage } from "../EmptyMessage";
 import { isEmpty } from "../../utilities/isEmpty";
+import { Spinner } from "../Spinner";
+import { StatusBadge } from "../StatusBadge";
 
 const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
   gql`
@@ -23,6 +25,7 @@ const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
           name
           mutationString
           variables
+          loading
         }
       }
     }
@@ -45,7 +48,7 @@ export const Mutations = ({ explorerIFrame }: MutationsProps) => {
     <SidebarLayout>
       <SidebarLayout.Sidebar>
         <List className="h-full">
-          {mutations.map(({ name, id }) => {
+          {mutations.map(({ name, id, loading }) => {
             return (
               <ListItem
                 key={`${name}-${id}`}
@@ -53,7 +56,10 @@ export const Mutations = ({ explorerIFrame }: MutationsProps) => {
                 onClick={() => setSelected(id)}
                 selected={selected === id}
               >
-                {name}
+                <div className="w-full flex items-center justify-between">
+                  {name}
+                  {loading && <Spinner size="xs" />}
+                </div>
               </ListItem>
             );
           })}
@@ -63,7 +69,18 @@ export const Mutations = ({ explorerIFrame }: MutationsProps) => {
         {selectedMutation ? (
           <>
             <QueryLayout.Header>
-              <QueryLayout.Title>{selectedMutation.name}</QueryLayout.Title>
+              <QueryLayout.Title className="flex gap-6 items-center">
+                {selectedMutation.name}
+                {selectedMutation.loading && (
+                  <StatusBadge
+                    color="blue"
+                    variant="rounded"
+                    icon={<Spinner size="xs" />}
+                  >
+                    Loading
+                  </StatusBadge>
+                )}
+              </QueryLayout.Title>
               <RunInExplorerButton
                 operation={selectedMutation.mutationString}
                 variables={selectedMutation.variables ?? undefined}
