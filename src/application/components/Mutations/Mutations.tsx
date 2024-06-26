@@ -17,7 +17,8 @@ import { isEmpty } from "../../utilities/isEmpty";
 import { Spinner } from "../Spinner";
 import { StatusBadge } from "../StatusBadge";
 import { AlertDisclosure } from "../AlertDisclosure";
-import { ErrorAlertDisclosureItem } from "../ErrorAlertDisclosureItem";
+import { SerializedErrorAlertDisclosureItem } from "../SerializedErrorAlertDisclosureItem";
+import { ApolloErrorAlertDisclosurePanel } from "../ApolloErrorAlertDisclosurePanel";
 
 const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
   gql`
@@ -30,13 +31,19 @@ const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
           variables
           loading
           error {
-            message
-            name
-            stack
+            ... on SerializedError {
+              ...SerializedErrorAlertDisclosureItem_error
+            }
+            ... on SerializedApolloError {
+              ...ApolloErrorAlertDisclosurePanel_error
+            }
           }
         }
       }
     }
+
+    ${ApolloErrorAlertDisclosurePanel.fragments.error}
+    ${SerializedErrorAlertDisclosureItem.fragments.error}
   `;
 
 interface MutationsProps {
@@ -105,30 +112,20 @@ export const Mutations = ({ explorerIFrame }: MutationsProps) => {
                   <AlertDisclosure.Button>
                     Mutation completed with errors
                   </AlertDisclosure.Button>
-                  <AlertDisclosure.Panel>
-                    <ul className="flex flex-col gap-4">
-                      <ErrorAlertDisclosureItem>
-                        <div>
-                          {selectedMutation.error.name}:{" "}
-                          {selectedMutation.error.message}
-                        </div>
-                        {selectedMutation.error.stack && (
-                          <div className="mt-3">
-                            <JSONTreeViewer
-                              key={selectedMutation.id}
-                              className="text-xs"
-                              data={selectedMutation.error.stack
-                                .split("\n")
-                                .slice(1)}
-                              keyPath={["Stack trace"]}
-                              theme="alertError"
-                              shouldExpandNodeInitially={() => false}
-                            />
-                          </div>
-                        )}
-                      </ErrorAlertDisclosureItem>
-                    </ul>
-                  </AlertDisclosure.Panel>
+                  {selectedMutation.error.__typename ===
+                  "SerializedApolloError" ? (
+                    <ApolloErrorAlertDisclosurePanel
+                      error={selectedMutation.error}
+                    />
+                  ) : (
+                    <AlertDisclosure.Panel>
+                      <ul>
+                        <SerializedErrorAlertDisclosureItem
+                          error={selectedMutation.error}
+                        />
+                      </ul>
+                    </AlertDisclosure.Panel>
+                  )}
                 </AlertDisclosure>
               )}
               <QueryLayout.QueryString code={selectedMutation.mutationString} />

@@ -161,12 +161,31 @@ export type GetMutations = {
       mutationString: string;
       variables: Variables | null;
       loading: boolean;
-      error: {
-        __typename: "SerializedError";
-        message: string;
-        name: string;
-        stack: string | null;
-      } | null;
+      error:
+        | {
+            __typename: "SerializedApolloError";
+            clientErrors: Array<string>;
+            protocolErrors: Array<string>;
+            networkError: {
+              __typename: "SerializedError";
+              message: string;
+              name: string;
+              stack: string | null;
+            } | null;
+            graphQLErrors: Array<{
+              __typename: "SerializedGraphQLError";
+              message: string;
+              path: GraphQLErrorPath | null;
+              extensions: JSON | null;
+            }>;
+          }
+        | {
+            __typename: "SerializedError";
+            message: string;
+            name: string;
+            stack: string | null;
+          }
+        | null;
     }>;
   };
 };
