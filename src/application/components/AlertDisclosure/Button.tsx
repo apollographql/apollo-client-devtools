@@ -1,5 +1,5 @@
 import { forwardRef, type ReactNode } from "react";
-import { Disclosure } from "@headlessui/react";
+import { DisclosureButton } from "@headlessui/react";
 import IconChevronDown from "@apollo/icons/default/IconChevronDown.svg";
 import clsx from "clsx";
 import type { AlertProps } from "../Alert";
@@ -15,7 +15,7 @@ export function AlertDisclosureButton({
 }: AlertDisclosureButtonProps) {
   const { variant } = useAlertDisclosure();
   return (
-    <Disclosure.Button className="w-full" as={AlertButton} variant={variant}>
+    <DisclosureButton className="w-full" as={AlertButton} variant={variant}>
       {({ open }) => {
         return (
           <div className="flex justify-between items-center">
@@ -28,7 +28,7 @@ export function AlertDisclosureButton({
           </div>
         );
       }}
-    </Disclosure.Button>
+    </DisclosureButton>
   );
 }
 
