@@ -18,7 +18,7 @@ type JSONTreeViewerProps = Pick<
 > & {
   className?: string;
   style?: CSSProperties;
-  theme?: Theme;
+  theme?: keyof typeof THEMES;
 };
 
 // The Base16 options used below are explained here:
@@ -35,7 +35,7 @@ const { primitives } = colors;
 
 const whiteToken = { base: primitives.white, dark: primitives.white };
 
-export const THEMES = {
+const THEMES = {
   codeBlock: {
     base00: bg.primary,
     base01: bg.secondary,
@@ -77,7 +77,7 @@ export const THEMES = {
 export function JSONTreeViewer({
   className,
   style,
-  theme = THEMES.codeBlock,
+  theme: themeName = "codeBlock",
   ...props
 }: JSONTreeViewerProps) {
   const colorKey =
@@ -86,9 +86,12 @@ export function JSONTreeViewer({
   const activeTheme = useMemo(
     () =>
       Object.fromEntries(
-        Object.entries(theme).map(([key, token]) => [key, token[colorKey]])
+        Object.entries(THEMES[themeName]).map(([key, token]) => [
+          key,
+          token[colorKey],
+        ])
       ),
-    [colorKey, theme]
+    [colorKey, themeName]
   );
 
   return (
