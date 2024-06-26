@@ -46,6 +46,7 @@ const GET_WATCHED_QUERIES: TypedDocumentNode<
         error {
           networkError {
             message
+            stack
           }
           clientErrors
           graphQLErrors {
@@ -76,6 +77,8 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
       ? selectedQuery?.variables ?? {}
       : selectedQuery?.cachedData ?? {}
   );
+
+  const networkError = selectedQuery?.error?.networkError;
 
   return (
     <SidebarLayout>
@@ -128,9 +131,20 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
                   </AlertDisclosure.Button>
                   <AlertDisclosure.Panel>
                     <ul className="flex flex-col gap-3">
-                      {selectedQuery.error.networkError && (
+                      {networkError && (
                         <ErrorMessageAlertItem>
-                          [Network]: {selectedQuery.error.networkError.message}
+                          <div>[Network]: {networkError.message}</div>
+                          {networkError.stack && (
+                            <div className="mt-4">
+                              <JSONTreeViewer
+                                className="text-xs"
+                                data={networkError.stack.split("\n").slice(1)}
+                                keyPath={["Stack trace"]}
+                                theme="alertError"
+                                shouldExpandNodeInitially={() => false}
+                              />
+                            </div>
+                          )}
                         </ErrorMessageAlertItem>
                       )}
                       {selectedQuery.error.graphQLErrors.map(

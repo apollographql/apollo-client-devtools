@@ -158,7 +158,11 @@ export type GetWatchedQueries = {
         __typename: "SerializedApolloError";
         clientErrors: Array<string>;
         protocolErrors: Array<string>;
-        networkError: { __typename: "SerializedError"; message: string } | null;
+        networkError: {
+          __typename: "SerializedError";
+          message: string;
+          stack: string | null;
+        } | null;
         graphQLErrors: Array<{
           __typename: "SerializedGraphQLError";
           message: string;
