@@ -1,19 +1,17 @@
 import type { ReactNode } from "react";
 import { useState } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
-import { NetworkStatus, gql, useQuery, useReactiveVar } from "@apollo/client";
+import { NetworkStatus, gql, useQuery } from "@apollo/client";
 import { isNetworkRequestInFlight } from "@apollo/client/core/networkStatus";
 import { List } from "../List";
 import { ListItem } from "../ListItem";
 import IconErrorSolid from "@apollo/icons/default/IconErrorSolid.svg";
-import { colors } from "@apollo/brand";
 
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { RunInExplorerButton } from "./RunInExplorerButton";
 import type {
   GetWatchedQueries,
   GetWatchedQueriesVariables,
-  SerializedGraphQLError,
 } from "../../types/gql";
 import { Tabs } from "../Tabs";
 import { JSONTreeViewer } from "../JSONTreeViewer";
@@ -24,11 +22,7 @@ import { isEmpty } from "../../utilities/isEmpty";
 import { Spinner } from "../Spinner";
 import { StatusBadge } from "../StatusBadge";
 import { AlertDisclosure } from "../AlertDisclosure";
-import { JSONTree } from "react-json-tree";
 import type { JSONObject } from "../Explorer/postMessageHelpers";
-import { ColorTheme, colorTheme } from "../../theme";
-import { pick } from "../../utilities/pick";
-import { twMerge } from "tailwind-merge";
 
 enum QueryTabs {
   Variables = "Variables",
@@ -272,9 +266,6 @@ const ErrorMessageAlertItem = ({ children }: { children: ReactNode }) => {
   );
 };
 
-const { bg, code, icon, text } = colors.tokens;
-const { primitives } = colors;
-
 const GraphQLErrorExtensions = ({
   className,
   extensions,
@@ -282,41 +273,12 @@ const GraphQLErrorExtensions = ({
   className?: string;
   extensions: JSONObject;
 }) => {
-  const isDark = useReactiveVar(colorTheme) === ColorTheme.Dark;
-
   return (
-    <JSONTree
+    <JSONTreeViewer
+      className={className}
       data={extensions}
       keyPath={["extensions"]}
-      theme={{
-        extend: {
-          scheme: "apollo",
-          author: "Apollo (community@apollographql.com)",
-          base00: "transparent",
-          base01: isDark ? bg.secondary.dark : bg.secondary.base,
-          base02: isDark ? bg.selected.dark : bg.selected.base,
-          base03: isDark ? code.g.dark : code.g.base,
-          base04: primitives.white,
-          base05: isDark ? icon.primary.dark : icon.primary.base,
-          base06: primitives.white,
-          base07: primitives.white,
-          base08: isDark ? code.a.dark : code.a.base,
-          base09: isDark ? code.g.dark : code.g.base,
-          base0A: isDark ? code.a.dark : code.a.base,
-          base0B: isDark ? code.g.dark : code.g.base,
-          base0C: isDark ? code.a.dark : code.a.base,
-          base0D: isDark ? text.error.dark : text.error.base,
-          base0E: isDark ? code.a.dark : code.a.base,
-          base0F: isDark ? text.error.dark : text.error.base,
-        },
-        tree: ({ style: defaultStyle }) => ({
-          className: twMerge("font-code text-xs", className),
-          style: {
-            ...defaultStyle,
-            margin: 0,
-          },
-        }),
-      }}
+      theme="alertError"
     />
   );
 };
