@@ -207,6 +207,13 @@ export type GetWatchedQueries = {
   };
 };
 
+export type SerializedErrorAlertDisclosureItem_error = {
+  __typename: "SerializedError";
+  message: string;
+  name: string;
+  stack: string | null;
+};
+
 export type GetQueriesVariables = Exact<{ [key: string]: never }>;
 
 export type GetQueries = {
