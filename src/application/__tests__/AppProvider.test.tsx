@@ -94,6 +94,8 @@ describe("<AppProvider />", () => {
         variables: {
           color: "#ee82ee",
         },
+        loading: false,
+        error: null,
       };
 
       const data = getMutationData(mutationData, 0);
@@ -106,6 +108,8 @@ describe("<AppProvider />", () => {
         variables: {
           color: "#ee82ee",
         },
+        loading: false,
+        error: null,
       });
     });
   });
