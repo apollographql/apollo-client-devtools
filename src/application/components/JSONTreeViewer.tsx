@@ -14,7 +14,11 @@ type JSONTreeProps = ComponentPropsWithoutRef<typeof JSONTree>;
 
 type JSONTreeViewerProps = Pick<
   JSONTreeProps,
-  "data" | "hideRoot" | "valueRenderer" | "keyPath"
+  | "data"
+  | "hideRoot"
+  | "valueRenderer"
+  | "keyPath"
+  | "shouldExpandNodeInitially"
 > & {
   className?: string;
   style?: CSSProperties;
