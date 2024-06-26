@@ -49,7 +49,7 @@ export const Mutations = ({ explorerIFrame }: MutationsProps) => {
             return (
               <ListItem
                 key={`${name}-${id}`}
-                className="font-code h-8 text-sm"
+                className="font-code"
                 onClick={() => setSelected(id)}
                 selected={selected === id}
               >
