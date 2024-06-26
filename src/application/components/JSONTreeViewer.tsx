@@ -1,56 +1,95 @@
-import type { CSSProperties, ComponentPropsWithoutRef } from "react";
+import {
+  useMemo,
+  type CSSProperties,
+  type ComponentPropsWithoutRef,
+} from "react";
 import { useReactiveVar } from "@apollo/client";
 import { JSONTree } from "react-json-tree";
 import { ColorTheme, colorTheme } from "../theme";
 import { colors } from "@apollo/brand";
 import { clsx } from "clsx";
+import type { Base16Theme } from "base16";
 
 type JSONTreeProps = ComponentPropsWithoutRef<typeof JSONTree>;
 
 type JSONTreeViewerProps = Pick<
   JSONTreeProps,
-  "data" | "hideRoot" | "valueRenderer"
+  "data" | "hideRoot" | "valueRenderer" | "keyPath"
 > & {
   className?: string;
   style?: CSSProperties;
+  theme?: Theme;
 };
-
-const { bg, code, icon } = colors.tokens;
-const { primitives } = colors;
 
 // The Base16 options used below are explained here:
 // https://github.com/chriskempson/base16/blob/7fa89d33bc77a43e1cf93c4654b235e21f827ce3/styling.md
-const getTheme = (theme: ColorTheme) => {
-  const isDark = theme === ColorTheme.Dark;
-
-  return {
-    scheme: "apollo",
-    author: "Apollo (community@apollographql.com)",
-    base00: isDark ? bg.primary.dark : bg.primary.base,
-    base01: isDark ? bg.secondary.dark : bg.secondary.base,
-    base02: isDark ? bg.selected.dark : bg.selected.base,
-    base03: isDark ? code.b.dark : code.b.base,
-    base04: primitives.white,
-    base05: isDark ? icon.primary.dark : icon.primary.base,
-    base06: primitives.white,
-    base07: primitives.white,
-    base08: isDark ? code.a.dark : code.a.base,
-    base09: isDark ? code.c.dark : code.c.base,
-    base0A: isDark ? code.a.dark : code.a.base,
-    base0B: isDark ? code.g.dark : code.g.base,
-    base0C: isDark ? code.f.dark : code.f.base,
-    base0D: isDark ? code.d.dark : code.d.base,
-    base0E: isDark ? code.d.dark : code.d.base,
-    base0F: isDark ? code.b.dark : code.b.base,
+type Theme = {
+  [K in keyof Base16Theme as K extends `base${string}` ? K : never]: {
+    base: string;
+    dark: string;
   };
 };
+
+const { bg, code, icon, text } = colors.tokens;
+const { primitives } = colors;
+
+const whiteToken = { base: primitives.white, dark: primitives.white };
+
+export const THEMES = {
+  codeBlock: {
+    base00: bg.primary,
+    base01: bg.secondary,
+    base02: bg.selected,
+    base03: code.b,
+    base04: whiteToken,
+    base05: icon.primary,
+    base06: whiteToken,
+    base07: whiteToken,
+    base08: code.a,
+    base09: code.c,
+    base0A: code.a,
+    base0B: code.g,
+    base0C: code.f,
+    base0D: code.d,
+    base0E: code.d,
+    base0F: code.b,
+  },
+  errorAlert: {
+    base00: { base: "transparent", dark: "transparent" },
+    base01: bg.secondary,
+    base02: bg.selected,
+    base03: code.g,
+    base04: whiteToken,
+    base05: icon.primary,
+    base06: whiteToken,
+    base07: whiteToken,
+    base08: code.a,
+    base09: code.g,
+    base0A: code.a,
+    base0B: code.g,
+    base0C: code.a,
+    base0D: text.error,
+    base0E: code.a,
+    base0F: text.error,
+  },
+} as const satisfies Record<string, Theme>;
 
 export function JSONTreeViewer({
   className,
   style,
+  theme = THEMES.codeBlock,
   ...props
 }: JSONTreeViewerProps) {
-  const activeTheme = getTheme(useReactiveVar(colorTheme));
+  const colorKey =
+    useReactiveVar(colorTheme) === ColorTheme.Dark ? "dark" : "base";
+
+  const activeTheme = useMemo(
+    () =>
+      Object.fromEntries(
+        Object.entries(theme).map(([key, token]) => [key, token[colorKey]])
+      ),
+    [colorKey, theme]
+  );
 
   return (
     <JSONTree
