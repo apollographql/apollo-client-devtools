@@ -1,4 +1,3 @@
-import type { ReactNode } from "react";
 import { useState } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { NetworkStatus, gql, useQuery } from "@apollo/client";
@@ -24,6 +23,7 @@ import { Spinner } from "../Spinner";
 import { StatusBadge } from "../StatusBadge";
 import { AlertDisclosure } from "../AlertDisclosure";
 import { Tooltip } from "../Tooltip";
+import { ErrorAlertDisclosureItem } from "../ErrorAlertDisclosureItem";
 
 enum QueryTabs {
   Variables = "Variables",
@@ -164,7 +164,7 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
                   <AlertDisclosure.Panel>
                     <ul className="flex flex-col gap-4">
                       {networkError && (
-                        <ErrorMessageAlertItem>
+                        <ErrorAlertDisclosureItem>
                           <div>
                             [Network]: {networkError.name}:{" "}
                             {networkError.message}
@@ -181,11 +181,11 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
                               />
                             </div>
                           )}
-                        </ErrorMessageAlertItem>
+                        </ErrorAlertDisclosureItem>
                       )}
                       {selectedQuery.error.graphQLErrors.map(
                         (graphQLError, idx) => (
-                          <ErrorMessageAlertItem key={`gql-${idx}`}>
+                          <ErrorAlertDisclosureItem key={`gql-${idx}`}>
                             <div>[GraphQL]: {graphQLError.message}</div>
                             {graphQLError.path && (
                               <div className="text-xs mt-3">
@@ -212,20 +212,20 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
                                 theme="alertError"
                               />
                             )}
-                          </ErrorMessageAlertItem>
+                          </ErrorAlertDisclosureItem>
                         )
                       )}
                       {selectedQuery.error.protocolErrors.map(
                         (message, idx) => (
-                          <ErrorMessageAlertItem key={`protocol-${idx}`}>
+                          <ErrorAlertDisclosureItem key={`protocol-${idx}`}>
                             [Protocol]: {message}
-                          </ErrorMessageAlertItem>
+                          </ErrorAlertDisclosureItem>
                         )
                       )}
                       {selectedQuery.error.clientErrors.map((message, idx) => (
-                        <ErrorMessageAlertItem key={`client-${idx}`}>
+                        <ErrorAlertDisclosureItem key={`client-${idx}`}>
                           [Client]: {message}
-                        </ErrorMessageAlertItem>
+                        </ErrorAlertDisclosureItem>
                       ))}
                     </ul>
                   </AlertDisclosure.Panel>
@@ -324,12 +324,4 @@ const QueryStatusIcon = ({
   }
 
   return null;
-};
-
-const ErrorMessageAlertItem = ({ children }: { children: ReactNode }) => {
-  return (
-    <li className="border-l-2 border-l-warning dark:border-l-warning-dark px-4 font-code text-sm font-normal text-error dark:text-error-dark">
-      {children}
-    </li>
-  );
 };
