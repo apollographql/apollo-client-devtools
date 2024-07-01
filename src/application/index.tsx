@@ -171,10 +171,7 @@ export const GET_MUTATIONS: TypedDocumentNode<
   }
 `;
 
-export function getQueryData(
-  query: QueryDetails,
-  key: number
-): WatchedQuery | undefined {
+export function getQueryData(query: QueryDetails): WatchedQuery | undefined {
   // TODO: The current designs do not account for non-cached data.
   // We need a workaround to show that data + we should surface
   // the FetchPolicy.
@@ -184,7 +181,7 @@ export function getQueryData(
   }
 
   return {
-    id: key,
+    id: Number(query.id),
     __typename: "WatchedQuery",
     name,
     queryString: print(query.document),
