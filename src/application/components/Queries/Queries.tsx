@@ -61,7 +61,7 @@ interface QueriesProps {
 }
 
 export const Queries = ({ explorerIFrame }: QueriesProps) => {
-  const [selected, setSelected] = useState<number>(0);
+  const [selected, setSelected] = useState(1);
   const { data } = useQuery(GET_WATCHED_QUERIES, { returnPartialData: true });
 
   const queries = data?.watchedQueries.queries ?? [];
@@ -76,7 +76,7 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
   const pollInterval = selectedQuery?.pollInterval;
 
   if (!selectedQuery && queries.length > 0) {
-    setSelected(0);
+    setSelected(queries[0].id);
   }
 
   return (

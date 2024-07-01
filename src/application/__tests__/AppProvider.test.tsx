@@ -7,7 +7,6 @@ import { Mode, colorTheme } from "../theme";
 import { AppProvider, getQueryData, getMutationData } from "../index";
 import type { MutationInfo, QueryInfo } from "../../extension/tab/helpers";
 import { print, getIntrospectionQuery } from "graphql";
-import { networkStatus } from "webextension-polyfill";
 
 const matchMedia = matchMediaMock();
 
@@ -30,6 +29,7 @@ describe("<AppProvider />", () => {
   describe("getQueryData", () => {
     test("returns expected query data", () => {
       const queryData: QueryInfo = {
+        id: "1",
         document: gql`
           query GetColorByHex {
             someQuery {
@@ -48,10 +48,10 @@ describe("<AppProvider />", () => {
         networkStatus: NetworkStatus.ready,
       };
 
-      const data = getQueryData(queryData, 0);
+      const data = getQueryData(queryData);
 
       expect(data).toEqual({
-        id: 0,
+        id: 1,
         __typename: "WatchedQuery",
         name: "GetColorByHex",
         queryString:
@@ -73,10 +73,11 @@ describe("<AppProvider />", () => {
 
     test("ignores IntrospectionQuery", () => {
       const queryData: QueryInfo = {
+        id: "1",
         document: gql(getIntrospectionQuery()),
       };
 
-      const data = getQueryData(queryData, 0);
+      const data = getQueryData(queryData);
       expect(data).toBeUndefined();
     });
   });
