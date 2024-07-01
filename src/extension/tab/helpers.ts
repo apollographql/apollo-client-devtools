@@ -141,7 +141,6 @@ export function getQueriesLegacy(
   queryMap: Map<
     string,
     {
-      queryId: string;
       document: DocumentNode;
       variables: Variables;
       diff: Cache.DiffResult<any>;
