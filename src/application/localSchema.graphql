@@ -7,6 +7,9 @@ scalar Variables
 "Represents options for a query"
 scalar QueryOptions
 
+scalar JSON
+scalar GraphQLErrorPath
+
 type Query {
   clientVersion: String
   cache: String!
@@ -21,7 +24,11 @@ type WatchedMutation {
   name: String
   mutationString: String!
   variables: Variables
+  loading: Boolean!
+  error: WatchedMutationError
 }
+
+union WatchedMutationError = SerializedError | SerializedApolloError
 
 type MutationLog {
   count: Int!
@@ -40,4 +47,28 @@ type WatchedQuery {
   cachedData: QueryData
   variables: Variables
   options: QueryOptions
+  networkStatus: Int!
+  error: SerializedApolloError
+  pollInterval: Int
+}
+
+type SerializedApolloError {
+  message: String!
+  clientErrors: [String!]!
+  name: String!
+  networkError: SerializedError
+  graphQLErrors: [SerializedGraphQLError!]!
+  protocolErrors: [String!]!
+}
+
+type SerializedError {
+  message: String!
+  name: String!
+  stack: String
+}
+
+type SerializedGraphQLError {
+  message: String!
+  path: GraphQLErrorPath
+  extensions: JSON
 }

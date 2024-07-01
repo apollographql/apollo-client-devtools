@@ -1,4 +1,9 @@
-import type { ObservableQuery, WatchQueryOptions } from "@apollo/client";
+import type {
+  ApolloError,
+  NetworkStatus,
+  ObservableQuery,
+  WatchQueryOptions,
+} from "@apollo/client";
 import type { Cache } from "@apollo/client/cache";
 import type {
   DocumentNode,
@@ -9,6 +14,7 @@ import type { QueryData, Variables } from "../../application/types/scalars";
 import { getPrivateAccess } from "../../privateAccess";
 import { getOperationName } from "@apollo/client/utilities";
 import { pick } from "../../application/utilities/pick";
+import type { GraphQLFormattedError } from "graphql";
 
 export type QueryOptions = Pick<
   WatchQueryOptions,
@@ -23,11 +29,37 @@ export type QueryOptions = Pick<
   | "notifyOnNetworkStatusChange"
 > & { nextFetchPolicy?: string };
 
+export interface SerializedApolloError extends Pick<ApolloError, "message"> {
+  name: "ApolloError";
+  clientErrors: string[];
+  networkError?: SerializedError;
+  graphQLErrors: Array<
+    Pick<GraphQLFormattedError, "message" | "path" | "extensions">
+  >;
+  protocolErrors: string[];
+}
+
+export interface SerializedError {
+  message: string;
+  name: string;
+  stack?: string;
+}
+
 export type QueryInfo = {
   document: DocumentNode;
   variables?: Variables;
   cachedData?: QueryData; // Not a member of the actual Apollo Client QueryInfo type
   options?: QueryOptions;
+  networkStatus?: NetworkStatus;
+  error?: SerializedApolloError;
+  pollInterval?: number;
+};
+
+export type MutationInfo = {
+  document: DocumentNode;
+  variables?: Variables;
+  loading: boolean;
+  error: SerializedApolloError | SerializedError | null;
 };
 
 // Transform the map of observable queries into a list of QueryInfo objects usable by DevTools
@@ -45,15 +77,37 @@ export function getQueries(
       if (name === "IntrospectionQuery") {
         return;
       }
+
+      const { pollingInfo } = observableQuery;
+      const { networkStatus, error } = observableQuery.getCurrentResult(false);
+
       queries.push({
         document,
         variables,
         cachedData: diff.result,
         options: getQueryOptions(oc),
+        networkStatus,
+        error: error ? serializeApolloError(error) : undefined,
+        pollInterval: pollingInfo && Math.floor(pollingInfo.interval),
       });
     });
   }
   return queries;
+}
+
+function serializeApolloError(error: ApolloError): SerializedApolloError {
+  return {
+    clientErrors: error.clientErrors.map((e) => e.message),
+    name: "ApolloError",
+    networkError: error.networkError
+      ? serializeError(error.networkError)
+      : undefined,
+    message: error.message,
+    graphQLErrors: error.graphQLErrors.map((e) =>
+      e.constructor.name === "GraphQLError" ? e.toJSON() : e
+    ),
+    protocolErrors: error.protocolErrors.map((e) => e.message),
+  };
 }
 
 function getQueryOptions(observableQuery: ObservableQuery) {
@@ -92,23 +146,34 @@ export function getQueriesLegacy(
       document: DocumentNode;
       variables: Variables;
       diff: Cache.DiffResult<any>;
+      networkStatus?: NetworkStatus;
     }
   >
 ): QueryInfo[] {
   let queries: QueryInfo[] = [];
   if (queryMap) {
-    queries = [...queryMap.values()].map(({ document, variables, diff }) => ({
-      document,
-      variables,
-      cachedData: diff?.result,
-    }));
+    queries = [...queryMap.values()].map(
+      ({ document, variables, diff, networkStatus }) => ({
+        document,
+        variables,
+        cachedData: diff?.result,
+        networkStatus,
+      })
+    );
   }
   return queries;
 }
 
+interface MutationStoreValue {
+  mutation: DocumentNode;
+  variables: Variables;
+  loading: boolean;
+  error: Error | null;
+}
+
 export function getMutations(
-  mutationsObj: Record<string, { mutation: DocumentNode; variables: Variables }>
-): QueryInfo[] {
+  mutationsObj: Record<string, MutationStoreValue>
+): MutationInfo[] {
   const keys = Object.keys(mutationsObj);
 
   if (keys.length === 0) {
@@ -116,12 +181,32 @@ export function getMutations(
   }
 
   return keys.map((key) => {
-    const { mutation, variables } = mutationsObj[key];
+    const { mutation, variables, loading, error } = mutationsObj[key];
     return {
       document: mutation,
       variables,
+      loading,
+      error: getSerializedMutationError(error),
     };
   });
+}
+
+function serializeError(error: Error) {
+  return { message: error.message, name: error.name, stack: error.stack };
+}
+
+function isApolloError(error: Error): error is ApolloError {
+  return error.name === "ApolloError";
+}
+
+function getSerializedMutationError(error: Error | null) {
+  if (!error) {
+    return null;
+  }
+
+  return isApolloError(error)
+    ? serializeApolloError(error)
+    : serializeError(error);
 }
 
 export function getMainDefinition(

@@ -35,7 +35,7 @@ export function ListItem({
         }
       }}
     >
-      <div className="overflow-hidden whitespace-nowrap text-ellipsis">
+      <div className="overflow-hidden whitespace-nowrap text-ellipsis w-full">
         {children}
       </div>
     </li>

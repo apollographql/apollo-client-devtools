@@ -1,12 +1,13 @@
 import React from "react";
 import { render, waitFor, screen } from "@testing-library/react";
-import { gql } from "@apollo/client";
+import { NetworkStatus, gql } from "@apollo/client";
 
 import matchMediaMock from "../utilities/testing/matchMedia";
 import { Mode, colorTheme } from "../theme";
 import { AppProvider, getQueryData, getMutationData } from "../index";
-import type { QueryInfo } from "../../extension/tab/helpers";
+import type { MutationInfo, QueryInfo } from "../../extension/tab/helpers";
 import { print, getIntrospectionQuery } from "graphql";
+import { networkStatus } from "webextension-polyfill";
 
 const matchMedia = matchMediaMock();
 
@@ -44,6 +45,7 @@ describe("<AppProvider />", () => {
           name: "Violet",
         },
         options: { fetchPolicy: "network-only" },
+        networkStatus: NetworkStatus.ready,
       };
 
       const data = getQueryData(queryData, 0);
@@ -63,6 +65,9 @@ describe("<AppProvider />", () => {
         options: {
           fetchPolicy: "network-only",
         },
+        pollInterval: null,
+        error: null,
+        networkStatus: NetworkStatus.ready,
       });
     });
 
@@ -84,11 +89,13 @@ describe("<AppProvider />", () => {
         }
       `;
 
-      const mutationData: QueryInfo = {
+      const mutationData: MutationInfo = {
         document: mutation,
         variables: {
           color: "#ee82ee",
         },
+        loading: false,
+        error: null,
       };
 
       const data = getMutationData(mutationData, 0);
@@ -101,6 +108,8 @@ describe("<AppProvider />", () => {
         variables: {
           color: "#ee82ee",
         },
+        loading: false,
+        error: null,
       });
     });
   });

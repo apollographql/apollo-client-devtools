@@ -6,6 +6,7 @@ import { renderWithApolloClient } from "../../../utilities/testing/renderWithApo
 import { client, GET_QUERIES } from "../../../index";
 import { Queries } from "../Queries";
 import type { GetQueries } from "../../../types/gql";
+import { NetworkStatus } from "@apollo/client";
 
 describe("<Queries />", () => {
   const queries: GetQueries["watchedQueries"]["queries"] = [
@@ -17,6 +18,9 @@ describe("<Queries />", () => {
       variables: null,
       cachedData: null,
       options: { fetchPolicy: "cache-first" },
+      pollInterval: null,
+      error: null,
+      networkStatus: NetworkStatus.ready,
     },
     {
       id: 1,
@@ -26,6 +30,9 @@ describe("<Queries />", () => {
       variables: null,
       cachedData: null,
       options: { fetchPolicy: "cache-first" },
+      pollInterval: null,
+      error: null,
+      networkStatus: NetworkStatus.ready,
     },
   ];
 
@@ -143,6 +150,9 @@ describe("<Queries />", () => {
               variables: { hex: "#000" },
               cachedData: { color: { name: "black" } },
               options: { fetchPolicy: "network-only" },
+              pollInterval: null,
+              error: null,
+              networkStatus: NetworkStatus.ready,
             },
           ],
           count: 1,
@@ -181,6 +191,9 @@ describe("<Queries />", () => {
       variables: { hex: "#000" },
       cachedData: { color: { name: "black" } },
       options: { fetchPolicy: "network-only" },
+      pollInterval: null,
+      error: null,
+      networkStatus: NetworkStatus.ready,
     } satisfies GetQueries["watchedQueries"]["queries"][number];
 
     client.writeQuery({
