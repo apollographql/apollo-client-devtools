@@ -11,7 +11,7 @@ import { NetworkStatus } from "@apollo/client";
 describe("<Queries />", () => {
   const queries: GetQueries["watchedQueries"]["queries"] = [
     {
-      id: 0,
+      id: 1,
       __typename: "WatchedQuery",
       name: null,
       queryString: "query { hello }",
@@ -23,7 +23,7 @@ describe("<Queries />", () => {
       networkStatus: NetworkStatus.ready,
     },
     {
-      id: 1,
+      id: 2,
       __typename: "WatchedQuery",
       name: "GetColors",
       queryString: "query GetColors { colors }",
