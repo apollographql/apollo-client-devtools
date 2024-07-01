@@ -7,7 +7,6 @@ import { Mode, colorTheme } from "../theme";
 import { AppProvider, getQueryData, getMutationData } from "../index";
 import type { MutationInfo, QueryInfo } from "../../extension/tab/helpers";
 import { print, getIntrospectionQuery } from "graphql";
-import { networkStatus } from "webextension-polyfill";
 
 const matchMedia = matchMediaMock();
 
