@@ -116,16 +116,16 @@ ${SECTIONS.apolloClientVersion}
 ${SECTIONS.devtoolsVersion}
 `;
 
+const machine = devtoolsMachine.provide({
+  actions: {
+    connectToClient: () => {
+      getPanelActor(window).send({ type: "connectToClient" });
+    },
+  },
+});
+
 export const App = () => {
-  const [snapshot, send] = useMachine(
-    devtoolsMachine.provide({
-      actions: {
-        connectToClient: () => {
-          getPanelActor(window).send({ type: "connectToClient" });
-        },
-      },
-    })
-  );
+  const [snapshot, send] = useMachine(machine);
 
   useActorEvent("connectToDevtools", () => {
     send({ type: "connect" });
