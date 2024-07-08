@@ -22,7 +22,8 @@ type Actions =
   | { type: "dismissBanner" }
   | { type: "notifyConnected" }
   | { type: "notifyDisconnected" }
-  | { type: "notifyNotFound" };
+  | { type: "notifyNotFound" }
+  | { type: "notifyTimedOut" };
 
 export const devtoolsMachine = createMachine(
   {
@@ -79,7 +80,9 @@ export const devtoolsMachine = createMachine(
           onDone: "notFound",
         },
       },
-      timedout: {},
+      timedout: {
+        entry: "notifyTimedOut",
+      },
       notFound: {
         on: {
           retry: "retrying",
@@ -109,6 +112,15 @@ export const devtoolsMachine = createMachine(
       notifyConnected: assign({
         dismissBanner: () => {
           return BannerAlert.show({ type: "success", content: "Connected!" });
+        },
+      }),
+      notifyTimedOut: assign({
+        dismissBanner: () => {
+          return BannerAlert.show({
+            type: "error",
+            content:
+              "Unable to communicate with browser tab. Please reload the window and restart the devtools to try again.",
+          });
         },
       }),
     },
