@@ -18,7 +18,7 @@ import { getRpcClient } from "../extension/devtools/panelRpcClient";
 import { createSchemaWithRpcClient } from "./schema";
 import type { ApolloClientInfo } from "../types";
 
-const rpcClient = getRpcClient(window);
+const rpcClient = getRpcClient();
 const schema = createSchemaWithRpcClient(rpcClient);
 const link = new SchemaLink({ schema });
 
