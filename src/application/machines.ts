@@ -35,7 +35,7 @@ export const devtoolsMachine = createMachine({
         timeout: "timedout",
         clientNotFound: "notFound",
       },
-      entry: ["connectToClient"],
+      entry: "connectToClient",
       invoke: {
         src: fromTimeout(),
         input: 10_000,
