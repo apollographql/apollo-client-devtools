@@ -1,4 +1,4 @@
-import { assign, createMachine } from "xstate";
+import { createMachine } from "xstate";
 import { fromTimeout } from "./actors/timeoutActor";
 import { BannerAlert } from "../application/components/BannerAlert";
 
@@ -28,7 +28,6 @@ type Actions =
 export const devtoolsMachine = createMachine(
   {
     types: {
-      context: {} as { dismissBanner?: () => void },
       actions: {} as Actions,
       events: {} as Events,
     },
@@ -94,35 +93,25 @@ export const devtoolsMachine = createMachine(
   },
   {
     actions: {
-      dismissBanner: assign({
-        dismissBanner: ({ context }) => {
-          context.dismissBanner?.();
-
-          return undefined;
-        },
-      }),
-      notifyDisconnected: assign({
-        dismissBanner: () => {
-          return BannerAlert.show({
-            type: "loading",
-            content: "Disconnected. Looking for client...",
-          });
-        },
-      }),
-      notifyConnected: assign({
-        dismissBanner: () => {
-          return BannerAlert.show({ type: "success", content: "Connected!" });
-        },
-      }),
-      notifyTimedOut: assign({
-        dismissBanner: () => {
-          return BannerAlert.show({
-            type: "error",
-            content:
-              "Unable to communicate with browser tab. Please reload the window and restart the devtools to try again.",
-          });
-        },
-      }),
+      dismissBanner: () => {
+        BannerAlert.close();
+      },
+      notifyDisconnected: () => {
+        return BannerAlert.show({
+          type: "loading",
+          content: "Disconnected. Looking for client...",
+        });
+      },
+      notifyConnected: () => {
+        return BannerAlert.show({ type: "success", content: "Connected!" });
+      },
+      notifyTimedOut: () => {
+        return BannerAlert.show({
+          type: "error",
+          content:
+            "Unable to communicate with browser tab. Please reload the window and restart the devtools to try again.",
+        });
+      },
     },
   }
 );
