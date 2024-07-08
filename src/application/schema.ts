@@ -64,6 +64,8 @@ function createResolvers(rpcClient: RpcClient<DevtoolsRPCMessage>): Resolvers {
           name: getOperationName(mutation.document),
           mutationString: print(mutation.document),
           variables: mutation.variables ?? null,
+          loading: mutation.loading,
+          error: mutation.error,
         }));
       },
     },
