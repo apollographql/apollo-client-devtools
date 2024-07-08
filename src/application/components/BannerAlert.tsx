@@ -54,3 +54,7 @@ BannerAlert.show = (config: BannerAlertConfig) => {
     bannerVar(null);
   };
 };
+
+BannerAlert.close = () => {
+  bannerVar(null);
+};
