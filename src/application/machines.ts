@@ -95,16 +95,16 @@ export const devtoolsMachine = createMachine(
     actions: {
       closeBanner: BannerAlert.close,
       notifyDisconnected: () => {
-        return BannerAlert.show({
+        BannerAlert.show({
           type: "loading",
           content: "Disconnected. Looking for client...",
         });
       },
       notifyConnected: () => {
-        return BannerAlert.show({ type: "success", content: "Connected!" });
+        BannerAlert.show({ type: "success", content: "Connected!" });
       },
       notifyTimedOut: () => {
-        return BannerAlert.show({
+        BannerAlert.show({
           type: "error",
           content:
             "Unable to communicate with browser tab. Please reload the window and restart the devtools to try again.",
