@@ -42,7 +42,7 @@ import { isSnapshotRelease, parseSnapshotRelease } from "./utilities/github";
 import { Select } from "./components/Select";
 import { Divider } from "./components/Divider";
 import { useActorEvent } from "./hooks/useActorEvent";
-import { addClient } from ".";
+import { addClient, removeClient } from ".";
 
 const panelWindow = getPanelActor(window);
 
@@ -147,8 +147,9 @@ export const App = () => {
     addClient(message.payload);
   });
 
-  useActorEvent("clientTerminated", () => {
+  useActorEvent("clientTerminated", (message) => {
     send({ type: "disconnect" });
+    removeClient(message.clientId);
   });
 
   const mountedRef = useRef(false);
