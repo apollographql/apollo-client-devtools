@@ -5,77 +5,96 @@ import {
   ApolloProvider,
   InMemoryCache,
   makeReference,
-  useQuery,
 } from "@apollo/client";
 import ColorSchemeGenerator from "./ColorSchemeGenerator";
 import Favorites from "./Favorites";
 import ColorLookup from "./ColorLookup";
-import { GET_SAVED_COLORS } from "./queries";
 import "./App.css";
 
 function App() {
-  const [client, setClient] = useState(() => createClient());
+  const [clients, setClients] = useState(() => [createClient()]);
+  const [selectedClientIndex, setSelectedClientIndex] = useState(0);
+  let client = clients[selectedClientIndex];
 
-  if (!client) {
+  if (clients.length === 0) {
     return (
       <div style={{ textAlign: "center" }}>
         <h1>Client was terminated</h1>
-        <button onClick={() => setClient(createClient())}>
+        <button
+          onClick={() => {
+            setClients([createClient()]);
+          }}
+        >
           Recreate client
         </button>
       </div>
     );
   }
 
+  if (!client) {
+    setSelectedClientIndex(0);
+    client = clients[0];
+  }
+
   return (
     <ApolloProvider client={client}>
       <BrowserRouter>
-        <Layout onChangeClient={(client) => setClient(client)} />
+        <div className="App">
+          <header style={{ display: "flex" }}>
+            <Link to="/">
+              <h1>Colors</h1>
+            </Link>
+            <nav style={{ flex: 1 }}>
+              <Link to="/favorites">Favorites</Link>
+              <Link to="/lookup">Lookup</Link>
+            </nav>
+            <div style={{ display: "flex", gap: "1rem" }}>
+              <select
+                value={clients.indexOf(client)}
+                onChange={(e) => setSelectedClientIndex(Number(e.target.value))}
+              >
+                {clients.map((_, index) => (
+                  <option key={index} value={index}>
+                    Client {index}
+                  </option>
+                ))}
+              </select>
+              <button onClick={() => setClients((c) => [...c, createClient()])}>
+                Add client
+              </button>
+              <button
+                onClick={() => {
+                  client.stop();
+                  setClients((c) => [
+                    ...c.slice(0, selectedClientIndex),
+                    createClient(),
+                    ...c.slice(selectedClientIndex + 1),
+                  ]);
+                }}
+              >
+                Recreate client
+              </button>
+              <button
+                onClick={() => {
+                  client.stop();
+                  setClients((clients) => clients.filter((c) => c !== client));
+                  setSelectedClientIndex(0);
+                }}
+              >
+                Terminate client
+              </button>
+            </div>
+          </header>
+          <main>
+            <Routes>
+              <Route path="/favorites" element={<Favorites />} />
+              <Route path="/lookup" element={<ColorLookup />} />
+              <Route path="/" element={<ColorSchemeGenerator />} />
+            </Routes>
+          </main>
+        </div>
       </BrowserRouter>
     </ApolloProvider>
-  );
-}
-
-function Layout({ onChangeClient }) {
-  const { client } = useQuery(GET_SAVED_COLORS);
-
-  return (
-    <div className="App">
-      <header style={{ display: "flex" }}>
-        <Link to="/">
-          <h1>Colors</h1>
-        </Link>
-        <nav style={{ flex: 1 }}>
-          <Link to="/favorites">Favorites</Link>
-          <Link to="/lookup">Lookup</Link>
-        </nav>
-        <div style={{ display: "flex", gap: "1rem" }}>
-          <button
-            onClick={() => {
-              client.stop();
-              onChangeClient(createClient());
-            }}
-          >
-            Recreate client
-          </button>
-          <button
-            onClick={() => {
-              client.stop();
-              onChangeClient(null);
-            }}
-          >
-            Terminate client
-          </button>
-        </div>
-      </header>
-      <main>
-        <Routes>
-          <Route path="/favorites" element={<Favorites />} />
-          <Route path="/lookup" element={<ColorLookup />} />
-          <Route path="/" element={<ColorSchemeGenerator />} />
-        </Routes>
-      </main>
-    </div>
   );
 }
 
@@ -89,10 +108,9 @@ function createClient() {
             saved: {
               read(_, { readField }) {
                 const hex = readField("hex");
-                const favoritedColors = readField(
-                  "favoritedColors",
-                  makeReference("ROOT_QUERY")
-                );
+                const favoritedColors =
+                  readField("favoritedColors", makeReference("ROOT_QUERY")) ??
+                  [];
                 return favoritedColors.some((colorRef) => {
                   return hex === readField("hex", colorRef);
                 });
