@@ -4,7 +4,6 @@ import {
   useReactiveVar,
   gql,
   useQuery,
-  makeVar,
   useSuspenseQuery,
   useApolloClient,
 } from "@apollo/client";
@@ -26,7 +25,6 @@ import { SettingsModal } from "./components/Layouts/SettingsModal";
 import Logo from "@apollo/icons/logos/LogoSymbol.svg";
 import type { BannerAlertConfig } from "./components/BannerAlert";
 import { BannerAlert } from "./components/BannerAlert";
-import type { StateValues } from "./machines";
 import { devtoolsMachine, type StateValues as DevtoolsState } from "./machines";
 import { ClientNotFoundModal } from "./components/ClientNotFoundModal";
 import { getPanelActor } from "../extension/devtools/panelActor";
@@ -46,8 +44,6 @@ import { useActorEvent } from "./hooks/useActorEvent";
 import { addClient, removeClient } from ".";
 
 const panelWindow = getPanelActor(window);
-
-export const devtoolsState = makeVar<StateValues>("initialized");
 
 const ALERT_CONFIGS = {
   initialized: {
