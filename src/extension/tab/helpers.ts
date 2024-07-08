@@ -156,7 +156,7 @@ export function getQueriesLegacy(
         document,
         variables,
         cachedData: diff?.result,
-        networkStatus,
+        networkStatus: networkStatus ?? 1,
       })
     );
   }
