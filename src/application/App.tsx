@@ -152,6 +152,10 @@ export const App = () => {
     removeClient(message.clientId);
   });
 
+  useActorEvent("disconnectFromDevtools", () => {
+    send({ type: "disconnect" });
+  });
+
   const mountedRef = useRef(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const { data } = useSuspenseQuery(APP_QUERY);

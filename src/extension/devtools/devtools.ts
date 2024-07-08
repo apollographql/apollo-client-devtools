@@ -101,4 +101,8 @@ async function createDevtoolsPanel() {
 
 createDevtoolsPanel();
 
-// browser.devtools.network.onNavigated.addListener(disconnectFromDevtools);
+browser.devtools.network.onNavigated.addListener(() => {
+  if (panelWindow) {
+    panelWindow.send({ type: "disconnectFromDevtools" });
+  }
+});
