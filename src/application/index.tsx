@@ -76,13 +76,31 @@ export const addClient = (clientData: ApolloClientInfo) => {
             fragment ClientFields on Client {
               id
               version
+              queries {
+                count
+              }
+              mutations {
+                count
+              }
             }
           `,
           id: client.cache.identify({
             __typename: "Client",
             id: clientData.id,
           }),
-          data: clientData,
+          data: {
+            __typename: "Client",
+            id: clientData.id,
+            version: clientData.version,
+            queries: {
+              __typename: "ClientQueries",
+              count: clientData.queryCount,
+            },
+            mutations: {
+              __typename: "ClientMutations",
+              count: clientData.mutationCount,
+            },
+          },
         });
 
         return ref ? [...clients, ref] : clients;
