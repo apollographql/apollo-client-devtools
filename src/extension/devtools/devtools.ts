@@ -75,7 +75,6 @@ async function createDevtoolsPanel() {
 
       panelWindow.send({
         type: "initializePanel",
-        state: machine.getSnapshot().value as any,
       });
 
       // panelWindow.on("retryConnection", () => {

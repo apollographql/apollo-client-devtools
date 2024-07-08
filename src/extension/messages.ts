@@ -110,7 +110,7 @@ export type PanelMessage =
   | ExplorerSubscriptionTerminationMessage
   | { type: "connectToDevtools" }
   | { type: "connectToClient" }
-  | { type: "initializePanel"; state: StateValues }
+  | { type: "initializePanel" }
   | { type: "retryConnection" }
   | { type: "devtoolsStateChanged"; state: StateValues };
 
