@@ -56,9 +56,9 @@ function createResolvers(rpcClient: RpcClient<DevtoolsRPCMessage>): Resolvers {
     ClientMutations: {
       total: (client) => client.mutationCount,
       items: async (client) => {
-        const queries = await rpcClient.request("getMutations", client.id);
+        const mutations = await rpcClient.request("getMutations", client.id);
 
-        return queries.map((mutation, index) => ({
+        return mutations.map((mutation, index) => ({
           id: String(index),
           __typename: "WatchedMutation",
           name: getOperationName(mutation.document),
