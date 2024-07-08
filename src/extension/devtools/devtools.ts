@@ -21,7 +21,7 @@ const machine = createMachineActor(
   })
 ).start();
 
-let connectTimeoutId: NodeJS.Timeout;
+// let connectTimeoutId: NodeJS.Timeout;
 
 const portAdapter = createPortMessageAdapter(() =>
   browser.runtime.connect({ name: inspectedTabId.toString() })
@@ -29,35 +29,33 @@ const portAdapter = createPortMessageAdapter(() =>
 
 const clientPort = createActor<ClientMessage>(portAdapter);
 
-function connectToClient() {
-  clientPort.send({ type: "connectToClient" });
-  startConnectTimeout();
-}
+// function connectToClient() {
+//   clientPort.send({ type: "connectToClient" });
+//   startConnectTimeout();
+// }
 
-function disconnectFromDevtools() {
-  machine.send({ type: "disconnect" });
-  startConnectTimeout();
-}
+// function disconnectFromDevtools() {
+//   machine.send({ type: "disconnect" });
+//   startConnectTimeout();
+// }
 
-function startConnectTimeout() {
-  clearTimeout(connectTimeoutId);
+// function startConnectTimeout() {
+//   clearTimeout(connectTimeoutId);
+//
+//   connectTimeoutId = setTimeout(() => {
+//     machine.send({ type: "clientNotFound" });
+//   }, 10_000);
+// }
 
-  connectTimeoutId = setTimeout(() => {
-    machine.send({ type: "clientNotFound" });
-  }, 10_000);
-}
+// clientPort.on("connectToDevtools", () => {
+//   machine.send({ type: "connect" });
+// });
+//
+// clientPort.on("registerClient", () => {
+//   machine.send({ type: "connect" });
+// });
 
-clientPort.on("connectToDevtools", () => {
-  machine.send({ type: "connect" });
-});
-
-clientPort.on("registerClient", () => {
-  machine.send({ type: "connect" });
-});
-
-clientPort.on("clientTerminated", disconnectFromDevtools);
-
-connectToClient();
+// clientPort.on("clientTerminated", disconnectFromDevtools);
 
 let connectedToPanel = false;
 let panelWindow: Actor<PanelMessage>;
@@ -77,16 +75,16 @@ async function createDevtoolsPanel() {
 
       panelWindow.send({
         type: "initializePanel",
-        state: machine.getSnapshot().value,
+        state: machine.getSnapshot().value as any,
       });
 
-      panelWindow.on("retryConnection", () => {
-        machine.send({ type: "retry" });
-      });
+      // panelWindow.on("retryConnection", () => {
+      //   machine.send({ type: "retry" });
+      // });
 
-      machine.subscribe(({ value }) => {
-        panelWindow.send({ type: "devtoolsStateChanged", state: value });
-      });
+      // machine.subscribe(({ value }) => {
+      //   panelWindow.send({ type: "devtoolsStateChanged", state: value as any });
+      // });
 
       clientPort.forward("explorerResponse", panelWindow);
       clientPort.forward("registerClient", panelWindow);
@@ -104,4 +102,4 @@ async function createDevtoolsPanel() {
 
 createDevtoolsPanel();
 
-browser.devtools.network.onNavigated.addListener(disconnectFromDevtools);
+// browser.devtools.network.onNavigated.addListener(disconnectFromDevtools);

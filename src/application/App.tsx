@@ -25,6 +25,7 @@ import { SettingsModal } from "./components/Layouts/SettingsModal";
 import Logo from "@apollo/icons/logos/LogoSymbol.svg";
 import type { BannerAlertConfig } from "./components/BannerAlert";
 import { BannerAlert } from "./components/BannerAlert";
+import type { StateValues } from "./machines";
 import { devtoolsMachine, type StateValues as DevtoolsState } from "./machines";
 import { ClientNotFoundModal } from "./components/ClientNotFoundModal";
 import { getPanelActor } from "../extension/devtools/panelActor";
@@ -45,7 +46,7 @@ import { addClient } from ".";
 
 const panelWindow = getPanelActor(window);
 
-export const devtoolsState = makeVar<DevtoolsState>("initialized");
+export const devtoolsState = makeVar<StateValues>("initialized");
 
 const ALERT_CONFIGS = {
   initialized: {
@@ -117,24 +118,25 @@ ${SECTIONS.apolloClientVersion}
 ${SECTIONS.devtoolsVersion}
 `;
 
-const machine = devtoolsMachine.provide({
-  actions: {
-    connectToClient: ({ self }) => {
-      if (self.getSnapshot().matches("initialized")) {
-        BannerAlert.show(ALERT_CONFIGS.initialized);
-      }
-
-      getPanelActor(window).send({ type: "connectToClient" });
-    },
-    notifyConnected: () => {
-      const dismiss = BannerAlert.show(ALERT_CONFIGS.connected);
-      setTimeout(dismiss, 2500);
-    },
-  },
-});
-
 export const App = () => {
-  const [snapshot, send] = useMachine(machine);
+  const [snapshot, send] = useMachine(
+    devtoolsMachine.provide({
+      actions: {
+        connectToClient: ({ self }) => {
+          if (self.getSnapshot().matches("initialized")) {
+            BannerAlert.show(ALERT_CONFIGS.initialized);
+          }
+
+          getPanelActor(window).send({ type: "connectToClient" });
+        },
+        notifyConnected: () => {
+          const dismiss = BannerAlert.show(ALERT_CONFIGS.connected);
+          setTimeout(dismiss, 2500);
+          setClientNotFoundModalOpen(false);
+        },
+      },
+    })
+  );
 
   useActorEvent("connectToDevtools", () => {
     send({ type: "connect" });
@@ -157,7 +159,6 @@ export const App = () => {
   );
   const [clientNotFoundModalOpen, setClientNotFoundModalOpen] = useState(false);
   const selected = useReactiveVar<Screens>(currentScreen);
-  const state = useReactiveVar(devtoolsState);
   const [embeddedExplorerIFrame, setEmbeddedExplorerIFrame] =
     useState<HTMLIFrameElement | null>(null);
 
@@ -183,17 +184,19 @@ export const App = () => {
     let timeout: NodeJS.Timeout;
     // Don't show connected message on the first render if we are already
     // connected to the client.
-    if (!mountedRef.current && state === "connected") {
+    if (!mountedRef.current && snapshot.value === "connected") {
       return;
     }
 
-    if (state === "notFound") {
+    if (snapshot.value === "notFound") {
       setClientNotFoundModalOpen(true);
     }
 
-    const dismiss = BannerAlert.show(ALERT_CONFIGS[state]);
+    const dismiss = BannerAlert.show(
+      ALERT_CONFIGS[snapshot.value as DevtoolsState]
+    );
 
-    if (state === "connected") {
+    if (snapshot.value === "connected") {
       setClientNotFoundModalOpen(false);
       timeout = setTimeout(dismiss, 2500);
     }
@@ -201,7 +204,7 @@ export const App = () => {
     mountedRef.current = true;
 
     return () => clearTimeout(timeout);
-  }, [state]);
+  }, [snapshot.value]);
 
   return (
     <>
