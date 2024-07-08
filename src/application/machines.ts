@@ -18,70 +18,57 @@ export type StateValues =
 
 type Actions = { type: "connectToClient" } | { type: "notifyConnected" };
 
-export const devtoolsMachine = createMachine(
-  {
-    types: {
-      actions: {} as Actions,
-      events: {} as Events,
+export const devtoolsMachine = createMachine({
+  types: {
+    actions: {} as Actions,
+    events: {} as Events,
+  },
+  initial: "initialized",
+  states: {
+    initialized: {
+      on: {
+        connect: "connected",
+        timeout: "timedout",
+        clientNotFound: "notFound",
+      },
+      entry: ["connectToClient"],
+      invoke: {
+        src: fromTimeout(),
+        input: 10_000,
+        onDone: "notFound",
+      },
     },
-    initial: "initialized",
-    states: {
-      initialized: {
-        on: {
-          connect: "connected",
-          timeout: "timedout",
-          clientNotFound: "notFound",
-        },
-        entry: ["connectToClient"],
-        invoke: {
-          id: "connectTimeout",
-          src: "timeout",
-          input: 10_000,
-          onDone: {
-            target: "notFound",
-          },
-        },
+    retrying: {
+      on: {
+        connect: "connected",
+        clientNotFound: "notFound",
       },
-      retrying: {
-        on: {
-          connect: "connected",
-          clientNotFound: "notFound",
-        },
-        entry: "connectToClient",
+      entry: "connectToClient",
+    },
+    connected: {
+      on: {
+        disconnect: "disconnected",
       },
-      connected: {
-        on: {
-          disconnect: "disconnected",
-        },
-        entry: "notifyConnected",
+      entry: "notifyConnected",
+    },
+    disconnected: {
+      on: {
+        connect: "connected",
+        timeout: "timedout",
+        clientNotFound: "notFound",
       },
-      disconnected: {
-        on: {
-          connect: "connected",
-          timeout: "timedout",
-          clientNotFound: "notFound",
-        },
-        invoke: {
-          id: "connectTimeout",
-          src: "timeout",
-          input: 10_000,
-          onDone: {
-            target: "notFound",
-          },
-        },
+      invoke: {
+        src: fromTimeout(),
+        input: 10_000,
+        onDone: "notFound",
       },
-      timedout: {},
-      notFound: {
-        on: {
-          retry: "retrying",
-          connect: "connected",
-        },
+    },
+    timedout: {},
+    notFound: {
+      on: {
+        retry: "retrying",
+        connect: "connected",
       },
     },
   },
-  {
-    actors: {
-      timeout: fromTimeout(),
-    },
-  }
-);
+});
