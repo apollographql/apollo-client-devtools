@@ -121,6 +121,7 @@ function createClient() {
       },
     }),
     uri: "http://localhost:4000",
+    connectToDevTools: true,
   });
 }
 
