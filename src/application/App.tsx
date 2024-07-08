@@ -108,6 +108,8 @@ export const App = () => {
           });
         },
         notifyNotFound: () => {
+          setClientNotFoundModalOpen(true);
+
           BannerAlert.show({
             type: "error",
             content: (
@@ -192,10 +194,6 @@ export const App = () => {
     // connected to the client.
     if (!mountedRef.current && snapshot.value === "connected") {
       return;
-    }
-
-    if (snapshot.value === "notFound") {
-      setClientNotFoundModalOpen(true);
     }
 
     const config = ALERT_CONFIGS[snapshot.value as DevtoolsState];
