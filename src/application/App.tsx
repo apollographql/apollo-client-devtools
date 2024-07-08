@@ -7,6 +7,7 @@ import {
   makeVar,
   useSuspenseQuery,
 } from "@apollo/client";
+import { useMachine } from "@xstate/react";
 
 import { currentScreen, Screens } from "./components/Layouts/Navigation";
 import { Queries } from "./components/Queries/Queries";
@@ -24,7 +25,7 @@ import { SettingsModal } from "./components/Layouts/SettingsModal";
 import Logo from "@apollo/icons/logos/LogoSymbol.svg";
 import type { BannerAlertConfig } from "./components/BannerAlert";
 import { BannerAlert } from "./components/BannerAlert";
-import type { StateValues as DevtoolsState } from "./machines";
+import { devtoolsMachine, type StateValues as DevtoolsState } from "./machines";
 import { ClientNotFoundModal } from "./components/ClientNotFoundModal";
 import { getPanelActor } from "../extension/devtools/panelActor";
 import { ButtonGroup } from "./components/ButtonGroup";
@@ -39,6 +40,7 @@ import { GitHubReleaseHoverCard } from "./components/GitHubReleaseHoverCard";
 import { isSnapshotRelease, parseSnapshotRelease } from "./utilities/github";
 import { Select } from "./components/Select";
 import { Divider } from "./components/Divider";
+import { useActorEvent } from "./hooks/useActorEvent";
 
 const panelWindow = getPanelActor(window);
 
@@ -115,6 +117,28 @@ ${SECTIONS.devtoolsVersion}
 `;
 
 export const App = () => {
+  const [snapshot, send] = useMachine(
+    devtoolsMachine.provide({
+      actions: {
+        connectToClient: () => {
+          getPanelActor(window).send({ type: "connectToClient" });
+        },
+      },
+    })
+  );
+
+  useActorEvent("connectToDevtools", () => {
+    send({ type: "connect" });
+  });
+
+  useActorEvent("registerClient", () => {
+    send({ type: "connect" });
+  });
+
+  useActorEvent("clientTerminated", () => {
+    send({ type: "disconnect" });
+  });
+
   const mountedRef = useRef(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const { data } = useSuspenseQuery(APP_QUERY);

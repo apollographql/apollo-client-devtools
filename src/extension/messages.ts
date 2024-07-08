@@ -108,6 +108,8 @@ export type PanelMessage =
   | ExplorerRequestMessage
   | ExplorerResponseMessage
   | ExplorerSubscriptionTerminationMessage
+  | { type: "connectToDevtools" }
+  | { type: "connectToClient" }
   | { type: "initializePanel"; state: StateValues }
   | { type: "retryConnection" }
   | { type: "devtoolsStateChanged"; state: StateValues };

@@ -1,5 +1,4 @@
 import browser from "webextension-polyfill";
-import { createDevtoolsMachine } from "../../application/machines";
 import type { Actor } from "../actor";
 import { createActor } from "../actor";
 import type { ClientMessage, PanelMessage } from "../messages";
@@ -9,14 +8,15 @@ import {
   createWindowMessageAdapter,
 } from "../messageAdapters";
 import { createRPCBridge } from "../rpc";
-import { interpret } from "@xstate/fsm";
+import { createActor as createMachineActor } from "xstate";
+import { devtoolsMachine } from "../../application/machines";
 
 const inspectedTabId = browser.devtools.inspectedWindow.tabId;
 
-const devtoolsMachine = interpret(
-  createDevtoolsMachine({
+const machine = createMachineActor(
+  devtoolsMachine.provide({
     actions: {
-      connectToClient,
+      connectToClient: () => {},
     },
   })
 ).start();
@@ -35,7 +35,7 @@ function connectToClient() {
 }
 
 function disconnectFromDevtools() {
-  devtoolsMachine.send("disconnect");
+  machine.send({ type: "disconnect" });
   startConnectTimeout();
 }
 
@@ -43,16 +43,16 @@ function startConnectTimeout() {
   clearTimeout(connectTimeoutId);
 
   connectTimeoutId = setTimeout(() => {
-    devtoolsMachine.send("clientNotFound");
+    machine.send({ type: "clientNotFound" });
   }, 10_000);
 }
 
 clientPort.on("connectToDevtools", () => {
-  devtoolsMachine.send({ type: "connect" });
+  machine.send({ type: "connect" });
 });
 
 clientPort.on("registerClient", () => {
-  devtoolsMachine.send({ type: "connect" });
+  machine.send({ type: "connect" });
 });
 
 clientPort.on("clientTerminated", disconnectFromDevtools);
@@ -77,14 +77,14 @@ async function createDevtoolsPanel() {
 
       panelWindow.send({
         type: "initializePanel",
-        state: devtoolsMachine.state.value,
+        state: machine.getSnapshot().value,
       });
 
       panelWindow.on("retryConnection", () => {
-        devtoolsMachine.send("retry");
+        machine.send({ type: "retry" });
       });
 
-      devtoolsMachine.subscribe(({ value }) => {
+      machine.subscribe(({ value }) => {
         panelWindow.send({ type: "devtoolsStateChanged", state: value });
       });
 

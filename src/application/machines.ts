@@ -1,7 +1,4 @@
-import type { StateMachine } from "@xstate/fsm";
-import { createMachine } from "@xstate/fsm";
-
-type Context = Record<string, never>;
+import { createMachine } from "xstate";
 
 type Events =
   | { type: "connect" }
@@ -18,55 +15,48 @@ export type StateValues =
   | "timedout"
   | "notFound";
 
-type State = {
-  value: StateValues;
-  context: Context;
-};
+type Actions = { type: "connectToClient" };
 
-type Actions = {
-  connectToClient: StateMachine.ActionFunction<Context, Events>;
-};
-
-export function createDevtoolsMachine({ actions }: { actions: Actions }) {
-  return createMachine<Context, Events, State>(
-    {
-      initial: "initialized",
-      states: {
-        initialized: {
-          on: {
-            connect: "connected",
-            timeout: "timedout",
-            clientNotFound: "notFound",
-          },
-        },
-        retrying: {
-          on: {
-            connect: "connected",
-            clientNotFound: "notFound",
-          },
-          entry: "connectToClient",
-        },
-        connected: {
-          on: {
-            disconnect: "disconnected",
-          },
-        },
-        disconnected: {
-          on: {
-            connect: "connected",
-            timeout: "timedout",
-            clientNotFound: "notFound",
-          },
-        },
-        timedout: {},
-        notFound: {
-          on: {
-            retry: "retrying",
-            connect: "connected",
-          },
-        },
+export const devtoolsMachine = createMachine({
+  types: {
+    actions: {} as Actions,
+    events: {} as Events,
+  },
+  initial: "initialized",
+  states: {
+    initialized: {
+      on: {
+        connect: "connected",
+        timeout: "timedout",
+        clientNotFound: "notFound",
+      },
+      entry: ["connectToClient"],
+    },
+    retrying: {
+      on: {
+        connect: "connected",
+        clientNotFound: "notFound",
+      },
+      entry: "connectToClient",
+    },
+    connected: {
+      on: {
+        disconnect: "disconnected",
       },
     },
-    { actions }
-  );
-}
+    disconnected: {
+      on: {
+        connect: "connected",
+        timeout: "timedout",
+        clientNotFound: "notFound",
+      },
+    },
+    timedout: {},
+    notFound: {
+      on: {
+        retry: "retrying",
+        connect: "connected",
+      },
+    },
+  },
+});
