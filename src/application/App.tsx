@@ -234,13 +234,13 @@ export const App = () => {
             {clients.length > 1 && (
               <Select
                 size="sm"
-                className="w-44"
+                className="w-60"
                 value={selectedClientId}
                 onValueChange={setSelectedClientId}
               >
-                {clients.map((client, index) => (
+                {clients.map((client) => (
                   <Select.Option key={client.id} value={client.id}>
-                    Apollo Client {index}
+                    Apollo Client {client.id}
                   </Select.Option>
                 ))}
               </Select>
