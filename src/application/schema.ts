@@ -45,6 +45,7 @@ function createResolvers(rpcClient: RpcClient<DevtoolsRPCMessage>): Resolvers {
               variables: query.variables ?? null,
               cachedData: query.cachedData ?? null,
               options: query.options ?? null,
+              networkStatus: query.networkStatus,
             };
           })
           .filter(Boolean);
