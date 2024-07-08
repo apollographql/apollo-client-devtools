@@ -1,5 +1,5 @@
 import { createMachine } from "xstate";
-import { timeoutLogic } from "./actors/timeoutActor";
+import { fromTimeout } from "./actors/timeoutActor";
 
 type Events =
   | { type: "connect" }
@@ -81,7 +81,7 @@ export const devtoolsMachine = createMachine(
   },
   {
     actors: {
-      timeout: timeoutLogic,
+      timeout: fromTimeout(),
     },
   }
 );
