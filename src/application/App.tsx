@@ -41,6 +41,7 @@ import { isSnapshotRelease, parseSnapshotRelease } from "./utilities/github";
 import { Select } from "./components/Select";
 import { Divider } from "./components/Divider";
 import { useActorEvent } from "./hooks/useActorEvent";
+import { addClient } from ".";
 
 const panelWindow = getPanelActor(window);
 
@@ -131,8 +132,9 @@ export const App = () => {
     send({ type: "connect" });
   });
 
-  useActorEvent("registerClient", () => {
+  useActorEvent("registerClient", (message) => {
     send({ type: "connect" });
+    addClient(message.payload);
   });
 
   useActorEvent("clientTerminated", () => {

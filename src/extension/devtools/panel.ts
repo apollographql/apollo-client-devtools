@@ -1,9 +1,4 @@
-import {
-  initDevTools,
-  client,
-  addClient,
-  removeClient,
-} from "../../application";
+import { initDevTools, client, removeClient } from "../../application";
 import "./panel.css";
 import { devtoolsState } from "../../application/App";
 import { getPanelActor } from "./panelActor";
@@ -22,10 +17,6 @@ panelWindow.on("devtoolsStateChanged", (message) => {
   if (message.state !== "connected") {
     client.resetStore();
   }
-});
-
-panelWindow.on("registerClient", (message) => {
-  addClient(message.payload);
 });
 
 panelWindow.on("clientTerminated", (message) => {
