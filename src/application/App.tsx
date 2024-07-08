@@ -6,6 +6,7 @@ import {
   useQuery,
   makeVar,
   useSuspenseQuery,
+  useApolloClient,
 } from "@apollo/client";
 import { useMachine } from "@xstate/react";
 
@@ -119,6 +120,7 @@ ${SECTIONS.devtoolsVersion}
 `;
 
 export const App = () => {
+  const apolloClient = useApolloClient();
   const [snapshot, send] = useMachine(
     devtoolsMachine.provide({
       actions: {
@@ -155,6 +157,12 @@ export const App = () => {
   useActorEvent("disconnectFromDevtools", () => {
     send({ type: "disconnect" });
   });
+
+  useEffect(() => {
+    if (snapshot.value !== "connected") {
+      apolloClient.resetStore();
+    }
+  }, [apolloClient, snapshot.value]);
 
   const mountedRef = useRef(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
