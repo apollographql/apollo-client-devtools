@@ -77,10 +77,6 @@ async function createDevtoolsPanel() {
         type: "initializePanel",
       });
 
-      // machine.subscribe(({ value }) => {
-      //   panelWindow.send({ type: "devtoolsStateChanged", state: value as any });
-      // });
-
       clientPort.forward("explorerResponse", panelWindow);
       clientPort.forward("registerClient", panelWindow);
       clientPort.forward("clientTerminated", panelWindow);
