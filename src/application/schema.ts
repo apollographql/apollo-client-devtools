@@ -32,14 +32,14 @@ function createResolvers(rpcClient: RpcClient<DevtoolsRPCMessage>): Resolvers {
         const queries = await rpcClient.request("getQueries", client.id);
 
         return queries
-          .map((query, index) => {
+          .map((query) => {
             const name = getOperationName(query.document);
             if (name === "IntrospectionQuery") {
               return;
             }
 
             return {
-              id: String(index),
+              id: query.id,
               name,
               queryString: print(query.document),
               variables: query.variables ?? null,
