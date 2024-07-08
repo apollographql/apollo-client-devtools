@@ -1,5 +1,4 @@
 import type { ApolloClientInfo, ExplorerResponse, SafeAny } from "../types";
-import type { StateValues } from "../application/machines";
 import type { JSONObject } from "../application/types/json";
 import type { FetchPolicy, DocumentNode } from "@apollo/client";
 import type { MutationDetails, QueryDetails } from "./tab/helpers";
@@ -111,8 +110,7 @@ export type PanelMessage =
   | { type: "connectToDevtools" }
   | { type: "disconnectFromDevtools" }
   | { type: "connectToClient" }
-  | { type: "initializePanel" }
-  | { type: "devtoolsStateChanged"; state: StateValues };
+  | { type: "initializePanel" };
 
 export type DevtoolsRPCMessage = {
   getClients(): ApolloClientInfo[];
