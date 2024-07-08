@@ -150,7 +150,12 @@ export const App = () => {
   });
 
   useActorEvent("clientTerminated", (message) => {
-    send({ type: "disconnect" });
+    // Disconnect if we are terminating the last client. We assume that 1 client
+    // means we are terminating the selected client
+    if (clients.length === 1) {
+      send({ type: "disconnect" });
+    }
+
     removeClient(message.clientId);
   });
 
