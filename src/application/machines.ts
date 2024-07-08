@@ -26,7 +26,6 @@ type State = {
 type Actions = {
   connectToClient: StateMachine.ActionFunction<Context, Events>;
   cancelRequestInterval: StateMachine.ActionFunction<Context, Events>;
-  startRequestInterval: StateMachine.ActionFunction<Context, Events>;
 };
 
 export function createDevtoolsMachine({ actions }: { actions: Actions }) {
@@ -52,7 +51,6 @@ export function createDevtoolsMachine({ actions }: { actions: Actions }) {
           on: {
             disconnect: "disconnected",
           },
-          entry: ["startRequestInterval"],
         },
         disconnected: {
           on: {

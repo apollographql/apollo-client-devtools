@@ -18,18 +18,10 @@ const devtoolsMachine = interpret(
     actions: {
       connectToClient,
       cancelRequestInterval: () => cancelRequestInterval?.(),
-      startRequestInterval: () => {
-        clearTimeout(connectTimeoutId);
-
-        if (!panelHidden) {
-          cancelRequestInterval = startRequestInterval();
-        }
-      },
     },
   })
 ).start();
 
-let panelHidden = true;
 let connectTimeoutId: NodeJS.Timeout;
 let cancelRequestInterval: (() => void) | undefined;
 
@@ -69,27 +61,6 @@ clientPort.on("clientTerminated", disconnectFromDevtools);
 
 connectToClient();
 
-function startRequestInterval(ms = 500) {
-  let id: NodeJS.Timeout;
-
-  async function getClientData() {
-    try {
-      if (panelWindow) {
-        // panelWindow.send({
-        //   type: "update",
-        //   payload: await rpcClient.request("getClientOperations"),
-        // });
-      }
-    } finally {
-      id = setTimeout(getClientData, ms);
-    }
-  }
-
-  getClientData();
-
-  return () => clearTimeout(id);
-}
-
 let connectedToPanel = false;
 let panelWindow: Actor<PanelMessage>;
 
@@ -127,17 +98,6 @@ async function createDevtoolsPanel() {
 
       connectedToPanel = true;
     }
-
-    if (devtoolsMachine.state.value === "connected" && panelHidden) {
-      cancelRequestInterval = startRequestInterval();
-    }
-
-    panelHidden = false;
-  });
-
-  panel.onHidden.addListener(() => {
-    panelHidden = true;
-    cancelRequestInterval?.();
   });
 }
 
