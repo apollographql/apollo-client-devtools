@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import {
   useReactiveVar,
@@ -23,9 +23,8 @@ import IconSync from "@apollo/icons/small/IconSync.svg";
 import IconGitHubSolid from "@apollo/icons/small/IconGitHubSolid.svg";
 import { SettingsModal } from "./components/Layouts/SettingsModal";
 import Logo from "@apollo/icons/logos/LogoSymbol.svg";
-import type { BannerAlertConfig } from "./components/BannerAlert";
 import { BannerAlert } from "./components/BannerAlert";
-import { devtoolsMachine, type StateValues as DevtoolsState } from "./machines";
+import { devtoolsMachine } from "./machines";
 import { ClientNotFoundModal } from "./components/ClientNotFoundModal";
 import { getPanelActor } from "../extension/devtools/panelActor";
 import { ButtonGroup } from "./components/ButtonGroup";
@@ -42,14 +41,6 @@ import { Select } from "./components/Select";
 import { Divider } from "./components/Divider";
 import { useActorEvent } from "./hooks/useActorEvent";
 import { addClient, removeClient } from ".";
-
-const ALERT_CONFIGS = {
-  timedout: {
-    type: "error",
-    content:
-      "Unable to communicate with browser tab. Please reload the window and restart the devtools to try again.",
-  },
-} satisfies Partial<Record<DevtoolsState, BannerAlertConfig>>;
 
 const APP_QUERY: TypedDocumentNode<AppQuery, AppQueryVariables> = gql`
   query AppQuery {
@@ -149,7 +140,6 @@ export const App = () => {
     }
   }, [apolloClient, snapshot.value]);
 
-  const mountedRef = useRef(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const { data } = useSuspenseQuery(APP_QUERY);
   const [selectedClientId, setSelectedClientId] = useState<string | undefined>(
@@ -176,34 +166,6 @@ export const App = () => {
   ) {
     setSelectedClientId(clientIds[0]);
   }
-
-  useEffect(() => {
-    let timeout: NodeJS.Timeout;
-    // Don't show connected message on the first render if we are already
-    // connected to the client.
-    if (!mountedRef.current && snapshot.value === "connected") {
-      return;
-    }
-
-    const config = ALERT_CONFIGS[snapshot.value as DevtoolsState];
-
-    if (!config) {
-      return;
-    }
-
-    const dismiss = BannerAlert.show(
-      ALERT_CONFIGS[snapshot.value as DevtoolsState]
-    );
-
-    if (snapshot.value === "connected") {
-      setClientNotFoundModalOpen(false);
-      timeout = setTimeout(dismiss, 2500);
-    }
-
-    mountedRef.current = true;
-
-    return () => clearTimeout(timeout);
-  }, [snapshot.value]);
 
   return (
     <>
