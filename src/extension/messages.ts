@@ -2,7 +2,7 @@ import type { ApolloClientInfo, ExplorerResponse, SafeAny } from "../types";
 import type { StateValues } from "../application/machines";
 import type { JSONObject } from "../application/types/json";
 import type { FetchPolicy, DocumentNode } from "@apollo/client";
-import type { QueryDetails } from "./tab/helpers";
+import type { MutationDetails, QueryDetails } from "./tab/helpers";
 
 export interface MessageFormat {
   type: string;
@@ -115,8 +115,8 @@ export type PanelMessage =
 export type DevtoolsRPCMessage = {
   getClients(): ApolloClientInfo[];
   getClient(id: string): ApolloClientInfo;
-  getQueries(clientId: string): QueryInfo[];
-  getMutations(clientId: string): QueryInfo[];
+  getQueries(clientId: string): QueryDetails[];
+  getMutations(clientId: string): MutationDetails[];
   getCache(clientId: string): JSONObject;
 };
 
