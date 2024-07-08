@@ -71,7 +71,7 @@ async function createDevtoolsPanel() {
     "panel.html"
   );
 
-  panel.onShown.addListener(async (window) => {
+  panel.onShown.addListener((window) => {
     panelWindow = getPanelActor(window);
 
     if (!connectedToPanel) {
