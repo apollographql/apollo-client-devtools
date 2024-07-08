@@ -174,7 +174,6 @@ export const App = () => {
   });
 
   const client = clientData?.client;
-  const clientVersion = clientData?.client.version;
   const clients = data?.clients ?? [];
   const clientIds = clients.map((c) => c.id);
 
@@ -256,21 +255,21 @@ export const App = () => {
             <Tabs.Trigger value={Screens.Explorer}>Explorer</Tabs.Trigger>
           </Tabs.List>
           <div className="ml-auto flex-1 justify-end flex items-center gap-2 h-full">
-            {clientVersion && (
-              <GitHubReleaseHoverCard version={clientVersion}>
+            {client?.version && (
+              <GitHubReleaseHoverCard version={client.version}>
                 <a
                   className="no-underline"
                   href={
-                    isSnapshotRelease(clientVersion)
-                      ? `https://github.com/apollographql/apollo-client/pull/${parseSnapshotRelease(clientVersion).prNumber}`
-                      : `https://github.com/apollographql/apollo-client/releases/tag/v${clientVersion}`
+                    isSnapshotRelease(client.version)
+                      ? `https://github.com/apollographql/apollo-client/pull/${parseSnapshotRelease(client.version).prNumber}`
+                      : `https://github.com/apollographql/apollo-client/releases/tag/v${client.version}`
                   }
                   target="_blank"
                   rel="noreferrer"
                 >
                   <Badge variant="info" className="cursor-pointer">
                     Apollo Client <span className="lowercase">v</span>
-                    {clientVersion}
+                    {client.version}
                   </Badge>
                 </a>
               </GitHubReleaseHoverCard>
