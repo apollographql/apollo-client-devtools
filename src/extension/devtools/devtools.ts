@@ -17,13 +17,11 @@ const devtoolsMachine = interpret(
   createDevtoolsMachine({
     actions: {
       connectToClient,
-      cancelRequestInterval: () => cancelRequestInterval?.(),
     },
   })
 ).start();
 
 let connectTimeoutId: NodeJS.Timeout;
-let cancelRequestInterval: (() => void) | undefined;
 
 const portAdapter = createPortMessageAdapter(() =>
   browser.runtime.connect({ name: inspectedTabId.toString() })
