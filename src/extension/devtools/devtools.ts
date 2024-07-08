@@ -63,10 +63,6 @@ async function createDevtoolsPanel() {
     if (!connectedToPanel) {
       createRPCBridge(createWindowMessageAdapter(window), portAdapter);
 
-      panelWindow.send({
-        type: "initializePanel",
-      });
-
       clientPort.forward("explorerResponse", panelWindow);
       clientPort.forward("registerClient", panelWindow);
       clientPort.forward("clientTerminated", panelWindow);
@@ -76,6 +72,8 @@ async function createDevtoolsPanel() {
       panelWindow.forward("explorerRequest", clientPort);
       panelWindow.forward("explorerSubscriptionTermination", clientPort);
 
+      panelWindow.send({ type: "initializePanel" });
+
       connectedToPanel = true;
     }
   });
@@ -84,7 +82,5 @@ async function createDevtoolsPanel() {
 createDevtoolsPanel();
 
 browser.devtools.network.onNavigated.addListener(() => {
-  if (panelWindow) {
-    panelWindow.send({ type: "disconnectFromDevtools" });
-  }
+  panelWindow?.send({ type: "disconnectFromDevtools" });
 });
