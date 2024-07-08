@@ -8,18 +8,8 @@ import {
   createWindowMessageAdapter,
 } from "../messageAdapters";
 import { createRPCBridge } from "../rpc";
-import { createActor as createMachineActor } from "xstate";
-import { devtoolsMachine } from "../../application/machines";
 
 const inspectedTabId = browser.devtools.inspectedWindow.tabId;
-
-const machine = createMachineActor(
-  devtoolsMachine.provide({
-    actions: {
-      connectToClient: () => {},
-    },
-  })
-).start();
 
 // let connectTimeoutId: NodeJS.Timeout;
 
