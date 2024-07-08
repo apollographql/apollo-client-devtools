@@ -44,18 +44,6 @@ import { useActorEvent } from "./hooks/useActorEvent";
 import { addClient, removeClient } from ".";
 
 const ALERT_CONFIGS = {
-  initialized: {
-    type: "loading",
-    content: "Looking for client...",
-  },
-  retrying: {
-    type: "loading",
-    content: "Looking for client...",
-  },
-  connected: {
-    type: "success",
-    content: "Connected!",
-  },
   timedout: {
     type: "error",
     content:
@@ -106,12 +94,6 @@ export const App = () => {
 
           getPanelActor(window).send({ type: "connectToClient" });
         },
-        notifyDisconnected: () => {
-          BannerAlert.show({
-            type: "loading",
-            content: "Disconnected. Looking for client...",
-          });
-        },
         notifyNotFound: () => {
           setClientNotFoundModalOpen(true);
 
@@ -160,7 +142,9 @@ export const App = () => {
   });
 
   useEffect(() => {
-    if (snapshot.value !== "connected") {
+    if (snapshot.value === "connected") {
+      setClientNotFoundModalOpen(false);
+    } else {
       apolloClient.resetStore();
     }
   }, [apolloClient, snapshot.value]);
