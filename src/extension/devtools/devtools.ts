@@ -89,10 +89,13 @@ async function createDevtoolsPanel() {
       });
 
       clientPort.forward("explorerResponse", panelWindow);
-      panelWindow.forward("explorerRequest", clientPort);
-      panelWindow.forward("explorerSubscriptionTermination", clientPort);
       clientPort.forward("registerClient", panelWindow);
       clientPort.forward("clientTerminated", panelWindow);
+      clientPort.forward("connectToDevtools", panelWindow);
+
+      panelWindow.forward("connectToClient", clientPort);
+      panelWindow.forward("explorerRequest", clientPort);
+      panelWindow.forward("explorerSubscriptionTermination", clientPort);
 
       connectedToPanel = true;
     }
