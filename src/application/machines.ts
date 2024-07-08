@@ -15,7 +15,7 @@ export type StateValues =
   | "timedout"
   | "notFound";
 
-type Actions = { type: "connectToClient" };
+type Actions = { type: "connectToClient" } | { type: "notifyConnected" };
 
 export const devtoolsMachine = createMachine({
   types: {
@@ -43,6 +43,7 @@ export const devtoolsMachine = createMachine({
       on: {
         disconnect: "disconnected",
       },
+      entry: "notifyConnected",
     },
     disconnected: {
       on: {

@@ -119,8 +119,16 @@ ${SECTIONS.devtoolsVersion}
 
 const machine = devtoolsMachine.provide({
   actions: {
-    connectToClient: () => {
+    connectToClient: ({ self }) => {
+      if (self.getSnapshot().matches("initialized")) {
+        BannerAlert.show(ALERT_CONFIGS.initialized);
+      }
+
       getPanelActor(window).send({ type: "connectToClient" });
+    },
+    notifyConnected: () => {
+      const dismiss = BannerAlert.show(ALERT_CONFIGS.connected);
+      setTimeout(dismiss, 2500);
     },
   },
 });
