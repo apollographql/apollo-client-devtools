@@ -19,7 +19,7 @@ export type StateValues =
 
 type Actions =
   | { type: "connectToClient" }
-  | { type: "dismissBanner" }
+  | { type: "closeBanner" }
   | { type: "notifyConnected" }
   | { type: "notifyDisconnected" }
   | { type: "notifyNotFound" }
@@ -62,7 +62,7 @@ export const devtoolsMachine = createMachine(
           src: fromTimeout(),
           input: 2500,
           onDone: {
-            actions: "dismissBanner",
+            actions: "closeBanner",
           },
         },
       },
@@ -93,9 +93,7 @@ export const devtoolsMachine = createMachine(
   },
   {
     actions: {
-      dismissBanner: () => {
-        BannerAlert.close();
-      },
+      closeBanner: BannerAlert.close,
       notifyDisconnected: () => {
         return BannerAlert.show({
           type: "loading",
