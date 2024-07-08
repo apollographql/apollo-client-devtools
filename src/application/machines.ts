@@ -16,7 +16,10 @@ export type StateValues =
   | "timedout"
   | "notFound";
 
-type Actions = { type: "connectToClient" } | { type: "notifyConnected" };
+type Actions =
+  | { type: "connectToClient" }
+  | { type: "notifyConnected" }
+  | { type: "notifyDisconnected" };
 
 export const devtoolsMachine = createMachine({
   types: {
@@ -56,6 +59,7 @@ export const devtoolsMachine = createMachine({
         timeout: "timedout",
         clientNotFound: "notFound",
       },
+      entry: "notifyDisconnected",
       invoke: {
         src: fromTimeout(),
         input: 10_000,

@@ -58,10 +58,6 @@ const ALERT_CONFIGS = {
     type: "success",
     content: "Connected!",
   },
-  disconnected: {
-    type: "loading",
-    content: "Disconnected. Looking for client...",
-  },
   timedout: {
     type: "error",
     content:
@@ -83,7 +79,7 @@ const ALERT_CONFIGS = {
       </div>
     ),
   },
-} satisfies Record<DevtoolsState, BannerAlertConfig>;
+} satisfies Partial<Record<DevtoolsState, BannerAlertConfig>>;
 
 const APP_QUERY: TypedDocumentNode<AppQuery, AppQueryVariables> = gql`
   query AppQuery {
@@ -122,6 +118,12 @@ export const App = () => {
       actions: {
         connectToClient: () => {
           getPanelActor(window).send({ type: "connectToClient" });
+        },
+        notifyDisconnected: () => {
+          BannerAlert.show({
+            type: "loading",
+            content: "Disconnected. Looking for client...",
+          });
         },
       },
     })
@@ -194,6 +196,12 @@ export const App = () => {
 
     if (snapshot.value === "notFound") {
       setClientNotFoundModalOpen(true);
+    }
+
+    const config = ALERT_CONFIGS[snapshot.value as DevtoolsState];
+
+    if (!config) {
+      return;
     }
 
     const dismiss = BannerAlert.show(
