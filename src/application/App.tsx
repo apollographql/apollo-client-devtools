@@ -99,6 +99,11 @@ export const App = () => {
     devtoolsMachine.provide({
       actions: {
         connectToClient: () => {
+          BannerAlert.show({
+            type: "loading",
+            content: "Looking for client...",
+          });
+
           getPanelActor(window).send({ type: "connectToClient" });
         },
         notifyDisconnected: () => {
