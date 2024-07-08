@@ -19,7 +19,8 @@ export type StateValues =
 type Actions =
   | { type: "connectToClient" }
   | { type: "notifyConnected" }
-  | { type: "notifyDisconnected" };
+  | { type: "notifyDisconnected" }
+  | { type: "notifyNotFound" };
 
 export const devtoolsMachine = createMachine({
   types: {
@@ -72,6 +73,7 @@ export const devtoolsMachine = createMachine({
         retry: "retrying",
         connect: "connected",
       },
+      entry: "notifyNotFound",
     },
   },
 });

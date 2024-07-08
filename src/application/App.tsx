@@ -43,8 +43,6 @@ import { Divider } from "./components/Divider";
 import { useActorEvent } from "./hooks/useActorEvent";
 import { addClient, removeClient } from ".";
 
-const panelWindow = getPanelActor(window);
-
 const ALERT_CONFIGS = {
   initialized: {
     type: "loading",
@@ -62,22 +60,6 @@ const ALERT_CONFIGS = {
     type: "error",
     content:
       "Unable to communicate with browser tab. Please reload the window and restart the devtools to try again.",
-  },
-  notFound: {
-    type: "error",
-    content: (
-      <div className="flex justify-between items-center">
-        Client not found{" "}
-        <Button
-          size="xs"
-          variant="hidden"
-          icon={<IconSync />}
-          onClick={() => panelWindow.send({ type: "retryConnection" })}
-        >
-          Retry connection
-        </Button>
-      </div>
-    ),
   },
 } satisfies Partial<Record<DevtoolsState, BannerAlertConfig>>;
 
@@ -123,6 +105,24 @@ export const App = () => {
           BannerAlert.show({
             type: "loading",
             content: "Disconnected. Looking for client...",
+          });
+        },
+        notifyNotFound: () => {
+          BannerAlert.show({
+            type: "error",
+            content: (
+              <div className="flex justify-between items-center">
+                Client not found{" "}
+                <Button
+                  size="xs"
+                  variant="hidden"
+                  icon={<IconSync />}
+                  onClick={() => send({ type: "retry" })}
+                >
+                  Retry connection
+                </Button>
+              </div>
+            ),
           });
         },
       },
