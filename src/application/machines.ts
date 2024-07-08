@@ -49,7 +49,6 @@ export const devtoolsMachine = createMachine({
       on: {
         disconnect: "disconnected",
       },
-      entry: "notifyConnected",
     },
     disconnected: {
       on: {

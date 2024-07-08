@@ -124,17 +124,8 @@ export const App = () => {
   const [snapshot, send] = useMachine(
     devtoolsMachine.provide({
       actions: {
-        connectToClient: ({ self }) => {
-          if (self.getSnapshot().matches("initialized")) {
-            BannerAlert.show(ALERT_CONFIGS.initialized);
-          }
-
+        connectToClient: () => {
           getPanelActor(window).send({ type: "connectToClient" });
-        },
-        notifyConnected: () => {
-          const dismiss = BannerAlert.show(ALERT_CONFIGS.connected);
-          setTimeout(dismiss, 2500);
-          setClientNotFoundModalOpen(false);
         },
       },
     })
