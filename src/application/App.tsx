@@ -24,7 +24,7 @@ import IconGitHubSolid from "@apollo/icons/small/IconGitHubSolid.svg";
 import { SettingsModal } from "./components/Layouts/SettingsModal";
 import Logo from "@apollo/icons/logos/LogoSymbol.svg";
 import { BannerAlert } from "./components/BannerAlert";
-import { devtoolsMachine } from "./machines";
+import { devtoolsMachine } from "./machines/devtoolsMachine";
 import { ClientNotFoundModal } from "./components/ClientNotFoundModal";
 import { getPanelActor } from "../extension/devtools/panelActor";
 import { ButtonGroup } from "./components/ButtonGroup";

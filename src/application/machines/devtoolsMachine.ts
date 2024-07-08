@@ -1,6 +1,6 @@
 import { createMachine } from "xstate";
-import { fromTimeout } from "./actors/timeoutActor";
-import { BannerAlert } from "../application/components/BannerAlert";
+import { fromTimeout } from "../actors/timeoutActor";
+import { BannerAlert } from "../components/BannerAlert";
 
 type Events =
   | { type: "connect" }
