@@ -49,7 +49,7 @@ export type QueryDetails = {
   variables?: Variables;
   cachedData?: QueryData; // Not a member of the actual Apollo Client QueryInfo type
   options?: QueryOptions;
-  networkStatus?: NetworkStatus;
+  networkStatus: NetworkStatus;
   error?: SerializedApolloError;
   pollInterval?: number;
 };
