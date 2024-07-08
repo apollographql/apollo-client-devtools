@@ -77,10 +77,6 @@ async function createDevtoolsPanel() {
         type: "initializePanel",
       });
 
-      // panelWindow.on("retryConnection", () => {
-      //   machine.send({ type: "retry" });
-      // });
-
       // machine.subscribe(({ value }) => {
       //   panelWindow.send({ type: "devtoolsStateChanged", state: value as any });
       // });

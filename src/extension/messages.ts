@@ -112,7 +112,6 @@ export type PanelMessage =
   | { type: "disconnectFromDevtools" }
   | { type: "connectToClient" }
   | { type: "initializePanel" }
-  | { type: "retryConnection" }
   | { type: "devtoolsStateChanged"; state: StateValues };
 
 export type DevtoolsRPCMessage = {

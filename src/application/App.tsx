@@ -226,7 +226,7 @@ export const App = () => {
         open={clientNotFoundModalOpen}
         onClose={() => setClientNotFoundModalOpen(false)}
         onRetry={() => {
-          panelWindow.send({ type: "retryConnection" });
+          send({ type: "retry" });
           setClientNotFoundModalOpen(false);
         }}
       />
