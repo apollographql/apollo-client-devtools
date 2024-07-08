@@ -11,41 +11,11 @@ import { createRPCBridge } from "../rpc";
 
 const inspectedTabId = browser.devtools.inspectedWindow.tabId;
 
-// let connectTimeoutId: NodeJS.Timeout;
-
 const portAdapter = createPortMessageAdapter(() =>
   browser.runtime.connect({ name: inspectedTabId.toString() })
 );
 
 const clientPort = createActor<ClientMessage>(portAdapter);
-
-// function connectToClient() {
-//   clientPort.send({ type: "connectToClient" });
-//   startConnectTimeout();
-// }
-
-// function disconnectFromDevtools() {
-//   machine.send({ type: "disconnect" });
-//   startConnectTimeout();
-// }
-
-// function startConnectTimeout() {
-//   clearTimeout(connectTimeoutId);
-//
-//   connectTimeoutId = setTimeout(() => {
-//     machine.send({ type: "clientNotFound" });
-//   }, 10_000);
-// }
-
-// clientPort.on("connectToDevtools", () => {
-//   machine.send({ type: "connect" });
-// });
-//
-// clientPort.on("registerClient", () => {
-//   machine.send({ type: "connect" });
-// });
-
-// clientPort.on("clientTerminated", disconnectFromDevtools);
 
 let connectedToPanel = false;
 let panelWindow: Actor<PanelMessage>;
