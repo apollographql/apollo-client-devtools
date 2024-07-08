@@ -69,5 +69,14 @@ function createResolvers(rpcClient: RpcClient<DevtoolsRPCMessage>): Resolvers {
         }));
       },
     },
+    WatchedMutationError: {
+      __resolveType: (error) => {
+        if (error.name === "ApolloError") {
+          return "SerializedApolloError";
+        }
+
+        return "SerializedError";
+      },
+    },
   };
 }
