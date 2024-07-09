@@ -31,7 +31,7 @@ enum QueryTabs {
   Options = "Options",
 }
 
-const GET_WATCHED_QUERIES: TypedDocumentNode<
+const GET_QUERIES: TypedDocumentNode<
   GetWatchedQueries,
   GetWatchedQueriesVariables
 > = gql`
@@ -67,7 +67,7 @@ interface QueriesProps {
 
 export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
   const [selected, setSelected] = useState("1");
-  const { data } = useQuery(GET_WATCHED_QUERIES, {
+  const { data } = useQuery(GET_QUERIES, {
     returnPartialData: true,
     variables: { clientId: clientId as string },
     skip: clientId == null,
