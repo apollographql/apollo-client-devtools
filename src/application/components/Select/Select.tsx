@@ -41,6 +41,29 @@ const select = cva(
   }
 );
 
+const scrollIndicator = cva(
+  [
+    "absolute",
+    "flex",
+    "items-center",
+    "justify-center",
+    "cursor-default",
+    "w-full",
+    "py-2",
+    "bg-primary",
+    "dark:bg-primary-dark",
+    "z-10",
+  ],
+  {
+    variants: {
+      position: {
+        top: ["top-px", "rounded-t-lg"],
+        bottom: ["bottom-px", "rounded-b-lg"],
+      },
+    },
+  }
+);
+
 export const Select = ({
   align,
   children,
@@ -78,13 +101,17 @@ export const Select = ({
           position="popper"
           className="border border-primary bg-primary dark:bg-primary-dark dark:border-primary-dark shadow-dropdown overflow-hidden rounded-lg w-80 max-h-[calc(100vh-8rem)]"
         >
-          <SelectBase.ScrollUpButton className="flex items-center justify-center cursor-default py-2 pointer-events-none">
+          <SelectBase.ScrollUpButton
+            className={scrollIndicator({ position: "top" })}
+          >
             <IconChevronUp className="w-4" />
           </SelectBase.ScrollUpButton>
           <SelectBase.Viewport className="px-4 py-4">
             {children}
           </SelectBase.Viewport>
-          <SelectBase.ScrollDownButton className="flex items-center justify-center cursor-default py-2 pointer-events-none">
+          <SelectBase.ScrollDownButton
+            className={scrollIndicator({ position: "bottom" })}
+          >
             <IconChevronDown className="w-4" />
           </SelectBase.ScrollDownButton>
         </SelectBase.Content>
