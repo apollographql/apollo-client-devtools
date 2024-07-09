@@ -26,7 +26,6 @@ import Logo from "@apollo/icons/logos/LogoSymbol.svg";
 import { BannerAlert } from "./components/BannerAlert";
 import { devtoolsMachine } from "./machines/devtoolsMachine";
 import { ClientNotFoundModal } from "./components/ClientNotFoundModal";
-import { getPanelActor } from "../extension/devtools/panelActor";
 import { ButtonGroup } from "./components/ButtonGroup";
 import {
   GitHubIssueLink,
@@ -74,30 +73,7 @@ ${SECTIONS.devtoolsVersion}
 
 export const App = () => {
   const apolloClient = useApolloClient();
-  const [snapshot, send] = useMachine(
-    devtoolsMachine.provide({
-      actions: {
-        notifyNotFound: () => {
-          BannerAlert.show({
-            type: "error",
-            content: (
-              <div className="flex justify-between items-center">
-                Client not found{" "}
-                <Button
-                  size="xs"
-                  variant="hidden"
-                  icon={<IconSync />}
-                  onClick={() => send({ type: "retry" })}
-                >
-                  Retry connection
-                </Button>
-              </div>
-            ),
-          });
-        },
-      },
-    })
-  );
+  const [snapshot, send] = useMachine(devtoolsMachine);
 
   useActorEvent("connectToDevtools", () => {
     send({ type: "connect" });

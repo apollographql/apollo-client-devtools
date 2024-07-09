@@ -1,6 +1,8 @@
 import { setup, assign } from "xstate";
+import IconSync from "@apollo/icons/small/IconSync.svg";
 import { BannerAlert } from "../components/BannerAlert";
 import { getPanelActor } from "../../extension/devtools/panelActor";
+import { Button } from "../components/Button";
 
 type Events =
   | { type: "connect" }
@@ -17,12 +19,6 @@ export type StateValues =
   | "disconnected"
   | "timedout"
   | "notFound";
-
-function throwIfNotOverridden(name: string) {
-  return () => {
-    throw new Error(`Please override the '${name}' action with .provide`);
-  };
-}
 
 export const devtoolsMachine = setup({
   types: {
@@ -44,7 +40,6 @@ export const devtoolsMachine = setup({
       getPanelActor(window).send({ type: "connectToClient" });
     },
     closeBanner: BannerAlert.close,
-    notifyNotFound: throwIfNotOverridden("notifyNotFound"),
     notifyDisconnected: () => {
       BannerAlert.show({
         type: "loading",
@@ -59,6 +54,24 @@ export const devtoolsMachine = setup({
         type: "error",
         content:
           "Unable to communicate with browser tab. Please reload the window and restart the devtools to try again.",
+      });
+    },
+    notifyNotFound: ({ self }) => {
+      BannerAlert.show({
+        type: "error",
+        content: (
+          <div className="flex justify-between items-center">
+            Client not found{" "}
+            <Button
+              size="xs"
+              variant="hidden"
+              icon={<IconSync />}
+              onClick={() => self.send({ type: "retry" })}
+            >
+              Retry connection
+            </Button>
+          </div>
+        ),
       });
     },
   },
