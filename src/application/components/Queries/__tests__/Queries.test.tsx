@@ -15,6 +15,10 @@ jest.mock("../../../../extension/devtools/panelRpcClient");
 
 const getRpcClientMock = getRpcClient as GetRpcClientMock;
 
+beforeEach(() => {
+  getRpcClientMock.__adapter.mockClear();
+});
+
 describe("<Queries />", () => {
   const defaultQueries: QueryInfo[] = [
     {
@@ -52,7 +56,6 @@ describe("<Queries />", () => {
 
   beforeEach(() => {
     client.clearStore();
-    getRpcClientMock.__adapter.mockClear();
   });
 
   test("queries render in the sidebar", async () => {
