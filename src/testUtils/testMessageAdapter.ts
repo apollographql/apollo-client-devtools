@@ -1,56 +1,23 @@
 import type { MessageAdapter } from "../extension/messageAdapters";
-import type { RPCMessage, RPCRequestMessage } from "../extension/messages";
-import {
-  isRPCRequestMessage,
-  isRPCResponseMessage,
-  MessageType,
-} from "../extension/messages";
-import { createId } from "../utils/createId";
-// import type { DistributiveOmit } from "../types";
+import type { RPCResponseMessage } from "../extension/messages";
 
-interface TestAdapter extends MessageAdapter<RPCMessage> {
+interface TestAdapter extends MessageAdapter<RPCResponseMessage> {
   mocks: { messages: unknown[] };
-  handleRpc: (
-    name: string,
-    callback: (...args: unknown[]) => unknown | Promise<unknown>
-  ) => void;
+  simulateMessage: (message: unknown) => void;
   postMessage: jest.Mock<void, [message: unknown]>;
+  proxyTo: (adapter: TestAdapter) => void;
+  mockClear: () => void;
 }
 
 export function createTestAdapter(): TestAdapter {
+  let proxy: TestAdapter | undefined;
   const listeners = new Set<(message: unknown) => void>();
-  const rpcHandlers = new Map<
-    string,
-    (...args: unknown[]) => unknown | Promise<unknown>
-  >();
   const messages: unknown[] = [];
-
-  async function handleRpcRequest(message: RPCRequestMessage) {
-    const handler = rpcHandlers.get(message.name);
-
-    if (!handler) {
-      return;
-    }
-
-    const result = await Promise.resolve(handler(...message.params));
-
-    adapter.postMessage({
-      source: "apollo-client-devtools",
-      type: MessageType.RPCResponse,
-      id: createId(),
-      sourceId: message.id,
-      result,
-    });
-  }
-
-  function notifyListeners(message: unknown) {
-    listeners.forEach((listener) => listener(message));
-  }
 
   const adapter: TestAdapter = {
     mocks: { messages },
-    handleRpc: (name, callback) => {
-      rpcHandlers.set(name, callback);
+    simulateMessage: (message) => {
+      listeners.forEach((fn) => fn(message));
     },
     addListener: jest.fn((fn) => {
       listeners.add(fn);
@@ -59,13 +26,18 @@ export function createTestAdapter(): TestAdapter {
     }),
     postMessage: jest.fn((message) => {
       messages.push(message);
-
-      if (isRPCRequestMessage(message)) {
-        handleRpcRequest(message);
-      } else if (isRPCResponseMessage(message)) {
-        notifyListeners(message);
-      }
+      proxy?.simulateMessage(message);
     }),
+    proxyTo: (adapter) => {
+      proxy = adapter;
+    },
+    mockClear: () => {
+      adapter.mocks.messages = [];
+      listeners.clear();
+      (adapter.addListener as jest.Mock).mockClear();
+      adapter.postMessage.mockClear();
+      proxy = undefined;
+    },
   };
 
   return adapter;
