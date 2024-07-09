@@ -102,6 +102,7 @@ Object.defineProperty(window, "__APOLLO_DEVTOOLS_GLOBAL_HOOK__", {
 function getClientInfo(client: ApolloClient<unknown>): ApolloClientInfo {
   return {
     id: knownClients.get(client)!,
+    name: "devtoolsConfig" in client ? client.devtoolsConfig.name : undefined,
     version: client.version,
     queryCount: getQueriesForClient(client).length,
     mutationCount: getMutationsForClient(client).length,
