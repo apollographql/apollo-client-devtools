@@ -3,16 +3,16 @@ import { screen, within, waitFor, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { renderWithApolloClient } from "../../../utilities/testing/renderWithApolloClient";
-import { client, GET_QUERIES } from "../../../index";
-import { Queries } from "../Queries";
+import { client } from "../../../index";
+import { Queries, GET_QUERIES } from "../Queries";
 import type { GetQueries } from "../../../types/gql";
 import { NetworkStatus } from "@apollo/client";
 
 describe("<Queries />", () => {
-  const queries: GetQueries["watchedQueries"]["queries"] = [
+  const queries: GetQueries["client"]["queries"]["items"] = [
     {
-      id: 1,
       __typename: "WatchedQuery",
+      id: "1",
       name: null,
       queryString: "query { hello }",
       variables: null,
@@ -23,8 +23,8 @@ describe("<Queries />", () => {
       networkStatus: NetworkStatus.ready,
     },
     {
-      id: 2,
       __typename: "WatchedQuery",
+      id: "2",
       name: "GetColors",
       queryString: "query GetColors { colors }",
       variables: null,
@@ -44,15 +44,19 @@ describe("<Queries />", () => {
     client.writeQuery({
       query: GET_QUERIES,
       data: {
-        watchedQueries: {
-          __typename: "WatchedQueries",
-          queries,
-          count: queries.length,
+        client: {
+          __typename: "Client",
+          id: "1",
+          queries: {
+            __typename: "ClientQueries",
+            total: queries.length,
+            items: queries,
+          },
         },
       },
     });
 
-    renderWithApolloClient(<Queries explorerIFrame={null} />);
+    renderWithApolloClient(<Queries clientId="1" explorerIFrame={null} />);
 
     const sidebar = screen.getByRole("complementary");
     expect(within(sidebar).getByText("(anonymous)")).toBeInTheDocument();
@@ -65,15 +69,19 @@ describe("<Queries />", () => {
     client.writeQuery({
       query: GET_QUERIES,
       data: {
-        watchedQueries: {
-          __typename: "WatchedQueries",
-          queries,
-          count: queries.length,
+        client: {
+          __typename: "Client",
+          id: "1",
+          queries: {
+            __typename: "ClientQueries",
+            total: queries.length,
+            items: queries,
+          },
         },
       },
     });
 
-    renderWithApolloClient(<Queries explorerIFrame={null} />);
+    renderWithApolloClient(<Queries clientId="1" explorerIFrame={null} />);
 
     const main = screen.getByTestId("main");
     expect(within(main).getByTestId("title")).toHaveTextContent("(anonymous)");
@@ -86,7 +94,7 @@ describe("<Queries />", () => {
   });
 
   test("it renders an empty state", () => {
-    renderWithApolloClient(<Queries explorerIFrame={null} />);
+    renderWithApolloClient(<Queries clientId="1" explorerIFrame={null} />);
 
     expect(
       within(screen.getByTestId("main")).getByRole("heading")
@@ -97,15 +105,19 @@ describe("<Queries />", () => {
     client.writeQuery({
       query: GET_QUERIES,
       data: {
-        watchedQueries: {
-          __typename: "WatchedQueries",
-          queries,
-          count: queries.length,
+        client: {
+          __typename: "Client",
+          id: "1",
+          queries: {
+            __typename: "ClientQueries",
+            total: queries.length,
+            items: queries,
+          },
         },
       },
     });
 
-    renderWithApolloClient(<Queries explorerIFrame={null} />);
+    renderWithApolloClient(<Queries clientId="1" explorerIFrame={null} />);
 
     expect(screen.getByTestId("query")).toHaveTextContent(
       queries[0].queryString
@@ -117,15 +129,21 @@ describe("<Queries />", () => {
     client.writeQuery({
       query: GET_QUERIES,
       data: {
-        watchedQueries: {
-          __typename: "WatchedQueries",
-          queries,
-          count: queries.length,
+        client: {
+          __typename: "Client",
+          id: "1",
+          queries: {
+            __typename: "ClientQueries",
+            total: queries.length,
+            items: queries,
+          },
         },
       },
     });
 
-    const { user } = renderWithApolloClient(<Queries explorerIFrame={null} />);
+    const { user } = renderWithApolloClient(
+      <Queries clientId="1" explorerIFrame={null} />
+    );
 
     await user.click(within(screen.getByTestId("query")).getByText("Copy"));
     expect(window.prompt).toBeCalledWith(
@@ -138,29 +156,35 @@ describe("<Queries />", () => {
     client.writeQuery({
       query: GET_QUERIES,
       data: {
-        watchedQueries: {
-          __typename: "WatchedQueries",
-          queries: [
-            {
-              __typename: "WatchedQuery",
-              id: 0,
-              queryString:
-                "query GetColor($hex: String!) { color(hex: $hex) { name }}",
-              name: "GetColor",
-              variables: { hex: "#000" },
-              cachedData: { color: { name: "black" } },
-              options: { fetchPolicy: "network-only" },
-              pollInterval: null,
-              error: null,
-              networkStatus: NetworkStatus.ready,
-            },
-          ],
-          count: 1,
+        client: {
+          __typename: "Client",
+          id: "1",
+          queries: {
+            __typename: "ClientQueries",
+            total: 1,
+            items: [
+              {
+                __typename: "WatchedQuery",
+                id: "1",
+                queryString:
+                  "query GetColor($hex: String!) { color(hex: $hex) { name }}",
+                name: "GetColor",
+                variables: { hex: "#000" },
+                cachedData: { color: { name: "black" } },
+                options: { fetchPolicy: "network-only" },
+                pollInterval: null,
+                error: null,
+                networkStatus: NetworkStatus.ready,
+              },
+            ],
+          },
         },
       },
     });
 
-    const { user } = renderWithApolloClient(<Queries explorerIFrame={null} />);
+    const { user } = renderWithApolloClient(
+      <Queries clientId="1" explorerIFrame={null} />
+    );
 
     expect(screen.getByText("Variables")).toBeInTheDocument();
     const variablesPanel = within(screen.getByTestId("main")).getByRole(
@@ -185,7 +209,7 @@ describe("<Queries />", () => {
     window.prompt = jest.fn();
     const query = {
       __typename: "WatchedQuery",
-      id: 0,
+      id: "1",
       queryString: "query GetColor($hex: String!) { color(hex: $hex) { name }}",
       name: "GetColor",
       variables: { hex: "#000" },
@@ -194,20 +218,26 @@ describe("<Queries />", () => {
       pollInterval: null,
       error: null,
       networkStatus: NetworkStatus.ready,
-    } satisfies GetQueries["watchedQueries"]["queries"][number];
+    } satisfies GetQueries["client"]["queries"]["items"][number];
 
     client.writeQuery({
       query: GET_QUERIES,
       data: {
-        watchedQueries: {
-          __typename: "WatchedQueries",
-          queries: [query],
-          count: 1,
+        client: {
+          __typename: "Client",
+          id: "1",
+          queries: {
+            __typename: "ClientQueries",
+            total: 1,
+            items: [query],
+          },
         },
       },
     });
 
-    const { user } = renderWithApolloClient(<Queries explorerIFrame={null} />);
+    const { user } = renderWithApolloClient(
+      <Queries clientId="1" explorerIFrame={null} />
+    );
 
     const copyButton = within(screen.getByRole("tablist")).getByRole("button");
     await act(() => user.click(copyButton));
