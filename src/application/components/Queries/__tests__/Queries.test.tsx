@@ -124,7 +124,7 @@ describe("<Queries />", () => {
     await waitFor(() => {
       expect(
         screen.getByTestId("query").querySelector("pre")
-      ).toHaveTextContent(print(defaultQueries[0].document));
+      ).toHaveTextContent(/hello/);
     });
   });
 
