@@ -122,9 +122,9 @@ describe("<Queries />", () => {
     renderWithApolloClient(<Queries clientId="1" explorerIFrame={null} />);
 
     await waitFor(() => {
-      expect(screen.getByTestId("query")).toHaveTextContent(
-        print(defaultQueries[0].document)
-      );
+      expect(
+        screen.getByTestId("query").querySelector("pre")
+      ).toHaveTextContent(print(defaultQueries[0].document));
     });
   });
 
