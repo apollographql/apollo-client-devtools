@@ -10,7 +10,23 @@ import userEvent from "@testing-library/user-event";
 
 import { Cache } from "../Cache";
 import { renderWithApolloClient } from "../../../utilities/testing/renderWithApolloClient";
-import { client, writeData } from "../../../index";
+import { client } from "../../../index";
+import { getRpcClient } from "../../../../extension/devtools/panelRpcClient";
+import type { GetRpcClientMock } from "../../../../extension/devtools/__mocks__/panelRpcClient";
+import type { JSONObject } from "../../Explorer/postMessageHelpers";
+
+jest.mock("../../../../extension/devtools/panelRpcClient");
+
+const getRpcClientMock = getRpcClient as GetRpcClientMock;
+const testAdapter = getRpcClientMock.__adapter;
+
+const CLIENT_DATA = {
+  id: "1",
+  name: undefined,
+  version: "3.10.0",
+  queryCount: 0,
+  mutationCount: 0,
+};
 
 const CACHE_DATA = {
   "Result:1": {
@@ -52,10 +68,22 @@ function elementMatchesHighlightedNode(
   );
 }
 
+beforeEach(() => {
+  client.clearStore();
+  testAdapter.mockClear();
+});
+
+function setup(cacheData: JSONObject = CACHE_DATA) {
+  testAdapter.handleRpcRequest("getClient", () => CLIENT_DATA);
+  testAdapter.handleRpcRequest("getCache", () => cacheData);
+}
+
 describe("Cache component tests", () => {
   describe("No cache data", () => {
     it("should show no cache data message in sidebar", async () => {
-      renderWithApolloClient(<Cache />);
+      setup();
+
+      renderWithApolloClient(<Cache clientId="1" />);
       const main = screen.getByTestId("main");
       await waitFor(() => {
         expect(within(main).getByRole("heading")).toHaveTextContent(
@@ -65,26 +93,22 @@ describe("Cache component tests", () => {
     });
 
     it("should leave the header blank instead of trying to show a cache ID", async () => {
-      renderWithApolloClient(<Cache />);
+      setup({});
+
+      renderWithApolloClient(<Cache clientId="1" />);
       const cacheId = screen.queryByTestId("cache-id");
-      expect(cacheId).toBeNull();
+
+      await waitFor(() => {
+        expect(cacheId).toBeNull();
+      });
     });
   });
 
   describe("With cache data", () => {
-    beforeEach(() => {
-      client.resetStore();
-
-      writeData({
-        clientVersion: "3.10.0",
-        queries: [],
-        mutations: [],
-        cache: CACHE_DATA,
-      });
-    });
-
     it("should show list of root cache ids in the sidebar", async () => {
-      renderWithApolloClient(<Cache />);
+      setup();
+
+      renderWithApolloClient(<Cache clientId="1" />);
       const sidebar = screen.getByRole("complementary");
       await waitFor(() => {
         expect(within(sidebar).getByText("ROOT_QUERY")).toBeInTheDocument();
@@ -94,7 +118,8 @@ describe("Cache component tests", () => {
     });
 
     it("should show sidebar selected/active cache ID in the header", async () => {
-      renderWithApolloClient(<Cache />);
+      setup();
+      renderWithApolloClient(<Cache clientId="1" />);
 
       const main = screen.getByTestId("main");
 
@@ -104,7 +129,8 @@ describe("Cache component tests", () => {
     });
 
     it("should show data for the sidebar selected/active cache ID in main ", () => {
-      renderWithApolloClient(<Cache />);
+      setup();
+      renderWithApolloClient(<Cache clientId="1" />);
       const main = screen.getByTestId("main");
       expect(within(main).getByText("ROOT_QUERY")).toBeInTheDocument();
       expect(within(main).getByText("__typename:")).toBeInTheDocument();
@@ -123,18 +149,10 @@ describe("Cache component tests", () => {
   });
 
   describe("Search", () => {
-    beforeEach(() => {
-      writeData({
-        clientVersion: "3.10.0",
-        queries: [],
-        mutations: [],
-        cache: CACHE_DATA,
-      });
-    });
-
     it("filters cache ID's for matches against the keyword", async () => {
+      setup();
       const user = userEvent.setup();
-      renderWithApolloClient(<Cache />);
+      renderWithApolloClient(<Cache clientId="1" />);
 
       const searchInput =
         screen.getByPlaceholderText<HTMLInputElement>("Search queries");
@@ -160,11 +178,12 @@ describe("Cache component tests", () => {
     });
 
     it("highlights matched substring in cache ID", async () => {
+      setup();
       const selectedClassName =
         "bg-searchHighlight dark:bg-searchHighlight-dark";
       const user = userEvent.setup();
 
-      renderWithApolloClient(<Cache />);
+      renderWithApolloClient(<Cache clientId="1" />);
 
       const searchInput = screen.getByPlaceholderText("Search queries");
       await act(() => user.type(searchInput, "Res"));
