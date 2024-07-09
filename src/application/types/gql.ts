@@ -48,6 +48,7 @@ export type Client = {
   cache: Scalars["Cache"]["output"];
   id: Scalars["String"]["output"];
   mutations: ClientMutations;
+  name: Maybe<Scalars["String"]["output"]>;
   queries: ClientQueries;
   version: Scalars["String"]["output"];
 };
