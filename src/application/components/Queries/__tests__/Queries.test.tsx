@@ -1,11 +1,7 @@
-import { createRpcClient, createRpcHandler } from "../../../../extension/rpc";
-import {
-  createTestAdapter,
-  createTestAdapterBridge,
-} from "../../../../testUtils/testMessageAdapter";
+import { createRpcClient } from "../../../../extension/rpc";
+import { createTestAdapter } from "../../../../testUtils/testMessageAdapter";
 
 const mockAdapter = createTestAdapter();
-const rpcHandlerAdapter = createTestAdapter();
 
 jest.mock("../../../../extension/devtools/panelRpcClient.ts", () => ({
   getRpcClient: () => createRpcClient(mockAdapter),
@@ -19,7 +15,6 @@ import { renderWithApolloClient } from "../../../utilities/testing/renderWithApo
 import { client } from "../../../index";
 import { Queries } from "../Queries";
 import { gql, NetworkStatus } from "@apollo/client";
-import type { DevtoolsRPCMessage } from "../../../../extension/messages";
 import { print } from "graphql";
 import type { QueryInfo } from "../../../../extension/tab/helpers";
 
@@ -48,25 +43,19 @@ describe("<Queries />", () => {
   ];
 
   function setup(queries: QueryInfo[] = defaultQueries) {
-    const handle = createRpcHandler<DevtoolsRPCMessage>(rpcHandlerAdapter);
-
-    handle("getQueries", () => queries);
-    handle("getClient", (id) => {
-      return {
-        id,
-        version: "3.10.0",
-        queryCount: queries.length,
-        mutationCount: 0,
-      };
-    });
+    mockAdapter.handleRpcRequest("getQueries", () => queries);
+    mockAdapter.handleRpcRequest("getClient", (id) => ({
+      id,
+      name: undefined,
+      version: "3.10.0",
+      queryCount: queries.length,
+      mutationCount: 0,
+    }));
   }
 
   beforeEach(() => {
     client.clearStore();
     mockAdapter.mockClear();
-    rpcHandlerAdapter.mockClear();
-
-    createTestAdapterBridge(mockAdapter, rpcHandlerAdapter);
   });
 
   test("queries render in the sidebar", async () => {
