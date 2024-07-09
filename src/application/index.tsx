@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { createRoot } from "react-dom/client";
-import type { Reference } from "@apollo/client";
+import type { Reference, TypedDocumentNode } from "@apollo/client";
 import {
   ApolloClient,
   ApolloProvider,
@@ -17,6 +17,7 @@ import * as Tooltip from "@radix-ui/react-tooltip";
 import { getRpcClient } from "../extension/devtools/panelRpcClient";
 import { createSchemaWithRpcClient } from "./schema";
 import type { ApolloClientInfo } from "../types";
+import type { ClientFields } from "./types/gql";
 
 const rpcClient = getRpcClient();
 const schema = createSchemaWithRpcClient(rpcClient);
@@ -77,13 +78,13 @@ export const addClient = (clientData: ApolloClientInfo) => {
               id
               version
               queries {
-                count
+                total
               }
               mutations {
-                count
+                total
               }
             }
-          `,
+          ` as TypedDocumentNode<ClientFields>,
           id: client.cache.identify({
             __typename: "Client",
             id: clientData.id,
@@ -94,11 +95,11 @@ export const addClient = (clientData: ApolloClientInfo) => {
             version: clientData.version,
             queries: {
               __typename: "ClientQueries",
-              count: clientData.queryCount,
+              total: clientData.queryCount,
             },
             mutations: {
               __typename: "ClientMutations",
-              count: clientData.mutationCount,
+              total: clientData.mutationCount,
             },
           },
         });
