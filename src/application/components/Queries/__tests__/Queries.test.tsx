@@ -1,90 +1,102 @@
+import { createRpcClient, createRpcHandler } from "../../../../extension/rpc";
+import {
+  createTestAdapter,
+  createTestAdapterBridge,
+} from "../../../../testUtils/testMessageAdapter";
+
+const mockAdapter = createTestAdapter();
+const rpcHandlerAdapter = createTestAdapter();
+
+jest.mock("../../../../extension/devtools/panelRpcClient.ts", () => ({
+  getRpcClient: () => createRpcClient(mockAdapter),
+}));
+
 import React from "react";
 import { screen, within, waitFor, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { renderWithApolloClient } from "../../../utilities/testing/renderWithApolloClient";
 import { client } from "../../../index";
-import { Queries, GET_QUERIES } from "../Queries";
-import type { GetQueries } from "../../../types/gql";
-import { NetworkStatus } from "@apollo/client";
+import { Queries } from "../Queries";
+import { gql, NetworkStatus } from "@apollo/client";
+import type { DevtoolsRPCMessage } from "../../../../extension/messages";
+import { print } from "graphql";
+import type { QueryInfo } from "../../../../extension/tab/helpers";
 
 describe("<Queries />", () => {
-  const queries: GetQueries["client"]["queries"]["items"] = [
+  const defaultQueries: QueryInfo[] = [
     {
-      __typename: "WatchedQuery",
       id: "1",
-      name: null,
-      queryString: "query { hello }",
-      variables: null,
-      cachedData: null,
+      document: gql`
+        query {
+          hello
+        }
+      `,
       options: { fetchPolicy: "cache-first" },
-      pollInterval: null,
-      error: null,
       networkStatus: NetworkStatus.ready,
     },
     {
-      __typename: "WatchedQuery",
       id: "2",
-      name: "GetColors",
-      queryString: "query GetColors { colors }",
-      variables: null,
-      cachedData: null,
+      document: gql`
+        query GetColors {
+          colors
+        }
+      `,
       options: { fetchPolicy: "cache-first" },
-      pollInterval: null,
-      error: null,
       networkStatus: NetworkStatus.ready,
     },
   ];
 
+  function setup(queries: QueryInfo[] = defaultQueries) {
+    const handle = createRpcHandler<DevtoolsRPCMessage>(rpcHandlerAdapter);
+
+    handle("getQueries", () => queries);
+    handle("getClient", (id) => {
+      return {
+        id,
+        version: "3.10.0",
+        queryCount: queries.length,
+        mutationCount: 0,
+      };
+    });
+  }
+
   beforeEach(() => {
     client.clearStore();
+    mockAdapter.mockClear();
+    rpcHandlerAdapter.mockClear();
+
+    createTestAdapterBridge(mockAdapter, rpcHandlerAdapter);
   });
 
   test("queries render in the sidebar", async () => {
-    client.writeQuery({
-      query: GET_QUERIES,
-      data: {
-        client: {
-          __typename: "Client",
-          id: "1",
-          queries: {
-            __typename: "ClientQueries",
-            total: queries.length,
-            items: queries,
-          },
-        },
-      },
-    });
+    setup();
 
     renderWithApolloClient(<Queries clientId="1" explorerIFrame={null} />);
 
     const sidebar = screen.getByRole("complementary");
-    expect(within(sidebar).getByText("(anonymous)")).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(within(sidebar).getByText("(anonymous)")).toBeInTheDocument();
+    });
+
     expect(within(sidebar).getByText("GetColors")).toBeInTheDocument();
   });
 
   test("renders query name", async () => {
-    const user = userEvent.setup();
+    setup();
 
-    client.writeQuery({
-      query: GET_QUERIES,
-      data: {
-        client: {
-          __typename: "Client",
-          id: "1",
-          queries: {
-            __typename: "ClientQueries",
-            total: queries.length,
-            items: queries,
-          },
-        },
-      },
-    });
+    const user = userEvent.setup();
 
     renderWithApolloClient(<Queries clientId="1" explorerIFrame={null} />);
 
     const main = screen.getByTestId("main");
-    expect(within(main).getByTestId("title")).toHaveTextContent("(anonymous)");
+
+    await waitFor(() => {
+      expect(within(main).getByTestId("title")).toHaveTextContent(
+        "(anonymous)"
+      );
+    });
 
     const sidebar = screen.getByRole("complementary");
     await act(() => user.click(within(sidebar).getByText("GetColors")));
@@ -93,94 +105,70 @@ describe("<Queries />", () => {
     });
   });
 
-  test("it renders an empty state", () => {
+  test("it renders an empty state", async () => {
+    setup();
     renderWithApolloClient(<Queries clientId="1" explorerIFrame={null} />);
 
-    expect(
-      within(screen.getByTestId("main")).getByRole("heading")
-    ).toHaveTextContent("👋 Welcome to Apollo Client Devtools");
+    await waitFor(() => {
+      expect(
+        within(screen.getByTestId("main")).getByRole("heading")
+      ).toHaveTextContent("👋 Welcome to Apollo Client Devtools");
+    });
   });
 
-  test("renders the query string", () => {
-    client.writeQuery({
-      query: GET_QUERIES,
-      data: {
-        client: {
-          __typename: "Client",
-          id: "1",
-          queries: {
-            __typename: "ClientQueries",
-            total: queries.length,
-            items: queries,
-          },
-        },
-      },
-    });
+  test("renders the query string", async () => {
+    setup();
 
     renderWithApolloClient(<Queries clientId="1" explorerIFrame={null} />);
 
-    expect(screen.getByTestId("query")).toHaveTextContent(
-      queries[0].queryString
-    );
+    await waitFor(() => {
+      expect(screen.getByTestId("query")).toHaveTextContent(
+        print(defaultQueries[0].document)
+      );
+    });
   });
 
   test("can copy the query string", async () => {
     window.prompt = jest.fn();
-    client.writeQuery({
-      query: GET_QUERIES,
-      data: {
-        client: {
-          __typename: "Client",
-          id: "1",
-          queries: {
-            __typename: "ClientQueries",
-            total: queries.length,
-            items: queries,
-          },
-        },
-      },
-    });
+    setup();
 
     const { user } = renderWithApolloClient(
       <Queries clientId="1" explorerIFrame={null} />
     );
 
-    await user.click(within(screen.getByTestId("query")).getByText("Copy"));
-    expect(window.prompt).toBeCalledWith(
+    await waitFor(() => {
+      expect(
+        within(screen.getByTestId("main")).getByTestId("title")
+      ).toHaveTextContent("(anonymous)");
+    });
+
+    await act(() =>
+      user.click(within(screen.getByTestId("query")).getByText("Copy"))
+    );
+
+    expect(window.prompt).toHaveBeenCalledWith(
       "Copy to clipboard: Ctrl+C, Enter",
-      queries[0].queryString
+      print(defaultQueries[0].document)
     );
   });
 
   test("renders the query data", async () => {
-    client.writeQuery({
-      query: GET_QUERIES,
-      data: {
-        client: {
-          __typename: "Client",
-          id: "1",
-          queries: {
-            __typename: "ClientQueries",
-            total: 1,
-            items: [
-              {
-                __typename: "WatchedQuery",
-                id: "1",
-                queryString:
-                  "query GetColor($hex: String!) { color(hex: $hex) { name }}",
-                name: "GetColor",
-                variables: { hex: "#000" },
-                cachedData: { color: { name: "black" } },
-                options: { fetchPolicy: "network-only" },
-                pollInterval: null,
-                error: null,
-                networkStatus: NetworkStatus.ready,
-              },
-            ],
-          },
-        },
+    setup([
+      {
+        id: "1",
+        document: gql`
+          query GetColor($hex: String!) {
+            color(hex: $hex) {
+              name
+            }
+          }
+        `,
+        variables: { hex: "#000" },
+        cachedData: { color: { name: "black" } },
+        options: { fetchPolicy: "network-only" },
+        networkStatus: NetworkStatus.ready,
       },
-    });
+    ]);
 
     const { user } = renderWithApolloClient(
       <Queries clientId="1" explorerIFrame={null} />
@@ -190,9 +178,12 @@ describe("<Queries />", () => {
     const variablesPanel = within(screen.getByTestId("main")).getByRole(
       "tabpanel"
     );
-    expect(
-      within(variablesPanel).getByText((content) => content.includes("#000"))
-    ).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(
+        within(variablesPanel).getByText((content) => content.includes("#000"))
+      ).toBeInTheDocument();
+    });
 
     const cachedDataTab = screen.getByText("Cached Data");
     expect(cachedDataTab).toBeInTheDocument();
@@ -207,42 +198,41 @@ describe("<Queries />", () => {
 
   test("can copy the query data", async () => {
     window.prompt = jest.fn();
-    const query = {
-      __typename: "WatchedQuery",
+    const query: QueryInfo = {
       id: "1",
-      queryString: "query GetColor($hex: String!) { color(hex: $hex) { name }}",
-      name: "GetColor",
+      document: gql`
+        query GetColor($hex: String!) {
+          color(hex: $hex) {
+            name
+          }
+        }
+      `,
       variables: { hex: "#000" },
       cachedData: { color: { name: "black" } },
       options: { fetchPolicy: "network-only" },
-      pollInterval: null,
-      error: null,
       networkStatus: NetworkStatus.ready,
-    } satisfies GetQueries["client"]["queries"]["items"][number];
+    };
 
-    client.writeQuery({
-      query: GET_QUERIES,
-      data: {
-        client: {
-          __typename: "Client",
-          id: "1",
-          queries: {
-            __typename: "ClientQueries",
-            total: 1,
-            items: [query],
-          },
-        },
-      },
-    });
+    setup([query]);
 
     const { user } = renderWithApolloClient(
       <Queries clientId="1" explorerIFrame={null} />
     );
 
     const copyButton = within(screen.getByRole("tablist")).getByRole("button");
+    const variablesPanel = within(screen.getByTestId("main")).getByRole(
+      "tabpanel"
+    );
+
+    await waitFor(() => {
+      expect(
+        within(variablesPanel).getByText((content) => content.includes("#000"))
+      ).toBeInTheDocument();
+    });
+
     await act(() => user.click(copyButton));
 
-    expect(window.prompt).toBeCalledWith(
+    expect(window.prompt).toHaveBeenCalledWith(
       "Copy to clipboard: Ctrl+C, Enter",
       JSON.stringify(query.variables)
     );
@@ -251,7 +241,7 @@ describe("<Queries />", () => {
 
     await act(() => user.click(cachedDataTab));
     await act(() => user.click(copyButton));
-    expect(window.prompt).toBeCalledWith(
+    expect(window.prompt).toHaveBeenCalledWith(
       "Copy to clipboard: Ctrl+C, Enter",
       JSON.stringify(query.cachedData)
     );
