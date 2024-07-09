@@ -12,7 +12,7 @@ import ColorLookup from "./ColorLookup";
 import "./App.css";
 
 function App() {
-  const [clients, setClients] = useState(() => [createClient()]);
+  const [clients, setClients] = useState(() => [createClient("Root client")]);
   const [selectedClientIndex, setSelectedClientIndex] = useState(0);
   let client = clients[selectedClientIndex];
 
@@ -22,7 +22,7 @@ function App() {
         <h1>Client was terminated</h1>
         <button
           onClick={() => {
-            setClients([createClient()]);
+            setClients([createClient("Root client")]);
           }}
         >
           Recreate client
@@ -59,15 +59,25 @@ function App() {
                   </option>
                 ))}
               </select>
-              <button onClick={() => setClients((c) => [...c, createClient()])}>
+              <button
+                onClick={() =>
+                  setClients((c) => [
+                    ...c,
+                    createClient(`Added client ${c.length}`),
+                  ])
+                }
+              >
                 Add client
+              </button>
+              <button onClick={() => setClients((c) => [...c, createClient()])}>
+                Add anonymous client
               </button>
               <button
                 onClick={() => {
                   client.stop();
                   setClients((c) => [
                     ...c.slice(0, selectedClientIndex),
-                    createClient(),
+                    createClient(`Recreated client ${selectedClientIndex}`),
                     ...c.slice(selectedClientIndex + 1),
                   ]);
                 }}
@@ -98,7 +108,7 @@ function App() {
   );
 }
 
-function createClient() {
+function createClient(name) {
   return new ApolloClient({
     cache: new InMemoryCache({
       typePolicies: {
@@ -121,7 +131,10 @@ function createClient() {
       },
     }),
     uri: "http://localhost:4000",
-    connectToDevTools: true,
+    devtools: {
+      enabled: true,
+      name,
+    },
   });
 }
 
