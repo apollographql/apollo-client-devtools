@@ -85,6 +85,11 @@ export const devtoolsMachine = setup({
         clientNotFound: "notFound",
       },
       entry: ["connectToClient", "closeModal"],
+      after: {
+        connectTimeout: {
+          target: "notFound",
+        },
+      },
     },
     connected: {
       on: {
