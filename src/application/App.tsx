@@ -109,6 +109,8 @@ export const App = () => {
     })
   );
 
+  const modalSnapshot = snapshot.children.notFoundModal!.getSnapshot();
+
   useActorEvent("connectToDevtools", () => {
     send({ type: "connect" });
   });
@@ -167,12 +169,14 @@ export const App = () => {
     setSelectedClientId(clientIds[0]);
   }
 
+  console.log(snapshot.children.notFoundModal);
+
   return (
     <>
       <SettingsModal open={settingsOpen} onOpen={setSettingsOpen} />
       <ClientNotFoundModal
-        open={clientNotFoundModalOpen}
-        onClose={() => setClientNotFoundModalOpen(false)}
+        open={modalSnapshot.value === "open"}
+        onClose={() => send({ type: "closeModal" })}
         onRetry={() => {
           send({ type: "retry" });
           setClientNotFoundModalOpen(false);

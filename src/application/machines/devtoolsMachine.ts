@@ -1,12 +1,14 @@
-import { setup } from "xstate";
+import { setup, spawnChild, sendTo } from "xstate";
 import { BannerAlert } from "../components/BannerAlert";
+import { modalMachine } from "./modalMachine";
 
 type Events =
   | { type: "connect" }
   | { type: "timeout" }
   | { type: "disconnect" }
   | { type: "clientNotFound" }
-  | { type: "retry" };
+  | { type: "retry" }
+  | { type: "closeModal" };
 
 export type StateValues =
   | "initialized"
@@ -23,11 +25,15 @@ function throwIfNotOverridden(name: string) {
 }
 
 export const devtoolsMachine = setup({
+  actors: {
+    modal: modalMachine,
+  },
   types: {
     events: {} as Events,
   },
   delays: {
-    connectTimeout: 10_000,
+    // connectTimeout: 10_000,
+    connectTimeout: 1_000,
   },
   actions: {
     connectToClient: throwIfNotOverridden("connectToClient"),
@@ -51,7 +57,18 @@ export const devtoolsMachine = setup({
     },
   },
 }).createMachine({
+  id: "devtools",
   initial: "initialized",
+  // entry: spawnChild("modal", { id: "notFoundModal" }),
+  invoke: {
+    src: "modal",
+    id: "notFoundModal",
+  },
+  on: {
+    closeModal: {
+      actions: sendTo("notFoundModal", { type: "close" }),
+    },
+  },
   states: {
     initialized: {
       on: {
@@ -71,13 +88,13 @@ export const devtoolsMachine = setup({
         connect: "connected",
         clientNotFound: "notFound",
       },
-      entry: "connectToClient",
+      entry: ["connectToClient", sendTo("notFoundModal", { type: "close" })],
     },
     connected: {
       on: {
         disconnect: "disconnected",
       },
-      entry: "notifyConnected",
+      entry: ["notifyConnected", sendTo("notFoundModal", { type: "close" })],
       after: {
         2500: {
           actions: "closeBanner",
@@ -105,7 +122,7 @@ export const devtoolsMachine = setup({
         retry: "retrying",
         connect: "connected",
       },
-      entry: "notifyNotFound",
+      entry: ["notifyNotFound", sendTo("notFoundModal", { type: "open" })],
     },
   },
 });

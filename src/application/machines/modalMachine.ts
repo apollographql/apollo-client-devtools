@@ -1,4 +1,4 @@
-import { setup } from "xstate";
+import { log, setup } from "xstate";
 
 type Events = { type: "open" } | { type: "close" };
 
@@ -7,17 +7,23 @@ export const modalMachine = setup({
     events: {} as Events,
   },
 }).createMachine({
+  id: "modal",
   initial: "closed",
   states: {
     open: {
       on: {
-        close: "closed",
+        close: {
+          target: "closed",
+          actions: log("close"),
+        },
       },
+      entry: [({ self }) => console.log("open", self.id, self)],
     },
     closed: {
       on: {
-        open: "open",
+        open: { target: "open", actions: log("open") },
       },
+      entry: [({ self }) => console.log("closed", self.id, self)],
     },
   },
 });
