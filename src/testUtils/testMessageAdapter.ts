@@ -42,3 +42,11 @@ export function createTestAdapter(): TestAdapter {
 
   return adapter;
 }
+
+export function createTestAdapterBridge(
+  adapter1: TestAdapter,
+  adapter2: TestAdapter
+) {
+  adapter1.proxyTo(adapter2);
+  adapter2.proxyTo(adapter1);
+}
