@@ -31,7 +31,7 @@ enum QueryTabs {
   Options = "Options",
 }
 
-const GET_QUERIES: TypedDocumentNode<
+export const GET_QUERIES: TypedDocumentNode<
   GetWatchedQueries,
   GetWatchedQueriesVariables
 > = gql`
