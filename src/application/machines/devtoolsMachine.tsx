@@ -12,14 +12,6 @@ type Events =
   | { type: "retry" }
   | { type: "closeModal" };
 
-export type StateValues =
-  | "initialized"
-  | "retrying"
-  | "connected"
-  | "disconnected"
-  | "timedout"
-  | "notFound";
-
 export const devtoolsMachine = setup({
   types: {
     context: {} as { modalOpen: boolean },
