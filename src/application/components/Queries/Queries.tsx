@@ -9,10 +9,7 @@ import IconTime from "@apollo/icons/default/IconTime.svg";
 
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { RunInExplorerButton } from "./RunInExplorerButton";
-import type {
-  GetWatchedQueries,
-  GetWatchedQueriesVariables,
-} from "../../types/gql";
+import type { GetQueries, GetQueriesVariables } from "../../types/gql";
 import { Tabs } from "../Tabs";
 import { JSONTreeViewer } from "../JSONTreeViewer";
 import { QueryLayout } from "../QueryLayout";
@@ -31,34 +28,32 @@ enum QueryTabs {
   Options = "Options",
 }
 
-export const GET_QUERIES: TypedDocumentNode<
-  GetWatchedQueries,
-  GetWatchedQueriesVariables
-> = gql`
-  query GetWatchedQueries($clientId: ID!) {
-    client(id: $clientId) {
-      id
-      queries {
-        total
-        items {
-          id
-          name
-          queryString
-          variables
-          cachedData
-          options
-          networkStatus
-          pollInterval
-          error {
-            ...ApolloErrorAlertDisclosurePanel_error
+export const GET_QUERIES: TypedDocumentNode<GetQueries, GetQueriesVariables> =
+  gql`
+    query GetQueries($clientId: ID!) {
+      client(id: $clientId) {
+        id
+        queries {
+          total
+          items {
+            id
+            name
+            queryString
+            variables
+            cachedData
+            options
+            networkStatus
+            pollInterval
+            error {
+              ...ApolloErrorAlertDisclosurePanel_error
+            }
           }
         }
       }
     }
-  }
 
-  ${ApolloErrorAlertDisclosurePanel.fragments.error}
-`;
+    ${ApolloErrorAlertDisclosurePanel.fragments.error}
+  `;
 
 interface QueriesProps {
   clientId: string | undefined;

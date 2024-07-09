@@ -228,11 +228,11 @@ export type GetMutations = {
   };
 };
 
-export type GetWatchedQueriesVariables = Exact<{
+export type GetQueriesVariables = Exact<{
   clientId: Scalars["ID"]["input"];
 }>;
 
-export type GetWatchedQueries = {
+export type GetQueries = {
   client: {
     __typename: "Client";
     id: string;
