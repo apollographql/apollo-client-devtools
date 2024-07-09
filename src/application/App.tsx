@@ -86,8 +86,6 @@ export const App = () => {
           getPanelActor(window).send({ type: "connectToClient" });
         },
         notifyNotFound: () => {
-          setClientNotFoundModalOpen(true);
-
           BannerAlert.show({
             type: "error",
             content: (
@@ -108,8 +106,6 @@ export const App = () => {
       },
     })
   );
-
-  const modalSnapshot = snapshot.children.notFoundModal!.getSnapshot();
 
   useActorEvent("connectToDevtools", () => {
     send({ type: "connect" });
@@ -135,9 +131,7 @@ export const App = () => {
   });
 
   useEffect(() => {
-    if (snapshot.value === "connected") {
-      setClientNotFoundModalOpen(false);
-    } else {
+    if (snapshot.value !== "connected") {
       apolloClient.resetStore();
     }
   }, [apolloClient, snapshot.value]);
@@ -147,7 +141,6 @@ export const App = () => {
   const [selectedClientId, setSelectedClientId] = useState<string | undefined>(
     data.clients[0]?.id
   );
-  const [clientNotFoundModalOpen, setClientNotFoundModalOpen] = useState(false);
   const selected = useReactiveVar<Screens>(currentScreen);
   const [embeddedExplorerIFrame, setEmbeddedExplorerIFrame] =
     useState<HTMLIFrameElement | null>(null);
@@ -169,18 +162,13 @@ export const App = () => {
     setSelectedClientId(clientIds[0]);
   }
 
-  console.log(snapshot.children.notFoundModal);
-
   return (
     <>
       <SettingsModal open={settingsOpen} onOpen={setSettingsOpen} />
       <ClientNotFoundModal
-        open={modalSnapshot.value === "open"}
+        open={snapshot.context.modalOpen}
         onClose={() => send({ type: "closeModal" })}
-        onRetry={() => {
-          send({ type: "retry" });
-          setClientNotFoundModalOpen(false);
-        }}
+        onRetry={() => send({ type: "retry" })}
       />
       <BannerAlert />
       <Tabs

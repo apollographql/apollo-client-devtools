@@ -1,6 +1,5 @@
-import { setup, spawnChild, sendTo } from "xstate";
+import { setup, sendTo, assign } from "xstate";
 import { BannerAlert } from "../components/BannerAlert";
-import { modalMachine } from "./modalMachine";
 
 type Events =
   | { type: "connect" }
@@ -25,17 +24,16 @@ function throwIfNotOverridden(name: string) {
 }
 
 export const devtoolsMachine = setup({
-  actors: {
-    modal: modalMachine,
-  },
   types: {
+    context: {} as { modalOpen: boolean },
     events: {} as Events,
   },
   delays: {
-    // connectTimeout: 10_000,
-    connectTimeout: 1_000,
+    connectTimeout: 10_000,
   },
   actions: {
+    openModal: assign({ modalOpen: true }),
+    closeModal: assign({ modalOpen: false }),
     connectToClient: throwIfNotOverridden("connectToClient"),
     closeBanner: BannerAlert.close,
     notifyNotFound: throwIfNotOverridden("notifyNotFound"),
@@ -59,14 +57,12 @@ export const devtoolsMachine = setup({
 }).createMachine({
   id: "devtools",
   initial: "initialized",
-  // entry: spawnChild("modal", { id: "notFoundModal" }),
-  invoke: {
-    src: "modal",
-    id: "notFoundModal",
+  context: {
+    modalOpen: false,
   },
   on: {
     closeModal: {
-      actions: sendTo("notFoundModal", { type: "close" }),
+      actions: "closeModal",
     },
   },
   states: {
@@ -88,13 +84,13 @@ export const devtoolsMachine = setup({
         connect: "connected",
         clientNotFound: "notFound",
       },
-      entry: ["connectToClient", sendTo("notFoundModal", { type: "close" })],
+      entry: ["connectToClient", "closeModal"],
     },
     connected: {
       on: {
         disconnect: "disconnected",
       },
-      entry: ["notifyConnected", sendTo("notFoundModal", { type: "close" })],
+      entry: ["notifyConnected", "closeModal"],
       after: {
         2500: {
           actions: "closeBanner",
@@ -122,7 +118,7 @@ export const devtoolsMachine = setup({
         retry: "retrying",
         connect: "connected",
       },
-      entry: ["notifyNotFound", sendTo("notFoundModal", { type: "open" })],
+      entry: ["notifyNotFound", "openModal"],
     },
   },
 });
