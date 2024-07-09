@@ -1,5 +1,4 @@
 import { createMachine } from "xstate";
-import { fromTimeout } from "../actors/timeoutActor";
 import { BannerAlert } from "../components/BannerAlert";
 
 type Events =
@@ -40,10 +39,10 @@ export const devtoolsMachine = createMachine(
           clientNotFound: "notFound",
         },
         entry: "connectToClient",
-        invoke: {
-          src: fromTimeout(),
-          input: 10_000,
-          onDone: "notFound",
+        after: {
+          connectToClientTimeout: {
+            target: "notFound",
+          },
         },
       },
       retrying: {
@@ -58,10 +57,8 @@ export const devtoolsMachine = createMachine(
           disconnect: "disconnected",
         },
         entry: "notifyConnected",
-        invoke: {
-          src: fromTimeout(),
-          input: 2500,
-          onDone: {
+        after: {
+          2500: {
             actions: "closeBanner",
           },
         },
@@ -73,10 +70,10 @@ export const devtoolsMachine = createMachine(
           clientNotFound: "notFound",
         },
         entry: "notifyDisconnected",
-        invoke: {
-          src: fromTimeout(),
-          input: 10_000,
-          onDone: "notFound",
+        after: {
+          connectToClientTimeout: {
+            target: "notFound",
+          },
         },
       },
       timedout: {
@@ -92,6 +89,9 @@ export const devtoolsMachine = createMachine(
     },
   },
   {
+    delays: {
+      connectToClientTimeout: 10_000,
+    },
     actions: {
       closeBanner: BannerAlert.close,
       notifyDisconnected: () => {
