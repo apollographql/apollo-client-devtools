@@ -191,7 +191,7 @@ export const App = () => {
             {clients.length > 1 && (
               <Select
                 size="sm"
-                className="w-60"
+                className="w-60 ml-2"
                 value={selectedClientId}
                 onValueChange={setSelectedClientId}
               >
