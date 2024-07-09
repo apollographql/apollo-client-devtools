@@ -1,12 +1,3 @@
-import { createRpcClient } from "../../../../extension/rpc";
-import { createTestAdapter } from "../../../../testUtils/testMessageAdapter";
-
-const mockAdapter = createTestAdapter();
-
-jest.mock("../../../../extension/devtools/panelRpcClient.ts", () => ({
-  getRpcClient: () => createRpcClient(mockAdapter),
-}));
-
 import React from "react";
 import { screen, within, waitFor, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -17,6 +8,12 @@ import { Queries } from "../Queries";
 import { gql, NetworkStatus } from "@apollo/client";
 import { print } from "graphql";
 import type { QueryInfo } from "../../../../extension/tab/helpers";
+import { getRpcClient } from "../../../../extension/devtools/panelRpcClient";
+import type { GetRpcClientMock } from "../../../../extension/devtools/__mocks__/panelRpcClient";
+
+jest.mock("../../../../extension/devtools/panelRpcClient");
+
+const getRpcClientMock = getRpcClient as GetRpcClientMock;
 
 describe("<Queries />", () => {
   const defaultQueries: QueryInfo[] = [
@@ -43,8 +40,8 @@ describe("<Queries />", () => {
   ];
 
   function setup(queries: QueryInfo[] = defaultQueries) {
-    mockAdapter.handleRpcRequest("getQueries", () => queries);
-    mockAdapter.handleRpcRequest("getClient", (id) => ({
+    getRpcClientMock.__adapter.handleRpcRequest("getQueries", () => queries);
+    getRpcClientMock.__adapter.handleRpcRequest("getClient", (id) => ({
       id,
       name: undefined,
       version: "3.10.0",
@@ -55,7 +52,7 @@ describe("<Queries />", () => {
 
   beforeEach(() => {
     client.clearStore();
-    mockAdapter.mockClear();
+    getRpcClientMock.__adapter.mockClear();
   });
 
   test("queries render in the sidebar", async () => {
