@@ -64,7 +64,9 @@ export const Select = ({
         disabled={disabled}
         className={twMerge(select({ size }), className)}
       >
-        <SelectBase.Value placeholder={placeholder ?? "Select..."} />
+        <span className="overflow-hidden text-ellipsis whitespace-nowrap">
+          <SelectBase.Value placeholder={placeholder ?? "Select..."} />
+        </span>
         <SelectBase.Icon className="group-data-state-open:rotate-180 transition-transform">
           <IconChevronDown className="w-4" />
         </SelectBase.Icon>
