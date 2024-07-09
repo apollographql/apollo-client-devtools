@@ -5,7 +5,6 @@ import {
   gql,
   useQuery,
   useSuspenseQuery,
-  useApolloClient,
 } from "@apollo/client";
 import { useMachine } from "@xstate/react";
 
@@ -71,8 +70,8 @@ ${SECTIONS.devtoolsVersion}
 `;
 
 export const App = () => {
-  const apolloClient = useApolloClient();
   const [snapshot, send] = useMachine(devtoolsMachine);
+  const { data, client: apolloClient } = useSuspenseQuery(APP_QUERY);
 
   useActorEvent("connectToDevtools", () => {
     send({ type: "connect" });
@@ -104,7 +103,6 @@ export const App = () => {
   }, [apolloClient, snapshot.value]);
 
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const { data } = useSuspenseQuery(APP_QUERY);
   const [selectedClientId, setSelectedClientId] = useState<string | undefined>(
     data.clients[0]?.id
   );
