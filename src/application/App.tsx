@@ -43,6 +43,7 @@ const APP_QUERY: TypedDocumentNode<AppQuery, AppQueryVariables> = gql`
   query AppQuery {
     clients {
       id
+      name
     }
   }
 `;
@@ -197,7 +198,7 @@ export const App = () => {
               >
                 {clients.map((client) => (
                   <Select.Option key={client.id} value={client.id}>
-                    Apollo Client {client.id}
+                    {client.name ?? `Apollo client ${client.id}`}
                   </Select.Option>
                 ))}
               </Select>
