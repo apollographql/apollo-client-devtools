@@ -27,7 +27,7 @@ export const devtoolsMachine = setup({
     events: {} as Events,
   },
   delays: {
-    connectToClientTimeout: 10_000,
+    connectTimeout: 10_000,
   },
   actions: {
     connectToClient: throwIfNotOverridden("connectToClient"),
@@ -61,7 +61,7 @@ export const devtoolsMachine = setup({
       },
       entry: "connectToClient",
       after: {
-        connectToClientTimeout: {
+        connectTimeout: {
           target: "notFound",
         },
       },
@@ -92,7 +92,7 @@ export const devtoolsMachine = setup({
       },
       entry: "notifyDisconnected",
       after: {
-        connectToClientTimeout: {
+        connectTimeout: {
           target: "notFound",
         },
       },
