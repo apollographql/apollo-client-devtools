@@ -1,4 +1,4 @@
-import { setup, sendTo, assign } from "xstate";
+import { setup, assign } from "xstate";
 import { BannerAlert } from "../components/BannerAlert";
 
 type Events =
