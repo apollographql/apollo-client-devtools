@@ -77,14 +77,6 @@ export const App = () => {
   const [snapshot, send] = useMachine(
     devtoolsMachine.provide({
       actions: {
-        connectToClient: () => {
-          BannerAlert.show({
-            type: "loading",
-            content: "Looking for client...",
-          });
-
-          getPanelActor(window).send({ type: "connectToClient" });
-        },
         notifyNotFound: () => {
           BannerAlert.show({
             type: "error",

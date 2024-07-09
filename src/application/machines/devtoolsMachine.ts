@@ -1,5 +1,6 @@
 import { setup, assign } from "xstate";
 import { BannerAlert } from "../components/BannerAlert";
+import { getPanelActor } from "../../extension/devtools/panelActor";
 
 type Events =
   | { type: "connect" }
@@ -34,7 +35,14 @@ export const devtoolsMachine = setup({
   actions: {
     openModal: assign({ modalOpen: true }),
     closeModal: assign({ modalOpen: false }),
-    connectToClient: throwIfNotOverridden("connectToClient"),
+    connectToClient: () => {
+      BannerAlert.show({
+        type: "loading",
+        content: "Looking for client...",
+      });
+
+      getPanelActor(window).send({ type: "connectToClient" });
+    },
     closeBanner: BannerAlert.close,
     notifyNotFound: throwIfNotOverridden("notifyNotFound"),
     notifyDisconnected: () => {
