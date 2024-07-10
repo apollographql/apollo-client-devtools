@@ -8,6 +8,11 @@ import type {
   GraphQLScalarTypeConfig,
 } from "graphql";
 import type { ApolloClientInfo } from "../../types.ts";
+import type {
+  SerializedApolloError as RpcSerializedApolloError,
+  SerializedError as RpcSerializedError,
+} from "../../extension/tab/helpers";
+import type { GraphQLFormattedError } from "graphql";
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -252,7 +257,7 @@ export type DirectiveResolverFn<
 
 /** Mapping of union types */
 export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = {
-  WatchedMutationError: SerializedApolloError | SerializedError;
+  WatchedMutationError: RpcSerializedApolloError | RpcSerializedError;
 };
 
 /** Mapping between all available schema types and the resolvers types */
@@ -270,9 +275,9 @@ export type ResolversTypes = {
   Query: ResolverTypeWrapper<never>;
   QueryData: ResolverTypeWrapper<Scalars["QueryData"]["output"]>;
   QueryOptions: ResolverTypeWrapper<Scalars["QueryOptions"]["output"]>;
-  SerializedApolloError: ResolverTypeWrapper<SerializedApolloError>;
-  SerializedError: ResolverTypeWrapper<SerializedError>;
-  SerializedGraphQLError: ResolverTypeWrapper<SerializedGraphQlError>;
+  SerializedApolloError: ResolverTypeWrapper<RpcSerializedApolloError>;
+  SerializedError: ResolverTypeWrapper<RpcSerializedError>;
+  SerializedGraphQLError: ResolverTypeWrapper<GraphQLFormattedError>;
   String: ResolverTypeWrapper<Scalars["String"]["output"]>;
   Variables: ResolverTypeWrapper<Scalars["Variables"]["output"]>;
   WatchedMutation: ResolverTypeWrapper<
@@ -283,8 +288,16 @@ export type ResolversTypes = {
   WatchedMutationError: ResolverTypeWrapper<
     ResolversUnionTypes<ResolversTypes>["WatchedMutationError"]
   >;
-  WatchedQueries: ResolverTypeWrapper<WatchedQueries>;
-  WatchedQuery: ResolverTypeWrapper<WatchedQuery>;
+  WatchedQueries: ResolverTypeWrapper<
+    Omit<WatchedQueries, "queries"> & {
+      queries: Array<ResolversTypes["WatchedQuery"]>;
+    }
+  >;
+  WatchedQuery: ResolverTypeWrapper<
+    Omit<WatchedQuery, "error"> & {
+      error?: Maybe<ResolversTypes["SerializedApolloError"]>;
+    }
+  >;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -302,17 +315,21 @@ export type ResolversParentTypes = {
   Query: never;
   QueryData: Scalars["QueryData"]["output"];
   QueryOptions: Scalars["QueryOptions"]["output"];
-  SerializedApolloError: SerializedApolloError;
-  SerializedError: SerializedError;
-  SerializedGraphQLError: SerializedGraphQlError;
+  SerializedApolloError: RpcSerializedApolloError;
+  SerializedError: RpcSerializedError;
+  SerializedGraphQLError: GraphQLFormattedError;
   String: Scalars["String"]["output"];
   Variables: Scalars["Variables"]["output"];
   WatchedMutation: Omit<WatchedMutation, "error"> & {
     error?: Maybe<ResolversParentTypes["WatchedMutationError"]>;
   };
   WatchedMutationError: ResolversUnionTypes<ResolversParentTypes>["WatchedMutationError"];
-  WatchedQueries: WatchedQueries;
-  WatchedQuery: WatchedQuery;
+  WatchedQueries: Omit<WatchedQueries, "queries"> & {
+    queries: Array<ResolversParentTypes["WatchedQuery"]>;
+  };
+  WatchedQuery: Omit<WatchedQuery, "error"> & {
+    error?: Maybe<ResolversParentTypes["SerializedApolloError"]>;
+  };
 };
 
 export interface CacheScalarConfig

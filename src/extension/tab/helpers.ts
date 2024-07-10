@@ -15,7 +15,6 @@ import { getPrivateAccess } from "../../privateAccess";
 import { getOperationName } from "@apollo/client/utilities";
 import { pick } from "../../application/utilities/pick";
 import type { GraphQLFormattedError } from "graphql";
-import type { DeepWriteable } from "../../application/types/utils";
 
 export type QueryOptions = Pick<
   WatchQueryOptions,
@@ -34,7 +33,7 @@ export interface SerializedApolloError extends Pick<ApolloError, "message"> {
   name: "ApolloError";
   clientErrors: string[];
   networkError?: SerializedError;
-  graphQLErrors: Array<DeepWriteable<GraphQLFormattedError>>;
+  graphQLErrors: ReadonlyArray<GraphQLFormattedError>;
   protocolErrors: string[];
 }
 
@@ -104,9 +103,7 @@ function serializeApolloError(error: ApolloError): SerializedApolloError {
       ? serializeError(error.networkError)
       : undefined,
     message: error.message,
-    graphQLErrors: error.graphQLErrors as Array<
-      DeepWriteable<GraphQLFormattedError>
-    >,
+    graphQLErrors: error.graphQLErrors,
     protocolErrors: error.protocolErrors.map((e) => e.message),
   };
 }
