@@ -104,7 +104,9 @@ function serializeApolloError(error: ApolloError): SerializedApolloError {
       ? serializeError(error.networkError)
       : undefined,
     message: error.message,
-    graphQLErrors: error.graphQLErrors as GraphQLFormattedError[],
+    graphQLErrors: error.graphQLErrors as Array<
+      DeepWriteable<GraphQLFormattedError>
+    >,
     protocolErrors: error.protocolErrors.map((e) => e.message),
   };
 }
