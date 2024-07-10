@@ -43,7 +43,7 @@ export interface SerializedError {
   stack?: string;
 }
 
-export type QueryInfo = {
+export type QueryDetails = {
   document: DocumentNode;
   variables?: Variables;
   cachedData?: QueryData; // Not a member of the actual Apollo Client QueryInfo type
@@ -53,7 +53,7 @@ export type QueryInfo = {
   pollInterval?: number;
 };
 
-export type MutationInfo = {
+export type MutationDetails = {
   document: DocumentNode;
   variables?: Variables;
   loading: boolean;
@@ -63,8 +63,8 @@ export type MutationInfo = {
 // Transform the map of observable queries into a list of QueryInfo objects usable by DevTools
 export function getQueries(
   observableQueries: Map<string, ObservableQuery>
-): QueryInfo[] {
-  const queries: QueryInfo[] = [];
+): QueryDetails[] {
+  const queries: QueryDetails[] = [];
   if (observableQueries) {
     observableQueries.forEach((oc) => {
       const observableQuery = getPrivateAccess(oc);
@@ -145,8 +145,8 @@ export function getQueriesLegacy(
       networkStatus?: NetworkStatus;
     }
   >
-): QueryInfo[] {
-  let queries: QueryInfo[] = [];
+): QueryDetails[] {
+  let queries: QueryDetails[] = [];
   if (queryMap) {
     queries = [...queryMap.values()].map(
       ({ document, variables, diff, networkStatus }) => ({
@@ -169,7 +169,7 @@ interface MutationStoreValue {
 
 export function getMutations(
   mutationsObj: Record<string, MutationStoreValue>
-): MutationInfo[] {
+): MutationDetails[] {
   const keys = Object.keys(mutationsObj);
 
   if (keys.length === 0) {

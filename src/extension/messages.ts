@@ -2,7 +2,7 @@ import type { ExplorerResponse, SafeAny } from "../types";
 import type { StateValues } from "../application/machines";
 import type { JSONObject } from "../application/types/json";
 import type { FetchPolicy, DocumentNode } from "@apollo/client";
-import type { MutationInfo, QueryInfo } from "./tab/helpers";
+import type { MutationDetails, QueryDetails } from "./tab/helpers";
 
 export interface MessageFormat {
   type: string;
@@ -85,8 +85,8 @@ type ExplorerSubscriptionTerminationMessage = {
 
 interface ClientContext {
   clientVersion: string | null;
-  queries: QueryInfo[];
-  mutations: MutationInfo[];
+  queries: QueryDetails[];
+  mutations: MutationDetails[];
   cache: JSONObject;
 }
 

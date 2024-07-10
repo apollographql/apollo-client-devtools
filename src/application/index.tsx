@@ -27,8 +27,8 @@ import type {
   SerializedError as GQLSerializedError,
 } from "./types/gql";
 import type {
-  MutationInfo,
-  QueryInfo,
+  MutationDetails,
+  QueryDetails,
   SerializedApolloError,
   SerializedError,
 } from "../extension/tab/helpers";
@@ -172,7 +172,7 @@ export const GET_MUTATIONS: TypedDocumentNode<
 `;
 
 export function getQueryData(
-  query: QueryInfo,
+  query: QueryDetails,
   key: number
 ): WatchedQuery | undefined {
   // TODO: The current designs do not account for non-cached data.
@@ -198,7 +198,7 @@ export function getQueryData(
 }
 
 export function getMutationData(
-  mutation: MutationInfo,
+  mutation: MutationDetails,
   key: number
 ): WatchedMutation {
   return {
@@ -243,7 +243,7 @@ function toGQLSerializedApolloError(
 }
 
 function getMutationError(
-  error: MutationInfo["error"]
+  error: MutationDetails["error"]
 ): GQLSerializedError | GQLSerializedApolloError | null {
   if (!error) {
     return null;
@@ -261,8 +261,8 @@ export const writeData = ({
   cache,
 }: {
   clientVersion: string | null;
-  queries: QueryInfo[];
-  mutations: MutationInfo[];
+  queries: QueryDetails[];
+  mutations: MutationDetails[];
   cache: JSONObject;
 }) => {
   const filteredQueries = queries.map(getQueryData).filter(Boolean);

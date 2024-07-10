@@ -5,7 +5,10 @@ import { NetworkStatus, gql } from "@apollo/client";
 import matchMediaMock from "../utilities/testing/matchMedia";
 import { Mode, colorTheme } from "../theme";
 import { AppProvider, getQueryData, getMutationData } from "../index";
-import type { MutationInfo, QueryInfo } from "../../extension/tab/helpers";
+import type {
+  MutationDetails,
+  QueryDetails,
+} from "../../extension/tab/helpers";
 import { print, getIntrospectionQuery } from "graphql";
 
 const matchMedia = matchMediaMock();
@@ -28,7 +31,7 @@ describe("<AppProvider />", () => {
 
   describe("getQueryData", () => {
     test("returns expected query data", () => {
-      const queryData: QueryInfo = {
+      const queryData: QueryDetails = {
         document: gql`
           query GetColorByHex {
             someQuery {
@@ -71,7 +74,7 @@ describe("<AppProvider />", () => {
     });
 
     test("ignores IntrospectionQuery", () => {
-      const queryData: QueryInfo = {
+      const queryData: QueryDetails = {
         document: gql(getIntrospectionQuery()),
       };
 
@@ -88,7 +91,7 @@ describe("<AppProvider />", () => {
         }
       `;
 
-      const mutationData: MutationInfo = {
+      const mutationData: MutationDetails = {
         document: mutation,
         variables: {
           color: "#ee82ee",
