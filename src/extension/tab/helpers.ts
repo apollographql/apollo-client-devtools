@@ -101,9 +101,7 @@ function serializeApolloError(error: ApolloError): SerializedApolloError {
       ? serializeError(error.networkError)
       : undefined,
     message: error.message,
-    graphQLErrors: error.graphQLErrors.map((e) =>
-      e.constructor.name === "GraphQLError" ? e.toJSON() : e
-    ),
+    graphQLErrors: error.graphQLErrors as unknown as GraphQLFormattedError[],
     protocolErrors: error.protocolErrors.map((e) => e.message),
   };
 }
