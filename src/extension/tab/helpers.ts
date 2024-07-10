@@ -33,9 +33,7 @@ export interface SerializedApolloError extends Pick<ApolloError, "message"> {
   name: "ApolloError";
   clientErrors: string[];
   networkError?: SerializedError;
-  graphQLErrors: Array<
-    Pick<GraphQLFormattedError, "message" | "path" | "extensions">
-  >;
+  graphQLErrors: Array<GraphQLFormattedError>;
   protocolErrors: string[];
 }
 
