@@ -1,4 +1,3 @@
-import React from "react";
 import { act, screen, within, waitFor } from "@testing-library/react";
 
 import { renderWithApolloClient } from "../../../utilities/testing/renderWithApolloClient";
