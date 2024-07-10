@@ -14,6 +14,7 @@ import { client } from "../../../index";
 import { getRpcClient } from "../../../../extension/devtools/panelRpcClient";
 import type { GetRpcClientMock } from "../../../../extension/devtools/__mocks__/panelRpcClient";
 import type { JSONObject } from "../../Explorer/postMessageHelpers";
+import type { ApolloClientInfo } from "../../../../types";
 
 jest.mock("../../../../extension/devtools/panelRpcClient");
 
@@ -72,15 +73,21 @@ beforeEach(() => {
   testAdapter.mockClear();
 });
 
-function setup(cacheData: JSONObject = CACHE_DATA) {
-  testAdapter.handleRpcRequest("getClient", () => CLIENT_DATA);
-  testAdapter.handleRpcRequest("getCache", () => cacheData);
+function mockRpcRequests({
+  cache = CACHE_DATA,
+  client = CLIENT_DATA,
+}: {
+  cache?: JSONObject;
+  client?: ApolloClientInfo;
+} = {}) {
+  testAdapter.handleRpcRequest("getClient", () => client);
+  testAdapter.handleRpcRequest("getCache", () => cache);
 }
 
 describe("Cache component tests", () => {
   describe("No cache data", () => {
     it("should show no cache data message in sidebar", async () => {
-      setup();
+      mockRpcRequests({ cache: {} });
 
       renderWithApolloClient(<Cache clientId="1" />);
       const main = screen.getByTestId("main");
@@ -92,7 +99,7 @@ describe("Cache component tests", () => {
     });
 
     it("should leave the header blank instead of trying to show a cache ID", async () => {
-      setup({});
+      mockRpcRequests({ cache: {} });
 
       renderWithApolloClient(<Cache clientId="1" />);
       const cacheId = screen.queryByTestId("cache-id");
@@ -105,7 +112,7 @@ describe("Cache component tests", () => {
 
   describe("With cache data", () => {
     it("should show list of root cache ids in the sidebar", async () => {
-      setup();
+      mockRpcRequests();
 
       renderWithApolloClient(<Cache clientId="1" />);
       const sidebar = screen.getByRole("complementary");
@@ -117,7 +124,8 @@ describe("Cache component tests", () => {
     });
 
     it("should show sidebar selected/active cache ID in the header", async () => {
-      setup();
+      mockRpcRequests();
+
       renderWithApolloClient(<Cache clientId="1" />);
 
       const main = screen.getByTestId("main");
@@ -127,11 +135,16 @@ describe("Cache component tests", () => {
       });
     });
 
-    it("should show data for the sidebar selected/active cache ID in main ", () => {
-      setup();
+    it("should show data for the sidebar selected/active cache ID in main ", async () => {
+      mockRpcRequests();
+
       renderWithApolloClient(<Cache clientId="1" />);
+
       const main = screen.getByTestId("main");
-      expect(within(main).getByText("ROOT_QUERY")).toBeInTheDocument();
+
+      await waitFor(() => {
+        expect(within(main).getByText("ROOT_QUERY")).toBeInTheDocument();
+      });
       expect(within(main).getByText("__typename:")).toBeInTheDocument();
       expect(within(main).getByText('"Query"')).toBeInTheDocument();
       expect(within(main).getByText("search:")).toBeInTheDocument();
@@ -149,12 +162,13 @@ describe("Cache component tests", () => {
 
   describe("Search", () => {
     it("filters cache ID's for matches against the keyword", async () => {
-      setup();
+      mockRpcRequests();
+
       const user = userEvent.setup();
       renderWithApolloClient(<Cache clientId="1" />);
 
       const searchInput =
-        screen.getByPlaceholderText<HTMLInputElement>("Search queries");
+        await screen.findByPlaceholderText<HTMLInputElement>("Search queries");
       await act(() => user.type(searchInput, "Result"));
 
       const sidebar = screen.getByRole("complementary");
@@ -177,14 +191,14 @@ describe("Cache component tests", () => {
     });
 
     it("highlights matched substring in cache ID", async () => {
-      setup();
+      mockRpcRequests();
       const selectedClassName =
         "bg-searchHighlight dark:bg-searchHighlight-dark";
       const user = userEvent.setup();
 
       renderWithApolloClient(<Cache clientId="1" />);
 
-      const searchInput = screen.getByPlaceholderText("Search queries");
+      const searchInput = await screen.findByPlaceholderText("Search queries");
       await act(() => user.type(searchInput, "Res"));
 
       const sidebar = screen.getByRole("complementary");
