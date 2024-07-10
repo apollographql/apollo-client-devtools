@@ -44,6 +44,7 @@ export interface SerializedError {
 }
 
 export type QueryDetails = {
+  id: string;
   document: DocumentNode;
   variables?: Variables;
   cachedData?: QueryData; // Not a member of the actual Apollo Client QueryInfo type
@@ -66,7 +67,7 @@ export function getQueries(
 ): QueryDetails[] {
   const queries: QueryDetails[] = [];
   if (observableQueries) {
-    observableQueries.forEach((oc) => {
+    observableQueries.forEach((oc, queryId) => {
       const observableQuery = getPrivateAccess(oc);
       const { document, variables } = observableQuery.queryInfo;
       const diff = observableQuery.queryInfo.getDiff();
@@ -80,6 +81,7 @@ export function getQueries(
       const { networkStatus, error } = observableQuery.getCurrentResult(false);
 
       queries.push({
+        id: queryId,
         document,
         variables,
         cachedData: diff.result,
@@ -148,8 +150,9 @@ export function getQueriesLegacy(
 ): QueryDetails[] {
   let queries: QueryDetails[] = [];
   if (queryMap) {
-    queries = [...queryMap.values()].map(
-      ({ document, variables, diff, networkStatus }) => ({
+    queries = [...queryMap.entries()].map(
+      ([queryId, { document, variables, diff, networkStatus }]) => ({
+        id: queryId,
         document,
         variables,
         cachedData: diff?.result,

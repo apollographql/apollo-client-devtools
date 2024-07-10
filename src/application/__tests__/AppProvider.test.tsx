@@ -32,6 +32,7 @@ describe("<AppProvider />", () => {
   describe("getQueryData", () => {
     test("returns expected query data", () => {
       const queryData: QueryDetails = {
+        id: "1",
         document: gql`
           query GetColorByHex {
             someQuery {
@@ -50,10 +51,10 @@ describe("<AppProvider />", () => {
         networkStatus: NetworkStatus.ready,
       };
 
-      const data = getQueryData(queryData, 0);
+      const data = getQueryData(queryData);
 
       expect(data).toEqual({
-        id: 0,
+        id: 1,
         __typename: "WatchedQuery",
         name: "GetColorByHex",
         queryString:
@@ -75,10 +76,11 @@ describe("<AppProvider />", () => {
 
     test("ignores IntrospectionQuery", () => {
       const queryData: QueryDetails = {
+        id: "1",
         document: gql(getIntrospectionQuery()),
       };
 
-      const data = getQueryData(queryData, 0);
+      const data = getQueryData(queryData);
       expect(data).toBeUndefined();
     });
   });
