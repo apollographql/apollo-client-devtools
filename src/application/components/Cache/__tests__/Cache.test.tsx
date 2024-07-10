@@ -17,8 +17,7 @@ import type { JSONObject } from "../../Explorer/postMessageHelpers";
 
 jest.mock("../../../../extension/devtools/panelRpcClient");
 
-const getRpcClientMock = getRpcClient as GetRpcClientMock;
-const testAdapter = getRpcClientMock.__adapter;
+const testAdapter = (getRpcClient as GetRpcClientMock).__adapter;
 
 const CLIENT_DATA = {
   id: "1",
