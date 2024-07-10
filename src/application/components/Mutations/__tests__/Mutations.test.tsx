@@ -1,76 +1,91 @@
 import { act, screen, within, waitFor } from "@testing-library/react";
 
 import { renderWithApolloClient } from "../../../utilities/testing/renderWithApolloClient";
-import { client, GET_MUTATIONS } from "../../../index";
+import { client } from "../../../index";
 import { Mutations } from "../Mutations";
-import type { GetMutations } from "../../../types/gql";
+import { getRpcClient } from "../../../../extension/devtools/panelRpcClient";
+import type { GetRpcClientMock } from "../../../../extension/devtools/__mocks__/panelRpcClient";
+import type { MutationInfo } from "../../../../extension/tab/helpers";
+import { gql } from "@apollo/client";
+import { print } from "graphql";
+
+jest.mock("../../../../extension/devtools/panelRpcClient.ts");
+
+const testAdapter = (getRpcClient as GetRpcClientMock).__adapter;
+
+beforeEach(() => {
+  client.clearStore();
+  testAdapter.mockClear();
+});
 
 describe("<Mutations />", () => {
-  const mutations: GetMutations["mutationLog"]["mutations"] = [
+  const defaultMutations: MutationInfo[] = [
     {
-      id: 0,
-      __typename: "WatchedMutation",
-      name: null,
-      mutationString: "mutation { performTest }",
-      variables: null,
+      document: gql`
+        mutation {
+          performTest
+        }
+      `,
       loading: false,
       error: null,
     },
     {
-      id: 1,
-      __typename: "WatchedMutation",
-      name: "AddColorToFavorites",
-      mutationString: "mutation AddColorToFavorites { addColorToFavorites }",
-      variables: null,
+      document: gql`
+        mutation AddColorToFavorites {
+          addColorToFavorites
+        }
+      `,
       loading: false,
       error: null,
     },
   ];
 
-  beforeEach(() => {
-    client.clearStore();
-  });
+  function mockRpcRequests({
+    mutations = defaultMutations,
+  }: {
+    mutations?: MutationInfo[];
+  } = {}) {
+    testAdapter.handleRpcRequest("getClient", () => ({
+      id: "1",
+      version: "3.10.0",
+      name: undefined,
+      queryCount: 0,
+      mutationCount: 1,
+    }));
+
+    testAdapter.handleRpcRequest("getMutations", () => mutations);
+  }
 
   test("queries render in the sidebar", async () => {
-    client.writeQuery({
-      query: GET_MUTATIONS,
-      data: {
-        mutationLog: {
-          __typename: "MutationLog",
-          mutations,
-          count: mutations.length,
-        },
-      },
-    });
+    mockRpcRequests();
 
-    renderWithApolloClient(<Mutations explorerIFrame={null} />);
+    renderWithApolloClient(<Mutations clientId="1" explorerIFrame={null} />);
 
     const sidebar = screen.getByRole("complementary");
 
-    expect(within(sidebar).getByText("(anonymous)")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(within(sidebar).getByText("(anonymous)")).toBeInTheDocument();
+    });
+
     expect(
       within(sidebar).getByText("AddColorToFavorites")
     ).toBeInTheDocument();
   });
 
   test("renders query name", async () => {
-    client.writeQuery({
-      query: GET_MUTATIONS,
-      data: {
-        mutationLog: {
-          __typename: "MutationLog",
-          mutations,
-          count: mutations.length,
-        },
-      },
-    });
+    mockRpcRequests();
 
     const { user } = renderWithApolloClient(
-      <Mutations explorerIFrame={null} />
+      <Mutations clientId="1" explorerIFrame={null} />
     );
 
     const main = screen.getByTestId("main");
-    expect(within(main).getByTestId("title")).toHaveTextContent("(anonymous)");
+
+    await waitFor(() => {
+      expect(within(main).getByTestId("title")).toHaveTextContent(
+        "(anonymous)"
+      );
+    });
 
     const sidebar = screen.getByRole("complementary");
     await act(() =>
@@ -84,80 +99,64 @@ describe("<Mutations />", () => {
   });
 
   test("it renders an empty state", () => {
-    renderWithApolloClient(<Mutations explorerIFrame={null} />);
+    mockRpcRequests();
+
+    renderWithApolloClient(<Mutations clientId="1" explorerIFrame={null} />);
+
     expect(
       within(screen.getByTestId("main")).getByRole("heading")
     ).toHaveTextContent("👋 Welcome to Apollo Client Devtools");
   });
 
-  test("renders the mutation string", () => {
-    client.writeQuery({
-      query: GET_MUTATIONS,
-      data: {
-        mutationLog: {
-          __typename: "MutationLog",
-          mutations,
-          count: mutations.length,
-        },
-      },
+  test("renders the mutation string", async () => {
+    mockRpcRequests();
+
+    renderWithApolloClient(<Mutations clientId="1" explorerIFrame={null} />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("query")).toHaveTextContent(/performTest/);
     });
-
-    renderWithApolloClient(<Mutations explorerIFrame={null} />);
-
-    expect(screen.getByTestId("query")).toHaveTextContent(
-      mutations[0].mutationString
-    );
   });
 
   test("can copy the mutation string", async () => {
     window.prompt = jest.fn();
-    client.writeQuery({
-      query: GET_MUTATIONS,
-      data: {
-        mutationLog: {
-          __typename: "MutationLog",
-          mutations,
-          count: mutations.length,
-        },
-      },
-    });
+    mockRpcRequests();
 
     const { user } = renderWithApolloClient(
-      <Mutations explorerIFrame={null} />
+      <Mutations clientId="1" explorerIFrame={null} />
     );
 
-    await user.click(within(screen.getByTestId("query")).getByText("Copy"));
-    expect(window.prompt).toBeCalledWith(
+    const query = await screen.findByTestId("query");
+    await user.click(within(query).getByText("Copy"));
+    expect(window.prompt).toHaveBeenCalledWith(
       "Copy to clipboard: Ctrl+C, Enter",
-      mutations[0].mutationString
+      print(defaultMutations[0].document)
     );
   });
 
-  test("renders the mutation variables", () => {
-    client.writeQuery({
-      query: GET_MUTATIONS,
-      data: {
-        mutationLog: {
-          __typename: "MutationLog",
-          mutations: [
-            {
-              __typename: "WatchedMutation",
-              id: 0,
-              name: "ChangeName",
-              mutationString: `mutation ChangeName($name: String!) { changeName(name: $name) { name } }`,
-              variables: { name: "Bob Vance (Vance Refridgeration)" },
-              loading: false,
-              error: null,
-            },
-          ],
-          count: 1,
+  test("renders the mutation variables", async () => {
+    mockRpcRequests({
+      mutations: [
+        {
+          document: gql`
+            mutation ChangeName($name: String!) {
+              changeName(name: $name) {
+                name
+              }
+            }
+          `,
+          variables: { name: "Bob Vance (Vance Refridgeration)" },
+          loading: false,
+          error: null,
         },
-      },
+      ],
     });
 
-    renderWithApolloClient(<Mutations explorerIFrame={null} />);
+    renderWithApolloClient(<Mutations clientId="1" explorerIFrame={null} />);
 
-    expect(screen.getByText("Variables")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("Variables")).toBeInTheDocument();
+    });
 
     expect(
       screen.getByText((content) =>
@@ -168,34 +167,30 @@ describe("<Mutations />", () => {
 
   test("can copy the mutation variables", async () => {
     window.prompt = jest.fn();
-    client.writeQuery({
-      query: GET_MUTATIONS,
-      data: {
-        mutationLog: {
-          __typename: "MutationLog",
-          mutations: [
-            {
-              __typename: "WatchedMutation",
-              id: 0,
-              name: "ChangeName",
-              mutationString: `mutation ChangeName($name: String!) { changeName(name: $name) { name } }`,
-              variables: { name: "Bob Vance (Vance Refridgeration)" },
-              loading: false,
-              error: null,
-            },
-          ],
-          count: 1,
+    mockRpcRequests({
+      mutations: [
+        {
+          document: gql`
+            mutation ChangeName($name: String!) {
+              changeName(name: $name) {
+                name
+              }
+            }
+          `,
+          variables: { name: "Bob Vance (Vance Refridgeration)" },
+          loading: false,
+          error: null,
         },
-      },
+      ],
     });
 
     const { user } = renderWithApolloClient(
-      <Mutations explorerIFrame={null} />
+      <Mutations clientId="1" explorerIFrame={null} />
     );
 
     const copyButton = within(screen.getByRole("tablist")).getByRole("button");
     await user.click(copyButton);
-    expect(window.prompt).toBeCalledWith(
+    expect(window.prompt).toHaveBeenCalledWith(
       "Copy to clipboard: Ctrl+C, Enter",
       JSON.stringify({ name: "Bob Vance (Vance Refridgeration)" })
     );
