@@ -7,7 +7,7 @@ import { client } from "../../../index";
 import { Queries } from "../Queries";
 import { gql, NetworkStatus } from "@apollo/client";
 import { print } from "graphql";
-import type { QueryInfo } from "../../../../extension/tab/helpers";
+import type { QueryDetails } from "../../../../extension/tab/helpers";
 import { getRpcClient } from "../../../../extension/devtools/panelRpcClient";
 import type { GetRpcClientMock } from "../../../../extension/devtools/__mocks__/panelRpcClient";
 
@@ -20,7 +20,7 @@ beforeEach(() => {
 });
 
 describe("<Queries />", () => {
-  const defaultQueries: QueryInfo[] = [
+  const defaultQueries: QueryDetails[] = [
     {
       id: "1",
       document: gql`
@@ -43,7 +43,7 @@ describe("<Queries />", () => {
     },
   ];
 
-  function setup(queries: QueryInfo[] = defaultQueries) {
+  function setup(queries: QueryDetails[] = defaultQueries) {
     getRpcClientMock.__adapter.handleRpcRequest("getQueries", () => queries);
     getRpcClientMock.__adapter.handleRpcRequest("getClient", (id) => ({
       id,
@@ -187,7 +187,7 @@ describe("<Queries />", () => {
 
   test("can copy the query data", async () => {
     window.prompt = jest.fn();
-    const query: QueryInfo = {
+    const query: QueryDetails = {
       id: "1",
       document: gql`
         query GetColor($hex: String!) {

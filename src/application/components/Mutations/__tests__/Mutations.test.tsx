@@ -5,7 +5,7 @@ import { client } from "../../../index";
 import { Mutations } from "../Mutations";
 import { getRpcClient } from "../../../../extension/devtools/panelRpcClient";
 import type { GetRpcClientMock } from "../../../../extension/devtools/__mocks__/panelRpcClient";
-import type { MutationInfo } from "../../../../extension/tab/helpers";
+import type { MutationDetails } from "../../../../extension/tab/helpers";
 import { gql } from "@apollo/client";
 import { print } from "graphql";
 
@@ -19,7 +19,7 @@ beforeEach(() => {
 });
 
 describe("<Mutations />", () => {
-  const defaultMutations: MutationInfo[] = [
+  const defaultMutations: MutationDetails[] = [
     {
       document: gql`
         mutation {
@@ -43,7 +43,7 @@ describe("<Mutations />", () => {
   function mockRpcRequests({
     mutations = defaultMutations,
   }: {
-    mutations?: MutationInfo[];
+    mutations?: MutationDetails[];
   } = {}) {
     testAdapter.handleRpcRequest("getClient", () => ({
       id: "1",
