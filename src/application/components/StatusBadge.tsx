@@ -18,7 +18,7 @@ const container = cva(
   [
     "inline-flex",
     "items-center",
-    "font-normal",
+    "font-body",
     "font-normal",
     "text-md",
     "gap-2",

@@ -1,13 +1,14 @@
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
-import type { ElementType, ReactNode } from "react";
+import { forwardRef, type ElementType, type ReactNode } from "react";
 import type { OmitNull } from "../types/utils";
 import IconErrorSolid from "@apollo/icons/large/IconErrorSolid.svg";
 import { twMerge } from "tailwind-merge";
 
 type Variants = OmitNull<Required<VariantProps<typeof alert>>>;
 
-interface AlertProps extends Variants {
+export interface AlertProps extends Variants {
+  as?: "button" | "div";
   children?: ReactNode;
   className?: string;
 }
@@ -34,13 +35,20 @@ const ICONS: Record<Variants["variant"], ElementType> = {
   error: IconErrorSolid,
 };
 
-export function Alert({ children, className, variant }: AlertProps) {
-  const Icon = ICONS[variant];
+export const Alert = forwardRef<HTMLDivElement | HTMLButtonElement, AlertProps>(
+  ({ as: Element = "div", children, className, variant, ...props }, ref) => {
+    const Icon = ICONS[variant];
 
-  return (
-    <div className={twMerge(alert({ variant }), className)}>
-      <Icon className="size-6" />
-      <div className="flex-1 font-body text-md font-normal">{children}</div>
-    </div>
-  );
-}
+    return (
+      <Element
+        {...props}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ref={ref as any}
+        className={twMerge(alert({ variant }), className)}
+      >
+        <Icon className="size-6" />
+        <div className="flex-1 font-body text-md font-normal">{children}</div>
+      </Element>
+    );
+  }
+);

@@ -14,6 +14,8 @@ describe("<Mutations />", () => {
       name: null,
       mutationString: "mutation { performTest }",
       variables: null,
+      loading: false,
+      error: null,
     },
     {
       id: 1,
@@ -21,6 +23,8 @@ describe("<Mutations />", () => {
       name: "AddColorToFavorites",
       mutationString: "mutation AddColorToFavorites { addColorToFavorites }",
       variables: null,
+      loading: false,
+      error: null,
     },
   ];
 
@@ -143,6 +147,8 @@ describe("<Mutations />", () => {
               name: "ChangeName",
               mutationString: `mutation ChangeName($name: String!) { changeName(name: $name) { name } }`,
               variables: { name: "Bob Vance (Vance Refridgeration)" },
+              loading: false,
+              error: null,
             },
           ],
           count: 1,
@@ -175,6 +181,8 @@ describe("<Mutations />", () => {
               name: "ChangeName",
               mutationString: `mutation ChangeName($name: String!) { changeName(name: $name) { name } }`,
               variables: { name: "Bob Vance (Vance Refridgeration)" },
+              loading: false,
+              error: null,
             },
           ],
           count: 1,

@@ -12,7 +12,7 @@ type Writable<T> = { -readonly [P in keyof T]: T[P] };
 // which one we import from.
 import * as manifest from "../chrome/manifest.json";
 const { version: devtoolsVersion } = manifest;
-import type { QueryInfo } from "./helpers";
+import type { MutationDetails, QueryDetails } from "./helpers";
 import {
   getQueries,
   getQueriesLegacy,
@@ -43,8 +43,8 @@ declare global {
 type Hook = {
   ApolloClient: ApolloClient<any> | undefined;
   version: string;
-  getQueries: () => QueryInfo[];
-  getMutations: () => QueryInfo[];
+  getQueries: () => QueryDetails[];
+  getMutations: () => MutationDetails[];
   getCache: () => JSONObject;
 };
 
@@ -104,8 +104,8 @@ function getClientData() {
     })
   ) as {
     clientVersion: string | null;
-    queries: QueryInfo[];
-    mutations: QueryInfo[];
+    queries: QueryDetails[];
+    mutations: MutationDetails[];
     cache: JSONObject;
   };
 }

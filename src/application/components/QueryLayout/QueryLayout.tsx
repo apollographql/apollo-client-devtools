@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { clsx } from "clsx";
 
 import { SidebarLayout } from "../Layouts/SidebarLayout";
+import { Content } from "./Content";
 import { Header } from "./Header";
 import { QueryString } from "./QueryString";
 import { Tabs } from "./Tabs";
@@ -25,6 +26,7 @@ export function QueryLayout({ children }: QueryLayoutProps) {
   );
 }
 
+QueryLayout.Content = Content;
 QueryLayout.Header = Header;
 QueryLayout.QueryString = QueryString;
 QueryLayout.Tabs = Tabs;

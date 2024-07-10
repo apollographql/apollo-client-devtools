@@ -16,9 +16,10 @@ const MODE = {
 };
 
 const ColorSchemeGenerator = () => {
-  const { data, refetch } = useQuery(GET_RANDOM_COLOR, {
-    fetchPolicy: "no-cache",
-  });
+  const { data, refetch, startPolling, stopPolling } = useQuery(
+    GET_RANDOM_COLOR,
+    { fetchPolicy: "no-cache" }
+  );
   const { data: schemeData } = useQuery(GET_COLOR_SCHEME, {
     variables: {
       hex: data?.random?.color?.hex,
@@ -31,6 +32,14 @@ const ColorSchemeGenerator = () => {
     function onKeyPress(e) {
       if (e.keyCode === 32) {
         refetch();
+      }
+
+      if (e.key === "s") {
+        stopPolling();
+      }
+
+      if (e.key === "p") {
+        startPolling(10000);
       }
     }
 

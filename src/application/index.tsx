@@ -23,12 +23,22 @@ import type {
   GetQueriesVariables,
   WatchedMutation,
   WatchedQuery,
+  SerializedApolloError as GQLSerializedApolloError,
+  SerializedError as GQLSerializedError,
 } from "./types/gql";
-import type { QueryInfo } from "../extension/tab/helpers";
+import type {
+  MutationDetails,
+  QueryDetails,
+  SerializedApolloError,
+  SerializedError,
+} from "../extension/tab/helpers";
 import type { JSONObject } from "./types/json";
 
 const cache = new InMemoryCache({
   fragments: fragmentRegistry,
+  possibleTypes: {
+    WatchedMutationError: ["SerializedError", "SerializedApolloError"],
+  },
   typePolicies: {
     WatchedQuery: {
       fields: {
@@ -71,6 +81,12 @@ const cache = new InMemoryCache({
         },
       },
     },
+    SerializedApolloError: {
+      keyFields: false,
+    },
+    SerializedGraphQLError: {
+      keyFields: false,
+    },
   },
 });
 
@@ -90,6 +106,24 @@ export const GET_QUERIES: TypedDocumentNode<GetQueries, GetQueriesVariables> =
           variables
           cachedData
           options
+          networkStatus
+          pollInterval
+          error {
+            message
+            clientErrors
+            name
+            networkError {
+              message
+              name
+              stack
+            }
+            graphQLErrors {
+              message
+              path
+              extensions
+            }
+            protocolErrors
+          }
         }
         count
       }
@@ -107,6 +141,30 @@ export const GET_MUTATIONS: TypedDocumentNode<
         name
         mutationString
         variables
+        loading
+        error {
+          ... on SerializedError {
+            message
+            name
+            stack
+          }
+          ... on SerializedApolloError {
+            message
+            clientErrors
+            name
+            networkError {
+              message
+              name
+              stack
+            }
+            graphQLErrors {
+              message
+              path
+              extensions
+            }
+            protocolErrors
+          }
+        }
       }
       count
     }
@@ -114,7 +172,7 @@ export const GET_MUTATIONS: TypedDocumentNode<
 `;
 
 export function getQueryData(
-  query: QueryInfo,
+  query: QueryDetails,
   key: number
 ): WatchedQuery | undefined {
   // TODO: The current designs do not account for non-cached data.
@@ -133,11 +191,14 @@ export function getQueryData(
     variables: query.variables ?? null,
     cachedData: query.cachedData ?? null,
     options: query.options ?? null,
+    networkStatus: (query.networkStatus as number) ?? null,
+    pollInterval: query.pollInterval ?? null,
+    error: query.error ? toGQLSerializedApolloError(query.error) : null,
   };
 }
 
 export function getMutationData(
-  mutation: QueryInfo,
+  mutation: MutationDetails,
   key: number
 ): WatchedMutation {
   return {
@@ -146,7 +207,51 @@ export function getMutationData(
     name: getOperationName(mutation.document),
     mutationString: print(mutation.document),
     variables: mutation.variables ?? null,
+    loading: mutation.loading,
+    error: getMutationError(mutation.error),
   };
+}
+
+function isApolloError(error: Error): error is SerializedApolloError {
+  return error.name === "ApolloError";
+}
+
+function toGQLSerializedError(error: SerializedError): GQLSerializedError {
+  return {
+    ...error,
+    stack: error.stack ?? null,
+    __typename: "SerializedError",
+  };
+}
+
+function toGQLSerializedApolloError(
+  apolloError: SerializedApolloError
+): GQLSerializedApolloError {
+  return {
+    ...apolloError,
+    networkError: apolloError.networkError
+      ? toGQLSerializedError(apolloError.networkError)
+      : null,
+    graphQLErrors: apolloError.graphQLErrors.map((graphQLError) => ({
+      __typename: "SerializedGraphQLError",
+      path: graphQLError.path ?? null,
+      message: graphQLError.message,
+      extensions: (graphQLError.extensions as JSONObject) ?? null,
+    })),
+    __typename: "SerializedApolloError",
+  };
+}
+
+function getMutationError(
+  error: MutationDetails["error"]
+): GQLSerializedError | GQLSerializedApolloError | null {
+  if (!error) {
+    return null;
+  }
+
+  return isApolloError(error)
+    ? toGQLSerializedApolloError(error)
+    : toGQLSerializedError(error);
 }
 
 export const writeData = ({
@@ -156,8 +261,8 @@ export const writeData = ({
   cache,
 }: {
   clientVersion: string | null;
-  queries: QueryInfo[];
-  mutations: QueryInfo[];
+  queries: QueryDetails[];
+  mutations: MutationDetails[];
   cache: JSONObject;
 }) => {
   const filteredQueries = queries.map(getQueryData).filter(Boolean);
