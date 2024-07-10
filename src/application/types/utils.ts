@@ -7,3 +7,7 @@ export type OmitNull<T> = T extends object
 declare const __brand: unique symbol;
 
 export type Brand<K, T> = K & { [__brand]: T };
+
+export type DeepWriteable<T> = {
+  -readonly [P in keyof T]: DeepWriteable<T[P]>;
+};

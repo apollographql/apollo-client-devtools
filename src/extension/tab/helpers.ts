@@ -15,6 +15,7 @@ import { getPrivateAccess } from "../../privateAccess";
 import { getOperationName } from "@apollo/client/utilities";
 import { pick } from "../../application/utilities/pick";
 import type { GraphQLFormattedError } from "graphql";
+import type { DeepWriteable } from "../../application/types/utils";
 
 export type QueryOptions = Pick<
   WatchQueryOptions,
@@ -33,7 +34,7 @@ export interface SerializedApolloError extends Pick<ApolloError, "message"> {
   name: "ApolloError";
   clientErrors: string[];
   networkError?: SerializedError;
-  graphQLErrors: Array<GraphQLFormattedError>;
+  graphQLErrors: Array<DeepWriteable<GraphQLFormattedError>>;
   protocolErrors: string[];
 }
 
