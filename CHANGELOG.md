@@ -1,5 +1,15 @@
 # Changelog
 
+## 4.16.0
+
+### Minor Changes
+
+- [#1429](https://github.com/apollographql/apollo-client-devtools/pull/1429) [`267ab0d`](https://github.com/apollographql/apollo-client-devtools/commit/267ab0d1d946a2538532a08b6775030be6ecfdc2) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Show the loading status and any defined errors on queries and mutations both in the sidebar and the main panel.
+
+### Patch Changes
+
+- [#1429](https://github.com/apollographql/apollo-client-devtools/pull/1429) [`267ab0d`](https://github.com/apollographql/apollo-client-devtools/commit/267ab0d1d946a2538532a08b6775030be6ecfdc2) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Select the first query/mutation if the current query/mutation is no longer active.
+
 ## 4.15.7
 
 ### Patch Changes
