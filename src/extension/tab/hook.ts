@@ -82,6 +82,8 @@ function getMutationsForClient(client: ApolloClient<unknown> | undefined) {
 const knownClients = new Map<ApolloClient<SafeAny>, string>();
 const hook: Hook = {
   get ApolloClient() {
+    logDeprecation("window.__APOLLO_DEVTOOLS_GLOBAL_HOOK__.ApolloClient");
+
     return globalClient;
   },
   version: devtoolsVersion,
