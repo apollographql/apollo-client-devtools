@@ -52,6 +52,8 @@ function filterCache(cache: JSONObject, searchTerm: string) {
 
 const history = new History("ROOT_QUERY");
 
+const STABLE_EMPTY_OBJ: JSONObject = {};
+
 interface CacheProps {
   clientId: string | undefined;
 }
@@ -67,7 +69,7 @@ export function Cache({ clientId }: CacheProps) {
     fetchPolicy: "cache-and-network",
   });
 
-  const cache = useMemo(() => data?.client?.cache ?? {}, [data?.client.cache]);
+  const cache = data?.client.cache ?? STABLE_EMPTY_OBJ;
 
   const filteredCache = useMemo(
     () => (searchTerm ? filterCache(cache, searchTerm) : cache),
