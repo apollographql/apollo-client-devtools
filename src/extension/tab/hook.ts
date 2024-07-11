@@ -81,7 +81,9 @@ function getMutationsForClient(client: ApolloClient<unknown> | undefined) {
 // client multiple times.
 const knownClients = new Map<ApolloClient<SafeAny>, string>();
 const hook: Hook = {
-  ApolloClient: undefined,
+  get ApolloClient() {
+    return globalClient;
+  },
   version: devtoolsVersion,
   getQueries() {
     return getQueriesForClient(hook.ApolloClient);
@@ -148,7 +150,7 @@ function getClientById(clientId: string) {
 }
 
 tab.on("connectToClient", () => {
-  if (hook.ApolloClient) {
+  if (globalClient) {
     tab.send({ type: "connectToDevtools" });
   }
 });
@@ -255,10 +257,6 @@ function watchForClientTermination(client: ApolloClient<any>) {
       window.__APOLLO_CLIENT__ = undefined;
     }
 
-    if (hook.ApolloClient === client) {
-      hook.ApolloClient = undefined;
-    }
-
     tab.send({ type: "clientTerminated", clientId });
     originalStop.call(client);
   };
@@ -269,10 +267,6 @@ function registerClient(client: ApolloClient<any>) {
     const id = createId();
     knownClients.set(client, id);
     watchForClientTermination(client);
-
-    if (!hook.ApolloClient) {
-      hook.ApolloClient = client;
-    }
 
     tab.send({ type: "registerClient", payload: getClientInfo(client) });
   }
