@@ -110,7 +110,9 @@ export type PanelMessage =
   | { type: "connectToDevtools" }
   | { type: "disconnectFromDevtools" }
   | { type: "connectToClient" }
-  | { type: "initializePanel" };
+  | { type: "initializePanel" }
+  | { type: "panelHidden" }
+  | { type: "panelShown" };
 
 export type DevtoolsRPCMessage = {
   getClients(): ApolloClientInfo[];

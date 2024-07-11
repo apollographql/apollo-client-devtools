@@ -30,7 +30,9 @@ async function createDevtoolsPanel() {
   panel.onShown.addListener((window) => {
     panelWindow = getPanelActor(window);
 
-    if (!connectedToPanel) {
+    if (connectedToPanel) {
+      panelWindow.send({ type: "panelShown" });
+    } else {
       createRPCBridge(createWindowMessageAdapter(window), portAdapter);
 
       clientPort.forward("explorerResponse", panelWindow);
@@ -46,6 +48,10 @@ async function createDevtoolsPanel() {
 
       connectedToPanel = true;
     }
+  });
+
+  panel.onHidden.addListener(() => {
+    panelWindow.send({ type: "panelHidden" });
   });
 }
 
