@@ -97,7 +97,7 @@ export const App = () => {
     removeClient(message.clientId);
   });
 
-  useActorEvent("disconnectFromDevtools", () => {
+  useActorEvent("pageNavigated", () => {
     send({ type: "disconnect" });
   });
 

@@ -109,7 +109,7 @@ export type PanelMessage =
   | ExplorerResponseMessage
   | ExplorerSubscriptionTerminationMessage
   | { type: "connectToDevtools" }
-  | { type: "disconnectFromDevtools" }
+  | { type: "pageNavigated" }
   | { type: "connectToClient" }
   | { type: "initializePanel" }
   | { type: "panelHidden" }
