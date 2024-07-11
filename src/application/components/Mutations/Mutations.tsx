@@ -68,7 +68,7 @@ export const Mutations = ({ clientId, explorerIFrame }: MutationsProps) => {
   useActorEvent("panelHidden", () => stopPolling());
   useActorEvent("panelShown", () => startPolling(500));
 
-  const mutations = data?.client.mutations?.items ?? [];
+  const mutations = data?.client?.mutations?.items ?? [];
   const selectedMutation = mutations.find(
     (mutation) => Number(mutation.id) === selected
   );

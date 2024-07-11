@@ -73,7 +73,7 @@ export function Cache({ clientId }: CacheProps) {
   useActorEvent("panelHidden", () => stopPolling());
   useActorEvent("panelShown", () => startPolling(500));
 
-  const cache = data?.client.cache ?? STABLE_EMPTY_OBJ;
+  const cache = data?.client?.cache ?? STABLE_EMPTY_OBJ;
 
   const filteredCache = useMemo(
     () => (searchTerm ? filterCache(cache, searchTerm) : cache),

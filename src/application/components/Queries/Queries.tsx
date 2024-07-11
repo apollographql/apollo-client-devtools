@@ -70,7 +70,7 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
     pollInterval: 500,
   });
 
-  const queries = data?.client.queries.items ?? [];
+  const queries = data?.client?.queries.items ?? [];
   const selectedQuery = queries.find((query) => query.id === selected);
   const [currentTab, setCurrentTab] = useState<QueryTabs>(QueryTabs.Variables);
   const copyButtonText = JSON.stringify(

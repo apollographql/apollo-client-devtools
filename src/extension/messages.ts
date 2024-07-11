@@ -117,7 +117,7 @@ export type PanelMessage =
 
 export type DevtoolsRPCMessage = {
   getClients(): ApolloClientInfo[];
-  getClient(id: string): ApolloClientInfo;
+  getClient(id: string): ApolloClientInfo | null;
   getQueries(clientId: string): QueryDetails[];
   getMutations(clientId: string): MutationDetails[];
   getCache(clientId: string): JSONObject;

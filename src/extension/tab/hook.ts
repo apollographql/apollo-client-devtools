@@ -126,7 +126,9 @@ handleRpc("getClients", () => {
 });
 
 handleRpc("getClient", (clientId) => {
-  return getClientInfo(getClientById(clientId));
+  const client = getClientById(clientId);
+
+  return client ? getClientInfo(client) : null;
 });
 
 handleRpc("getQueries", (clientId) =>
@@ -147,14 +149,13 @@ handleRpc("getCache", (clientId) => {
   //
   // https://github.com/apollographql/apollo-client-devtools/issues/1258
   return JSON.parse(
-    JSON.stringify(getClientById(clientId).cache.extract(true))
+    JSON.stringify(getClientById(clientId)?.cache.extract(true) ?? {})
   ) as JSONObject;
 });
 
 function getClientById(clientId: string) {
-  const [client] = [...knownClients.entries()].find(
-    ([, id]) => id === clientId
-  )!;
+  const [client] =
+    [...knownClients.entries()].find(([, id]) => id === clientId) ?? [];
 
   return client;
 }
@@ -175,6 +176,11 @@ tab.on("explorerRequest", (message) => {
   } = message.payload;
 
   const client = getClientById(clientId);
+
+  if (!client) {
+    throw new Error("Could not find selected client");
+  }
+
   const clonedQueryAst = structuredClone(queryAst) as Writable<typeof queryAst>;
 
   const filteredDefinitions = clonedQueryAst.definitions.reduce(
