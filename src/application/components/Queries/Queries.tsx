@@ -21,6 +21,7 @@ import { StatusBadge } from "../StatusBadge";
 import { AlertDisclosure } from "../AlertDisclosure";
 import { Tooltip } from "../Tooltip";
 import { ApolloErrorAlertDisclosurePanel } from "../ApolloErrorAlertDisclosurePanel";
+import { useActorEvent } from "../../hooks/useActorEvent";
 
 enum QueryTabs {
   Variables = "Variables",
@@ -62,7 +63,7 @@ interface QueriesProps {
 
 export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
   const [selected, setSelected] = useState("1");
-  const { data } = useQuery(GET_QUERIES, {
+  const { data, startPolling, stopPolling } = useQuery(GET_QUERIES, {
     variables: { clientId: clientId as string },
     skip: clientId == null,
     fetchPolicy: "cache-and-network",
@@ -79,6 +80,9 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
   );
 
   const pollInterval = selectedQuery?.pollInterval;
+
+  useActorEvent("panelHidden", () => stopPolling());
+  useActorEvent("panelShown", () => startPolling(500));
 
   if (!selectedQuery && queries.length > 0) {
     setSelected(queries[0].id);

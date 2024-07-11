@@ -19,6 +19,7 @@ import { StatusBadge } from "../StatusBadge";
 import { AlertDisclosure } from "../AlertDisclosure";
 import { SerializedErrorAlertDisclosureItem } from "../SerializedErrorAlertDisclosureItem";
 import { ApolloErrorAlertDisclosurePanel } from "../ApolloErrorAlertDisclosurePanel";
+import { useActorEvent } from "../../hooks/useActorEvent";
 
 const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
   gql`
@@ -57,12 +58,15 @@ interface MutationsProps {
 
 export const Mutations = ({ clientId, explorerIFrame }: MutationsProps) => {
   const [selected, setSelected] = useState<number>(0);
-  const { data } = useQuery(GET_MUTATIONS, {
+  const { data, startPolling, stopPolling } = useQuery(GET_MUTATIONS, {
     variables: { id: clientId as string },
     skip: clientId == null,
     fetchPolicy: "cache-and-network",
     pollInterval: 500,
   });
+
+  useActorEvent("panelHidden", () => stopPolling());
+  useActorEvent("panelShown", () => startPolling(500));
 
   const mutations = data?.client.mutations?.items ?? [];
   const selectedMutation = mutations.find(

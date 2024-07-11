@@ -111,7 +111,11 @@ export const App = () => {
   const [embeddedExplorerIFrame, setEmbeddedExplorerIFrame] =
     useState<HTMLIFrameElement | null>(null);
 
-  const { data: clientData } = useQuery(CLIENT_QUERY, {
+  const {
+    data: clientData,
+    startPolling,
+    stopPolling,
+  } = useQuery(CLIENT_QUERY, {
     variables: { id: selectedClientId as string },
     skip: !selectedClientId,
     pollInterval: 500,
@@ -120,6 +124,9 @@ export const App = () => {
   const client = clientData?.client;
   const clients = data?.clients ?? [];
   const clientIds = clients.map((c) => c.id);
+
+  useActorEvent("panelHidden", () => stopPolling());
+  useActorEvent("panelShown", () => startPolling(500));
 
   if (
     (selectedClientId && !clientIds.includes(selectedClientId)) ||

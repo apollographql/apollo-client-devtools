@@ -23,6 +23,7 @@ import { List } from "../List";
 import { ListItem } from "../ListItem";
 import { getRootCacheIds } from "./common/utils";
 import HighlightMatch from "../HighlightMatch";
+import { useActorEvent } from "../../hooks/useActorEvent";
 
 const { Sidebar, Main } = SidebarLayout;
 
@@ -62,12 +63,15 @@ export function Cache({ clientId }: CacheProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const cacheId = useSyncExternalStore(history.listen, history.getCurrent);
 
-  const { loading, data } = useQuery(GET_CACHE, {
+  const { loading, data, startPolling, stopPolling } = useQuery(GET_CACHE, {
     variables: { id: clientId as string },
     skip: clientId == null,
     pollInterval: 500,
     fetchPolicy: "cache-and-network",
   });
+
+  useActorEvent("panelHidden", () => stopPolling());
+  useActorEvent("panelShown", () => startPolling(500));
 
   const cache = data?.client.cache ?? STABLE_EMPTY_OBJ;
 
