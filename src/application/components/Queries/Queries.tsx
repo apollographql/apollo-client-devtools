@@ -63,7 +63,6 @@ interface QueriesProps {
 export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
   const [selected, setSelected] = useState("1");
   const { data } = useQuery(GET_QUERIES, {
-    returnPartialData: true,
     variables: { clientId: clientId as string },
     skip: clientId == null,
     fetchPolicy: "cache-and-network",
