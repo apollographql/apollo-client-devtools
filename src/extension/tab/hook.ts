@@ -86,12 +86,20 @@ const hook: Hook = {
   },
   version: devtoolsVersion,
   getQueries() {
+    logDeprecation("window.__APOLLO_DEVTOOLS_GLOBAL_HOOK__.getQueries()");
+
     return getQueriesForClient(hook.ApolloClient);
   },
   getMutations: () => {
+    logDeprecation("window.__APOLLO_DEVTOOLS_GLOBAL_HOOK__.getMutations()");
+
     return getMutationsForClient(hook.ApolloClient);
   },
-  getCache: () => hook.ApolloClient?.cache.extract(true) ?? {},
+  getCache: () => {
+    logDeprecation("window.__APOLLO_DEVTOOLS_GLOBAL_HOOK__.getCache()");
+
+    return hook.ApolloClient?.cache.extract(true) ?? {};
+  },
 };
 
 Object.defineProperty(window, "__APOLLO_DEVTOOLS_GLOBAL_HOOK__", {
@@ -314,4 +322,10 @@ Object.defineProperty(window, "__APOLLO_CLIENT__", {
 
 if (globalClient) {
   registerClient(globalClient);
+}
+
+function logDeprecation(api: string) {
+  console.warn(
+    `[Apollo Client Devtools]: '${api}' is deprecated and will be removed in a future version.`
+  );
 }
