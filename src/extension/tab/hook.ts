@@ -165,12 +165,14 @@ tab.on("connectToClient", () => {
 
 tab.on("explorerRequest", (message) => {
   const {
+    clientId,
     operation: queryAst,
     operationName,
     fetchPolicy,
     variables,
   } = message.payload;
 
+  const client = getClientById(clientId);
   const clonedQueryAst = structuredClone(queryAst) as Writable<typeof queryAst>;
 
   const filteredDefinitions = clonedQueryAst.definitions.reduce(
@@ -198,15 +200,14 @@ tab.on("explorerRequest", (message) => {
       definition.operation === "mutation"
     ) {
       return new Observable<QueryResult>((observer) => {
-        hook.ApolloClient?.mutate({
-          mutation: clonedQueryAst,
-          variables,
-        }).then((result) => {
-          observer.next(result as QueryResult);
-        });
+        client
+          .mutate({ mutation: clonedQueryAst, variables })
+          .then((result) => {
+            observer.next(result as QueryResult);
+          });
       });
     } else {
-      return hook.ApolloClient?.watchQuery({
+      return client.watchQuery({
         query: clonedQueryAst,
         variables,
         fetchPolicy,

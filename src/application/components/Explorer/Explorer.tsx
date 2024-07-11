@@ -41,17 +41,20 @@ function executeOperation({
   variables,
   fetchPolicy,
   isSubscription,
+  clientId,
 }: {
   operation: string;
   operationName?: string;
   variables?: JSONObject;
   fetchPolicy: FetchPolicy;
   isSubscription?: boolean;
+  clientId: string;
 }) {
   return new Observable<QueryResult>((observer) => {
     panelWindow.send({
       type: "explorerRequest",
       payload: {
+        clientId,
         operation: gql(operation),
         operationName,
         variables,
@@ -101,9 +104,11 @@ const setGraphRefFromLocalStorage = (graphRef: string) => {
 };
 
 export const Explorer = ({
+  clientId,
   isVisible,
   embeddedExplorerProps,
 }: {
+  clientId: string | undefined;
   isVisible: boolean | undefined;
   embeddedExplorerProps: {
     embeddedExplorerIFrame: HTMLIFrameElement | null;
@@ -164,8 +169,9 @@ export const Explorer = ({
   }, [graphRef, setEmbeddedExplorerIFrame]);
 
   useEffect(() => {
-    if (!schema && embeddedExplorerIFrame) {
+    if (clientId && !schema && embeddedExplorerIFrame) {
       const observer = executeOperation({
+        clientId,
         operation: getIntrospectionQuery(),
         operationName: "IntrospectionQuery",
         variables: undefined,
@@ -210,16 +216,17 @@ export const Explorer = ({
         }
       });
     }
-  }, [schema, embeddedExplorerIFrame]);
+  }, [clientId, schema, embeddedExplorerIFrame]);
 
   useEffect(() => {
-    if (embeddedExplorerIFrame) {
+    if (clientId && embeddedExplorerIFrame) {
       const onPostMessageReceived = (event: IncomingMessageEvent) => {
         const isQueryOrMutation = event.data.name === EXPLORER_REQUEST;
         const isSubscription =
           event.data.name === EXPLORER_SUBSCRIPTION_REQUEST;
         if ((isQueryOrMutation || isSubscription) && event.data.operation) {
           const observer = executeOperation({
+            clientId,
             operation: event.data.operation,
             operationName: event.data.operationName,
             variables: event.data.variables ?? undefined,
@@ -246,7 +253,7 @@ export const Explorer = ({
 
       return () => window.removeEventListener("message", onPostMessageReceived);
     }
-  }, [embeddedExplorerIFrame, graphRef, queryCache]);
+  }, [clientId, embeddedExplorerIFrame, graphRef, queryCache]);
 
   const embedIframeSrcString = useMemo(
     () =>

@@ -66,6 +66,7 @@ export type ApolloClientDevtoolsMessage<
 type ExplorerRequestMessage = {
   type: "explorerRequest";
   payload: {
+    clientId: string;
     operation: DocumentNode;
     operationName: string | undefined;
     variables: JSONObject | undefined;

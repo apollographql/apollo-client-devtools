@@ -250,6 +250,7 @@ export const App = () => {
           forceMount
         >
           <Explorer
+            clientId={selectedClientId}
             isVisible={selected === Screens.Explorer}
             embeddedExplorerProps={{
               embeddedExplorerIFrame,
