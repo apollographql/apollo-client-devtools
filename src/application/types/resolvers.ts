@@ -86,7 +86,7 @@ export type GraphQlErrorSourceLocation = {
 
 export type Query = {
   __typename?: "Query";
-  client: Client;
+  client?: Maybe<Client>;
   clients: Array<Client>;
 };
 
@@ -409,7 +409,7 @@ export type QueryResolvers<
     ResolversParentTypes["Query"] = ResolversParentTypes["Query"],
 > = {
   client?: Resolver<
-    ResolversTypes["Client"],
+    Maybe<ResolversTypes["Client"]>,
     ParentType,
     ContextType,
     RequireFields<QueryClientArgs, "id">

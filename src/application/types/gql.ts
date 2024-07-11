@@ -73,7 +73,7 @@ export type GraphQLErrorSourceLocation = {
 
 export type Query = {
   __typename: "Query";
-  client: Client;
+  client: Maybe<Client>;
   clients: Array<Client>;
 };
 
@@ -154,7 +154,7 @@ export type ClientQuery = {
     version: string;
     queries: { __typename: "ClientQueries"; total: number };
     mutations: { __typename: "ClientMutations"; total: number };
-  };
+  } | null;
 };
 
 export type ApolloErrorAlertDisclosurePanel_error = {
@@ -180,7 +180,7 @@ export type GetCacheVariables = Exact<{
 }>;
 
 export type GetCache = {
-  client: { __typename: "Client"; id: string; cache: Cache };
+  client: { __typename: "Client"; id: string; cache: Cache } | null;
 };
 
 export type GetMutationsVariables = Exact<{
@@ -228,7 +228,7 @@ export type GetMutations = {
           | null;
       }>;
     };
-  };
+  } | null;
 };
 
 export type GetQueriesVariables = Exact<{
@@ -271,7 +271,7 @@ export type GetQueries = {
         } | null;
       }>;
     };
-  };
+  } | null;
 };
 
 export type SerializedErrorAlertDisclosureItem_error = {
