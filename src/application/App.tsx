@@ -13,8 +13,12 @@ import { Queries } from "./components/Queries/Queries";
 import { Mutations } from "./components/Mutations/Mutations";
 import { Explorer } from "./components/Explorer/Explorer";
 import { Cache } from "./components/Cache/Cache";
-import type { ClientQuery, ClientQueryVariables } from "./types/gql";
-import { type AppQuery, type AppQueryVariables } from "./types/gql";
+import type {
+  AppQuery,
+  AppQueryVariables,
+  ClientQuery,
+  ClientQueryVariables,
+} from "./types/gql";
 import { Tabs } from "./components/Tabs";
 import { Button } from "./components/Button";
 import IconSettings from "@apollo/icons/default/IconSettings.svg";
