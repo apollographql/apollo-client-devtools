@@ -26,6 +26,7 @@ const EmbeddedExplorerWrapper = () => {
     useState<HTMLIFrameElement | null>(null);
   return (
     <Explorer
+      clientId="1"
       isVisible={true}
       embeddedExplorerProps={{
         embeddedExplorerIFrame,
