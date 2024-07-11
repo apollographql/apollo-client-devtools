@@ -67,7 +67,7 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
     variables: { clientId: clientId as string },
     skip: clientId == null,
     fetchPolicy: "cache-and-network",
-    pollInterval: 1000,
+    pollInterval: 500,
   });
 
   const queries = data?.client.queries.items ?? [];

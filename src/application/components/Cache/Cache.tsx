@@ -65,7 +65,7 @@ export function Cache({ clientId }: CacheProps) {
   const { loading, data } = useQuery(GET_CACHE, {
     variables: { id: clientId as string },
     skip: clientId == null,
-    pollInterval: 1000,
+    pollInterval: 500,
     fetchPolicy: "cache-and-network",
   });
 

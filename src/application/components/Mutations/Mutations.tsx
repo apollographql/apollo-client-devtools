@@ -61,7 +61,7 @@ export const Mutations = ({ clientId, explorerIFrame }: MutationsProps) => {
     variables: { id: clientId as string },
     skip: clientId == null,
     fetchPolicy: "cache-and-network",
-    pollInterval: 1000,
+    pollInterval: 500,
   });
 
   const mutations = data?.client.mutations?.items ?? [];
