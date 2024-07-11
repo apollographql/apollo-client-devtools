@@ -127,6 +127,9 @@ export const Explorer = ({
     if (graphRef) setGraphRefFromLocalStorage(graphRef);
   }, [graphRef]);
 
+  const [previousClientId, setPreviousClientId] = useState<string | undefined>(
+    clientId
+  );
   const [schema, setSchema] = useState<IntrospectionQuery | null>(null);
   const [queryCache, setQueryCache] = useState<FetchPolicy>(
     FetchPolicy.NoCache
@@ -136,6 +139,13 @@ export const Explorer = ({
     embeddedExplorerProps;
 
   const color = useReactiveVar(colorTheme);
+
+  // If the selected client has changed, make sure we re-run the introspection
+  // query in case the client points to a different GraphQL schema.
+  if (previousClientId !== clientId) {
+    setPreviousClientId(clientId);
+    setSchema(null);
+  }
 
   // Set embedded explorer iframe if loaded
   useEffect(() => {
