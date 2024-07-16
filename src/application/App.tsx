@@ -1,11 +1,6 @@
 import { useState } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
-import {
-  useReactiveVar,
-  gql,
-  useQuery,
-  useSuspenseQuery,
-} from "@apollo/client";
+import { useReactiveVar, gql, useQuery } from "@apollo/client";
 import { useMachine } from "@xstate/react";
 
 import { currentScreen, Screens } from "./components/Layouts/Navigation";
@@ -84,7 +79,9 @@ export const App = () => {
       },
     })
   );
-  const { data, client: apolloClient } = useSuspenseQuery(APP_QUERY);
+  const { data, client: apolloClient } = useQuery(APP_QUERY, {
+    errorPolicy: "all",
+  });
 
   useActorEvent("connectToDevtools", () => {
     send({ type: "connect" });
@@ -111,7 +108,7 @@ export const App = () => {
 
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [selectedClientId, setSelectedClientId] = useState<string | undefined>(
-    data.clients[0]?.id
+    data?.clients[0]?.id
   );
   const selected = useReactiveVar<Screens>(currentScreen);
   const [embeddedExplorerIFrame, setEmbeddedExplorerIFrame] =
