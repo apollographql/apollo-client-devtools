@@ -66,6 +66,9 @@ export const devtoolsMachine = setup({
         ),
       });
     },
+    resetStore: () => {
+      throw new Error("Provide implementation in the component");
+    },
   },
 }).createMachine({
   id: "devtools",
@@ -109,6 +112,7 @@ export const devtoolsMachine = setup({
         disconnect: "disconnected",
       },
       entry: ["notifyConnected", "closeModal"],
+      exit: ["resetStore"],
       after: {
         2500: {
           actions: "closeBanner",

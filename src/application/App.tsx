@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import {
   useReactiveVar,
@@ -75,7 +75,19 @@ ${SECTIONS.devtoolsVersion}
 `;
 
 export const App = () => {
-  const [snapshot, send] = useMachine(devtoolsMachine);
+  const [snapshot, send] = useMachine(
+    devtoolsMachine.provide({
+      actions: {
+        resetStore: () => {
+          try {
+            apolloClient.resetStore();
+          } catch (e) {
+            // ignore errors when resetting store
+          }
+        },
+      },
+    })
+  );
   const { data, client: apolloClient } = useSuspenseQuery(APP_QUERY);
 
   useActorEvent("connectToDevtools", () => {
@@ -100,12 +112,6 @@ export const App = () => {
   useActorEvent("pageNavigated", () => {
     send({ type: "disconnect" });
   });
-
-  useEffect(() => {
-    if (snapshot.value !== "connected") {
-      apolloClient.resetStore();
-    }
-  }, [apolloClient, snapshot.value]);
 
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [selectedClientId, setSelectedClientId] = useState<string | undefined>(
