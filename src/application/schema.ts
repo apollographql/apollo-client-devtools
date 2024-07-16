@@ -15,7 +15,9 @@ export function createSchemaWithRpcClient(
   });
 }
 
-function createResolvers(rpcClient: RpcClient<DevtoolsRPCMessage>): Resolvers {
+function createResolvers(client: RpcClient<DevtoolsRPCMessage>): Resolvers {
+  const rpcClient = client.withTimeout(3000);
+
   return {
     Query: {
       clients: () => rpcClient.request("getClients"),
