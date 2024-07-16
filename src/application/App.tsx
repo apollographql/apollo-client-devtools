@@ -79,11 +79,7 @@ export const App = () => {
     devtoolsMachine.provide({
       actions: {
         resetStore: () => {
-          try {
-            apolloClient.resetStore();
-          } catch (e) {
-            // ignore errors when resetting store
-          }
+          apolloClient.resetStore().catch(() => {});
         },
       },
     })
