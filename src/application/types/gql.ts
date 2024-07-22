@@ -1,3 +1,4 @@
+import type { Cache } from "./scalars";
 import type { GraphQLErrorPath } from "./scalars";
 import type { JSON } from "./scalars";
 import type { QueryData } from "./scalars";
@@ -25,11 +26,13 @@ export type Incremental<T> =
     };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: number; output: number };
+  ID: { input: string; output: string };
   String: { input: string; output: string };
   Boolean: { input: boolean; output: boolean };
   Int: { input: number; output: number };
   Float: { input: number; output: number };
+  /** Represents JSON cache data */
+  Cache: { input: Cache; output: Cache };
   GraphQLErrorPath: { input: GraphQLErrorPath; output: GraphQLErrorPath };
   JSON: { input: JSON; output: JSON };
   /** Represents data for a specific query */
@@ -40,27 +43,41 @@ export type Scalars = {
   Variables: { input: Variables; output: Variables };
 };
 
-export type MutationLog = {
-  __typename: "MutationLog";
-  count: Scalars["Int"]["output"];
-  mutations: Array<WatchedMutation>;
+export type Client = {
+  __typename: "Client";
+  cache: Scalars["Cache"]["output"];
+  id: Scalars["String"]["output"];
+  mutations: ClientMutations;
+  name: Maybe<Scalars["String"]["output"]>;
+  queries: ClientQueries;
+  version: Scalars["String"]["output"];
+};
+
+export type ClientMutations = {
+  __typename: "ClientMutations";
+  items: Array<WatchedMutation>;
+  total: Scalars["Int"]["output"];
+};
+
+export type ClientQueries = {
+  __typename: "ClientQueries";
+  items: Array<WatchedQuery>;
+  total: Scalars["Int"]["output"];
+};
+
+export type GraphQLErrorSourceLocation = {
+  __typename: "GraphQLErrorSourceLocation";
+  column: Scalars["Int"]["output"];
+  line: Scalars["Int"]["output"];
 };
 
 export type Query = {
   __typename: "Query";
-  cache: Scalars["String"]["output"];
-  clientVersion: Maybe<Scalars["String"]["output"]>;
-  mutation: Maybe<WatchedMutation>;
-  mutationLog: MutationLog;
-  watchedQueries: WatchedQueries;
-  watchedQuery: Maybe<WatchedQuery>;
+  client: Maybe<Client>;
+  clients: Array<Client>;
 };
 
-export type QuerymutationArgs = {
-  id: Scalars["ID"]["input"];
-};
-
-export type QuerywatchedQueryArgs = {
+export type QueryclientArgs = {
   id: Scalars["ID"]["input"];
 };
 
@@ -84,6 +101,7 @@ export type SerializedError = {
 export type SerializedGraphQLError = {
   __typename: "SerializedGraphQLError";
   extensions: Maybe<Scalars["JSON"]["output"]>;
+  locations: Maybe<Array<GraphQLErrorSourceLocation>>;
   message: Scalars["String"]["output"];
   path: Maybe<Scalars["GraphQLErrorPath"]["output"]>;
 };
@@ -119,12 +137,24 @@ export type WatchedQuery = {
   variables: Maybe<Scalars["Variables"]["output"]>;
 };
 
-export type GetOperationCountsVariables = Exact<{ [key: string]: never }>;
+export type AppQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetOperationCounts = {
-  clientVersion: string | null;
-  watchedQueries: { __typename: "WatchedQueries"; count: number };
-  mutationLog: { __typename: "MutationLog"; count: number };
+export type AppQuery = {
+  clients: Array<{ __typename: "Client"; id: string; name: string | null }>;
+};
+
+export type ClientQueryVariables = Exact<{
+  id: Scalars["ID"]["input"];
+}>;
+
+export type ClientQuery = {
+  client: {
+    __typename: "Client";
+    id: string;
+    version: string;
+    queries: { __typename: "ClientQueries"; total: number };
+    mutations: { __typename: "ClientMutations"; total: number };
+  } | null;
 };
 
 export type ApolloErrorAlertDisclosurePanel_error = {
@@ -145,85 +175,103 @@ export type ApolloErrorAlertDisclosurePanel_error = {
   }>;
 };
 
-export type GetCacheVariables = Exact<{ [key: string]: never }>;
+export type GetCacheVariables = Exact<{
+  id: Scalars["ID"]["input"];
+}>;
 
-export type GetCache = { cache: string };
+export type GetCache = {
+  client: { __typename: "Client"; id: string; cache: Cache } | null;
+};
 
-export type GetMutationsVariables = Exact<{ [key: string]: never }>;
+export type GetMutationsVariables = Exact<{
+  id: Scalars["ID"]["input"];
+}>;
 
 export type GetMutations = {
-  mutationLog: {
-    __typename: "MutationLog";
-    mutations: Array<{
-      __typename: "WatchedMutation";
-      id: number;
-      name: string | null;
-      mutationString: string;
-      variables: Variables | null;
-      loading: boolean;
-      error:
-        | {
-            __typename: "SerializedApolloError";
-            clientErrors: Array<string>;
-            protocolErrors: Array<string>;
-            networkError: {
+  client: {
+    __typename: "Client";
+    id: string;
+    mutations: {
+      __typename: "ClientMutations";
+      total: number;
+      items: Array<{
+        __typename: "WatchedMutation";
+        id: string;
+        name: string | null;
+        mutationString: string;
+        variables: Variables | null;
+        loading: boolean;
+        error:
+          | {
+              __typename: "SerializedApolloError";
+              clientErrors: Array<string>;
+              protocolErrors: Array<string>;
+              networkError: {
+                __typename: "SerializedError";
+                message: string;
+                name: string;
+                stack: string | null;
+              } | null;
+              graphQLErrors: Array<{
+                __typename: "SerializedGraphQLError";
+                message: string;
+                path: GraphQLErrorPath | null;
+                extensions: JSON | null;
+              }>;
+            }
+          | {
               __typename: "SerializedError";
               message: string;
               name: string;
               stack: string | null;
-            } | null;
-            graphQLErrors: Array<{
-              __typename: "SerializedGraphQLError";
-              message: string;
-              path: GraphQLErrorPath | null;
-              extensions: JSON | null;
-            }>;
-          }
-        | {
+            }
+          | null;
+      }>;
+    };
+  } | null;
+};
+
+export type GetQueriesVariables = Exact<{
+  clientId: Scalars["ID"]["input"];
+}>;
+
+export type GetQueries = {
+  client: {
+    __typename: "Client";
+    id: string;
+    queries: {
+      __typename: "ClientQueries";
+      total: number;
+      items: Array<{
+        __typename: "WatchedQuery";
+        id: string;
+        name: string | null;
+        queryString: string;
+        variables: Variables | null;
+        cachedData: QueryData | null;
+        options: QueryOptions | null;
+        networkStatus: number;
+        pollInterval: number | null;
+        error: {
+          __typename: "SerializedApolloError";
+          clientErrors: Array<string>;
+          protocolErrors: Array<string>;
+          networkError: {
             __typename: "SerializedError";
             message: string;
             name: string;
             stack: string | null;
-          }
-        | null;
-    }>;
-  };
-};
-
-export type GetWatchedQueriesVariables = Exact<{ [key: string]: never }>;
-
-export type GetWatchedQueries = {
-  watchedQueries: {
-    __typename: "WatchedQueries";
-    queries: Array<{
-      __typename: "WatchedQuery";
-      id: number;
-      name: string | null;
-      queryString: string;
-      variables: Variables | null;
-      cachedData: QueryData | null;
-      options: QueryOptions | null;
-      networkStatus: number;
-      pollInterval: number | null;
-      error: {
-        __typename: "SerializedApolloError";
-        clientErrors: Array<string>;
-        protocolErrors: Array<string>;
-        networkError: {
-          __typename: "SerializedError";
-          message: string;
-          name: string;
-          stack: string | null;
+          } | null;
+          graphQLErrors: Array<{
+            __typename: "SerializedGraphQLError";
+            message: string;
+            path: GraphQLErrorPath | null;
+            extensions: JSON | null;
+          }>;
         } | null;
-        graphQLErrors: Array<{
-          __typename: "SerializedGraphQLError";
-          message: string;
-          path: GraphQLErrorPath | null;
-          extensions: JSON | null;
-        }>;
-      } | null;
-    }>;
-  };
+      }>;
+    };
+  } | null;
 };
 
 export type SerializedErrorAlertDisclosureItem_error = {
@@ -233,89 +281,10 @@ export type SerializedErrorAlertDisclosureItem_error = {
   stack: string | null;
 };
 
-export type GetQueriesVariables = Exact<{ [key: string]: never }>;
-
-export type GetQueries = {
-  watchedQueries: {
-    __typename: "WatchedQueries";
-    count: number;
-    queries: Array<{
-      __typename: "WatchedQuery";
-      id: number;
-      name: string | null;
-      queryString: string;
-      variables: Variables | null;
-      cachedData: QueryData | null;
-      options: QueryOptions | null;
-      networkStatus: number;
-      pollInterval: number | null;
-      error: {
-        __typename: "SerializedApolloError";
-        message: string;
-        clientErrors: Array<string>;
-        name: string;
-        protocolErrors: Array<string>;
-        networkError: {
-          __typename: "SerializedError";
-          message: string;
-          name: string;
-          stack: string | null;
-        } | null;
-        graphQLErrors: Array<{
-          __typename: "SerializedGraphQLError";
-          message: string;
-          path: GraphQLErrorPath | null;
-          extensions: JSON | null;
-        }>;
-      } | null;
-    }>;
-  };
+export type ClientFields = {
+  __typename: "Client";
+  id: string;
+  version: string;
+  queries: { __typename: "ClientQueries"; total: number };
+  mutations: { __typename: "ClientMutations"; total: number };
 };
-
-export type GetAllMutationsVariables = Exact<{ [key: string]: never }>;
-
-export type GetAllMutations = {
-  mutationLog: {
-    __typename: "MutationLog";
-    count: number;
-    mutations: Array<{
-      __typename: "WatchedMutation";
-      id: number;
-      name: string | null;
-      mutationString: string;
-      variables: Variables | null;
-      loading: boolean;
-      error:
-        | {
-            __typename: "SerializedApolloError";
-            message: string;
-            clientErrors: Array<string>;
-            name: string;
-            protocolErrors: Array<string>;
-            networkError: {
-              __typename: "SerializedError";
-              message: string;
-              name: string;
-              stack: string | null;
-            } | null;
-            graphQLErrors: Array<{
-              __typename: "SerializedGraphQLError";
-              message: string;
-              path: GraphQLErrorPath | null;
-              extensions: JSON | null;
-            }>;
-          }
-        | {
-            __typename: "SerializedError";
-            message: string;
-            name: string;
-            stack: string | null;
-          }
-        | null;
-    }>;
-  };
-};
-
-export type ClientVersionVariables = Exact<{ [key: string]: never }>;
-
-export type ClientVersion = { clientVersion: string | null };

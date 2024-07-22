@@ -1,3 +1,6 @@
+"Represents JSON cache data"
+scalar Cache
+
 "Represents data for a specific query"
 scalar QueryData
 
@@ -11,12 +14,27 @@ scalar JSON
 scalar GraphQLErrorPath
 
 type Query {
-  clientVersion: String
-  cache: String!
-  mutation(id: ID!): WatchedMutation
-  mutationLog: MutationLog!
-  watchedQueries: WatchedQueries!
-  watchedQuery(id: ID!): WatchedQuery
+  clients: [Client!]!
+  client(id: ID!): Client
+}
+
+type Client {
+  id: String!
+  name: String
+  version: String!
+  queries: ClientQueries!
+  mutations: ClientMutations!
+  cache: Cache!
+}
+
+type ClientQueries {
+  total: Int!
+  items: [WatchedQuery!]!
+}
+
+type ClientMutations {
+  total: Int!
+  items: [WatchedMutation!]!
 }
 
 type WatchedMutation {
@@ -29,11 +47,6 @@ type WatchedMutation {
 }
 
 union WatchedMutationError = SerializedError | SerializedApolloError
-
-type MutationLog {
-  count: Int!
-  mutations: [WatchedMutation!]!
-}
 
 type WatchedQueries {
   count: Int!
@@ -69,6 +82,12 @@ type SerializedError {
 
 type SerializedGraphQLError {
   message: String!
+  locations: [GraphQLErrorSourceLocation!]
   path: GraphQLErrorPath
   extensions: JSON
+}
+
+type GraphQLErrorSourceLocation {
+  line: Int!
+  column: Int!
 }

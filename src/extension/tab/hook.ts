@@ -19,7 +19,7 @@ import {
   getMutations,
   getMainDefinition,
 } from "./helpers";
-import type { QueryResult, SafeAny } from "../../types";
+import type { ApolloClientInfo, QueryResult, SafeAny } from "../../types";
 import { getPrivateAccess } from "../../privateAccess";
 import type { JSONObject } from "../../application/types/json";
 import { createWindowActor } from "../actor";
@@ -28,6 +28,7 @@ import { createWindowMessageAdapter } from "../messageAdapters";
 import { createRpcClient, createRpcHandler } from "../rpc";
 import type { ErrorCodesHandler } from "../background/errorcodes";
 import { loadErrorCodes } from "./loadErrorCodes";
+import { createId } from "../../utils/createId";
 
 declare global {
   type TCache = any;
@@ -54,29 +55,53 @@ const tab = createWindowActor<ClientMessage>(window);
 const messageAdapter = createWindowMessageAdapter(window);
 const handleRpc = createRpcHandler<DevtoolsRPCMessage>(messageAdapter);
 const rpcClient = createRpcClient<ErrorCodesHandler>(messageAdapter);
-const knownClients = new Set<ApolloClient<any>>();
+
+function getQueriesForClient(client: ApolloClient<unknown> | undefined) {
+  const ac = getPrivateAccess(client);
+  if (ac?.queryManager.getObservableQueries) {
+    return getQueries(ac.queryManager.getObservableQueries("active"));
+  } else {
+    return getQueriesLegacy(ac?.queryManager["queries"]);
+  }
+}
+
+function getMutationsForClient(client: ApolloClient<unknown> | undefined) {
+  const ac = getPrivateAccess(client);
+
+  return getMutations(
+    (ac?.queryManager.mutationStore?.getStore
+      ? // @ts-expect-error Apollo Client 3.0 - 3.2
+        ac.queryManager.mutationStore?.getStore()
+      : // Apollo Client 3.3
+        ac?.queryManager.mutationStore) ?? {}
+  );
+}
+
+// Keep a reverse mapping of client -> id to ensure we don't register the same
+// client multiple times.
+const knownClients = new Map<ApolloClient<SafeAny>, string>();
 const hook: Hook = {
-  ApolloClient: undefined,
+  get ApolloClient() {
+    logDeprecation("window.__APOLLO_DEVTOOLS_GLOBAL_HOOK__.ApolloClient");
+
+    return globalClient;
+  },
   version: devtoolsVersion,
   getQueries() {
-    const ac = getPrivateAccess(hook.ApolloClient);
-    if (ac?.queryManager.getObservableQueries) {
-      return getQueries(ac.queryManager.getObservableQueries("active"));
-    } else {
-      return getQueriesLegacy(ac?.queryManager["queries"]);
-    }
+    logDeprecation("window.__APOLLO_DEVTOOLS_GLOBAL_HOOK__.getQueries()");
+
+    return getQueriesForClient(hook.ApolloClient);
   },
   getMutations: () => {
-    const ac = getPrivateAccess(hook.ApolloClient);
-    return getMutations(
-      (ac?.queryManager.mutationStore?.getStore
-        ? // @ts-expect-error Apollo Client 3.0 - 3.2
-          ac.queryManager.mutationStore?.getStore()
-        : // Apollo Client 3.3
-          ac?.queryManager.mutationStore) ?? {}
-    );
+    logDeprecation("window.__APOLLO_DEVTOOLS_GLOBAL_HOOK__.getMutations()");
+
+    return getMutationsForClient(hook.ApolloClient);
   },
-  getCache: () => hook.ApolloClient?.cache.extract(true) ?? {},
+  getCache: () => {
+    logDeprecation("window.__APOLLO_DEVTOOLS_GLOBAL_HOOK__.getCache()");
+
+    return hook.ApolloClient?.cache.extract(true) ?? {};
+  },
 };
 
 Object.defineProperty(window, "__APOLLO_DEVTOOLS_GLOBAL_HOOK__", {
@@ -86,7 +111,35 @@ Object.defineProperty(window, "__APOLLO_DEVTOOLS_GLOBAL_HOOK__", {
   configurable: true,
 });
 
-function getClientData() {
+function getClientInfo(client: ApolloClient<unknown>): ApolloClientInfo {
+  return {
+    id: knownClients.get(client)!,
+    name: "devtoolsConfig" in client ? client.devtoolsConfig.name : undefined,
+    version: client.version,
+    queryCount: getQueriesForClient(client).length,
+    mutationCount: getMutationsForClient(client).length,
+  };
+}
+
+handleRpc("getClients", () => {
+  return [...knownClients.keys()].map(getClientInfo);
+});
+
+handleRpc("getClient", (clientId) => {
+  const client = getClientById(clientId);
+
+  return client ? getClientInfo(client) : null;
+});
+
+handleRpc("getQueries", (clientId) =>
+  getQueriesForClient(getClientById(clientId))
+);
+
+handleRpc("getMutations", (clientId) =>
+  getMutationsForClient(getClientById(clientId))
+);
+
+handleRpc("getCache", (clientId) => {
   // We need to JSON stringify the data here in case the cache contains
   // references to irregular data such as `URL` instances which are not
   // cloneable via `structuredClone` (which `window.postMessage` uses to
@@ -96,35 +149,37 @@ function getClientData() {
   //
   // https://github.com/apollographql/apollo-client-devtools/issues/1258
   return JSON.parse(
-    JSON.stringify({
-      clientVersion: hook.ApolloClient?.version ?? null,
-      queries: hook.getQueries(),
-      mutations: hook.getMutations(),
-      cache: hook.getCache(),
-    })
-  ) as {
-    clientVersion: string | null;
-    queries: QueryDetails[];
-    mutations: MutationDetails[];
-    cache: JSONObject;
-  };
+    JSON.stringify(getClientById(clientId)?.cache.extract(true) ?? {})
+  ) as JSONObject;
+});
+
+function getClientById(clientId: string) {
+  const [client] =
+    [...knownClients.entries()].find(([, id]) => id === clientId) ?? [];
+
+  return client;
 }
 
-handleRpc("getClientOperations", getClientData);
-
 tab.on("connectToClient", () => {
-  if (hook.ApolloClient) {
+  if (globalClient) {
     tab.send({ type: "connectToDevtools" });
   }
 });
 
 tab.on("explorerRequest", (message) => {
   const {
+    clientId,
     operation: queryAst,
     operationName,
     fetchPolicy,
     variables,
   } = message.payload;
+
+  const client = getClientById(clientId);
+
+  if (!client) {
+    throw new Error("Could not find selected client");
+  }
 
   const clonedQueryAst = structuredClone(queryAst) as Writable<typeof queryAst>;
 
@@ -153,15 +208,14 @@ tab.on("explorerRequest", (message) => {
       definition.operation === "mutation"
     ) {
       return new Observable<QueryResult>((observer) => {
-        hook.ApolloClient?.mutate({
-          mutation: clonedQueryAst,
-          variables,
-        }).then((result) => {
-          observer.next(result as QueryResult);
-        });
+        client
+          .mutate({ mutation: clonedQueryAst, variables })
+          .then((result) => {
+            observer.next(result as QueryResult);
+          });
       });
     } else {
-      return hook.ApolloClient?.watchQuery({
+      return client.watchQuery({
         query: clonedQueryAst,
         variables,
         fetchPolicy,
@@ -213,29 +267,27 @@ function watchForClientTermination(client: ApolloClient<any>) {
   const originalStop = client.stop;
 
   client.stop = () => {
+    const clientId = knownClients.get(client)!;
     knownClients.delete(client);
 
     if (window.__APOLLO_CLIENT__ === client) {
       window.__APOLLO_CLIENT__ = undefined;
     }
 
-    if (hook.ApolloClient === client) {
-      hook.ApolloClient = undefined;
-    }
-
-    tab.send({ type: "clientTerminated" });
+    tab.send({ type: "clientTerminated", clientId });
     originalStop.call(client);
   };
 }
 
 function registerClient(client: ApolloClient<any>) {
   if (!knownClients.has(client)) {
-    knownClients.add(client);
+    const id = createId();
+    knownClients.set(client, id);
     watchForClientTermination(client);
-    tab.send({ type: "registerClient" });
+
+    tab.send({ type: "registerClient", payload: getClientInfo(client) });
   }
 
-  hook.ApolloClient = client;
   // TODO: Repurpose this callback. The message it sent was not listened by
   // anything, so the broadcast was useless. Currently the devtools rely on
   // polling the client every second for updates, rather than relying on
@@ -279,4 +331,10 @@ Object.defineProperty(window, "__APOLLO_CLIENT__", {
 
 if (globalClient) {
   registerClient(globalClient);
+}
+
+function logDeprecation(api: string) {
+  console.warn(
+    `[Apollo Client Devtools]: '${api}' is deprecated and will be removed in a future version.`
+  );
 }

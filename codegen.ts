@@ -22,8 +22,9 @@ const config: CodegenConfig = {
         },
         nonOptionalTypename: true,
         omitOperationSuffix: true,
+        useTypeImports: true,
         scalars: {
-          ID: "number",
+          Cache: "./scalars#Cache",
           QueryData: "./scalars#QueryData",
           Variables: "./scalars#Variables",
           QueryOptions: "./scalars#QueryOptions",
@@ -33,6 +34,43 @@ const config: CodegenConfig = {
         skipTypeNameForRoot: true,
       },
       plugins: ["typescript", "typescript-operations"],
+      hooks: {
+        afterOneFileWrite: ["prettier --write"],
+      },
+    },
+    "./src/application/types/resolvers.ts": {
+      config: {
+        defaultScalarType: "unknown",
+        rootValueType: "never",
+        useTypeImports: true,
+        scalars: {
+          QueryData: "./scalars#QueryData",
+          Variables: "./scalars#Variables",
+          QueryOptions: "./scalars#QueryOptions",
+        },
+        mappers: {
+          Client: "../../types.ts#ApolloClientInfo",
+          ClientQueries: "../../types.ts#ApolloClientInfo",
+          ClientMutations: "../../types.ts#ApolloClientInfo",
+          SerializedApolloError:
+            "../../extension/tab/helpers#SerializedApolloError as RpcSerializedApolloError",
+          SerializedError:
+            "../../extension/tab/helpers#SerializedError as RpcSerializedError",
+          SerializedGraphQLError: "graphql#GraphQLFormattedError",
+        },
+      },
+      plugins: [
+        {
+          add: {
+            content: "/* eslint-disable @typescript-eslint/ban-types */",
+          },
+        },
+        "typescript",
+        "typescript-resolvers",
+      ],
+      hooks: {
+        afterOneFileWrite: ["prettier --write"],
+      },
     },
   },
   hooks: {

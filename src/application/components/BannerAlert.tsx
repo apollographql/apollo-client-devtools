@@ -49,8 +49,8 @@ export function BannerAlert() {
 
 BannerAlert.show = (config: BannerAlertConfig) => {
   bannerVar(config);
+};
 
-  return () => {
-    bannerVar(null);
-  };
+BannerAlert.close = () => {
+  bannerVar(null);
 };

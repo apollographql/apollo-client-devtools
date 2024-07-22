@@ -1,6 +1,7 @@
-import { useEffect, useState, useRef } from "react";
+import { useState } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
-import { useReactiveVar, gql, useQuery, makeVar } from "@apollo/client";
+import { useReactiveVar, gql, useQuery } from "@apollo/client";
+import { useMachine } from "@xstate/react";
 
 import { currentScreen, Screens } from "./components/Layouts/Navigation";
 import { Queries } from "./components/Queries/Queries";
@@ -8,21 +9,20 @@ import { Mutations } from "./components/Mutations/Mutations";
 import { Explorer } from "./components/Explorer/Explorer";
 import { Cache } from "./components/Cache/Cache";
 import type {
-  GetOperationCounts,
-  GetOperationCountsVariables,
+  AppQuery,
+  AppQueryVariables,
+  ClientQuery,
+  ClientQueryVariables,
 } from "./types/gql";
 import { Tabs } from "./components/Tabs";
 import { Button } from "./components/Button";
 import IconSettings from "@apollo/icons/default/IconSettings.svg";
-import IconSync from "@apollo/icons/small/IconSync.svg";
 import IconGitHubSolid from "@apollo/icons/small/IconGitHubSolid.svg";
 import { SettingsModal } from "./components/Layouts/SettingsModal";
 import Logo from "@apollo/icons/logos/LogoSymbol.svg";
-import type { BannerAlertConfig } from "./components/BannerAlert";
 import { BannerAlert } from "./components/BannerAlert";
-import type { StateValues as DevtoolsState } from "./machines";
+import { devtoolsMachine } from "./machines/devtoolsMachine";
 import { ClientNotFoundModal } from "./components/ClientNotFoundModal";
-import { getPanelActor } from "../extension/devtools/panelActor";
 import { ButtonGroup } from "./components/ButtonGroup";
 import {
   GitHubIssueLink,
@@ -33,62 +33,31 @@ import { Tooltip } from "./components/Tooltip";
 import { Badge } from "./components/Badge";
 import { GitHubReleaseHoverCard } from "./components/GitHubReleaseHoverCard";
 import { isSnapshotRelease, parseSnapshotRelease } from "./utilities/github";
+import { Select } from "./components/Select";
+import { Divider } from "./components/Divider";
+import { useActorEvent } from "./hooks/useActorEvent";
+import { addClient, removeClient } from ".";
 
-const panelWindow = getPanelActor(window);
-
-export const devtoolsState = makeVar<DevtoolsState>("initialized");
-
-const ALERT_CONFIGS = {
-  initialized: {
-    type: "loading",
-    content: "Looking for client...",
-  },
-  retrying: {
-    type: "loading",
-    content: "Looking for client...",
-  },
-  connected: {
-    type: "success",
-    content: "Connected!",
-  },
-  disconnected: {
-    type: "loading",
-    content: "Disconnected. Looking for client...",
-  },
-  timedout: {
-    type: "error",
-    content:
-      "Unable to communicate with browser tab. Please reload the window and restart the devtools to try again.",
-  },
-  notFound: {
-    type: "error",
-    content: (
-      <div className="flex justify-between items-center">
-        Client not found{" "}
-        <Button
-          size="xs"
-          variant="hidden"
-          icon={<IconSync />}
-          onClick={() => panelWindow.send({ type: "retryConnection" })}
-        >
-          Retry connection
-        </Button>
-      </div>
-    ),
-  },
-} satisfies Record<DevtoolsState, BannerAlertConfig>;
-
-const GET_OPERATION_COUNTS: TypedDocumentNode<
-  GetOperationCounts,
-  GetOperationCountsVariables
-> = gql`
-  query GetOperationCounts {
-    clientVersion @client
-    watchedQueries @client {
-      count
+const APP_QUERY: TypedDocumentNode<AppQuery, AppQueryVariables> = gql`
+  query AppQuery {
+    clients {
+      id
+      name
     }
-    mutationLog @client {
-      count
+  }
+`;
+
+const CLIENT_QUERY: TypedDocumentNode<ClientQuery, ClientQueryVariables> = gql`
+  query ClientQuery($id: ID!) {
+    client(id: $id) {
+      id
+      version
+      queries {
+        total
+      }
+      mutations {
+        total
+      }
     }
   }
 `;
@@ -101,50 +70,81 @@ ${SECTIONS.devtoolsVersion}
 `;
 
 export const App = () => {
-  const mountedRef = useRef(false);
+  const [snapshot, send] = useMachine(
+    devtoolsMachine.provide({
+      actions: {
+        resetStore: () => {
+          apolloClient.resetStore().catch(() => {});
+        },
+      },
+    })
+  );
+  const { data, client: apolloClient } = useQuery(APP_QUERY, {
+    errorPolicy: "all",
+  });
+
+  useActorEvent("connectToDevtools", () => {
+    send({ type: "connect" });
+  });
+
+  useActorEvent("registerClient", (message) => {
+    send({ type: "connect" });
+    addClient(message.payload);
+  });
+
+  useActorEvent("clientTerminated", (message) => {
+    // Disconnect if we are terminating the last client. We assume that 1 client
+    // means we are terminating the selected client
+    if (clients.length === 1) {
+      send({ type: "disconnect" });
+    }
+
+    removeClient(message.clientId);
+  });
+
+  useActorEvent("pageNavigated", () => {
+    send({ type: "disconnect" });
+  });
+
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const { data } = useQuery(GET_OPERATION_COUNTS);
-  const [clientNotFoundModalOpen, setClientNotFoundModalOpen] = useState(false);
+  const [selectedClientId, setSelectedClientId] = useState<string | undefined>(
+    data?.clients[0]?.id
+  );
   const selected = useReactiveVar<Screens>(currentScreen);
-  const state = useReactiveVar(devtoolsState);
   const [embeddedExplorerIFrame, setEmbeddedExplorerIFrame] =
     useState<HTMLIFrameElement | null>(null);
 
-  const clientVersion = data?.clientVersion;
+  const {
+    data: clientData,
+    startPolling,
+    stopPolling,
+  } = useQuery(CLIENT_QUERY, {
+    variables: { id: selectedClientId as string },
+    skip: !selectedClientId,
+    pollInterval: 500,
+  });
 
-  useEffect(() => {
-    let timeout: NodeJS.Timeout;
-    // Don't show connected message on the first render if we are already
-    // connected to the client.
-    if (!mountedRef.current && state === "connected") {
-      return;
-    }
+  const client = clientData?.client;
+  const clients = data?.clients ?? [];
+  const clientIds = clients.map((c) => c.id);
 
-    if (state === "notFound") {
-      setClientNotFoundModalOpen(true);
-    }
+  useActorEvent("panelHidden", () => stopPolling());
+  useActorEvent("panelShown", () => startPolling(500));
 
-    const dismiss = BannerAlert.show(ALERT_CONFIGS[state]);
-
-    if (state === "connected") {
-      setClientNotFoundModalOpen(false);
-      timeout = setTimeout(dismiss, 2500);
-    }
-
-    mountedRef.current = true;
-
-    return () => clearTimeout(timeout);
-  }, [state]);
+  if (
+    (selectedClientId && !clientIds.includes(selectedClientId)) ||
+    (!selectedClientId && clientIds.length > 0)
+  ) {
+    setSelectedClientId(clientIds[0]);
+  }
 
   return (
     <>
+      <SettingsModal open={settingsOpen} onOpen={setSettingsOpen} />
       <ClientNotFoundModal
-        open={clientNotFoundModalOpen}
-        onClose={() => setClientNotFoundModalOpen(false)}
-        onRetry={() => {
-          panelWindow.send({ type: "retryConnection" });
-          setClientNotFoundModalOpen(false);
-        }}
+        open={snapshot.context.modalOpen}
+        onClose={() => send({ type: "closeModal" })}
+        onRetry={() => send({ type: "retry" })}
       />
       <BannerAlert />
       <Tabs
@@ -152,12 +152,12 @@ export const App = () => {
         onChange={(screen) => currentScreen(screen)}
         className="flex flex-col h-screen bg-primary dark:bg-primary-dark"
       >
-        <Tabs.List className="flex items-center px-4">
+        <div className="flex items-center border-b border-b-primary dark:border-b-primary-dark gap-4 px-4">
           <a
             href="https://go.apollo.dev/c/docs"
             target="_blank"
             title="Apollo Client developer documentation"
-            className="block pr-4 border-r border-primary dark:border-primary-dark"
+            className="block"
             rel="noreferrer"
           >
             <Logo
@@ -168,35 +168,52 @@ export const App = () => {
               className="text-icon-primary dark:text-icon-primary-dark"
             />
           </a>
-          <Tabs.Trigger value={Screens.Queries}>
-            Queries ({data?.watchedQueries?.count ?? 0})
-          </Tabs.Trigger>
-          <Tabs.Trigger value={Screens.Mutations}>
-            Mutations ({data?.mutationLog?.count ?? 0})
-          </Tabs.Trigger>
-          <Tabs.Trigger value={Screens.Cache}>Cache</Tabs.Trigger>
-          <Tabs.Trigger value={Screens.Explorer}>Explorer</Tabs.Trigger>
-
-          <div className="ml-auto flex-1 justify-end flex items-center gap-2">
-            {clientVersion && (
-              <GitHubReleaseHoverCard version={clientVersion}>
+          <Divider orientation="vertical" />
+          <Tabs.List className="-mb-px">
+            <Tabs.Trigger value={Screens.Queries}>
+              Queries ({client?.queries.total ?? 0})
+            </Tabs.Trigger>
+            <Tabs.Trigger value={Screens.Mutations}>
+              Mutations ({client?.mutations.total ?? 0})
+            </Tabs.Trigger>
+            <Tabs.Trigger value={Screens.Cache}>Cache</Tabs.Trigger>
+            <Tabs.Trigger value={Screens.Explorer}>Explorer</Tabs.Trigger>
+          </Tabs.List>
+          <div className="ml-auto flex-1 justify-end flex items-center gap-2 h-full">
+            {client?.version && (
+              <GitHubReleaseHoverCard version={client.version}>
                 <a
                   className="no-underline"
                   href={
-                    isSnapshotRelease(clientVersion)
-                      ? `https://github.com/apollographql/apollo-client/pull/${parseSnapshotRelease(clientVersion).prNumber}`
-                      : `https://github.com/apollographql/apollo-client/releases/tag/v${clientVersion}`
+                    isSnapshotRelease(client.version)
+                      ? `https://github.com/apollographql/apollo-client/pull/${parseSnapshotRelease(client.version).prNumber}`
+                      : `https://github.com/apollographql/apollo-client/releases/tag/v${client.version}`
                   }
                   target="_blank"
                   rel="noreferrer"
                 >
                   <Badge variant="info" className="cursor-pointer">
                     Apollo Client <span className="lowercase">v</span>
-                    {clientVersion}
+                    {client.version}
                   </Badge>
                 </a>
               </GitHubReleaseHoverCard>
             )}
+            {clients.length > 1 && (
+              <Select
+                size="sm"
+                className="w-60 ml-2"
+                value={selectedClientId}
+                onValueChange={setSelectedClientId}
+              >
+                {clients.map((client) => (
+                  <Select.Option key={client.id} value={client.id}>
+                    {client.name ?? `Apollo client ${client.id}`}
+                  </Select.Option>
+                ))}
+              </Select>
+            )}
+            <Divider orientation="vertical" className="mx-2" />
             <ButtonGroup>
               <Tooltip content="Report an issue">
                 <Button
@@ -221,8 +238,7 @@ export const App = () => {
               </Tooltip>
             </ButtonGroup>
           </div>
-          <SettingsModal open={settingsOpen} onOpen={setSettingsOpen} />
-        </Tabs.List>
+        </div>
         {/**
          * We need to keep the iframe inside of the `Explorer` loaded at all times
          * so that we don't reload the iframe when we come to this tab
@@ -233,6 +249,7 @@ export const App = () => {
           forceMount
         >
           <Explorer
+            clientId={selectedClientId}
             isVisible={selected === Screens.Explorer}
             embeddedExplorerProps={{
               embeddedExplorerIFrame,
@@ -244,16 +261,22 @@ export const App = () => {
           className="flex-1 overflow-hidden"
           value={Screens.Queries}
         >
-          <Queries explorerIFrame={embeddedExplorerIFrame} />
+          <Queries
+            clientId={selectedClientId}
+            explorerIFrame={embeddedExplorerIFrame}
+          />
         </Tabs.Content>
         <Tabs.Content
           className="flex-1 overflow-hidden"
           value={Screens.Mutations}
         >
-          <Mutations explorerIFrame={embeddedExplorerIFrame} />
+          <Mutations
+            clientId={selectedClientId}
+            explorerIFrame={embeddedExplorerIFrame}
+          />
         </Tabs.Content>
         <Tabs.Content className="flex-1 overflow-hidden" value={Screens.Cache}>
-          <Cache />
+          <Cache clientId={selectedClientId} />
         </Tabs.Content>
       </Tabs>
     </>

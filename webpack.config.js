@@ -111,6 +111,10 @@ export default /** @returns {import("webpack").Configuration} */ (env) => {
           issuer: /\.[jt]sx?$/,
           use: ["@svgr/webpack"],
         },
+        {
+          test: /\.graphql/,
+          type: "asset/source",
+        },
       ],
     },
     optimization: {

@@ -23,21 +23,23 @@ import { List } from "../List";
 import { ListItem } from "../ListItem";
 import { getRootCacheIds } from "./common/utils";
 import HighlightMatch from "../HighlightMatch";
+import { useActorEvent } from "../../hooks/useActorEvent";
 
 const { Sidebar, Main } = SidebarLayout;
 
 const GET_CACHE: TypedDocumentNode<GetCache, GetCacheVariables> = gql`
-  query GetCache {
-    cache @client
+  query GetCache($id: ID!) {
+    client(id: $id) {
+      id
+      cache
+    }
   }
 `;
 
-type Cache = Record<string, JSONObject>;
-
-function filterCache(cache: Cache, searchTerm: string) {
+function filterCache(cache: JSONObject, searchTerm: string) {
   const regex = new RegExp(searchTerm, "i");
 
-  return Object.entries(cache).reduce<Cache>(
+  return Object.entries(cache).reduce<JSONObject>(
     (filteredCache, [cacheKey, value]) => {
       if (regex.test(cacheKey)) {
         filteredCache[cacheKey] = value;
@@ -51,15 +53,27 @@ function filterCache(cache: Cache, searchTerm: string) {
 
 const history = new History("ROOT_QUERY");
 
-export function Cache() {
+const STABLE_EMPTY_OBJ: JSONObject = {};
+
+interface CacheProps {
+  clientId: string | undefined;
+}
+
+export function Cache({ clientId }: CacheProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const cacheId = useSyncExternalStore(history.listen, history.getCurrent);
 
-  const { loading, data } = useQuery(GET_CACHE);
-  const cache = useMemo(
-    () => (data?.cache ? (JSON.parse(data.cache) as Cache) : {}),
-    [data?.cache]
-  );
+  const { loading, data, startPolling, stopPolling } = useQuery(GET_CACHE, {
+    variables: { id: clientId as string },
+    skip: clientId == null,
+    pollInterval: 500,
+    fetchPolicy: "cache-and-network",
+  });
+
+  useActorEvent("panelHidden", () => stopPolling());
+  useActorEvent("panelShown", () => startPolling(500));
+
+  const cache = data?.client?.cache ?? STABLE_EMPTY_OBJ;
 
   const filteredCache = useMemo(
     () => (searchTerm ? filterCache(cache, searchTerm) : cache),

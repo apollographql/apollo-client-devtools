@@ -33,7 +33,7 @@ export interface SerializedApolloError extends Pick<ApolloError, "message"> {
   name: "ApolloError";
   clientErrors: string[];
   networkError?: SerializedError;
-  graphQLErrors: Array<GraphQLFormattedError>;
+  graphQLErrors: ReadonlyArray<GraphQLFormattedError>;
   protocolErrors: string[];
 }
 
@@ -49,7 +49,7 @@ export type QueryDetails = {
   variables?: Variables;
   cachedData?: QueryData; // Not a member of the actual Apollo Client QueryInfo type
   options?: QueryOptions;
-  networkStatus?: NetworkStatus;
+  networkStatus: NetworkStatus;
   error?: SerializedApolloError;
   pollInterval?: number;
 };
@@ -103,7 +103,7 @@ function serializeApolloError(error: ApolloError): SerializedApolloError {
       ? serializeError(error.networkError)
       : undefined,
     message: error.message,
-    graphQLErrors: error.graphQLErrors as unknown as GraphQLFormattedError[],
+    graphQLErrors: error.graphQLErrors,
     protocolErrors: error.protocolErrors.map((e) => e.message),
   };
 }
@@ -156,7 +156,7 @@ export function getQueriesLegacy(
         document,
         variables,
         cachedData: diff?.result,
-        networkStatus,
+        networkStatus: networkStatus ?? 1,
       })
     );
   }

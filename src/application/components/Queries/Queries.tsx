@@ -9,10 +9,7 @@ import IconTime from "@apollo/icons/default/IconTime.svg";
 
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { RunInExplorerButton } from "./RunInExplorerButton";
-import type {
-  GetWatchedQueries,
-  GetWatchedQueriesVariables,
-} from "../../types/gql";
+import type { GetQueries, GetQueriesVariables } from "../../types/gql";
 import { Tabs } from "../Tabs";
 import { JSONTreeViewer } from "../JSONTreeViewer";
 import { QueryLayout } from "../QueryLayout";
@@ -24,6 +21,7 @@ import { StatusBadge } from "../StatusBadge";
 import { AlertDisclosure } from "../AlertDisclosure";
 import { Tooltip } from "../Tooltip";
 import { ApolloErrorAlertDisclosurePanel } from "../ApolloErrorAlertDisclosurePanel";
+import { useActorEvent } from "../../hooks/useActorEvent";
 
 enum QueryTabs {
   Variables = "Variables",
@@ -31,40 +29,48 @@ enum QueryTabs {
   Options = "Options",
 }
 
-const GET_WATCHED_QUERIES: TypedDocumentNode<
-  GetWatchedQueries,
-  GetWatchedQueriesVariables
-> = gql`
-  query GetWatchedQueries {
-    watchedQueries @client {
-      queries {
+export const GET_QUERIES: TypedDocumentNode<GetQueries, GetQueriesVariables> =
+  gql`
+    query GetQueries($clientId: ID!) {
+      client(id: $clientId) {
         id
-        name
-        queryString
-        variables
-        cachedData
-        options
-        networkStatus
-        pollInterval
-        error {
-          ...ApolloErrorAlertDisclosurePanel_error
+        queries {
+          total
+          items {
+            id
+            name
+            queryString
+            variables
+            cachedData
+            options
+            networkStatus
+            pollInterval
+            error {
+              ...ApolloErrorAlertDisclosurePanel_error
+            }
+          }
         }
       }
     }
-  }
 
-  ${ApolloErrorAlertDisclosurePanel.fragments.error}
-`;
+    ${ApolloErrorAlertDisclosurePanel.fragments.error}
+  `;
 
 interface QueriesProps {
+  clientId: string | undefined;
   explorerIFrame: HTMLIFrameElement | null;
 }
 
-export const Queries = ({ explorerIFrame }: QueriesProps) => {
-  const [selected, setSelected] = useState(1);
-  const { data } = useQuery(GET_WATCHED_QUERIES, { returnPartialData: true });
+export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
+  const [selected, setSelected] = useState("1");
+  const { data, startPolling, stopPolling } = useQuery(GET_QUERIES, {
+    variables: { clientId: clientId as string },
+    skip: clientId == null,
+    fetchPolicy: "cache-and-network",
+    pollInterval: 500,
+  });
 
-  const queries = data?.watchedQueries.queries ?? [];
+  const queries = data?.client?.queries.items ?? [];
   const selectedQuery = queries.find((query) => query.id === selected);
   const [currentTab, setCurrentTab] = useState<QueryTabs>(QueryTabs.Variables);
   const copyButtonText = JSON.stringify(
@@ -74,6 +80,9 @@ export const Queries = ({ explorerIFrame }: QueriesProps) => {
   );
 
   const pollInterval = selectedQuery?.pollInterval;
+
+  useActorEvent("panelHidden", () => stopPolling());
+  useActorEvent("panelShown", () => startPolling(500));
 
   if (!selectedQuery && queries.length > 0) {
     setSelected(queries[0].id);

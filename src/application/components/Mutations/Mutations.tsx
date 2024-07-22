@@ -19,23 +19,28 @@ import { StatusBadge } from "../StatusBadge";
 import { AlertDisclosure } from "../AlertDisclosure";
 import { SerializedErrorAlertDisclosureItem } from "../SerializedErrorAlertDisclosureItem";
 import { ApolloErrorAlertDisclosurePanel } from "../ApolloErrorAlertDisclosurePanel";
+import { useActorEvent } from "../../hooks/useActorEvent";
 
 const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
   gql`
-    query GetMutations {
-      mutationLog @client {
+    query GetMutations($id: ID!) {
+      client(id: $id) {
+        id
         mutations {
-          id
-          name
-          mutationString
-          variables
-          loading
-          error {
-            ... on SerializedError {
-              ...SerializedErrorAlertDisclosureItem_error
-            }
-            ... on SerializedApolloError {
-              ...ApolloErrorAlertDisclosurePanel_error
+          total
+          items {
+            id
+            name
+            mutationString
+            variables
+            loading
+            error {
+              ... on SerializedError {
+                ...SerializedErrorAlertDisclosureItem_error
+              }
+              ... on SerializedApolloError {
+                ...ApolloErrorAlertDisclosurePanel_error
+              }
             }
           }
         }
@@ -47,16 +52,25 @@ const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
   `;
 
 interface MutationsProps {
+  clientId: string | undefined;
   explorerIFrame: HTMLIFrameElement | null;
 }
 
-export const Mutations = ({ explorerIFrame }: MutationsProps) => {
+export const Mutations = ({ clientId, explorerIFrame }: MutationsProps) => {
   const [selected, setSelected] = useState<number>(0);
-  const { data } = useQuery(GET_MUTATIONS);
+  const { data, startPolling, stopPolling } = useQuery(GET_MUTATIONS, {
+    variables: { id: clientId as string },
+    skip: clientId == null,
+    fetchPolicy: "cache-and-network",
+    pollInterval: 500,
+  });
 
-  const mutations = data?.mutationLog.mutations ?? [];
+  useActorEvent("panelHidden", () => stopPolling());
+  useActorEvent("panelShown", () => startPolling(500));
+
+  const mutations = data?.client?.mutations?.items ?? [];
   const selectedMutation = mutations.find(
-    (mutation) => mutation.id === selected
+    (mutation) => Number(mutation.id) === selected
   );
 
   if (!selectedMutation && mutations.length > 0) {
@@ -72,8 +86,8 @@ export const Mutations = ({ explorerIFrame }: MutationsProps) => {
               <ListItem
                 key={`${name}-${id}`}
                 className="font-code"
-                onClick={() => setSelected(id)}
-                selected={selected === id}
+                onClick={() => setSelected(Number(id))}
+                selected={selected === Number(id)}
               >
                 <div className="w-full flex items-center justify-between gap-2">
                   <span className="flex-1 overflow-hidden text-ellipsis">

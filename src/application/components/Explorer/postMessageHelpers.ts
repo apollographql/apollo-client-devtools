@@ -1,4 +1,4 @@
-import type { GraphQLError, IntrospectionQuery } from "graphql";
+import type { GraphQLFormattedError, IntrospectionQuery } from "graphql";
 
 import type { JSONValue, JSONPrimitive, JSONObject } from "../../types/json";
 export type { JSONValue, JSONPrimitive, JSONObject };
@@ -22,7 +22,7 @@ export const EXPLORER_SUBSCRIPTION_TERMINATION =
 
 export type ExplorerResponse = {
   data?: JSONValue | undefined;
-  errors?: readonly GraphQLError[] | undefined;
+  errors?: readonly GraphQLFormattedError[] | undefined;
   error?:
     | {
         message: string;
@@ -37,7 +37,7 @@ export type OutgoingMessageEvent =
   | {
       name: "SchemaError";
       error?: string;
-      errors?: readonly GraphQLError[] | undefined;
+      errors?: readonly GraphQLFormattedError[] | undefined;
     }
   | {
       name: "SchemaResponse";
