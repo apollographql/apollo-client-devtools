@@ -1,5 +1,24 @@
 # Changelog
 
+## 4.17.0
+
+### Minor Changes
+
+- [#1418](https://github.com/apollographql/apollo-client-devtools/pull/1418) [`ce416bd`](https://github.com/apollographql/apollo-client-devtools/commit/ce416bdf7447bef75edca14a256e59bad8740cf8) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Add support for inspecting multiple clients. When multiple clients connect to devtools, you can select which to inspect. When combined with Apollo Client [3.11](https://github.com/apollographql/apollo-client/releases/tag/v3.11.0), you can provide a custom name using the new `devtools` option.
+
+  ```js
+  new ApolloClient({
+    devtools: {
+      enabled: true,
+      name: "My Custom Client",
+    },
+  });
+  ```
+
+### Patch Changes
+
+- [#1447](https://github.com/apollographql/apollo-client-devtools/pull/1447) [`c223f14`](https://github.com/apollographql/apollo-client-devtools/commit/c223f140e79a479252cbc8ec60c74fcc08062d67) Thanks [@github-actions](https://github.com/apps/github-actions)! - add error codes for new Apollo Client version
+
 ## 4.16.1
 
 ### Patch Changes
