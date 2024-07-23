@@ -281,10 +281,15 @@ export type SerializedErrorAlertDisclosureItem_error = {
   stack: string | null;
 };
 
-export type ClientFields = {
-  __typename: "Client";
-  id: string;
-  version: string;
-  queries: { __typename: "ClientQueries"; total: number };
-  mutations: { __typename: "ClientMutations"; total: number };
+export type UpdateClientsQueryVariables = Exact<{ [key: string]: never }>;
+
+export type UpdateClientsQuery = {
+  clients: Array<{
+    __typename: "Client";
+    id: string;
+    name: string | null;
+    version: string;
+    queries: { __typename: "ClientQueries"; total: number };
+    mutations: { __typename: "ClientMutations"; total: number };
+  }>;
 };
