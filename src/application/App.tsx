@@ -79,17 +79,23 @@ export const App = () => {
       },
     })
   );
-  const { data, client: apolloClient } = useQuery(APP_QUERY, {
-    errorPolicy: "all",
-  });
+  const {
+    data,
+    client: apolloClient,
+    refetch,
+  } = useQuery(APP_QUERY, { errorPolicy: "all" });
 
   useActorEvent("connectToDevtools", () => {
     send({ type: "connect" });
   });
 
-  useActorEvent("registerClient", (message) => {
+  useActorEvent("registerClient", () => {
     send({ type: "connect" });
-    addClient(message.payload);
+    // Unfortunately after we clear the store above, the query ends up "stuck"
+    // holding onto the old list of clients even if we manually write a cache
+    // update to properly resolve the list. Instead we refetch the list again to
+    // force the query to reload to ensure its in sync with the latest values.
+    refetch();
   });
 
   useActorEvent("clientTerminated", (message) => {
