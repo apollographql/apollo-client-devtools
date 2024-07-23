@@ -133,6 +133,18 @@ function getQueryOptions(observableQuery: ObservableQuery) {
     delete queryOptions.nextFetchPolicy;
   }
 
+  if (queryOptions.context) {
+    queryOptions.context = JSON.parse(
+      JSON.stringify(queryOptions.context, (_key, value) => {
+        if (typeof value === "function") {
+          return `<function>`;
+        }
+
+        return value;
+      })
+    ) as Record<string, unknown>;
+  }
+
   return queryOptions;
 }
 
