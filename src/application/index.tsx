@@ -54,9 +54,11 @@ const cache = new InMemoryCache({
       },
     },
     ClientQueries: {
+      keyFields: false,
       merge: true,
     },
     ClientMutations: {
+      keyFields: false,
       merge: true,
     },
     SerializedApolloError: {
