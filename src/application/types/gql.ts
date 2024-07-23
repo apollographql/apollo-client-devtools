@@ -280,16 +280,3 @@ export type SerializedErrorAlertDisclosureItem_error = {
   name: string;
   stack: string | null;
 };
-
-export type UpdateClientsQueryVariables = Exact<{ [key: string]: never }>;
-
-export type UpdateClientsQuery = {
-  clients: Array<{
-    __typename: "Client";
-    id: string;
-    name: string | null;
-    version: string;
-    queries: { __typename: "ClientQueries"; total: number };
-    mutations: { __typename: "ClientMutations"; total: number };
-  }>;
-};

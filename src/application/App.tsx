@@ -36,7 +36,7 @@ import { isSnapshotRelease, parseSnapshotRelease } from "./utilities/github";
 import { Select } from "./components/Select";
 import { Divider } from "./components/Divider";
 import { useActorEvent } from "./hooks/useActorEvent";
-import { addClient, removeClient } from ".";
+import { removeClient } from ".";
 
 const APP_QUERY: TypedDocumentNode<AppQuery, AppQueryVariables> = gql`
   query AppQuery {

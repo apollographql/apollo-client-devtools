@@ -1,12 +1,7 @@
 import { useEffect } from "react";
 import { createRoot } from "react-dom/client";
-import type { Reference, TypedDocumentNode } from "@apollo/client";
-import {
-  ApolloClient,
-  ApolloProvider,
-  InMemoryCache,
-  gql,
-} from "@apollo/client";
+import type { Reference } from "@apollo/client";
+import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import { SchemaLink } from "@apollo/client/link/schema";
 
 import { colorTheme, listenForThemeChange } from "./theme";
@@ -16,11 +11,6 @@ import * as Tooltip from "@radix-ui/react-tooltip";
 
 import { getRpcClient } from "../extension/devtools/panelRpcClient";
 import { createSchemaWithRpcClient } from "./schema";
-import type { ApolloClientInfo } from "../types";
-import type {
-  UpdateClientsQuery,
-  UpdateClientsQueryVariables,
-} from "./types/gql";
 
 const rpcClient = getRpcClient();
 const schema = createSchemaWithRpcClient(rpcClient);
@@ -71,53 +61,6 @@ const cache = new InMemoryCache({
 });
 
 export const client = new ApolloClient({ cache, link });
-
-const UPDATE_CLIENTS_QUERY: TypedDocumentNode<
-  UpdateClientsQuery,
-  UpdateClientsQueryVariables
-> = gql`
-  query UpdateClientsQuery {
-    clients {
-      id
-      name
-      version
-      queries {
-        total
-      }
-      mutations {
-        total
-      }
-    }
-  }
-`;
-
-export const addClient = (clientData: ApolloClientInfo) => {
-  const result = client.readQuery({ query: UPDATE_CLIENTS_QUERY });
-  const clients = result?.clients ?? [];
-
-  client.writeQuery({
-    query: UPDATE_CLIENTS_QUERY,
-    data: {
-      clients: [
-        ...clients,
-        {
-          __typename: "Client",
-          id: clientData.id,
-          name: clientData.name ?? null,
-          version: clientData.version,
-          queries: {
-            __typename: "ClientQueries",
-            total: clientData.queryCount,
-          },
-          mutations: {
-            __typename: "ClientMutations",
-            total: clientData.mutationCount,
-          },
-        },
-      ],
-    },
-  });
-};
 
 export const removeClient = (clientId: string) => {
   client.cache.modify({
