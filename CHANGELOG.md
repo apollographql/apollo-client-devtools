@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.17.1
+
+### Patch Changes
+
+- [#1454](https://github.com/apollographql/apollo-client-devtools/pull/1454) [`837779a`](https://github.com/apollographql/apollo-client-devtools/commit/837779a35f89834c657fce4f94cf163e7a19024b) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Fix an issue where data would sometimes disappear a few seconds after refreshing the page with no way to recover the data afterward.
+
 ## 4.17.0
 
 ### Minor Changes
