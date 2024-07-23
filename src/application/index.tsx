@@ -1,12 +1,7 @@
 import { useEffect } from "react";
 import { createRoot } from "react-dom/client";
-import type { Reference, TypedDocumentNode } from "@apollo/client";
-import {
-  ApolloClient,
-  ApolloProvider,
-  InMemoryCache,
-  gql,
-} from "@apollo/client";
+import type { Reference } from "@apollo/client";
+import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import { SchemaLink } from "@apollo/client/link/schema";
 
 import { colorTheme, listenForThemeChange } from "./theme";
@@ -16,8 +11,6 @@ import * as Tooltip from "@radix-ui/react-tooltip";
 
 import { getRpcClient } from "../extension/devtools/panelRpcClient";
 import { createSchemaWithRpcClient } from "./schema";
-import type { ApolloClientInfo } from "../types";
-import type { ClientFields } from "./types/gql";
 
 const rpcClient = getRpcClient();
 const schema = createSchemaWithRpcClient(rpcClient);
@@ -51,9 +44,11 @@ const cache = new InMemoryCache({
       },
     },
     ClientQueries: {
+      keyFields: false,
       merge: true,
     },
     ClientMutations: {
+      keyFields: false,
       merge: true,
     },
     SerializedApolloError: {
@@ -66,49 +61,6 @@ const cache = new InMemoryCache({
 });
 
 export const client = new ApolloClient({ cache, link });
-
-export const addClient = (clientData: ApolloClientInfo) => {
-  client.cache.modify({
-    id: "ROOT_QUERY",
-    fields: {
-      clients: (clients) => {
-        const ref = client.writeFragment({
-          fragment: gql`
-            fragment ClientFields on Client {
-              id
-              version
-              queries {
-                total
-              }
-              mutations {
-                total
-              }
-            }
-          ` as TypedDocumentNode<ClientFields>,
-          id: client.cache.identify({
-            __typename: "Client",
-            id: clientData.id,
-          }),
-          data: {
-            __typename: "Client",
-            id: clientData.id,
-            version: clientData.version,
-            queries: {
-              __typename: "ClientQueries",
-              total: clientData.queryCount,
-            },
-            mutations: {
-              __typename: "ClientMutations",
-              total: clientData.mutationCount,
-            },
-          },
-        });
-
-        return ref ? [...clients, ref] : clients;
-      },
-    },
-  });
-};
 
 export const removeClient = (clientId: string) => {
   client.cache.modify({

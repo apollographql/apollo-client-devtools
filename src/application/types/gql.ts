@@ -280,11 +280,3 @@ export type SerializedErrorAlertDisclosureItem_error = {
   name: string;
   stack: string | null;
 };
-
-export type ClientFields = {
-  __typename: "Client";
-  id: string;
-  version: string;
-  queries: { __typename: "ClientQueries"; total: number };
-  mutations: { __typename: "ClientMutations"; total: number };
-};

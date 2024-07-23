@@ -36,7 +36,7 @@ import { isSnapshotRelease, parseSnapshotRelease } from "./utilities/github";
 import { Select } from "./components/Select";
 import { Divider } from "./components/Divider";
 import { useActorEvent } from "./hooks/useActorEvent";
-import { addClient, removeClient } from ".";
+import { removeClient } from ".";
 
 const APP_QUERY: TypedDocumentNode<AppQuery, AppQueryVariables> = gql`
   query AppQuery {
@@ -74,22 +74,28 @@ export const App = () => {
     devtoolsMachine.provide({
       actions: {
         resetStore: () => {
-          apolloClient.resetStore().catch(() => {});
+          apolloClient.clearStore().catch(() => {});
         },
       },
     })
   );
-  const { data, client: apolloClient } = useQuery(APP_QUERY, {
-    errorPolicy: "all",
-  });
+  const {
+    data,
+    client: apolloClient,
+    refetch,
+  } = useQuery(APP_QUERY, { errorPolicy: "all" });
 
   useActorEvent("connectToDevtools", () => {
     send({ type: "connect" });
   });
 
-  useActorEvent("registerClient", (message) => {
+  useActorEvent("registerClient", () => {
     send({ type: "connect" });
-    addClient(message.payload);
+    // Unfortunately after we clear the store above, the query ends up "stuck"
+    // holding onto the old list of clients even if we manually write a cache
+    // update to properly resolve the list. Instead we refetch the list again to
+    // force the query to reload to ensure its in sync with the latest values.
+    refetch();
   });
 
   useActorEvent("clientTerminated", (message) => {
