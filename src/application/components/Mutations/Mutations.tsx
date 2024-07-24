@@ -69,7 +69,6 @@ export const Mutations = ({ clientId, explorerIFrame }: MutationsProps) => {
   const { data, startPolling, stopPolling } = useQuery(GET_MUTATIONS, {
     variables: { id: clientId as string },
     skip: clientId == null,
-    fetchPolicy: "cache-and-network",
     pollInterval: 500,
   });
 
