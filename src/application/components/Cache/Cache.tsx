@@ -67,7 +67,6 @@ export function Cache({ clientId }: CacheProps) {
     variables: { id: clientId as string },
     skip: clientId == null,
     pollInterval: 500,
-    fetchPolicy: "cache-and-network",
   });
 
   useActorEvent("panelHidden", () => stopPolling());
