@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.17.2
+
+### Patch Changes
+
+- [#1456](https://github.com/apollographql/apollo-client-devtools/pull/1456) [`d49777f`](https://github.com/apollographql/apollo-client-devtools/commit/d49777fde348e8697fbf7ccb3f59e99bf2e01ce8) Thanks [@github-actions](https://github.com/apps/github-actions)! - add error codes for new Apollo Client version
+
+- [#1458](https://github.com/apollographql/apollo-client-devtools/pull/1458) [`7bebb72`](https://github.com/apollographql/apollo-client-devtools/commit/7bebb7214314c450cabf447f91855a9c8a4d9df9) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Fix serialization of functions in context
+
 ## 4.17.1
 
 ### Patch Changes
