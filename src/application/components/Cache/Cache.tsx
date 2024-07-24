@@ -7,7 +7,6 @@ import IconArrowRight from "@apollo/icons/small/IconArrowRight.svg";
 
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { SearchField } from "../SearchField";
-import { Loading } from "./common/Loading";
 import type { GetCache, GetCacheVariables } from "../../types/gql";
 import type { JSONObject } from "../../types/json";
 import { JSONTreeViewer } from "../JSONTreeViewer";
@@ -24,6 +23,7 @@ import { ListItem } from "../ListItem";
 import { getRootCacheIds } from "./common/utils";
 import HighlightMatch from "../HighlightMatch";
 import { useActorEvent } from "../../hooks/useActorEvent";
+import { PageSpinner } from "../PageSpinner";
 
 const { Sidebar, Main } = SidebarLayout;
 
@@ -86,9 +86,7 @@ export function Cache({ clientId }: CacheProps) {
   return (
     <SidebarLayout>
       <Sidebar className="flex flex-col h-full">
-        {loading ? (
-          <Loading />
-        ) : dataExists ? (
+        {dataExists ? (
           <Fragment>
             <SearchField
               className="mb-4"
@@ -161,12 +159,10 @@ export function Cache({ clientId }: CacheProps) {
               </h1>
             </div>
           </>
-        ) : (
-          <EmptyMessage className="m-auto mt-20" />
-        )}
+        ) : null}
 
         {loading ? (
-          <Loading />
+          <PageSpinner />
         ) : cacheItem ? (
           <JSONTreeViewer
             data={cacheItem}
@@ -193,7 +189,9 @@ export function Cache({ clientId }: CacheProps) {
             This cache entry was either removed from the cache or does not
             exist.
           </Alert>
-        ) : null}
+        ) : (
+          <EmptyMessage className="m-auto mt-20" />
+        )}
       </Main>
     </SidebarLayout>
   );
