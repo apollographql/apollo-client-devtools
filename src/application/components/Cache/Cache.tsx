@@ -139,7 +139,7 @@ export function Cache({ clientId }: CacheProps) {
               </ButtonGroup>
               <CopyButton
                 size="sm"
-                text={JSON.stringify(cache[cacheId])}
+                text={JSON.stringify(cacheItem)}
                 className={clsx({ invisible: !cacheItem })}
               />
             </div>
