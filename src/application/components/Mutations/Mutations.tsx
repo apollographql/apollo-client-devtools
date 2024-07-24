@@ -22,6 +22,7 @@ import { ApolloErrorAlertDisclosurePanel } from "../ApolloErrorAlertDisclosurePa
 import { useActorEvent } from "../../hooks/useActorEvent";
 import { SearchField } from "../SearchField";
 import HighlightMatch from "../HighlightMatch";
+import { PageSpinner } from "../PageSpinner";
 
 const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
   gql`
@@ -66,7 +67,7 @@ export const Mutations = ({ clientId, explorerIFrame }: MutationsProps) => {
   const [selected, setSelected] = useState<number>(0);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { data, startPolling, stopPolling } = useQuery(GET_MUTATIONS, {
+  const { data, loading, startPolling, stopPolling } = useQuery(GET_MUTATIONS, {
     variables: { id: clientId as string },
     skip: clientId == null,
     pollInterval: 500,
@@ -130,74 +131,82 @@ export const Mutations = ({ clientId, explorerIFrame }: MutationsProps) => {
           })}
         </List>
       </SidebarLayout.Sidebar>
-      <QueryLayout>
-        {selectedMutation ? (
-          <>
-            <QueryLayout.Header>
-              <QueryLayout.Title className="flex gap-6 items-center">
-                {selectedMutation.name}
-                {selectedMutation.loading ? (
-                  <StatusBadge
-                    color="blue"
-                    variant="rounded"
-                    icon={<Spinner size="xs" />}
-                  >
-                    Loading
-                  </StatusBadge>
-                ) : null}
-              </QueryLayout.Title>
-              <RunInExplorerButton
-                operation={selectedMutation.mutationString}
-                variables={selectedMutation.variables ?? undefined}
-                embeddedExplorerIFrame={explorerIFrame}
+      {loading ? (
+        <SidebarLayout.Main>
+          <PageSpinner />
+        </SidebarLayout.Main>
+      ) : (
+        <QueryLayout>
+          {selectedMutation ? (
+            <>
+              <QueryLayout.Header>
+                <QueryLayout.Title className="flex gap-6 items-center">
+                  {selectedMutation.name}
+                  {selectedMutation.loading ? (
+                    <StatusBadge
+                      color="blue"
+                      variant="rounded"
+                      icon={<Spinner size="xs" />}
+                    >
+                      Loading
+                    </StatusBadge>
+                  ) : null}
+                </QueryLayout.Title>
+                <RunInExplorerButton
+                  operation={selectedMutation.mutationString}
+                  variables={selectedMutation.variables ?? undefined}
+                  embeddedExplorerIFrame={explorerIFrame}
+                />
+              </QueryLayout.Header>
+              <QueryLayout.Content>
+                {selectedMutation.error && (
+                  <AlertDisclosure className="mb-2" variant="error">
+                    <AlertDisclosure.Button>
+                      Mutation completed with errors
+                    </AlertDisclosure.Button>
+                    {selectedMutation.error.__typename ===
+                    "SerializedApolloError" ? (
+                      <ApolloErrorAlertDisclosurePanel
+                        error={selectedMutation.error}
+                      />
+                    ) : (
+                      <AlertDisclosure.Panel>
+                        <ul>
+                          <SerializedErrorAlertDisclosureItem
+                            error={selectedMutation.error}
+                          />
+                        </ul>
+                      </AlertDisclosure.Panel>
+                    )}
+                  </AlertDisclosure>
+                )}
+                <QueryLayout.QueryString
+                  code={selectedMutation.mutationString}
+                />
+              </QueryLayout.Content>
+            </>
+          ) : (
+            <EmptyMessage className="m-auto mt-20" />
+          )}
+          <QueryLayout.Tabs defaultValue="variables">
+            <Tabs.List>
+              <Tabs.Trigger value="variables">Variables</Tabs.Trigger>
+              <CopyButton
+                text={JSON.stringify(selectedMutation?.variables ?? {})}
+                size="sm"
+                className="ml-auto relative right-[6px]"
               />
-            </QueryLayout.Header>
-            <QueryLayout.Content>
-              {selectedMutation.error && (
-                <AlertDisclosure className="mb-2" variant="error">
-                  <AlertDisclosure.Button>
-                    Mutation completed with errors
-                  </AlertDisclosure.Button>
-                  {selectedMutation.error.__typename ===
-                  "SerializedApolloError" ? (
-                    <ApolloErrorAlertDisclosurePanel
-                      error={selectedMutation.error}
-                    />
-                  ) : (
-                    <AlertDisclosure.Panel>
-                      <ul>
-                        <SerializedErrorAlertDisclosureItem
-                          error={selectedMutation.error}
-                        />
-                      </ul>
-                    </AlertDisclosure.Panel>
-                  )}
-                </AlertDisclosure>
-              )}
-              <QueryLayout.QueryString code={selectedMutation.mutationString} />
-            </QueryLayout.Content>
-          </>
-        ) : (
-          <EmptyMessage className="m-auto mt-20" />
-        )}
-        <QueryLayout.Tabs defaultValue="variables">
-          <Tabs.List>
-            <Tabs.Trigger value="variables">Variables</Tabs.Trigger>
-            <CopyButton
-              text={JSON.stringify(selectedMutation?.variables ?? {})}
-              size="sm"
-              className="ml-auto relative right-[6px]"
-            />
-          </Tabs.List>
-          <QueryLayout.TabContent value="variables">
-            <JSONTreeViewer
-              hideRoot={!isEmpty(selectedMutation?.variables)}
-              className="[&>li]:!pt-0"
-              data={selectedMutation?.variables ?? {}}
-            />
-          </QueryLayout.TabContent>
-        </QueryLayout.Tabs>
-      </QueryLayout>
+            </Tabs.List>
+            <QueryLayout.TabContent value="variables">
+              <JSONTreeViewer
+                hideRoot={!isEmpty(selectedMutation?.variables)}
+                className="[&>li]:!pt-0"
+                data={selectedMutation?.variables ?? {}}
+              />
+            </QueryLayout.TabContent>
+          </QueryLayout.Tabs>
+        </QueryLayout>
+      )}
     </SidebarLayout>
   );
 };
