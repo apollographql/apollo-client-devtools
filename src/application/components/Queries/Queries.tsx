@@ -74,7 +74,6 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
   const { data, startPolling, stopPolling } = useQuery(GET_QUERIES, {
     variables: { clientId: clientId as string },
     skip: clientId == null,
-    fetchPolicy: "cache-and-network",
     pollInterval: 500,
   });
 
