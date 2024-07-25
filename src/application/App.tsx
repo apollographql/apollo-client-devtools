@@ -45,7 +45,7 @@ import {
   PageErrorBody,
   PageErrorContent,
   PageErrorDetails,
-  PageErrorLink,
+  PageErrorGitHubLink,
   PageErrorTitle,
 } from "./components/PageError";
 import { SidebarLayout } from "./components/Layouts/SidebarLayout";
@@ -333,9 +333,9 @@ function TabErrorBoundary({ children, remarks }: TabErrorBoundaryProps) {
                   </PageErrorTitle>
                   <PageErrorBody>
                     Please try again. If the issue persists, please{" "}
-                    <PageErrorLink error={error} remarks={remarks}>
+                    <PageErrorGitHubLink error={error} remarks={remarks}>
                       open an issue
-                    </PageErrorLink>{" "}
+                    </PageErrorGitHubLink>{" "}
                     to help us diagnose the error.
                   </PageErrorBody>
                 </PageErrorContent>
