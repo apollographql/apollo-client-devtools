@@ -79,12 +79,10 @@ describe("<Mutations />", () => {
       <Mutations clientId="1" explorerIFrame={null} />
     );
 
-    const main = screen.getByTestId("main");
-
     await waitFor(() => {
-      expect(within(main).getByTestId("title")).toHaveTextContent(
-        "(anonymous)"
-      );
+      expect(
+        within(screen.getByTestId("main")).getByTestId("title")
+      ).toHaveTextContent("(anonymous)");
     });
 
     const sidebar = screen.getByRole("complementary");
@@ -92,20 +90,22 @@ describe("<Mutations />", () => {
       user.click(within(sidebar).getByText("AddColorToFavorites"))
     );
     await waitFor(() => {
-      expect(within(main).getByTestId("title")).toHaveTextContent(
+      expect(screen.getByTestId("main")).toHaveTextContent(
         "AddColorToFavorites"
       );
     });
   });
 
-  test("it renders an empty state", () => {
-    mockRpcRequests();
+  test("it renders an empty state", async () => {
+    mockRpcRequests({ mutations: [] });
 
     renderWithApolloClient(<Mutations clientId="1" explorerIFrame={null} />);
 
-    expect(
-      within(screen.getByTestId("main")).getByRole("heading")
-    ).toHaveTextContent("👋 Welcome to Apollo Client Devtools");
+    await waitFor(() => {
+      expect(
+        within(screen.getByTestId("main")).getByRole("heading")
+      ).toHaveTextContent("👋 Welcome to Apollo Client Devtools");
+    });
   });
 
   test("renders the mutation string", async () => {
@@ -187,6 +187,10 @@ describe("<Mutations />", () => {
     const { user } = renderWithApolloClient(
       <Mutations clientId="1" explorerIFrame={null} />
     );
+
+    await waitFor(() => {
+      expect(screen.getByRole("tablist")).toBeInTheDocument();
+    });
 
     const copyButton = within(screen.getByRole("tablist")).getByRole("button");
     await user.click(copyButton);
