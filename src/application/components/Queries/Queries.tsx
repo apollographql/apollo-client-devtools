@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { NetworkStatus, gql, useQuery } from "@apollo/client";
 import { isNetworkRequestInFlight } from "@apollo/client/core/networkStatus";
@@ -7,7 +7,6 @@ import { ListItem } from "../ListItem";
 import IconErrorSolid from "@apollo/icons/default/IconErrorSolid.svg";
 import IconTime from "@apollo/icons/default/IconTime.svg";
 import IconSync from "@apollo/icons/default/IconSync.svg";
-import ErrorPlanet from "../../assets/error-planet.svg";
 
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { RunInExplorerButton } from "./RunInExplorerButton";
@@ -28,7 +27,13 @@ import { SearchField } from "../SearchField";
 import HighlightMatch from "../HighlightMatch";
 import { PageSpinner } from "../PageSpinner";
 import { Button } from "../Button";
-import { GitHubIssueLink, LABELS, SECTIONS } from "../GitHubIssueLink";
+import {
+  PageError,
+  PageErrorBody,
+  PageErrorContent,
+  PageErrorLink,
+  PageErrorTitle,
+} from "../PageError";
 
 enum QueryTabs {
   Variables = "Variables",
@@ -42,7 +47,6 @@ export const GET_QUERIES: TypedDocumentNode<GetQueries, GetQueriesVariables> =
       client(id: $clientId) {
         id
         queries {
-          total
           items {
             id
             name
@@ -95,6 +99,12 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
   );
 
   const pollInterval = selectedQuery?.pollInterval;
+
+  useEffect(() => {
+    if (error) {
+      stopPolling();
+    }
+  }, [stopPolling, error]);
 
   useActorEvent("panelHidden", () => stopPolling());
   useActorEvent("panelShown", () => startPolling(500));
@@ -154,44 +164,32 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
           <PageSpinner />
         </SidebarLayout.Main>
       ) : error ? (
-        <SidebarLayout.Main className="flex flex-col gap-6 items-center">
-          <ErrorPlanet className="w-36" />
-          <div className="text-center">
-            <h1 className="font-heading text-xl font-medium">
-              We&apos;ve run into an unexpected error
-            </h1>
-            <p className="mt-3">
-              Please try loading the queries again. If the issue persists,
-              please{" "}
-              <GitHubIssueLink
-                labels={[LABELS.bug]}
-                body={`
-\`\`\`
-${error.message}
-
-${error.stack}
-\`\`\`
-
-### Additional details
-<!-- Please provide any additional details of the issue here, otherwise feel free to delete this section. -->
-
-${SECTIONS.apolloClientVersion}
-${SECTIONS.devtoolsVersion}
-`}
-              >
-                open an issue
-              </GitHubIssueLink>{" "}
-              to help us diagnose the error.
-            </p>
-          </div>
-          <Button
-            icon={<IconSync />}
-            size="md"
-            variant="primary"
-            onClick={() => refetch()}
-          >
-            Try again
-          </Button>
+        <SidebarLayout.Main>
+          <PageError>
+            <PageErrorContent>
+              <PageErrorTitle>
+                We&apos;ve run into an unexpected error
+              </PageErrorTitle>
+              <PageErrorBody>
+                Please try loading the queries again. If the issue persists,
+                please{" "}
+                <PageErrorLink error={error} remarks="Error on Queries tab:">
+                  open an issue
+                </PageErrorLink>{" "}
+                to help us diagnose the error.
+              </PageErrorBody>
+            </PageErrorContent>
+            <Button
+              icon={<IconSync />}
+              size="md"
+              variant="primary"
+              onClick={() => refetch()}
+              loading={loading}
+              loadingText="Loading"
+            >
+              Try again
+            </Button>
+          </PageError>
         </SidebarLayout.Main>
       ) : (
         <QueryLayout>
