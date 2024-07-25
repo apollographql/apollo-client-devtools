@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { NetworkStatus, gql, useQuery } from "@apollo/client";
 import { isNetworkRequestInFlight } from "@apollo/client/core/networkStatus";
@@ -86,12 +86,6 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
   );
 
   const pollInterval = selectedQuery?.pollInterval;
-
-  useEffect(() => {
-    if (error) {
-      stopPolling();
-    }
-  }, [stopPolling, error]);
 
   useActorEvent("panelHidden", () => stopPolling());
   useActorEvent("panelShown", () => startPolling(500));
