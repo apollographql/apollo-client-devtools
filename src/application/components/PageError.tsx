@@ -45,13 +45,20 @@ export function PageErrorBody({ children }: PageErrorBodyProps) {
 interface PageErrorLinkProps {
   error: Error;
   children: ReactNode;
+  remarks?: string;
 }
 
-export function PageErrorLink({ error, children }: PageErrorLinkProps) {
+export function PageErrorLink({
+  remarks,
+  error,
+  children,
+}: PageErrorLinkProps) {
   return (
     <GitHubIssueLink
       labels={[LABELS.bug]}
       body={`
+${remarks}
+
 \`\`\`
 ${error.message}
 
