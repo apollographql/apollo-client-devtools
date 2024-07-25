@@ -6,7 +6,6 @@ import { List } from "../List";
 import { ListItem } from "../ListItem";
 import IconErrorSolid from "@apollo/icons/default/IconErrorSolid.svg";
 import IconTime from "@apollo/icons/default/IconTime.svg";
-import IconSync from "@apollo/icons/default/IconSync.svg";
 
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { RunInExplorerButton } from "./RunInExplorerButton";
@@ -24,15 +23,6 @@ import { Tooltip } from "../Tooltip";
 import { ApolloErrorAlertDisclosurePanel } from "../ApolloErrorAlertDisclosurePanel";
 import { useActorEvent } from "../../hooks/useActorEvent";
 import { PageSpinner } from "../PageSpinner";
-import { Button } from "../Button";
-import {
-  PageError,
-  PageErrorBody,
-  PageErrorContent,
-  PageErrorDetails,
-  PageErrorGitHubLink,
-  PageErrorTitle,
-} from "../PageError";
 
 enum QueryTabs {
   Variables = "Variables",
