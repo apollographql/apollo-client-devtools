@@ -31,6 +31,7 @@ import {
   PageError,
   PageErrorBody,
   PageErrorContent,
+  PageErrorDetails,
   PageErrorLink,
   PageErrorTitle,
 } from "../PageError";
@@ -164,7 +165,7 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
           <PageSpinner />
         </SidebarLayout.Main>
       ) : error ? (
-        <SidebarLayout.Main>
+        <SidebarLayout.Main className="!overflow-y-auto">
           <PageError>
             <PageErrorContent>
               <PageErrorTitle>
@@ -189,6 +190,7 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
             >
               Try again
             </Button>
+            <PageErrorDetails error={error} />
           </PageError>
         </SidebarLayout.Main>
       ) : (
