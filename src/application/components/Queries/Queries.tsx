@@ -30,7 +30,7 @@ import {
   PageErrorBody,
   PageErrorContent,
   PageErrorDetails,
-  PageErrorLink,
+  PageErrorGitHubLink,
   PageErrorTitle,
 } from "../PageError";
 

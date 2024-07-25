@@ -70,7 +70,7 @@ interface PageErrorLinkProps {
   remarks?: string;
 }
 
-export function PageErrorLink({
+export function PageErrorGitHubLink({
   remarks,
   error,
   children,
