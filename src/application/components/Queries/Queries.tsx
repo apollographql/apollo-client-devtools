@@ -80,6 +80,10 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
     }
   );
 
+  if (error) {
+    throw error;
+  }
+
   const queries = data?.client?.queries.items ?? STABLE_EMPTY_QUERIES;
   const selectedQuery = queries.find((query) => query.id === selected);
   const [currentTab, setCurrentTab] = useState<QueryTabs>(QueryTabs.Variables);
@@ -113,10 +117,6 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
 
     return queries.filter((query) => query.name && regex.test(query.name));
   }, [searchTerm, queries]);
-
-  if (error) {
-    throw error;
-  }
 
   return (
     <SidebarLayout>
