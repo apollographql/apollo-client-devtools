@@ -79,23 +79,19 @@ describe("<Queries />", () => {
 
     renderWithApolloClient(<Queries clientId="1" explorerIFrame={null} />);
 
-    const main = screen.getByTestId("main");
-
     await waitFor(() => {
-      expect(within(main).getByTestId("title")).toHaveTextContent(
-        "(anonymous)"
-      );
+      expect(screen.getByTestId("title")).toHaveTextContent("(anonymous)");
     });
 
     const sidebar = screen.getByRole("complementary");
     await act(() => user.click(within(sidebar).getByText("GetColors")));
     await waitFor(() => {
-      expect(within(main).getByTestId("title")).toHaveTextContent("GetColors");
+      expect(screen.getByTestId("title")).toHaveTextContent("GetColors");
     });
   });
 
   test("it renders an empty state", async () => {
-    mockRpcRequests();
+    mockRpcRequests([]);
     renderWithApolloClient(<Queries clientId="1" explorerIFrame={null} />);
 
     await waitFor(() => {
@@ -163,7 +159,10 @@ describe("<Queries />", () => {
       <Queries clientId="1" explorerIFrame={null} />
     );
 
-    expect(screen.getByText("Variables")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("Variables")).toBeInTheDocument();
+    });
+
     const variablesPanel = within(screen.getByTestId("main")).getByRole(
       "tabpanel"
     );
@@ -208,16 +207,15 @@ describe("<Queries />", () => {
       <Queries clientId="1" explorerIFrame={null} />
     );
 
-    const copyButton = within(screen.getByRole("tablist")).getByRole("button");
-    const variablesPanel = within(screen.getByTestId("main")).getByRole(
-      "tabpanel"
-    );
-
     await waitFor(() => {
       expect(
-        within(variablesPanel).getByText((content) => content.includes("#000"))
+        within(
+          within(screen.getByTestId("main")).getByRole("tabpanel")
+        ).getByText((content) => content.includes("#000"))
       ).toBeInTheDocument();
     });
+
+    const copyButton = within(screen.getByRole("tablist")).getByRole("button");
 
     await act(() => user.click(copyButton));
 
