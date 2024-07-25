@@ -28,7 +28,7 @@ interface PageErrorContentProps {
   children?: ReactNode;
 }
 
-export function PageErrorContent({ children }: PageErrorContentProps) {
+function PageErrorContent({ children }: PageErrorContentProps) {
   return <div className="text-center">{children}</div>;
 }
 
@@ -36,7 +36,7 @@ interface PageErrorTitleProps {
   children?: ReactNode;
 }
 
-export function PageErrorTitle({ children }: PageErrorTitleProps) {
+function PageErrorTitle({ children }: PageErrorTitleProps) {
   return <h1 className="font-heading text-xl font-medium">{children}</h1>;
 }
 
@@ -44,7 +44,7 @@ interface PageErrorBodyProps {
   children: ReactNode;
 }
 
-export function PageErrorBody({ children }: PageErrorBodyProps) {
+function PageErrorBody({ children }: PageErrorBodyProps) {
   return <p className="mt-3 first:mt-0">{children}</p>;
 }
 
@@ -52,7 +52,7 @@ interface PageErrorDetailsProps {
   error: Error;
 }
 
-export function PageErrorDetails({ error }: PageErrorDetailsProps) {
+function PageErrorDetails({ error }: PageErrorDetailsProps) {
   return (
     <details className="text-left w-full">
       <summary className="text-center">Error details</summary>
@@ -70,11 +70,7 @@ interface PageErrorLinkProps {
   remarks?: string;
 }
 
-export function PageErrorGitHubLink({
-  remarks,
-  error,
-  children,
-}: PageErrorLinkProps) {
+function PageErrorGitHubLink({ remarks, error, children }: PageErrorLinkProps) {
   return (
     <GitHubIssueLink
       labels={[LABELS.bug]}
@@ -98,3 +94,10 @@ ${SECTIONS.devtoolsVersion}
     </GitHubIssueLink>
   );
 }
+
+PageError.Content = PageErrorContent;
+PageError.GitHubLink = PageErrorGitHubLink;
+PageError.Details = PageErrorDetails;
+PageError.Body = PageErrorBody;
+PageError.Title = PageErrorTitle;
+PageError.Content = PageErrorContent;

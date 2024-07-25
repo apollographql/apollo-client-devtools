@@ -40,14 +40,7 @@ import { Select } from "./components/Select";
 import { Divider } from "./components/Divider";
 import { useActorEvent } from "./hooks/useActorEvent";
 import { removeClient } from ".";
-import {
-  PageError,
-  PageErrorBody,
-  PageErrorContent,
-  PageErrorDetails,
-  PageErrorGitHubLink,
-  PageErrorTitle,
-} from "./components/PageError";
+import { PageError } from "./components/PageError";
 import { SidebarLayout } from "./components/Layouts/SidebarLayout";
 
 const APP_QUERY: TypedDocumentNode<AppQuery, AppQueryVariables> = gql`
@@ -327,18 +320,18 @@ function TabErrorBoundary({ children, remarks }: TabErrorBoundaryProps) {
             <SidebarLayout.Sidebar />
             <SidebarLayout.Main className="!overflow-y-auto">
               <PageError>
-                <PageErrorContent>
-                  <PageErrorTitle>
+                <PageError.Content>
+                  <PageError.Title>
                     We&apos;ve run into an unexpected error
-                  </PageErrorTitle>
-                  <PageErrorBody>
+                  </PageError.Title>
+                  <PageError.Body>
                     Please try again. If the issue persists, please{" "}
-                    <PageErrorGitHubLink error={error} remarks={remarks}>
+                    <PageError.GitHubLink error={error} remarks={remarks}>
                       open an issue
-                    </PageErrorGitHubLink>{" "}
+                    </PageError.GitHubLink>{" "}
                     to help us diagnose the error.
-                  </PageErrorBody>
-                </PageErrorContent>
+                  </PageError.Body>
+                </PageError.Content>
                 <Button
                   icon={<IconSync />}
                   size="md"
@@ -347,7 +340,7 @@ function TabErrorBoundary({ children, remarks }: TabErrorBoundaryProps) {
                 >
                   Try again
                 </Button>
-                <PageErrorDetails error={error} />
+                <PageError.Details error={error} />
               </PageError>
             </SidebarLayout.Main>
           </SidebarLayout>
