@@ -26,7 +26,7 @@ export const devtoolsMachine = setup({
     connectToClient: () => {
       BannerAlert.show({
         type: "loading",
-        content: "Looking for client...",
+        content: "Waiting for client to connect...",
       });
 
       getPanelActor(window).send({ type: "connectToClient" });
@@ -35,7 +35,7 @@ export const devtoolsMachine = setup({
     notifyDisconnected: () => {
       BannerAlert.show({
         type: "loading",
-        content: "Disconnected. Looking for client...",
+        content: "Disconnected. Waiting for client to connect...",
       });
     },
     notifyConnected: () => {
