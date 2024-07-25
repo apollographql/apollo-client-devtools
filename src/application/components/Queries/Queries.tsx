@@ -6,6 +6,8 @@ import { List } from "../List";
 import { ListItem } from "../ListItem";
 import IconErrorSolid from "@apollo/icons/default/IconErrorSolid.svg";
 import IconTime from "@apollo/icons/default/IconTime.svg";
+import IconSync from "@apollo/icons/default/IconSync.svg";
+import ErrorPlanet from "../../assets/error-planet.svg";
 
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { RunInExplorerButton } from "./RunInExplorerButton";
@@ -25,6 +27,8 @@ import { useActorEvent } from "../../hooks/useActorEvent";
 import { SearchField } from "../SearchField";
 import HighlightMatch from "../HighlightMatch";
 import { PageSpinner } from "../PageSpinner";
+import { Button } from "../Button";
+import { GitHubIssueLink, LABELS, SECTIONS } from "../GitHubIssueLink";
 
 enum QueryTabs {
   Variables = "Variables",
@@ -72,11 +76,14 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
   const [selected, setSelected] = useState("1");
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { loading, data, startPolling, stopPolling } = useQuery(GET_QUERIES, {
-    variables: { clientId: clientId as string },
-    skip: clientId == null,
-    pollInterval: 500,
-  });
+  const { loading, error, data, startPolling, stopPolling, refetch } = useQuery(
+    GET_QUERIES,
+    {
+      variables: { clientId: clientId as string },
+      skip: clientId == null,
+      pollInterval: 500,
+    }
+  );
 
   const queries = data?.client?.queries.items ?? STABLE_EMPTY_QUERIES;
   const selectedQuery = queries.find((query) => query.id === selected);
@@ -145,6 +152,46 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
       {loading ? (
         <SidebarLayout.Main>
           <PageSpinner />
+        </SidebarLayout.Main>
+      ) : error ? (
+        <SidebarLayout.Main className="flex flex-col gap-6 items-center">
+          <ErrorPlanet className="w-36" />
+          <div className="text-center">
+            <h1 className="font-heading text-xl font-medium">
+              We&apos;ve run into an unexpected error
+            </h1>
+            <p className="mt-3">
+              Please try loading the queries again. If the issue persists,
+              please{" "}
+              <GitHubIssueLink
+                labels={[LABELS.bug]}
+                body={`
+\`\`\`
+${error.message}
+
+${error.stack}
+\`\`\`
+
+### Additional details
+<!-- Please provide any additional details of the issue here, otherwise feel free to delete this section. -->
+
+${SECTIONS.apolloClientVersion}
+${SECTIONS.devtoolsVersion}
+`}
+              >
+                open an issue
+              </GitHubIssueLink>{" "}
+              to help us diagnose the error.
+            </p>
+          </div>
+          <Button
+            icon={<IconSync />}
+            size="md"
+            variant="primary"
+            onClick={() => refetch()}
+          >
+            Try again
+          </Button>
         </SidebarLayout.Main>
       ) : (
         <QueryLayout>
