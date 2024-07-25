@@ -63,11 +63,18 @@ export function Cache({ clientId }: CacheProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const cacheId = useSyncExternalStore(history.listen, history.getCurrent);
 
-  const { loading, data, startPolling, stopPolling } = useQuery(GET_CACHE, {
-    variables: { id: clientId as string },
-    skip: clientId == null,
-    pollInterval: 500,
-  });
+  const { loading, data, error, startPolling, stopPolling } = useQuery(
+    GET_CACHE,
+    {
+      variables: { id: clientId as string },
+      skip: clientId == null,
+      pollInterval: 500,
+    }
+  );
+
+  if (error) {
+    throw error;
+  }
 
   useActorEvent("panelHidden", () => stopPolling());
   useActorEvent("panelShown", () => startPolling(500));
