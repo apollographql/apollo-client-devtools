@@ -59,11 +59,18 @@ interface MutationsProps {
 
 export const Mutations = ({ clientId, explorerIFrame }: MutationsProps) => {
   const [selected, setSelected] = useState<number>(0);
-  const { data, loading, startPolling, stopPolling } = useQuery(GET_MUTATIONS, {
-    variables: { id: clientId as string },
-    skip: clientId == null,
-    pollInterval: 500,
-  });
+  const { data, error, loading, startPolling, stopPolling } = useQuery(
+    GET_MUTATIONS,
+    {
+      variables: { id: clientId as string },
+      skip: clientId == null,
+      pollInterval: 500,
+    }
+  );
+
+  if (error) {
+    throw error;
+  }
 
   useActorEvent("panelHidden", () => stopPolling());
   useActorEvent("panelShown", () => startPolling(500));
