@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { useReactiveVar, gql, useQuery } from "@apollo/client";
 import { useMachine } from "@xstate/react";
+import { ErrorBoundary } from "react-error-boundary";
+import IconSync from "@apollo/icons/default/IconSync.svg";
 
 import { currentScreen, Screens } from "./components/Layouts/Navigation";
 import { Queries } from "./components/Queries/Queries";
@@ -37,6 +40,15 @@ import { Select } from "./components/Select";
 import { Divider } from "./components/Divider";
 import { useActorEvent } from "./hooks/useActorEvent";
 import { removeClient } from ".";
+import {
+  PageError,
+  PageErrorBody,
+  PageErrorContent,
+  PageErrorDetails,
+  PageErrorLink,
+  PageErrorTitle,
+} from "./components/PageError";
+import { SidebarLayout } from "./components/Layouts/SidebarLayout";
 
 const APP_QUERY: TypedDocumentNode<AppQuery, AppQueryVariables> = gql`
   query AppQuery {
@@ -273,24 +285,76 @@ export const App = () => {
           className="flex-1 overflow-hidden"
           value={Screens.Queries}
         >
-          <Queries
-            clientId={selectedClientId}
-            explorerIFrame={embeddedExplorerIFrame}
-          />
+          <TabErrorBoundary remarks="Error on Queries tab:">
+            <Queries
+              clientId={selectedClientId}
+              explorerIFrame={embeddedExplorerIFrame}
+            />
+          </TabErrorBoundary>
         </Tabs.Content>
         <Tabs.Content
           className="flex-1 overflow-hidden"
           value={Screens.Mutations}
         >
-          <Mutations
-            clientId={selectedClientId}
-            explorerIFrame={embeddedExplorerIFrame}
-          />
+          <TabErrorBoundary remarks="Error on Mutations tab:">
+            <Mutations
+              clientId={selectedClientId}
+              explorerIFrame={embeddedExplorerIFrame}
+            />
+          </TabErrorBoundary>
         </Tabs.Content>
         <Tabs.Content className="flex-1 overflow-hidden" value={Screens.Cache}>
-          <Cache clientId={selectedClientId} />
+          <TabErrorBoundary remarks="Error on Cache tab:">
+            <Cache clientId={selectedClientId} />
+          </TabErrorBoundary>
         </Tabs.Content>
       </Tabs>
     </>
   );
 };
+
+interface TabErrorBoundaryProps {
+  children?: ReactNode;
+  remarks?: string;
+}
+
+function TabErrorBoundary({ children, remarks }: TabErrorBoundaryProps) {
+  return (
+    <ErrorBoundary
+      fallbackRender={({ error, resetErrorBoundary }) => {
+        return (
+          <SidebarLayout>
+            <SidebarLayout.Sidebar />
+            <SidebarLayout.Main className="!overflow-y-auto">
+              <PageError>
+                <PageErrorContent>
+                  <PageErrorTitle>
+                    We&apos;ve run into an unexpected error
+                  </PageErrorTitle>
+                  <PageErrorBody>
+                    Please try again. If the issue persists, please{" "}
+                    <PageErrorLink error={error} remarks={remarks}>
+                      open an issue
+                    </PageErrorLink>{" "}
+                    to help us diagnose the error.
+                  </PageErrorBody>
+                </PageErrorContent>
+                <Button
+                  icon={<IconSync />}
+                  size="md"
+                  variant="primary"
+                  onClick={resetErrorBoundary}
+                >
+                  Try again
+                </Button>
+                <PageErrorDetails error={error} />
+              </PageError>
+            </SidebarLayout.Main>
+          </SidebarLayout>
+        );
+      }}
+    >
+      {children}
+    </ErrorBoundary>
+  );
+}
