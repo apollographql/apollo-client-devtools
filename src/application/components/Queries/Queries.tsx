@@ -124,6 +124,10 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
     return queries.filter((query) => query.name && regex.test(query.name));
   }, [searchTerm, queries]);
 
+  if (error) {
+    throw error;
+  }
+
   return (
     <SidebarLayout>
       <SidebarLayout.Sidebar>
@@ -163,35 +167,6 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
       {loading ? (
         <SidebarLayout.Main>
           <PageSpinner />
-        </SidebarLayout.Main>
-      ) : error ? (
-        <SidebarLayout.Main className="!overflow-y-auto">
-          <PageError>
-            <PageErrorContent>
-              <PageErrorTitle>
-                We&apos;ve run into an unexpected error
-              </PageErrorTitle>
-              <PageErrorBody>
-                Please try loading the queries again. If the issue persists,
-                please{" "}
-                <PageErrorLink error={error} remarks="Error on Queries tab:">
-                  open an issue
-                </PageErrorLink>{" "}
-                to help us diagnose the error.
-              </PageErrorBody>
-            </PageErrorContent>
-            <Button
-              icon={<IconSync />}
-              size="md"
-              variant="primary"
-              onClick={() => refetch()}
-              loading={loading}
-              loadingText="Loading"
-            >
-              Try again
-            </Button>
-            <PageErrorDetails error={error} />
-          </PageError>
         </SidebarLayout.Main>
       ) : (
         <QueryLayout>
