@@ -3,6 +3,7 @@ import { twMerge } from "tailwind-merge";
 import ErrorPlanet from "../assets/error-planet.svg";
 import { GitHubIssueLink, LABELS, SECTIONS } from "./GitHubIssueLink";
 import type { ReactNode } from "react";
+import { CodeBlock } from "./CodeBlock";
 
 interface PageErrorProps {
   className?: string;
@@ -11,7 +12,12 @@ interface PageErrorProps {
 
 export function PageError({ children, className }: PageErrorProps) {
   return (
-    <div className={twMerge("flex flex-col gap-6 items-center", className)}>
+    <div
+      className={twMerge(
+        "flex flex-col gap-6 items-center max-w-2xl mx-auto",
+        className
+      )}
+    >
       <ErrorPlanet className="w-36" />
       {children}
     </div>
@@ -42,6 +48,22 @@ export function PageErrorBody({ children }: PageErrorBodyProps) {
   return <p className="mt-3 first:mt-0">{children}</p>;
 }
 
+interface PageErrorDetailsProps {
+  error: Error;
+}
+
+export function PageErrorDetails({ error }: PageErrorDetailsProps) {
+  return (
+    <details className="text-left w-full">
+      <summary className="text-center">Error details</summary>
+      <CodeBlock
+        language="plain"
+        code={`${error.name}: ${error.message}\n\n${error.stack}`}
+      />
+    </details>
+  );
+}
+
 interface PageErrorLinkProps {
   error: Error;
   children: ReactNode;
@@ -60,7 +82,7 @@ export function PageErrorLink({
 ${remarks}
 
 \`\`\`
-${error.message}
+${error.name}: ${error.message}
 
 ${error.stack}
 \`\`\`
