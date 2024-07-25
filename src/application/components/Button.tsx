@@ -128,7 +128,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             "aria-hidden": true,
             className: twMerge(iconSize({ size }), icon.props.className),
           })}
-        <Slottable>{children}</Slottable>
+        {asChild ? (
+          <Slottable>{children}</Slottable>
+        ) : children && isValidElement(icon) ? (
+          <span>{children}</span>
+        ) : (
+          children
+        )}
       </Component>
     );
   }
