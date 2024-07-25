@@ -72,6 +72,10 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
     }
   );
 
+  if (error) {
+    throw error;
+  }
+
   const queries = data?.client?.queries.items ?? [];
   const selectedQuery = queries.find((query) => query.id === selected);
   const [currentTab, setCurrentTab] = useState<QueryTabs>(QueryTabs.Variables);
@@ -94,10 +98,6 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
 
   if (!selectedQuery && queries.length > 0) {
     setSelected(queries[0].id);
-  }
-
-  if (error) {
-    throw error;
   }
 
   return (
