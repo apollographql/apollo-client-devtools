@@ -63,7 +63,7 @@ interface QueriesProps {
 
 export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
   const [selected, setSelected] = useState("1");
-  const { loading, error, data, startPolling, stopPolling, refetch } = useQuery(
+  const { loading, error, data, startPolling, stopPolling } = useQuery(
     GET_QUERIES,
     {
       variables: { clientId: clientId as string },
