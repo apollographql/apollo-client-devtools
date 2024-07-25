@@ -43,7 +43,7 @@ describe("<Queries />", () => {
     },
   ];
 
-  function setup(queries: QueryDetails[] = defaultQueries) {
+  function mockRpcRequests(queries: QueryDetails[] = defaultQueries) {
     getRpcClientMock.__adapter.handleRpcRequest("getQueries", () => queries);
     getRpcClientMock.__adapter.handleRpcRequest("getClient", (id) => ({
       id,
@@ -59,7 +59,7 @@ describe("<Queries />", () => {
   });
 
   test("queries render in the sidebar", async () => {
-    setup();
+    mockRpcRequests();
 
     renderWithApolloClient(<Queries clientId="1" explorerIFrame={null} />);
 
@@ -73,7 +73,7 @@ describe("<Queries />", () => {
   });
 
   test("renders query name", async () => {
-    setup();
+    mockRpcRequests();
 
     const user = userEvent.setup();
 
@@ -95,7 +95,7 @@ describe("<Queries />", () => {
   });
 
   test("it renders an empty state", async () => {
-    setup();
+    mockRpcRequests();
     renderWithApolloClient(<Queries clientId="1" explorerIFrame={null} />);
 
     await waitFor(() => {
@@ -106,7 +106,7 @@ describe("<Queries />", () => {
   });
 
   test("renders the query string", async () => {
-    setup();
+    mockRpcRequests();
 
     renderWithApolloClient(<Queries clientId="1" explorerIFrame={null} />);
 
@@ -119,7 +119,7 @@ describe("<Queries />", () => {
 
   test("can copy the query string", async () => {
     window.prompt = jest.fn();
-    setup();
+    mockRpcRequests();
 
     const { user } = renderWithApolloClient(
       <Queries clientId="1" explorerIFrame={null} />
@@ -142,7 +142,7 @@ describe("<Queries />", () => {
   });
 
   test("renders the query data", async () => {
-    setup([
+    mockRpcRequests([
       {
         id: "1",
         document: gql`
@@ -202,7 +202,7 @@ describe("<Queries />", () => {
       networkStatus: NetworkStatus.ready,
     };
 
-    setup([query]);
+    mockRpcRequests([query]);
 
     const { user } = renderWithApolloClient(
       <Queries clientId="1" explorerIFrame={null} />
