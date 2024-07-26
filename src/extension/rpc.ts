@@ -10,8 +10,6 @@ import {
   isRPCResponseMessage,
 } from "./messages";
 
-type MessageCollection = Record<string, (...parameters: SafeAny[]) => SafeAny>;
-
 export interface RpcClient {
   readonly timeout: number;
   withTimeout: (timeoutMs: number) => RpcClient;
@@ -65,9 +63,7 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
   };
 }
 
-export function createRpcHandler<Messages extends MessageCollection>(
-  adapter: MessageAdapter
-) {
+export function createRpcHandler(adapter: MessageAdapter) {
   const listeners = new Map<string, (message: RPCRequestMessage) => void>();
   let removeListener: (() => void) | null = null;
 
@@ -90,13 +86,13 @@ export function createRpcHandler<Messages extends MessageCollection>(
     }
   }
 
-  return function <TName extends keyof Messages & string>(
+  return function <TName extends keyof DevtoolsRPCMessage & string>(
     name: TName,
     handler: (
-      ...params: Parameters<Messages[TName]>
+      ...params: Parameters<DevtoolsRPCMessage[TName]>
     ) =>
-      | NoInfer<Awaited<ReturnType<Messages[TName]>>>
-      | Promise<NoInfer<Awaited<ReturnType<Messages[TName]>>>>
+      | NoInfer<Awaited<ReturnType<DevtoolsRPCMessage[TName]>>>
+      | Promise<NoInfer<Awaited<ReturnType<DevtoolsRPCMessage[TName]>>>>
   ) {
     if (listeners.has(name)) {
       throw new Error("Only one rpc handler can be registered per type");
@@ -105,7 +101,7 @@ export function createRpcHandler<Messages extends MessageCollection>(
     listeners.set(name, async ({ id, params }) => {
       try {
         const result = await Promise.resolve(
-          handler(...(params as Parameters<Messages[TName]>))
+          handler(...(params as Parameters<DevtoolsRPCMessage[TName]>))
         );
 
         adapter.postMessage({

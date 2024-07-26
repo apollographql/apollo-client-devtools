@@ -10,9 +10,8 @@ export type ErrorCodesHandler = {
 };
 browser.runtime.onConnect.addListener((port) => {
   if (port.name === "tab") {
-    const handleRpc = createRpcHandler<ErrorCodesHandler>(
-      createPortMessageAdapter(() => port)
-    );
+    const handleRpc = createRpcHandler(createPortMessageAdapter(() => port));
+
     handleRpc("getErrorCodes", (version) => {
       if (version in allErrorCodes.byVersion) {
         return restoreErrorCodes(allErrorCodes, version);
