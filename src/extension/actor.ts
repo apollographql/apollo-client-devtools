@@ -1,4 +1,4 @@
-import { MessageType, isEventMessage } from "./messages";
+import { MessageType, isActorMessage } from "./messages";
 import type { MessageAdapter } from "./messageAdapters";
 import { createWindowMessageAdapter } from "./messageAdapters";
 import { createId } from "../utils/createId";
@@ -44,7 +44,7 @@ export function createActor(adapter: MessageAdapter): Actor {
   >();
 
   function handleMessage(message: unknown) {
-    if (!isEventMessage(message)) {
+    if (!isActorMessage(message)) {
       return;
     }
 

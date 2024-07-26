@@ -90,7 +90,7 @@ export function isRPCResponseMessage(
   return isDevtoolsMessage(message) && message.type === MessageType.RPCResponse;
 }
 
-export function isEventMessage(
+export function isActorMessage(
   message: unknown
 ): message is ApolloClientDevtoolsEventMessage {
   return isDevtoolsMessage(message) && message.type === MessageType.Event;
