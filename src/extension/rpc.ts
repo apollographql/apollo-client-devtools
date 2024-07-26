@@ -1,31 +1,62 @@
-import type { NoInfer, SafeAny } from "../types";
+import type { ErrorCodes } from "@apollo/client/invariantErrorCodes";
+import type { JSONObject } from "../application/types/json";
+import type { ApolloClientInfo, NoInfer, SafeAny } from "../types";
 import { createId } from "../utils/createId";
 import { RPC_MESSAGE_TIMEOUT } from "./errorMessages";
 import { deserializeError, serializeError } from "./errorSerialization";
 import type { MessageAdapter } from "./messageAdapters";
-import type { RPCRequestMessage, RPCResponseMessage } from "./messages";
-import {
-  MessageType,
-  isRPCRequestMessage,
-  isRPCResponseMessage,
-} from "./messages";
+import { MessageType, isDevtoolsMessage } from "./messages";
+import type { MutationDetails, QueryDetails } from "./tab/helpers";
 
-type MessageCollection = Record<string, (...parameters: SafeAny[]) => SafeAny>;
+export type RPCRequest = {
+  getClients(): ApolloClientInfo[];
+  getClient(id: string): ApolloClientInfo | null;
+  getQueries(clientId: string): QueryDetails[];
+  getMutations(clientId: string): MutationDetails[];
+  getCache(clientId: string): JSONObject;
+  getErrorCodes(version: string): Promise<ErrorCodes | undefined>;
+};
 
-export interface RpcClient<Messages extends MessageCollection> {
+export interface RpcClient {
   readonly timeout: number;
-  withTimeout: (timeoutMs: number) => RpcClient<Messages>;
-  request: <TName extends keyof Messages & string>(
+  withTimeout: (timeoutMs: number) => RpcClient;
+  request: <TName extends keyof RPCRequest & string>(
     name: TName,
-    ...params: Parameters<Messages[TName]>
-  ) => Promise<Awaited<ReturnType<Messages[TName]>>>;
+    ...params: Parameters<RPCRequest[TName]>
+  ) => Promise<Awaited<ReturnType<RPCRequest[TName]>>>;
 }
+
+type RPCErrorResponseMessage = {
+  source: "apollo-client-devtools";
+  type: MessageType.RPCResponse;
+  id: string;
+  sourceId: string;
+  error: { name?: string; message: string; stack?: string };
+};
+
+type RPCSuccessResponseMessage<Result = unknown> = {
+  source: "apollo-client-devtools";
+  type: MessageType.RPCResponse;
+  id: string;
+  sourceId: string;
+  result: Result;
+};
+
+export type RPCRequestMessage<Params extends SafeAny[] = unknown[]> = {
+  source: "apollo-client-devtools";
+  type: MessageType.RPCRequest;
+  id: string;
+  name: string;
+  params: Params;
+};
+
+export type RPCResponseMessage<Result = unknown> =
+  | RPCSuccessResponseMessage<Result>
+  | RPCErrorResponseMessage;
 
 const DEFAULT_TIMEOUT = 30_000;
 
-export function createRpcClient<Messages extends MessageCollection>(
-  adapter: MessageAdapter<RPCRequestMessage>
-): RpcClient<Messages> {
+export function createRpcClient(adapter: MessageAdapter): RpcClient {
   return {
     timeout: DEFAULT_TIMEOUT,
     withTimeout(timeoutMs) {
@@ -67,9 +98,7 @@ export function createRpcClient<Messages extends MessageCollection>(
   };
 }
 
-export function createRpcHandler<Messages extends MessageCollection>(
-  adapter: MessageAdapter<RPCResponseMessage>
-) {
+export function createRpcHandler(adapter: MessageAdapter) {
   const listeners = new Map<string, (message: RPCRequestMessage) => void>();
   let removeListener: (() => void) | null = null;
 
@@ -92,13 +121,13 @@ export function createRpcHandler<Messages extends MessageCollection>(
     }
   }
 
-  return function <TName extends keyof Messages & string>(
+  return function <TName extends keyof RPCRequest & string>(
     name: TName,
     handler: (
-      ...params: Parameters<Messages[TName]>
+      ...params: Parameters<RPCRequest[TName]>
     ) =>
-      | NoInfer<Awaited<ReturnType<Messages[TName]>>>
-      | Promise<NoInfer<Awaited<ReturnType<Messages[TName]>>>>
+      | NoInfer<Awaited<ReturnType<RPCRequest[TName]>>>
+      | Promise<NoInfer<Awaited<ReturnType<RPCRequest[TName]>>>>
   ) {
     if (listeners.has(name)) {
       throw new Error("Only one rpc handler can be registered per type");
@@ -107,7 +136,7 @@ export function createRpcHandler<Messages extends MessageCollection>(
     listeners.set(name, async ({ id, params }) => {
       try {
         const result = await Promise.resolve(
-          handler(...(params as Parameters<Messages[TName]>))
+          handler(...(params as Parameters<RPCRequest[TName]>))
         );
 
         adapter.postMessage({
@@ -138,4 +167,14 @@ export function createRpcHandler<Messages extends MessageCollection>(
       }
     };
   };
+}
+
+export function isRPCRequestMessage(
+  message: unknown
+): message is RPCRequestMessage {
+  return isDevtoolsMessage(message) && message.type === MessageType.RPCRequest;
+}
+
+function isRPCResponseMessage(message: unknown): message is RPCResponseMessage {
+  return isDevtoolsMessage(message) && message.type === MessageType.RPCResponse;
 }

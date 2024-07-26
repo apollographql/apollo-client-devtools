@@ -1,4 +1,3 @@
-import type { DevtoolsRPCMessage } from "../extension/messages";
 import type { RpcClient } from "../extension/rpc";
 import typeDefs from "./localSchema.graphql";
 import { makeExecutableSchema } from "@graphql-tools/schema";
@@ -6,16 +5,14 @@ import type { Resolvers } from "./types/resolvers";
 import { getOperationName } from "@apollo/client/utilities";
 import { print } from "graphql";
 
-export function createSchemaWithRpcClient(
-  rpcClient: RpcClient<DevtoolsRPCMessage>
-) {
+export function createSchemaWithRpcClient(rpcClient: RpcClient) {
   return makeExecutableSchema({
     typeDefs,
     resolvers: createResolvers(rpcClient),
   });
 }
 
-function createResolvers(client: RpcClient<DevtoolsRPCMessage>): Resolvers {
+function createResolvers(client: RpcClient): Resolvers {
   const rpcClient = client.withTimeout(3000);
 
   return {

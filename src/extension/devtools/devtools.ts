@@ -1,6 +1,5 @@
 import browser from "webextension-polyfill";
 import type { Actor } from "../actor";
-import type { PanelMessage } from "../messages";
 import { getPanelActor } from "./panelActor";
 import {
   createMessageBridge,
@@ -15,7 +14,7 @@ const portAdapter = createPortMessageAdapter(() =>
 );
 
 let connectedToPanel = false;
-let panelWindow: Actor<PanelMessage>;
+let panelWindow: Actor;
 
 async function createDevtoolsPanel() {
   const panel = await browser.devtools.panels.create(

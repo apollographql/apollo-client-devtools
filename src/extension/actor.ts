@@ -1,37 +1,57 @@
-import type {
-  ApolloClientDevtoolsEventMessage,
-  MessageFormat,
-} from "./messages";
-import { MessageType, isEventMessage } from "./messages";
+import { MessageType, isDevtoolsMessage } from "./messages";
 import type { MessageAdapter } from "./messageAdapters";
 import { createWindowMessageAdapter } from "./messageAdapters";
 import { createId } from "../utils/createId";
+import type { ApolloClientInfo, ExplorerResponse } from "../types";
+import type { DocumentNode, FetchPolicy } from "@apollo/client";
+import type { JSONObject } from "../application/types/json";
 
-export interface Actor<Messages extends MessageFormat> {
-  on: <TName extends Messages["type"]>(
+export type ActorMessage =
+  | { type: "registerClient"; payload: ApolloClientInfo }
+  | { type: "clientTerminated"; clientId: string }
+  | {
+      type: "explorerRequest";
+      payload: {
+        clientId: string;
+        operation: DocumentNode;
+        operationName: string | undefined;
+        variables: JSONObject | undefined;
+        fetchPolicy: FetchPolicy;
+      };
+    }
+  | { type: "explorerResponse"; payload: ExplorerResponse }
+  | { type: "explorerSubscriptionTermination" }
+  | { type: "pageNavigated" }
+  | { type: "initializePanel" }
+  | { type: "panelHidden" }
+  | { type: "panelShown" };
+
+export type ApolloClientDevtoolsActorMessage = {
+  id: string;
+  source: "apollo-client-devtools";
+  type: MessageType.Actor;
+  message: ActorMessage;
+};
+
+export interface Actor {
+  on: <TName extends ActorMessage["type"]>(
     name: TName,
-    callback: Extract<Messages, { type: TName }> extends infer Message
+    callback: Extract<ActorMessage, { type: TName }> extends infer Message
       ? (message: Message) => void
       : never
   ) => () => void;
-  send: (message: Messages) => void;
+  send: (message: ActorMessage) => void;
 }
 
-export function createActor<
-  Messages extends MessageFormat = {
-    type: "Error: Pass <Messages> to `createActor<Messages>()`";
-  },
->(
-  adapter: MessageAdapter<ApolloClientDevtoolsEventMessage<Messages>>
-): Actor<Messages> {
+export function createActor(adapter: MessageAdapter): Actor {
   let removeListener: (() => void) | null = null;
   const messageListeners = new Map<
-    Messages["type"],
-    Set<(message: Messages) => void>
+    ActorMessage["type"],
+    Set<(message: ActorMessage) => void>
   >();
 
   function handleMessage(message: unknown) {
-    if (!isEventMessage<Messages>(message)) {
+    if (!isActorMessage(message)) {
       return;
     }
 
@@ -57,12 +77,12 @@ export function createActor<
     }
   }
 
-  const on: Actor<Messages>["on"] = (name, callback) => {
+  const on: Actor["on"] = (name, callback) => {
     let listeners = messageListeners.get(name) as Set<typeof callback>;
 
     if (!listeners) {
       listeners = new Set();
-      messageListeners.set(name, listeners as Set<(message: Messages) => void>);
+      messageListeners.set(name, listeners);
     }
 
     listeners.add(callback);
@@ -87,17 +107,19 @@ export function createActor<
       adapter.postMessage({
         id: createId(),
         source: "apollo-client-devtools",
-        type: MessageType.Event,
+        type: MessageType.Actor,
         message,
       });
     },
   };
 }
 
-export function createWindowActor<
-  Messages extends MessageFormat = {
-    type: "Error: Pass <Messages> to `createWindowActor<Messages>()`";
-  },
->(window: Window) {
-  return createActor<Messages>(createWindowMessageAdapter(window));
+export function createWindowActor(window: Window) {
+  return createActor(createWindowMessageAdapter(window));
+}
+
+function isActorMessage(
+  message: unknown
+): message is ApolloClientDevtoolsActorMessage {
+  return isDevtoolsMessage(message) && message.type === MessageType.Actor;
 }
