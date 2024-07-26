@@ -67,15 +67,3 @@ export function isDevtoolsMessage(
     message.source === "apollo-client-devtools"
   );
 }
-
-export function isRPCRequestMessage(
-  message: unknown
-): message is RPCRequestMessage {
-  return isDevtoolsMessage(message) && message.type === MessageType.RPCRequest;
-}
-
-export function isRPCResponseMessage(
-  message: unknown
-): message is RPCResponseMessage {
-  return isDevtoolsMessage(message) && message.type === MessageType.RPCResponse;
-}

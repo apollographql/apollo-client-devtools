@@ -5,12 +5,8 @@ import { createId } from "../utils/createId";
 import { RPC_MESSAGE_TIMEOUT } from "./errorMessages";
 import { deserializeError, serializeError } from "./errorSerialization";
 import type { MessageAdapter } from "./messageAdapters";
-import type { RPCRequestMessage } from "./messages";
-import {
-  MessageType,
-  isRPCRequestMessage,
-  isRPCResponseMessage,
-} from "./messages";
+import type { RPCRequestMessage, RPCResponseMessage } from "./messages";
+import { MessageType, isDevtoolsMessage } from "./messages";
 import type { MutationDetails, QueryDetails } from "./tab/helpers";
 
 export type DevtoolsRPCMessage = {
@@ -144,4 +140,14 @@ export function createRpcHandler(adapter: MessageAdapter) {
       }
     };
   };
+}
+
+export function isRPCRequestMessage(
+  message: unknown
+): message is RPCRequestMessage {
+  return isDevtoolsMessage(message) && message.type === MessageType.RPCRequest;
+}
+
+function isRPCResponseMessage(message: unknown): message is RPCResponseMessage {
+  return isDevtoolsMessage(message) && message.type === MessageType.RPCResponse;
 }
