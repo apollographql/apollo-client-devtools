@@ -1,7 +1,7 @@
 import { createActor } from "../actor";
 import { MessageType } from "../messages";
 
-function createTestAdapter<Messages = unknown>() {
+function createTestAdapter() {
   let listener: ((message: unknown) => void) | null;
   const removeListener = jest.fn(() => {
     listener = null;
@@ -12,7 +12,7 @@ function createTestAdapter<Messages = unknown>() {
     simulatePlainMessage: (message: unknown) => {
       listener?.(message);
     },
-    simulateDevtoolsMessage: (message: Messages) => {
+    simulateDevtoolsMessage: (message: Record<string, unknown>) => {
       listener?.({
         source: "apollo-client-devtools",
         type: MessageType.Event,
@@ -29,70 +29,65 @@ function createTestAdapter<Messages = unknown>() {
 }
 
 test("sends messages to specified adapter in devtools message format", () => {
-  type Message = { type: "test"; payload: string };
-
   const adapter = createTestAdapter();
-  const actor = createActor<Message>(adapter);
+  const actor = createActor(adapter);
 
-  actor.send({ type: "test", payload: "Hello" });
+  actor.send({ type: "clientTerminated", clientId: "1" });
 
   expect(adapter.postMessage).toHaveBeenCalledWith({
     id: expect.any(String),
     source: "apollo-client-devtools",
     type: MessageType.Event,
     message: {
-      type: "test",
-      payload: "Hello",
+      type: "clientTerminated",
+      clientId: "1",
     },
   });
 });
 
 test("calls message callback when subscribing to a message", () => {
-  type Message = { type: "connect"; payload: string } | { type: "disconnect" };
-
-  const adapter = createTestAdapter<Message>();
-  const actor = createActor<Message>(adapter);
+  const adapter = createTestAdapter();
+  const actor = createActor(adapter);
 
   const handleConnect = jest.fn();
   const handleDisconnect = jest.fn();
 
-  actor.on("connect", handleConnect);
-  actor.on("disconnect", handleDisconnect);
+  actor.on("initializePanel", handleConnect);
+  actor.on("clientTerminated", handleDisconnect);
 
-  adapter.simulateDevtoolsMessage({
-    type: "connect",
-    payload: "Connected!",
-  });
+  adapter.simulateDevtoolsMessage({ type: "initializePanel" });
 
   expect(handleConnect).toHaveBeenCalledTimes(1);
-  expect(handleConnect).toHaveBeenCalledWith({
-    type: "connect",
-    payload: "Connected!",
-  });
+  expect(handleConnect).toHaveBeenCalledWith({ type: "initializePanel" });
   expect(handleDisconnect).not.toHaveBeenCalled();
 
-  adapter.simulateDevtoolsMessage({ type: "disconnect" });
-  adapter.simulateDevtoolsMessage({ type: "disconnect" });
+  adapter.simulateDevtoolsMessage({ type: "clientTerminated", clientId: "1" });
+  adapter.simulateDevtoolsMessage({ type: "clientTerminated", clientId: "2" });
 
   expect(handleDisconnect).toHaveBeenCalledTimes(2);
-  expect(handleDisconnect).toHaveBeenCalledWith({ type: "disconnect" });
+  expect(handleDisconnect).toHaveBeenCalledWith({
+    type: "clientTerminated",
+    clientId: "1",
+  });
+  expect(handleDisconnect).toHaveBeenCalledWith({
+    type: "clientTerminated",
+    clientId: "2",
+  });
 });
 
 test("calls all listeners for the same message", () => {
-  type Message = { type: "test" };
-
-  const adapter = createTestAdapter<Message>();
-  const actor = createActor<Message>(adapter);
+  const adapter = createTestAdapter();
+  const actor = createActor(adapter);
 
   const handleMessage = jest.fn();
   const handleMessage2 = jest.fn();
   const handleMessage3 = jest.fn();
 
-  actor.on("test", handleMessage);
-  actor.on("test", handleMessage2);
-  actor.on("test", handleMessage3);
+  actor.on("initializePanel", handleMessage);
+  actor.on("initializePanel", handleMessage2);
+  actor.on("initializePanel", handleMessage3);
 
-  adapter.simulateDevtoolsMessage({ type: "test" });
+  adapter.simulateDevtoolsMessage({ type: "initializePanel" });
 
   expect(handleMessage).toHaveBeenCalledTimes(1);
   expect(handleMessage2).toHaveBeenCalledTimes(1);
@@ -100,14 +95,13 @@ test("calls all listeners for the same message", () => {
 });
 
 test("ignores messages that don't originate from devtools", () => {
-  type Message = { type: "test" };
   const adapter = createTestAdapter();
-  const actor = createActor<Message>(adapter);
+  const actor = createActor(adapter);
 
   const handleMessage = jest.fn();
-  actor.on("test", handleMessage);
+  actor.on("initializePanel", handleMessage);
 
-  adapter.simulatePlainMessage({ type: "test" });
+  adapter.simulatePlainMessage({ type: "initializePanel" });
 
   expect(handleMessage).not.toHaveBeenCalled();
 });
@@ -115,17 +109,16 @@ test("ignores messages that don't originate from devtools", () => {
 test.each([MessageType.RPCRequest, MessageType.RPCResponse])(
   "ignores messages that are %s messages",
   (messageType) => {
-    type Message = { type: "test" };
     const adapter = createTestAdapter();
-    const actor = createActor<Message>(adapter);
+    const actor = createActor(adapter);
 
     const handleMessage = jest.fn();
-    actor.on("test", handleMessage);
+    actor.on("initializePanel", handleMessage);
 
     adapter.simulatePlainMessage({
       source: "apollo-client-devtools",
       type: messageType,
-      message: { type: "test" },
+      message: { type: "initializePanel" },
     });
 
     expect(handleMessage).not.toHaveBeenCalled();
@@ -133,67 +126,57 @@ test.each([MessageType.RPCRequest, MessageType.RPCResponse])(
 );
 
 test("does not add listener to adapter until first subscribed actor listener", () => {
-  type Message = { type: "test" };
-
   const adapter = createTestAdapter();
-  const actor = createActor<Message>(adapter);
+  const actor = createActor(adapter);
 
   expect(adapter.addListener).not.toHaveBeenCalled();
 
-  actor.send({ type: "test" });
+  actor.send({ type: "initializePanel" });
   expect(adapter.addListener).not.toHaveBeenCalled();
 
-  actor.on("test", () => {});
+  actor.on("initializePanel", () => {});
   expect(adapter.addListener).toHaveBeenCalledTimes(1);
 });
 
 test("adds a single listener to adapter regardless of subscribed actor listeners", () => {
-  type Message =
-    | { type: "test" }
-    | { type: "greet" }
-    | { type: "connect" }
-    | { type: "disconnect" };
-
   const adapter = createTestAdapter();
-  const actor = createActor<Message>(adapter);
+  const actor = createActor(adapter);
 
-  actor.on("test", () => {});
-  actor.on("greet", () => {});
-  actor.on("disconnect", () => {});
-  actor.on("connect", () => {});
+  actor.on("initializePanel", () => {});
+  actor.on("registerClient", () => {});
+  actor.on("clientTerminated", () => {});
+  actor.on("panelShown", () => {});
 
   expect(adapter.addListener).toHaveBeenCalledTimes(1);
 });
 
 test("can unsubscribe from a message by calling the returned function", () => {
-  type Message = { type: "test" };
-  const adapter = createTestAdapter<Message>();
-  const actor = createActor<Message>(adapter);
+  const adapter = createTestAdapter();
+  const actor = createActor(adapter);
 
   const handleMessage = jest.fn();
-  const unsubscribe = actor.on("test", handleMessage);
+  const unsubscribe = actor.on("initializePanel", handleMessage);
 
-  adapter.simulateDevtoolsMessage({ type: "test" });
+  adapter.simulateDevtoolsMessage({ type: "initializePanel" });
 
   expect(handleMessage).toHaveBeenCalledTimes(1);
 
   handleMessage.mockClear();
   unsubscribe();
 
-  adapter.simulateDevtoolsMessage({ type: "test" });
+  adapter.simulateDevtoolsMessage({ type: "initializePanel" });
 
   expect(handleMessage).not.toHaveBeenCalled();
 });
 
 test("removes listener on adapter when unsubscribing from last actor listener", () => {
-  type Message = { type: "connect" } | { type: "disconnect" };
-  const adapter = createTestAdapter<Message>();
-  const actor = createActor<Message>(adapter);
+  const adapter = createTestAdapter();
+  const actor = createActor(adapter);
 
   const handleConnect = jest.fn();
   const handleDisconnect = jest.fn();
-  const unsubscribeConnect = actor.on("connect", handleConnect);
-  const unsubscribeDisconnect = actor.on("connect", handleDisconnect);
+  const unsubscribeConnect = actor.on("initializePanel", handleConnect);
+  const unsubscribeDisconnect = actor.on("clientTerminated", handleDisconnect);
 
   unsubscribeConnect();
 
@@ -205,12 +188,11 @@ test("removes listener on adapter when unsubscribing from last actor listener", 
 });
 
 test("re-adds listener on adapter when subscribing actor listener after disconnecting", () => {
-  type Message = { type: "connect" };
-  const adapter = createTestAdapter<Message>();
-  const actor = createActor<Message>(adapter);
+  const adapter = createTestAdapter();
+  const actor = createActor(adapter);
 
   const handleConnect = jest.fn();
-  const unsubscribeConnect = actor.on("connect", handleConnect);
+  const unsubscribeConnect = actor.on("initializePanel", handleConnect);
 
   expect(adapter.addListener).toHaveBeenCalledTimes(1);
 
@@ -219,6 +201,6 @@ test("re-adds listener on adapter when subscribing actor listener after disconne
 
   adapter.addListener.mockClear();
 
-  actor.on("connect", handleConnect);
+  actor.on("initializePanel", handleConnect);
   expect(adapter.addListener).toHaveBeenCalledTimes(1);
 });
