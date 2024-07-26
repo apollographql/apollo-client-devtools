@@ -111,6 +111,8 @@ export type PanelMessage =
   | { type: "panelHidden" }
   | { type: "panelShown" };
 
+export type EventMessage = PanelMessage | ClientMessage;
+
 export type DevtoolsRPCMessage = {
   getClients(): ApolloClientInfo[];
   getClient(id: string): ApolloClientInfo | null;
