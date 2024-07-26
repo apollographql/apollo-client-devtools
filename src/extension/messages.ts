@@ -1,11 +1,6 @@
 import type { SafeAny } from "../types";
 import type { ActorMessage } from "./actor";
 
-export interface MessageFormat {
-  type: string;
-  [key: string]: unknown;
-}
-
 export const enum MessageType {
   RPCRequest = "rpcRequest",
   RPCResponse = "rpcResponse",
