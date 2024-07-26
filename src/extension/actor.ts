@@ -1,4 +1,3 @@
-import type { ApolloClientDevtoolsActorMessage } from "./messages";
 import { MessageType, isDevtoolsMessage } from "./messages";
 import type { MessageAdapter } from "./messageAdapters";
 import { createWindowMessageAdapter } from "./messageAdapters";
@@ -26,6 +25,13 @@ export type ActorMessage =
   | { type: "initializePanel" }
   | { type: "panelHidden" }
   | { type: "panelShown" };
+
+export type ApolloClientDevtoolsActorMessage = {
+  id: string;
+  source: "apollo-client-devtools";
+  type: MessageType.Event;
+  message: ActorMessage;
+};
 
 export interface Actor {
   on: <TName extends ActorMessage["type"]>(
