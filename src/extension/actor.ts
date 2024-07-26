@@ -6,7 +6,7 @@ import type { ApolloClientInfo, ExplorerResponse } from "../types";
 import type { DocumentNode, FetchPolicy } from "@apollo/client";
 import type { JSONObject } from "../application/types/json";
 
-export type EventMessage =
+export type ActorMessage =
   | { type: "registerClient"; payload: ApolloClientInfo }
   | { type: "clientTerminated"; clientId: string }
   | {
@@ -27,20 +27,20 @@ export type EventMessage =
   | { type: "panelShown" };
 
 export interface Actor {
-  on: <TName extends EventMessage["type"]>(
+  on: <TName extends ActorMessage["type"]>(
     name: TName,
-    callback: Extract<EventMessage, { type: TName }> extends infer Message
+    callback: Extract<ActorMessage, { type: TName }> extends infer Message
       ? (message: Message) => void
       : never
   ) => () => void;
-  send: (message: EventMessage) => void;
+  send: (message: ActorMessage) => void;
 }
 
 export function createActor(adapter: MessageAdapter): Actor {
   let removeListener: (() => void) | null = null;
   const messageListeners = new Map<
-    EventMessage["type"],
-    Set<(message: EventMessage) => void>
+    ActorMessage["type"],
+    Set<(message: ActorMessage) => void>
   >();
 
   function handleMessage(message: unknown) {
@@ -77,7 +77,7 @@ export function createActor(adapter: MessageAdapter): Actor {
       listeners = new Set();
       messageListeners.set(
         name,
-        listeners as Set<(message: EventMessage) => void>
+        listeners as Set<(message: ActorMessage) => void>
       );
     }
 

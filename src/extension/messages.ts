@@ -1,7 +1,7 @@
 import type { ApolloClientInfo, SafeAny } from "../types";
 import type { JSONObject } from "../application/types/json";
 import type { MutationDetails, QueryDetails } from "./tab/helpers";
-import type { EventMessage } from "./actor";
+import type { ActorMessage } from "./actor";
 
 export interface MessageFormat {
   type: string;
@@ -51,7 +51,7 @@ export type ApolloClientDevtoolsEventMessage = {
   id: string;
   source: "apollo-client-devtools";
   type: MessageType.Event;
-  message: EventMessage;
+  message: ActorMessage;
 };
 
 export type ApolloClientDevtoolsMessage =

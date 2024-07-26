@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useLayoutEffect, useRef } from "react";
 import { getPanelActor } from "../../extension/devtools/panelActor";
-import type { EventMessage } from "../../extension/actor";
+import type { ActorMessage } from "../../extension/actor";
 
-export function useActorEvent<TName extends EventMessage["type"]>(
+export function useActorEvent<TName extends ActorMessage["type"]>(
   name: TName,
-  callback: Extract<EventMessage, { type: TName }> extends infer Message
+  callback: Extract<ActorMessage, { type: TName }> extends infer Message
     ? (message: Message) => void
     : never
 ) {
