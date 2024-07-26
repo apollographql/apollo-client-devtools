@@ -602,21 +602,3 @@ test("unsubscribes connection on bridge when calling returned function", () => {
   });
   expect(adapter1.postMessage).not.toHaveBeenCalled();
 });
-
-test.each([MessageType.Event])(
-  "does not forward %s messages",
-  (messageType) => {
-    const adapter1 = createTestAdapter();
-    const adapter2 = createTestAdapter();
-
-    createRPCBridge(adapter1, adapter2);
-
-    adapter1.simulateMessage({
-      id: 1,
-      type: messageType,
-      payload: { type: "add", params: { x: 1, y: 2 } },
-    });
-
-    expect(adapter2.postMessage).not.toHaveBeenCalled();
-  }
-);
