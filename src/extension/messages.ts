@@ -95,7 +95,6 @@ type ClientTerminatedMessage = {
 
 export type ClientMessage =
   | RegisterClientMessage
-  | { type: "connectToClient" }
   | { type: "connectToDevtools" }
   | ClientTerminatedMessage
   | ExplorerRequestMessage
@@ -110,7 +109,6 @@ export type PanelMessage =
   | ExplorerSubscriptionTerminationMessage
   | { type: "connectToDevtools" }
   | { type: "pageNavigated" }
-  | { type: "connectToClient" }
   | { type: "initializePanel" }
   | { type: "panelHidden" }
   | { type: "panelShown" };

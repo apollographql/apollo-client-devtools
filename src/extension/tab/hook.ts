@@ -160,12 +160,6 @@ function getClientById(clientId: string) {
   return client;
 }
 
-tab.on("connectToClient", () => {
-  if (globalClient) {
-    tab.send({ type: "connectToDevtools" });
-  }
-});
-
 tab.on("explorerRequest", (message) => {
   const {
     clientId,

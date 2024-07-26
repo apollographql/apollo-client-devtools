@@ -40,7 +40,6 @@ async function createDevtoolsPanel() {
       clientPort.forward("clientTerminated", panelWindow);
       clientPort.forward("connectToDevtools", panelWindow);
 
-      panelWindow.forward("connectToClient", clientPort);
       panelWindow.forward("explorerRequest", clientPort);
       panelWindow.forward("explorerSubscriptionTermination", clientPort);
 

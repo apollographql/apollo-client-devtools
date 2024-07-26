@@ -19,7 +19,6 @@ const devtools = createActor<ClientMessage>(portAdapter);
 
 createRPCBridge(portAdapter, createWindowMessageAdapter(window));
 
-devtools.forward("connectToClient", tab);
 devtools.forward("explorerSubscriptionTermination", tab);
 devtools.forward("explorerRequest", tab);
 
