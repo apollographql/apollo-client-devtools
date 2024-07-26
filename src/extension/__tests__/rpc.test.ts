@@ -2,9 +2,11 @@ import type { ApolloClientInfo, DistributiveOmit } from "../../types";
 import { RPC_MESSAGE_TIMEOUT } from "../errorMessages";
 import type { MessageAdapter } from "../messageAdapters";
 import { createMessageBridge } from "../messageAdapters";
-import type { RPCMessage, RPCRequestMessage } from "../messages";
+import type { RPCRequestMessage, RPCResponseMessage } from "../messages";
 import { MessageType } from "../messages";
 import { createRpcClient, createRpcHandler } from "../rpc";
+
+type RPCMessage = RPCRequestMessage | RPCResponseMessage;
 
 interface TestAdapter extends MessageAdapter {
   mocks: { listeners: Set<(message: unknown) => void>; messages: unknown[] };
