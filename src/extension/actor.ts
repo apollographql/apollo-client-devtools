@@ -82,10 +82,7 @@ export function createActor(adapter: MessageAdapter): Actor {
 
     if (!listeners) {
       listeners = new Set();
-      messageListeners.set(
-        name,
-        listeners as Set<(message: ActorMessage) => void>
-      );
+      messageListeners.set(name, listeners);
     }
 
     listeners.add(callback);
