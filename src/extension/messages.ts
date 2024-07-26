@@ -119,7 +119,7 @@ export type DevtoolsRPCMessage = {
   getCache(clientId: string): JSONObject;
 };
 
-function isDevtoolsMessage<Message extends Record<string, unknown>>(
+export function isDevtoolsMessage<Message extends Record<string, unknown>>(
   message: unknown
 ): message is ApolloClientDevtoolsMessage<Message> {
   return (
