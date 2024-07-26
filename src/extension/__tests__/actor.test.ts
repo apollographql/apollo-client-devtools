@@ -15,7 +15,7 @@ function createTestAdapter() {
     simulateDevtoolsMessage: (message: Record<string, unknown>) => {
       listener?.({
         source: "apollo-client-devtools",
-        type: MessageType.Event,
+        type: MessageType.Actor,
         message,
       });
     },
@@ -37,7 +37,7 @@ test("sends messages to specified adapter in devtools message format", () => {
   expect(adapter.postMessage).toHaveBeenCalledWith({
     id: expect.any(String),
     source: "apollo-client-devtools",
-    type: MessageType.Event,
+    type: MessageType.Actor,
     message: {
       type: "clientTerminated",
       clientId: "1",

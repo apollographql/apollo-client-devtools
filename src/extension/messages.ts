@@ -4,7 +4,7 @@ import type { ApolloClientDevtoolsActorMessage } from "./actor";
 export const enum MessageType {
   RPCRequest = "rpcRequest",
   RPCResponse = "rpcResponse",
-  Event = "event",
+  Actor = "actor",
 }
 
 export type RPCRequestMessage<Params extends SafeAny[] = unknown[]> = {

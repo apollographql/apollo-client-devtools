@@ -283,7 +283,7 @@ test("ignores messages that aren't rpc messages", () => {
 
   adapter.simulateMessage({
     source: "apollo-client-devtools",
-    type: MessageType.Event,
+    type: MessageType.Actor,
     payload: { type: "getClient", clientId: "1" },
   });
 

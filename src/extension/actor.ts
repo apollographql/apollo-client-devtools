@@ -29,7 +29,7 @@ export type ActorMessage =
 export type ApolloClientDevtoolsActorMessage = {
   id: string;
   source: "apollo-client-devtools";
-  type: MessageType.Event;
+  type: MessageType.Actor;
   message: ActorMessage;
 };
 
@@ -110,7 +110,7 @@ export function createActor(adapter: MessageAdapter): Actor {
       adapter.postMessage({
         id: createId(),
         source: "apollo-client-devtools",
-        type: MessageType.Event,
+        type: MessageType.Actor,
         message,
       });
     },
@@ -124,5 +124,5 @@ export function createWindowActor(window: Window) {
 function isActorMessage(
   message: unknown
 ): message is ApolloClientDevtoolsActorMessage {
-  return isDevtoolsMessage(message) && message.type === MessageType.Event;
+  return isDevtoolsMessage(message) && message.type === MessageType.Actor;
 }
