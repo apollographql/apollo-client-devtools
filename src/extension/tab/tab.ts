@@ -1,12 +1,10 @@
 // This script is injected into each tab.
 import browser from "webextension-polyfill";
-import type { ClientMessage } from "../messages";
-import { createActor, createWindowActor } from "../actor";
 import {
+  createMessageBridge,
   createPortMessageAdapter,
   createWindowMessageAdapter,
 } from "../messageAdapters";
-import { createRPCBridge } from "../rpc";
 
 declare const __IS_FIREFOX__: boolean;
 
@@ -14,17 +12,7 @@ const portAdapter = createPortMessageAdapter(() =>
   browser.runtime.connect({ name: "tab" })
 );
 
-const tab = createWindowActor<ClientMessage>(window);
-const devtools = createActor<ClientMessage>(portAdapter);
-
-createRPCBridge(portAdapter, createWindowMessageAdapter(window));
-
-devtools.forward("explorerSubscriptionTermination", tab);
-devtools.forward("explorerRequest", tab);
-
-tab.forward("registerClient", devtools);
-tab.forward("clientTerminated", devtools);
-tab.forward("explorerResponse", devtools);
+createMessageBridge(portAdapter, createWindowMessageAdapter(window));
 
 // We run the hook.js script on the page as a content script in Manifest v3
 // extensions (chrome for now). We do this using execution world MAIN.
