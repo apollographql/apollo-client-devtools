@@ -1,10 +1,10 @@
 import clsx from "clsx";
 import { makeVar, useReactiveVar } from "@apollo/client";
 import type { ReactNode } from "react";
-import { LoadingSpinner } from "./Explorer/LoadingSpinner";
 import IconCheck from "@apollo/icons/default/IconCheck.svg";
 import IconError from "@apollo/icons/default/IconError.svg";
 import { AnimatePresence, motion } from "framer-motion";
+import { Spinner } from "./Spinner";
 
 const bannerVar = makeVar<BannerAlertConfig | null>(null);
 
@@ -37,7 +37,7 @@ export function BannerAlert() {
             }
           )}
         >
-          {banner.type === "loading" && <LoadingSpinner size="2xsmall" />}
+          {banner.type === "loading" && <Spinner size="xs" />}
           {banner.type === "success" && <IconCheck className="w-4" />}
           {banner.type === "error" && <IconError className="w-4" />}
           <div className="text-sm font-body flex-1">{banner.content}</div>
