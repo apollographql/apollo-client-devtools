@@ -5,7 +5,6 @@ import { createId } from "../utils/createId";
 import { RPC_MESSAGE_TIMEOUT } from "./errorMessages";
 import { deserializeError, serializeError } from "./errorSerialization";
 import type { MessageAdapter } from "./messageAdapters";
-import type { RPCRequestMessage, RPCResponseMessage } from "./messages";
 import { MessageType, isDevtoolsMessage } from "./messages";
 import type { MutationDetails, QueryDetails } from "./tab/helpers";
 
@@ -26,6 +25,34 @@ export interface RpcClient {
     ...params: Parameters<DevtoolsRPCMessage[TName]>
   ) => Promise<Awaited<ReturnType<DevtoolsRPCMessage[TName]>>>;
 }
+
+type RPCErrorResponseMessage = {
+  source: "apollo-client-devtools";
+  type: MessageType.RPCResponse;
+  id: string;
+  sourceId: string;
+  error: { name?: string; message: string; stack?: string };
+};
+
+type RPCSuccessResponseMessage<Result = unknown> = {
+  source: "apollo-client-devtools";
+  type: MessageType.RPCResponse;
+  id: string;
+  sourceId: string;
+  result: Result;
+};
+
+export type RPCRequestMessage<Params extends SafeAny[] = unknown[]> = {
+  source: "apollo-client-devtools";
+  type: MessageType.RPCRequest;
+  id: string;
+  name: string;
+  params: Params;
+};
+
+export type RPCResponseMessage<Result = unknown> =
+  | RPCSuccessResponseMessage<Result>
+  | RPCErrorResponseMessage;
 
 const DEFAULT_TIMEOUT = 30_000;
 

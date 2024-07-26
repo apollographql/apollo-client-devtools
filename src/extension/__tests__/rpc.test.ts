@@ -2,8 +2,8 @@ import type { ApolloClientInfo, DistributiveOmit } from "../../types";
 import { RPC_MESSAGE_TIMEOUT } from "../errorMessages";
 import type { MessageAdapter } from "../messageAdapters";
 import { createMessageBridge } from "../messageAdapters";
-import type { RPCRequestMessage, RPCResponseMessage } from "../messages";
 import { MessageType } from "../messages";
+import type { RPCRequestMessage, RPCResponseMessage } from "../rpc";
 import { createRpcClient, createRpcHandler } from "../rpc";
 
 type RPCMessage = RPCRequestMessage | RPCResponseMessage;

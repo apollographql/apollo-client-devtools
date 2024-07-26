@@ -1,39 +1,11 @@
-import type { SafeAny } from "../types";
 import type { ApolloClientDevtoolsActorMessage } from "./actor";
+import type { RPCRequestMessage, RPCResponseMessage } from "./rpc";
 
 export const enum MessageType {
   RPCRequest = "rpcRequest",
   RPCResponse = "rpcResponse",
   Actor = "actor",
 }
-
-export type RPCRequestMessage<Params extends SafeAny[] = unknown[]> = {
-  source: "apollo-client-devtools";
-  type: MessageType.RPCRequest;
-  id: string;
-  name: string;
-  params: Params;
-};
-
-export type RPCErrorResponseMessage = {
-  source: "apollo-client-devtools";
-  type: MessageType.RPCResponse;
-  id: string;
-  sourceId: string;
-  error: { name?: string; message: string; stack?: string };
-};
-
-export type RPCSuccessResponseMessage<Result = unknown> = {
-  source: "apollo-client-devtools";
-  type: MessageType.RPCResponse;
-  id: string;
-  sourceId: string;
-  result: Result;
-};
-
-export type RPCResponseMessage<Result = unknown> =
-  | RPCSuccessResponseMessage<Result>
-  | RPCErrorResponseMessage;
 
 export type ApolloClientDevtoolsMessage =
   | ApolloClientDevtoolsActorMessage

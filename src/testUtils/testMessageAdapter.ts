@@ -1,9 +1,6 @@
 import type { MessageAdapter } from "../extension/messageAdapters";
 import { MessageType } from "../extension/messages";
-import type {
-  RPCRequestMessage,
-  RPCResponseMessage,
-} from "../extension/messages";
+import type { RPCRequestMessage, RPCResponseMessage } from "../extension/rpc";
 import { isRPCRequestMessage, type DevtoolsRPCMessage } from "../extension/rpc";
 import type { SafeAny } from "../types";
 import { createId } from "../utils/createId";
