@@ -4,19 +4,17 @@ import type { ApolloClientDevtoolsMessage } from "./messages";
 import type { SafeAny } from "../types";
 
 export interface MessageAdapter<
-  PostMessageFormat extends ApolloClientDevtoolsMessage<
-    Record<string, unknown>
-  >,
+  PostMessageFormat extends Record<string, unknown>,
 > {
   addListener: (listener: (message: unknown) => void) => () => void;
-  postMessage: (message: PostMessageFormat) => void;
+  postMessage: (
+    message: ApolloClientDevtoolsMessage<PostMessageFormat>
+  ) => void;
 }
 
 export function createPortMessageAdapter<
   PostMessageFormat extends Record<string, unknown> = Record<string, unknown>,
->(
-  createPort: () => browser.Runtime.Port
-): MessageAdapter<ApolloClientDevtoolsMessage<PostMessageFormat>> {
+>(createPort: () => browser.Runtime.Port): MessageAdapter<PostMessageFormat> {
   let port = createPort();
   const listeners = new Set<(message: unknown) => void>();
 
@@ -56,9 +54,7 @@ export function createPortMessageAdapter<
 
 export function createWindowMessageAdapter<
   PostMessageFormat extends Record<string, unknown> = Record<string, unknown>,
->(
-  window: Window
-): MessageAdapter<ApolloClientDevtoolsMessage<PostMessageFormat>> {
+>(window: Window): MessageAdapter<PostMessageFormat> {
   const sentMessageIds = new Set<string>();
 
   return {

@@ -1,7 +1,4 @@
-import type {
-  ApolloClientDevtoolsEventMessage,
-  MessageFormat,
-} from "./messages";
+import type { MessageFormat } from "./messages";
 import { MessageType, isEventMessage } from "./messages";
 import type { MessageAdapter } from "./messageAdapters";
 import { createWindowMessageAdapter } from "./messageAdapters";
@@ -21,9 +18,7 @@ export function createActor<
   Messages extends MessageFormat = {
     type: "Error: Pass <Messages> to `createActor<Messages>()`";
   },
->(
-  adapter: MessageAdapter<ApolloClientDevtoolsEventMessage<Messages>>
-): Actor<Messages> {
+>(adapter: MessageAdapter<Messages>): Actor<Messages> {
   let removeListener: (() => void) | null = null;
   const messageListeners = new Map<
     Messages["type"],
