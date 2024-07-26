@@ -3,7 +3,6 @@ import type {
   MessageFormat,
 } from "./messages";
 import { MessageType, isEventMessage } from "./messages";
-import type { NoInfer } from "../types";
 import type { MessageAdapter } from "./messageAdapters";
 import { createWindowMessageAdapter } from "./messageAdapters";
 import { createId } from "../utils/createId";
@@ -16,10 +15,6 @@ export interface Actor<Messages extends MessageFormat> {
       : never
   ) => () => void;
   send: (message: Messages) => void;
-  forward: <TName extends Messages["type"]>(
-    name: TName,
-    actor: Actor<Extract<Messages, { type: NoInfer<TName> }>>
-  ) => () => void;
 }
 
 export function createActor<
@@ -96,8 +91,6 @@ export function createActor<
         message,
       });
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    forward: (name, actor) => on(name, actor.send as unknown as any),
   };
 }
 
