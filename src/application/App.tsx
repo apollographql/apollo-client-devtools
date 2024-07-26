@@ -148,7 +148,7 @@ export const App = () => {
     if (clients.length) {
       send({ type: "connect" });
     }
-  }, [send, clients]);
+  }, [send, clients.length]);
 
   return (
     <>
