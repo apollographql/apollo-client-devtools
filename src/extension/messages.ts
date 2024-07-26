@@ -63,42 +63,21 @@ export type ApolloClientDevtoolsMessage<
   | RPCRequestMessage
   | RPCResponseMessage;
 
-type ExplorerRequestMessage = {
-  type: "explorerRequest";
-  payload: {
-    clientId: string;
-    operation: DocumentNode;
-    operationName: string | undefined;
-    variables: JSONObject | undefined;
-    fetchPolicy: FetchPolicy;
-  };
-};
-
-type ExplorerResponseMessage = {
-  type: "explorerResponse";
-  payload: ExplorerResponse;
-};
-
-type ExplorerSubscriptionTerminationMessage = {
-  type: "explorerSubscriptionTermination";
-};
-
-type RegisterClientMessage = {
-  type: "registerClient";
-  payload: ApolloClientInfo;
-};
-
-type ClientTerminatedMessage = {
-  type: "clientTerminated";
-  clientId: string;
-};
-
 export type EventMessage =
-  | RegisterClientMessage
-  | ClientTerminatedMessage
-  | ExplorerRequestMessage
-  | ExplorerResponseMessage
-  | ExplorerSubscriptionTerminationMessage
+  | { type: "registerClient"; payload: ApolloClientInfo }
+  | { type: "clientTerminated"; clientId: string }
+  | {
+      type: "explorerRequest";
+      payload: {
+        clientId: string;
+        operation: DocumentNode;
+        operationName: string | undefined;
+        variables: JSONObject | undefined;
+        fetchPolicy: FetchPolicy;
+      };
+    }
+  | { type: "explorerResponse"; payload: ExplorerResponse }
+  | { type: "explorerSubscriptionTermination" }
   | { type: "pageNavigated" }
   | { type: "initializePanel" }
   | { type: "panelHidden" }
