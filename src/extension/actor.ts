@@ -1,4 +1,4 @@
-import type { ApolloClientDevtoolsEventMessage } from "./messages";
+import type { ApolloClientDevtoolsActorMessage } from "./messages";
 import { MessageType, isDevtoolsMessage } from "./messages";
 import type { MessageAdapter } from "./messageAdapters";
 import { createWindowMessageAdapter } from "./messageAdapters";
@@ -117,6 +117,6 @@ export function createWindowActor(window: Window) {
 
 function isActorMessage(
   message: unknown
-): message is ApolloClientDevtoolsEventMessage {
+): message is ApolloClientDevtoolsActorMessage {
   return isDevtoolsMessage(message) && message.type === MessageType.Event;
 }

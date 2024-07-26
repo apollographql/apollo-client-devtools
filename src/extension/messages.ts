@@ -40,7 +40,7 @@ export type RPCMessage<
   Result = unknown,
 > = RPCRequestMessage<Params> | RPCResponseMessage<Result>;
 
-export type ApolloClientDevtoolsEventMessage = {
+export type ApolloClientDevtoolsActorMessage = {
   id: string;
   source: "apollo-client-devtools";
   type: MessageType.Event;
@@ -48,7 +48,7 @@ export type ApolloClientDevtoolsEventMessage = {
 };
 
 export type ApolloClientDevtoolsMessage =
-  | ApolloClientDevtoolsEventMessage
+  | ApolloClientDevtoolsActorMessage
   | RPCRequestMessage
   | RPCResponseMessage;
 
