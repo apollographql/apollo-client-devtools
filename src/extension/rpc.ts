@@ -8,7 +8,7 @@ import type { MessageAdapter } from "./messageAdapters";
 import { MessageType, isDevtoolsMessage } from "./messages";
 import type { MutationDetails, QueryDetails } from "./tab/helpers";
 
-export type DevtoolsRPCMessage = {
+export type RPCRequest = {
   getClients(): ApolloClientInfo[];
   getClient(id: string): ApolloClientInfo | null;
   getQueries(clientId: string): QueryDetails[];
@@ -20,10 +20,10 @@ export type DevtoolsRPCMessage = {
 export interface RpcClient {
   readonly timeout: number;
   withTimeout: (timeoutMs: number) => RpcClient;
-  request: <TName extends keyof DevtoolsRPCMessage & string>(
+  request: <TName extends keyof RPCRequest & string>(
     name: TName,
-    ...params: Parameters<DevtoolsRPCMessage[TName]>
-  ) => Promise<Awaited<ReturnType<DevtoolsRPCMessage[TName]>>>;
+    ...params: Parameters<RPCRequest[TName]>
+  ) => Promise<Awaited<ReturnType<RPCRequest[TName]>>>;
 }
 
 type RPCErrorResponseMessage = {
@@ -121,13 +121,13 @@ export function createRpcHandler(adapter: MessageAdapter) {
     }
   }
 
-  return function <TName extends keyof DevtoolsRPCMessage & string>(
+  return function <TName extends keyof RPCRequest & string>(
     name: TName,
     handler: (
-      ...params: Parameters<DevtoolsRPCMessage[TName]>
+      ...params: Parameters<RPCRequest[TName]>
     ) =>
-      | NoInfer<Awaited<ReturnType<DevtoolsRPCMessage[TName]>>>
-      | Promise<NoInfer<Awaited<ReturnType<DevtoolsRPCMessage[TName]>>>>
+      | NoInfer<Awaited<ReturnType<RPCRequest[TName]>>>
+      | Promise<NoInfer<Awaited<ReturnType<RPCRequest[TName]>>>>
   ) {
     if (listeners.has(name)) {
       throw new Error("Only one rpc handler can be registered per type");
@@ -136,7 +136,7 @@ export function createRpcHandler(adapter: MessageAdapter) {
     listeners.set(name, async ({ id, params }) => {
       try {
         const result = await Promise.resolve(
-          handler(...(params as Parameters<DevtoolsRPCMessage[TName]>))
+          handler(...(params as Parameters<RPCRequest[TName]>))
         );
 
         adapter.postMessage({

@@ -1,7 +1,7 @@
 import type { MessageAdapter } from "../extension/messageAdapters";
 import { MessageType } from "../extension/messages";
 import type { RPCRequestMessage, RPCResponseMessage } from "../extension/rpc";
-import { isRPCRequestMessage, type DevtoolsRPCMessage } from "../extension/rpc";
+import { isRPCRequestMessage, type RPCRequest } from "../extension/rpc";
 import type { SafeAny } from "../types";
 import { createId } from "../utils/createId";
 
@@ -9,11 +9,11 @@ interface TestAdapter extends MessageAdapter {
   mocks: { messages: unknown[] };
   postMessage: jest.Mock<void, [message: unknown]>;
   mockClear: () => void;
-  handleRpcRequest: <TName extends keyof DevtoolsRPCMessage>(
+  handleRpcRequest: <TName extends keyof RPCRequest>(
     name: TName,
     callback: (
-      ...args: Parameters<DevtoolsRPCMessage[TName]>
-    ) => ReturnType<DevtoolsRPCMessage[TName]>
+      ...args: Parameters<RPCRequest[TName]>
+    ) => ReturnType<RPCRequest[TName]>
   ) => void;
 }
 
