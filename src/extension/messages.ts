@@ -35,11 +35,6 @@ export type RPCResponseMessage<Result = unknown> =
   | RPCSuccessResponseMessage<Result>
   | RPCErrorResponseMessage;
 
-export type RPCMessage<
-  Params extends SafeAny[] = unknown[],
-  Result = unknown,
-> = RPCRequestMessage<Params> | RPCResponseMessage<Result>;
-
 export type ApolloClientDevtoolsMessage =
   | ApolloClientDevtoolsActorMessage
   | RPCRequestMessage
