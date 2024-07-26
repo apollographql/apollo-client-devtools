@@ -1,7 +1,7 @@
-import type { ApolloClientInfo, ExplorerResponse, SafeAny } from "../types";
+import type { ApolloClientInfo, SafeAny } from "../types";
 import type { JSONObject } from "../application/types/json";
-import type { FetchPolicy, DocumentNode } from "@apollo/client";
 import type { MutationDetails, QueryDetails } from "./tab/helpers";
+import type { EventMessage } from "./actor";
 
 export interface MessageFormat {
   type: string;
@@ -58,26 +58,6 @@ export type ApolloClientDevtoolsMessage =
   | ApolloClientDevtoolsEventMessage
   | RPCRequestMessage
   | RPCResponseMessage;
-
-export type EventMessage =
-  | { type: "registerClient"; payload: ApolloClientInfo }
-  | { type: "clientTerminated"; clientId: string }
-  | {
-      type: "explorerRequest";
-      payload: {
-        clientId: string;
-        operation: DocumentNode;
-        operationName: string | undefined;
-        variables: JSONObject | undefined;
-        fetchPolicy: FetchPolicy;
-      };
-    }
-  | { type: "explorerResponse"; payload: ExplorerResponse }
-  | { type: "explorerSubscriptionTermination" }
-  | { type: "pageNavigated" }
-  | { type: "initializePanel" }
-  | { type: "panelHidden" }
-  | { type: "panelShown" };
 
 export type DevtoolsRPCMessage = {
   getClients(): ApolloClientInfo[];

@@ -1,8 +1,30 @@
-import type { EventMessage } from "./messages";
 import { MessageType, isEventMessage } from "./messages";
 import type { MessageAdapter } from "./messageAdapters";
 import { createWindowMessageAdapter } from "./messageAdapters";
 import { createId } from "../utils/createId";
+import type { ApolloClientInfo, ExplorerResponse } from "../types";
+import type { DocumentNode, FetchPolicy } from "@apollo/client";
+import type { JSONObject } from "../application/types/json";
+
+export type EventMessage =
+  | { type: "registerClient"; payload: ApolloClientInfo }
+  | { type: "clientTerminated"; clientId: string }
+  | {
+      type: "explorerRequest";
+      payload: {
+        clientId: string;
+        operation: DocumentNode;
+        operationName: string | undefined;
+        variables: JSONObject | undefined;
+        fetchPolicy: FetchPolicy;
+      };
+    }
+  | { type: "explorerResponse"; payload: ExplorerResponse }
+  | { type: "explorerSubscriptionTermination" }
+  | { type: "pageNavigated" }
+  | { type: "initializePanel" }
+  | { type: "panelHidden" }
+  | { type: "panelShown" };
 
 export interface Actor {
   on: <TName extends EventMessage["type"]>(
