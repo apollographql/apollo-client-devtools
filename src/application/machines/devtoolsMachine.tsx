@@ -1,7 +1,6 @@
 import { setup, assign } from "xstate";
 import IconSync from "@apollo/icons/small/IconSync.svg";
 import { BannerAlert } from "../components/BannerAlert";
-import { getPanelActor } from "../../extension/devtools/panelActor";
 import { Button } from "../components/Button";
 
 type Events =
@@ -26,14 +25,14 @@ export const devtoolsMachine = setup({
     connectToClient: () => {
       BannerAlert.show({
         type: "loading",
-        content: "Looking for client...",
+        content: "Waiting for client to connect...",
       });
     },
     closeBanner: BannerAlert.close,
     notifyDisconnected: () => {
       BannerAlert.show({
         type: "loading",
-        content: "Disconnected. Looking for client...",
+        content: "Disconnected. Waiting for client to connect...",
       });
     },
     notifyConnected: () => {
