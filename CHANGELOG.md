@@ -1,5 +1,15 @@
 # Changelog
 
+## 4.17.3
+
+### Patch Changes
+
+- [#1461](https://github.com/apollographql/apollo-client-devtools/pull/1461) [`36cd3bb`](https://github.com/apollographql/apollo-client-devtools/commit/36cd3bb30750401d52edcfd0baab506f26ed694a) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Create a universal message bridge to handle both actor and rpc messages.
+
+- [#1460](https://github.com/apollographql/apollo-client-devtools/pull/1460) [`4a58340`](https://github.com/apollographql/apollo-client-devtools/commit/4a5834064e64724589b2922b72a1e72dcffdf196) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Remove unneeded initialization message to determine if page had a client instance.
+
+- [#1460](https://github.com/apollographql/apollo-client-devtools/pull/1460) [`4a58340`](https://github.com/apollographql/apollo-client-devtools/commit/4a5834064e64724589b2922b72a1e72dcffdf196) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Fix issue when disconnecting from the client that would show stale data until reconnected.
+
 ## 4.17.2
 
 ### Patch Changes
