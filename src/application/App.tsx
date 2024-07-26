@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { useReactiveVar, gql, useQuery } from "@apollo/client";
 import { useMachine } from "@xstate/react";
@@ -69,12 +69,16 @@ ${SECTIONS.apolloClientVersion}
 ${SECTIONS.devtoolsVersion}
 `;
 
+const stableEmptyClients: Required<AppQuery["clients"]> = [];
+const noop = () => {};
+
 export const App = () => {
   const [snapshot, send] = useMachine(
     devtoolsMachine.provide({
       actions: {
-        resetStore: () => {
-          apolloClient.clearStore().catch(() => {});
+        resetStore: async () => {
+          await apolloClient.clearStore().catch(noop);
+          refetch().catch(noop);
         },
       },
     })
@@ -84,10 +88,6 @@ export const App = () => {
     client: apolloClient,
     refetch,
   } = useQuery(APP_QUERY, { errorPolicy: "all" });
-
-  useActorEvent("connectToDevtools", () => {
-    send({ type: "connect" });
-  });
 
   useActorEvent("registerClient", () => {
     send({ type: "connect" });
@@ -131,7 +131,7 @@ export const App = () => {
   });
 
   const client = clientData?.client;
-  const clients = data?.clients ?? [];
+  const clients = data?.clients ?? stableEmptyClients;
   const clientIds = clients.map((c) => c.id);
 
   useActorEvent("panelHidden", () => stopPolling());
@@ -143,6 +143,12 @@ export const App = () => {
   ) {
     setSelectedClientId(clientIds[0]);
   }
+
+  useEffect(() => {
+    if (clients.length) {
+      send({ type: "connect" });
+    }
+  }, [send, clients.length]);
 
   return (
     <>

@@ -1,7 +1,6 @@
 import { setup, assign } from "xstate";
 import IconSync from "@apollo/icons/small/IconSync.svg";
 import { BannerAlert } from "../components/BannerAlert";
-import { getPanelActor } from "../../extension/devtools/panelActor";
 import { Button } from "../components/Button";
 
 type Events =
@@ -23,19 +22,17 @@ export const devtoolsMachine = setup({
   actions: {
     openModal: assign({ modalOpen: true }),
     closeModal: assign({ modalOpen: false }),
-    connectToClient: () => {
+    notifyWaitingForConnection: () => {
       BannerAlert.show({
         type: "loading",
-        content: "Looking for client...",
+        content: "Waiting for client to connect...",
       });
-
-      getPanelActor(window).send({ type: "connectToClient" });
     },
     closeBanner: BannerAlert.close,
     notifyDisconnected: () => {
       BannerAlert.show({
         type: "loading",
-        content: "Disconnected. Looking for client...",
+        content: "Disconnected. Waiting for client to connect...",
       });
     },
     notifyConnected: () => {
@@ -88,7 +85,7 @@ export const devtoolsMachine = setup({
         timeout: "timedout",
         clientNotFound: "notFound",
       },
-      entry: "connectToClient",
+      entry: "notifyWaitingForConnection",
       after: {
         connectTimeout: {
           target: "notFound",
@@ -100,7 +97,7 @@ export const devtoolsMachine = setup({
         connect: "connected",
         clientNotFound: "notFound",
       },
-      entry: ["connectToClient", "closeModal"],
+      entry: ["notifyWaitingForConnection", "closeModal"],
       after: {
         connectTimeout: {
           target: "notFound",
