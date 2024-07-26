@@ -8,7 +8,7 @@ import type {
 import type { SafeAny } from "../types";
 import { createId } from "../utils/createId";
 
-interface TestAdapter extends MessageAdapter<RPCResponseMessage> {
+interface TestAdapter extends MessageAdapter {
   mocks: { messages: unknown[] };
   postMessage: jest.Mock<void, [message: unknown]>;
   mockClear: () => void;

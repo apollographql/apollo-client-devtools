@@ -1,20 +1,17 @@
 import type browser from "webextension-polyfill";
 import { isDevtoolsMessage } from "./messages";
 import type { ApolloClientDevtoolsMessage } from "./messages";
-import type { SafeAny } from "../types";
 
-export interface MessageAdapter<
-  PostMessageFormat extends Record<string, unknown>,
-> {
+export interface MessageAdapter {
   addListener: (listener: (message: unknown) => void) => () => void;
   postMessage: (
-    message: ApolloClientDevtoolsMessage<PostMessageFormat>
+    message: ApolloClientDevtoolsMessage<Record<string, unknown>>
   ) => void;
 }
 
-export function createPortMessageAdapter<
-  PostMessageFormat extends Record<string, unknown> = Record<string, unknown>,
->(createPort: () => browser.Runtime.Port): MessageAdapter<PostMessageFormat> {
+export function createPortMessageAdapter(
+  createPort: () => browser.Runtime.Port
+): MessageAdapter {
   let port = createPort();
   const listeners = new Set<(message: unknown) => void>();
 
@@ -52,9 +49,7 @@ export function createPortMessageAdapter<
   };
 }
 
-export function createWindowMessageAdapter<
-  PostMessageFormat extends Record<string, unknown> = Record<string, unknown>,
->(window: Window): MessageAdapter<PostMessageFormat> {
+export function createWindowMessageAdapter(window: Window): MessageAdapter {
   const sentMessageIds = new Set<string>();
 
   return {
@@ -88,8 +83,8 @@ export function createWindowMessageAdapter<
 }
 
 export function createMessageBridge(
-  adapter1: MessageAdapter<SafeAny>,
-  adapter2: MessageAdapter<SafeAny>
+  adapter1: MessageAdapter,
+  adapter2: MessageAdapter
 ) {
   const removeListener1 = adapter1.addListener((message) => {
     if (isDevtoolsMessage(message)) {

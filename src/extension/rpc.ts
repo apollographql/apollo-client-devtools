@@ -3,7 +3,7 @@ import { createId } from "../utils/createId";
 import { RPC_MESSAGE_TIMEOUT } from "./errorMessages";
 import { deserializeError, serializeError } from "./errorSerialization";
 import type { MessageAdapter } from "./messageAdapters";
-import type { RPCRequestMessage, RPCResponseMessage } from "./messages";
+import type { RPCRequestMessage } from "./messages";
 import {
   MessageType,
   isRPCRequestMessage,
@@ -24,7 +24,7 @@ export interface RpcClient<Messages extends MessageCollection> {
 const DEFAULT_TIMEOUT = 30_000;
 
 export function createRpcClient<Messages extends MessageCollection>(
-  adapter: MessageAdapter<RPCRequestMessage>
+  adapter: MessageAdapter
 ): RpcClient<Messages> {
   return {
     timeout: DEFAULT_TIMEOUT,
@@ -68,7 +68,7 @@ export function createRpcClient<Messages extends MessageCollection>(
 }
 
 export function createRpcHandler<Messages extends MessageCollection>(
-  adapter: MessageAdapter<RPCResponseMessage>
+  adapter: MessageAdapter
 ) {
   const listeners = new Map<string, (message: RPCRequestMessage) => void>();
   let removeListener: (() => void) | null = null;

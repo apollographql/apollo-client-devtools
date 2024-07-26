@@ -18,7 +18,7 @@ export function createActor<
   Messages extends MessageFormat = {
     type: "Error: Pass <Messages> to `createActor<Messages>()`";
   },
->(adapter: MessageAdapter<Messages>): Actor<Messages> {
+>(adapter: MessageAdapter): Actor<Messages> {
   let removeListener: (() => void) | null = null;
   const messageListeners = new Map<
     Messages["type"],
