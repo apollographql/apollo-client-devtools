@@ -1,8 +1,5 @@
-import type { ApolloClientInfo, SafeAny } from "../types";
-import type { JSONObject } from "../application/types/json";
-import type { MutationDetails, QueryDetails } from "./tab/helpers";
+import type { SafeAny } from "../types";
 import type { ActorMessage } from "./actor";
-import type { ErrorCodes } from "@apollo/client/invariantErrorCodes";
 
 export interface MessageFormat {
   type: string;
@@ -59,15 +56,6 @@ export type ApolloClientDevtoolsMessage =
   | ApolloClientDevtoolsEventMessage
   | RPCRequestMessage
   | RPCResponseMessage;
-
-export type DevtoolsRPCMessage = {
-  getClients(): ApolloClientInfo[];
-  getClient(id: string): ApolloClientInfo | null;
-  getQueries(clientId: string): QueryDetails[];
-  getMutations(clientId: string): MutationDetails[];
-  getCache(clientId: string): JSONObject;
-  getErrorCodes(version: string): Promise<ErrorCodes | undefined>;
-};
 
 export function isDevtoolsMessage(
   message: unknown

@@ -1,14 +1,26 @@
-import type { NoInfer, SafeAny } from "../types";
+import type { ErrorCodes } from "@apollo/client/invariantErrorCodes";
+import type { JSONObject } from "../application/types/json";
+import type { ApolloClientInfo, NoInfer, SafeAny } from "../types";
 import { createId } from "../utils/createId";
 import { RPC_MESSAGE_TIMEOUT } from "./errorMessages";
 import { deserializeError, serializeError } from "./errorSerialization";
 import type { MessageAdapter } from "./messageAdapters";
-import type { DevtoolsRPCMessage, RPCRequestMessage } from "./messages";
+import type { RPCRequestMessage } from "./messages";
 import {
   MessageType,
   isRPCRequestMessage,
   isRPCResponseMessage,
 } from "./messages";
+import type { MutationDetails, QueryDetails } from "./tab/helpers";
+
+export type DevtoolsRPCMessage = {
+  getClients(): ApolloClientInfo[];
+  getClient(id: string): ApolloClientInfo | null;
+  getQueries(clientId: string): QueryDetails[];
+  getMutations(clientId: string): MutationDetails[];
+  getCache(clientId: string): JSONObject;
+  getErrorCodes(version: string): Promise<ErrorCodes | undefined>;
+};
 
 export interface RpcClient {
   readonly timeout: number;
