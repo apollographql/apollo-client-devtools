@@ -23,7 +23,7 @@ import type { ApolloClientInfo, QueryResult, SafeAny } from "../../types";
 import { getPrivateAccess } from "../../privateAccess";
 import type { JSONObject } from "../../application/types/json";
 import { createWindowActor } from "../actor";
-import type { ClientMessage, DevtoolsRPCMessage } from "../messages";
+import type { DevtoolsRPCMessage } from "../messages";
 import { createWindowMessageAdapter } from "../messageAdapters";
 import { createRpcClient, createRpcHandler } from "../rpc";
 import type { ErrorCodesHandler } from "../background/errorcodes";
@@ -51,7 +51,7 @@ type Hook = {
 
 const DEVTOOLS_KEY = Symbol.for("apollo.devtools");
 
-const tab = createWindowActor<ClientMessage>(window);
+const tab = createWindowActor(window);
 const messageAdapter = createWindowMessageAdapter(window);
 const handleRpc = createRpcHandler<DevtoolsRPCMessage>(messageAdapter);
 const rpcClient = createRpcClient<ErrorCodesHandler>(messageAdapter);

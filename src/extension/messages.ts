@@ -144,8 +144,8 @@ export function isRPCResponseMessage(
   return isDevtoolsMessage(message) && message.type === MessageType.RPCResponse;
 }
 
-export function isEventMessage<Message extends Record<string, unknown>>(
+export function isEventMessage(
   message: unknown
-): message is ApolloClientDevtoolsEventMessage<Message> {
+): message is ApolloClientDevtoolsEventMessage<EventMessage> {
   return isDevtoolsMessage(message) && message.type === MessageType.Event;
 }
