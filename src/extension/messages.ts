@@ -93,13 +93,6 @@ type ClientTerminatedMessage = {
   clientId: string;
 };
 
-export type ClientMessage =
-  | RegisterClientMessage
-  | ClientTerminatedMessage
-  | ExplorerRequestMessage
-  | ExplorerResponseMessage
-  | ExplorerSubscriptionTerminationMessage;
-
 export type PanelMessage =
   | RegisterClientMessage
   | ClientTerminatedMessage
@@ -111,7 +104,7 @@ export type PanelMessage =
   | { type: "panelHidden" }
   | { type: "panelShown" };
 
-export type EventMessage = PanelMessage | ClientMessage;
+export type EventMessage = PanelMessage;
 
 export type DevtoolsRPCMessage = {
   getClients(): ApolloClientInfo[];
