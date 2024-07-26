@@ -89,10 +89,6 @@ export const App = () => {
     refetch,
   } = useQuery(APP_QUERY, { errorPolicy: "all" });
 
-  useActorEvent("connectToDevtools", () => {
-    send({ type: "connect" });
-  });
-
   useActorEvent("registerClient", () => {
     send({ type: "connect" });
     // Unfortunately after we clear the store above, the query ends up "stuck"
