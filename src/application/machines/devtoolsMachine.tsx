@@ -28,8 +28,6 @@ export const devtoolsMachine = setup({
         type: "loading",
         content: "Looking for client...",
       });
-
-      getPanelActor(window).send({ type: "connectToClient" });
     },
     closeBanner: BannerAlert.close,
     notifyDisconnected: () => {
