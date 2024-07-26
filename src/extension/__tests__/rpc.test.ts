@@ -1,9 +1,10 @@
 import type { DistributiveOmit } from "../../types";
 import { RPC_MESSAGE_TIMEOUT } from "../errorMessages";
 import type { MessageAdapter } from "../messageAdapters";
+import { createMessageBridge } from "../messageAdapters";
 import type { RPCMessage, RPCRequestMessage } from "../messages";
 import { MessageType } from "../messages";
-import { createRPCBridge, createRpcClient, createRpcHandler } from "../rpc";
+import { createRpcClient, createRpcHandler } from "../rpc";
 
 interface TestAdapter extends MessageAdapter<RPCMessage> {
   mocks: { listeners: Set<(message: unknown) => void>; messages: unknown[] };
@@ -524,7 +525,7 @@ test("forwards rpc messages from one adapter to another with bridge", () => {
   const adapter1 = createTestAdapter();
   const adapter2 = createTestAdapter();
 
-  createRPCBridge(adapter1, adapter2);
+  createMessageBridge(adapter1, adapter2);
 
   adapter1.simulateRPCMessage({
     id: "abc",
@@ -563,7 +564,7 @@ test("unsubscribes connection on bridge when calling returned function", () => {
   const adapter1 = createTestAdapter();
   const adapter2 = createTestAdapter();
 
-  const unsubscribe = createRPCBridge(adapter1, adapter2);
+  const unsubscribe = createMessageBridge(adapter1, adapter2);
 
   adapter1.simulateRPCMessage({
     id: "abc",
