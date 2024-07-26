@@ -3,7 +3,7 @@ import { createId } from "../utils/createId";
 import { RPC_MESSAGE_TIMEOUT } from "./errorMessages";
 import { deserializeError, serializeError } from "./errorSerialization";
 import type { MessageAdapter } from "./messageAdapters";
-import type { RPCRequestMessage } from "./messages";
+import type { DevtoolsRPCMessage, RPCRequestMessage } from "./messages";
 import {
   MessageType,
   isRPCRequestMessage,
@@ -12,20 +12,18 @@ import {
 
 type MessageCollection = Record<string, (...parameters: SafeAny[]) => SafeAny>;
 
-export interface RpcClient<Messages extends MessageCollection> {
+export interface RpcClient {
   readonly timeout: number;
-  withTimeout: (timeoutMs: number) => RpcClient<Messages>;
-  request: <TName extends keyof Messages & string>(
+  withTimeout: (timeoutMs: number) => RpcClient;
+  request: <TName extends keyof DevtoolsRPCMessage & string>(
     name: TName,
-    ...params: Parameters<Messages[TName]>
-  ) => Promise<Awaited<ReturnType<Messages[TName]>>>;
+    ...params: Parameters<DevtoolsRPCMessage[TName]>
+  ) => Promise<Awaited<ReturnType<DevtoolsRPCMessage[TName]>>>;
 }
 
 const DEFAULT_TIMEOUT = 30_000;
 
-export function createRpcClient<Messages extends MessageCollection>(
-  adapter: MessageAdapter
-): RpcClient<Messages> {
+export function createRpcClient(adapter: MessageAdapter): RpcClient {
   return {
     timeout: DEFAULT_TIMEOUT,
     withTimeout(timeoutMs) {

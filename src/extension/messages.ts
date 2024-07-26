@@ -2,6 +2,7 @@ import type { ApolloClientInfo, SafeAny } from "../types";
 import type { JSONObject } from "../application/types/json";
 import type { MutationDetails, QueryDetails } from "./tab/helpers";
 import type { ActorMessage } from "./actor";
+import type { ErrorCodes } from "@apollo/client/invariantErrorCodes";
 
 export interface MessageFormat {
   type: string;
@@ -65,6 +66,7 @@ export type DevtoolsRPCMessage = {
   getQueries(clientId: string): QueryDetails[];
   getMutations(clientId: string): MutationDetails[];
   getCache(clientId: string): JSONObject;
+  getErrorCodes(version: string): Promise<ErrorCodes | undefined>;
 };
 
 export function isDevtoolsMessage(

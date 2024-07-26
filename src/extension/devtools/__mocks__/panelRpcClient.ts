@@ -1,9 +1,8 @@
 import { createTestAdapter } from "../../../testUtils/testMessageAdapter";
-import type { DevtoolsRPCMessage } from "../../messages";
 import { createRpcClient } from "../../rpc";
 
 const adapter = createTestAdapter();
-const rpcClient = createRpcClient<DevtoolsRPCMessage>(adapter);
+const rpcClient = createRpcClient(adapter);
 
 export type GetRpcClientMock = typeof getRpcClient;
 

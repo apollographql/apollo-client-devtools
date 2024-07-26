@@ -54,7 +54,7 @@ const DEVTOOLS_KEY = Symbol.for("apollo.devtools");
 const tab = createWindowActor(window);
 const messageAdapter = createWindowMessageAdapter(window);
 const handleRpc = createRpcHandler<DevtoolsRPCMessage>(messageAdapter);
-const rpcClient = createRpcClient<ErrorCodesHandler>(messageAdapter);
+const rpcClient = createRpcClient(messageAdapter);
 
 function getQueriesForClient(client: ApolloClient<unknown> | undefined) {
   const ac = getPrivateAccess(client);
