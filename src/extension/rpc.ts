@@ -3,14 +3,9 @@ import { createId } from "../utils/createId";
 import { RPC_MESSAGE_TIMEOUT } from "./errorMessages";
 import { deserializeError, serializeError } from "./errorSerialization";
 import type { MessageAdapter } from "./messageAdapters";
-import type {
-  RPCMessage,
-  RPCRequestMessage,
-  RPCResponseMessage,
-} from "./messages";
+import type { RPCRequestMessage, RPCResponseMessage } from "./messages";
 import {
   MessageType,
-  isRPCMessage,
   isRPCRequestMessage,
   isRPCResponseMessage,
 } from "./messages";
@@ -142,27 +137,5 @@ export function createRpcHandler<Messages extends MessageCollection>(
         stopListening();
       }
     };
-  };
-}
-
-export function createRPCBridge(
-  adapter1: MessageAdapter<RPCMessage>,
-  adapter2: MessageAdapter<RPCMessage>
-) {
-  const removeListener1 = adapter1.addListener((message) => {
-    if (isRPCMessage(message)) {
-      adapter2.postMessage(message);
-    }
-  });
-
-  const removeListener2 = adapter2.addListener((message) => {
-    if (isRPCMessage(message)) {
-      adapter1.postMessage(message);
-    }
-  });
-
-  return () => {
-    removeListener1();
-    removeListener2();
   };
 }

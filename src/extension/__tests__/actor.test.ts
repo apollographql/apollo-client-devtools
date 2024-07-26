@@ -222,38 +222,3 @@ test("re-adds listener on adapter when subscribing actor listener after disconne
   actor.on("connect", handleConnect);
   expect(adapter.addListener).toHaveBeenCalledTimes(1);
 });
-
-test("forwards messages to another actor", () => {
-  type Message = { type: "connect"; payload: string } | { type: "disconnect" };
-
-  const proxyAdapter = createTestAdapter<Message>();
-  const actorAdapter = createTestAdapter<Message>();
-  const proxy = createActor<Message>(proxyAdapter);
-  const actor = createActor<Message>(actorAdapter);
-
-  proxy.forward("connect", actor);
-  proxy.forward("disconnect", actor);
-
-  proxyAdapter.simulateDevtoolsMessage({ type: "connect", payload: "Hello!" });
-
-  expect(actorAdapter.postMessage).toHaveBeenCalledTimes(1);
-  expect(actorAdapter.postMessage).toHaveBeenCalledWith({
-    id: expect.any(String),
-    source: "apollo-client-devtools",
-    type: MessageType.Event,
-    message: {
-      type: "connect",
-      payload: "Hello!",
-    },
-  });
-
-  proxyAdapter.simulateDevtoolsMessage({ type: "disconnect" });
-
-  expect(actorAdapter.postMessage).toHaveBeenCalledTimes(2);
-  expect(actorAdapter.postMessage).toHaveBeenCalledWith({
-    id: expect.any(String),
-    source: "apollo-client-devtools",
-    type: MessageType.Event,
-    message: { type: "disconnect" },
-  });
-});

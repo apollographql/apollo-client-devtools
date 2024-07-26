@@ -1,21 +1,18 @@
 import browser from "webextension-polyfill";
 import type { Actor } from "../actor";
-import { createActor } from "../actor";
-import type { ClientMessage, PanelMessage } from "../messages";
+import type { PanelMessage } from "../messages";
 import { getPanelActor } from "./panelActor";
 import {
+  createMessageBridge,
   createPortMessageAdapter,
   createWindowMessageAdapter,
 } from "../messageAdapters";
-import { createRPCBridge } from "../rpc";
 
 const inspectedTabId = browser.devtools.inspectedWindow.tabId;
 
 const portAdapter = createPortMessageAdapter(() =>
   browser.runtime.connect({ name: inspectedTabId.toString() })
 );
-
-const clientPort = createActor<ClientMessage>(portAdapter);
 
 let connectedToPanel = false;
 let panelWindow: Actor<PanelMessage>;
@@ -33,14 +30,7 @@ async function createDevtoolsPanel() {
     if (connectedToPanel) {
       panelWindow.send({ type: "panelShown" });
     } else {
-      createRPCBridge(createWindowMessageAdapter(window), portAdapter);
-
-      clientPort.forward("explorerResponse", panelWindow);
-      clientPort.forward("registerClient", panelWindow);
-      clientPort.forward("clientTerminated", panelWindow);
-
-      panelWindow.forward("explorerRequest", clientPort);
-      panelWindow.forward("explorerSubscriptionTermination", clientPort);
+      createMessageBridge(createWindowMessageAdapter(window), portAdapter);
 
       panelWindow.send({ type: "initializePanel" });
 

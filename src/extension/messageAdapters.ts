@@ -1,5 +1,7 @@
 import type browser from "webextension-polyfill";
+import { isDevtoolsMessage } from "./messages";
 import type { ApolloClientDevtoolsMessage } from "./messages";
+import type { SafeAny } from "../types";
 
 export interface MessageAdapter<
   PostMessageFormat extends ApolloClientDevtoolsMessage<
@@ -86,5 +88,27 @@ export function createWindowMessageAdapter<
       setTimeout(() => sentMessageIds.delete(message.id), 10);
       window.postMessage(message, "*");
     },
+  };
+}
+
+export function createMessageBridge(
+  adapter1: MessageAdapter<SafeAny>,
+  adapter2: MessageAdapter<SafeAny>
+) {
+  const removeListener1 = adapter1.addListener((message) => {
+    if (isDevtoolsMessage(message)) {
+      adapter2.postMessage(message);
+    }
+  });
+
+  const removeListener2 = adapter2.addListener((message) => {
+    if (isDevtoolsMessage(message)) {
+      adapter1.postMessage(message);
+    }
+  });
+
+  return () => {
+    removeListener1();
+    removeListener2();
   };
 }
