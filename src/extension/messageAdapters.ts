@@ -4,9 +4,7 @@ import type { ApolloClientDevtoolsMessage } from "./messages";
 
 export interface MessageAdapter {
   addListener: (listener: (message: unknown) => void) => () => void;
-  postMessage: (
-    message: ApolloClientDevtoolsMessage<Record<string, unknown>>
-  ) => void;
+  postMessage: (message: ApolloClientDevtoolsMessage) => void;
 }
 
 export function createPortMessageAdapter(

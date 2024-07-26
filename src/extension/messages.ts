@@ -47,19 +47,15 @@ export type RPCMessage<
   Result = unknown,
 > = RPCRequestMessage<Params> | RPCResponseMessage<Result>;
 
-export type ApolloClientDevtoolsEventMessage<
-  Message extends Record<string, unknown> = Record<string, unknown>,
-> = {
+export type ApolloClientDevtoolsEventMessage = {
   id: string;
   source: "apollo-client-devtools";
   type: MessageType.Event;
-  message: Message;
+  message: EventMessage;
 };
 
-export type ApolloClientDevtoolsMessage<
-  Message extends Record<string, unknown> = Record<string, unknown>,
-> =
-  | ApolloClientDevtoolsEventMessage<Message>
+export type ApolloClientDevtoolsMessage =
+  | ApolloClientDevtoolsEventMessage
   | RPCRequestMessage
   | RPCResponseMessage;
 
@@ -91,9 +87,9 @@ export type DevtoolsRPCMessage = {
   getCache(clientId: string): JSONObject;
 };
 
-export function isDevtoolsMessage<Message extends Record<string, unknown>>(
+export function isDevtoolsMessage(
   message: unknown
-): message is ApolloClientDevtoolsMessage<Message> {
+): message is ApolloClientDevtoolsMessage {
   return (
     typeof message === "object" &&
     message !== null &&
@@ -116,6 +112,6 @@ export function isRPCResponseMessage(
 
 export function isEventMessage(
   message: unknown
-): message is ApolloClientDevtoolsEventMessage<EventMessage> {
+): message is ApolloClientDevtoolsEventMessage {
   return isDevtoolsMessage(message) && message.type === MessageType.Event;
 }
