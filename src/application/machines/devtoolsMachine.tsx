@@ -22,7 +22,7 @@ export const devtoolsMachine = setup({
   actions: {
     openModal: assign({ modalOpen: true }),
     closeModal: assign({ modalOpen: false }),
-    connectToClient: () => {
+    notifyWaitingForConnection: () => {
       BannerAlert.show({
         type: "loading",
         content: "Waiting for client to connect...",
@@ -85,7 +85,7 @@ export const devtoolsMachine = setup({
         timeout: "timedout",
         clientNotFound: "notFound",
       },
-      entry: "connectToClient",
+      entry: "notifyWaitingForConnection",
       after: {
         connectTimeout: {
           target: "notFound",
@@ -97,7 +97,7 @@ export const devtoolsMachine = setup({
         connect: "connected",
         clientNotFound: "notFound",
       },
-      entry: ["connectToClient", "closeModal"],
+      entry: ["notifyWaitingForConnection", "closeModal"],
       after: {
         connectTimeout: {
           target: "notFound",
