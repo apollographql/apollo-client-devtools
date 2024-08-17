@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Fragment, useState, useMemo, useSyncExternalStore } from "react";
+import { useState, useMemo, useSyncExternalStore } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { gql, useQuery } from "@apollo/client";
 import IconArrowLeft from "@apollo/icons/small/IconArrowLeft.svg";
@@ -90,34 +90,32 @@ export function Cache({ clientId }: CacheProps) {
         {loading ? (
           <Loading />
         ) : dataExists ? (
-          <Fragment>
+          <>
             <SearchField
               className="mb-4"
               placeholder="Search cache"
               onChange={setSearchTerm}
               value={searchTerm}
             />
-            <div className="overflow-auto h-full">
-              <List>
-                {cacheIds.map((id) => {
-                  return (
-                    <ListItem
-                      key={id}
-                      onClick={() => history.push(id)}
-                      selected={id === cacheId}
-                      className="font-code"
-                    >
-                      {searchTerm ? (
-                        <HighlightMatch searchTerm={searchTerm} value={id} />
-                      ) : (
-                        id
-                      )}
-                    </ListItem>
-                  );
-                })}
-              </List>
-            </div>
-          </Fragment>
+            <List className="h-full">
+              {cacheIds.map((id) => {
+                return (
+                  <ListItem
+                    key={id}
+                    onClick={() => history.push(id)}
+                    selected={id === cacheId}
+                    className="font-code"
+                  >
+                    {searchTerm ? (
+                      <HighlightMatch searchTerm={searchTerm} value={id} />
+                    ) : (
+                      id
+                    )}
+                  </ListItem>
+                );
+              })}
+            </List>
+          </>
         ) : null}
       </Sidebar>
       <Main className="!overflow-auto flex flex-col">
