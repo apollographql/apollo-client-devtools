@@ -93,30 +93,24 @@ export function Cache({ clientId }: CacheProps) {
           onChange={setSearchTerm}
           value={searchTerm}
         />
-        {loading ? (
-          <Loading />
-        ) : dataExists ? (
-          <>
-            <List className="h-full">
-              {cacheIds.map((id) => {
-                return (
-                  <ListItem
-                    key={id}
-                    onClick={() => history.push(id)}
-                    selected={id === cacheId}
-                    className="font-code"
-                  >
-                    {searchTerm ? (
-                      <HighlightMatch searchTerm={searchTerm} value={id} />
-                    ) : (
-                      id
-                    )}
-                  </ListItem>
-                );
-              })}
-            </List>
-          </>
-        ) : null}
+        <List className="h-full">
+          {cacheIds.map((id) => {
+            return (
+              <ListItem
+                key={id}
+                onClick={() => history.push(id)}
+                selected={id === cacheId}
+                className="font-code"
+              >
+                {searchTerm ? (
+                  <HighlightMatch searchTerm={searchTerm} value={id} />
+                ) : (
+                  id
+                )}
+              </ListItem>
+            );
+          })}
+        </List>
       </Sidebar>
       <Main className="!overflow-auto flex flex-col">
         {dataExists ? (
