@@ -87,16 +87,16 @@ export function Cache({ clientId }: CacheProps) {
   return (
     <SidebarLayout>
       <Sidebar className="flex flex-col h-full">
+        <SearchField
+          className="mb-4"
+          placeholder="Search cache"
+          onChange={setSearchTerm}
+          value={searchTerm}
+        />
         {loading ? (
           <Loading />
         ) : dataExists ? (
           <>
-            <SearchField
-              className="mb-4"
-              placeholder="Search cache"
-              onChange={setSearchTerm}
-              value={searchTerm}
-            />
             <List className="h-full">
               {cacheIds.map((id) => {
                 return (
