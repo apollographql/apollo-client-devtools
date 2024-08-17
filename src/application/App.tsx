@@ -317,7 +317,6 @@ function TabErrorBoundary({ children, remarks }: TabErrorBoundaryProps) {
       fallbackRender={({ error, resetErrorBoundary }) => {
         return (
           <SidebarLayout>
-            <SidebarLayout.Sidebar />
             <SidebarLayout.Main className="!overflow-y-auto">
               <PageError>
                 <PageError.Content>
