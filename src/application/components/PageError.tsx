@@ -59,6 +59,7 @@ function PageErrorDetails({ error }: PageErrorDetailsProps) {
       <CodeBlock
         language="plain"
         code={`${error.name}: ${error.message}\n\n${error.stack}`}
+        className="mt-2"
       />
     </details>
   );
