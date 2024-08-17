@@ -93,7 +93,7 @@ export function Cache({ clientId }: CacheProps) {
           <Fragment>
             <SearchField
               className="mb-4"
-              placeholder="Search queries"
+              placeholder="Search cache"
               onChange={setSearchTerm}
               value={searchTerm}
             />
