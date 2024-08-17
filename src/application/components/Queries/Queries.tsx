@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { NetworkStatus, gql, useQuery } from "@apollo/client";
 import { isNetworkRequestInFlight } from "@apollo/client/core/networkStatus";
@@ -22,6 +22,8 @@ import { AlertDisclosure } from "../AlertDisclosure";
 import { Tooltip } from "../Tooltip";
 import { ApolloErrorAlertDisclosurePanel } from "../ApolloErrorAlertDisclosurePanel";
 import { useActorEvent } from "../../hooks/useActorEvent";
+import { SearchField } from "../SearchField";
+import HighlightMatch from "../HighlightMatch";
 
 enum QueryTabs {
   Variables = "Variables",
@@ -61,8 +63,14 @@ interface QueriesProps {
   explorerIFrame: HTMLIFrameElement | null;
 }
 
+const STABLE_EMPTY_QUERIES: Array<
+  NonNullable<GetQueries["client"]>["queries"]["items"][number]
+> = [];
+
 export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
   const [selected, setSelected] = useState("1");
+  const [searchTerm, setSearchTerm] = useState("");
+
   const { data, startPolling, stopPolling } = useQuery(GET_QUERIES, {
     variables: { clientId: clientId as string },
     skip: clientId == null,
@@ -70,7 +78,7 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
     pollInterval: 500,
   });
 
-  const queries = data?.client?.queries.items ?? [];
+  const queries = data?.client?.queries.items ?? STABLE_EMPTY_QUERIES;
   const selectedQuery = queries.find((query) => query.id === selected);
   const [currentTab, setCurrentTab] = useState<QueryTabs>(QueryTabs.Variables);
   const copyButtonText = JSON.stringify(
@@ -88,11 +96,27 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
     setSelected(queries[0].id);
   }
 
+  const filteredQueries = useMemo(() => {
+    if (!searchTerm) {
+      return queries;
+    }
+
+    const regex = new RegExp(searchTerm, "i");
+
+    return queries.filter((query) => query.name && regex.test(query.name));
+  }, [searchTerm, queries]);
+
   return (
     <SidebarLayout>
       <SidebarLayout.Sidebar>
+        <SearchField
+          className="mb-4"
+          placeholder="Search queries"
+          onChange={setSearchTerm}
+          value={searchTerm}
+        />
         <List className="h-full">
-          {queries.map(({ name, id, networkStatus, pollInterval }) => {
+          {filteredQueries.map(({ name, id, networkStatus, pollInterval }) => {
             return (
               <ListItem
                 key={`${name}-${id}`}
@@ -102,7 +126,11 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
               >
                 <div className="w-full flex items-center justify-between gap-2">
                   <span className="flex-1 overflow-hidden text-ellipsis">
-                    {name}
+                    {searchTerm && name ? (
+                      <HighlightMatch searchTerm={searchTerm} value={name} />
+                    ) : (
+                      name
+                    )}
                   </span>
                   <QueryStatusIcon
                     networkStatus={networkStatus}
