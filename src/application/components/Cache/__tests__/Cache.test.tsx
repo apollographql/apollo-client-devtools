@@ -167,7 +167,7 @@ describe("Cache component tests", () => {
       renderWithApolloClient(<Cache clientId="1" />);
 
       const searchInput =
-        await screen.findByPlaceholderText<HTMLInputElement>("Search queries");
+        await screen.findByPlaceholderText<HTMLInputElement>("Search cache");
       await act(() => user.type(searchInput, "Result"));
 
       const sidebar = screen.getByRole("complementary");
@@ -197,7 +197,7 @@ describe("Cache component tests", () => {
 
       renderWithApolloClient(<Cache clientId="1" />);
 
-      const searchInput = await screen.findByPlaceholderText("Search queries");
+      const searchInput = await screen.findByPlaceholderText("Search cache");
       await act(() => user.type(searchInput, "Res"));
 
       const sidebar = screen.getByRole("complementary");

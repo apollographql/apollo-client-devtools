@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { gql, useQuery } from "@apollo/client";
 import { List } from "../List";
@@ -20,6 +20,8 @@ import { AlertDisclosure } from "../AlertDisclosure";
 import { SerializedErrorAlertDisclosureItem } from "../SerializedErrorAlertDisclosureItem";
 import { ApolloErrorAlertDisclosurePanel } from "../ApolloErrorAlertDisclosurePanel";
 import { useActorEvent } from "../../hooks/useActorEvent";
+import { SearchField } from "../SearchField";
+import HighlightMatch from "../HighlightMatch";
 
 const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
   gql`
@@ -56,8 +58,14 @@ interface MutationsProps {
   explorerIFrame: HTMLIFrameElement | null;
 }
 
+const STABLE_EMPTY_MUTATIONS: Array<
+  NonNullable<GetMutations["client"]>["mutations"]["items"][number]
+> = [];
+
 export const Mutations = ({ clientId, explorerIFrame }: MutationsProps) => {
   const [selected, setSelected] = useState<number>(0);
+  const [searchTerm, setSearchTerm] = useState("");
+
   const { data, startPolling, stopPolling } = useQuery(GET_MUTATIONS, {
     variables: { id: clientId as string },
     skip: clientId == null,
@@ -68,7 +76,7 @@ export const Mutations = ({ clientId, explorerIFrame }: MutationsProps) => {
   useActorEvent("panelHidden", () => stopPolling());
   useActorEvent("panelShown", () => startPolling(500));
 
-  const mutations = data?.client?.mutations?.items ?? [];
+  const mutations = data?.client?.mutations?.items ?? STABLE_EMPTY_MUTATIONS;
   const selectedMutation = mutations.find(
     (mutation) => Number(mutation.id) === selected
   );
@@ -77,11 +85,26 @@ export const Mutations = ({ clientId, explorerIFrame }: MutationsProps) => {
     setSelected(0);
   }
 
+  const filteredMutations = useMemo(() => {
+    if (!searchTerm) {
+      return mutations;
+    }
+    const regex = new RegExp(searchTerm, "i");
+
+    return mutations.filter(({ name }) => name && regex.test(name));
+  }, [searchTerm, mutations]);
+
   return (
     <SidebarLayout>
       <SidebarLayout.Sidebar>
+        <SearchField
+          className="mb-4"
+          placeholder="Search mutations"
+          onChange={setSearchTerm}
+          value={searchTerm}
+        />
         <List className="h-full">
-          {mutations.map(({ name, id, loading, error }) => {
+          {filteredMutations.map(({ name, id, loading, error }) => {
             return (
               <ListItem
                 key={`${name}-${id}`}
@@ -91,7 +114,11 @@ export const Mutations = ({ clientId, explorerIFrame }: MutationsProps) => {
               >
                 <div className="w-full flex items-center justify-between gap-2">
                   <span className="flex-1 overflow-hidden text-ellipsis">
-                    {name}
+                    {searchTerm && name ? (
+                      <HighlightMatch searchTerm={searchTerm} value={name} />
+                    ) : (
+                      name
+                    )}
                   </span>
                   {loading ? (
                     <Spinner size="xs" className="shrink-0" />
