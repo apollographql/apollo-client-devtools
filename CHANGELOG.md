@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.18.0
+
+### Minor Changes
+
+- [#1473](https://github.com/apollographql/apollo-client-devtools/pull/1473) [`1d622c4`](https://github.com/apollographql/apollo-client-devtools/commit/1d622c4818748351d548dc02c1ec5f0e75562b70) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Add a search input to the "Queries" and "Mutations" tabs that filters the list of operations.
+
 ## 4.17.6
 
 ### Patch Changes
