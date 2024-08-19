@@ -4,7 +4,7 @@ import CopyPlugin from "copy-webpack-plugin";
 import TerserPlugin from "terser-webpack-plugin";
 import WebExtPlugin from "web-ext-plugin";
 import webpack from "webpack";
-import packageJson from "./package.json" assert { type: "json" };
+import packageJson from "./package.json" with { type: "json" };
 
 const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
