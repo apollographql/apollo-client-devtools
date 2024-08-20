@@ -241,7 +241,6 @@ export type GetQueries = {
     id: string;
     queries: {
       __typename: "ClientQueries";
-      total: number;
       items: Array<{
         __typename: "WatchedQuery";
         id: string;
