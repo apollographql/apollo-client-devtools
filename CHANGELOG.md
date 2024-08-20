@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.18.1
+
+### Patch Changes
+
+- [#1459](https://github.com/apollographql/apollo-client-devtools/pull/1459) [`b4a600b`](https://github.com/apollographql/apollo-client-devtools/commit/b4a600b6c6e300fa738adc96c8faeecc2b8981e6) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Show a loading indicator when the extension is loading client data.
+
+- [#1459](https://github.com/apollographql/apollo-client-devtools/pull/1459) [`b4a600b`](https://github.com/apollographql/apollo-client-devtools/commit/b4a600b6c6e300fa738adc96c8faeecc2b8981e6) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Show an error screen if an error occurs while getting client data. This will provide a helpful suggestion with a link to open a prefilled GitHub issue with the error that occurred.
+
 ## 4.18.0
 
 ### Minor Changes
