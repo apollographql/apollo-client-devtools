@@ -5,6 +5,7 @@ import type { AsChildProps } from "../types/props";
 import { cva, type VariantProps } from "class-variance-authority";
 import { twMerge } from "tailwind-merge";
 import type { OmitNull } from "../types/utils";
+import { Spinner } from "./Spinner";
 
 type NativeButtonProps = ComponentPropsWithoutRef<"button">;
 
@@ -12,6 +13,8 @@ type ButtonProps = AsChildProps<NativeButtonProps> &
   Variants & {
     className?: string;
     icon?: ReactElement<{ "aria-hidden": boolean; className?: string }>;
+    loading?: boolean;
+    loadingText?: string;
   };
 
 type Variants = OmitNull<Required<VariantProps<typeof button>>>;
@@ -112,23 +115,45 @@ const iconSize = cva([], {
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   function Button(
-    { asChild, className, children, variant, size, icon, ...props },
+    {
+      asChild,
+      className,
+      children,
+      variant,
+      size,
+      icon,
+      loading,
+      loadingText,
+      ...props
+    },
     ref
   ) {
     const Component = asChild ? Slot : "button";
+    const content = loading ? loadingText ?? children : children;
 
     return (
       <Component
         {...props}
         ref={ref}
         className={twMerge(button({ variant, size }), className)}
+        disabled={loading || (props as NativeButtonProps).disabled}
       >
-        {isValidElement(icon) &&
+        {loading ? (
+          <Spinner size="xs" />
+        ) : (
+          isValidElement(icon) &&
           cloneElement(icon, {
             "aria-hidden": true,
             className: twMerge(iconSize({ size }), icon.props.className),
-          })}
-        <Slottable>{children}</Slottable>
+          })
+        )}
+        {asChild ? (
+          <Slottable>{content}</Slottable>
+        ) : content && isValidElement(icon) ? (
+          <span>{content}</span>
+        ) : (
+          content
+        )}
       </Component>
     );
   }

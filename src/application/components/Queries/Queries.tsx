@@ -24,6 +24,7 @@ import { ApolloErrorAlertDisclosurePanel } from "../ApolloErrorAlertDisclosurePa
 import { useActorEvent } from "../../hooks/useActorEvent";
 import { SearchField } from "../SearchField";
 import HighlightMatch from "../HighlightMatch";
+import { PageSpinner } from "../PageSpinner";
 
 enum QueryTabs {
   Variables = "Variables",
@@ -37,7 +38,6 @@ export const GET_QUERIES: TypedDocumentNode<GetQueries, GetQueriesVariables> =
       client(id: $clientId) {
         id
         queries {
-          total
           items {
             id
             name
@@ -71,12 +71,18 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
   const [selected, setSelected] = useState("1");
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { data, startPolling, stopPolling } = useQuery(GET_QUERIES, {
-    variables: { clientId: clientId as string },
-    skip: clientId == null,
-    fetchPolicy: "cache-and-network",
-    pollInterval: 500,
-  });
+  const { loading, error, data, startPolling, stopPolling } = useQuery(
+    GET_QUERIES,
+    {
+      variables: { clientId: clientId as string },
+      skip: clientId == null,
+      pollInterval: 500,
+    }
+  );
+
+  if (error) {
+    throw error;
+  }
 
   const queries = data?.client?.queries.items ?? STABLE_EMPTY_QUERIES;
   const selectedQuery = queries.find((query) => query.id === selected);
@@ -142,108 +148,114 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
           })}
         </List>
       </SidebarLayout.Sidebar>
-      <QueryLayout>
-        {selectedQuery ? (
-          <>
-            <QueryLayout.Header>
-              <QueryLayout.Title className="flex gap-6 items-center">
-                {selectedQuery.name}
-                {isNetworkRequestInFlight(selectedQuery.networkStatus) &&
-                selectedQuery.networkStatus !== NetworkStatus.poll ? (
-                  <>
+      {loading ? (
+        <SidebarLayout.Main>
+          <PageSpinner />
+        </SidebarLayout.Main>
+      ) : (
+        <QueryLayout>
+          {selectedQuery ? (
+            <>
+              <QueryLayout.Header>
+                <QueryLayout.Title className="flex gap-6 items-center">
+                  {selectedQuery.name}
+                  {isNetworkRequestInFlight(selectedQuery.networkStatus) &&
+                  selectedQuery.networkStatus !== NetworkStatus.poll ? (
+                    <>
+                      <StatusBadge
+                        color="blue"
+                        variant="rounded"
+                        icon={<Spinner size="xs" />}
+                      >
+                        {getNetworkStatusLabel(selectedQuery.networkStatus)}
+                      </StatusBadge>
+                    </>
+                  ) : typeof pollInterval === "number" ? (
                     <StatusBadge
-                      color="blue"
+                      color={pollInterval === 0 ? "red" : "green"}
                       variant="rounded"
-                      icon={<Spinner size="xs" />}
+                      icon={
+                        selectedQuery.networkStatus === NetworkStatus.poll ? (
+                          <Spinner size="xs" />
+                        ) : undefined
+                      }
                     >
-                      {getNetworkStatusLabel(selectedQuery.networkStatus)}
-                    </StatusBadge>
-                  </>
-                ) : typeof pollInterval === "number" ? (
-                  <StatusBadge
-                    color={pollInterval === 0 ? "red" : "green"}
-                    variant="rounded"
-                    icon={
-                      selectedQuery.networkStatus === NetworkStatus.poll ? (
-                        <Spinner size="xs" />
-                      ) : undefined
-                    }
-                  >
-                    {pollInterval === 0 ? (
-                      "Stopped polling"
-                    ) : (
-                      <span>
-                        Polling{" "}
-                        <span className="text-sm">
-                          ({selectedQuery.pollInterval} ms)
+                      {pollInterval === 0 ? (
+                        "Stopped polling"
+                      ) : (
+                        <span>
+                          Polling{" "}
+                          <span className="text-sm">
+                            ({selectedQuery.pollInterval} ms)
+                          </span>
                         </span>
-                      </span>
-                    )}
-                  </StatusBadge>
-                ) : null}
-              </QueryLayout.Title>
-              <RunInExplorerButton
-                operation={selectedQuery.queryString}
-                variables={selectedQuery.variables ?? undefined}
-                embeddedExplorerIFrame={explorerIFrame}
+                      )}
+                    </StatusBadge>
+                  ) : null}
+                </QueryLayout.Title>
+                <RunInExplorerButton
+                  operation={selectedQuery.queryString}
+                  variables={selectedQuery.variables ?? undefined}
+                  embeddedExplorerIFrame={explorerIFrame}
+                />
+              </QueryLayout.Header>
+              <QueryLayout.Content>
+                {selectedQuery.error && (
+                  <AlertDisclosure className="mb-2" variant="error">
+                    <AlertDisclosure.Button>
+                      Query completed with errors
+                    </AlertDisclosure.Button>
+                    <ApolloErrorAlertDisclosurePanel
+                      error={selectedQuery.error}
+                    />
+                  </AlertDisclosure>
+                )}
+                <QueryLayout.QueryString code={selectedQuery.queryString} />
+              </QueryLayout.Content>
+            </>
+          ) : (
+            <EmptyMessage className="m-auto mt-20" />
+          )}
+          <QueryLayout.Tabs
+            value={currentTab}
+            onChange={(value) => setCurrentTab(value)}
+          >
+            <Tabs.List>
+              <Tabs.Trigger value={QueryTabs.Variables}>Variables</Tabs.Trigger>
+              <Tabs.Trigger value={QueryTabs.CachedData}>
+                Cached Data
+              </Tabs.Trigger>
+              <Tabs.Trigger value={QueryTabs.Options}>Options</Tabs.Trigger>
+              <CopyButton
+                className="ml-auto relative right-[6px]"
+                size="sm"
+                text={copyButtonText}
               />
-            </QueryLayout.Header>
-            <QueryLayout.Content>
-              {selectedQuery.error && (
-                <AlertDisclosure className="mb-2" variant="error">
-                  <AlertDisclosure.Button>
-                    Query completed with errors
-                  </AlertDisclosure.Button>
-                  <ApolloErrorAlertDisclosurePanel
-                    error={selectedQuery.error}
-                  />
-                </AlertDisclosure>
-              )}
-              <QueryLayout.QueryString code={selectedQuery.queryString} />
-            </QueryLayout.Content>
-          </>
-        ) : (
-          <EmptyMessage className="m-auto mt-20" />
-        )}
-        <QueryLayout.Tabs
-          value={currentTab}
-          onChange={(value) => setCurrentTab(value)}
-        >
-          <Tabs.List>
-            <Tabs.Trigger value={QueryTabs.Variables}>Variables</Tabs.Trigger>
-            <Tabs.Trigger value={QueryTabs.CachedData}>
-              Cached Data
-            </Tabs.Trigger>
-            <Tabs.Trigger value={QueryTabs.Options}>Options</Tabs.Trigger>
-            <CopyButton
-              className="ml-auto relative right-[6px]"
-              size="sm"
-              text={copyButtonText}
-            />
-          </Tabs.List>
-          <QueryLayout.TabContent value={QueryTabs.Variables}>
-            <JSONTreeViewer
-              hideRoot={!isEmpty(selectedQuery?.variables)}
-              className="[&>li]:!pt-0"
-              data={selectedQuery?.variables ?? {}}
-            />
-          </QueryLayout.TabContent>
-          <QueryLayout.TabContent value={QueryTabs.CachedData}>
-            <JSONTreeViewer
-              hideRoot={!isEmpty(selectedQuery?.cachedData)}
-              className="[&>li]:!pt-0"
-              data={selectedQuery?.cachedData ?? {}}
-            />
-          </QueryLayout.TabContent>
-          <QueryLayout.TabContent value={QueryTabs.Options}>
-            <JSONTreeViewer
-              hideRoot={!isEmpty(selectedQuery?.options)}
-              className="[&>li]:!pt-0"
-              data={selectedQuery?.options ?? {}}
-            />
-          </QueryLayout.TabContent>
-        </QueryLayout.Tabs>
-      </QueryLayout>
+            </Tabs.List>
+            <QueryLayout.TabContent value={QueryTabs.Variables}>
+              <JSONTreeViewer
+                hideRoot={!isEmpty(selectedQuery?.variables)}
+                className="[&>li]:!pt-0"
+                data={selectedQuery?.variables ?? {}}
+              />
+            </QueryLayout.TabContent>
+            <QueryLayout.TabContent value={QueryTabs.CachedData}>
+              <JSONTreeViewer
+                hideRoot={!isEmpty(selectedQuery?.cachedData)}
+                className="[&>li]:!pt-0"
+                data={selectedQuery?.cachedData ?? {}}
+              />
+            </QueryLayout.TabContent>
+            <QueryLayout.TabContent value={QueryTabs.Options}>
+              <JSONTreeViewer
+                hideRoot={!isEmpty(selectedQuery?.options)}
+                className="[&>li]:!pt-0"
+                data={selectedQuery?.options ?? {}}
+              />
+            </QueryLayout.TabContent>
+          </QueryLayout.Tabs>
+        </QueryLayout>
+      )}
     </SidebarLayout>
   );
 };

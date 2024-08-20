@@ -13,7 +13,7 @@ export function createSchemaWithRpcClient(rpcClient: RpcClient) {
 }
 
 function createResolvers(client: RpcClient): Resolvers {
-  const rpcClient = client.withTimeout(3000);
+  const rpcClient = client.withTimeout(10_000);
 
   return {
     Query: {

@@ -8,7 +8,7 @@ interface SidebarLayoutProps {
 
 interface SidebarProps {
   className?: string;
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 const SidebarLayout = ({ children }: SidebarLayoutProps) => {
