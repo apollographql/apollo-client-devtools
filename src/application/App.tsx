@@ -323,8 +323,8 @@ function TabErrorBoundary({ children, remarks }: TabErrorBoundaryProps) {
                     We&apos;ve run into an unexpected error
                   </PageError.Title>
                   <PageError.Body>
-                    Please try closing and reopening the browser devtools. If
-                    the issue persists, please{" "}
+                    Please try closing and reopening the browser devtools and
+                    refreshing the page. If the issue persists, please{" "}
                     <PageError.GitHubLink error={error} remarks={remarks}>
                       open an issue
                     </PageError.GitHubLink>{" "}
