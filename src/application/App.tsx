@@ -4,7 +4,6 @@ import type { TypedDocumentNode } from "@apollo/client";
 import { useReactiveVar, gql, useQuery } from "@apollo/client";
 import { useMachine } from "@xstate/react";
 import { ErrorBoundary } from "react-error-boundary";
-import IconSync from "@apollo/icons/default/IconSync.svg";
 
 import { currentScreen, Screens } from "./components/Layouts/Navigation";
 import { Queries } from "./components/Queries/Queries";
@@ -314,7 +313,7 @@ interface TabErrorBoundaryProps {
 function TabErrorBoundary({ children, remarks }: TabErrorBoundaryProps) {
   return (
     <ErrorBoundary
-      fallbackRender={({ error, resetErrorBoundary }) => {
+      fallbackRender={({ error }) => {
         return (
           <SidebarLayout>
             <SidebarLayout.Main className="!overflow-y-auto">
@@ -324,21 +323,14 @@ function TabErrorBoundary({ children, remarks }: TabErrorBoundaryProps) {
                     We&apos;ve run into an unexpected error
                   </PageError.Title>
                   <PageError.Body>
-                    Please try again. If the issue persists, please{" "}
+                    Please try closing and reopening the browser devtools. If
+                    the issue persists, please{" "}
                     <PageError.GitHubLink error={error} remarks={remarks}>
                       open an issue
                     </PageError.GitHubLink>{" "}
                     to help us diagnose the error.
                   </PageError.Body>
                 </PageError.Content>
-                <Button
-                  icon={<IconSync />}
-                  size="md"
-                  variant="primary"
-                  onClick={resetErrorBoundary}
-                >
-                  Try again
-                </Button>
                 <PageError.Details error={error} />
               </PageError>
             </SidebarLayout.Main>
