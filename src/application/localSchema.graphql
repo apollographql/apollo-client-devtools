@@ -18,6 +18,15 @@ type Query {
   client(id: ID!): Client
 }
 
+type BaseCacheSizes {
+  fragmentQueryDocuments: CacheSize
+}
+
+type CacheSize {
+  limit: Int
+  value: Int
+}
+
 interface Client {
   id: String!
   name: String
@@ -48,11 +57,6 @@ type ClientV3 implements Client {
   memoryInternals: MemoryInternals
 }
 
-type MemoryInternals {
-  limits: JSON!
-  sizes: JSON!
-}
-
 type ClientV4 implements Client {
   id: String!
   name: String
@@ -81,6 +85,51 @@ type ClientV3Mutations implements ClientMutations {
 type ClientV4Mutations implements ClientMutations {
   total: Int!
   items: [ClientV4Mutation!]!
+}
+
+type DocumentTransformCacheSizes {
+  cache: CacheSize
+}
+
+type FragmentRegistryCacheSizes {
+  lookup: CacheSize
+  findFragmentSpreads: CacheSize
+  transform: CacheSize
+}
+
+type InMemoryCacheSizes {
+  maybeBroadcastWatch: CacheSize
+  executeSelectionSet: CacheSize
+  executeSubSelectedArray: CacheSize
+}
+
+union LinkCacheSize =
+  | PersistedQueryLinkCacheSizes
+  | RemoveTypenameFromVariablesLinkCacheSizes
+
+type MemoryInternals {
+  print: CacheSize
+  parser: CacheSize
+  canonicalStringify: CacheSize
+  links: [LinkCacheSize!]
+  queryManager: QueryManagerCacheSizes!
+  fragmentRegistry: FragmentRegistryCacheSizes!
+  cache: BaseCacheSizes!
+  addTypenameDocumentTransform: [DocumentTransformCacheSizes!]
+  inMemoryCache: InMemoryCacheSizes!
+}
+
+type QueryManagerCacheSizes {
+  getDocumentInfo: CacheSize
+  documentTransforms: [DocumentTransformCacheSizes!]
+}
+
+type PersistedQueryLinkCacheSizes {
+  persistedQueryHashes: CacheSize
+}
+
+type RemoveTypenameFromVariablesLinkCacheSizes {
+  getVariableDefinitions: CacheSize
 }
 
 interface ClientMutation {
