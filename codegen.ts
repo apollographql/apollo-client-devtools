@@ -60,7 +60,6 @@ const config: CodegenConfig = {
           ClientV4Queries: "@/types.ts#ApolloClientInfo",
           ClientV3Mutations: "@/types.ts#ApolloClientInfo",
           ClientV4Mutations: "@/types.ts#ApolloClientInfo",
-          MemoryInternals: "@/types.ts#MemoryInternals",
           SerializedApolloError:
             "@/extension/tab/v3/types#SerializedApolloError as RpcSerializedApolloError",
           SerializedError: "@/types#SerializedError as RpcSerializedError",
