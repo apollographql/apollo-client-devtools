@@ -364,6 +364,21 @@ export type CombinedProtocolErrorsAlertDisclosurePanel_error = {
   errors: Array<{ __typename: "SerializedGraphQLError"; message: string }>;
 };
 
+export type MemoryInternalsQueryVariables = Exact<{
+  clientId: Scalars["ID"]["input"];
+}>;
+
+export type MemoryInternalsQuery = {
+  client: {
+    __typename: "Client";
+    memoryInternals: {
+      __typename: "MemoryInternals";
+      limits: JSON;
+      sizes: JSON;
+    } | null;
+  } | null;
+};
+
 export type GetMutationsVariables = Exact<{
   id: Scalars["ID"]["input"];
 }>;
