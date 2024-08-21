@@ -97,6 +97,12 @@ handleRpc("getCache", (clientId) => {
   return (getClientById(clientId)?.cache.extract(true) as JSONObject) ?? {};
 });
 
+handleRpc("getMemoryInternals", (clientId) => {
+  const client = getClientById(clientId);
+
+  return client?.getMemoryInternals?.();
+});
+
 function getClientById(clientId: IDv3): ApolloClient3<any>;
 function getClientById(clientId: IDv4): ApolloClient4;
 

@@ -8,6 +8,11 @@ import { MessageType, isDevtoolsMessage } from "./messages";
 import type { IDv3, IDv4 } from "./tab/clientHandler";
 import type { MutationV3Details, QueryV3Details } from "./tab/v3/types";
 import type { MutationV4Details, QueryV4Details } from "./tab/v4/types";
+import type { ApolloClient } from "@/types";
+
+type MemoryInternals = ReturnType<
+  NonNullable<ApolloClient["getMemoryInternals"]>
+>;
 
 export type RPCRequest = {
   getClients(): ApolloClientInfo[];
@@ -18,6 +23,7 @@ export type RPCRequest = {
   getV4Mutations(clientId: IDv4): MutationV4Details[];
   getCache(clientId: string): JSONObject;
   getErrorCodes(version: string): Promise<ErrorCodes | undefined>;
+  getMemoryInternals(clientId: string): MemoryInternals | undefined;
 };
 
 export interface RpcClient {
