@@ -249,6 +249,12 @@ export type LinkCacheSize =
 
 export type MemoryInternals = {
   __typename?: "MemoryInternals";
+  caches: MemoryInternalsCaches;
+  raw: Maybe<Scalars["JSON"]["output"]>;
+};
+
+export type MemoryInternalsCaches = {
+  __typename?: "MemoryInternalsCaches";
   addTypenameDocumentTransform: Maybe<Array<DocumentTransformCacheSizes>>;
   cache: BaseCacheSizes;
   canonicalStringify: Maybe<CacheSize>;
@@ -574,8 +580,9 @@ export type ResolversTypes = {
   LinkCacheSize: ResolverTypeWrapper<
     ResolversUnionTypes<ResolversTypes>["LinkCacheSize"]
   >;
-  MemoryInternals: ResolverTypeWrapper<
-    Omit<MemoryInternals, "links"> & {
+  MemoryInternals: ResolverTypeWrapper<MemoryInternals>;
+  MemoryInternalsCaches: ResolverTypeWrapper<
+    Omit<MemoryInternalsCaches, "links"> & {
       links: Array<ResolversTypes["LinkCacheSize"]>;
     }
   >;
@@ -641,7 +648,8 @@ export type ResolversParentTypes = {
   Int: Scalars["Int"]["output"];
   JSON: Scalars["JSON"]["output"];
   LinkCacheSize: ResolversUnionTypes<ResolversParentTypes>["LinkCacheSize"];
-  MemoryInternals: Omit<MemoryInternals, "links"> & {
+  MemoryInternals: MemoryInternals;
+  MemoryInternalsCaches: Omit<MemoryInternalsCaches, "links"> & {
     links: Array<ResolversParentTypes["LinkCacheSize"]>;
   };
   PersistedQueryLinkCacheSizes: PersistedQueryLinkCacheSizes;
@@ -1108,6 +1116,20 @@ export type MemoryInternalsResolvers<
   ParentType extends
     ResolversParentTypes["MemoryInternals"] = ResolversParentTypes["MemoryInternals"],
 > = {
+  caches?: Resolver<
+    ResolversTypes["MemoryInternalsCaches"],
+    ParentType,
+    ContextType
+  >;
+  raw?: Resolver<Maybe<ResolversTypes["JSON"]>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type MemoryInternalsCachesResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["MemoryInternalsCaches"] = ResolversParentTypes["MemoryInternalsCaches"],
+> = {
   addTypenameDocumentTransform?: Resolver<
     Maybe<Array<ResolversTypes["DocumentTransformCacheSizes"]>>,
     ParentType,
@@ -1405,6 +1427,7 @@ export type Resolvers<ContextType = any> = {
   JSON?: GraphQLScalarType;
   LinkCacheSize?: LinkCacheSizeResolvers<ContextType>;
   MemoryInternals?: MemoryInternalsResolvers<ContextType>;
+  MemoryInternalsCaches?: MemoryInternalsCachesResolvers<ContextType>;
   PersistedQueryLinkCacheSizes?: PersistedQueryLinkCacheSizesResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   QueryData?: GraphQLScalarType;
