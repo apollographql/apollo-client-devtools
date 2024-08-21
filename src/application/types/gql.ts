@@ -371,6 +371,7 @@ export type MemoryInternalsQueryVariables = Exact<{
 export type MemoryInternalsQuery = {
   client: {
     __typename: "Client";
+    id: string;
     memoryInternals: {
       __typename: "MemoryInternals";
       limits: JSON;
