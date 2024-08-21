@@ -44,6 +44,12 @@ type ClientV3 implements Client {
   queries: ClientV3Queries!
   mutations: ClientV3Mutations!
   cache: Cache!
+  memoryInternals: MemoryInternals
+}
+
+type MemoryInternals {
+  limits: JSON!
+  sizes: JSON!
 }
 
 type ClientV4 implements Client {
