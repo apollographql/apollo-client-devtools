@@ -43,6 +43,17 @@ export type Scalars = {
   Variables: { input: Variables; output: Variables };
 };
 
+export type BaseCacheSizes = {
+  __typename: "BaseCacheSizes";
+  fragmentQueryDocuments: Maybe<CacheSize>;
+};
+
+export type CacheSize = {
+  __typename: "CacheSize";
+  limit: Maybe<Scalars["Int"]["output"]>;
+  size: Maybe<Scalars["Int"]["output"]>;
+};
+
 export type Client = {
   cache: Scalars["Cache"]["output"];
   id: Scalars["String"]["output"];
@@ -182,10 +193,22 @@ export type ClientWatchedQuery = {
   variables: Maybe<Scalars["Variables"]["output"]>;
 };
 
+export type DocumentTransformCacheSizes = {
+  __typename: "DocumentTransformCacheSizes";
+  cache: Maybe<CacheSize>;
+};
+
 export type ErrorLike = {
   message: Scalars["String"]["output"];
   name: Scalars["String"]["output"];
   stack: Maybe<Scalars["String"]["output"]>;
+};
+
+export type FragmentRegistryCacheSizes = {
+  __typename: "FragmentRegistryCacheSizes";
+  findFragmentSpreads: Maybe<CacheSize>;
+  lookup: Maybe<CacheSize>;
+  transform: Maybe<CacheSize>;
 };
 
 export type GraphQLErrorSourceLocation = {
@@ -194,10 +217,33 @@ export type GraphQLErrorSourceLocation = {
   line: Scalars["Int"]["output"];
 };
 
+export type InMemoryCacheSizes = {
+  __typename: "InMemoryCacheSizes";
+  executeSelectionSet: Maybe<CacheSize>;
+  executeSubSelectedArray: Maybe<CacheSize>;
+  maybeBroadcastWatch: Maybe<CacheSize>;
+};
+
+export type LinkCacheSize =
+  | PersistedQueryLinkCacheSizes
+  | RemoveTypenameFromVariablesLinkCacheSizes;
+
 export type MemoryInternals = {
   __typename: "MemoryInternals";
-  limits: Scalars["JSON"]["output"];
-  sizes: Scalars["JSON"]["output"];
+  addTypenameDocumentTransform: Maybe<Array<DocumentTransformCacheSizes>>;
+  cache: BaseCacheSizes;
+  canonicalStringify: Maybe<CacheSize>;
+  fragmentRegistry: FragmentRegistryCacheSizes;
+  inMemoryCache: InMemoryCacheSizes;
+  links: Array<LinkCacheSize>;
+  parser: Maybe<CacheSize>;
+  print: Maybe<CacheSize>;
+  queryManager: QueryManagerCacheSizes;
+};
+
+export type PersistedQueryLinkCacheSizes = {
+  __typename: "PersistedQueryLinkCacheSizes";
+  persistedQueryHashes: Maybe<CacheSize>;
 };
 
 export type Query = {
@@ -208,6 +254,17 @@ export type Query = {
 
 export type QueryclientArgs = {
   id: Scalars["ID"]["input"];
+};
+
+export type QueryManagerCacheSizes = {
+  __typename: "QueryManagerCacheSizes";
+  documentTransforms: Maybe<Array<DocumentTransformCacheSizes>>;
+  getDocumentInfo: Maybe<CacheSize>;
+};
+
+export type RemoveTypenameFromVariablesLinkCacheSizes = {
+  __typename: "RemoveTypenameFromVariablesLinkCacheSizes";
+  getVariableDefinitions: Maybe<CacheSize>;
 };
 
 export type SerializedApolloError = {
@@ -369,15 +426,230 @@ export type MemoryInternalsQueryVariables = Exact<{
 }>;
 
 export type MemoryInternalsQuery = {
-  client: {
-    __typename: "Client";
-    id: string;
-    memoryInternals: {
-      __typename: "MemoryInternals";
-      limits: JSON;
-      sizes: JSON;
-    } | null;
-  } | null;
+  client:
+    | {
+        __typename: "ClientV3";
+        id: string;
+        memoryInternals: {
+          __typename: "MemoryInternals";
+          print: {
+            __typename: "CacheSize";
+            size: number | null;
+            limit: number | null;
+          } | null;
+          parser: {
+            __typename: "CacheSize";
+            size: number | null;
+            limit: number | null;
+          } | null;
+          canonicalStringify: {
+            __typename: "CacheSize";
+            size: number | null;
+            limit: number | null;
+          } | null;
+          links: Array<
+            | {
+                __typename: "PersistedQueryLinkCacheSizes";
+                persistedQueryHashes: {
+                  __typename: "CacheSize";
+                  size: number | null;
+                  limit: number | null;
+                } | null;
+              }
+            | {
+                __typename: "RemoveTypenameFromVariablesLinkCacheSizes";
+                getVariableDefinitions: {
+                  __typename: "CacheSize";
+                  size: number | null;
+                  limit: number | null;
+                } | null;
+              }
+          >;
+          queryManager: {
+            __typename: "QueryManagerCacheSizes";
+            getDocumentInfo: {
+              __typename: "CacheSize";
+              size: number | null;
+              limit: number | null;
+            } | null;
+            documentTransforms: Array<{
+              __typename: "DocumentTransformCacheSizes";
+              cache: {
+                __typename: "CacheSize";
+                size: number | null;
+                limit: number | null;
+              } | null;
+            }> | null;
+          };
+          fragmentRegistry: {
+            __typename: "FragmentRegistryCacheSizes";
+            lookup: {
+              __typename: "CacheSize";
+              size: number | null;
+              limit: number | null;
+            } | null;
+            findFragmentSpreads: {
+              __typename: "CacheSize";
+              size: number | null;
+              limit: number | null;
+            } | null;
+            transform: {
+              __typename: "CacheSize";
+              size: number | null;
+              limit: number | null;
+            } | null;
+          };
+          cache: {
+            __typename: "BaseCacheSizes";
+            fragmentQueryDocuments: {
+              __typename: "CacheSize";
+              size: number | null;
+              limit: number | null;
+            } | null;
+          };
+          addTypenameDocumentTransform: Array<{
+            __typename: "DocumentTransformCacheSizes";
+            cache: {
+              __typename: "CacheSize";
+              size: number | null;
+              limit: number | null;
+            } | null;
+          }> | null;
+          inMemoryCache: {
+            __typename: "InMemoryCacheSizes";
+            maybeBroadcastWatch: {
+              __typename: "CacheSize";
+              size: number | null;
+              limit: number | null;
+            } | null;
+            executeSelectionSet: {
+              __typename: "CacheSize";
+              size: number | null;
+              limit: number | null;
+            } | null;
+            executeSubSelectedArray: {
+              __typename: "CacheSize";
+              size: number | null;
+              limit: number | null;
+            } | null;
+          };
+        } | null;
+      }
+    | {
+        __typename: "ClientV4";
+        id: string;
+        memoryInternals: {
+          __typename: "MemoryInternals";
+          print: {
+            __typename: "CacheSize";
+            size: number | null;
+            limit: number | null;
+          } | null;
+          parser: {
+            __typename: "CacheSize";
+            size: number | null;
+            limit: number | null;
+          } | null;
+          canonicalStringify: {
+            __typename: "CacheSize";
+            size: number | null;
+            limit: number | null;
+          } | null;
+          links: Array<
+            | {
+                __typename: "PersistedQueryLinkCacheSizes";
+                persistedQueryHashes: {
+                  __typename: "CacheSize";
+                  size: number | null;
+                  limit: number | null;
+                } | null;
+              }
+            | {
+                __typename: "RemoveTypenameFromVariablesLinkCacheSizes";
+                getVariableDefinitions: {
+                  __typename: "CacheSize";
+                  size: number | null;
+                  limit: number | null;
+                } | null;
+              }
+          >;
+          queryManager: {
+            __typename: "QueryManagerCacheSizes";
+            getDocumentInfo: {
+              __typename: "CacheSize";
+              size: number | null;
+              limit: number | null;
+            } | null;
+            documentTransforms: Array<{
+              __typename: "DocumentTransformCacheSizes";
+              cache: {
+                __typename: "CacheSize";
+                size: number | null;
+                limit: number | null;
+              } | null;
+            }> | null;
+          };
+          fragmentRegistry: {
+            __typename: "FragmentRegistryCacheSizes";
+            lookup: {
+              __typename: "CacheSize";
+              size: number | null;
+              limit: number | null;
+            } | null;
+            findFragmentSpreads: {
+              __typename: "CacheSize";
+              size: number | null;
+              limit: number | null;
+            } | null;
+            transform: {
+              __typename: "CacheSize";
+              size: number | null;
+              limit: number | null;
+            } | null;
+          };
+          cache: {
+            __typename: "BaseCacheSizes";
+            fragmentQueryDocuments: {
+              __typename: "CacheSize";
+              size: number | null;
+              limit: number | null;
+            } | null;
+          };
+          addTypenameDocumentTransform: Array<{
+            __typename: "DocumentTransformCacheSizes";
+            cache: {
+              __typename: "CacheSize";
+              size: number | null;
+              limit: number | null;
+            } | null;
+          }> | null;
+          inMemoryCache: {
+            __typename: "InMemoryCacheSizes";
+            maybeBroadcastWatch: {
+              __typename: "CacheSize";
+              size: number | null;
+              limit: number | null;
+            } | null;
+            executeSelectionSet: {
+              __typename: "CacheSize";
+              size: number | null;
+              limit: number | null;
+            } | null;
+            executeSubSelectedArray: {
+              __typename: "CacheSize";
+              size: number | null;
+              limit: number | null;
+            } | null;
+          };
+        } | null;
+      }
+    | null;
+};
+
+export type CacheSizeFields = {
+  __typename: "CacheSize";
+  size: number | null;
+  limit: number | null;
 };
 
 export type GetMutationsVariables = Exact<{
