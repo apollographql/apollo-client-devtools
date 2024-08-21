@@ -46,6 +46,7 @@ export type Scalars = {
 export type Client = {
   cache: Scalars["Cache"]["output"];
   id: Scalars["String"]["output"];
+  memoryInternals: Maybe<MemoryInternals>;
   mutations: ClientMutations;
   name: Maybe<Scalars["String"]["output"]>;
   queries: ClientQueries;
@@ -74,6 +75,7 @@ export type ClientV3 = Client & {
   __typename: "ClientV3";
   cache: Scalars["Cache"]["output"];
   id: Scalars["String"]["output"];
+  memoryInternals: Maybe<MemoryInternals>;
   mutations: ClientV3Mutations;
   name: Maybe<Scalars["String"]["output"]>;
   queries: ClientV3Queries;
@@ -127,6 +129,7 @@ export type ClientV4 = Client & {
   __typename: "ClientV4";
   cache: Scalars["Cache"]["output"];
   id: Scalars["String"]["output"];
+  memoryInternals: Maybe<MemoryInternals>;
   mutations: ClientV4Mutations;
   name: Maybe<Scalars["String"]["output"]>;
   queries: ClientV4Queries;
@@ -189,6 +192,12 @@ export type GraphQLErrorSourceLocation = {
   __typename: "GraphQLErrorSourceLocation";
   column: Scalars["Int"]["output"];
   line: Scalars["Int"]["output"];
+};
+
+export type MemoryInternals = {
+  __typename: "MemoryInternals";
+  limits: Scalars["JSON"]["output"];
+  sizes: Scalars["JSON"]["output"];
 };
 
 export type Query = {

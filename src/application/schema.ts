@@ -30,11 +30,17 @@ function createResolvers(client: RpcClient): Resolvers {
       cache: (client) => rpcClient.request("getCache", client.id),
       queries: (client) => client,
       mutations: (client) => client,
+      memoryInternals: (client) => {
+        return rpcClient.request("getMemoryInternals", client.id);
+      },
     },
     ClientV4: {
       cache: (client) => rpcClient.request("getCache", client.id),
       queries: (client) => client,
       mutations: (client) => client,
+      memoryInternals: (client) => {
+        return rpcClient.request("getMemoryInternals", client.id);
+      },
     },
     ClientQueries: {
       __resolveType: (client) => {

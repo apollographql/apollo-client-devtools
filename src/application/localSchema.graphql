@@ -25,6 +25,7 @@ interface Client {
   cache: Cache!
   queries: ClientQueries!
   mutations: ClientMutations!
+  memoryInternals: MemoryInternals
 }
 
 interface ClientQueries {
@@ -59,6 +60,7 @@ type ClientV4 implements Client {
   cache: Cache!
   mutations: ClientV4Mutations!
   queries: ClientV4Queries!
+  memoryInternals: MemoryInternals
 }
 
 type ClientV3Queries implements ClientQueries {

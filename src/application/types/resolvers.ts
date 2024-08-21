@@ -7,7 +7,7 @@ import type {
   GraphQLScalarType,
   GraphQLScalarTypeConfig,
 } from "graphql";
-import type { ApolloClientInfo } from "@/types.ts";
+import type { ApolloClientInfo, MemoryInternals } from "@/types.ts";
 import type { SerializedApolloError as RpcSerializedApolloError } from "@/extension/tab/v3/types";
 import type { SerializedError as RpcSerializedError } from "@/types";
 import type { GraphQLFormattedError } from "graphql";
@@ -65,6 +65,7 @@ export type Scalars = {
 export type Client = {
   cache: Scalars["Cache"]["output"];
   id: Scalars["String"]["output"];
+  memoryInternals: Maybe<MemoryInternals>;
   mutations: ClientMutations;
   name: Maybe<Scalars["String"]["output"]>;
   queries: ClientQueries;
@@ -93,6 +94,7 @@ export type ClientV3 = Client & {
   __typename?: "ClientV3";
   cache: Scalars["Cache"]["output"];
   id: Scalars["String"]["output"];
+  memoryInternals: Maybe<MemoryInternals>;
   mutations: ClientV3Mutations;
   name: Maybe<Scalars["String"]["output"]>;
   queries: ClientV3Queries;
@@ -146,6 +148,7 @@ export type ClientV4 = Client & {
   __typename?: "ClientV4";
   cache: Scalars["Cache"]["output"];
   id: Scalars["String"]["output"];
+  memoryInternals: Maybe<MemoryInternals>;
   mutations: ClientV4Mutations;
   name: Maybe<Scalars["String"]["output"]>;
   queries: ClientV4Queries;
@@ -208,6 +211,12 @@ export type GraphQlErrorSourceLocation = {
   __typename?: "GraphQLErrorSourceLocation";
   column: Scalars["Int"]["output"];
   line: Scalars["Int"]["output"];
+};
+
+export type MemoryInternals = {
+  __typename?: "MemoryInternals";
+  limits: Scalars["JSON"]["output"];
+  sizes: Scalars["JSON"]["output"];
 };
 
 export type Query = {
@@ -497,6 +506,7 @@ export type ResolversTypes = {
   ID: ResolverTypeWrapper<Scalars["ID"]["output"]>;
   Int: ResolverTypeWrapper<Scalars["Int"]["output"]>;
   JSON: ResolverTypeWrapper<Scalars["JSON"]["output"]>;
+  MemoryInternals: ResolverTypeWrapper<MemoryInternals>;
   Query: ResolverTypeWrapper<never>;
   QueryData: ResolverTypeWrapper<Scalars["QueryData"]["output"]>;
   QueryOptions: ResolverTypeWrapper<Scalars["QueryOptions"]["output"]>;
@@ -550,6 +560,7 @@ export type ResolversParentTypes = {
   ID: Scalars["ID"]["output"];
   Int: Scalars["Int"]["output"];
   JSON: Scalars["JSON"]["output"];
+  MemoryInternals: MemoryInternals;
   Query: never;
   QueryData: Scalars["QueryData"]["output"];
   QueryOptions: Scalars["QueryOptions"]["output"];
@@ -626,6 +637,11 @@ export type ClientV3Resolvers<
 > = {
   cache?: Resolver<ResolversTypes["Cache"], ParentType, ContextType>;
   id?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  memoryInternals?: Resolver<
+    Maybe<ResolversTypes["MemoryInternals"]>,
+    ParentType,
+    ContextType
+  >;
   mutations?: Resolver<
     ResolversTypes["ClientV3Mutations"],
     ParentType,
@@ -761,6 +777,11 @@ export type ClientV4Resolvers<
 > = {
   cache?: Resolver<ResolversTypes["Cache"], ParentType, ContextType>;
   id?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  memoryInternals?: Resolver<
+    Maybe<ResolversTypes["MemoryInternals"]>,
+    ParentType,
+    ContextType
+  >;
   mutations?: Resolver<
     ResolversTypes["ClientV4Mutations"],
     ParentType,
@@ -904,6 +925,16 @@ export interface JsonScalarConfig
   extends GraphQLScalarTypeConfig<ResolversTypes["JSON"], any> {
   name: "JSON";
 }
+
+export type MemoryInternalsResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["MemoryInternals"] = ResolversParentTypes["MemoryInternals"],
+> = {
+  limits?: Resolver<ResolversTypes["JSON"], ParentType, ContextType>;
+  sizes?: Resolver<ResolversTypes["JSON"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
 
 export type QueryResolvers<
   ContextType = any,
@@ -1111,6 +1142,7 @@ export type Resolvers<ContextType = any> = {
   GraphQLErrorPath?: GraphQLScalarType;
   GraphQLErrorSourceLocation?: GraphQlErrorSourceLocationResolvers<ContextType>;
   JSON?: GraphQLScalarType;
+  MemoryInternals?: MemoryInternalsResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   QueryData?: GraphQLScalarType;
   QueryOptions?: GraphQLScalarType;
