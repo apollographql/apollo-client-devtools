@@ -1,5 +1,11 @@
 import type { JSONObject } from "../application/types/json";
-import type { ApolloClientInfo, ErrorCodes, NoInfer, SafeAny } from "../types";
+import type {
+  ApolloClientInfo,
+  ErrorCodes,
+  MemoryInternals,
+  NoInfer,
+  SafeAny,
+} from "@/types";
 import { createId } from "../utils/createId";
 import { RPC_MESSAGE_TIMEOUT } from "./errorMessages";
 import { deserializeError, serializeError } from "./errorSerialization";
@@ -8,11 +14,6 @@ import { MessageType, isDevtoolsMessage } from "./messages";
 import type { IDv3, IDv4 } from "./tab/clientHandler";
 import type { MutationV3Details, QueryV3Details } from "./tab/v3/types";
 import type { MutationV4Details, QueryV4Details } from "./tab/v4/types";
-import type { ApolloClient } from "@/types";
-
-type MemoryInternals = ReturnType<
-  NonNullable<ApolloClient["getMemoryInternals"]>
->;
 
 export type RPCRequest = {
   getClients(): ApolloClientInfo[];
