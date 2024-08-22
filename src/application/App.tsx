@@ -275,6 +275,7 @@ export const App = () => {
         <Tabs.Content
           className="flex flex-1 overflow-hidden"
           value={Screens.Memory}
+          forceMount
         >
           <TabErrorBoundary remarks="Error on Memory tab:">
             <MemoryInternals clientId={selectedClientId} />
