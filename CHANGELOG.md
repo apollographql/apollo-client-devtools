@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.18.2
+
+### Patch Changes
+
+- [#1481](https://github.com/apollographql/apollo-client-devtools/pull/1481) [`d065fca`](https://github.com/apollographql/apollo-client-devtools/commit/d065fcac046b9967144bb532f8815006e7a20e85) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Fix issue serializing cache data for the queries tab when the cache contains irregular data.
+
 ## 4.18.1
 
 ### Patch Changes
