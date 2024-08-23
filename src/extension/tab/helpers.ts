@@ -15,6 +15,7 @@ import { getPrivateAccess } from "../../privateAccess";
 import { getOperationName } from "@apollo/client/utilities";
 import { pick } from "../../application/utilities/pick";
 import type { GraphQLFormattedError } from "graphql";
+import type { JSONObject } from "../../application/types/json";
 
 export type QueryOptions = Pick<
   WatchQueryOptions,
@@ -84,7 +85,7 @@ export function getQueries(
         id: queryId,
         document,
         variables,
-        cachedData: diff.result,
+        cachedData: JSON.parse(JSON.stringify(diff.result ?? {})) as JSONObject,
         options: getQueryOptions(oc),
         networkStatus,
         error: error ? serializeApolloError(error) : undefined,
