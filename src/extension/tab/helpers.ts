@@ -15,7 +15,6 @@ import { getPrivateAccess } from "../../privateAccess";
 import { getOperationName } from "@apollo/client/utilities";
 import { pick } from "../../application/utilities/pick";
 import type { GraphQLFormattedError } from "graphql";
-import type { JSONObject } from "../../application/types/json";
 
 export type QueryOptions = Pick<
   WatchQueryOptions,
