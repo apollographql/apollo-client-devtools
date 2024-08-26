@@ -85,7 +85,7 @@ export function getQueries(
         id: queryId,
         document,
         variables,
-        cachedData: JSON.parse(JSON.stringify(diff.result ?? {})) as JSONObject,
+        cachedData: diff.result,
         options: getQueryOptions(oc),
         networkStatus,
         error: error ? serializeApolloError(error) : undefined,

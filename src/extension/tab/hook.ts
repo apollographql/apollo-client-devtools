@@ -140,17 +140,7 @@ handleRpc("getMutations", (clientId) =>
 );
 
 handleRpc("getCache", (clientId) => {
-  // We need to JSON stringify the data here in case the cache contains
-  // references to irregular data such as `URL` instances which are not
-  // cloneable via `structuredClone` (which `window.postMessage` uses to
-  // send messages). `JSON.stringify` does however serialize `URL`s into
-  // strings properly, so this should ensure that the cache data will be
-  // sent without errors.
-  //
-  // https://github.com/apollographql/apollo-client-devtools/issues/1258
-  return JSON.parse(
-    JSON.stringify(getClientById(clientId)?.cache.extract(true) ?? {})
-  ) as JSONObject;
+  return getClientById(clientId)?.cache.extract(true) ?? {};
 });
 
 function getClientById(clientId: string) {
