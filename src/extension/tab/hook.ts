@@ -50,7 +50,9 @@ type Hook = {
 const DEVTOOLS_KEY = Symbol.for("apollo.devtools");
 
 const tab = createWindowActor(window);
-const messageAdapter = createWindowMessageAdapter(window);
+const messageAdapter = createWindowMessageAdapter(window, {
+  jsonSerialize: true,
+});
 const handleRpc = createRpcHandler(messageAdapter);
 const rpcClient = createRpcClient(messageAdapter);
 
