@@ -47,7 +47,15 @@ export function createPortMessageAdapter(
   };
 }
 
-export function createWindowMessageAdapter(window: Window): MessageAdapter {
+interface WindowMessageAdapterOptions {
+  jsonSerialize?: boolean;
+}
+
+export function createWindowMessageAdapter(
+  window: Window,
+  options: WindowMessageAdapterOptions = {}
+): MessageAdapter {
+  const { jsonSerialize } = options;
   const sentMessageIds = new Set<string>();
 
   return {
@@ -75,7 +83,20 @@ export function createWindowMessageAdapter(window: Window): MessageAdapter {
       // Avoid memory leaks by always cleaning up this ID in case this message
       // adapter doesn't have a listener attached to it.
       setTimeout(() => sentMessageIds.delete(message.id), 10);
-      window.postMessage(message, "*");
+
+      // In some cases, we need to JSON stringify the data transferred in case
+      // the payload contains references to irregular data, such as `URL`
+      // instances which are not cloneable via `structuredClone` (which
+      // `window.postMessage` uses to send messages). `JSON.stringify` tends
+      // to serialize these irregular values into something that is cloneable to
+      // avoid errors for non-cloneable data.
+      //
+      // https://github.com/apollographql/apollo-client-devtools/issues/1258
+      // https://github.com/apollographql/apollo-client-devtools/issues/1479
+      window.postMessage(
+        jsonSerialize ? JSON.parse(JSON.stringify(message)) : message,
+        "*"
+      );
     },
   };
 }
