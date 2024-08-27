@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.18.3
+
+### Patch Changes
+
+- [#1488](https://github.com/apollographql/apollo-client-devtools/pull/1488) [`3a26412`](https://github.com/apollographql/apollo-client-devtools/commit/3a264120cdd8f986d1c6382d2d67da57219b92af) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Always JSON serialize payloads sent from the injected script to avoid issues cloning irregular objects in client data.
+
 ## 4.18.2
 
 ### Patch Changes
