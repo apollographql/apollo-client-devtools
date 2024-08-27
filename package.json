@@ -36,9 +36,9 @@
     "codegen": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
-    "@apollo/brand": "^0.5.9",
+    "@apollo/brand": "^0.6.0",
     "@apollo/client": "3.11.4",
-    "@apollo/icons": "^0.3.2",
+    "@apollo/icons": "^0.5.0",
     "@apollo/tailwind-preset": "^0.1.13",
     "@graphql-codegen/typescript-resolvers": "^4.1.0",
     "@headlessui/react": "^2.1.0",
