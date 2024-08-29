@@ -15,6 +15,8 @@ const WEB_EXT_TARGETS = {
 
 export default /** @returns {import("webpack").Configuration} */ (env) => {
   const target = env.TARGET;
+  const IS_EXTENSION = target === "chrome" || target === "firefox";
+  const IS_VSCODE = target === "vscode";
   const devOptions =
     env.NODE_ENV === "development"
       ? {
@@ -42,19 +44,26 @@ export default /** @returns {import("webpack").Configuration} */ (env) => {
           from: "./src/extension/images",
           to: path.resolve(__dirname, "build/images"),
         },
-        {
-          from: `./src/extension/${target}/manifest.json`,
-          to: path.resolve(__dirname, "build/manifest.json"),
-        },
-      ],
+      ].concat(
+        IS_EXTENSION
+          ? [
+              {
+                from: `./src/extension/${target}/manifest.json`,
+                to: path.resolve(__dirname, "build/manifest.json"),
+              },
+            ]
+          : []
+      ),
     }),
     new webpack.DefinePlugin({
       VERSION: JSON.stringify(packageJson.version),
       __IS_FIREFOX__: target === "firefox",
+      __IS_EXTENSION__: IS_EXTENSION,
+      __IS_VSCODE__: IS_VSCODE,
     }),
   ];
 
-  if (env.NODE_ENV === "development") {
+  if (env.NODE_ENV === "development" && IS_EXTENSION) {
     plugins.push(
       new WebExtPlugin({
         browserConsole: true,
@@ -71,7 +80,7 @@ export default /** @returns {import("webpack").Configuration} */ (env) => {
       ? { service_worker: "./src/extension/service_worker/service_worker.ts" }
       : { background: "./src/extension/background/background.ts" };
 
-  return {
+  const base = {
     ...devOptions,
     mode: env.NODE_ENV,
     target: "web",
@@ -118,7 +127,7 @@ export default /** @returns {import("webpack").Configuration} */ (env) => {
       ],
     },
     optimization: {
-      minimize: env.NODE_ENV === "production",
+      minimize: false, //env.NODE_ENV === "production",
       minimizer: [
         new TerserPlugin({
           terserOptions: {
@@ -132,4 +141,46 @@ export default /** @returns {import("webpack").Configuration} */ (env) => {
     },
     plugins,
   };
+  return [base].concat(
+    IS_VSCODE
+      ? [
+          {
+            mode: env.NODE_ENV,
+            target: "web",
+            entry: {
+              "vscode-server": "./src/extension/vscode/server.ts",
+              "vscode-client": "./src/extension/vscode/client.ts",
+            },
+            output: {
+              path: path.join(__dirname, "build"),
+              filename: "[name].js",
+              chunkFormat: "module",
+              library: {
+                type: "module",
+              },
+            },
+            experiments: {
+              outputModule: true,
+            },
+            resolve: base.resolve,
+            module: base.module,
+            optimization: base.optimization,
+            plugins: [
+              new CopyPlugin({
+                patterns: [
+                  {
+                    from: "./dist/src/extension/vscode/server.d.ts",
+                    to: path.resolve(__dirname, "build", "vscode-server.d.ts"),
+                  },
+                  {
+                    from: "./dist/src/extension/vscode/client.d.ts",
+                    to: path.resolve(__dirname, "build", "vscode-client.d.ts"),
+                  },
+                ],
+              }),
+            ],
+          },
+        ]
+      : []
+  );
 };
