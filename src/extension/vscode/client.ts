@@ -6,6 +6,7 @@ import { createRpcClient, createRpcHandler } from "../rpc";
 import { getQueries, getMutations } from "../tab/helpers";
 import { loadErrorCodes } from "../tab/loadErrorCodes";
 import type { MessageAdapter } from "../messageAdapters";
+import { handleExplorerRequests } from "../tab/handleExplorerRequests";
 
 export function registerClient(client: ApolloClient<any>, url: string | URL) {
   const ac = getPrivateAccess(client);
@@ -35,6 +36,7 @@ export function registerClient(client: ApolloClient<any>, url: string | URL) {
   wsRpcHandler("getQueries", getQueriesForClient);
   wsRpcHandler("getMutations", getMutationsForClient);
   wsRpcHandler("getCache", () => ac.cache.extract(true) ?? {});
+  handleExplorerRequests(wsActor, () => client);
   ws.addEventListener("open", function open() {
     wsActor.send({
       type: "registerClient",

@@ -2,6 +2,7 @@
 import type { WebSocketServer, RawData, WebSocket } from "ws";
 import type { MessageAdapter } from "../messageAdapters";
 import { createRpcClient, createRpcHandler } from "../rpc";
+import type { Actor } from "../actor";
 import { createActor } from "../actor";
 import type { ApolloClientInfo } from "../../types";
 import { createId } from "../../utils/createId";
@@ -22,6 +23,7 @@ export function runServer(
     string,
     {
       rpcClient: ReturnType<typeof createRpcClient>;
+      actor: Actor;
       info: ApolloClientInfo;
     }
   >();
@@ -54,9 +56,13 @@ export function runServer(
       payload.id = id;
       clients.set(id, {
         info: payload,
+        actor: wsActor,
         rpcClient: wsRpcClient,
       });
       tab.send({ type: "registerClient", payload });
+    });
+    wsActor.on("explorerResponse", (message) => {
+      tab.send(message);
     });
     wsRpcHandler("getErrorCodes", (version) => {
       if (version in allErrorCodes.byVersion) {
@@ -72,6 +78,20 @@ export function runServer(
     ws.on("message", function incoming(message) {
       console.log("server.ts received: %o", message);
     });
+  });
+
+  tab.on("explorerRequest", (message) => {
+    const { clientId } = message.payload;
+    const client = clients.get(clientId);
+    if (!client) {
+      throw new Error("Could not find selected client");
+    }
+    client.actor.send(message);
+  });
+  tab.on("explorerSubscriptionTermination", () => {
+    for (const client of clients.values()) {
+      client.actor.send({ type: "explorerSubscriptionTermination" });
+    }
   });
 }
 

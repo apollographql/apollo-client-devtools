@@ -159,6 +159,15 @@ export default /** @returns {import("webpack").Configuration} */ (env) => {
                 type: "module",
               },
             },
+            externals: function (ctx, callback) {
+              if (ctx.request.startsWith(".")) {
+                return callback();
+              }
+              if (ctx.request.startsWith("@apollo/client")) {
+                return callback(null, ctx.request + "/index.js", "module");
+              }
+              callback(null, ctx.request, "module");
+            },
             experiments: {
               outputModule: true,
             },
