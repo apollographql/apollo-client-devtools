@@ -14,6 +14,7 @@ export function registerClient(
 ): {
   connected: Promise<void>;
   unregister: () => void;
+  onCleanup: (cleanup: () => void) => void;
 } {
   const { signal, cleanup, registerCleanup } = getCleanupController();
 
@@ -72,6 +73,7 @@ export function registerClient(
       ws.addEventListener("open", () => resolve(), { once: true, signal })
     ),
     unregister: cleanup,
+    onCleanup: registerCleanup,
   };
 }
 
