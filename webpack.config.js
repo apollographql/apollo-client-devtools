@@ -30,31 +30,6 @@ export default /** @returns {import("webpack").Configuration} */ (env) => {
 
   /** @type {import("webpack").WebpackPluginInstance[]} */
   const plugins = [
-    new CopyPlugin({
-      patterns: [
-        {
-          from: "./src/extension/devtools/panel.html",
-          to: path.resolve(__dirname, "build"),
-        },
-        {
-          from: "./src/extension/devtools/devtools.html",
-          to: path.resolve(__dirname, "build"),
-        },
-        {
-          from: "./src/extension/images",
-          to: path.resolve(__dirname, "build/images"),
-        },
-      ].concat(
-        IS_EXTENSION
-          ? [
-              {
-                from: `./src/extension/${target}/manifest.json`,
-                to: path.resolve(__dirname, "build/manifest.json"),
-              },
-            ]
-          : []
-      ),
-    }),
     new webpack.DefinePlugin({
       VERSION: JSON.stringify(packageJson.version),
       __IS_FIREFOX__: target === "firefox",
@@ -63,6 +38,30 @@ export default /** @returns {import("webpack").Configuration} */ (env) => {
     }),
   ];
 
+  if (IS_EXTENSION) {
+    plugins.push(
+      new CopyPlugin({
+        patterns: [
+          {
+            from: "./src/extension/devtools/panel.html",
+            to: path.resolve(__dirname, "build"),
+          },
+          {
+            from: "./src/extension/devtools/devtools.html",
+            to: path.resolve(__dirname, "build"),
+          },
+          {
+            from: "./src/extension/images",
+            to: path.resolve(__dirname, "build/images"),
+          },
+          {
+            from: `./src/extension/${target}/manifest.json`,
+            to: path.resolve(__dirname, "build/manifest.json"),
+          },
+        ],
+      })
+    );
+  }
   if (env.NODE_ENV === "development" && IS_EXTENSION) {
     plugins.push(
       new WebExtPlugin({
@@ -75,22 +74,27 @@ export default /** @returns {import("webpack").Configuration} */ (env) => {
     );
   }
 
-  const entry =
-    target === "chrome"
-      ? { service_worker: "./src/extension/service_worker/service_worker.ts" }
-      : { background: "./src/extension/background/background.ts" };
-
   const base = {
     ...devOptions,
     mode: env.NODE_ENV,
     target: "web",
-    entry: {
-      panel: "./src/extension/devtools/panel.ts",
-      devtools: "./src/extension/devtools/devtools.ts",
-      tab: "./src/extension/tab/tab.ts",
-      hook: "./src/extension/tab/hook.ts",
-      ...entry,
-    },
+    entry: IS_VSCODE
+      ? { panel: "./src/extension/devtools/panel.ts" }
+      : target === "chrome"
+        ? {
+            service_worker: "./src/extension/service_worker/service_worker.ts",
+            panel: "./src/extension/devtools/panel.ts",
+            devtools: "./src/extension/devtools/devtools.ts",
+            tab: "./src/extension/tab/tab.ts",
+            hook: "./src/extension/tab/hook.ts",
+          }
+        : {
+            background: "./src/extension/background/background.ts",
+            panel: "./src/extension/devtools/panel.ts",
+            devtools: "./src/extension/devtools/devtools.ts",
+            tab: "./src/extension/tab/tab.ts",
+            hook: "./src/extension/tab/hook.ts",
+          },
     output: {
       path: path.join(__dirname, "build"),
       filename: "[name].js",
@@ -127,7 +131,7 @@ export default /** @returns {import("webpack").Configuration} */ (env) => {
       ],
     },
     optimization: {
-      minimize: false, //env.NODE_ENV === "production",
+      minimize: env.NODE_ENV === "production",
       minimizer: [
         new TerserPlugin({
           terserOptions: {
@@ -173,7 +177,7 @@ export default /** @returns {import("webpack").Configuration} */ (env) => {
             },
             resolve: base.resolve,
             module: base.module,
-            optimization: base.optimization,
+            optimization: { minimize: false },
             plugins: [
               new CopyPlugin({
                 patterns: [
@@ -184,6 +188,18 @@ export default /** @returns {import("webpack").Configuration} */ (env) => {
                   {
                     from: "./dist/src/extension/vscode/client.d.ts",
                     to: path.resolve(__dirname, "build", "vscode-client.d.ts"),
+                  },
+                  {
+                    from: "./package.vscode.json",
+                    to: path.resolve(__dirname, "build", "package.json"),
+                  },
+                  {
+                    from: "./README.vscode.md",
+                    to: path.resolve(__dirname, "build", "README.md"),
+                  },
+                  {
+                    from: "./LICENSE",
+                    to: path.resolve(__dirname, "build", "LICENSE.md"),
                   },
                 ],
               }),
