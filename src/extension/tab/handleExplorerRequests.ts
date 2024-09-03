@@ -15,7 +15,7 @@ export function handleExplorerRequests(
   actor: Actor,
   getClientById: (clientId: string) => ApolloClient<SafeAny> | undefined
 ) {
-  actor.on("explorerRequest", (message) => {
+  return actor.on("explorerRequest", (message) => {
     const {
       clientId,
       operation: queryAst,
