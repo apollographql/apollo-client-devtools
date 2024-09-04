@@ -6,3 +6,5 @@ build
 .DS_Store
 development/server/db.json
 webpack-stats.json
+.yalc
+yalc.lock
