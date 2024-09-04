@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "@apollo/brand": "^0.6.0",
-    "@apollo/client": "3.11.6",
+    "@apollo/client": "3.11.7",
     "@apollo/icons": "^0.6.0",
     "@apollo/tailwind-preset": "^0.1.13",
     "@graphql-codegen/typescript-resolvers": "^4.1.0",
@@ -73,7 +73,7 @@
   },
   "devDependencies": {
     "@changesets/changelog-github": "0.5.0",
-    "@changesets/cli": "2.27.7",
+    "@changesets/cli": "2.27.8",
     "@graphql-codegen/cli": "5.0.2",
     "@graphql-codegen/typescript": "4.0.9",
     "@graphql-codegen/typescript-operations": "4.2.3",
