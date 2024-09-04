@@ -13,7 +13,9 @@ type Writable<T> = { -readonly [P in keyof T]: T[P] };
 
 export function handleExplorerRequests(
   actor: Actor,
-  getClientById: (clientId: string) => ApolloClient<SafeAny> | undefined
+  getClientById: (
+    clientId: string
+  ) => Pick<ApolloClient<SafeAny>, "mutate" | "watchQuery"> | undefined
 ) {
   return actor.on("explorerRequest", (message) => {
     const {

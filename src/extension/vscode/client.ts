@@ -7,6 +7,7 @@ import { getQueries, getMutations } from "../tab/helpers";
 import { loadErrorCodes } from "../tab/loadErrorCodes";
 import type { MessageAdapter } from "../messageAdapters";
 import { handleExplorerRequests } from "../tab/handleExplorerRequests";
+import { setMaxListeners, WeakRef, FinalizationRegistry } from "./polyfills";
 
 export function registerClient(
   client: ApolloClient<any>,
@@ -16,9 +17,33 @@ export function registerClient(
   unregister: () => void;
   onCleanup: (cleanup: () => void) => void;
 } {
+  const clientRef = new WeakRef(client);
+  const registered = _registerClient(clientRef, url);
+  const registry = new FinalizationRegistry(registered.unregister);
+  const unregisterToken = {};
+  registry.register(client, "", unregisterToken);
+  registered.onCleanup(() => registry.unregister(unregisterToken));
+  return registered;
+}
+
+export function _registerClient(
+  clientRef: WeakRef<ApolloClient<any>>,
+  url: string | URL
+): {
+  connected: Promise<void>;
+  unregister: () => void;
+  onCleanup: (cleanup: () => void) => void;
+} {
   const { signal, cleanup, registerCleanup } = getCleanupController();
 
-  const ac = getPrivateAccess(client);
+  function getClient() {
+    const client = clientRef.deref();
+    if (client) {
+      return getPrivateAccess(client);
+    } else {
+      cleanup();
+    }
+  }
 
   const ws = new WebSocket(url);
   registerCleanup(ws.close.bind(ws));
@@ -29,21 +54,27 @@ export function registerClient(
   const wsRpcHandler = createRpcHandler(wsAdapter);
   const wsActor = createActor(wsAdapter);
   function getQueriesForClient() {
-    return getQueries(ac.queryManager.getObservableQueries("active"));
+    return getQueries(
+      getClient()?.queryManager.getObservableQueries("active") ?? new Map()
+    );
   }
   function getMutationsForClient() {
-    return getMutations(ac?.queryManager.mutationStore ?? {});
+    return getMutations(getClient()?.queryManager.mutationStore ?? {});
   }
   registerCleanup(
     wsRpcHandler("getQueries", getQueriesForClient),
     wsRpcHandler("getMutations", getMutationsForClient),
-    wsRpcHandler("getCache", () => ac.cache.extract(true) ?? {}),
-    handleExplorerRequests(wsActor, () => client)
+    wsRpcHandler("getCache", () => getClient()?.cache.extract(true) ?? {}),
+    handleExplorerRequests(wsActor, getClient)
   );
 
   ws.addEventListener(
     "open",
     function open() {
+      const client = getClient();
+      if (!client) {
+        return;
+      }
       wsActor.send({
         type: "registerClient",
         payload: {
@@ -60,14 +91,6 @@ export function registerClient(
     { once: true, signal }
   );
 
-  const originalStop = client.stop;
-  client.stop = function () {
-    cleanup();
-    originalStop.call(client);
-  };
-  registerCleanup(() => {
-    client.stop = originalStop;
-  });
   return {
     connected: new Promise<void>((resolve) =>
       ws.addEventListener("open", () => resolve(), { once: true, signal })
@@ -108,15 +131,4 @@ function getCleanupController() {
     }
   }
   return { cleanup, signal, registerCleanup };
-}
-
-/**
- * A workaround to set the `maxListeners` property of a node EventEmitter without having to import
- * the `node:events` module, which would make the code non-portable.
- */
-function setMaxListeners(maxListeners: number, emitter: any) {
-  const key = Object.getOwnPropertySymbols(new AbortController().signal).find(
-    (key) => key.description === "events.maxEventTargetListeners"
-  );
-  if (key) emitter[key] = maxListeners;
 }
