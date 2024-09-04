@@ -9,21 +9,36 @@ import type { MessageAdapter } from "../messageAdapters";
 import { handleExplorerRequests } from "../tab/handleExplorerRequests";
 import { setMaxListeners, WeakRef, FinalizationRegistry } from "./polyfills";
 
+type Reason =
+  | "WS_DISCONNECTED"
+  | "CLIENT_GC"
+  | "WS_ERROR"
+  | "UNREGISTER"
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  | (string & {});
+
 export function registerClient(
   client: ApolloClient<any>,
   url: string | URL
 ): {
   connected: Promise<void>;
-  unregister: () => void;
-  onCleanup: (cleanup: () => void) => void;
+  unregister: (reason?: Reason) => void;
+  onCleanup: (cleanup: (reason: Reason) => void) => void;
 } {
   const clientRef = new WeakRef(client);
   const registered = _registerClient(clientRef, url);
   const registry = new FinalizationRegistry(registered.unregister);
   const unregisterToken = {};
-  registry.register(client, "", unregisterToken);
+  registry.register(client, "CLIENT_GC", unregisterToken);
   registered.onCleanup(() => registry.unregister(unregisterToken));
   return registered;
+}
+
+function makeErrorHandler(cleanup: (reason?: Reason) => void): EventListener {
+  return (e) => {
+    console.error("Apollo DevTools Client encountered WebSocket error:", e);
+    cleanup("WS_ERROR");
+  };
 }
 
 export function _registerClient(
@@ -31,8 +46,8 @@ export function _registerClient(
   url: string | URL
 ): {
   connected: Promise<void>;
-  unregister: () => void;
-  onCleanup: (cleanup: () => void) => void;
+  unregister: (reason?: Reason) => void;
+  onCleanup: (cleanup: (reason: Reason) => void) => void;
 } {
   const { signal, cleanup, registerCleanup } = getCleanupController();
 
@@ -41,13 +56,20 @@ export function _registerClient(
     if (client) {
       return getPrivateAccess(client);
     } else {
-      cleanup();
+      cleanup("CLIENT_GC");
     }
   }
 
   const ws = new WebSocket(url);
-  registerCleanup(ws.close.bind(ws));
-  ws.addEventListener("close", cleanup, { once: true, signal });
+  registerCleanup(ws.close.bind(ws, 1000));
+  ws.addEventListener("close", cleanup.bind(undefined, "WS_DISCONNECTED"), {
+    once: true,
+    signal,
+  });
+  ws.addEventListener("error", makeErrorHandler(cleanup), {
+    once: true,
+    signal,
+  });
 
   const wsAdapter = createWsAdapter(ws, signal);
   const wsRpcClient = createRpcClient(wsAdapter);
@@ -120,15 +142,21 @@ function getCleanupController() {
   const cleanup = cleanupContoller.abort.bind(cleanupContoller);
   const signal = cleanupContoller.signal;
   setMaxListeners(20, signal);
-  function registerCleanup(...cleanupFunctions: Array<() => void>) {
+  function registerCleanup(
+    ...cleanupFunctions: Array<(reason: Reason) => void>
+  ) {
     for (const cleanupFn of cleanupFunctions) {
       if (signal.aborted) {
-        cleanupFn();
+        cleanupFn(signal.reason);
       }
-      signal.addEventListener("abort", () => cleanupFn(), {
+      signal.addEventListener("abort", () => cleanupFn(signal.reason), {
         once: true,
       });
     }
   }
-  return { cleanup, signal, registerCleanup };
+  return {
+    cleanup: (reason: Reason = "UNREGISTER") => cleanup(reason),
+    signal,
+    registerCleanup,
+  };
 }
