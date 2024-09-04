@@ -96,6 +96,7 @@ function getCleanupController() {
   const cleanupContoller = new AbortController();
   const cleanup = cleanupContoller.abort.bind(cleanupContoller);
   const signal = cleanupContoller.signal;
+  setMaxListeners(20, signal);
   function registerCleanup(...cleanupFunctions: Array<() => void>) {
     for (const cleanupFn of cleanupFunctions) {
       if (signal.aborted) {
@@ -107,4 +108,15 @@ function getCleanupController() {
     }
   }
   return { cleanup, signal, registerCleanup };
+}
+
+/**
+ * A workaround to set the `maxListeners` property of a node EventEmitter without having to import
+ * the `node:events` module, which would make the code non-portable.
+ */
+function setMaxListeners(maxListeners: number, emitter: any) {
+  const key = Object.getOwnPropertySymbols(new AbortController().signal).find(
+    (key) => key.description === "events.maxEventTargetListeners"
+  );
+  if (key) emitter[key] = maxListeners;
 }
