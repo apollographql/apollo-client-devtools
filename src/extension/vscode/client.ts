@@ -47,7 +47,9 @@ interface ApolloClientDevToolsConnection {
  */
 export function connectApolloClientToVSCodeDevTools(
   client: ApolloClient<any>,
-  vsCodeServerUrl: string | URL
+  vsCodeServerUrl:
+    | ConstructorParameters<typeof WebSocket>[0]
+    | ConstructorParameters<typeof WebSocket>
 ): ApolloClientDevToolsConnection {
   const clientRef = new WeakRef(client);
   const registered = registerClient(clientRef, vsCodeServerUrl);
@@ -67,7 +69,9 @@ function makeErrorHandler(cleanup: (reason?: Reason) => void): EventListener {
 
 function registerClient(
   clientRef: WeakRef<ApolloClient<any>>,
-  url: string | URL
+  url:
+    | ConstructorParameters<typeof WebSocket>[0]
+    | ConstructorParameters<typeof WebSocket>
 ): ApolloClientDevToolsConnection {
   const { signal, cleanup, onCleanup } = getCleanupController();
 
@@ -80,7 +84,10 @@ function registerClient(
     }
   }
 
-  const ws = new WebSocket(url);
+  const wsArgs: ConstructorParameters<typeof WebSocket> = Array.isArray(url)
+    ? url
+    : [url];
+  const ws = new WebSocket(...wsArgs);
   onCleanup(ws.close.bind(ws, 1000));
   ws.addEventListener("close", cleanup.bind(undefined, "WS_DISCONNECTED"), {
     once: true,

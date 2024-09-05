@@ -103,7 +103,15 @@ export default /** @returns {import("webpack").Configuration} */ (env) => {
       chunkFormat: "commonjs",
     },
     resolve: {
-      extensions: [".mjs", ".js", ".ts", ".tsx", ".css"],
+      extensions: [
+        `.${target}.ts`,
+        `.${target}.tsx`,
+        ".mjs",
+        ".js",
+        ".ts",
+        ".tsx",
+        ".css",
+      ],
     },
     module: {
       rules: [

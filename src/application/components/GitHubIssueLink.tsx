@@ -7,7 +7,7 @@ interface GitHubIssueLinkProps {
   className?: string;
   body?: string;
   labels?: string[];
-  repository?: "apollo-client" | "apollo-client-devtools";
+  repository?: "apollo-client" | "apollo-client-devtools" | "vscode-graphql";
   children?: ReactNode;
 }
 
