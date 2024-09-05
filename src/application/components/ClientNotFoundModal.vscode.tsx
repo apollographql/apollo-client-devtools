@@ -24,21 +24,23 @@ export function ClientNotFoundModal({
         <Modal.Title>Waiting for connection from Apollo Client.</Modal.Title>
         <Modal.Description>
           No Apollo Client instance has connected to the VSCode DevTools yet.
+          <br />
           Please follow these instructions to connect your client.
         </Modal.Description>
         <ol className="py-2 list-inside list-decimal flex flex-col gap-1">
           <li>
-            Install the @apollo/client-devtools-vscode package
+            Install the <code>@apollo/client-devtools-vscode package</code>
             <CodeBlock
-              language="bash"
+              language="bash" // disabling the copy button because it makes a one-line code snippet too big
+              copyable={false}
               code={`
 npm install @apollo/client-devtools-vscode
             `.trim()}
             />
           </li>
           <li>
-            After initializing your `ApolloClient` instance, call
-            `registerClient` with your client instance.
+            After initializing your <code>ApolloClient</code> instance, call
+            <code>registerClient</code> with your client instance.
             <CodeBlock
               language="javascript"
               // disabling the copy button because it overlaps the import path too much - might consider enabling it after visual improvements
@@ -219,7 +221,7 @@ const devtoolsRegistration = registerClient(client, [
                 non-standard option object with headers as the second argument.
                 <br />
                 If your WebSocket implementation does not support this, you can
-                use the `ws` package to polyfill this behavior:
+                use the <code>ws</code> package to polyfill this behavior:
               </p>
               <CodeBlock
                 language="javascript"
