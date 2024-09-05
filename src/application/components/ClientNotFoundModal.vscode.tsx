@@ -93,7 +93,7 @@ const devtoolsRegistration = registerClient(
                 See{" "}
                 <a href="https://code.visualstudio.com/docs/editor/port-forwarding">
                   How to use local port forwarding
-                </a>
+                </a>{" "}
                 for more information.
                 <br />
                 By default, this will upgrade your connection to the wss
@@ -168,7 +168,7 @@ Token scope: connect
 Token lifetime: 1.00:00:00
 Token expiration: 2024-09-06 12:55:06 UTC
 Token: your-very-long-token
-`}
+`.trim()}
               />
               <p>
                 Note the token here - you will need it in a moment. <br />
@@ -185,7 +185,7 @@ Token: your-very-long-token
                 copyable={false}
                 code={`
 devtunnel host
-`}
+`.trim()}
               />
               <CodeBlock
                 language="bash"
@@ -196,7 +196,7 @@ Connect via browser: https://your-tunnel-url.devtunnels.ms
 Inspect network activity: https://your-tunnel-url.devtunnels.ms
 
 Ready to accept connections for tunnel: your-tunnel-id
-`}
+`.trim()}
               />
               <p>
                 Now you can add the tunnel url and the token to your
