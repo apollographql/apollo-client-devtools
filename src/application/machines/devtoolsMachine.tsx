@@ -1,19 +1,29 @@
+import type { Actor, SnapshotFrom } from "xstate";
 import { setup, assign } from "xstate";
 import IconSync from "@apollo/icons/small/IconSync.svg";
 import { BannerAlert } from "../components/BannerAlert";
 import { Button } from "../components/Button";
+import { createContext, useContext } from "react";
+import { useSelector } from "@xstate/react";
 
+export interface DevtoolsMachineContext {
+  modalOpen: boolean;
+  port: number | false | undefined;
+}
 type Events =
+  | { type: "initializePanel"; initialContext: Partial<DevtoolsMachineContext> }
+  | { type: "port.changed"; port: number | false }
   | { type: "connect" }
   | { type: "timeout" }
   | { type: "disconnect" }
   | { type: "clientNotFound" }
   | { type: "retry" }
-  | { type: "closeModal" };
-
+  | { type: "closeModal" }
+  | { type: "store.didReset" };
+export type DevToolsMachineEvents = Events;
 export const devtoolsMachine = setup({
   types: {
-    context: {} as { modalOpen: boolean },
+    context: {} as DevtoolsMachineContext,
     events: {} as Events,
   },
   delays: {
@@ -63,15 +73,24 @@ export const devtoolsMachine = setup({
         ),
       });
     },
+    renderUI: () => {
+      throw new Error("Provide implementation");
+    },
     resetStore: () => {
-      throw new Error("Provide implementation in the component");
+      throw new Error("Provide implementation");
+    },
+  },
+  guards: {
+    contextValid: ({ context }) => {
+      return context.port !== false;
     },
   },
 }).createMachine({
   id: "devtools",
-  initial: "initialized",
+  initial: "uninitialized",
   context: {
     modalOpen: false,
+    port: undefined,
   },
   on: {
     closeModal: {
@@ -79,6 +98,40 @@ export const devtoolsMachine = setup({
     },
   },
   states: {
+    uninitialized: {
+      on: {
+        initializePanel: {
+          actions: [assign(({ event }) => event.initialContext)],
+          target: "initializing",
+        },
+      },
+    },
+    initializing: {
+      entry: "renderUI",
+      always: [
+        {
+          guard: "contextValid",
+          target: "initialized",
+        },
+        {
+          target: "initialization_error",
+        },
+      ],
+    },
+    initialization_error: {
+      on: {
+        "port.changed": [
+          {
+            actions: [
+              assign({
+                port: ({ event }) => event.port,
+              }),
+            ],
+            target: "initializing",
+          },
+        ],
+      },
+    },
     initialized: {
       on: {
         connect: "connected",
@@ -141,3 +194,23 @@ export const devtoolsMachine = setup({
     },
   },
 });
+
+export const DevToolsMachineContext = createContext<DevToolsActor | null>(null);
+export function useDevToolsActorRef() {
+  return (
+    useContext(DevToolsMachineContext) ||
+    (() => {
+      throw new Error("DevToolsMachineContext not found");
+    })()
+  );
+}
+export function useDevToolsSelector<T>(
+  selector: (snapshot: SnapshotFrom<DevToolsMachine>) => T,
+  compare?: (a: T, b: T) => boolean
+): T {
+  const actor = useDevToolsActorRef();
+  return useSelector(actor, selector, compare);
+}
+
+export type DevToolsMachine = typeof devtoolsMachine;
+export type DevToolsActor = Actor<DevToolsMachine>;
