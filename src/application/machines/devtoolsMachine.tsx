@@ -1,5 +1,5 @@
 import type { Actor, SnapshotFrom } from "xstate";
-import { setup, assign } from "xstate";
+import { setup, assign, not } from "xstate";
 import IconSync from "@apollo/icons/small/IconSync.svg";
 import { BannerAlert } from "../components/BannerAlert";
 import { Button } from "../components/Button";
@@ -87,7 +87,7 @@ export const devtoolsMachine = setup({
   },
 }).createMachine({
   id: "devtools",
-  initial: "uninitialized",
+  type: "parallel",
   context: {
     modalOpen: false,
     port: undefined,
@@ -98,27 +98,8 @@ export const devtoolsMachine = setup({
     },
   },
   states: {
-    uninitialized: {
-      on: {
-        initializePanel: {
-          actions: [assign(({ event }) => event.initialContext)],
-          target: "initializing",
-        },
-      },
-    },
-    initializing: {
-      entry: "renderUI",
-      always: [
-        {
-          guard: "contextValid",
-          target: "initialized",
-        },
-        {
-          target: "initialization_error",
-        },
-      ],
-    },
-    initialization_error: {
+    initialization: {
+      initial: "uninitialized",
       on: {
         "port.changed": [
           {
@@ -127,70 +108,112 @@ export const devtoolsMachine = setup({
                 port: ({ event }) => event.port,
               }),
             ],
-            target: "initializing",
           },
         ],
       },
-    },
-    initialized: {
-      on: {
-        connect: "connected",
-        timeout: "timedout",
-        clientNotFound: "notFound",
-      },
-      entry: "notifyWaitingForConnection",
-      after: {
-        connectTimeout: {
-          target: "notFound",
+      states: {
+        uninitialized: {
+          on: {
+            initializePanel: {
+              actions: [assign(({ event }) => event.initialContext)],
+              target: "initializing",
+            },
+          },
+        },
+        initializing: {
+          entry: "renderUI",
+          always: [
+            {
+              guard: "contextValid",
+              target: "ok",
+            },
+            {
+              target: "error",
+            },
+          ],
+        },
+        error: {
+          always: [
+            {
+              guard: "contextValid",
+              target: "ok",
+            },
+          ],
+          on: {},
+        },
+        ok: {
+          always: {
+            guard: not("contextValid"),
+            target: "error",
+          },
+          on: {},
         },
       },
     },
-    retrying: {
-      on: {
-        connect: "connected",
-        clientNotFound: "notFound",
-      },
-      entry: ["notifyWaitingForConnection", "closeModal"],
-      after: {
-        connectTimeout: {
-          target: "notFound",
+    connection: {
+      initial: "initialized",
+      states: {
+        initialized: {
+          on: {
+            connect: "connected",
+            timeout: "timedout",
+            clientNotFound: "notFound",
+          },
+          entry: "notifyWaitingForConnection",
+          after: {
+            connectTimeout: {
+              target: "notFound",
+            },
+          },
+        },
+        retrying: {
+          on: {
+            connect: "connected",
+            clientNotFound: "notFound",
+          },
+          entry: ["notifyWaitingForConnection", "closeModal"],
+          after: {
+            connectTimeout: {
+              target: "notFound",
+            },
+          },
+        },
+        connected: {
+          on: {
+            disconnect: "disconnected",
+          },
+          entry: ["notifyConnected", "closeModal"],
+          exit: ["resetStore"],
+          after: {
+            2500: {
+              actions: "closeBanner",
+            },
+          },
+        },
+        disconnected: {
+          on: {
+            connect: "connected",
+            timeout: "timedout",
+            clientNotFound: "notFound",
+          },
+          entry: "notifyDisconnected",
+          after: {
+            connectTimeout: {
+              target: "notFound",
+            },
+          },
+        },
+        timedout: {
+          entry: "notifyTimedOut",
+        },
+        notFound: {
+          on: {
+            retry: "retrying",
+            connect: "connected",
+          },
+          entry: ["notifyNotFound", "openModal"],
         },
       },
-    },
-    connected: {
-      on: {
-        disconnect: "disconnected",
-      },
-      entry: ["notifyConnected", "closeModal"],
-      exit: ["resetStore"],
-      after: {
-        2500: {
-          actions: "closeBanner",
-        },
-      },
-    },
-    disconnected: {
-      on: {
-        connect: "connected",
-        timeout: "timedout",
-        clientNotFound: "notFound",
-      },
-      entry: "notifyDisconnected",
-      after: {
-        connectTimeout: {
-          target: "notFound",
-        },
-      },
-    },
-    timedout: {
-      entry: "notifyTimedOut",
-    },
-    notFound: {
-      on: {
-        retry: "retrying",
-        connect: "connected",
-      },
-      entry: ["notifyNotFound", "openModal"],
     },
   },
 });

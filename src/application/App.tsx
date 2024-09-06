@@ -84,6 +84,10 @@ export const App = () => {
   useEffect(() => devToolsActor.on("storeReset", () => refetch()).unsubscribe);
 
   const modalOpen = useDevToolsSelector((state) => state.context.modalOpen);
+  const isErrorState = useDevToolsSelector(
+    (state) => state.value.initialization === "error"
+  );
+  console.log("show error modal!", isErrorState);
 
   useActorEvent("registerClient", () => {
     send({ type: "connect" });
