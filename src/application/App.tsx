@@ -83,6 +83,10 @@ export const App = () => {
   const { data, refetch } = useQuery(APP_QUERY, { errorPolicy: "all" });
 
   const modalOpen = useDevToolsSelector((state) => state.context.modalOpen);
+  const isErrorState = useDevToolsSelector(
+    (state) => state.value.initialization === "error"
+  );
+  console.log("show error modal!", isErrorState);
 
   useActorEvent("registerClient", () => {
     send({ type: "connect" });
