@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { useReactiveVar, gql, useQuery } from "@apollo/client";
-import { useMachine } from "@xstate/react";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { currentScreen, Screens } from "./components/Layouts/Navigation";
@@ -23,7 +22,10 @@ import IconGitHubSolid from "@apollo/icons/small/IconGitHubSolid.svg";
 import { SettingsModal } from "./components/Layouts/SettingsModal";
 import Logo from "@apollo/icons/logos/LogoSymbol.svg";
 import { BannerAlert } from "./components/BannerAlert";
-import { devtoolsMachine } from "./machines/devtoolsMachine";
+import {
+  useDevToolsActorRef,
+  useDevToolsSelector,
+} from "./machines/devtoolsMachine";
 import { ClientNotFoundModal } from "./components/ClientNotFoundModal";
 import { ButtonGroup } from "./components/ButtonGroup";
 import {
@@ -74,24 +76,14 @@ ${SECTIONS.devtoolsVersion}
 `;
 
 const stableEmptyClients: Required<AppQuery["clients"]> = [];
-const noop = () => {};
 
 export const App = () => {
-  const [snapshot, send] = useMachine(
-    devtoolsMachine.provide({
-      actions: {
-        resetStore: async () => {
-          await apolloClient.clearStore().catch(noop);
-          refetch().catch(noop);
-        },
-      },
-    })
-  );
-  const {
-    data,
-    client: apolloClient,
-    refetch,
-  } = useQuery(APP_QUERY, { errorPolicy: "all" });
+  const devToolsActor = useDevToolsActorRef();
+  const send = devToolsActor.send.bind(devToolsActor);
+  const { data, refetch } = useQuery(APP_QUERY, { errorPolicy: "all" });
+  useEffect(() => devToolsActor.on("storeReset", () => refetch()).unsubscribe);
+
+  const modalOpen = useDevToolsSelector((state) => state.context.modalOpen);
 
   useActorEvent("registerClient", () => {
     send({ type: "connect" });
@@ -158,7 +150,7 @@ export const App = () => {
     <>
       <SettingsModal open={settingsOpen} onOpen={setSettingsOpen} />
       <ClientNotFoundModal
-        open={snapshot.context.modalOpen}
+        open={modalOpen}
         onClose={() => send({ type: "closeModal" })}
         onRetry={() => send({ type: "retry" })}
       />

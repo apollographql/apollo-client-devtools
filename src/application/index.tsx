@@ -11,6 +11,19 @@ import * as Tooltip from "@radix-ui/react-tooltip";
 
 import { getRpcClient } from "../extension/devtools/panelRpcClient";
 import { createSchemaWithRpcClient } from "./schema";
+import type {
+  DevToolsActor,
+  DevToolsMachineEvents,
+} from "./machines/devtoolsMachine";
+import {
+  devtoolsMachine,
+  DevToolsMachineContext,
+} from "./machines/devtoolsMachine";
+import { createActor } from "xstate";
+import type {
+  Actor as WindowActor,
+  ActorMessage as WindowActorMessage,
+} from "../extension/actor";
 
 const rpcClient = getRpcClient();
 const schema = createSchemaWithRpcClient(rpcClient);
@@ -75,7 +88,7 @@ export const removeClient = (clientId: string) => {
   });
 };
 
-export const AppProvider = () => {
+export const AppProvider = ({ actor }: { actor: DevToolsActor }) => {
   useEffect(() =>
     listenForThemeChange((newColorTheme) => colorTheme(newColorTheme))
   );
@@ -83,14 +96,44 @@ export const AppProvider = () => {
   return (
     <Tooltip.Provider delayDuration={0}>
       <ApolloProvider client={client}>
-        <App />
+        <DevToolsMachineContext.Provider value={actor}>
+          <App />
+        </DevToolsMachineContext.Provider>
       </ApolloProvider>
     </Tooltip.Provider>
   );
 };
 
-export const initDevTools = () => {
-  const root = createRoot(document.getElementById("devtools") as HTMLElement);
+function noop() {}
+const actor = createActor(
+  devtoolsMachine.provide({
+    actions: {
+      resetStore: async ({ self }) => {
+        await client.clearStore().catch(noop);
+        self.send({ type: "store.didReset" });
+      },
+      renderUI() {
+        const root = createRoot(
+          document.getElementById("devtools") as HTMLElement
+        );
+        root.render(<AppProvider actor={actor} />);
+      },
+    },
+  })
+);
+actor.start();
 
-  root.render(<AppProvider />);
+// debugging
+actor.on("*", (event) => console.log(event));
+actor.subscribe((snapshot) => console.log(snapshot.value, snapshot.context));
+
+export const forwardDevToolsActorEvent = (
+  windowActor: WindowActor,
+  types: Array<
+    Extract<DevToolsMachineEvents["type"], WindowActorMessage["type"]>
+  >
+) => {
+  for (const type of types) {
+    windowActor.on(type, (event) => actor.send(event));
+  }
 };
