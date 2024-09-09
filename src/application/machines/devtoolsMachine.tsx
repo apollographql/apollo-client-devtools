@@ -1,29 +1,29 @@
 import type { Actor, SnapshotFrom } from "xstate";
-import { setup, assign, not, sendParent, fromCallback } from "xstate";
+import { setup, assign, not } from "xstate";
 import IconSync from "@apollo/icons/small/IconSync.svg";
 import { BannerAlert } from "../components/BannerAlert";
 import { Button } from "../components/Button";
 import { createContext, useContext, useMemo } from "react";
 import { useSelector } from "@xstate/react";
+import { delay } from "framer-motion";
 
 export interface DevtoolsMachineContext {
-  modalOpen: boolean;
-  port: number | false | undefined;
+  listening?: boolean;
+  port?: number;
   registeredClients: number;
 }
+
 type Events =
   | { type: "initializePanel"; initialContext: Partial<DevtoolsMachineContext> }
-  | { type: "port.changed"; port: number | false }
+  | { type: "port.changed"; port: number; listening: boolean }
   | { type: "client.register" }
   | { type: "client.terminated" }
   | { type: "client.setCount"; count: number }
   | { type: "connection.retry" }
-  | { type: "openModal" }
-  | { type: "closeModal" }
   | { type: "store.didReset" };
 export type DevToolsMachineEvents = Events;
 
-const reconnectMachine = setup({
+const reconnectMachineSetup = setup({
   types: {
     events: {} as Events,
   },
@@ -56,7 +56,8 @@ const reconnectMachine = setup({
       });
     },
   },
-}).createMachine({
+});
+const tabReconnectMachine = reconnectMachineSetup.createMachine({
   initial: "disconnected",
   states: {
     disconnected: {
@@ -67,12 +68,7 @@ const reconnectMachine = setup({
       },
     },
     retrying: {
-      entry: [
-        "notifyWaitingForConnection",
-        sendParent({
-          type: "closeModal",
-        } satisfies DevToolsMachineEvents),
-      ],
+      entry: ["notifyWaitingForConnection"],
       after: {
         connectTimeout: {
           target: "notFound",
@@ -83,15 +79,28 @@ const reconnectMachine = setup({
       on: {
         "connection.retry": "retrying",
       },
-      entry: [
-        "notifyNotFound",
-        sendParent({
-          type: "openModal",
-        } satisfies DevToolsMachineEvents),
-      ],
+      entry: ["notifyNotFound"],
     },
   },
 });
+
+const vscodeReconnectMachine = reconnectMachineSetup
+  .createMachine({
+    initial: "disconnected",
+    states: {
+      disconnected: {
+        after: {
+          connectTimeout: {
+            target: "notFound",
+          },
+        },
+      },
+      notFound: {
+        on: {},
+      },
+    },
+  })
+  .provide({ delays: { connectTimeout: 500 } });
 
 export const devtoolsMachine = setup({
   types: {
@@ -102,8 +111,6 @@ export const devtoolsMachine = setup({
     connectTimeout: 10_000,
   },
   actions: {
-    openModal: assign({ modalOpen: true }),
-    closeModal: assign({ modalOpen: false }),
     closeBanner: BannerAlert.close,
     notifyDisconnected: () => {
       BannerAlert.show({
@@ -124,31 +131,19 @@ export const devtoolsMachine = setup({
   },
   guards: {
     contextValid: ({ context }) => {
-      return context.port !== false;
+      return context.listening !== false;
     },
   },
   actors: {
-    reconnect: __IS_EXTENSION__
-      ? reconnectMachine
-      : fromCallback(({ sendBack }) => {
-          sendBack({ type: "openModal" } satisfies DevToolsMachineEvents);
-        }),
+    reconnect: __IS_EXTENSION__ ? tabReconnectMachine : vscodeReconnectMachine,
   },
 }).createMachine({
   id: "devtools",
   type: "parallel",
   context: {
-    modalOpen: false,
+    modals: {},
     port: undefined,
     registeredClients: 0,
-  },
-  on: {
-    openModal: {
-      actions: "openModal",
-    },
-    closeModal: {
-      actions: "closeModal",
-    },
   },
   states: {
     initialization: {
@@ -157,9 +152,10 @@ export const devtoolsMachine = setup({
         "port.changed": [
           {
             actions: [
-              assign({
-                port: ({ event }) => event.port,
-              }),
+              assign(({ event }) => ({
+                port: event.port,
+                listening: event.listening,
+              })),
             ],
           },
         ],
@@ -230,7 +226,7 @@ export const devtoolsMachine = setup({
       },
       states: {
         connected: {
-          entry: ["notifyConnected", "closeModal"],
+          entry: ["notifyConnected"],
           exit: ["resetStore"],
           after: {
             2500: {

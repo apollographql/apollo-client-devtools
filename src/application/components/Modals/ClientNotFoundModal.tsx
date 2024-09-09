@@ -1,8 +1,8 @@
-import { Button } from "./Button";
-import { ButtonGroup } from "./ButtonGroup";
-import { Disclosure } from "./Disclosure";
-import { GitHubIssueLink, SECTIONS, LABELS } from "./GitHubIssueLink";
-import { Modal } from "./Modal";
+import { Button } from "../Button";
+import { ButtonGroup } from "../ButtonGroup";
+import { Disclosure } from "../Disclosure";
+import { GitHubIssueLink, SECTIONS, LABELS } from "../GitHubIssueLink";
+import { Modal } from "../Modal";
 import IconGitHubSolid from "@apollo/icons/small/IconGitHubSolid.svg";
 
 interface ClientNotFoundModalProps {

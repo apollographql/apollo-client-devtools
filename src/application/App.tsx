@@ -22,11 +22,8 @@ import IconGitHubSolid from "@apollo/icons/small/IconGitHubSolid.svg";
 import { SettingsModal } from "./components/Layouts/SettingsModal";
 import Logo from "@apollo/icons/logos/LogoSymbol.svg";
 import { BannerAlert } from "./components/BannerAlert";
-import {
-  useDevToolsActorRef,
-  useDevToolsSelector,
-} from "./machines/devtoolsMachine";
-import { ClientNotFoundModal } from "./components/ClientNotFoundModal";
+import { useDevToolsActorRef } from "./machines/devtoolsMachine";
+import { Modals } from "./components/Modals/Modals";
 import { ButtonGroup } from "./components/ButtonGroup";
 import {
   GitHubIssueLink,
@@ -80,12 +77,6 @@ const stableEmptyClients: Required<AppQuery["clients"]> = [];
 export const App = () => {
   const { send } = useDevToolsActorRef();
   const { data, refetch } = useQuery(APP_QUERY, { errorPolicy: "all" });
-
-  const modalOpen = useDevToolsSelector((state) => state.context.modalOpen);
-  const isErrorState = useDevToolsSelector(
-    (state) => state.value.initialization === "error"
-  );
-  console.log("show error modal!", isErrorState);
 
   useActorEvent("registerClient", () => {
     send({ type: "client.register" });
@@ -146,11 +137,7 @@ export const App = () => {
   return (
     <>
       <SettingsModal open={settingsOpen} onOpen={setSettingsOpen} />
-      <ClientNotFoundModal
-        open={modalOpen}
-        onClose={() => send({ type: "closeModal" })}
-        onRetry={() => send({ type: "connection.retry" })}
-      />
+      <Modals />
       <BannerAlert />
       <Tabs
         value={selected}

@@ -1,10 +1,10 @@
 import IconWarningSolid from "@apollo/icons/default/IconWarningSolid.svg";
-import { CodeBlock } from "./CodeBlock";
-import { Disclosure } from "./Disclosure";
-import { GitHubIssueLink, SECTIONS, LABELS } from "./GitHubIssueLink";
-import { Modal } from "./Modal";
+import { CodeBlock } from "../CodeBlock";
+import { Disclosure } from "../Disclosure";
+import { GitHubIssueLink, SECTIONS, LABELS } from "../GitHubIssueLink";
+import { Modal } from "../Modal";
 import { expectTypeOf } from "expect-type";
-import { Admonition } from "./Admonition";
+import { Admonition } from "../Admonition";
 
 expectTypeOf<typeof import("./ClientNotFoundModal.jsx")>().toMatchTypeOf<
   typeof import("./ClientNotFoundModal.vscode.jsx")
