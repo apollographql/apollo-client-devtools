@@ -21,7 +21,7 @@ export const SECTIONS = {
 <!-- Please provide the version of \`@apollo/client\` you are using. -->
 `,
   devtoolsVersion: `### Apollo Client Devtools version
-${VERSION}
+${VERSION} (${__IS_FIREFOX__ ? "Firefox" : __IS_VSCODE__ ? "VSCode" : "Chrome"})
 `,
   reproduction: `### Link to Reproduction
 <!-- Please provide a link to the reproduction of the issue. -->

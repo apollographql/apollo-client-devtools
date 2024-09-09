@@ -1,7 +1,7 @@
-import { CodeBlock } from "./CodeBlock";
-import { Disclosure } from "./Disclosure";
-import { GitHubIssueLink, SECTIONS, LABELS } from "./GitHubIssueLink";
-import { Modal } from "./Modal";
+import { CodeBlock } from "../CodeBlock";
+import { Disclosure } from "../Disclosure";
+import { GitHubIssueLink, SECTIONS, LABELS } from "../GitHubIssueLink";
+import { Modal } from "../Modal";
 import { expectTypeOf } from "expect-type";
 
 expectTypeOf<typeof import("./ClientNotFoundModal.jsx")>().toMatchTypeOf<
