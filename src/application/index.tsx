@@ -124,8 +124,7 @@ const actor = createActor(
 actor.start();
 
 // debugging
-actor.on("*", (event) => console.log(event));
-actor.subscribe((snapshot) => console.log(snapshot.value, snapshot.context));
+// actor.subscribe((snapshot) => console.log(snapshot.value, snapshot.context));
 
 export const forwardDevToolsActorEvent = (
   windowActor: WindowActor,
