@@ -1,58 +1,40 @@
 import type { Actor, SnapshotFrom } from "xstate";
-import { setup, assign, not } from "xstate";
+import { setup, assign, not, sendParent, fromCallback } from "xstate";
 import IconSync from "@apollo/icons/small/IconSync.svg";
 import { BannerAlert } from "../components/BannerAlert";
 import { Button } from "../components/Button";
-import { createContext, useContext } from "react";
+import { createContext, useContext, useMemo } from "react";
 import { useSelector } from "@xstate/react";
 
 export interface DevtoolsMachineContext {
   modalOpen: boolean;
   port: number | false | undefined;
+  registeredClients: number;
 }
 type Events =
   | { type: "initializePanel"; initialContext: Partial<DevtoolsMachineContext> }
   | { type: "port.changed"; port: number | false }
-  | { type: "connect" }
-  | { type: "timeout" }
-  | { type: "disconnect" }
-  | { type: "clientNotFound" }
-  | { type: "retry" }
+  | { type: "client.register" }
+  | { type: "client.terminated" }
+  | { type: "client.setCount"; count: number }
+  | { type: "connection.retry" }
+  | { type: "openModal" }
   | { type: "closeModal" }
   | { type: "store.didReset" };
 export type DevToolsMachineEvents = Events;
-export const devtoolsMachine = setup({
+
+const reconnectMachine = setup({
   types: {
-    context: {} as DevtoolsMachineContext,
     events: {} as Events,
   },
   delays: {
     connectTimeout: 10_000,
   },
   actions: {
-    openModal: assign({ modalOpen: true }),
-    closeModal: assign({ modalOpen: false }),
     notifyWaitingForConnection: () => {
       BannerAlert.show({
         type: "loading",
         content: "Waiting for client to connect...",
-      });
-    },
-    closeBanner: BannerAlert.close,
-    notifyDisconnected: () => {
-      BannerAlert.show({
-        type: "loading",
-        content: "Disconnected. Waiting for client to connect...",
-      });
-    },
-    notifyConnected: () => {
-      BannerAlert.show({ type: "success", content: "Connected!" });
-    },
-    notifyTimedOut: () => {
-      BannerAlert.show({
-        type: "error",
-        content:
-          "Unable to communicate with browser tab. Please reload the window and restart the devtools to try again.",
       });
     },
     notifyNotFound: ({ self }) => {
@@ -65,7 +47,7 @@ export const devtoolsMachine = setup({
               size="xs"
               variant="hidden"
               icon={<IconSync />}
-              onClick={() => self.send({ type: "retry" })}
+              onClick={() => self.send({ type: "connection.retry" })}
             >
               Retry connection
             </Button>
@@ -73,6 +55,66 @@ export const devtoolsMachine = setup({
         ),
       });
     },
+  },
+}).createMachine({
+  initial: "disconnected",
+  states: {
+    disconnected: {
+      after: {
+        connectTimeout: {
+          target: "notFound",
+        },
+      },
+    },
+    retrying: {
+      entry: [
+        "notifyWaitingForConnection",
+        sendParent({
+          type: "closeModal",
+        } satisfies DevToolsMachineEvents),
+      ],
+      after: {
+        connectTimeout: {
+          target: "notFound",
+        },
+      },
+    },
+    notFound: {
+      on: {
+        "connection.retry": "retrying",
+      },
+      entry: [
+        "notifyNotFound",
+        sendParent({
+          type: "openModal",
+        } satisfies DevToolsMachineEvents),
+      ],
+    },
+  },
+});
+
+export const devtoolsMachine = setup({
+  types: {
+    context: {} as DevtoolsMachineContext,
+    events: {} as Events,
+  },
+  delays: {
+    connectTimeout: 10_000,
+  },
+  actions: {
+    openModal: assign({ modalOpen: true }),
+    closeModal: assign({ modalOpen: false }),
+    closeBanner: BannerAlert.close,
+    notifyDisconnected: () => {
+      BannerAlert.show({
+        type: "loading",
+        content: "No client connected. Waiting for client to connect...",
+      });
+    },
+    notifyConnected: () => {
+      BannerAlert.show({ type: "success", content: "Connected!" });
+    },
+
     renderUI: () => {
       throw new Error("Provide implementation");
     },
@@ -85,14 +127,25 @@ export const devtoolsMachine = setup({
       return context.port !== false;
     },
   },
+  actors: {
+    reconnect: __IS_EXTENSION__
+      ? reconnectMachine
+      : fromCallback(({ sendBack }) => {
+          sendBack({ type: "openModal" } satisfies DevToolsMachineEvents);
+        }),
+  },
 }).createMachine({
   id: "devtools",
   type: "parallel",
   context: {
     modalOpen: false,
     port: undefined,
+    registeredClients: 0,
   },
   on: {
+    openModal: {
+      actions: "openModal",
+    },
     closeModal: {
       actions: "closeModal",
     },
@@ -151,37 +204,32 @@ export const devtoolsMachine = setup({
       },
     },
     connection: {
-      initial: "initialized",
+      initial: "disconnected",
+      on: {
+        "client.register": {
+          actions: [
+            assign({
+              registeredClients: ({ context }) => context.registeredClients + 1,
+            }),
+          ],
+        },
+        "client.terminated": {
+          actions: [
+            assign({
+              registeredClients: ({ context }) => context.registeredClients - 1,
+            }),
+          ],
+        },
+        "client.setCount": {
+          actions: [
+            assign({
+              registeredClients: ({ event }) => event.count,
+            }),
+          ],
+        },
+      },
       states: {
-        initialized: {
-          on: {
-            connect: "connected",
-            timeout: "timedout",
-            clientNotFound: "notFound",
-          },
-          entry: "notifyWaitingForConnection",
-          after: {
-            connectTimeout: {
-              target: "notFound",
-            },
-          },
-        },
-        retrying: {
-          on: {
-            connect: "connected",
-            clientNotFound: "notFound",
-          },
-          entry: ["notifyWaitingForConnection", "closeModal"],
-          after: {
-            connectTimeout: {
-              target: "notFound",
-            },
-          },
-        },
         connected: {
-          on: {
-            disconnect: "disconnected",
-          },
           entry: ["notifyConnected", "closeModal"],
           exit: ["resetStore"],
           after: {
@@ -189,29 +237,21 @@ export const devtoolsMachine = setup({
               actions: "closeBanner",
             },
           },
+          always: {
+            guard: ({ context }) => context.registeredClients === 0,
+            target: "disconnected",
+          },
         },
         disconnected: {
-          on: {
-            connect: "connected",
-            timeout: "timedout",
-            clientNotFound: "notFound",
-          },
           entry: "notifyDisconnected",
-          after: {
-            connectTimeout: {
-              target: "notFound",
-            },
+          invoke: {
+            id: "reconnect",
+            src: "reconnect",
           },
-        },
-        timedout: {
-          entry: "notifyTimedOut",
-        },
-        notFound: {
-          on: {
-            retry: "retrying",
-            connect: "connected",
+          always: {
+            guard: ({ context }) => context.registeredClients > 0,
+            target: "connected",
           },
-          entry: ["notifyNotFound", "openModal"],
         },
       },
     },
@@ -220,18 +260,30 @@ export const devtoolsMachine = setup({
 
 export const DevToolsMachineContext = createContext<DevToolsActor | null>(null);
 export function useDevToolsActorRef() {
-  return (
-    useContext(DevToolsMachineContext) ||
-    (() => {
-      throw new Error("DevToolsMachineContext not found");
-    })()
+  const contextValue = useContext(DevToolsMachineContext);
+  if (!contextValue) {
+    throw new Error("DevToolsMachineContext not found");
+  }
+  const memoizedBound = useMemo<Pick<DevToolsActor, "send" | "on">>(
+    () => ({
+      send: (event) => {
+        // console.log("send", event);
+        contextValue.send(event);
+      },
+      on: contextValue.on.bind(contextValue),
+    }),
+    [contextValue]
   );
+  return memoizedBound;
 }
 export function useDevToolsSelector<T>(
   selector: (snapshot: SnapshotFrom<DevToolsMachine>) => T,
   compare?: (a: T, b: T) => boolean
 ): T {
-  const actor = useDevToolsActorRef();
+  const actor = useContext(DevToolsMachineContext);
+  if (!actor) {
+    throw new Error("DevToolsMachineContext not found");
+  }
   return useSelector(actor, selector, compare);
 }
 

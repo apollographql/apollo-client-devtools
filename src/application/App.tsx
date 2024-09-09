@@ -78,8 +78,7 @@ ${SECTIONS.devtoolsVersion}
 const stableEmptyClients: Required<AppQuery["clients"]> = [];
 
 export const App = () => {
-  const devToolsActor = useDevToolsActorRef();
-  const send = devToolsActor.send.bind(devToolsActor);
+  const { send } = useDevToolsActorRef();
   const { data, refetch } = useQuery(APP_QUERY, { errorPolicy: "all" });
 
   const modalOpen = useDevToolsSelector((state) => state.context.modalOpen);
@@ -89,7 +88,7 @@ export const App = () => {
   console.log("show error modal!", isErrorState);
 
   useActorEvent("registerClient", () => {
-    send({ type: "connect" });
+    send({ type: "client.register" });
     // Unfortunately after we clear the store above, the query ends up "stuck"
     // holding onto the old list of clients even if we manually write a cache
     // update to properly resolve the list. Instead we refetch the list again to
@@ -98,17 +97,12 @@ export const App = () => {
   });
 
   useActorEvent("clientTerminated", (message) => {
-    // Disconnect if we are terminating the last client. We assume that 1 client
-    // means we are terminating the selected client
-    if (clients.length === 1) {
-      send({ type: "disconnect" });
-    }
-
+    send({ type: "client.terminated" });
     removeClient(message.clientId);
   });
 
   useActorEvent("pageNavigated", () => {
-    send({ type: "disconnect" });
+    send({ type: "client.setCount", count: 0 });
   });
 
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -145,7 +139,7 @@ export const App = () => {
 
   useEffect(() => {
     if (clients.length) {
-      send({ type: "connect" });
+      send({ type: "client.setCount", count: clients.length });
     }
   }, [send, clients.length]);
 
@@ -155,7 +149,7 @@ export const App = () => {
       <ClientNotFoundModal
         open={modalOpen}
         onClose={() => send({ type: "closeModal" })}
-        onRetry={() => send({ type: "retry" })}
+        onRetry={() => send({ type: "connection.retry" })}
       />
       <BannerAlert />
       <Tabs
