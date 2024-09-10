@@ -1,4 +1,5 @@
 import { Button } from "../Button";
+import { ExternalLink } from "../ExternalLink";
 import { Modal } from "../Modal";
 
 declare const VERSION: string;
@@ -17,14 +18,14 @@ export function SettingsModal({
       </Modal.Header>
       <Modal.Body>
         Devtools version:{" "}
-        <a
+        <ExternalLink
           className="font-code"
           target="_blank"
           rel="noopener noreferrer"
           href={`https://github.com/apollographql/apollo-client-devtools/releases/tag/v${VERSION}`}
         >
           {VERSION}
-        </a>
+        </ExternalLink>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="primary" size="md" onClick={() => onOpen(false)}>

@@ -40,6 +40,7 @@ import { useActorEvent } from "./hooks/useActorEvent";
 import { removeClient } from ".";
 import { PageError } from "./components/PageError";
 import { SidebarLayout } from "./components/Layouts/SidebarLayout";
+import { ExternalLink } from "./components/ExternalLink";
 
 const APP_QUERY: TypedDocumentNode<AppQuery, AppQueryVariables> = gql`
   query AppQuery {
@@ -145,7 +146,7 @@ export const App = () => {
         className="flex flex-col h-screen bg-primary dark:bg-primary-dark"
       >
         <div className="flex items-center border-b border-b-primary dark:border-b-primary-dark gap-4 px-4">
-          <a
+          <ExternalLink
             href="https://go.apollo.dev/c/docs"
             target="_blank"
             title="Apollo Client developer documentation"
@@ -159,7 +160,7 @@ export const App = () => {
               fill="currentColor"
               className="text-icon-primary dark:text-icon-primary-dark"
             />
-          </a>
+          </ExternalLink>
           <Divider orientation="vertical" />
           <Tabs.List className="-mb-px">
             <Tabs.Trigger value={Screens.Queries}>
@@ -174,7 +175,7 @@ export const App = () => {
           <div className="ml-auto flex-1 justify-end flex items-center gap-2 h-full">
             {client?.version && (
               <GitHubReleaseHoverCard version={client.version}>
-                <a
+                <ExternalLink
                   className="no-underline"
                   href={
                     isSnapshotRelease(client.version)
@@ -188,7 +189,7 @@ export const App = () => {
                     Apollo Client <span className="lowercase">v</span>
                     {client.version}
                   </Badge>
-                </a>
+                </ExternalLink>
               </GitHubReleaseHoverCard>
             )}
             {clients.length > 1 && (

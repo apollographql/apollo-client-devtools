@@ -5,6 +5,7 @@ import { GitHubIssueLink, SECTIONS, LABELS } from "../GitHubIssueLink";
 import { Modal } from "../Modal";
 import { expectTypeOf } from "expect-type";
 import { Admonition } from "../Admonition";
+import { ExternalLink } from "../ExternalLink.vscode";
 
 expectTypeOf<typeof import("./ClientNotFoundModal.jsx")>().toMatchTypeOf<
   typeof import("./ClientNotFoundModal.vscode.jsx")
@@ -96,13 +97,9 @@ const devtoolsRegistration = registerClient(
                 VSCode provides built-in support for port forwarding that allows
                 you to forward the port from your local machine to a publically
                 accessible url. Learn how to setup port forwarding in the{" "}
-                <a
-                  rel="noopener noreferrer"
-                  target="_blank"
-                  href="https://code.visualstudio.com/docs/editor/port-forwarding#_how-to-use-local-port-forwarding"
-                >
+                <ExternalLink href="https://code.visualstudio.com/docs/editor/port-forwarding#_how-to-use-local-port-forwarding">
                   VSCode docs
-                </a>
+                </ExternalLink>
                 .
               </p>
               <Admonition variant="note">
@@ -152,13 +149,9 @@ const devtoolsRegistration = registerClient(
               <p>
                 To create a secure dev tunnel with token authentication, use the{" "}
                 <code>devtunnel</code> CLI. Follow the{" "}
-                <a
-                  rel="noopener noreferrer"
-                  target="_blank"
-                  href="https://learn.microsoft.com/en-us/azure/developer/dev-tunnels/get-started?tabs=macos#install"
-                >
+                <ExternalLink href="https://learn.microsoft.com/en-us/azure/developer/dev-tunnels/get-started?tabs=macos#install">
                   installation instructions
-                </a>{" "}
+                </ExternalLink>{" "}
                 to install the CLI for your OS.
               </p>
               <p>

@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { forwardRef } from "react";
+import { ExternalLink } from "./ExternalLink";
 
 declare const VERSION: string;
 
@@ -58,7 +59,7 @@ export const GitHubIssueLink = forwardRef<
   }
 
   return (
-    <a
+    <ExternalLink
       {...props}
       ref={ref}
       className={className}
@@ -67,6 +68,6 @@ export const GitHubIssueLink = forwardRef<
       href={`https://github.com/apollographql/${repository}/issues/new?${params}`}
     >
       {children}
-    </a>
+    </ExternalLink>
   );
 });
