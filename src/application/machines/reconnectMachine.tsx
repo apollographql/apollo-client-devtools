@@ -1,7 +1,5 @@
 import { setup } from "xstate";
-import IconSync from "@apollo/icons/small/IconSync.svg";
 import { BannerAlert } from "../components/BannerAlert";
-import { Button } from "../components/Button";
 
 export type ReconnectMachineEvents = { type: "reconnect.retry" };
 

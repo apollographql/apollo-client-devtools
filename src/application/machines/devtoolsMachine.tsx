@@ -1,5 +1,5 @@
 import type { Actor, SnapshotFrom } from "xstate";
-import { setup, assign, not, sendTo } from "xstate";
+import { setup, assign, not, sendTo, emit } from "xstate";
 import { BannerAlert } from "../components/BannerAlert";
 import { createContext, useContext, useMemo } from "react";
 import { useSelector } from "@xstate/react";
@@ -18,16 +18,28 @@ type Events =
   | { type: "client.register" }
   | { type: "client.terminated" }
   | { type: "client.setCount"; count: number }
-  | { type: "store.didReset" }
+  | { type: "emit.store.didReset" }
   | ReconnectMachineEvents;
 
 export type DevToolsMachineEvents = Events;
+
+export type EmittedEvents =
+  Extract<Events, { type: `emit.${string}` }> extends infer EmitTriggerEvents
+    ? {
+        [K in keyof EmitTriggerEvents]: K extends "type"
+          ? EmitTriggerEvents[K] extends `emit.${infer Type}`
+            ? Type
+            : EmitTriggerEvents[K]
+          : EmitTriggerEvents[K];
+      }
+    : never;
 
 export const devtoolsMachine = setup({
   types: {} as {
     context: DevtoolsMachineContext;
     events: Events;
     children: { reconnect: "reconnect" };
+    emitted: EmittedEvents;
   },
   delays: {
     connectTimeout: 10_000,
@@ -71,6 +83,15 @@ export const devtoolsMachine = setup({
     // forward reconnect events to child actor
     "reconnect.*": {
       actions: sendTo("reconnect", ({ event }) => event),
+    },
+    // on an `emit.*` event, `emit` that event so it can be subscribed to from the app
+    "emit.*": {
+      actions: emit(({ event }) => {
+        return {
+          ...event,
+          type: event.type.replace("emit.", ""),
+        } as EmittedEvents;
+      }),
     },
   },
   states: {

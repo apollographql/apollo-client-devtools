@@ -110,7 +110,7 @@ const actor = createActor(
     actions: {
       resetStore: async ({ self }) => {
         await client.clearStore().catch(noop);
-        self.send({ type: "store.didReset" });
+        self.send({ type: "emit.store.didReset" });
       },
       renderUI() {
         const root = createRoot(
