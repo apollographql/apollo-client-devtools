@@ -9,7 +9,7 @@ interface ErrorModalProps {
 
 export function UnknownErrorModal({ open }: ErrorModalProps) {
   return (
-    <Modal open={open} onClose={() => false} size="xl">
+    <Modal open={open} size="xl">
       <Modal.Header>
         <Modal.Title>Error</Modal.Title>
       </Modal.Header>

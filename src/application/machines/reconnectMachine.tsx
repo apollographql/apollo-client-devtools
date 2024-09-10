@@ -3,7 +3,7 @@ import IconSync from "@apollo/icons/small/IconSync.svg";
 import { BannerAlert } from "../components/BannerAlert";
 import { Button } from "../components/Button";
 
-export type ReconnectMachineEvents = { type: "connection.retry" };
+export type ReconnectMachineEvents = { type: "reconnect.retry" };
 
 export const reconnectMachine = setup({
   types: {} as {
@@ -19,22 +19,10 @@ export const reconnectMachine = setup({
         content: "Waiting for client to connect...",
       });
     },
-    notifyNotFound: ({ self }) => {
+    notifyNotFound: () => {
       BannerAlert.show({
         type: "error",
-        content: (
-          <div className="flex justify-between items-center">
-            Client not found{" "}
-            <Button
-              size="xs"
-              variant="hidden"
-              icon={<IconSync />}
-              onClick={() => self.send({ type: "connection.retry" })}
-            >
-              Retry connection
-            </Button>
-          </div>
-        ),
+        content: "Client not found",
       });
     },
   },
@@ -58,7 +46,7 @@ export const reconnectMachine = setup({
     },
     notFound: {
       on: {
-        "connection.retry": "retrying",
+        "reconnect.retry": "retrying",
       },
       entry: ["notifyNotFound"],
     },
