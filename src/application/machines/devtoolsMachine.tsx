@@ -1,11 +1,10 @@
 import type { Actor, SnapshotFrom } from "xstate";
 import { setup, assign, not } from "xstate";
-import IconSync from "@apollo/icons/small/IconSync.svg";
 import { BannerAlert } from "../components/BannerAlert";
-import { Button } from "../components/Button";
 import { createContext, useContext, useMemo } from "react";
 import { useSelector } from "@xstate/react";
-import { delay } from "framer-motion";
+import type { ReconnectMachineEvents } from "./reconnectMachine";
+import { reconnectMachine } from "./reconnectMachine";
 
 export interface DevtoolsMachineContext {
   listening?: boolean;
@@ -19,93 +18,16 @@ type Events =
   | { type: "client.register" }
   | { type: "client.terminated" }
   | { type: "client.setCount"; count: number }
-  | { type: "connection.retry" }
-  | { type: "store.didReset" };
+  | { type: "store.didReset" }
+  | ReconnectMachineEvents;
+
 export type DevToolsMachineEvents = Events;
 
-const reconnectMachineSetup = setup({
-  types: {
-    events: {} as Events,
-  },
-  delays: {
-    connectTimeout: 10_000,
-  },
-  actions: {
-    notifyWaitingForConnection: () => {
-      BannerAlert.show({
-        type: "loading",
-        content: "Waiting for client to connect...",
-      });
-    },
-    notifyNotFound: ({ self }) => {
-      BannerAlert.show({
-        type: "error",
-        content: (
-          <div className="flex justify-between items-center">
-            Client not found{" "}
-            <Button
-              size="xs"
-              variant="hidden"
-              icon={<IconSync />}
-              onClick={() => self.send({ type: "connection.retry" })}
-            >
-              Retry connection
-            </Button>
-          </div>
-        ),
-      });
-    },
-  },
-});
-const tabReconnectMachine = reconnectMachineSetup.createMachine({
-  initial: "disconnected",
-  states: {
-    disconnected: {
-      after: {
-        connectTimeout: {
-          target: "notFound",
-        },
-      },
-    },
-    retrying: {
-      entry: ["notifyWaitingForConnection"],
-      after: {
-        connectTimeout: {
-          target: "notFound",
-        },
-      },
-    },
-    notFound: {
-      on: {
-        "connection.retry": "retrying",
-      },
-      entry: ["notifyNotFound"],
-    },
-  },
-});
-
-const vscodeReconnectMachine = reconnectMachineSetup
-  .createMachine({
-    initial: "disconnected",
-    states: {
-      disconnected: {
-        after: {
-          connectTimeout: {
-            target: "notFound",
-          },
-        },
-      },
-      notFound: {
-        on: {},
-      },
-    },
-  })
-  .provide({ delays: { connectTimeout: 500 } });
-
 export const devtoolsMachine = setup({
-  types: {
-    context: {} as DevtoolsMachineContext,
-    events: {} as Events,
+  types: {} as {
+    context: DevtoolsMachineContext;
+    events: Events;
+    children: { reconnect: "reconnect" };
   },
   delays: {
     connectTimeout: 10_000,
@@ -135,7 +57,7 @@ export const devtoolsMachine = setup({
     },
   },
   actors: {
-    reconnect: __IS_EXTENSION__ ? tabReconnectMachine : vscodeReconnectMachine,
+    reconnect: reconnectMachine,
   },
 }).createMachine({
   id: "devtools",
