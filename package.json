@@ -39,7 +39,7 @@
     "@apollo/brand": "^0.7.0",
     "@apollo/client": "3.11.8",
     "@apollo/icons": "^0.6.0",
-    "@apollo/tailwind-preset": "^0.1.13",
+    "@apollo/tailwind-preset": "^0.2.0",
     "@graphql-codegen/typescript-resolvers": "^4.1.0",
     "@headlessui/react": "^2.1.0",
     "@headlessui/tailwindcss": "^0.2.0",
