@@ -1,5 +1,5 @@
 import type { Actor, SnapshotFrom } from "xstate";
-import { setup, assign, not } from "xstate";
+import { setup, assign, not, sendTo } from "xstate";
 import { BannerAlert } from "../components/BannerAlert";
 import { createContext, useContext, useMemo } from "react";
 import { useSelector } from "@xstate/react";
@@ -66,6 +66,12 @@ export const devtoolsMachine = setup({
     modals: {},
     port: undefined,
     registeredClients: 0,
+  },
+  on: {
+    // forward reconnect events to child actor
+    "reconnect.*": {
+      actions: sendTo("reconnect", ({ event }) => event),
+    },
   },
   states: {
     initialization: {

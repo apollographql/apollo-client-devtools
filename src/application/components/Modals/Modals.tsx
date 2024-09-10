@@ -35,8 +35,7 @@ export function Modals() {
     <ClientNotFoundModal
       key="clientNotFound"
       open={!modalHandled && openClientNotFoundModal}
-      onClose={() => {}}
-      onRetry={() => send({ type: "connection.retry" })}
+      onRetry={() => send({ type: "reconnect.retry" })}
     />
   );
   modalHandled ||= openClientNotFoundModal;

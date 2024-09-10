@@ -7,7 +7,6 @@ import IconGitHubSolid from "@apollo/icons/small/IconGitHubSolid.svg";
 
 interface ClientNotFoundModalProps {
   open: boolean;
-  onClose: () => void;
   onRetry: () => void;
 }
 
@@ -25,11 +24,10 @@ function ConnectToDevToolsOptionLink() {
 
 export function ClientNotFoundModal({
   open,
-  onClose,
   onRetry,
 }: ClientNotFoundModalProps) {
   return (
-    <Modal open={open} onClose={onClose} size="xl">
+    <Modal open={open} size="xl">
       <Modal.Header>
         <Modal.Title>Could not find client</Modal.Title>
         <Modal.Description>
@@ -255,14 +253,9 @@ ${SECTIONS.devtoolsVersion}
             <span>Create an issue</span>
           </GitHubIssueLink>
         </Button>
-        <ButtonGroup>
-          <Button type="button" size="md" variant="secondary" onClick={onClose}>
-            Close
-          </Button>
-          <Button size="md" variant="primary" onClick={onRetry}>
-            Retry
-          </Button>
-        </ButtonGroup>
+        <Button size="md" variant="primary" onClick={onRetry}>
+          Retry
+        </Button>
       </Modal.Footer>
     </Modal>
   );

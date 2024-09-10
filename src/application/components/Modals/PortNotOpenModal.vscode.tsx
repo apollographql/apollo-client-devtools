@@ -19,7 +19,7 @@ export function PortNotOpenModal({ open }: ErrorModalProps) {
     (state) => state.context.port ?? "<default port>"
   );
   return (
-    <Modal open={open} onClose={() => false} size="xl">
+    <Modal open={open} size="xl">
       <Modal.Header>
         <Modal.Title>DevTools Server not running on port {port}</Modal.Title>
       </Modal.Header>{" "}
