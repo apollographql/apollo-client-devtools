@@ -25,6 +25,15 @@ export type ActorMessage =
   | { type: "pageNavigated" }
   | { type: "panelHidden" }
   | { type: "panelShown" }
+  | {
+      type: "vscode:openExternal";
+      uri: string;
+    }
+  | {
+      type: "vscode:executeCommand";
+      command: string;
+      arguments?: unknown[];
+    }
   | Extract<
       DevToolsMachineEvents,
       { type: "initializePanel" | "port.changed" }
