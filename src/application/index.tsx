@@ -119,12 +119,39 @@ const actor = createActor(
         root.render(<AppProvider actor={actor} />);
       },
     },
-  })
+  }),
+  {
+    id: "devtools",
+    inspect: (inspectionEvent) => {
+      // toggle here for debugging
+      const DEBUG_XSTATE = false;
+      if (process.env.NODE_ENV === "development" && DEBUG_XSTATE) {
+        const actorId = inspectionEvent.actorRef.id;
+        switch (inspectionEvent.type) {
+          case "@xstate.event": {
+            const { type, ...rest } = inspectionEvent.event;
+            console.log("[%s] event: %s (%o)", actorId, type, rest);
+            break;
+          }
+          case "@xstate.action": {
+            console.log(
+              "[%s] action: %s (%o)",
+              actorId,
+              inspectionEvent.action.type,
+              inspectionEvent.action.params
+            );
+            break;
+          }
+          case "@xstate.snapshot": {
+            console.log("[%s] snapshot: %o", actorId, inspectionEvent.snapshot);
+            break;
+          }
+        }
+      }
+    },
+  }
 );
 actor.start();
-
-// debugging
-// actor.subscribe((snapshot) => console.log(snapshot.value, snapshot.context));
 
 export const forwardDevToolsActorEvent = (
   windowActor: WindowActor,
