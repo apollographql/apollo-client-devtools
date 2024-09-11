@@ -187,14 +187,14 @@ function ReleaseCardContents({ version }: { version: string }) {
         <div className="flex gap-1 items-center text-xs font-bold uppercase text-secondary dark:text-secondary-dark">
           Published {formatDate(Date.parse(release.published_at))}
         </div>
-        <a
+        <ExternalLink
           className="flex gap-1 items-center mt-2"
           href={`https://github.com/apollographql/apollo-client/releases/tag/v${version}`}
           target="_blank"
           rel="noreferrer"
         >
           View release in GitHub <IconOutlink className="size-3" />
-        </a>
+        </ExternalLink>
       </header>
       <Markdown>{release.body}</Markdown>
     </div>
