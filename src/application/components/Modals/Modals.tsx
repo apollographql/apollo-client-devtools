@@ -6,23 +6,14 @@ import {
 import { ClientNotFoundModal } from "./ClientNotFoundModal";
 import { PortNotOpenModal } from "./PortNotOpenModal";
 import { UnknownErrorModal } from "./UnknownErrorModal";
+import { cloneElement } from "react";
 
 export function Modals() {
   const { send } = useDevToolsActorRef();
 
-  let modalHandled = false;
-  const modals: React.ReactNode[] = [];
-
   const openPortNotOpenModal = useDevToolsSelector(
     (state) => state.context.listening === false
   );
-  modals.push(
-    <PortNotOpenModal
-      key="portNotOpen"
-      open={!modalHandled && openPortNotOpenModal}
-    />
-  );
-  modalHandled ||= openPortNotOpenModal;
 
   const reconnectActor = useDevToolsSelector(
     (state) => state.children.reconnect
@@ -31,24 +22,33 @@ export function Modals() {
     reconnectActor,
     (state) => state?.status === "active" && state.value === "notFound"
   );
-  modals.push(
-    <ClientNotFoundModal
-      key="clientNotFound"
-      open={!modalHandled && openClientNotFoundModal}
-      onRetry={() => send({ type: "reconnect.retry" })}
-    />
-  );
-  modalHandled ||= openClientNotFoundModal;
 
   const isErrorState = useDevToolsSelector(
     (state) => state.value.initialization === "error"
   );
-  modals.push(
-    <UnknownErrorModal
-      key="unknownError"
-      open={!modalHandled && isErrorState}
-    />
-  );
+  const modals = [
+    <PortNotOpenModal key="portNotOpen" open={openPortNotOpenModal} />,
+    <ClientNotFoundModal
+      key="clientNotFound"
+      open={openClientNotFoundModal}
+      onRetry={() => send({ type: "reconnect.retry" })}
+    />,
+    <UnknownErrorModal key="unknownError" open={isErrorState} />,
+  ];
 
-  return <>{modals}</>;
+  let atLeastOneModalOpen = false;
+  return (
+    <>
+      {modals.map((modal) => {
+        if (modal.props.open) {
+          if (atLeastOneModalOpen) {
+            // we only want to show one open modal at once, even if more than one would qualify to be open.
+            return cloneElement(modal, { open: false });
+          }
+          atLeastOneModalOpen = true;
+        }
+        return modal;
+      })}
+    </>
+  );
 }
