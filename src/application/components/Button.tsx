@@ -9,7 +9,7 @@ import { Spinner } from "./Spinner";
 
 type NativeButtonProps = ComponentPropsWithoutRef<"button">;
 
-type ButtonProps = AsChildProps<NativeButtonProps> &
+export type ButtonProps = AsChildProps<NativeButtonProps> &
   Variants & {
     className?: string;
     icon?: ReactElement<{ "aria-hidden": boolean; className?: string }>;
