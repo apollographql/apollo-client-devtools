@@ -2,8 +2,9 @@ import { expectTypeOf } from "expect-type";
 import { Modal } from "../Modal";
 import { Disclosure } from "../Disclosure";
 import { useDevToolsSelector } from "../../machines/devtoolsMachine";
-import { VSCodeCommand } from "../VSCode/VSCodeCommand";
-import { VSCodeSetting } from "../VSCode/VSCodeSetting";
+import { VSCodeCommandButton } from "../VSCode/VSCodeCommandButton";
+import { VSCodeSettingButton } from "../VSCode/VSCodeSettingButton";
+import { ButtonGroup } from "../ButtonGroup";
 
 expectTypeOf<typeof import("./PortNotOpenModal.jsx")>().toMatchTypeOf<
   typeof import("./PortNotOpenModal.vscode.jsx")
@@ -13,16 +14,10 @@ interface ErrorModalProps {
   open: boolean;
 }
 
-const StartDevTools = (
-  <VSCodeCommand
-    command="apollographql/startDevToolsServer"
-    title="Apollo: Start Apollo Client DevTools Server"
-  />
-);
-const StopDevTools = '"Apollo: Stop Apollo Client DevTools Server"';
-const ServerPortSettings = (
-  <VSCodeSetting name="apollographql.devTools.serverPort" />
-);
+const StartCommandLabel = "Apollo: Start Apollo Client DevTools Server";
+const StartCommand = "apollographql/startDevToolsServer";
+const StopCommandLabel = "Apollo: Stop Apollo Client DevTools Server";
+const PortSetting = "apollographql.devTools.serverPort";
 
 export function PortNotOpenModal({ open }: ErrorModalProps) {
   const port = useDevToolsSelector(
@@ -52,14 +47,20 @@ export function PortNotOpenModal({ open }: ErrorModalProps) {
               <ul className="list-disc list-outside ml-4">
                 <li>
                   By stopping the server in that other instance (e.g. by running
-                  the {StopDevTools} command or by closing the Workspace)
+                  the <code>&quot;{StopCommandLabel}&quot;</code> command or by
+                  closing the Workspace)
                 </li>
                 <li>
-                  By changing the port of the DevTools Server (
-                  {ServerPortSettings}) in your workspace settings and
-                  restarting the server with the {StartDevTools} command.
+                  By changing the port of the DevTools Server in your workspace
+                  settings and restarting the server.
                 </li>
               </ul>
+              <VSCodeCommandButton
+                command={StartCommand}
+                className="ml-auto mt-2"
+              >
+                {StartCommandLabel}
+              </VSCodeCommandButton>
             </Disclosure.Panel>
           </Disclosure>
           <Disclosure>
@@ -103,16 +104,21 @@ export function PortNotOpenModal({ open }: ErrorModalProps) {
                       <code>sudo ss -tulpn | grep :{port}</code>
                     </li>
                   </ul>
-                  After that, kill that process and restart the DevTools Server
-                  with the {StartDevTools} command.
+                  After that, kill that process and restart the DevTools Server.
                 </li>
                 <li>
-                  By changing the port of the DevTools Server (
-                  <code>apollographql.devTools.serverPort</code>) in your
-                  workspace settings and restarting the server with the{" "}
-                  {StartDevTools} command.
+                  By changing the port of the DevTools Server in your workspace
+                  settings and restarting the server.
                 </li>
               </ul>
+              <ButtonGroup className="justify-end mt-2">
+                <VSCodeCommandButton command={StartCommand}>
+                  {StartCommandLabel}
+                </VSCodeCommandButton>
+                <VSCodeSettingButton settingsKey={PortSetting}>
+                  Open Settings
+                </VSCodeSettingButton>
+              </ButtonGroup>
             </Disclosure.Panel>
           </Disclosure>
           <Disclosure>
@@ -122,10 +128,17 @@ export function PortNotOpenModal({ open }: ErrorModalProps) {
             <Disclosure.Panel>
               <p>
                 You might have stopped the DevTools Server with the{" "}
-                {StopDevTools} command.
+                <code>&quot;{StopCommandLabel}&quot;</code> command.
                 <br />
-                You can start it again with the {StartDevTools} command.
+                You can start it again with the{" "}
+                <code>&quot;{StartCommandLabel}&quot;</code> command.
               </p>
+              <VSCodeCommandButton
+                command={StartCommand}
+                className="ml-auto mt-2"
+              >
+                {StartCommandLabel}
+              </VSCodeCommandButton>
             </Disclosure.Panel>
           </Disclosure>
         </div>
