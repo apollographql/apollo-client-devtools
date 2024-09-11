@@ -211,10 +211,7 @@ export function useDevToolsActorRef() {
   }
   const memoizedBound = useMemo<Pick<DevToolsActor, "send" | "on">>(
     () => ({
-      send: (event) => {
-        // console.log("send", event);
-        contextValue.send(event);
-      },
+      send: contextValue.send.bind(contextValue),
       on: contextValue.on.bind(contextValue),
     }),
     [contextValue]
