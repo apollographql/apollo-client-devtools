@@ -6,6 +6,7 @@ import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import remarkGithub from "remark-github";
 import type { ReactNode } from "react";
+import { ExternalLink } from "./ExternalLink";
 
 interface MarkdownProps {
   className?: string;
@@ -62,7 +63,8 @@ const components: NonNullable<Options["components"]> = {
   ),
   p: ({ children }) => <p className="mt-2 first:mt-0">{children}</p>,
   a: ({ node, ...props }) => (
-    <a
+    <ExternalLink
+      href="#"
       {...props}
       className="font-semibold underline-offset-4 underline"
       target="_blank"

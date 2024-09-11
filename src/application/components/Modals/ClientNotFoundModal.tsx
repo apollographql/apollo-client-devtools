@@ -1,6 +1,6 @@
 import { Button } from "../Button";
-import { ButtonGroup } from "../ButtonGroup";
 import { Disclosure } from "../Disclosure";
+import { ExternalLink } from "../ExternalLink";
 import { GitHubIssueLink, SECTIONS, LABELS } from "../GitHubIssueLink";
 import { Modal } from "../Modal";
 import IconGitHubSolid from "@apollo/icons/small/IconGitHubSolid.svg";
@@ -12,13 +12,13 @@ interface ClientNotFoundModalProps {
 
 function ConnectToDevToolsOptionLink() {
   return (
-    <a
+    <ExternalLink
       rel="noreferrer noopener"
       target="_blank"
       href="https://www.apollographql.com/docs/react/api/core/ApolloClient#apolloclientoptions-connecttodevtools"
     >
       <code>connectToDevTools</code> option
-    </a>
+    </ExternalLink>
   );
 }
 
@@ -73,13 +73,13 @@ ${SECTIONS.devtoolsVersion}
               <p className="mt-4">
                 You may need to tweak your bundler settings to set{" "}
                 <code>globalThis.__DEV__</code> correctly. See the{" "}
-                <a
+                <ExternalLink
                   rel="noreferrer noopener"
                   target="_blank"
                   href="https://www.apollographql.com/docs/react/development-testing/reducing-bundle-size/"
                 >
                   &quot;Reducing bundle size&quot;
-                </a>{" "}
+                </ExternalLink>{" "}
                 article for examples on configuring your bundler.
               </p>
               <p className="mt-4">
@@ -108,13 +108,13 @@ ${SECTIONS.devtoolsVersion}
             <Disclosure.Panel>
               Apollo Client Devtools does not currently support clients created
               in iframes. Please follow{" "}
-              <a
+              <ExternalLink
                 rel="noreferrer noopener"
                 target="_blank"
                 href="https://github.com/apollographql/apollo-client-devtools/discussions/380"
               >
                 this discussion
-              </a>{" "}
+              </ExternalLink>{" "}
               for updates on this feature.
             </Disclosure.Panel>
           </Disclosure>
@@ -129,13 +129,13 @@ ${SECTIONS.devtoolsVersion}
                 <code>window.__APOLLO_CLIENT__</code> variable for up to 10
                 seconds after a page load before giving up. When using
                 Apollo&apos;s{" "}
-                <a
+                <ExternalLink
                   rel="noreferrer noopener"
                   target="_blank"
                   href="https://github.com/apollographql/apollo-client-nextjs"
                 >
                   Next.js RSC integration
-                </a>
+                </ExternalLink>
                 , it is possible that Apollo Client Devtools will be unable to
                 connect to the client when the first loaded page does not render
                 any client components and no other client components are loaded
