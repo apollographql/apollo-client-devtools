@@ -30,7 +30,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         id: chrome-artifact
         with:
-          name: apollo-client-devtools-chrome
+          name: devtools-chrome
           path: apollo-client-devtools-chrome.zip
           retention-days: 14
 
@@ -40,7 +40,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         id: firefox-artifact
         with:
-          name: apollo-client-devtools-firefox
+          name: devtools-firefox
           path: apollo-client-devtools-firefox.zip
           retention-days: 14
 
