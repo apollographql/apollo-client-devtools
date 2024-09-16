@@ -19,14 +19,14 @@ type Reason =
 
 export function registerClient(
   client: ApolloClient<any>,
-  url: string | URL
+  vsCodeServerUrl: string | URL
 ): {
   connected: Promise<void>;
   unregister: (reason?: Reason) => void;
   onCleanup: (cleanup: (reason: Reason) => void) => void;
 } {
   const clientRef = new WeakRef(client);
-  const registered = _registerClient(clientRef, url);
+  const registered = _registerClient(clientRef, vsCodeServerUrl);
   const registry = new FinalizationRegistry(registered.unregister);
   const unregisterToken = {};
   registry.register(client, "CLIENT_GC", unregisterToken);
