@@ -22,7 +22,9 @@ export default /** @returns {import("webpack").Configuration} */ (env) => {
       ? {
           devtool: "inline-source-map",
         }
-      : {};
+      : {
+          devtool: false,
+        };
 
   if (!target) {
     throw new Error("Must set a `TARGET`");
@@ -177,6 +179,7 @@ export default /** @returns {import("webpack").Configuration} */ (env) => {
             },
             resolve: base.resolve,
             module: base.module,
+            devtool: base.devtool,
             optimization: { minimize: false },
             plugins: [
               new CopyPlugin({

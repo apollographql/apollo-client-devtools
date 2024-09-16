@@ -35,7 +35,7 @@ export function handleExplorerRequests(
         throw new Error("Could not find selected client");
       }
 
-      const clonedQueryAst = structuredClone(queryAst) as Writable<
+      const clonedQueryAst = JSON.parse(JSON.stringify(queryAst)) as Writable<
         typeof queryAst
       >;
 
