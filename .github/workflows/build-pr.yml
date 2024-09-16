@@ -19,10 +19,50 @@ jobs:
       - run: npm ci
 
       # Build and output bunle stats to webpack-stats.json
-      - run: yarn build --env TARGET=chrome --json webpack-stats.json
+      - run: WEBPACK_BUILD_ARGS="--json webpack-stats.json" npm run dist:chrome
 
       # Upload webpack-stats.json to use on relative-ci.yaml workflow
       - name: Upload webpack stats artifact
         uses: relative-ci/agent-upload-artifact-action@v2
         with:
           webpackStatsFile: ./webpack-stats.json
+
+      - uses: actions/upload-artifact@v4
+        id: chrome-artifact
+        with:
+          name: apollo-client-devtools-chrome
+          path: apollo-client-devtools-chrome.zip
+          retention-days: 14
+
+      # Build and output bunle stats to webpack-stats.json
+      - run: npm run dist:firefox
+
+      - uses: actions/upload-artifact@v4
+        id: firefox-artifact
+        with:
+          name: apollo-client-devtools-firefox
+          path: apollo-client-devtools-firefox.zip
+          retention-days: 14
+
+      - name: Output artifact URLs
+        run: echo "Artifact URLs are \n${{ steps.chrome-artifact.outputs.artifact-url }}\n and \n${{ steps.firefox-artifact.outputs.artifact-url }}\n"
+
+      - name: Find Comment
+        uses: peter-evans/find-comment@v3
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: "github-actions[bot]"
+          body-includes: <!-- ARTIFACT-DOWNLOAD -->
+
+      - name: Create comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          edit-mode: replace
+          body: |
+            <!-- ARTIFACT-DOWNLOAD -->
+            You can download the latest builds of the extension for this PR here:
+            * [Chrome](${{ steps.chrome-artifact.outputs.artifact-url }})
+            * [Firefox](${{ steps.firefox-artifact.outputs.artifact-url }})

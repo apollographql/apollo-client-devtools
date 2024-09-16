@@ -17,7 +17,7 @@
     "start:dev": "run-p start:client start:server",
     "dist:chrome": "npm run build -- --env TARGET=chrome && tsx build.ts chrome",
     "dist:firefox": "npm run build -- --env TARGET=firefox && tsx build.ts firefox",
-    "build": "npm run clean && webpack --env NODE_ENV=production --progress",
+    "build": "npm run clean && webpack --env NODE_ENV=production --progress $WEBPACK_BUILD_ARGS",
     "build:dev": "npm run clean && webpack --env NODE_ENV=development --progress",
     "clean": "rimraf build && mkdir build && rimraf *.zip",
     "changeset-publish": "npm run build -- --env TARGET=firefox && changeset publish",

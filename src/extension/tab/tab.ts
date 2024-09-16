@@ -50,5 +50,12 @@ if (__IS_FIREFOX__) {
     }
   }
 
-  injectScript(browser.runtime.getURL("hook.js"));
+  try {
+    injectScript(browser.runtime.getURL("hook.js"));
+  } catch (e) {
+    console.warn(
+      "Error occured while trying to initialize Apollo Client Devtools:",
+      e
+    );
+  }
 }
