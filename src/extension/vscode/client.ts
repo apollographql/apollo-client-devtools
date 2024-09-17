@@ -14,21 +14,44 @@ type Reason =
   | "WS_DISCONNECTED"
   | "CLIENT_GC"
   | "WS_ERROR"
-  | "UNREGISTER"
+  | "MANUAL_DISCONNECT"
   // eslint-disable-next-line @typescript-eslint/ban-types
   | (string & {});
 
-export function registerClient(
+type RemoveListener = () => void;
+
+interface ApolloClientDevToolsConnection {
+  /** A promise that resolves once the connection with the DevTools has successfully been established. */
+  connectedPromise: Promise<void>;
+  /**
+   * Disconnects the Apollo Client from the DevTools. You can add a `reason`, which will be available in the `onCleanup` listener.
+   * @param reason - defaults to `"MANUAL_DISCONNECT"`.
+   */
+  disconnect: (reason?: Reason) => void;
+  /**
+   * Registers a callback that will be called when the connection is being cleaned up.
+   * That could e.g. happen on WebSocket error, client garbage collection, or manual disconnection.
+   * The callback will receive a `reason` string that indicates why the connection is being cleaned up.
+   * Internal values for `reason` are `"WS_DISCONNECTED"` | `"CLIENT_GC"` | `"WS_ERROR"` | `"MANUAL_DISCONNECT"`,
+   * or the argument you provided when calling `disconnect`.
+   */
+  onCleanup: (cleanup: (reason: Reason) => void) => RemoveListener;
+}
+
+/**
+ * Connects an Apollo Client instance to the VS Code Apollo DevTools.
+ * @param client - Your Apollo Client instance.
+ * @param vsCodeServerUrl - WebSocket URL of the VS Code Apollo DevTools server.
+ * The default port is 7095, so for local development you would usually use "ws://localhost:7095".
+ * @returns {ApolloClientDevToolsConnection}
+ */
+export function connectApolloClientToVSCodeDevTools(
   client: ApolloClient<any>,
   vsCodeServerUrl: string | URL
-): {
-  connected: Promise<void>;
-  unregister: (reason?: Reason) => void;
-  onCleanup: (cleanup: (reason: Reason) => void) => void;
-} {
+): ApolloClientDevToolsConnection {
   const clientRef = new WeakRef(client);
-  const registered = _registerClient(clientRef, vsCodeServerUrl);
-  const registry = new FinalizationRegistry(registered.unregister);
+  const registered = registerClient(clientRef, vsCodeServerUrl);
+  const registry = new FinalizationRegistry(registered.disconnect);
   const unregisterToken = {};
   registry.register(client, "CLIENT_GC", unregisterToken);
   registered.onCleanup(() => registry.unregister(unregisterToken));
@@ -42,15 +65,11 @@ function makeErrorHandler(cleanup: (reason?: Reason) => void): EventListener {
   };
 }
 
-export function _registerClient(
+function registerClient(
   clientRef: WeakRef<ApolloClient<any>>,
   url: string | URL
-): {
-  connected: Promise<void>;
-  unregister: (reason?: Reason) => void;
-  onCleanup: (cleanup: (reason: Reason) => void) => void;
-} {
-  const { signal, cleanup, registerCleanup } = getCleanupController();
+): ApolloClientDevToolsConnection {
+  const { signal, cleanup, onCleanup } = getCleanupController();
 
   function getClient() {
     const client = clientRef.deref();
@@ -62,7 +81,7 @@ export function _registerClient(
   }
 
   const ws = new WebSocket(url);
-  registerCleanup(ws.close.bind(ws, 1000));
+  onCleanup(ws.close.bind(ws, 1000));
   ws.addEventListener("close", cleanup.bind(undefined, "WS_DISCONNECTED"), {
     once: true,
     signal,
@@ -84,12 +103,12 @@ export function _registerClient(
   function getMutationsForClient() {
     return getMutations(getClient()?.queryManager.mutationStore ?? {});
   }
-  registerCleanup(
-    wsRpcHandler("getQueries", getQueriesForClient),
-    wsRpcHandler("getMutations", getMutationsForClient),
-    wsRpcHandler("getCache", () => getClient()?.cache.extract(true) ?? {}),
-    handleExplorerRequests(wsActor, getClient)
-  );
+  wsRpcHandler("getQueries", getQueriesForClient, { signal });
+  wsRpcHandler("getMutations", getMutationsForClient, { signal });
+  wsRpcHandler("getCache", () => getClient()?.cache.extract(true) ?? {}, {
+    signal,
+  });
+  handleExplorerRequests(wsActor, getClient, { signal });
 
   const id = createId();
 
@@ -117,11 +136,12 @@ export function _registerClient(
   );
 
   return {
-    connected: new Promise<void>((resolve) =>
-      ws.addEventListener("open", () => resolve(), { once: true, signal })
-    ),
-    unregister: cleanup,
-    onCleanup: registerCleanup,
+    connectedPromise: new Promise<void>((resolve, reject) => {
+      ws.addEventListener("open", () => resolve(), { once: true, signal });
+      ws.addEventListener("error", reject, { once: true, signal });
+    }),
+    disconnect: cleanup,
+    onCleanup,
   };
 }
 
@@ -142,24 +162,22 @@ function createWsAdapter(ws: WebSocket, signal: AbortSignal): MessageAdapter {
 
 function getCleanupController() {
   const cleanupContoller = new AbortController();
-  const cleanup = cleanupContoller.abort.bind(cleanupContoller);
   const signal = cleanupContoller.signal;
   setMaxListeners(20, signal);
-  function registerCleanup(
-    ...cleanupFunctions: Array<(reason: Reason) => void>
-  ) {
-    for (const cleanupFn of cleanupFunctions) {
-      if (signal.aborted) {
-        cleanupFn(signal.reason);
-      }
-      signal.addEventListener("abort", () => cleanupFn(signal.reason), {
-        once: true,
-      });
+  function onCleanup(cleanupFn: (reason: Reason) => void): () => void {
+    if (signal.aborted) {
+      cleanupFn(signal.reason);
     }
+    const listener = () => cleanupFn(signal.reason);
+    signal.addEventListener("abort", listener, {
+      once: true,
+    });
+    return () => signal.removeEventListener("abort", listener);
   }
   return {
-    cleanup: (reason: Reason = "UNREGISTER") => cleanup(reason),
+    cleanup: (reason: Reason = "MANUAL_DISCONNECT") =>
+      cleanupContoller.abort(reason),
     signal,
-    registerCleanup,
+    onCleanup,
   };
 }
