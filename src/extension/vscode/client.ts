@@ -8,6 +8,7 @@ import { loadErrorCodes } from "../tab/loadErrorCodes";
 import type { MessageAdapter } from "../messageAdapters";
 import { handleExplorerRequests } from "../tab/handleExplorerRequests";
 import { setMaxListeners, WeakRef, FinalizationRegistry } from "./polyfills";
+import { createId } from "../../utils/createId";
 
 type Reason =
   | "WS_DISCONNECTED"
@@ -90,6 +91,8 @@ export function _registerClient(
     handleExplorerRequests(wsActor, getClient)
   );
 
+  const id = createId();
+
   ws.addEventListener(
     "open",
     function open() {
@@ -100,7 +103,7 @@ export function _registerClient(
       wsActor.send({
         type: "registerClient",
         payload: {
-          id: "",
+          id,
           name:
             "devtoolsConfig" in client ? client.devtoolsConfig.name : undefined,
           version: client.version,

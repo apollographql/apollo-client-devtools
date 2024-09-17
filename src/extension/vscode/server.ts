@@ -5,7 +5,6 @@ import { createRpcClient, createRpcHandler } from "../rpc";
 import type { Actor } from "../actor";
 import { createActor } from "../actor";
 import type { ApolloClientInfo } from "../../types";
-import { createId } from "../../utils/createId";
 import allErrorCodes from "../../../all-clients/errorcodes.json";
 import { restoreErrorCodes } from "../../../all-clients/restore-errorcodes.mjs";
 
@@ -29,7 +28,7 @@ export function runServer(
   >();
 
   const messageAdapter = adapter as MessageAdapter;
-  const tab = createActor(messageAdapter);
+  const vscodeActor = createActor(messageAdapter);
   const handleRpc = createRpcHandler(messageAdapter);
 
   handleRpc("getClients", () =>
@@ -47,22 +46,22 @@ export function runServer(
   );
 
   server.on("connection", function connection(ws) {
-    const id = createId();
+    let id: string | undefined;
     const wsAdapter = createSocketMessageAdapter(ws);
     const wsRpcClient = createRpcClient(wsAdapter);
     const wsRpcHandler = createRpcHandler(wsAdapter);
     const wsActor = createActor(wsAdapter);
-    wsActor.on("registerClient", ({ payload }) => {
-      payload.id = id;
+    wsActor.on("registerClient", (message) => {
+      id = message.payload.id;
       clients.set(id, {
-        info: payload,
+        info: message.payload,
         actor: wsActor,
         rpcClient: wsRpcClient,
       });
-      tab.send({ type: "registerClient", payload });
+      vscodeActor.send(message);
     });
     wsActor.on("explorerResponse", (message) => {
-      tab.send(message);
+      vscodeActor.send(message);
     });
     wsRpcHandler("getErrorCodes", (version) => {
       if (version in allErrorCodes.byVersion) {
@@ -70,17 +69,14 @@ export function runServer(
       }
     });
     ws.on("close", () => {
-      if (clients.has(id)) {
-        tab.send({ type: "clientTerminated", clientId: id });
+      if (id && clients.has(id)) {
+        vscodeActor.send({ type: "clientTerminated", clientId: id });
         clients.delete(id);
       }
     });
-    ws.on("message", function incoming(message) {
-      console.log("server.ts received: %o", message);
-    });
   });
 
-  tab.on("explorerRequest", (message) => {
+  vscodeActor.on("explorerRequest", (message) => {
     const { clientId } = message.payload;
     const client = clients.get(clientId);
     if (!client) {
@@ -88,7 +84,7 @@ export function runServer(
     }
     client.actor.send(message);
   });
-  tab.on("explorerSubscriptionTermination", () => {
+  vscodeActor.on("explorerSubscriptionTermination", () => {
     for (const client of clients.values()) {
       client.actor.send({ type: "explorerSubscriptionTermination" });
     }
