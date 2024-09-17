@@ -28,7 +28,7 @@
     "README.md"
   ],
   "peerDependencies": {
-    "@apollo/client": "^3.10.4"
+    "@apollo/client": "^3.4.0"
   },
   "dependencies": {
     "zen-observable": "^0.8.0"
