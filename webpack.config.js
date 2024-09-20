@@ -193,14 +193,6 @@ export default /** @returns {import("webpack").Configuration} */ (env) => {
               new CopyPlugin({
                 patterns: [
                   {
-                    from: "./dist/src/extension/vscode/server.d.ts",
-                    to: path.resolve(__dirname, "build", "vscode-server.d.ts"),
-                  },
-                  {
-                    from: "./dist/src/extension/vscode/client.d.ts",
-                    to: path.resolve(__dirname, "build", "vscode-client.d.ts"),
-                  },
-                  {
                     from: "./package.vscode.json",
                     to: path.resolve(__dirname, "build", "package.json"),
                   },
