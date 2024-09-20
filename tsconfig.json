@@ -12,7 +12,9 @@
     "jsx": "react-jsx",
     "resolveJsonModule": true,
     "strict": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "outDir": "dist"
   },
   "$schema": "https://json.schemastore.org/tsconfig",
   "compileOnSave": true,

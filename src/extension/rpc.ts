@@ -127,7 +127,8 @@ export function createRpcHandler(adapter: MessageAdapter) {
       ...params: Parameters<RPCRequest[TName]>
     ) =>
       | NoInfer<Awaited<ReturnType<RPCRequest[TName]>>>
-      | Promise<NoInfer<Awaited<ReturnType<RPCRequest[TName]>>>>
+      | Promise<NoInfer<Awaited<ReturnType<RPCRequest[TName]>>>>,
+    options: { signal?: AbortSignal } = {}
   ) {
     if (listeners.has(name)) {
       throw new Error("Only one rpc handler can be registered per type");
@@ -159,13 +160,17 @@ export function createRpcHandler(adapter: MessageAdapter) {
 
     startListening();
 
-    return () => {
+    const cleanup = () => {
       listeners.delete(name);
 
       if (listeners.size === 0) {
         stopListening();
       }
     };
+    if (options.signal) {
+      options.signal.addEventListener("abort", cleanup, { once: true });
+    }
+    return cleanup;
   };
 }
 

@@ -38,7 +38,8 @@ export interface Actor {
     name: TName,
     callback: Extract<ActorMessage, { type: TName }> extends infer Message
       ? (message: Message) => void
-      : never
+      : never,
+    options?: OptionsWithAbortSignal
   ) => () => void;
   send: (message: ActorMessage) => void;
 }
@@ -77,7 +78,7 @@ export function createActor(adapter: MessageAdapter): Actor {
     }
   }
 
-  const on: Actor["on"] = (name, callback) => {
+  const on: Actor["on"] = (name, callback, options = {}) => {
     let listeners = messageListeners.get(name) as Set<typeof callback>;
 
     if (!listeners) {
@@ -88,7 +89,7 @@ export function createActor(adapter: MessageAdapter): Actor {
     listeners.add(callback);
     startListening();
 
-    return () => {
+    const cleanup = () => {
       listeners!.delete(callback);
 
       if (listeners.size === 0) {
@@ -99,6 +100,10 @@ export function createActor(adapter: MessageAdapter): Actor {
         stopListening();
       }
     };
+    if (options.signal) {
+      options.signal.addEventListener("abort", cleanup, { once: true });
+    }
+    return cleanup;
   };
 
   return {
@@ -122,4 +127,8 @@ function isActorMessage(
   message: unknown
 ): message is ApolloClientDevtoolsActorMessage {
   return isDevtoolsMessage(message) && message.type === MessageType.Actor;
+}
+
+export interface OptionsWithAbortSignal {
+  signal?: AbortSignal;
 }
