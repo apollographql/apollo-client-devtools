@@ -1,8 +1,9 @@
-import { CodeBlock } from "./CodeBlock";
-import { Disclosure } from "./Disclosure";
-import { GitHubIssueLink, SECTIONS, LABELS } from "./GitHubIssueLink";
-import { Modal } from "./Modal";
+import { CodeBlock } from "../CodeBlock";
+import { Disclosure } from "../Disclosure";
+import { GitHubIssueLink, SECTIONS, LABELS } from "../GitHubIssueLink";
+import { Modal } from "../Modal";
 import { expectTypeOf } from "expect-type";
+import { ExternalLink } from "../ExternalLink.vscode";
 
 expectTypeOf<typeof import("./ClientNotFoundModal.jsx")>().toMatchTypeOf<
   typeof import("./ClientNotFoundModal.vscode.jsx")
@@ -10,16 +11,12 @@ expectTypeOf<typeof import("./ClientNotFoundModal.jsx")>().toMatchTypeOf<
 
 interface ClientNotFoundModalProps {
   open: boolean;
-  onClose: () => void;
   onRetry: () => void;
 }
 
-export function ClientNotFoundModal({
-  open,
-  onClose,
-}: ClientNotFoundModalProps) {
+export function ClientNotFoundModal({ open }: ClientNotFoundModalProps) {
   return (
-    <Modal open={open} onClose={onClose} size="xl">
+    <Modal open={open} size="xl">
       <Modal.Header>
         <Modal.Title>Waiting for connection from Apollo Client.</Modal.Title>
         <Modal.Description>
@@ -91,9 +88,9 @@ const devtoolsRegistration = registerClient(
                 This VSCode feature allows you to forward the port from your
                 local machine to a publically accessible url. <br />
                 See{" "}
-                <a href="https://code.visualstudio.com/docs/editor/port-forwarding">
+                <ExternalLink href="https://code.visualstudio.com/docs/editor/port-forwarding">
                   How to use local port forwarding
-                </a>{" "}
+                </ExternalLink>{" "}
                 for more information.
                 <br />
                 By default, this will upgrade your connection to the wss
@@ -135,9 +132,9 @@ const devtoolsRegistration = registerClient(
                 If you want to use a DevTunnel secured with a token, you need to
                 install the <code>devtunnel</code> CLI, as described here:
                 <br />
-                <a href="https://learn.microsoft.com/en-us/azure/developer/dev-tunnels/get-started?tabs=macos#install">
+                <ExternalLink href="https://learn.microsoft.com/en-us/azure/developer/dev-tunnels/get-started?tabs=macos#install">
                   Installation instructions
-                </a>
+                </ExternalLink>
                 <br />
                 After that, authenticate with your GitHub account:
               </p>

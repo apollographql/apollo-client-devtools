@@ -1,143 +1,233 @@
-import { setup, assign } from "xstate";
-import IconSync from "@apollo/icons/small/IconSync.svg";
+import type { Actor, SnapshotFrom } from "xstate";
+import { setup, assign, not, sendTo, emit } from "xstate";
 import { BannerAlert } from "../components/BannerAlert";
-import { Button } from "../components/Button";
+import { createContext, useContext, useMemo } from "react";
+import { useSelector } from "@xstate/react";
+import type { ReconnectMachineEvents } from "./reconnectMachine";
+import { reconnectMachine } from "./reconnectMachine";
+
+export interface DevtoolsMachineContext {
+  listening?: boolean;
+  port?: number;
+  registeredClients: number;
+}
 
 type Events =
-  | { type: "connect" }
-  | { type: "timeout" }
-  | { type: "disconnect" }
-  | { type: "clientNotFound" }
-  | { type: "retry" }
-  | { type: "closeModal" };
+  | { type: "initializePanel"; initialContext: Partial<DevtoolsMachineContext> }
+  | { type: "port.changed"; port: number; listening: boolean }
+  | { type: "client.register" }
+  | { type: "client.terminated" }
+  | { type: "client.setCount"; count: number }
+  | { type: "emit.store.didReset" }
+  | ReconnectMachineEvents;
+
+export type DevToolsMachineEvents = Events;
+
+export type EmittedEvents =
+  Extract<Events, { type: `emit.${string}` }> extends infer EmitTriggerEvents
+    ? {
+        [K in keyof EmitTriggerEvents]: K extends "type"
+          ? EmitTriggerEvents[K] extends `emit.${infer Type}`
+            ? Type
+            : EmitTriggerEvents[K]
+          : EmitTriggerEvents[K];
+      }
+    : never;
 
 export const devtoolsMachine = setup({
-  types: {
-    context: {} as { modalOpen: boolean },
-    events: {} as Events,
+  types: {} as {
+    context: DevtoolsMachineContext;
+    events: Events;
+    children: { reconnect: "reconnect" };
+    emitted: EmittedEvents;
   },
   delays: {
     connectTimeout: 10_000,
   },
   actions: {
-    openModal: assign({ modalOpen: true }),
-    closeModal: assign({ modalOpen: false }),
-    notifyWaitingForConnection: () => {
-      BannerAlert.show({
-        type: "loading",
-        content: "Waiting for client to connect...",
-      });
-    },
     closeBanner: BannerAlert.close,
     notifyDisconnected: () => {
       BannerAlert.show({
         type: "loading",
-        content: "Disconnected. Waiting for client to connect...",
+        content: "No client connected. Waiting for client to connect...",
       });
     },
     notifyConnected: () => {
       BannerAlert.show({ type: "success", content: "Connected!" });
     },
-    notifyTimedOut: () => {
-      BannerAlert.show({
-        type: "error",
-        content:
-          "Unable to communicate with browser tab. Please reload the window and restart the devtools to try again.",
-      });
-    },
-    notifyNotFound: ({ self }) => {
-      BannerAlert.show({
-        type: "error",
-        content: (
-          <div className="flex justify-between items-center">
-            Client not found{" "}
-            <Button
-              size="xs"
-              variant="hidden"
-              icon={<IconSync />}
-              onClick={() => self.send({ type: "retry" })}
-            >
-              Retry connection
-            </Button>
-          </div>
-        ),
-      });
+
+    renderUI: () => {
+      throw new Error("Provide implementation");
     },
     resetStore: () => {
-      throw new Error("Provide implementation in the component");
+      throw new Error("Provide implementation");
     },
+  },
+  guards: {
+    contextValid: ({ context }) => {
+      return context.listening !== false;
+    },
+  },
+  actors: {
+    reconnect: reconnectMachine,
   },
 }).createMachine({
   id: "devtools",
-  initial: "initialized",
+  type: "parallel",
   context: {
-    modalOpen: false,
+    modals: {},
+    port: undefined,
+    registeredClients: 0,
   },
   on: {
-    closeModal: {
-      actions: "closeModal",
+    // forward reconnect events to child actor
+    "reconnect.*": {
+      actions: sendTo("reconnect", ({ event }) => event),
+    },
+    // on an `emit.*` event, `emit` that event so it can be subscribed to from the app
+    "emit.*": {
+      actions: emit(({ event }) => {
+        return {
+          ...event,
+          type: event.type.replace("emit.", ""),
+        } as EmittedEvents;
+      }),
     },
   },
   states: {
-    initialized: {
+    initialization: {
+      initial: "uninitialized",
       on: {
-        connect: "connected",
-        timeout: "timedout",
-        clientNotFound: "notFound",
+        "port.changed": [
+          {
+            actions: [
+              assign(({ event }) => ({
+                port: event.port,
+                listening: event.listening,
+              })),
+            ],
+          },
+        ],
       },
-      entry: "notifyWaitingForConnection",
-      after: {
-        connectTimeout: {
-          target: "notFound",
+      states: {
+        uninitialized: {
+          on: {
+            initializePanel: {
+              actions: [assign(({ event }) => event.initialContext)],
+              target: "initializing",
+            },
+          },
+        },
+        initializing: {
+          entry: "renderUI",
+          always: [
+            {
+              guard: "contextValid",
+              target: "ok",
+            },
+            {
+              target: "error",
+            },
+          ],
+        },
+        error: {
+          always: [
+            {
+              guard: "contextValid",
+              target: "ok",
+            },
+          ],
+          on: {},
+        },
+        ok: {
+          always: {
+            guard: not("contextValid"),
+            target: "error",
+          },
+          on: {},
         },
       },
     },
-    retrying: {
+    connection: {
+      initial: "disconnected",
       on: {
-        connect: "connected",
-        clientNotFound: "notFound",
-      },
-      entry: ["notifyWaitingForConnection", "closeModal"],
-      after: {
-        connectTimeout: {
-          target: "notFound",
+        "client.register": {
+          actions: [
+            assign({
+              registeredClients: ({ context }) => context.registeredClients + 1,
+            }),
+          ],
+        },
+        "client.terminated": {
+          actions: [
+            assign({
+              registeredClients: ({ context }) => context.registeredClients - 1,
+            }),
+          ],
+        },
+        "client.setCount": {
+          actions: [
+            assign({
+              registeredClients: ({ event }) => event.count,
+            }),
+          ],
         },
       },
-    },
-    connected: {
-      on: {
-        disconnect: "disconnected",
-      },
-      entry: ["notifyConnected", "closeModal"],
-      exit: ["resetStore"],
-      after: {
-        2500: {
-          actions: "closeBanner",
+      states: {
+        connected: {
+          entry: ["notifyConnected"],
+          exit: ["resetStore"],
+          after: {
+            2500: {
+              actions: "closeBanner",
+            },
+          },
+          always: {
+            guard: ({ context }) => context.registeredClients === 0,
+            target: "disconnected",
+          },
+        },
+        disconnected: {
+          entry: "notifyDisconnected",
+          invoke: {
+            id: "reconnect",
+            src: "reconnect",
+          },
+          always: {
+            guard: ({ context }) => context.registeredClients > 0,
+            target: "connected",
+          },
         },
       },
-    },
-    disconnected: {
-      on: {
-        connect: "connected",
-        timeout: "timedout",
-        clientNotFound: "notFound",
-      },
-      entry: "notifyDisconnected",
-      after: {
-        connectTimeout: {
-          target: "notFound",
-        },
-      },
-    },
-    timedout: {
-      entry: "notifyTimedOut",
-    },
-    notFound: {
-      on: {
-        retry: "retrying",
-        connect: "connected",
-      },
-      entry: ["notifyNotFound", "openModal"],
     },
   },
 });
+
+export const DevToolsMachineContext = createContext<DevToolsActor | null>(null);
+export function useDevToolsActorRef() {
+  const contextValue = useContext(DevToolsMachineContext);
+  if (!contextValue) {
+    throw new Error("DevToolsMachineContext not found");
+  }
+  const memoizedBound = useMemo<Pick<DevToolsActor, "send" | "on">>(
+    () => ({
+      send: contextValue.send.bind(contextValue),
+      on: contextValue.on.bind(contextValue),
+    }),
+    [contextValue]
+  );
+  return memoizedBound;
+}
+export function useDevToolsSelector<T>(
+  selector: (snapshot: SnapshotFrom<DevToolsMachine>) => T,
+  compare?: (a: T, b: T) => boolean
+): T {
+  const actor = useContext(DevToolsMachineContext);
+  if (!actor) {
+    throw new Error("DevToolsMachineContext not found");
+  }
+  return useSelector(actor, selector, compare);
+}
+
+export type DevToolsMachine = typeof devtoolsMachine;
+export type DevToolsActor = Actor<DevToolsMachine>;
