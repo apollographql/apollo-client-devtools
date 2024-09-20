@@ -35,7 +35,7 @@
     "test:circleci": "jest --maxWorkers=2",
     "test:watch": "jest --watch",
     "codegen": "graphql-codegen --config codegen.ts",
-    "pkg-pr-new-publish": "npm run dist:vscode && cd build && pkg-pr-new publish --no-template --compact"
+    "pkg-pr-new-publish": "npm run dist:vscode && cd build && pkg-pr-new publish --no-template"
   },
   "dependencies": {
     "@apollo/brand": "^0.7.0",
