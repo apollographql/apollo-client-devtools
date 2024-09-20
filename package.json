@@ -17,7 +17,7 @@
     "start:dev": "run-p start:client start:server",
     "dist:chrome": "npm run build -- --env TARGET=chrome && tsx build.ts chrome",
     "dist:firefox": "npm run build -- --env TARGET=firefox && tsx build.ts firefox",
-    "dist:vscode": "npm run build -- --env TARGET=vscode && cp ./dist/src/extension/vscode/server.d.ts ./dist/src/extension/vscode/client.d.ts build",
+    "dist:vscode": "npm run build -- --env TARGET=vscode && cp ./dist/src/extension/vscode/server.d.ts build/vscode-server.d.ts && cp ./dist/src/extension/vscode/client.d.ts build/vscode-client.d.ts",
     "build": "npm run clean && webpack --env NODE_ENV=production --progress",
     "build:dev": "npm run clean && webpack --env NODE_ENV=development --progress",
     "clean": "rimraf build && rimraf dist && mkdir build && rimraf *.zip",
