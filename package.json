@@ -17,9 +17,10 @@
     "start:dev": "run-p start:client start:server",
     "dist:chrome": "npm run build -- --env TARGET=chrome && tsx build.ts chrome",
     "dist:firefox": "npm run build -- --env TARGET=firefox && tsx build.ts firefox",
+    "dist:vscode": "npm run build -- --env TARGET=vscode && cp ./dist/src/extension/vscode/server.d.ts ./dist/src/extension/vscode/client.d.ts build",
     "build": "npm run clean && webpack --env NODE_ENV=production --progress",
     "build:dev": "npm run clean && webpack --env NODE_ENV=development --progress",
-    "clean": "rimraf build && mkdir build && rimraf *.zip",
+    "clean": "rimraf build && rimraf dist && mkdir build && rimraf *.zip",
     "changeset-publish": "npm run build -- --env TARGET=firefox && changeset publish",
     "changeset-check": "changeset status --verbose --since=origin/main",
     "changeset-version": "changeset version && npm i && npm run prepdist:changesets",
@@ -33,7 +34,8 @@
     "type-check": "tsc --noEmit",
     "test:circleci": "jest --maxWorkers=2",
     "test:watch": "jest --watch",
-    "codegen": "graphql-codegen --config codegen.ts"
+    "codegen": "graphql-codegen --config codegen.ts",
+    "pkg-pr-new-publish": "npm run dist:vscode && cd build && pkg-pr-new publish --no-template"
   },
   "dependencies": {
     "@apollo/brand": "^0.7.0",
@@ -111,6 +113,7 @@
     "jest-environment-jsdom": "29.7.0",
     "jest-matchmedia-mock": "1.1.0",
     "npm-run-all": "4.1.5",
+    "pkg-pr-new": "^0.0.25",
     "postcss": "8.4.39",
     "postcss-loader": "8.1.1",
     "prettier": "3.3.2",
