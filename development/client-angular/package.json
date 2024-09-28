@@ -21,8 +21,8 @@
     "build": "ng build"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "17.3.9",
-    "@angular/cli": "17.3.9",
+    "@angular-devkit/build-angular": "17.3.10",
+    "@angular/cli": "17.3.10",
     "@angular/compiler-cli": "17.3.12",
     "@types/node": "20.14.10",
     "ts-node": "10.9.2",
