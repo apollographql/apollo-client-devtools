@@ -88,7 +88,16 @@
     "Expected a QueryRef object, but got something else instead.",
     "The query has not been loaded. Please load the query.",
     "A subscription that is skipped cannot be restarted.",
-    "You must provide an `updateQuery` function when using `fetchMore` with a `no-cache` fetch policy."
+    "You must provide an `updateQuery` function when using `fetchMore` with a `no-cache` fetch policy.",
+    "Could not identify object passed to `from` for '%s' fragment, either because the object is non-normalized or the key fields are missing. If you are masking this object, please ensure the key fields are requested by the parent object.",
+    "Expected a parsed GraphQL document with a query, mutation, or subscription.",
+    "Could not find fragment with name \"%s\".",
+    "Could not find fragment with name '%s'.",
+    "Accessing unmasked field on %s at path '%s'. This field will not be available when masking is enabled. Please read the field from the fragment instead.",
+    "The configured cache does not support data masking which effectively disables it. Please use a cache that supports data masking or disable data masking to silence this warning.",
+    "@unmask 'mode' argument does not support variables.",
+    "@unmask 'mode' argument must be of type string.",
+    "@unmask 'mode' argument does not recognize value '%s'."
   ],
   "allConditions": [
     null,
@@ -154,7 +163,9 @@
     "queryWithoutClientOnlyDirectives",
     "internalQueryRef",
     "!optionsRef.current.skip",
-    "updateQuery"
+    "updateQuery",
+    "definition",
+    "!!fragment"
   ],
   "allFiles": [
     null,
@@ -197,7 +208,9 @@
     "@apollo/client/utilities/graphql/DocumentTransform.js",
     "@apollo/client/react/hooks/useReadQuery.js",
     "@apollo/client/react/hooks/useLoadableQuery.js",
-    "@apollo/client/react/internal/cache/QueryReference.js"
+    "@apollo/client/react/internal/cache/QueryReference.js",
+    "@apollo/client/cache/core/cache.js",
+    "@apollo/client/core/masking.js"
   ],
   "byVersion": {
     "3.8.0-beta.0": "1",
@@ -267,7 +280,8 @@
     "3.11.5": "17",
     "3.11.6": "17",
     "3.11.7": "17",
-    "3.11.8": "17"
+    "3.11.8": "17",
+    "3.12.0-alpha.0": "18"
   },
   "errors": {
     "1": "AQEBAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUECwUEDAYEDQYEDgYGDwYEEAcHBwgIBwgIEQkEEgkEEwkJFAkEFQkEFgoEFwoKGAoLGQoMGgoNGwoOHAoPHQoEHgoEHwoEIAsEIQsEIgwEIw0EJA4EJQ8QJg8RJxAEKBEEKRISKhMTKxQULBUVLBYWLRcXLhgYLxkEMBoEMRoEMhoEMxoENBsZNRwaNhwENx0EOB4bOR4cOh4dOx4ePB4fPR8gPiAhPyAiQCAjQSAkQiEEQyElByEIRCImRSIERiInRyIoRCIpSCIqSSIrSiIESyMETCQETSQE",
@@ -286,6 +300,7 @@
     "14": "AQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEDAYEDgYvDwYEBwgIBwgIEQkEEgkEEwkJFAkEFQkEFgoEFwoKGAowGQoMGgoxGwoOHAoPHQoEHgoEVAoEIAsEIQsEIgwEIw0EJA4EJQ8yJg8RJxAEKBEEKRISKhMtKxQULBUVLBYWLRcXUyc6LxkEMBoEMRoEMhoEMxoENRwaNhwENx0EOB4bOR4uOh4dOx4ePB4fPR8gUh85ECUHPiAhPyAiQCAzQSA0QiEEQyElByEIRCI1RSIERiInRyI2RCI3SCIqSSI4SiIESyMETCQETSQE",
     "15": "AQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEDAYEDgYvDwYEBwgIBwgIEQkEEgkEEwkJFAkEFQkEFgoEFwoKGAowGQoMGgoxGwoOHAoPHQoEHgoEVAoEIAsEIQsEIgwEIw0EJA4EJQ8yJg8RJxAEKBEEKRISKhMtKxQULBUVLBYWLRcXUyc6LxkEMBoEMRoEMhoEMxoENRwaNhwENx0EVSg7OB4bOR4uOh4dOx4ePB4fPR88Uh85ECUHPiAhPyAiQCAzQSA0QiEEQyElByEIRCI1RSIERiInRyI2RCI3SCIqSSI4SiIESyMETCQETSQE",
     "16": "AQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEDAYEDgYvDwYEBwgIBwgIEQkEEgkEEwkJFAkEFQkEFgoEFwoKGAowGQoMGgoxGwoOHAoPHQoEHgoEVAoEIAsEIQsEIgwEIw0EJA4EJQ8yJg8RJxAEKBEEKRISKhMtKxQULBUVLBYWLRcXUyc6Vic9MBoEMRoEMhoEMxoEVxo+NRwaNhwENx0EVSg7OB4bOR4uOh4dOx4ePB4fPR88Uh85ECUHPiAhPyAiQCAzQSA0QiEEQyElByEIRCI1RSIERiInRyI2RCI3SCIqSSI4SiIESyMETCQETSQE",
-    "17": "AQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEDAYEDgYvDwYEBwgIBwgIEQkEWAk/EgkEEwkJFAkEFQkEFgoEFwoKGAowGQoMGgoxGwoOHAoPHQoEHgoEVAoEIAsEIQsEIgwEIw0EJA4EJQ8yJg8RJxAEKBEEKRISKhMtKxQULBUVLBYWLRcXUyc6Vic9MBoEMRoEMhoEMxoEVxo+NRwaNhwENx0EVSg7OB4bOR4uOh4dOx4ePB4fPR88Uh85ECUHPiAhPyAiQCAzQSA0QiEEQyElByEIRCI1RSIERiInRyI2RCI3SCIqSSI4SiIESyMETCQETSQE"
+    "17": "AQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEDAYEDgYvDwYEBwgIBwgIEQkEWAk/EgkEEwkJFAkEFQkEFgoEFwoKGAowGQoMGgoxGwoOHAoPHQoEHgoEVAoEIAsEIQsEIgwEIw0EJA4EJQ8yJg8RJxAEKBEEKRISKhMtKxQULBUVLBYWLRcXUyc6Vic9MBoEMRoEMhoEMxoEVxo+NRwaNhwENx0EVSg7OB4bOR4uOh4dOx4ePB4fPR88Uh85ECUHPiAhPyAiQCAzQSA0QiEEQyElByEIRCI1RSIERiInRyI2RCI3SCIqSSI4SiIESyMETCQETSQE",
+    "18": "WSkEAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEDAYEDgYvDwYEBwgIBwgIEQkEWAk/EgkEEwkJFAkEFQkEFgoEFwoKGAowGQoMGgoxGwoOHAoPHQoEHgoEVAoEWipAQyolWypBXCoIXSoEXioEIAsEIQsEIgwEIw0EJA4EJQ8yJg8RJxAEKBEEKRISKhMtKxQULBUVLBYWLRcXUyc6Vic9MBoEMRoEMhoEMxoEVxo+NRwaNhwENx0EVSg7OB4bOR4uOh4dOx4ePB4fPR88Uh85ECUHPiAhPyAiQCAzQSA0XyAEYCAEYSAEQiEEQyElByEIRCI1RSIERiInRyI2RCI3SCIqSSI4SiIESyMETCQETSQE"
   }
 }
