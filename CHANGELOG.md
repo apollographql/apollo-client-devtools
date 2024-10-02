@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.18.8
+
+### Patch Changes
+
+- [#1536](https://github.com/apollographql/apollo-client-devtools/pull/1536) [`fe039a0`](https://github.com/apollographql/apollo-client-devtools/commit/fe039a071b02ee8155d185a1a511dc9d07e1339c) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Fix an issue where refreshing the page would sometimes cause client data to stop updating.
+
 ## 4.18.7
 
 ### Patch Changes
