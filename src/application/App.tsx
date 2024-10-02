@@ -80,9 +80,8 @@ export const App = () => {
   const [snapshot, send] = useMachine(
     devtoolsMachine.provide({
       actions: {
-        resetStore: async () => {
-          await apolloClient.clearStore().catch(noop);
-          refetch().catch(noop);
+        resetStore: () => {
+          apolloClient.clearStore().catch(noop);
         },
       },
     })
