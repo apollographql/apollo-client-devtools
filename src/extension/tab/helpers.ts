@@ -97,14 +97,14 @@ export function getQueries(
 
 function serializeApolloError(error: ApolloError): SerializedApolloError {
   return {
-    clientErrors: error.clientErrors.map((e) => e.message),
+    clientErrors: error.clientErrors?.map((e) => e.message) ?? [],
     name: "ApolloError",
     networkError: error.networkError
       ? serializeError(error.networkError)
       : undefined,
     message: error.message,
     graphQLErrors: error.graphQLErrors,
-    protocolErrors: error.protocolErrors.map((e) => e.message),
+    protocolErrors: error.protocolErrors?.map((e) => e.message) ?? [],
   };
 }
 

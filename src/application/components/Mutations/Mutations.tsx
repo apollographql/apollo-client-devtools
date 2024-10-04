@@ -23,6 +23,7 @@ import { useActorEvent } from "../../hooks/useActorEvent";
 import { SearchField } from "../SearchField";
 import HighlightMatch from "../HighlightMatch";
 import { PageSpinner } from "../PageSpinner";
+import { isIgnoredError } from "../../utilities/ignoredErrors";
 
 const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
   gql`
@@ -76,7 +77,7 @@ export const Mutations = ({ clientId, explorerIFrame }: MutationsProps) => {
     }
   );
 
-  if (error) {
+  if (error && !isIgnoredError(error)) {
     throw error;
   }
 
