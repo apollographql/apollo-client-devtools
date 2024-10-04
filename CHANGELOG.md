@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.18.9
+
+### Patch Changes
+
+- [#1538](https://github.com/apollographql/apollo-client-devtools/pull/1538) [`c8a8f2f`](https://github.com/apollographql/apollo-client-devtools/commit/c8a8f2f386d3e75b39d204533e51e7e9dbe1bc80) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Fix issue when serializing an `ApolloError` where clientErrors or protocolErrors is undefined.
+
+- [#1538](https://github.com/apollographql/apollo-client-devtools/pull/1538) [`c8a8f2f`](https://github.com/apollographql/apollo-client-devtools/commit/c8a8f2f386d3e75b39d204533e51e7e9dbe1bc80) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Fix issue where a page refresh would sometimes cause an error to be displayed in the devtools related to store resets.
+
 ## 4.18.8
 
 ### Patch Changes
