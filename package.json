@@ -76,7 +76,7 @@
   "devDependencies": {
     "@changesets/changelog-github": "0.5.0",
     "@changesets/cli": "2.27.9",
-    "@graphql-codegen/cli": "5.0.2",
+    "@graphql-codegen/cli": "5.0.3",
     "@graphql-codegen/typescript": "4.0.9",
     "@graphql-codegen/typescript-operations": "4.2.3",
     "@graphql-tools/mock": "9.0.4",
@@ -94,7 +94,7 @@
     "@types/jest": "29.5.13",
     "@types/react": "18.3.11",
     "@types/react-copy-to-clipboard": "5.0.7",
-    "@types/react-dom": "18.3.0",
+    "@types/react-dom": "18.3.1",
     "@types/webextension-polyfill": "0.10.7",
     "@types/zen-observable": "0.8.7",
     "@typescript-eslint/eslint-plugin": "7.14.1",
