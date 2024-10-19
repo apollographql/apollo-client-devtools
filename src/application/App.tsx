@@ -77,7 +77,6 @@ ${SECTIONS.devtoolsVersion}
 
 const stableEmptyClients: Required<AppQuery["clients"]> = [];
 const noop = () => {};
-const nextId = 0;
 
 export const App = () => {
   const [snapshot, send] = useMachine(
