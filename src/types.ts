@@ -28,7 +28,14 @@ export interface ApolloClientInfo {
   mutationCount: number;
 }
 
-export interface ConnectorsDebuggingPayload {
+export interface ConnectorsDebuggingResultPayload {
+  operationName: string | null;
+  variables: Record<string, unknown> | null;
+  query: string;
+  debuggingResult: ConnectorsDebuggingResult;
+}
+
+export interface ConnectorsDebuggingResult {
   version: string;
   data: ConnectorsDebuggingData[];
 }

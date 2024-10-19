@@ -41,7 +41,7 @@ import { useActorEvent } from "./hooks/useActorEvent";
 import { removeClient } from ".";
 import { PageError } from "./components/PageError";
 import { SidebarLayout } from "./components/Layouts/SidebarLayout";
-import type { ConnectorsDebuggingPayload } from "../types";
+import type { ConnectorsDebuggingResultPayload } from "../types";
 import { Connectors } from "./components/Connectors";
 
 const APP_QUERY: TypedDocumentNode<AppQuery, AppQueryVariables> = gql`
@@ -80,7 +80,7 @@ const noop = () => {};
 
 export const App = () => {
   const [connectorsPayloads, setConnectorsPayloads] = useState<
-    ConnectorsDebuggingPayload[]
+    ConnectorsDebuggingResultPayload[]
   >([]);
   const [snapshot, send] = useMachine(
     devtoolsMachine.provide({
@@ -120,7 +120,7 @@ export const App = () => {
     send({ type: "disconnect" });
   });
 
-  useActorEvent("connectorsDebugging", ({ payload }) => {
+  useActorEvent("connectorsDebuggingResult", ({ payload }) => {
     setConnectorsPayloads((prev) => [...prev, payload]);
   });
 
