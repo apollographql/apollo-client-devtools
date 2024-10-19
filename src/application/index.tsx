@@ -103,7 +103,9 @@ export const initDevTools = () => {
 };
 
 let nextPayloadId = 0;
-getPanelActor(window).on("connectorsDebuggingResult", ({ payload }) => {
+const actor = getPanelActor(window);
+
+actor.on("connectorsDebuggingResult", ({ payload }) => {
   connectorsRequestsVar([
     ...connectorsRequestsVar(),
     {
@@ -119,3 +121,6 @@ getPanelActor(window).on("connectorsDebuggingResult", ({ payload }) => {
     },
   ]);
 });
+
+actor.on("pageNavigated", () => connectorsRequestsVar([]));
+actor.on("clientTerminated", () => connectorsRequestsVar([]));
