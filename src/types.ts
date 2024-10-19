@@ -38,11 +38,17 @@ export interface ConnectorsDebuggingResultPayload {
 export interface ConnectorsDebuggingResultPayloadWithId
   extends ConnectorsDebuggingResultPayload {
   id: number;
+  debuggingResult: ConnectorsDebuggingResultWithId;
 }
 
 export interface ConnectorsDebuggingResult {
   version: string;
   data: ConnectorsDebuggingData[];
+}
+
+export interface ConnectorsDebuggingResultWithId {
+  version: string;
+  data: ConnectorsDebuggingDataWithId[];
 }
 
 export interface ConnectorsDebuggingRequest {
@@ -82,6 +88,10 @@ export interface ConnectorsDebuggingResponse {
 export interface ConnectorsDebuggingData {
   request: ConnectorsDebuggingRequest | null | undefined;
   response: ConnectorsDebuggingResponse | null | undefined;
+}
+
+export interface ConnectorsDebuggingDataWithId extends ConnectorsDebuggingData {
+  id: number;
 }
 
 export interface ConnectorsDebuggingResult {

@@ -5,12 +5,12 @@ import { Thead } from "./Thead";
 import { Tooltip } from "./Tooltip";
 import { Tr } from "./Tr";
 import { Tbody } from "./Tbody";
-import type { ConnectorsDebuggingData } from "../../types";
+import type { ConnectorsDebuggingDataWithId } from "../../types";
 import { Td } from "./Td";
 import { HTTPStatusBadge } from "./HTTPStatusBadge";
 
 interface ConnectorsRequestListProps {
-  requests: ConnectorsDebuggingData[];
+  requests: ConnectorsDebuggingDataWithId[];
 }
 
 export function ConnectorsRequestList({
@@ -37,12 +37,12 @@ export function ConnectorsRequestList({
         </Tr>
       </Thead>
       <Tbody>
-        {requests.map(({ request, response }, idx) => {
+        {requests.map(({ id, request, response }) => {
           const url = new URL(request?.url ?? "");
 
           return (
-            <Tr key={idx}>
-              <Td>{idx + 1}</Td>
+            <Tr key={id}>
+              <Td>{id}</Td>
               <Td>{url.pathname + url.search}</Td>
               <Td>
                 <HTTPStatusBadge status={response?.status} />

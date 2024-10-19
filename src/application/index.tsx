@@ -106,6 +106,16 @@ let nextPayloadId = 0;
 getPanelActor(window).on("connectorsDebuggingResult", ({ payload }) => {
   connectorsRequestsVar([
     ...connectorsRequestsVar(),
-    { ...payload, id: ++nextPayloadId },
+    {
+      ...payload,
+      id: ++nextPayloadId,
+      debuggingResult: {
+        ...payload.debuggingResult,
+        data: payload.debuggingResult.data.map((request, idx) => ({
+          ...request,
+          id: idx + 1,
+        })),
+      },
+    },
   ]);
 });
