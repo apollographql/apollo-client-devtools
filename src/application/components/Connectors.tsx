@@ -21,6 +21,7 @@ import { Divider } from "./Divider";
 import { Panel, PanelResizeHandle } from "react-resizable-panels";
 import { JSONTreeViewer } from "./JSONTreeViewer";
 import { isEmpty } from "../utilities/isEmpty";
+import { HTTPStatusBadge } from "./HTTPStatusBadge";
 
 interface ConnectorsProps {
   payloads: ConnectorsDebuggingResultPayload[];
@@ -127,7 +128,9 @@ function ConnectorsData({ data }: { data: ConnectorsDebuggingData[] }) {
             <Tr key={idx}>
               <Td>{idx + 1}</Td>
               <Td>{url.pathname + url.search}</Td>
-              <Td>{response?.status}</Td>
+              <Td>
+                <HTTPStatusBadge status={response?.status} />
+              </Td>
               <Td>{request?.method}</Td>
               <Td>{response?.body?.selection?.errors?.length ?? 0}</Td>
             </Tr>
