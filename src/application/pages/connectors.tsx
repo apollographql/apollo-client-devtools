@@ -15,7 +15,7 @@ import {
 import { useReactiveVar } from "@apollo/client";
 import { connectorsRequestsVar } from "../vars";
 
-export function ConnectorsPage() {
+export function Route() {
   const connectorsRequests = useReactiveVar(connectorsRequestsVar);
   const location = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
