@@ -6,11 +6,16 @@ import {
 
 import { App } from "./App";
 import { ConnectorsPage } from "./pages/connectors";
+import { ConnectorsIndexPage } from "./pages/connectors/index";
+import * as ConnectorPage from "./pages/connectors/$id";
 
 export const router = createMemoryRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
-      <Route path="connectors" element={<ConnectorsPage />} />
+      <Route path="connectors" element={<ConnectorsPage />}>
+        <Route index element={<ConnectorsIndexPage />} />
+        <Route path=":id" element={<ConnectorPage.Element />} />
+      </Route>
     </Route>
   )
 );

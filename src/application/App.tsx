@@ -41,7 +41,7 @@ import { useActorEvent } from "./hooks/useActorEvent";
 import { removeClient } from ".";
 import { PageError } from "./components/PageError";
 import { SidebarLayout } from "./components/Layouts/SidebarLayout";
-import type { ConnectorsDebuggingResultPayload } from "../types";
+import type { ConnectorsDebuggingResultPayloadWithId } from "../types";
 import { Outlet, useNavigate } from "react-router-dom";
 
 const APP_QUERY: TypedDocumentNode<AppQuery, AppQueryVariables> = gql`
@@ -77,10 +77,11 @@ ${SECTIONS.devtoolsVersion}
 
 const stableEmptyClients: Required<AppQuery["clients"]> = [];
 const noop = () => {};
+let nextId = 0;
 
 export const App = () => {
   const [connectorsPayloads, setConnectorsPayloads] = useState<
-    ConnectorsDebuggingResultPayload[]
+    ConnectorsDebuggingResultPayloadWithId[]
   >([]);
   const [snapshot, send] = useMachine(
     devtoolsMachine.provide({
@@ -121,7 +122,7 @@ export const App = () => {
   });
 
   useActorEvent("connectorsDebuggingResult", ({ payload }) => {
-    setConnectorsPayloads((prev) => [...prev, payload]);
+    setConnectorsPayloads((prev) => [...prev, { ...payload, id: ++nextId }]);
   });
 
   const navigate = useNavigate();

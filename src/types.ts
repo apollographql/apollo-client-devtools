@@ -35,6 +35,11 @@ export interface ConnectorsDebuggingResultPayload {
   debuggingResult: ConnectorsDebuggingResult;
 }
 
+export interface ConnectorsDebuggingResultPayloadWithId
+  extends ConnectorsDebuggingResultPayload {
+  id: number;
+}
+
 export interface ConnectorsDebuggingResult {
   version: string;
   data: ConnectorsDebuggingData[];

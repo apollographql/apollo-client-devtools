@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { ConnectorsDebuggingResultPayload } from "../../types";
+import type { ConnectorsDebuggingResultPayloadWithId } from "../../types";
 import { SidebarLayout } from "../components/Layouts/SidebarLayout";
 import { List } from "../components/List";
 import { ListItem } from "../components/ListItem";
@@ -10,20 +10,24 @@ import { Panel, PanelResizeHandle } from "react-resizable-panels";
 import { JSONTreeViewer } from "../components/JSONTreeViewer";
 import { isEmpty } from "../utilities/isEmpty";
 import { ConnectorsRequestList } from "../components/ConnectorsRequestList";
-import { useOutletContext } from "react-router-dom";
+import {
+  useOutletContext,
+  matchPath,
+  useLocation,
+  Link,
+  resolvePath,
+  Outlet,
+} from "react-router-dom";
 
 interface OutletContext {
-  connectorsPayloads: ConnectorsDebuggingResultPayload[];
+  connectorsPayloads: ConnectorsDebuggingResultPayloadWithId[];
 }
 
 export function ConnectorsPage() {
   const { connectorsPayloads: payloads } = useOutletContext<OutletContext>();
+  const location = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedPayload, setSelectedPayload] = useState(payloads[0]);
-
-  if (!selectedPayload && payloads.length > 0) {
-    setSelectedPayload(payloads[0]);
-  }
 
   return (
     <SidebarLayout>
@@ -39,27 +43,32 @@ export function ConnectorsPage() {
             return (
               <ListItem
                 key={idx}
-                selected={selectedPayload === payload}
-                onClick={() => setSelectedPayload(payload)}
-                className="font-code"
+                selected={
+                  resolvePath(`/connectors/${payload.id}`).pathname ===
+                  location.pathname
+                }
+                className="font-code p-0"
               >
-                {searchTerm ? (
-                  <HighlightMatch
-                    searchTerm={searchTerm}
-                    value={payload.operationName ?? "(anonymous)"}
-                  />
-                ) : (
-                  payload.operationName ?? "(anonymous)"
-                )}
+                <Link
+                  to={String(payload.id)}
+                  className="block no-underline py-2 px-4"
+                >
+                  {searchTerm ? (
+                    <HighlightMatch
+                      searchTerm={searchTerm}
+                      value={payload.operationName ?? "(anonymous)"}
+                    />
+                  ) : (
+                    payload.operationName ?? "(anonymous)"
+                  )}
+                </Link>
               </ListItem>
             );
           })}
         </List>
       </SidebarLayout.Sidebar>
+      <Outlet />
       <SidebarLayout.Main className="!overflow-auto flex flex-col p-4 gap-4">
-        <h1 className="font-medium text-heading dark:text-heading-dark text-xl">
-          All requests
-        </h1>
         {selectedPayload && (
           <ConnectorsRequestList
             requests={selectedPayload.debuggingResult.data}
