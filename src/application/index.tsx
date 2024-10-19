@@ -12,6 +12,8 @@ import * as Tooltip from "@radix-ui/react-tooltip";
 
 import { getRpcClient } from "../extension/devtools/panelRpcClient";
 import { createSchemaWithRpcClient } from "./schema";
+import { RouterProvider } from "react-router-dom";
+import { router } from "./router";
 
 loadDevMessages();
 loadErrorMessages();
@@ -87,7 +89,7 @@ export const AppProvider = () => {
   return (
     <Tooltip.Provider delayDuration={0}>
       <ApolloProvider client={client}>
-        <App />
+        <RouterProvider router={router} />
       </ApolloProvider>
     </Tooltip.Provider>
   );
