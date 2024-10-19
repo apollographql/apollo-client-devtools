@@ -41,7 +41,6 @@ import { useActorEvent } from "./hooks/useActorEvent";
 import { removeClient } from ".";
 import { PageError } from "./components/PageError";
 import { SidebarLayout } from "./components/Layouts/SidebarLayout";
-import type { ConnectorsDebuggingResultPayloadWithId } from "../types";
 import { Outlet, useNavigate } from "react-router-dom";
 import { PageSpinner } from "./components/PageSpinner";
 
