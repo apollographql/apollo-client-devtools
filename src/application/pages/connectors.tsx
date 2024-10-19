@@ -4,7 +4,14 @@ import { List } from "../components/List";
 import { ListItem } from "../components/ListItem";
 import { SearchField } from "../components/SearchField";
 import HighlightMatch from "../components/HighlightMatch";
-import { useLocation, Link, resolvePath, Outlet } from "react-router-dom";
+import {
+  useLocation,
+  Link,
+  resolvePath,
+  Outlet,
+  Navigate,
+  useMatch,
+} from "react-router-dom";
 import { useReactiveVar } from "@apollo/client";
 import { connectorsRequestsVar } from "../vars";
 
@@ -12,6 +19,11 @@ export function ConnectorsPage() {
   const connectorsRequests = useReactiveVar(connectorsRequestsVar);
   const location = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
+  const match = useMatch("/connectors/:id");
+
+  if (!match && connectorsRequests.length > 0) {
+    return <Navigate to={String(connectorsRequests[0].id)} />;
+  }
 
   return (
     <SidebarLayout>
