@@ -1,13 +1,13 @@
 import { Panel, PanelResizeHandle } from "react-resizable-panels";
 import { Alert } from "../../components/Alert";
-import { ConnectorsRequestList } from "../../components/ConnectorsRequestList";
 import { SidebarLayout } from "../../components/Layouts/SidebarLayout";
 import { connectorsRequestsVar } from "../../vars";
 import type { LoaderFunctionArgs } from "react-router-dom";
-import { useLoaderData } from "react-router-dom";
+import { Outlet, useLoaderData, useOutletContext } from "react-router-dom";
 import { CodeBlock } from "../../components/CodeBlock";
 import { JSONTreeViewer } from "../../components/JSONTreeViewer";
 import { isEmpty } from "../../utilities/isEmpty";
+import type { ConnectorsDebuggingResultPayloadWithId } from "../../../types";
 
 export function loader({ params }: LoaderFunctionArgs) {
   const request = connectorsRequestsVar().find(
@@ -37,7 +37,7 @@ export function Route() {
         <h1 className="font-medium text-heading dark:text-heading-dark text-xl">
           All requests
         </h1>
-        <ConnectorsRequestList requests={request.debuggingResult.data} />
+        <Outlet context={request} />
       </SidebarLayout.Main>
       <PanelResizeHandle className="border-r border-primary dark:border-primary-dark" />
       <Panel
@@ -58,4 +58,8 @@ export function Route() {
       </Panel>
     </>
   );
+}
+
+export function useRequest() {
+  return useOutletContext<ConnectorsDebuggingResultPayloadWithId>();
 }
