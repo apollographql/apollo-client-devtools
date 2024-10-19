@@ -42,7 +42,7 @@ import { removeClient } from ".";
 import { PageError } from "./components/PageError";
 import { SidebarLayout } from "./components/Layouts/SidebarLayout";
 import type { ConnectorsDebuggingResultPayload } from "../types";
-import { Connectors } from "./components/Connectors";
+import { Outlet, useNavigate } from "react-router-dom";
 
 const APP_QUERY: TypedDocumentNode<AppQuery, AppQueryVariables> = gql`
   query AppQuery {
@@ -124,6 +124,7 @@ export const App = () => {
     setConnectorsPayloads((prev) => [...prev, payload]);
   });
 
+  const navigate = useNavigate();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [selectedClientId, setSelectedClientId] = useState<string | undefined>(
     data?.clients[0]?.id
@@ -173,7 +174,15 @@ export const App = () => {
       <BannerAlert />
       <Tabs
         value={selected}
-        onChange={(screen) => currentScreen(screen)}
+        onChange={(screen) => {
+          currentScreen(screen);
+
+          if (screen === Screens.Connectors) {
+            navigate("/connectors");
+          } else {
+            navigate("/");
+          }
+        }}
         className="flex flex-col h-screen bg-primary dark:bg-primary-dark"
       >
         <div className="flex items-center border-b border-b-primary dark:border-b-primary-dark gap-4 px-4">
@@ -309,7 +318,7 @@ export const App = () => {
           value={Screens.Connectors}
         >
           <TabErrorBoundary remarks="Error on Connectors tab:">
-            <Connectors payloads={connectorsPayloads} />
+            <Outlet context={{ connectorsPayloads }} />
           </TabErrorBoundary>
         </Tabs.Content>
         <Tabs.Content className="flex-1 overflow-hidden" value={Screens.Cache}>

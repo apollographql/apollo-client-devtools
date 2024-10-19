@@ -1,21 +1,23 @@
 import { useState } from "react";
 import type { ConnectorsDebuggingResultPayload } from "../../types";
-import { SidebarLayout } from "./Layouts/SidebarLayout";
-import { List } from "./List";
-import { ListItem } from "./ListItem";
-import { SearchField } from "./SearchField";
-import HighlightMatch from "./HighlightMatch";
-import { CodeBlock } from "./CodeBlock";
+import { SidebarLayout } from "../components/Layouts/SidebarLayout";
+import { List } from "../components/List";
+import { ListItem } from "../components/ListItem";
+import { SearchField } from "../components/SearchField";
+import HighlightMatch from "../components/HighlightMatch";
+import { CodeBlock } from "../components/CodeBlock";
 import { Panel, PanelResizeHandle } from "react-resizable-panels";
-import { JSONTreeViewer } from "./JSONTreeViewer";
+import { JSONTreeViewer } from "../components/JSONTreeViewer";
 import { isEmpty } from "../utilities/isEmpty";
-import { ConnectorsRequestList } from "./ConnectorsRequestList";
+import { ConnectorsRequestList } from "../components/ConnectorsRequestList";
+import { useOutletContext } from "react-router-dom";
 
-interface ConnectorsProps {
-  payloads: ConnectorsDebuggingResultPayload[];
+interface OutletContext {
+  connectorsPayloads: ConnectorsDebuggingResultPayload[];
 }
 
-export function Connectors({ payloads }: ConnectorsProps) {
+export function ConnectorsPage() {
+  const { connectorsPayloads: payloads } = useOutletContext<OutletContext>();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedPayload, setSelectedPayload] = useState(payloads[0]);
 

@@ -6,7 +6,6 @@ import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import { SchemaLink } from "@apollo/client/link/schema";
 
 import { colorTheme, listenForThemeChange } from "./theme";
-import { App } from "./App";
 import { fragmentRegistry } from "./fragmentRegistry";
 import * as Tooltip from "@radix-ui/react-tooltip";
 
