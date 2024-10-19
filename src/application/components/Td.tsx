@@ -41,7 +41,7 @@ export function Td({ className, formElement, numeric, ...props }: TdProps) {
       className={twMerge(
         td({ size, variant }),
         interactive &&
-          "group-hover:bg-tableHover dark:group-hover:bg-tableHover-dark empty:before:[content:'–']",
+          "cursor-pointer group-hover:bg-tableHover dark:group-hover:bg-tableHover-dark empty:before:[content:'–']",
         formElement && "text-center",
         numeric && "text-end",
         className
