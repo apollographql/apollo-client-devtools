@@ -30,7 +30,7 @@ export interface ApolloClientInfo {
 
 export interface ConnectorsDebuggingPayload {
   version: string;
-  data: ConnectorsDebuggingData;
+  data: ConnectorsDebuggingData[];
 }
 
 export interface ConnectorsDebuggingRequest {
