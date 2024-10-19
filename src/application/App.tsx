@@ -79,7 +79,7 @@ const noop = () => {};
 
 export const App = () => {
   const [connectorsPayloads, setConnectorsPayloads] = useState<
-    ConnectorsDebuggingData[]
+    ConnectorsDebuggingPayload[]
   >([]);
   const [snapshot, send] = useMachine(
     devtoolsMachine.provide({
@@ -120,7 +120,7 @@ export const App = () => {
   });
 
   useActorEvent("connectorsDebugging", ({ payload }) => {
-    setConnectorsPayloads((prev) => [...prev, payload.data]);
+    setConnectorsPayloads((prev) => [...prev, payload]);
   });
 
   const [settingsOpen, setSettingsOpen] = useState(false);

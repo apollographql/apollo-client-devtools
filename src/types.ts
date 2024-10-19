@@ -28,7 +28,7 @@ export interface ApolloClientInfo {
   mutationCount: number;
 }
 
-export interface ConnectorsDebugging {
+export interface ConnectorsDebuggingPayload {
   version: string;
   data: ConnectorsDebuggingData;
 }

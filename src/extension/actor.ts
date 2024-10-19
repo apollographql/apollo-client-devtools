@@ -4,7 +4,7 @@ import { createWindowMessageAdapter } from "./messageAdapters";
 import { createId } from "../utils/createId";
 import type {
   ApolloClientInfo,
-  ConnectorsDebugging,
+  ConnectorsDebuggingPayload,
   ExplorerResponse,
 } from "../types";
 import type { DocumentNode, FetchPolicy } from "@apollo/client";
@@ -29,7 +29,7 @@ export type ActorMessage =
   | { type: "initializePanel" }
   | { type: "panelHidden" }
   | { type: "panelShown" }
-  | { type: "connectorsDebugging"; payload: ConnectorsDebugging };
+  | { type: "connectorsDebugging"; payload: ConnectorsDebuggingPayload };
 
 export type ApolloClientDevtoolsActorMessage = {
   id: string;
