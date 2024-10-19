@@ -7,8 +7,8 @@ import {
 import { App } from "./App";
 import * as ConnectorsPage from "./pages/connectors";
 import * as ConnectorsIndexPage from "./pages/connectors/index";
-import * as ConnectorPage from "./pages/connectors/$id";
-import * as ConnectorIndexPage from "./pages/connectors/$id/index";
+import * as ConnectorPage from "./pages/connectors/$operationId";
+import * as ConnectorIndexPage from "./pages/connectors/$operationId/index";
 
 export const router = createMemoryRouter(
   createRoutesFromElements(

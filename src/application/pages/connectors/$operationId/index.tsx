@@ -1,5 +1,5 @@
 import IconInfo from "@apollo/icons/default/IconInfo.svg";
-import { useRequest } from "../$id";
+import { useRequest } from "../$operationId";
 import { Table } from "../../../components/Table";
 import { Thead } from "../../../components/Thead";
 import { Tr } from "../../../components/Tr";
@@ -8,9 +8,11 @@ import { Tooltip } from "../../../components/Tooltip";
 import { Td } from "../../../components/Td";
 import { Tbody } from "../../../components/Tbody";
 import { HTTPStatusBadge } from "../../../components/HTTPStatusBadge";
+import { useNavigate } from "react-router-dom";
 
 export function Route() {
   const request = useRequest();
+  const navigate = useNavigate();
 
   return (
     <Table interactive variant="striped">
@@ -37,7 +39,7 @@ export function Route() {
           const url = new URL(request?.url ?? "");
 
           return (
-            <Tr key={id}>
+            <Tr key={id} onClick={() => navigate(String(id))}>
               <Td>{id}</Td>
               <Td>{url.pathname + url.search}</Td>
               <Td>
