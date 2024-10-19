@@ -4,6 +4,7 @@ export enum Screens {
   Cache = "cache",
   Queries = "queries",
   Mutations = "mutations",
+  Connectors = "connectors",
   Explorer = "explorer",
 }
 

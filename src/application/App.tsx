@@ -41,7 +41,8 @@ import { useActorEvent } from "./hooks/useActorEvent";
 import { removeClient } from ".";
 import { PageError } from "./components/PageError";
 import { SidebarLayout } from "./components/Layouts/SidebarLayout";
-import type { ConnectorsDebuggingData } from "../types";
+import type { ConnectorsDebuggingPayload } from "../types";
+import { Connectors } from "./components/Connectors";
 
 const APP_QUERY: TypedDocumentNode<AppQuery, AppQueryVariables> = gql`
   query AppQuery {
@@ -200,6 +201,7 @@ export const App = () => {
               Mutations ({client?.mutations.total ?? 0})
             </Tabs.Trigger>
             <Tabs.Trigger value={Screens.Cache}>Cache</Tabs.Trigger>
+            <Tabs.Trigger value={Screens.Connectors}>Connectors</Tabs.Trigger>
             <Tabs.Trigger value={Screens.Explorer}>Explorer</Tabs.Trigger>
           </Tabs.List>
           <div className="ml-auto flex-1 justify-end flex items-center gap-2 h-full">
@@ -300,6 +302,14 @@ export const App = () => {
               clientId={selectedClientId}
               explorerIFrame={embeddedExplorerIFrame}
             />
+          </TabErrorBoundary>
+        </Tabs.Content>
+        <Tabs.Content
+          className="flex-1 overflow-hidden"
+          value={Screens.Connectors}
+        >
+          <TabErrorBoundary remarks="Error on Connectors tab:">
+            <Connectors payloads={connectorsPayloads} />
           </TabErrorBoundary>
         </Tabs.Content>
         <Tabs.Content className="flex-1 overflow-hidden" value={Screens.Cache}>
