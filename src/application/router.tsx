@@ -9,6 +9,7 @@ import * as ConnectorsPage from "./pages/connectors";
 import * as ConnectorsIndexPage from "./pages/connectors/index";
 import * as ConnectorPage from "./pages/connectors/$operationId";
 import * as ConnectorIndexPage from "./pages/connectors/$operationId/index";
+import * as ConnectorRequestPage from "./pages/connectors/$operationId/requests/$requestId";
 
 export const router = createMemoryRouter(
   createRoutesFromElements(
@@ -21,6 +22,10 @@ export const router = createMemoryRouter(
           loader={ConnectorPage.loader}
         >
           <Route index element={<ConnectorIndexPage.Route />} />
+          <Route
+            path="requests/:requestId"
+            element={<ConnectorRequestPage.Route />}
+          />
         </Route>
       </Route>
     </Route>

@@ -39,7 +39,7 @@ export function Route() {
           const url = new URL(request?.url ?? "");
 
           return (
-            <Tr key={id} onClick={() => navigate(String(id))}>
+            <Tr key={id} onClick={() => navigate(`requests/${id}`)}>
               <Td>{id}</Td>
               <Td>{url.pathname + url.search}</Td>
               <Td>
