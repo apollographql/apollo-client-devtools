@@ -1,8 +1,54 @@
-import { ConnectorsRequestList } from "../../../components/ConnectorsRequestList";
+import IconInfo from "@apollo/icons/default/IconInfo.svg";
 import { useRequest } from "../$id";
+import { Table } from "../../../components/Table";
+import { Thead } from "../../../components/Thead";
+import { Tr } from "../../../components/Tr";
+import { Th } from "../../../components/Th";
+import { Tooltip } from "../../../components/Tooltip";
+import { Td } from "../../../components/Td";
+import { Tbody } from "../../../components/Tbody";
+import { HTTPStatusBadge } from "../../../components/HTTPStatusBadge";
 
 export function Route() {
   const request = useRequest();
 
-  return <ConnectorsRequestList requests={request.debuggingResult.data} />;
+  return (
+    <Table interactive variant="striped">
+      <Thead>
+        <Tr>
+          <Th>ID</Th>
+          <Th>Path</Th>
+          <Th>Status</Th>
+          <Th>Method</Th>
+          <Th>
+            <div className="flex gap-2 items-center">
+              Errors{" "}
+              <Tooltip content="Total mapping errors">
+                <span>
+                  <IconInfo className="size-3" />
+                </span>
+              </Tooltip>
+            </div>
+          </Th>
+        </Tr>
+      </Thead>
+      <Tbody>
+        {request.debuggingResult.data.map(({ id, request, response }) => {
+          const url = new URL(request?.url ?? "");
+
+          return (
+            <Tr key={id}>
+              <Td>{id}</Td>
+              <Td>{url.pathname + url.search}</Td>
+              <Td>
+                <HTTPStatusBadge status={response?.status} />
+              </Td>
+              <Td>{request?.method}</Td>
+              <Td>{response?.body?.selection?.errors?.length ?? 0}</Td>
+            </Tr>
+          );
+        })}
+      </Tbody>
+    </Table>
+  );
 }
