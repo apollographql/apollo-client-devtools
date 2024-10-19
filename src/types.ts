@@ -1,4 +1,5 @@
 import type { ApolloQueryResult } from "@apollo/client";
+import type { JSONObject } from "./application/types/json";
 
 export type QueryResult = ApolloQueryResult<any>;
 
@@ -25,4 +26,53 @@ export interface ApolloClientInfo {
   version: string;
   queryCount: number;
   mutationCount: number;
+}
+
+export interface ConnectorsDebugging {
+  version: string;
+  data: ConnectorsDebuggingData;
+}
+
+export interface ConnectorsDebuggingRequest {
+  url: string;
+  method: string;
+  headers: [string, string][];
+  body: Body | null;
+}
+
+interface SelectionError {
+  message: string;
+  path: string;
+  count: number;
+}
+
+export interface Body {
+  kind: string;
+  content: Content;
+}
+
+export type Content = string | JSONObject | JSONObject[] | null | undefined;
+
+export interface SelectionMappingResponse {
+  source: string;
+  transformed: string;
+  result: JSONObject | JSONObject[] | null;
+  errors: SelectionError[];
+}
+
+export interface ConnectorsDebuggingResponse {
+  status: number;
+  headers: [string, string][];
+  body: Body & {
+    selection: SelectionMappingResponse;
+  };
+}
+export interface ConnectorsDebuggingData {
+  request: ConnectorsDebuggingRequest | null | undefined;
+  response: ConnectorsDebuggingResponse | null | undefined;
+}
+
+export interface ConnectorsDebuggingResult {
+  version: string;
+  data: ConnectorsDebuggingData[];
 }
