@@ -15,7 +15,7 @@ export const router = createMemoryRouter(
       <Route path="connectors" element={<ConnectorsPage />}>
         <Route index element={<ConnectorsIndexPage />} />
         <Route
-          path=":id"
+          path=":operationId"
           element={<ConnectorPage.Route />}
           loader={ConnectorPage.loader}
         />

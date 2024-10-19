@@ -11,7 +11,7 @@ import { isEmpty } from "../../utilities/isEmpty";
 
 export function loader({ params }: LoaderFunctionArgs) {
   const request = connectorsRequestsVar().find(
-    (request) => String(request.id) === params.id
+    (request) => String(request.id) === params.operationId
   );
 
   return { request };

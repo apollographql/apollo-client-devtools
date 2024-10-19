@@ -19,7 +19,7 @@ export function ConnectorsPage() {
   const connectorsRequests = useReactiveVar(connectorsRequestsVar);
   const location = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
-  const match = useMatch("/connectors/:id");
+  const match = useMatch("/connectors/:operationId");
 
   if (!match && connectorsRequests.length > 0) {
     return <Navigate to={String(connectorsRequests[0].id)} />;
