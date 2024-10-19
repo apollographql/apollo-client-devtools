@@ -13,6 +13,8 @@ import { getRpcClient } from "../extension/devtools/panelRpcClient";
 import { createSchemaWithRpcClient } from "./schema";
 import { RouterProvider } from "react-router-dom";
 import { router } from "./router";
+import { getPanelActor } from "../extension/devtools/panelActor";
+import { connectorsRequestsVar } from "./vars";
 
 loadDevMessages();
 loadErrorMessages();
@@ -99,3 +101,11 @@ export const initDevTools = () => {
 
   root.render(<AppProvider />);
 };
+
+let nextPayloadId = 0;
+getPanelActor(window).on("connectorsDebuggingResult", ({ payload }) => {
+  connectorsRequestsVar([
+    ...connectorsRequestsVar(),
+    { ...payload, id: ++nextPayloadId },
+  ]);
+});

@@ -1,33 +1,17 @@
 import { useState } from "react";
-import type { ConnectorsDebuggingResultPayloadWithId } from "../../types";
 import { SidebarLayout } from "../components/Layouts/SidebarLayout";
 import { List } from "../components/List";
 import { ListItem } from "../components/ListItem";
 import { SearchField } from "../components/SearchField";
 import HighlightMatch from "../components/HighlightMatch";
-import { CodeBlock } from "../components/CodeBlock";
-import { Panel, PanelResizeHandle } from "react-resizable-panels";
-import { JSONTreeViewer } from "../components/JSONTreeViewer";
-import { isEmpty } from "../utilities/isEmpty";
-import { ConnectorsRequestList } from "../components/ConnectorsRequestList";
-import {
-  useOutletContext,
-  matchPath,
-  useLocation,
-  Link,
-  resolvePath,
-  Outlet,
-} from "react-router-dom";
-
-interface OutletContext {
-  connectorsPayloads: ConnectorsDebuggingResultPayloadWithId[];
-}
+import { useLocation, Link, resolvePath, Outlet } from "react-router-dom";
+import { useReactiveVar } from "@apollo/client";
+import { connectorsRequestsVar } from "../vars";
 
 export function ConnectorsPage() {
-  const { connectorsPayloads: payloads } = useOutletContext<OutletContext>();
+  const connectorsRequests = useReactiveVar(connectorsRequestsVar);
   const location = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedPayload, setSelectedPayload] = useState(payloads[0]);
 
   return (
     <SidebarLayout>
@@ -39,7 +23,7 @@ export function ConnectorsPage() {
           value={searchTerm}
         />
         <List className="h-full">
-          {payloads.map((payload, idx) => {
+          {connectorsRequests.map((payload, idx) => {
             return (
               <ListItem
                 key={idx}
@@ -68,34 +52,6 @@ export function ConnectorsPage() {
         </List>
       </SidebarLayout.Sidebar>
       <Outlet />
-      <SidebarLayout.Main className="!overflow-auto flex flex-col p-4 gap-4">
-        {selectedPayload && (
-          <ConnectorsRequestList
-            requests={selectedPayload.debuggingResult.data}
-          />
-        )}
-      </SidebarLayout.Main>
-      {selectedPayload && (
-        <>
-          <PanelResizeHandle className="border-r border-primary dark:border-primary-dark" />
-          <Panel
-            id="details"
-            defaultSize={25}
-            minSize={25}
-            className="h-full p-4 flex flex-col gap-2"
-          >
-            <CodeBlock language="graphql" code={selectedPayload.query} />
-            <h2 className="text-heading dark:text-heading-dark font-medium text-lg">
-              Variables
-            </h2>
-            <JSONTreeViewer
-              hideRoot={!isEmpty(selectedPayload.variables)}
-              className="[&>li]:!pt-0"
-              data={selectedPayload.variables ?? {}}
-            />
-          </Panel>
-        </>
-      )}
     </SidebarLayout>
   );
 }

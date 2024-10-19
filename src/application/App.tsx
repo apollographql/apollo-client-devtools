@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { useReactiveVar, gql, useQuery } from "@apollo/client";
@@ -43,6 +43,7 @@ import { PageError } from "./components/PageError";
 import { SidebarLayout } from "./components/Layouts/SidebarLayout";
 import type { ConnectorsDebuggingResultPayloadWithId } from "../types";
 import { Outlet, useNavigate } from "react-router-dom";
+import { PageSpinner } from "./components/PageSpinner";
 
 const APP_QUERY: TypedDocumentNode<AppQuery, AppQueryVariables> = gql`
   query AppQuery {
@@ -77,12 +78,9 @@ ${SECTIONS.devtoolsVersion}
 
 const stableEmptyClients: Required<AppQuery["clients"]> = [];
 const noop = () => {};
-let nextId = 0;
+const nextId = 0;
 
 export const App = () => {
-  const [connectorsPayloads, setConnectorsPayloads] = useState<
-    ConnectorsDebuggingResultPayloadWithId[]
-  >([]);
   const [snapshot, send] = useMachine(
     devtoolsMachine.provide({
       actions: {
@@ -119,10 +117,6 @@ export const App = () => {
 
   useActorEvent("pageNavigated", () => {
     send({ type: "disconnect" });
-  });
-
-  useActorEvent("connectorsDebuggingResult", ({ payload }) => {
-    setConnectorsPayloads((prev) => [...prev, { ...payload, id: ++nextId }]);
   });
 
   const navigate = useNavigate();
@@ -319,7 +313,9 @@ export const App = () => {
           value={Screens.Connectors}
         >
           <TabErrorBoundary remarks="Error on Connectors tab:">
-            <Outlet context={{ connectorsPayloads }} />
+            <Suspense fallback={<PageSpinner />}>
+              <Outlet />
+            </Suspense>
           </TabErrorBoundary>
         </Tabs.Content>
         <Tabs.Content className="flex-1 overflow-hidden" value={Screens.Cache}>

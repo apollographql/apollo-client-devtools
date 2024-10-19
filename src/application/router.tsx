@@ -14,7 +14,11 @@ export const router = createMemoryRouter(
     <Route path="/" element={<App />}>
       <Route path="connectors" element={<ConnectorsPage />}>
         <Route index element={<ConnectorsIndexPage />} />
-        <Route path=":id" element={<ConnectorPage.Element />} />
+        <Route
+          path=":id"
+          element={<ConnectorPage.Route />}
+          loader={ConnectorPage.loader}
+        />
       </Route>
     </Route>
   )
