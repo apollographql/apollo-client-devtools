@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import type { ConnectorsDebuggingResultPayload } from "../../types";
 import { SidebarLayout } from "./Layouts/SidebarLayout";
 import { List } from "./List";
@@ -12,35 +12,11 @@ interface ConnectorsProps {
 
 export function Connectors({ payloads }: ConnectorsProps) {
   const [searchTerm, setSearchTerm] = useState("");
-  const payloadsByOperationName = useMemo(() => {
-    return payloads.reduce((memo, payload) => {
-      const operationName = payload.operationName ?? "(anonymous)";
+  const [selectedPayload, setSelectedPayload] = useState(payloads[0]);
 
-      if (!memo.has(operationName)) {
-        memo.set(operationName, []);
-      }
-
-      memo.get(operationName)!.push(payload);
-
-      return memo;
-    }, new Map<string, ConnectorsDebuggingResultPayload[]>());
-  }, [payloads]);
-
-  const [selectedOperationName, setSelectedOperationName] = useState(
-    () => payloadsByOperationName.keys().next().value as string | undefined
-  );
-
-  const filteredOperations = useMemo(() => {
-    const operationNames = Array.from(payloadsByOperationName.keys());
-
-    if (!searchTerm) {
-      return operationNames;
-    }
-
-    const regex = new RegExp(searchTerm, "i");
-
-    return operationNames.filter((operationName) => regex.test(operationName));
-  }, [searchTerm, payloadsByOperationName]);
+  if (!selectedPayload && payloads.length > 0) {
+    setSelectedPayload(payloads[0]);
+  }
 
   return (
     <SidebarLayout>
@@ -52,21 +28,21 @@ export function Connectors({ payloads }: ConnectorsProps) {
           value={searchTerm}
         />
         <List className="h-full">
-          {filteredOperations.map((operationName) => {
+          {payloads.map((payload, idx) => {
             return (
               <ListItem
-                key={operationName}
-                selected={selectedOperationName === operationName}
-                onClick={() => setSelectedOperationName(operationName)}
+                key={idx}
+                selected={selectedPayload === payload}
+                onClick={() => setSelectedPayload(payload)}
                 className="font-code"
               >
                 {searchTerm ? (
                   <HighlightMatch
                     searchTerm={searchTerm}
-                    value={operationName}
+                    value={payload.operationName ?? "(anonymous)"}
                   />
                 ) : (
-                  operationName
+                  payload.operationName ?? "(anonymous)"
                 )}
               </ListItem>
             );
@@ -77,14 +53,11 @@ export function Connectors({ payloads }: ConnectorsProps) {
         <h1 className="font-medium text-heading dark:text-heading-dark text-xl">
           Connectors
         </h1>
-        <div>
-          {selectedOperationName &&
-            payloadsByOperationName
-              .get(selectedOperationName)!
-              .map((payload, idx) => {
-                return <pre key={idx}>{JSON.stringify(payload, null, 2)}</pre>;
-              })}
-        </div>
+        {selectedPayload && (
+          <div>
+            <pre>{JSON.stringify(selectedPayload, null, 2)}</pre>
+          </div>
+        )}
       </SidebarLayout.Main>
     </SidebarLayout>
   );
