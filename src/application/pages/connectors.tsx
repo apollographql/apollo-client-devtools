@@ -24,12 +24,16 @@ export function Route() {
         />
         <List className="h-full">
           {connectorsRequests.map((payload, idx) => {
+            const { pathname: toPathname } = resolvePath(
+              `/connectors/${payload.id}`
+            );
+
             return (
               <ListItem
                 key={idx}
                 selected={
-                  resolvePath(`/connectors/${payload.id}`).pathname ===
-                  location.pathname
+                  toPathname === location.pathname ||
+                  location.pathname.startsWith(toPathname)
                 }
                 className="font-code p-0"
               >
