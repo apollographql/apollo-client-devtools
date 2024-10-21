@@ -36,7 +36,8 @@ import { Tr } from "../Tr";
 import { Th } from "../Th";
 import { Tbody } from "../Tbody";
 import { Td } from "../Td";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { HTTPStatusBadge } from "../HTTPStatusBadge";
 
 enum QueryTabs {
   Variables = "Variables",
@@ -126,6 +127,16 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
 
     return queries.filter((query) => query.name && regex.test(query.name));
   }, [searchTerm, queries]);
+
+  const lastConnectorsRequest = connectorsRequests
+    .filter((data) => {
+      return (
+        data.query === selectedQuery?.queryString &&
+        canonicalStringify(data.variables) ===
+          canonicalStringify(selectedQuery.variables)
+      );
+    })
+    .at(-1);
 
   return (
     <SidebarLayout>
@@ -272,53 +283,51 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
               />
             </QueryLayout.TabContent>
             <QueryLayout.TabContent value={QueryTabs.Connectors}>
-              <div className="flex flex-col gap-4">
-                {connectorsRequests
-                  .filter((data) => {
-                    return (
-                      data.query === selectedQuery?.queryString &&
-                      canonicalStringify(data.variables) ===
-                        canonicalStringify(selectedQuery.variables)
-                    );
-                  })
-                  .map((data) => {
-                    return (
-                      <Card key={data.id}>
-                        <CardBody>
-                          <Table interactive variant="striped" size="condensed">
-                            <Thead>
-                              <Tr>
-                                <Th>ID</Th>
-                                <Th>URL</Th>
-                              </Tr>
-                            </Thead>
-                            <Tbody>
-                              {data.debuggingResult.data.map((result) => {
-                                return (
-                                  <Tr
-                                    key={result.id}
-                                    onClick={() => {
-                                      console.log(
-                                        "navigate",
-                                        `/connectors/${data.id}/requests/${result.id}`
-                                      );
-                                      navigate(
-                                        `/connectors/${data.id}/requests/${result.id}`
-                                      );
-                                    }}
-                                  >
-                                    <Td>{result.id}</Td>
-                                    <Td>{result.request?.url}</Td>
-                                  </Tr>
-                                );
-                              })}
-                            </Tbody>
-                          </Table>
-                        </CardBody>
-                      </Card>
-                    );
-                  })}
-              </div>
+              {lastConnectorsRequest && (
+                <Card>
+                  <CardBody>
+                    <Table interactive variant="striped" size="condensed">
+                      <Thead>
+                        <Tr>
+                          <Th>Method</Th>
+                          <Th>Status</Th>
+                          <Th>URL</Th>
+                        </Tr>
+                      </Thead>
+                      <Tbody>
+                        {lastConnectorsRequest.debuggingResult.data.map(
+                          (result) => {
+                            return (
+                              <Tooltip
+                                key={result.id}
+                                content="View full details"
+                                disableHoverableContent
+                              >
+                                <Tr
+                                  onClick={() => {
+                                    navigate(
+                                      `/connectors/${lastConnectorsRequest.id}/requests/${result.id}`
+                                    );
+                                  }}
+                                >
+                                  <Td>{result.request?.method}</Td>
+                                  <Td>
+                                    <HTTPStatusBadge
+                                      status={result.response?.status}
+                                      variant="terse"
+                                    />
+                                  </Td>
+                                  <Td>{result.request?.url}</Td>
+                                </Tr>
+                              </Tooltip>
+                            );
+                          }
+                        )}
+                      </Tbody>
+                    </Table>
+                  </CardBody>
+                </Card>
+              )}
             </QueryLayout.TabContent>
           </QueryLayout.Tabs>
         </QueryLayout>
