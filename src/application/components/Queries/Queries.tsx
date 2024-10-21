@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
-import { NetworkStatus, gql, useQuery } from "@apollo/client";
+import { NetworkStatus, gql, useQuery, useReactiveVar } from "@apollo/client";
 import { isNetworkRequestInFlight } from "@apollo/client/core/networkStatus";
 import { List } from "../List";
 import { ListItem } from "../ListItem";
@@ -26,11 +26,23 @@ import { SearchField } from "../SearchField";
 import HighlightMatch from "../HighlightMatch";
 import { PageSpinner } from "../PageSpinner";
 import { isIgnoredError } from "../../utilities/ignoredErrors";
+import { connectorsRequestsVar } from "../../vars";
+import { canonicalStringify } from "@apollo/client/cache";
+import { Card } from "../Card";
+import { CardBody } from "../CardBody";
+import { Thead } from "../Thead";
+import { Table } from "../Table";
+import { Tr } from "../Tr";
+import { Th } from "../Th";
+import { Tbody } from "../Tbody";
+import { Td } from "../Td";
+import { useLocation, useNavigate } from "react-router-dom";
 
 enum QueryTabs {
   Variables = "Variables",
   CachedData = "CachedData",
   Options = "Options",
+  Connectors = "Connectors",
 }
 
 export const GET_QUERIES: TypedDocumentNode<GetQueries, GetQueriesVariables> =
@@ -71,6 +83,8 @@ const STABLE_EMPTY_QUERIES: Array<
 export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
   const [selected, setSelected] = useState("1");
   const [searchTerm, setSearchTerm] = useState("");
+  const connectorsRequests = useReactiveVar(connectorsRequestsVar);
+  const navigate = useNavigate();
 
   const { loading, error, data, startPolling, stopPolling } = useQuery(
     GET_QUERIES,
@@ -227,6 +241,9 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
                 Cached Data
               </Tabs.Trigger>
               <Tabs.Trigger value={QueryTabs.Options}>Options</Tabs.Trigger>
+              <Tabs.Trigger value={QueryTabs.Connectors}>
+                Connectors
+              </Tabs.Trigger>
               <CopyButton
                 className="ml-auto relative right-[6px]"
                 size="sm"
@@ -253,6 +270,55 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
                 className="[&>li]:!pt-0"
                 data={selectedQuery?.options ?? {}}
               />
+            </QueryLayout.TabContent>
+            <QueryLayout.TabContent value={QueryTabs.Connectors}>
+              <div className="flex flex-col gap-4">
+                {connectorsRequests
+                  .filter((data) => {
+                    return (
+                      data.query === selectedQuery?.queryString &&
+                      canonicalStringify(data.variables) ===
+                        canonicalStringify(selectedQuery.variables)
+                    );
+                  })
+                  .map((data) => {
+                    return (
+                      <Card key={data.id}>
+                        <CardBody>
+                          <Table interactive variant="striped" size="condensed">
+                            <Thead>
+                              <Tr>
+                                <Th>ID</Th>
+                                <Th>URL</Th>
+                              </Tr>
+                            </Thead>
+                            <Tbody>
+                              {data.debuggingResult.data.map((result) => {
+                                return (
+                                  <Tr
+                                    key={result.id}
+                                    onClick={() => {
+                                      console.log(
+                                        "navigate",
+                                        `/connectors/${data.id}/requests/${result.id}`
+                                      );
+                                      navigate(
+                                        `/connectors/${data.id}/requests/${result.id}`
+                                      );
+                                    }}
+                                  >
+                                    <Td>{result.id}</Td>
+                                    <Td>{result.request?.url}</Td>
+                                  </Tr>
+                                );
+                              })}
+                            </Tbody>
+                          </Table>
+                        </CardBody>
+                      </Card>
+                    );
+                  })}
+              </div>
             </QueryLayout.TabContent>
           </QueryLayout.Tabs>
         </QueryLayout>
