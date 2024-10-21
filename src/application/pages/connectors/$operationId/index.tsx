@@ -43,7 +43,7 @@ export function Route() {
               <Td>{id}</Td>
               <Td>{url.pathname + url.search}</Td>
               <Td>
-                <HTTPStatusBadge status={response?.status} />
+                <HTTPStatusBadge status={response?.status} variant="terse" />
               </Td>
               <Td>{request?.method}</Td>
               <Td>{response?.body?.selection?.errors?.length ?? 0}</Td>
