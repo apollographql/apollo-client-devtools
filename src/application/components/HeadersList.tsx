@@ -9,7 +9,11 @@ export function HeadersList({ headers }: HeadersListProps) {
   return (
     <DefinitionList>
       {headers.map(([name, value], idx) => (
-        <DefinitionListItem key={idx} term={name}>
+        <DefinitionListItem
+          key={idx}
+          term={name}
+          className="[&>dt]:whitespace-nowrap"
+        >
           {value}
         </DefinitionListItem>
       ))}
