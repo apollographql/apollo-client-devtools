@@ -19,7 +19,7 @@ export function ConnectorsRequestOverview({
   const { headers } = request;
 
   return (
-    <Accordion type="multiple">
+    <Accordion type="multiple" defaultValue={["general"]}>
       <AccordionItem value="general">
         <AccordionTrigger>
           <AccordionIcon />
