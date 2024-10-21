@@ -26,7 +26,7 @@ export function EmptyMessage({
       <h1 className="text-2xl font-semibold font-body text-heading dark:text-heading-dark">
         {title || "👋 Welcome to Apollo Client Devtools"}
       </h1>
-      <div>
+      <div className="text-left">
         {children ||
           "Start interacting with your interface to see data reflected in this space"}
       </div>
