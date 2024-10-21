@@ -5,6 +5,7 @@ import { Tabs } from "../../../../components/Tabs";
 import { JSONTreeViewer } from "../../../../components/JSONTreeViewer";
 import IconStatusDot from "@apollo/icons/default/IconStatusDot.svg";
 import { ConnectorsRequestOverview } from "../../../../components/ConnectorsRequestOverview";
+import { ConnectorsResponseOverview } from "../../../../components/ConnectorsResponseOverview";
 
 export function Route() {
   const params = useParams();
@@ -44,7 +45,11 @@ export function Route() {
         )}
       </Tabs.Content>
       <Tabs.Content value="response" className="py-4">
-        <div>Status code: {data.response?.status}</div>
+        {data.response ? (
+          <ConnectorsResponseOverview response={data.response} />
+        ) : (
+          "Empty state here"
+        )}
       </Tabs.Content>
       {response?.body && (
         <Tabs.Content value="responseBody" className="py-4">
@@ -60,7 +65,7 @@ export function Route() {
           )}
         </Tabs.Content>
       )}
-      <Tabs.Content value="response" className="py-4">
+      <Tabs.Content value="mapping" className="py-4">
         <div>Mapping: </div>
       </Tabs.Content>
     </Tabs>
