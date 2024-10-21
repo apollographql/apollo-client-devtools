@@ -43,6 +43,13 @@ const button = cva(
   {
     variants: {
       variant: {
+        destructive: [
+          "text-white",
+          "bg-button-destructive",
+          "dark:bg-button-destructive-dark",
+          "hover:bg-button-destructiveHover",
+          "dark:hover:bg-button-destructiveHover-dark",
+        ],
         hidden: [
           "text-primary",
           "dark:text-primary-dark",
