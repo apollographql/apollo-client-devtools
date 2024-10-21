@@ -37,7 +37,9 @@ export function ConnectorsResponseMapping({
   return (
     <div className="flex size-full flex-col gap-4">
       <div className="flex justify-between">
-        <h2 className="capitalize">{HEADINGS_MAP[activeView]}</h2>
+        <h2 className="text-heading dark:text-heading-dark text-lg capitalize">
+          {HEADINGS_MAP[activeView]}
+        </h2>
         <ButtonGroup attached>
           <Tooltip content="View original selection">
             <Button
@@ -95,24 +97,27 @@ export function ConnectorsResponseMapping({
       </div>
       {activeView === "errors" ? (
         <ErrorsView errors={selection.errors} />
+      ) : activeView === "source" ? (
+        <Selection source={selection.source} />
+      ) : activeView === "transformed" ? (
+        <Selection source={selection.transformed} />
       ) : (
-        <ConnectorsBody
-          body={{
-            content: selection[activeView],
-            kind: typeof selection[activeView] === "string" ? "text" : "json",
-          }}
-        />
+        <ConnectorsBody body={{ content: selection.result, kind: "json" }} />
       )}
     </div>
   );
 }
 
-const ErrorsView = ({
+function Selection({ source }: { source: string }) {
+  return <pre className="font-code">{source}</pre>;
+}
+
+function ErrorsView({
   errors,
 }: {
   errors: SelectionMappingResponse["errors"];
-}) =>
-  errors.length ? (
+}) {
+  return errors.length ? (
     <Card>
       <CardBody>
         <Table size="condensed" variant="striped">
@@ -138,6 +143,7 @@ const ErrorsView = ({
   ) : (
     <ConnectorsEmptyState>No errors to display</ConnectorsEmptyState>
   );
+}
 
 const HEADINGS_MAP: Record<ActiveView, string> = {
   errors: "Errors",
