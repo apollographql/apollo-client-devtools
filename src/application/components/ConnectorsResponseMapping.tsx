@@ -18,6 +18,7 @@ import { Td } from "./Td";
 import { Thead } from "./Thead";
 import { Th } from "./Th";
 import { CardBody } from "./CardBody";
+import { CodeBlock } from "./CodeBlock";
 
 interface ConnectorsResponseMappingProps {
   selection: SelectionMappingResponse;
@@ -85,7 +86,7 @@ export function ConnectorsResponseMapping({
                     "size-4",
                     activeView !== "errors" &&
                       selection.errors.length &&
-                      "!text-icon-error"
+                      "text-icon-error dark:text-icon-error"
                   )}
                 />
               }
@@ -109,7 +110,7 @@ export function ConnectorsResponseMapping({
 }
 
 function Selection({ source }: { source: string }) {
-  return <pre className="font-code">{source}</pre>;
+  return <CodeBlock code={source} language="text" copyable={false} />;
 }
 
 function ErrorsView({
