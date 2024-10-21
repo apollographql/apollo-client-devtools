@@ -13,7 +13,7 @@ export function DefinitionListItem({
 }: DefinitionListItemProps) {
   return (
     <div {...props} className={twMerge("flex gap-3 py-2", className)}>
-      <dt className="font-semibold">{term}</dt>
+      <dt className="font-semibold">{term}:</dt>
       <dd>{children}</dd>
     </div>
   );
