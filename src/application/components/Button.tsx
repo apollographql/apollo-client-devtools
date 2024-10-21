@@ -39,6 +39,7 @@ const button = cva(
     "disabled:cursor-not-allowed",
     "transition-colors",
     "duration-200",
+    "group-[[data-attached=true]]/button-group:rounded-none",
   ],
   {
     variants: {
@@ -79,6 +80,8 @@ const button = cva(
           "hover:dark:bg-button-secondaryHover-dark",
           "active:bg-selected",
           "active:dark:bg-selected-dark",
+          "group-[[data-attached=true]]/button-group:border-r-0",
+          "group-[[data-attached=true]]/button-group:last:border-r",
         ],
       },
       size: {
@@ -88,6 +91,8 @@ const button = cva(
           "text-sm",
           "font-semibold",
           "has-[>svg:only-child]:p-1.5",
+          "group-[[data-attached=true]]/button-group:first:rounded-l",
+          "group-[[data-attached=true]]/button-group:last:rounded-r",
         ],
         sm: [
           "py-2",
@@ -96,6 +101,8 @@ const button = cva(
           "text-sm",
           "font-semibold",
           "has-[>svg:only-child]:p-2",
+          "group-[[data-attached=true]]/button-group:first:rounded-l",
+          "group-[[data-attached=true]]/button-group:last:rounded-r",
         ],
         md: [
           "py-2",
@@ -104,6 +111,8 @@ const button = cva(
           "text-md",
           "font-semibold",
           "has-[>svg:only-child]:p-3",
+          "group-[[data-attached=true]]/button-group:first:rounded-l-lg",
+          "group-[[data-attached=true]]/button-group:last:rounded-r-lg",
         ],
       },
     },
