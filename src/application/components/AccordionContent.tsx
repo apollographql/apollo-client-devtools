@@ -20,6 +20,10 @@ export function AccordionContent({
 
 type AnimatedContentProps = ComponentPropsWithoutRef<typeof motion.div>;
 
+const EASINGS = {
+  ease: [0.25, 0.1, 0.25, 1],
+};
+
 const AnimatedContent = forwardRef<HTMLDivElement, AnimatedContentProps>(
   ({ className, ...props }) => {
     const show = (props as Record<string, unknown>)["data-state"] === "open";
@@ -30,14 +34,29 @@ const AnimatedContent = forwardRef<HTMLDivElement, AnimatedContentProps>(
           <motion.div
             {...props}
             initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0, transitionEnd: { display: "none" } }}
+            animate={{
+              height: "auto",
+              opacity: 1,
+              transition: {
+                height: { duration: 0.3, ease: EASINGS.ease },
+                opacity: { duration: 0.4, ease: EASINGS.ease },
+              },
+            }}
+            exit={{
+              height: 0,
+              opacity: 0,
+              transition: {
+                height: { duration: 0.2, ease: EASINGS.ease },
+                opacity: { duration: 0.3, ease: EASINGS.ease },
+              },
+              transitionEnd: { display: "none" },
+            }}
             style={{ display: "block" }}
             className="rounded-b border border-primary dark:border-primary-dark border-t-0 overflow-hidden"
           >
             <div
               className={twMerge(
-                "p-4 bg-primary dark:bg-primary-dark",
+                "p-4 bg-primary dark:bg-primary-dark overflow-auto",
                 className
               )}
             >
