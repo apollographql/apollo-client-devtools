@@ -255,11 +255,13 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
               <Tabs.Trigger value={QueryTabs.Connectors}>
                 Connectors
               </Tabs.Trigger>
-              <CopyButton
-                className="ml-auto relative right-[6px]"
-                size="sm"
-                text={copyButtonText}
-              />
+              {currentTab !== QueryTabs.Connectors && (
+                <CopyButton
+                  className="ml-auto relative right-[6px]"
+                  size="sm"
+                  text={copyButtonText}
+                />
+              )}
             </Tabs.List>
             <QueryLayout.TabContent value={QueryTabs.Variables}>
               <JSONTreeViewer
