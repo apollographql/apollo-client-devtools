@@ -23,7 +23,7 @@ export function Route() {
   if (!request) {
     return (
       <SidebarLayout.Main className="!overflow-auto flex flex-col p-4 gap-4">
-        <h1 className="font-medium text-heading dark:text-heading-dark text-xl">
+        <h1 className="font-medium text-heading dark:text-heading-dark text-2xl">
           All requests
         </h1>
         <Alert variant="error">Connectors request not found</Alert>
@@ -34,7 +34,7 @@ export function Route() {
   return (
     <>
       <SidebarLayout.Main className="!overflow-auto flex flex-col p-4 gap-4">
-        <h1 className="font-medium text-heading dark:text-heading-dark text-xl">
+        <h1 className="font-medium text-heading dark:text-heading-dark text-2xl">
           All requests
         </h1>
         <Outlet context={request} />
@@ -46,6 +46,9 @@ export function Route() {
         minSize={25}
         className="h-full p-4 flex flex-col gap-2"
       >
+        <h2 className="text-heading dark:text-heading-dark font-medium text-lg">
+          Query
+        </h2>
         <CodeBlock language="graphql" code={request.query} />
         <h2 className="text-heading dark:text-heading-dark font-medium text-lg">
           Variables
