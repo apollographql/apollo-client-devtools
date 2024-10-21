@@ -3,6 +3,7 @@ import { useRequest } from "../../$operationId";
 import { useMemo } from "react";
 import { Tabs } from "../../../../components/Tabs";
 import { JSONTreeViewer } from "../../../../components/JSONTreeViewer";
+import IconStatusDot from "@apollo/icons/default/IconStatusDot.svg";
 
 export function Route() {
   const params = useParams();
@@ -17,6 +18,7 @@ export function Route() {
   );
 
   const response = data.response;
+  const selectionErrorCount = response?.body.selection?.errors.length ?? 0;
 
   return (
     <Tabs>
@@ -26,7 +28,12 @@ export function Route() {
         {response?.body && (
           <Tabs.Trigger value="responseBody">Response body</Tabs.Trigger>
         )}
-        <Tabs.Trigger value="mapping">Mapping</Tabs.Trigger>
+        <Tabs.Trigger value="mapping" className="flex items-center gap-2">
+          Mapping
+          {selectionErrorCount > 0 && (
+            <IconStatusDot className="size-4 text-icon-error dark:text-icon-error-dark" />
+          )}
+        </Tabs.Trigger>
       </Tabs.List>
       <Tabs.Content value="request" className="py-4">
         <div>URL: {data.request?.url}</div>
