@@ -3,6 +3,7 @@ import { EmptyMessage } from "../../components/EmptyMessage";
 import { SidebarLayout } from "../../components/Layouts/SidebarLayout";
 import { connectorsRequestsVar } from "../../vars";
 import { Navigate } from "react-router-dom";
+import { ExternalLink } from "../../components/ExternalLink";
 
 export function Route() {
   const connectorsRequests = useReactiveVar(connectorsRequestsVar);
@@ -16,14 +17,9 @@ export function Route() {
       <EmptyMessage className="m-auto mt-20" title="No connectors requests">
         Queries and mutations that include connectors requests will show up
         here. See the{" "}
-        <a
-          href="https://www.apollographql.com/docs/graphos/schema-design/connectors"
-          target="_blank"
-          rel="noreferrer"
-          className="font-semibold underline-offset-4 underline"
-        >
+        <ExternalLink href="https://www.apollographql.com/docs/graphos/schema-design/connectors">
           Apollo connectors docs
-        </a>{" "}
+        </ExternalLink>{" "}
         for more information on using connectors.
       </EmptyMessage>
     </SidebarLayout.Main>

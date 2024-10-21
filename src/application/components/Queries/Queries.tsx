@@ -38,6 +38,8 @@ import { Tbody } from "../Tbody";
 import { Td } from "../Td";
 import { useNavigate } from "react-router-dom";
 import { HTTPStatusBadge } from "../HTTPStatusBadge";
+import { Heading } from "../Heading";
+import { ExternalLink } from "../ExternalLink";
 
 enum QueryTabs {
   Variables = "Variables",
@@ -285,7 +287,10 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
               />
             </QueryLayout.TabContent>
             <QueryLayout.TabContent value={QueryTabs.Connectors}>
-              {lastConnectorsRequest && (
+              <Heading as="h2" className="mb-4">
+                Requests
+              </Heading>
+              {lastConnectorsRequest ? (
                 <Card>
                   <CardBody>
                     <Table interactive variant="striped" size="condensed">
@@ -329,6 +334,18 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
                     </Table>
                   </CardBody>
                 </Card>
+              ) : (
+                <p className="text-placeholder dark:text-placeholder-dark text-sm">
+                  No connectors requests for this query. Learn more about Apollo
+                  connectors in the{" "}
+                  <ExternalLink
+                    href="https://www.apollographql.com/docs/graphos/schema-design/connectors"
+                    size="sm"
+                  >
+                    docs
+                  </ExternalLink>
+                  .
+                </p>
               )}
             </QueryLayout.TabContent>
           </QueryLayout.Tabs>
