@@ -13,10 +13,19 @@ export function Route() {
 
   return (
     <SidebarLayout.Main className="!overflow-auto flex flex-col p-4 gap-4">
-      <h1 className="font-medium text-heading dark:text-heading-dark text-2xl">
-        All requests
-      </h1>
-      <EmptyMessage />
+      <EmptyMessage className="m-auto mt-20" title="No connectors requests">
+        Queries and mutations that include connectors requests will show up
+        here. See the{" "}
+        <a
+          href="https://www.apollographql.com/docs/graphos/schema-design/connectors"
+          target="_blank"
+          rel="noreferrer"
+          className="font-semibold underline-offset-4 underline"
+        >
+          Apollo connectors docs
+        </a>{" "}
+        for more information on using connectors.
+      </EmptyMessage>
     </SidebarLayout.Main>
   );
 }
