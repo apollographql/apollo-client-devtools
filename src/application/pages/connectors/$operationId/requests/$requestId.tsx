@@ -53,6 +53,7 @@ export function Route() {
               hideRoot={!Array.isArray(response.body.content)}
               className="[&>li]:!pt-0"
               data={response.body.content}
+              shouldExpandNodeInitially={() => true}
             />
           ) : (
             String(response.body.content)
