@@ -55,7 +55,7 @@ export interface ConnectorsDebuggingRequest {
   url: string;
   method: string;
   headers: [string, string][];
-  body: Body | null;
+  body: ConnectorsDebuggingBody | null;
 }
 
 interface SelectionError {
@@ -64,7 +64,7 @@ interface SelectionError {
   count: number;
 }
 
-export interface Body {
+export interface ConnectorsDebuggingBody {
   kind: string;
   content: Content;
 }
@@ -81,7 +81,7 @@ export interface SelectionMappingResponse {
 export interface ConnectorsDebuggingResponse {
   status: number;
   headers: [string, string][];
-  body: Body & {
+  body: ConnectorsDebuggingBody & {
     selection: SelectionMappingResponse;
   };
 }
