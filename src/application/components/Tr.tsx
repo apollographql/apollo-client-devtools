@@ -8,7 +8,7 @@ export function Tr({ className, ...props }: TrProps) {
     <tr
       {...props}
       className={twMerge(
-        "focus-visible:outline-0 focus-visible:bg-tableHover dark:focus-visible:bg-tableHover-dark group",
+        "focus-visible:outline-0 focus-visible:bg-tableHover dark:focus-visible:bg-tableHover-dark group/tr",
         className
       )}
     />

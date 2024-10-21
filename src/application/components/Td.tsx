@@ -17,6 +17,7 @@ const td = cva(
     "dark:border-b-primary-dark",
     "px-6",
     "py-2",
+    "group-[]/card-body:group-last/tr:border-b-0",
   ],
   {
     variants: {
@@ -26,7 +27,10 @@ const td = cva(
       },
       variant: {
         plain: [],
-        striped: ["group-odd:bg-secondary", "dark:group-odd:bg-secondary-dark"],
+        striped: [
+          "group-odd/tr:bg-secondary",
+          "dark:group-odd/tr:bg-secondary-dark",
+        ],
       },
     },
   }
