@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { Tabs } from "../../../../components/Tabs";
 import { JSONTreeViewer } from "../../../../components/JSONTreeViewer";
 import IconStatusDot from "@apollo/icons/default/IconStatusDot.svg";
+import { ConnectorsRequestOverview } from "../../../../components/ConnectorsRequestOverview";
 
 export function Route() {
   const params = useParams();
@@ -21,7 +22,7 @@ export function Route() {
   const selectionErrorCount = response?.body.selection?.errors.length ?? 0;
 
   return (
-    <Tabs>
+    <Tabs defaultValue="request">
       <Tabs.List>
         <Tabs.Trigger value="request">Request overview</Tabs.Trigger>
         <Tabs.Trigger value="response">Response overview</Tabs.Trigger>
@@ -36,7 +37,11 @@ export function Route() {
         </Tabs.Trigger>
       </Tabs.List>
       <Tabs.Content value="request" className="py-4">
-        <div>URL: {data.request?.url}</div>
+        {data.request ? (
+          <ConnectorsRequestOverview request={data.request} />
+        ) : (
+          "Empty state here"
+        )}
       </Tabs.Content>
       <Tabs.Content value="response" className="py-4">
         <div>Status code: {data.response?.status}</div>
