@@ -1,6 +1,6 @@
 import { cva } from "class-variance-authority";
 import type { ComponentPropsWithoutRef } from "react";
-import { useMemo } from "react";
+import { forwardRef, useMemo } from "react";
 import { CardProvider } from "./CardContext";
 import { twMerge } from "tailwind-merge";
 
@@ -34,12 +34,16 @@ const card = cva(
   }
 );
 
-export function Card({ children, className, variant = "outline" }: CardProps) {
-  const context = useMemo(() => ({ variant }), [variant]);
+export const Card = forwardRef<HTMLDivElement, CardProps>(
+  ({ children, className, variant = "outline" }, ref) => {
+    const context = useMemo(() => ({ variant }), [variant]);
 
-  return (
-    <CardProvider value={context}>
-      <div className={twMerge(card({ variant }), className)}>{children}</div>
-    </CardProvider>
-  );
-}
+    return (
+      <CardProvider value={context}>
+        <div className={twMerge(card({ variant }), className)} ref={ref}>
+          {children}
+        </div>
+      </CardProvider>
+    );
+  }
+);
