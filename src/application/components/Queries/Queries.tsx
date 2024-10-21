@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
-import { NetworkStatus, gql, useQuery, useReactiveVar } from "@apollo/client";
+import { NetworkStatus, gql, useQuery } from "@apollo/client";
 import { isNetworkRequestInFlight } from "@apollo/client/core/networkStatus";
 import { List } from "../List";
 import { ListItem } from "../ListItem";
@@ -26,8 +26,6 @@ import { SearchField } from "../SearchField";
 import HighlightMatch from "../HighlightMatch";
 import { PageSpinner } from "../PageSpinner";
 import { isIgnoredError } from "../../utilities/ignoredErrors";
-import { connectorsRequestsVar } from "../../vars";
-import { canonicalStringify } from "@apollo/client/cache";
 import { Card } from "../Card";
 import { CardBody } from "../CardBody";
 import { Thead } from "../Thead";
@@ -40,6 +38,7 @@ import { useNavigate } from "react-router-dom";
 import { HTTPStatusBadge } from "../HTTPStatusBadge";
 import { Heading } from "../Heading";
 import { ExternalLink } from "../ExternalLink";
+import { useMatchingConnectors } from "../../hooks/useMatchingConnectors";
 
 enum QueryTabs {
   Variables = "Variables",
@@ -86,7 +85,6 @@ const STABLE_EMPTY_QUERIES: Array<
 export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
   const [selected, setSelected] = useState("1");
   const [searchTerm, setSearchTerm] = useState("");
-  const connectorsRequests = useReactiveVar(connectorsRequestsVar);
   const navigate = useNavigate();
 
   const { loading, error, data, startPolling, stopPolling } = useQuery(
@@ -130,15 +128,10 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
     return queries.filter((query) => query.name && regex.test(query.name));
   }, [searchTerm, queries]);
 
-  const lastConnectorsRequest = connectorsRequests
-    .filter((data) => {
-      return (
-        data.query === selectedQuery?.queryString &&
-        canonicalStringify(data.variables) ===
-          canonicalStringify(selectedQuery.variables)
-      );
-    })
-    .at(-1);
+  const lastConnectorsRequest = useMatchingConnectors({
+    query: selectedQuery?.queryString,
+    variables: selectedQuery?.variables,
+  }).at(-1);
 
   return (
     <SidebarLayout>
