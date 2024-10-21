@@ -14,6 +14,10 @@ import * as ConnectorRequestPage from "./pages/connectors/$operationId/requests/
 export const router = createMemoryRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
+      <Route path="queries" />
+      <Route path="mutations" />
+      <Route path="cache" />
+      <Route path="explorer" />
       <Route path="connectors" element={<ConnectorsPage.Route />}>
         <Route index element={<ConnectorsIndexPage.Route />} />
         <Route
@@ -29,5 +33,6 @@ export const router = createMemoryRouter(
         </Route>
       </Route>
     </Route>
-  )
+  ),
+  { initialEntries: ["/queries"] }
 );
