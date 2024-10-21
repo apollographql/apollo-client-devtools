@@ -32,6 +32,7 @@ const button = cva(
     "focus:dark:ring-offset-primary-dark",
     "focus:ring-focused",
     "focus:dark:ring-focused-dark",
+    "focus:z-10",
     "disabled:bg-button-disabled",
     "disabled:dark:bg-button-disabled-dark",
     "disabled:text-disabled",
@@ -95,6 +96,7 @@ const button = cva(
           "group-[[data-attached=true]]/button-group:last:rounded-r",
         ],
         sm: [
+          "h-8",
           "py-2",
           "px-3",
           "rounded",
