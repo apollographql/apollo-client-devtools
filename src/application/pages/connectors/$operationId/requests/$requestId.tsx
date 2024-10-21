@@ -7,6 +7,7 @@ import { ConnectorsRequestOverview } from "../../../../components/ConnectorsRequ
 import { ConnectorsResponseOverview } from "../../../../components/ConnectorsResponseOverview";
 import { ConnectorsBody } from "../../../../components/ConnectorsBody";
 import { ConnectorsEmptyState } from "../../../../components/ConnectorsEmptyState";
+import { ConnectorsResponseMapping } from "../../../../components/ConnectorsResponseMapping";
 
 export function Route() {
   const params = useParams();
@@ -21,7 +22,8 @@ export function Route() {
   );
 
   const response = data.response;
-  const selectionErrorCount = response?.body.selection?.errors.length ?? 0;
+  const selection = data.response?.body.selection;
+  const selectionErrorCount = selection?.errors.length ?? 0;
 
   return (
     <Tabs defaultValue="request">
@@ -68,7 +70,13 @@ export function Route() {
         )}
       </Tabs.Content>
       <Tabs.Content value="mapping" className="py-4">
-        <div>Mapping: </div>
+        {selection ? (
+          <ConnectorsResponseMapping selection={selection} />
+        ) : (
+          <ConnectorsEmptyState>
+            No selection mapping to show
+          </ConnectorsEmptyState>
+        )}
       </Tabs.Content>
     </Tabs>
   );
