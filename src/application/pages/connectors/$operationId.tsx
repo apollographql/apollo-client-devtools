@@ -3,7 +3,12 @@ import { Alert } from "../../components/Alert";
 import { SidebarLayout } from "../../components/Layouts/SidebarLayout";
 import { connectorsRequestsVar } from "../../vars";
 import type { LoaderFunctionArgs } from "react-router-dom";
-import { Outlet, useLoaderData, useOutletContext } from "react-router-dom";
+import {
+  Outlet,
+  useLoaderData,
+  useMatch,
+  useOutletContext,
+} from "react-router-dom";
 import { CodeBlock } from "../../components/CodeBlock";
 import { JSONTreeViewer } from "../../components/JSONTreeViewer";
 import { isEmpty } from "../../utilities/isEmpty";
@@ -19,6 +24,7 @@ export function loader({ params }: LoaderFunctionArgs) {
 
 export function Route() {
   const { request } = useLoaderData() as ReturnType<typeof loader>;
+  const match = useMatch("/connectors/:operationId/requests/:requestId");
 
   if (!request) {
     return (
@@ -31,11 +37,21 @@ export function Route() {
     );
   }
 
+  const selectedRequest = match
+    ? request.debuggingResult.data.find(
+        (data) => String(data.id) === match.params.requestId
+      )
+    : null;
+
+  const selectedURL = selectedRequest?.request?.url
+    ? new URL(selectedRequest.request.url)
+    : null;
+
   return (
     <>
       <SidebarLayout.Main className="!overflow-auto flex flex-col p-4 gap-4">
         <h1 className="font-medium text-heading dark:text-heading-dark text-2xl">
-          All requests
+          All requests {selectedURL ? "> " + selectedURL.pathname : ""}
         </h1>
         <Outlet context={request} />
       </SidebarLayout.Main>
