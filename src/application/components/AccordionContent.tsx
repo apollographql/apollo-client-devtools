@@ -25,7 +25,7 @@ const EASINGS = {
 };
 
 const AnimatedContent = forwardRef<HTMLDivElement, AnimatedContentProps>(
-  ({ className, ...props }) => {
+  ({ className, ...props }, ref) => {
     const show = (props as Record<string, unknown>)["data-state"] === "open";
 
     return (
@@ -33,6 +33,7 @@ const AnimatedContent = forwardRef<HTMLDivElement, AnimatedContentProps>(
         {show && (
           <motion.div
             {...props}
+            ref={ref}
             initial={{ height: 0, opacity: 0 }}
             animate={{
               height: "auto",
