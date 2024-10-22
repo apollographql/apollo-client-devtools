@@ -59,8 +59,8 @@ export function Route() {
     <>
       <SidebarLayout.Main className="!overflow-auto flex flex-col p-4 gap-4">
         <div className="flex flex-col gap-2">
-          <Heading as="h1" size="2xl">
-            Connectors
+          <Heading as="h1" size="2xl" className="font-code">
+            {request.operationName}
           </Heading>
           <Breadcrumb>
             <BreadcrumbItem isCurrentPage={!match}>
