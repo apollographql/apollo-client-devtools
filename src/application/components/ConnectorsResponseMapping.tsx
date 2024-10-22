@@ -86,7 +86,7 @@ export function ConnectorsResponseMapping({
                     "size-4",
                     activeView !== "errors" &&
                       selection.errors.length &&
-                      "text-icon-error dark:text-icon-error"
+                      "text-icon-error dark:text-icon-error-dark"
                   )}
                 />
               }
