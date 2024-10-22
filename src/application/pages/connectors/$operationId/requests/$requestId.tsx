@@ -26,7 +26,7 @@ export function Route() {
   const selectionErrorCount = selection?.errors.length ?? 0;
 
   return (
-    <Tabs defaultValue="request">
+    <Tabs defaultValue="request" className="flex-1 overflow-hidden">
       <Tabs.List>
         <Tabs.Trigger value="request">Request overview</Tabs.Trigger>
         {!!data.request?.body && (
@@ -41,7 +41,7 @@ export function Route() {
           )}
         </Tabs.Trigger>
       </Tabs.List>
-      <Tabs.Content value="request" className="py-4">
+      <Tabs.Content value="request" className="py-4 overflow-auto">
         {data.request ? (
           <ConnectorsRequestOverview request={data.request} />
         ) : (
@@ -50,10 +50,10 @@ export function Route() {
           </ConnectorsEmptyState>
         )}
       </Tabs.Content>
-      <Tabs.Content value="requestBody" className="py-4">
+      <Tabs.Content value="requestBody" className="py-4 overflow-auto">
         {data.request?.body && <ConnectorsBody body={data.request.body} />}
       </Tabs.Content>
-      <Tabs.Content value="response" className="py-4">
+      <Tabs.Content value="response" className="py-4 overflow-auto">
         {data.response ? (
           <ConnectorsResponseOverview response={data.response} />
         ) : (
@@ -62,14 +62,14 @@ export function Route() {
           </ConnectorsEmptyState>
         )}
       </Tabs.Content>
-      <Tabs.Content value="responseBody" className="py-4">
+      <Tabs.Content value="responseBody" className="py-4 overflow-auto">
         {response?.body ? (
           <ConnectorsBody body={response.body} />
         ) : (
           <ConnectorsEmptyState>No response body to show</ConnectorsEmptyState>
         )}
       </Tabs.Content>
-      <Tabs.Content value="mapping" className="py-4">
+      <Tabs.Content value="mapping" className="py-4 overflow-auto">
         {selection ? (
           <ConnectorsResponseMapping selection={selection} />
         ) : (
