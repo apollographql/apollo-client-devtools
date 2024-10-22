@@ -26,16 +26,6 @@ import { SearchField } from "../SearchField";
 import HighlightMatch from "../HighlightMatch";
 import { PageSpinner } from "../PageSpinner";
 import { isIgnoredError } from "../../utilities/ignoredErrors";
-import { Card } from "../Card";
-import { CardBody } from "../CardBody";
-import { Thead } from "../Thead";
-import { Table } from "../Table";
-import { Tr } from "../Tr";
-import { Th } from "../Th";
-import { Tbody } from "../Tbody";
-import { Td } from "../Td";
-import { useNavigate } from "react-router-dom";
-import { HTTPStatusBadge } from "../HTTPStatusBadge";
 import { Heading } from "../Heading";
 import { ExternalLink } from "../ExternalLink";
 import { useMatchingConnectors } from "../../hooks/useMatchingConnectors";
@@ -86,7 +76,6 @@ const STABLE_EMPTY_QUERIES: Array<
 export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
   const [selected, setSelected] = useState("1");
   const [searchTerm, setSearchTerm] = useState("");
-  const navigate = useNavigate();
 
   const { loading, error, data, startPolling, stopPolling } = useQuery(
     GET_QUERIES,
