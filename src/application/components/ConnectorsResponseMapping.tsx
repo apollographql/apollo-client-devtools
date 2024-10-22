@@ -38,7 +38,7 @@ export function ConnectorsResponseMapping({
   return (
     <div className="flex size-full flex-col gap-4">
       <div className="flex justify-between">
-        <h2 className="text-heading dark:text-heading-dark text-lg capitalize">
+        <h2 className="text-heading dark:text-heading-dark text-lg">
           {HEADINGS_MAP[activeView]}
         </h2>
         <ButtonGroup attached>
