@@ -8,6 +8,7 @@ import {
   redirect,
   useLoaderData,
   useMatch,
+  useNavigate,
   useOutletContext,
 } from "react-router-dom";
 import { CodeBlock } from "../../components/CodeBlock";
@@ -18,6 +19,7 @@ import { Breadcrumb } from "../../components/Breadcrumb";
 import { BreadcrumbItem } from "../../components/BreadcrumbItem";
 import { Heading } from "../../components/Heading";
 import { BreadcrumbLink } from "../../components/BreacrumbLink";
+import { useActorEvent } from "../../hooks/useActorEvent";
 
 export function loader({ params }: LoaderFunctionArgs) {
   const request = connectorsRequestsVar().find(
@@ -37,6 +39,7 @@ export function Route() {
     Response
   >;
   const match = useMatch("/connectors/:operationId/requests/:requestId");
+  const navigate = useNavigate();
 
   const selectedRequest = match
     ? request.debuggingResult.data.find(
@@ -47,6 +50,10 @@ export function Route() {
   const selectedURL = selectedRequest?.request?.url
     ? new URL(selectedRequest.request.url)
     : null;
+
+  useActorEvent("pageNavigated", () => {
+    navigate("/connectors");
+  });
 
   return (
     <>
