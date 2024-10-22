@@ -15,6 +15,7 @@ import { RouterProvider } from "react-router-dom";
 import { router } from "./router";
 import { getPanelActor } from "../extension/devtools/panelActor";
 import { connectorsRequestsVar } from "./vars";
+import type { ConnectorsDebuggingResultPayload } from "../types";
 
 loadDevMessages();
 loadErrorMessages();
@@ -99,6 +100,13 @@ export const AppProvider = () => {
 export const initDevTools = () => {
   const root = createRoot(document.getElementById("devtools") as HTMLElement);
 
+  rpcClient
+    .withTimeout(3000)
+    .request("getConnectorsRequests")
+    .then((results) => {
+      connectorsRequestsVar(results.map(assignConnectorsIds));
+    });
+
   root.render(<AppProvider />);
 };
 
@@ -108,19 +116,23 @@ const actor = getPanelActor(window);
 actor.on("connectorsDebuggingResult", ({ payload }) => {
   connectorsRequestsVar([
     ...connectorsRequestsVar(),
-    {
-      ...payload,
-      id: ++nextPayloadId,
-      debuggingResult: {
-        ...payload.debuggingResult,
-        data: payload.debuggingResult.data.map((request, idx) => ({
-          ...request,
-          id: idx + 1,
-        })),
-      },
-    },
+    assignConnectorsIds(payload),
   ]);
 });
 
 actor.on("pageNavigated", () => connectorsRequestsVar([]));
 actor.on("clientTerminated", () => connectorsRequestsVar([]));
+
+function assignConnectorsIds(result: ConnectorsDebuggingResultPayload) {
+  return {
+    ...result,
+    id: ++nextPayloadId,
+    debuggingResult: {
+      ...result.debuggingResult,
+      data: result.debuggingResult.data.map((data, idx) => ({
+        ...data,
+        id: idx + 1,
+      })),
+    },
+  };
+}
