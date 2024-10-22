@@ -60,38 +60,37 @@ export function ConnectorsTable({
           </Thead>
           <Tbody>
             {data.map(({ id, request, response }) => {
-              const url = new URL(request?.url ?? "");
-
               return (
-                <Tr
-                  key={id}
-                  onClick={() =>
-                    navigate(`/connectors/${resultId}/requests/${id}`)
-                  }
-                >
-                  {columns.map((col) => {
-                    return (
-                      <Fragment key={col}>
-                        {col === "id" && <Td>{id}</Td>}
-                        {col === "url" && <Td>{request?.url}</Td>}
-                        {col === "status" && (
-                          <Td>
-                            <HTTPStatusBadge
-                              status={response?.status}
-                              variant="terse"
-                            />
-                          </Td>
-                        )}
-                        {col === "method" && <Td>{request?.method}</Td>}
-                        {col === "errors" && (
-                          <Td>
-                            {response?.body?.selection?.errors?.length ?? 0}
-                          </Td>
-                        )}
-                      </Fragment>
-                    );
-                  })}
-                </Tr>
+                <Tooltip key={id} content="View more details">
+                  <Tr
+                    onClick={() =>
+                      navigate(`/connectors/${resultId}/requests/${id}`)
+                    }
+                  >
+                    {columns.map((col) => {
+                      return (
+                        <Fragment key={col}>
+                          {col === "id" && <Td>{id}</Td>}
+                          {col === "url" && <Td>{request?.url}</Td>}
+                          {col === "status" && (
+                            <Td>
+                              <HTTPStatusBadge
+                                status={response?.status}
+                                variant="terse"
+                              />
+                            </Td>
+                          )}
+                          {col === "method" && <Td>{request?.method}</Td>}
+                          {col === "errors" && (
+                            <Td>
+                              {response?.body?.selection?.errors?.length ?? 0}
+                            </Td>
+                          )}
+                        </Fragment>
+                      );
+                    })}
+                  </Tr>
+                </Tooltip>
               );
             })}
           </Tbody>
