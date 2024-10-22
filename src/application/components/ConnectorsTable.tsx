@@ -17,6 +17,7 @@ interface ConnectorsTableProps {
   data: ConnectorsDebuggingDataWithId[];
   resultId: number;
   columns: ColumnName[];
+  size?: "default" | "condensed";
 }
 
 type ColumnName = "id" | "url" | "status" | "method" | "errors";
@@ -25,13 +26,14 @@ export function ConnectorsTable({
   data,
   resultId,
   columns,
+  size,
 }: ConnectorsTableProps) {
   const navigate = useNavigate();
 
   return (
     <Card>
       <CardBody>
-        <Table interactive variant="striped">
+        <Table interactive variant="striped" size={size}>
           <Thead>
             <Tr>
               {columns.map((col) => {
