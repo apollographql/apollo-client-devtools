@@ -5,6 +5,7 @@ import { connectorsRequestsVar } from "../../vars";
 import type { LoaderFunctionArgs } from "react-router-dom";
 import {
   Outlet,
+  redirect,
   useLoaderData,
   useMatch,
   useOutletContext,
@@ -23,15 +24,22 @@ export function loader({ params }: LoaderFunctionArgs) {
     (request) => String(request.id) === params.operationId
   );
 
+  if (!request) {
+    return redirect("/connectors");
+  }
+
   return { request };
 }
 
 export function Route() {
-  const { request } = useLoaderData() as ReturnType<typeof loader>;
+  const { request } = useLoaderData() as Exclude<
+    ReturnType<typeof loader>,
+    Response
+  >;
   const match = useMatch("/connectors/:operationId/requests/:requestId");
 
   const selectedRequest = match
-    ? request?.debuggingResult.data.find(
+    ? request.debuggingResult.data.find(
         (data) => String(data.id) === match.params.requestId
       )
     : null;
@@ -49,7 +57,7 @@ export function Route() {
           </Heading>
           <Breadcrumb>
             <BreadcrumbItem isCurrentPage={!match}>
-              <BreadcrumbLink to={`/connectors/${request?.id}`}>
+              <BreadcrumbLink to={`/connectors/${request.id}`}>
                 All requests
               </BreadcrumbLink>
             </BreadcrumbItem>
@@ -66,30 +74,26 @@ export function Route() {
           <Alert variant="error">Connectors request not found</Alert>
         )}
       </SidebarLayout.Main>
-      {request && (
-        <>
-          <PanelResizeHandle className="border-r border-primary dark:border-primary-dark" />
-          <Panel
-            id="details"
-            defaultSize={25}
-            minSize={25}
-            className="h-full p-4 flex flex-col gap-2"
-          >
-            <h2 className="text-heading dark:text-heading-dark font-medium text-lg">
-              Query
-            </h2>
-            <CodeBlock language="graphql" code={request.query} />
-            <h2 className="text-heading dark:text-heading-dark font-medium text-lg">
-              Variables
-            </h2>
-            <JSONTreeViewer
-              hideRoot={!isEmpty(request.variables)}
-              className="[&>li]:!pt-0"
-              data={request.variables ?? {}}
-            />
-          </Panel>
-        </>
-      )}
+      <PanelResizeHandle className="border-r border-primary dark:border-primary-dark" />
+      <Panel
+        id="details"
+        defaultSize={25}
+        minSize={25}
+        className="h-full p-4 flex flex-col gap-2"
+      >
+        <h2 className="text-heading dark:text-heading-dark font-medium text-lg">
+          Query
+        </h2>
+        <CodeBlock language="graphql" code={request.query} />
+        <h2 className="text-heading dark:text-heading-dark font-medium text-lg">
+          Variables
+        </h2>
+        <JSONTreeViewer
+          hideRoot={!isEmpty(request.variables)}
+          className="[&>li]:!pt-0"
+          data={request.variables ?? {}}
+        />
+      </Panel>
     </>
   );
 }
