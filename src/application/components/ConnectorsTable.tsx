@@ -44,8 +44,8 @@ export function ConnectorsTable({
                     {col === "status" && <Th>Status</Th>}
                     {col === "method" && <Th>Method</Th>}
                     {col === "errors" && (
-                      <Th>
-                        <div className="flex gap-2 items-center">
+                      <Th numeric>
+                        <div className="flex gap-2 items-center justify-end">
                           Errors{" "}
                           <Tooltip content="Total mapping errors">
                             <span>
@@ -86,7 +86,7 @@ export function ConnectorsTable({
                         )}
                         {col === "method" && <Td>{request?.method}</Td>}
                         {col === "errors" && (
-                          <Td>
+                          <Td numeric>
                             {response?.body?.selection?.errors?.length ?? 0}
                           </Td>
                         )}
