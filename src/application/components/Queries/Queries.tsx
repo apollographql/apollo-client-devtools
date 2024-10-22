@@ -39,6 +39,7 @@ import { HTTPStatusBadge } from "../HTTPStatusBadge";
 import { Heading } from "../Heading";
 import { ExternalLink } from "../ExternalLink";
 import { useMatchingConnectors } from "../../hooks/useMatchingConnectors";
+import { ConnectorsTable } from "../ConnectorsTable";
 
 enum QueryTabs {
   Variables = "Variables",
@@ -284,49 +285,11 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
                 Requests
               </Heading>
               {lastConnectorsRequest ? (
-                <Card>
-                  <CardBody>
-                    <Table interactive variant="striped" size="condensed">
-                      <Thead>
-                        <Tr>
-                          <Th>Method</Th>
-                          <Th>Status</Th>
-                          <Th>URL</Th>
-                        </Tr>
-                      </Thead>
-                      <Tbody>
-                        {lastConnectorsRequest.debuggingResult.data.map(
-                          (result) => {
-                            return (
-                              <Tooltip
-                                key={result.id}
-                                content="View full details"
-                                disableHoverableContent
-                              >
-                                <Tr
-                                  onClick={() => {
-                                    navigate(
-                                      `/connectors/${lastConnectorsRequest.id}/requests/${result.id}`
-                                    );
-                                  }}
-                                >
-                                  <Td>{result.request?.method}</Td>
-                                  <Td>
-                                    <HTTPStatusBadge
-                                      status={result.response?.status}
-                                      variant="terse"
-                                    />
-                                  </Td>
-                                  <Td>{result.request?.url}</Td>
-                                </Tr>
-                              </Tooltip>
-                            );
-                          }
-                        )}
-                      </Tbody>
-                    </Table>
-                  </CardBody>
-                </Card>
+                <ConnectorsTable
+                  data={lastConnectorsRequest.debuggingResult.data}
+                  resultId={lastConnectorsRequest.id}
+                  columns={["method", "status", "url"]}
+                />
               ) : (
                 <p className="text-placeholder dark:text-placeholder-dark text-sm">
                   No connectors requests for this query. Learn more about Apollo
