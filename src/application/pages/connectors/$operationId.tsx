@@ -13,6 +13,10 @@ import { CodeBlock } from "../../components/CodeBlock";
 import { JSONTreeViewer } from "../../components/JSONTreeViewer";
 import { isEmpty } from "../../utilities/isEmpty";
 import type { ConnectorsDebuggingResultPayloadWithId } from "../../../types";
+import { Breadcrumb } from "../../components/Breadcrumb";
+import { BreadcrumbItem } from "../../components/BreadcrumbItem";
+import { Heading } from "../../components/Heading";
+import { BreadcrumbLink } from "../../components/BreacrumbLink";
 
 export function loader({ params }: LoaderFunctionArgs) {
   const request = connectorsRequestsVar().find(
@@ -29,9 +33,14 @@ export function Route() {
   if (!request) {
     return (
       <SidebarLayout.Main className="!overflow-auto flex flex-col p-4 gap-4">
-        <h1 className="font-medium text-heading dark:text-heading-dark text-2xl">
-          All requests
-        </h1>
+        <Heading as="h1" size="2xl">
+          Connectors
+        </Heading>
+        <Breadcrumb>
+          <BreadcrumbItem isCurrentPage>
+            <BreadcrumbLink to="#">All requests</BreadcrumbLink>
+          </BreadcrumbItem>
+        </Breadcrumb>
         <Alert variant="error">Connectors request not found</Alert>
       </SidebarLayout.Main>
     );
@@ -50,9 +59,21 @@ export function Route() {
   return (
     <>
       <SidebarLayout.Main className="!overflow-auto flex flex-col p-4 gap-4">
-        <h1 className="font-medium text-heading dark:text-heading-dark text-2xl">
-          All requests {selectedURL ? "> " + selectedURL.pathname : ""}
-        </h1>
+        <Heading as="h1" size="2xl">
+          Connectors
+        </Heading>
+        <Breadcrumb>
+          <BreadcrumbItem isCurrentPage={!match}>
+            <BreadcrumbLink to={`/connectors/${request.id}`}>
+              All requests
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          {selectedURL && (
+            <BreadcrumbItem isCurrentPage>
+              <BreadcrumbLink to="#">{selectedURL?.pathname}</BreadcrumbLink>
+            </BreadcrumbItem>
+          )}
+        </Breadcrumb>
         <Outlet context={request} />
       </SidebarLayout.Main>
       <PanelResizeHandle className="border-r border-primary dark:border-primary-dark" />
