@@ -71,7 +71,11 @@ export function ConnectorsTable({
                       return (
                         <Fragment key={col}>
                           {col === "id" && <Td>{id}</Td>}
-                          {col === "url" && <Td>{request?.url}</Td>}
+                          {col === "url" && (
+                            <Td className="whitespace-nowrap">
+                              {request?.url}
+                            </Td>
+                          )}
                           {col === "status" && (
                             <Td>
                               <HTTPStatusBadge
