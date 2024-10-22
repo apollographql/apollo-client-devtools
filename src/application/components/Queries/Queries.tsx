@@ -275,6 +275,7 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
               </Heading>
               {lastConnectorsRequest ? (
                 <ConnectorsTable
+                  size="condensed"
                   data={lastConnectorsRequest.debuggingResult.data}
                   resultId={lastConnectorsRequest.id}
                   columns={["method", "status", "url"]}

@@ -228,6 +228,7 @@ export const Mutations = ({ clientId, explorerIFrame }: MutationsProps) => {
               </Heading>
               {lastConnectorsRequest ? (
                 <ConnectorsTable
+                  size="condensed"
                   data={lastConnectorsRequest.debuggingResult.data}
                   resultId={lastConnectorsRequest.id}
                   columns={["method", "status", "url"]}
