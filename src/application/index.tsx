@@ -105,6 +105,9 @@ export const initDevTools = () => {
     .request("getConnectorsRequests")
     .then((results) => {
       connectorsRequestsVar(results.map(assignConnectorsIds));
+    })
+    .catch(() => {
+      // Ignore errors
     });
 
   root.render(<AppProvider />);
