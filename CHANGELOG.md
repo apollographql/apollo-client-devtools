@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.18.12
+
+### Patch Changes
+
+- [#1566](https://github.com/apollographql/apollo-client-devtools/pull/1566) [`6ccc20e`](https://github.com/apollographql/apollo-client-devtools/commit/6ccc20ec3f72afba23f0b6f3cb605d0ef3ba1a33) Thanks [@github-actions](https://github.com/apps/github-actions)! - add error codes for new Apollo Client version
+
 ## 4.18.11
 
 ### Patch Changes
