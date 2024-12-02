@@ -93,58 +93,55 @@ const devtoolsRegistration = registerClient(
             <Disclosure.Button>
               Expose VSCode DevTools to another machine using port forwarding
             </Disclosure.Button>
-            <Disclosure.Panel>
-              <div className="flex flex-col gap-4">
-                <p>
-                  VSCode provides built-in support for port forwarding that
-                  allows you to forward the port from your local machine to a
-                  publically accessible url. Learn how to setup port forwarding
-                  in the{" "}
-                  <a
-                    rel="noopener noreferrer"
-                    target="_blank"
-                    href="https://code.visualstudio.com/docs/editor/port-forwarding#_how-to-use-local-port-forwarding"
-                  >
-                    VSCode docs
-                  </a>
-                  .
-                </p>
-                <p className="border-l-4 border-l-gray-400 dark:border-l-primary-dark pl-4">
-                  This upgrades your connection to the wss protocol.
-                </p>
-                <h4 className="flex items-center gap-1 text-md font-semibold font-heading text-heading dark:text-heading-dark">
-                  <IconWarningSolid className="size-4 text-icon-warning dark:text-icon-warning-dark" />{" "}
-                  Warning
-                </h4>
-                <p>
-                  By default, the forwarded port is <b>private</b> and requires
-                  you to authenticate with GitHub. Unfortunately VSCode does not
-                  offer a way to acquire an authentication token so you will
-                  need to change the port visibility to &quot;Public&quot;.
-                  Doing so allows anyone with the URL to connect their Apollo
-                  Client instance with your VSCode DevTools.
-                </p>
-                <p>
-                  <b>If you are fine with the public visibility</b>, copy the
-                  forwarded address, change the protocol from <code>ws</code> to{" "}
-                  <code>wss</code> and adjust your <code>registerClient</code>{" "}
-                  call accordingly:
-                  <CodeBlock
-                    language="javascript"
-                    code={`
+            <Disclosure.Panel className="flex flex-col gap-4">
+              <p>
+                VSCode provides built-in support for port forwarding that allows
+                you to forward the port from your local machine to a publically
+                accessible url. Learn how to setup port forwarding in the{" "}
+                <a
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  href="https://code.visualstudio.com/docs/editor/port-forwarding#_how-to-use-local-port-forwarding"
+                >
+                  VSCode docs
+                </a>
+                .
+              </p>
+              <p className="border-l-4 border-l-gray-400 dark:border-l-primary-dark pl-4">
+                This upgrades your connection to the wss protocol.
+              </p>
+              <h4 className="flex items-center gap-1 text-md font-semibold font-heading text-heading dark:text-heading-dark">
+                <IconWarningSolid className="size-4 text-icon-warning dark:text-icon-warning-dark" />{" "}
+                Warning
+              </h4>
+              <p>
+                By default, the forwarded port is <b>private</b> and requires
+                you to authenticate with GitHub. Unfortunately VSCode does not
+                offer a way to acquire an authentication token so you will need
+                to change the port visibility to &quot;Public&quot;. Doing so
+                allows anyone with the URL to connect their Apollo Client
+                instance with your VSCode DevTools.
+              </p>
+              <p>
+                <b>If you are fine with the public visibility</b>, copy the
+                forwarded address, change the protocol from <code>ws</code> to{" "}
+                <code>wss</code> and adjust your <code>registerClient</code>{" "}
+                call accordingly:
+                <CodeBlock
+                  language="javascript"
+                  code={`
 const devtoolsRegistration = registerClient(
   client,
   "wss://your-tunnel-url.devtunnels.ms/",
 );
             `.trim()}
-                  />
-                </p>
-                <p>
-                  If you want use a private connection, you will need to use the{" "}
-                  <code>devtunnel</code> CLI instead. See the next section for
-                  more information.
-                </p>
-              </div>
+                />
+              </p>
+              <p>
+                If you want use a private connection, you will need to use the{" "}
+                <code>devtunnel</code> CLI instead. See the next section for
+                more information.
+              </p>
             </Disclosure.Panel>
           </Disclosure>
 
