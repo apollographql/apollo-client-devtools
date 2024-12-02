@@ -151,85 +151,91 @@ const devtoolsRegistration = registerClient(
               Expose the VSCode Devtools to another machine using
               Microsoft&apos;s <code>devtunnel</code> CLI
             </Disclosure.Button>
-            <Disclosure.Panel>
+            <Disclosure.Panel className="flex flex-col gap-4">
               <p>
-                If you want to use a DevTunnel secured with a token, you need to
-                install the <code>devtunnel</code> CLI, as described here:
-                <br />
+                To create a secure dev tunnel with token authentication, use the{" "}
+                <code>devtunnel</code> CLI. Follow the{" "}
                 <a
                   rel="noopener noreferrer"
                   target="_blank"
                   href="https://learn.microsoft.com/en-us/azure/developer/dev-tunnels/get-started?tabs=macos#install"
                 >
-                  Installation instructions
-                </a>
-                <br />
-                After that, authenticate with your GitHub account:
+                  installation instructions
+                </a>{" "}
+                to install the CLI for your OS.
               </p>
-              <CodeBlock
-                language="bash"
-                copyable={false}
-                code={`
-devtunnel login
-            `.trim()}
-              />
-              <p>and create a DevTunnel with a port and a token:</p>
-              <CodeBlock
-                language="bash"
-                copyable={false}
-                code={`
+              <p>
+                Once installed, use the CLI to create and host a dev tunnel for
+                your client instance.
+              </p>
+              <ol className="list-inside list-decimal flex flex-col gap-4">
+                <li>
+                  Authenticate with your GitHub account.
+                  <CodeBlock
+                    language="bash"
+                    copyable={false}
+                    code="devtunnel login"
+                  />
+                </li>
+                <li>
+                  Create a dev tunnel with a port and a token.
+                  <CodeBlock
+                    language="bash"
+                    copyable={false}
+                    code={`
 devtunnel create
 devtunnel port create --port-number 7095 --protocol http
 devtunnel token --scope connect
             `.trim()}
-              />
-              <p>This will create a token to connect to your tunnel.</p>
-              <CodeBlock
-                language="bash"
-                copyable={false}
-                code={`
+                  />
+                </li>
+                <li>
+                  Copy the token from the output to your clipboard&mdash;you
+                  will need it in a moment.
+                  <CodeBlock
+                    language="bash"
+                    copyable={false}
+                    code={`
 Token tunnel ID: your-tunnel-id
 Token scope: connect
 Token lifetime: 1.00:00:00
 Token expiration: 2024-09-06 12:55:06 UTC
 Token: your-very-long-token
 `.trim()}
-              />
-              <p>
-                Note the token here - you will need it in a moment. <br />
-                You can now start your tunnel:
-              </p>
-              <p>
-                <em>
-                  Note the the tunnel url will be different for every call to{" "}
-                  <code>devtunnel host</code>!
-                </em>
-              </p>
-              <CodeBlock
-                language="bash"
-                copyable={false}
-                code={`
+                  />
+                </li>
+                <li>
+                  Host the tunnel.
+                  <CodeBlock
+                    language="bash"
+                    copyable={false}
+                    code={`
 devtunnel host
 `.trim()}
-              />
-              <CodeBlock
-                language="bash"
-                copyable={false}
-                code={`
+                  />
+                  <CodeBlock
+                    language="bash"
+                    copyable={false}
+                    code={`
 Hosting port: 7095
 Connect via browser: https://your-tunnel-url.devtunnels.ms
 Inspect network activity: https://your-tunnel-url.devtunnels.ms
 
 Ready to accept connections for tunnel: your-tunnel-id
 `.trim()}
-              />
+                  />
+                  <Admonition variant="note" className="mt-2">
+                    The tunnel url will be different each time you host the
+                    tunnel.
+                  </Admonition>
+                </li>
+              </ol>
               <p>
-                Now you can add the tunnel url and the token to your
-                <code>registerClient</code> call:
-              </p>
-              <CodeBlock
-                language="javascript"
-                code={`
+                Add the tunnel url and the token copied from step 3 to your
+                <code>registerClient</code> call.
+                <CodeBlock
+                  language="javascript"
+                  code={`
 const devtoolsRegistration = registerClient(client, [
   "wss://your-tunnel-url.devtunnels.ms",
   {
@@ -240,21 +246,24 @@ const devtoolsRegistration = registerClient(client, [
   },
 ]);
             `.trim()}
-              />
-              <p>
-                This requires that you use a WebSocket client that accepts a
-                non-standard option object with headers as the second argument.
-                <br />
-                If your WebSocket implementation does not support this, you can
-                use the <code>ws</code> package to polyfill this behavior:
+                />
               </p>
-              <CodeBlock
-                language="javascript"
-                code={`
+              <Admonition variant="note">
+                <p>
+                  This requires that you use a WebSocket client that accepts a
+                  non-standard option object with headers as the second
+                  argument. If your WebSocket implementation does not support
+                  this, you can use the <code>ws</code> package to polyfill this
+                  behavior:
+                </p>
+                <CodeBlock
+                  language="javascript"
+                  code={`
 import { WebSocket } from "ws";
 globalThis.WebSocket = WebSocket;
             `.trim()}
-              />
+                />
+              </Admonition>
             </Disclosure.Panel>
           </Disclosure>
 
