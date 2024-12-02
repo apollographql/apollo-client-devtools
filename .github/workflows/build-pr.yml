@@ -19,7 +19,7 @@ jobs:
       - run: npm ci
 
       # Build and output bunle stats to webpack-stats.json
-      - run: yarn build --env TARGET=chrome --json webpack-stats.json
+      - run: yarn build --env TARGET=chrome
 
       # Upload webpack-stats.json to use on relative-ci.yaml workflow
       - name: Upload webpack stats artifact

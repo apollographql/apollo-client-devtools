@@ -8,12 +8,12 @@
     "@angular/core": "17.3.12",
     "@angular/platform-browser": "17.3.12",
     "@angular/platform-browser-dynamic": "17.3.12",
-    "@apollo/client": "3.11.8",
-    "apollo-angular": "7.2.0",
+    "@apollo/client": "3.11.10",
+    "apollo-angular": "7.2.1",
     "graphql": "16.9.0",
     "graphql-ws": "5.16.0",
     "rxjs": "7.8.1",
-    "tslib": "2.7.0",
+    "tslib": "2.8.1",
     "zone.js": "0.14.7"
   },
   "scripts": {
@@ -21,8 +21,8 @@
     "build": "ng build"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "17.3.9",
-    "@angular/cli": "17.3.9",
+    "@angular-devkit/build-angular": "17.3.11",
+    "@angular/cli": "17.3.11",
     "@angular/compiler-cli": "17.3.12",
     "@types/node": "20.14.10",
     "ts-node": "10.9.2",

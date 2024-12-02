@@ -24,6 +24,7 @@ import { getRootCacheIds } from "./common/utils";
 import HighlightMatch from "../HighlightMatch";
 import { useActorEvent } from "../../hooks/useActorEvent";
 import { PageSpinner } from "../PageSpinner";
+import { isIgnoredError } from "../../utilities/ignoredErrors";
 
 const { Sidebar, Main } = SidebarLayout;
 
@@ -72,7 +73,7 @@ export function Cache({ clientId }: CacheProps) {
     }
   );
 
-  if (error) {
+  if (error && !isIgnoredError(error)) {
     throw error;
   }
 

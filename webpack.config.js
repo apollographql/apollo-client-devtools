@@ -3,6 +3,7 @@ import url from "url";
 import CopyPlugin from "copy-webpack-plugin";
 import TerserPlugin from "terser-webpack-plugin";
 import WebExtPlugin from "web-ext-plugin";
+import { StatsWriterPlugin } from "webpack-stats-plugin";
 import webpack from "webpack";
 import packageJson from "./package.json" with { type: "json" };
 
@@ -39,6 +40,19 @@ export default /** @returns {import("webpack").Configuration} */ (env) => {
       __IS_VSCODE__: IS_VSCODE,
     }),
   ];
+
+  if (env.NODE_ENV === "production") {
+    plugins.push(
+      new StatsWriterPlugin({
+        filename: "../webpack-stats.json",
+        stats: {
+          assets: true,
+          chunks: true,
+          modules: true,
+        },
+      })
+    );
+  }
 
   if (IS_EXTENSION) {
     plugins.push(

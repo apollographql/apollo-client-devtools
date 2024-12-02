@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import type { Reference } from "@apollo/client";
+import { loadDevMessages, loadErrorMessages } from "@apollo/client/dev";
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import { SchemaLink } from "@apollo/client/link/schema";
 
@@ -11,6 +12,9 @@ import * as Tooltip from "@radix-ui/react-tooltip";
 
 import { getRpcClient } from "../extension/devtools/panelRpcClient";
 import { createSchemaWithRpcClient } from "./schema";
+
+loadDevMessages();
+loadErrorMessages();
 
 const rpcClient = getRpcClient();
 const schema = createSchemaWithRpcClient(rpcClient);

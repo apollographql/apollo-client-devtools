@@ -25,6 +25,7 @@ import { useActorEvent } from "../../hooks/useActorEvent";
 import { SearchField } from "../SearchField";
 import HighlightMatch from "../HighlightMatch";
 import { PageSpinner } from "../PageSpinner";
+import { isIgnoredError } from "../../utilities/ignoredErrors";
 
 enum QueryTabs {
   Variables = "Variables",
@@ -80,7 +81,7 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
     }
   );
 
-  if (error) {
+  if (error && !isIgnoredError(error)) {
     throw error;
   }
 
