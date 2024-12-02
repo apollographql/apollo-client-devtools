@@ -81,10 +81,10 @@ const devtoolsRegistration = registerClient(
               Ensure your application can reach the DevTools server port
             </Disclosure.Button>
             <Disclosure.Panel>
-              The VSCode DevTools extension starts a WebSocket server on port
-              7095. Make sure your application can reach this port, e.g. by
-              checking that you are in the same network and the port is opened
-              in your firewall.
+              The VSCode DevTools extension starts a WebSocket server on port{" "}
+              <code>7095</code>. Make sure your application can reach this port,
+              e.g. by checking that you are in the same network and the port is
+              opened in your firewall.
             </Disclosure.Panel>
           </Disclosure>
 
