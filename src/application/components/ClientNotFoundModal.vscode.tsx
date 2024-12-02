@@ -23,29 +23,38 @@ export function ClientNotFoundModal({
       <Modal.Header>
         <Modal.Title>Waiting for connection from Apollo Client.</Modal.Title>
         <Modal.Description>
-          No Apollo Client instance has connected to the VSCode DevTools yet.
-          <br />
-          Please follow these instructions to connect your client.
+          An Apollo Client instance has not connected to the VSCode DevTools
+          extension yet, either because it was never created or because it was
+          not registered.
         </Modal.Description>
-        <ol className="py-2 list-inside list-decimal flex flex-col gap-1">
-          <li>
-            Install the <code>@apollo/client-devtools-vscode package</code>
-            <CodeBlock
-              language="bash" // disabling the copy button because it makes a one-line code snippet too big
-              copyable={false}
-              code={`
+      </Modal.Header>
+      <Modal.Body className="flex flex-col gap-4">
+        <p>
+          To connect your client with the VSCode extension, use the following
+          instructions.
+        </p>
+        <Disclosure defaultOpen>
+          <Disclosure.Button>Setup your client</Disclosure.Button>
+          <Disclosure.Panel>
+            <ol className="list-inside list-decimal flex flex-col gap-4">
+              <li>
+                Install the <code>@apollo/client-devtools-vscode package</code>
+                <CodeBlock
+                  language="bash" // disabling the copy button because it makes a one-line code snippet too big
+                  copyable={false}
+                  code={`
 npm install @apollo/client-devtools-vscode
             `.trim()}
-            />
-          </li>
-          <li>
-            After initializing your <code>ApolloClient</code> instance, call
-            <code>registerClient</code> with your client instance.
-            <CodeBlock
-              language="javascript"
-              // disabling the copy button because it overlaps the import path too much - might consider enabling it after visual improvements
-              copyable={false}
-              code={`
+                />
+              </li>
+              <li>
+                After initializing your <code>ApolloClient</code> instance, call
+                <code>registerClient</code> with your client instance.
+                <CodeBlock
+                  language="javascript"
+                  // disabling the copy button because it overlaps the import path too much - might consider enabling it after visual improvements
+                  copyable={false}
+                  code={`
 import { registerClient } from "@apollo/client-devtools-vscode";
 
 // ...
@@ -59,16 +68,16 @@ const devtoolsRegistration = registerClient(
   "ws://localhost:7095",
 );
             `.trim()}
-            />
-          </li>
-        </ol>
-        <Modal.Description>
+                />
+              </li>
+            </ol>
+          </Disclosure.Panel>
+        </Disclosure>
+        <p className="mt-4">
           If you&apos;ve already finished this setup and you&apos;re still not
           getting a connection, please try one of the following suggestions.
-        </Modal.Description>
-      </Modal.Header>
-      <Modal.Body>
-        <div className="mt-4 flex flex-col gap-2">
+        </p>
+        <div className="flex flex-col gap-2">
           <Disclosure>
             <Disclosure.Button>
               Ensure your application can reach the DevTools server port
@@ -145,7 +154,7 @@ const devtoolsRegistration = registerClient(
                 language="bash"
                 copyable={false}
                 code={`
-devtunnel login 
+devtunnel login
             `.trim()}
               />
               <p>and create a DevTunnel with a port and a token:</p>
@@ -153,9 +162,9 @@ devtunnel login
                 language="bash"
                 copyable={false}
                 code={`
-devtunnel create 
+devtunnel create
 devtunnel port create --port-number 7095 --protocol http
-devtunnel token --scope connect 
+devtunnel token --scope connect
             `.trim()}
               />
               <p>This will create a token to connect to your tunnel.</p>
