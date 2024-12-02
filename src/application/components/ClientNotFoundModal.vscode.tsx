@@ -4,6 +4,7 @@ import { Disclosure } from "./Disclosure";
 import { GitHubIssueLink, SECTIONS, LABELS } from "./GitHubIssueLink";
 import { Modal } from "./Modal";
 import { expectTypeOf } from "expect-type";
+import { Admonition } from "./Admonition";
 
 expectTypeOf<typeof import("./ClientNotFoundModal.jsx")>().toMatchTypeOf<
   typeof import("./ClientNotFoundModal.vscode.jsx")
@@ -107,9 +108,9 @@ const devtoolsRegistration = registerClient(
                 </a>
                 .
               </p>
-              <p className="border-l-4 border-l-gray-400 dark:border-l-primary-dark pl-4">
+              <Admonition variant="note">
                 This upgrades your connection to the wss protocol.
-              </p>
+              </Admonition>
               <h4 className="flex items-center gap-1 text-md font-semibold font-heading text-heading dark:text-heading-dark">
                 <IconWarningSolid className="size-4 text-icon-warning dark:text-icon-warning-dark" />{" "}
                 Warning
