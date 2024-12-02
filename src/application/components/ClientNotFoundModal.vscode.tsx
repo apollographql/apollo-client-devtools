@@ -57,9 +57,7 @@ npm install @apollo/client-devtools-vscode
                   code={`
 import { registerClient } from "@apollo/client-devtools-vscode";
 
-// ...
-
-const client = new ApolloClient({ /* ... */});
+const client = new ApolloClient({ /* ... */ });
 
 // we recommend wrapping this statement in a check for e.g. process.env.NODE_ENV === "development"
 const devtoolsRegistration = registerClient(
