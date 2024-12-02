@@ -39,7 +39,7 @@ export function Admonition({ children, className, variant }: AdmonitionProps) {
         <Icon className="size-4" />{" "}
         <span className="uppercase font-semibold">{title}</span>
       </div>
-      <p className="mt-1">{children}</p>
+      <div className="mt-1">{children}</div>
     </aside>
   );
 }
