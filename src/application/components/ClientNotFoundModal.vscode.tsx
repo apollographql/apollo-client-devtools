@@ -98,7 +98,11 @@ const devtoolsRegistration = registerClient(
                 This VSCode feature allows you to forward the port from your
                 local machine to a publically accessible url. <br />
                 See{" "}
-                <a href="https://code.visualstudio.com/docs/editor/port-forwarding">
+                <a
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  href="https://code.visualstudio.com/docs/editor/port-forwarding"
+                >
                   How to use local port forwarding
                 </a>{" "}
                 for more information.
