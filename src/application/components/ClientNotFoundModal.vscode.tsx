@@ -155,7 +155,11 @@ const devtoolsRegistration = registerClient(
                 If you want to use a DevTunnel secured with a token, you need to
                 install the <code>devtunnel</code> CLI, as described here:
                 <br />
-                <a href="https://learn.microsoft.com/en-us/azure/developer/dev-tunnels/get-started?tabs=macos#install">
+                <a
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  href="https://learn.microsoft.com/en-us/azure/developer/dev-tunnels/get-started?tabs=macos#install"
+                >
                   Installation instructions
                 </a>
                 <br />
