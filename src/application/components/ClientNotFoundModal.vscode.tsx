@@ -50,7 +50,7 @@ npm install @apollo/client-devtools-vscode
                 />
               </li>
               <li>
-                After initializing your <code>ApolloClient</code> instance, call
+                After initializing your <code>ApolloClient</code> instance, call{" "}
                 <code>registerClient</code> with your client instance.
                 <CodeBlock
                   language="javascript"
