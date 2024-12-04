@@ -20,8 +20,6 @@ export function SettingsModal({
         Devtools version:{" "}
         <ExternalLink
           className="font-code"
-          target="_blank"
-          rel="noopener noreferrer"
           href={`https://github.com/apollographql/apollo-client-devtools/releases/tag/v${VERSION}`}
         >
           {VERSION}

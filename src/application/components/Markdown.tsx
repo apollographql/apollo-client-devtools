@@ -67,8 +67,6 @@ const components: NonNullable<Options["components"]> = {
       href="#"
       {...props}
       className="font-semibold underline-offset-4 underline"
-      target="_blank"
-      rel="noopener"
     />
   ),
   pre: ({ children }) => children as JSX.Element,

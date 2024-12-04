@@ -81,19 +81,11 @@ function SnapshotCardContents({ version }: { version: SnapshotVersion }) {
 
       <section>
         <div className="mb-2">
-          <ExternalLink
-            href={pullRequest.user.html_url}
-            target="_blank"
-            rel="noreferrer"
-          >
+          <ExternalLink href={pullRequest.user.html_url}>
             @{pullRequest.user.login}
           </ExternalLink>{" "}
           opened{" "}
-          <ExternalLink
-            href={pullRequest.html_url}
-            target="_blank"
-            rel="noreferrer"
-          >
+          <ExternalLink href={pullRequest.html_url}>
             #{pullRequest.number}
           </ExternalLink>{" "}
           on {formatDate(Date.parse(pullRequest.created_at))}:
@@ -112,8 +104,6 @@ function SnapshotCardContents({ version }: { version: SnapshotVersion }) {
               Merged {formatDate(Date.parse(pullRequest.merged_at))} into{" "}
               <ExternalLink
                 href={`https://github.com/apollographql/apollo-client/commit/${pullRequest.merge_commit_sha}`}
-                target="_blank"
-                rel="noreferrer"
               >
                 {pullRequest.merge_commit_sha.slice(0, 7)}
               </ExternalLink>
@@ -188,8 +178,6 @@ function ReleaseCardContents({ version }: { version: string }) {
         <ExternalLink
           className="flex gap-1 items-center mt-2"
           href={`https://github.com/apollographql/apollo-client/releases/tag/v${version}`}
-          target="_blank"
-          rel="noreferrer"
         >
           View release in GitHub <IconOutlink className="size-3" />
         </ExternalLink>

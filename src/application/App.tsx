@@ -148,10 +148,8 @@ export const App = () => {
         <div className="flex items-center border-b border-b-primary dark:border-b-primary-dark gap-4 px-4">
           <ExternalLink
             href="https://go.apollo.dev/c/docs"
-            target="_blank"
             title="Apollo Client developer documentation"
             className="block"
-            rel="noreferrer"
           >
             <Logo
               role="img"
@@ -182,8 +180,6 @@ export const App = () => {
                       ? `https://github.com/apollographql/apollo-client/pull/${parseSnapshotRelease(client.version).prNumber}`
                       : `https://github.com/apollographql/apollo-client/releases/tag/v${client.version}`
                   }
-                  target="_blank"
-                  rel="noreferrer"
                 >
                   <Badge variant="info" className="cursor-pointer">
                     Apollo Client <span className="lowercase">v</span>
