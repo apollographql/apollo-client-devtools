@@ -1,1 +1,2 @@
 src/extension/vscode/client.ts
+src/application/components/ClientNotFoundModal.vscode.tsx
