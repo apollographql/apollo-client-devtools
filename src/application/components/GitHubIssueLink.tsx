@@ -63,8 +63,6 @@ export const GitHubIssueLink = forwardRef<
       {...props}
       ref={ref}
       className={className}
-      rel="noreferrer noopener"
-      target="_blank"
       href={`https://github.com/apollographql/${repository}/issues/new?${params}`}
     >
       {children}

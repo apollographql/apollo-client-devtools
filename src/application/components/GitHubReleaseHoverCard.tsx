@@ -72,8 +72,6 @@ function SnapshotCardContents({ version }: { version: SnapshotVersion }) {
             <ExternalLink
               className="flex gap-1 items-center mt-2"
               href={`https://github.com/apollographql/apollo-client/pull/${release.prNumber}`}
-              target="_blank"
-              rel="noreferrer"
             >
               View pull request in GitHub <IconOutlink className="size-3" />
             </ExternalLink>

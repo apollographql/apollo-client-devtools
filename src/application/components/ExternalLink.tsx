@@ -4,5 +4,5 @@ export const ExternalLink = forwardRef<
   HTMLAnchorElement,
   ComponentProps<"a"> & { href: string }
 >((props, ref) => {
-  return <a {...props} ref={ref} />;
+  return <a target="_blank" rel="noopener noreferrer" {...props} ref={ref} />;
 });
