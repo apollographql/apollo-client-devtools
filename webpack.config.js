@@ -36,6 +36,7 @@ export default /** @returns {import("webpack").Configuration} */ (env) => {
     new webpack.DefinePlugin({
       VERSION: JSON.stringify(packageJson.version),
       __IS_FIREFOX__: target === "firefox",
+      __IS_CHROME__: target === "chrome",
       __IS_EXTENSION__: IS_EXTENSION,
       __IS_VSCODE__: IS_VSCODE,
     }),

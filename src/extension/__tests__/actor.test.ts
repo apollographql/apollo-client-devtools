@@ -131,7 +131,7 @@ test("does not add listener to adapter until first subscribed actor listener", (
 
   expect(adapter.addListener).not.toHaveBeenCalled();
 
-  actor.send({ type: "initializePanel" });
+  actor.send({ type: "initializePanel", initialContext: {} });
   expect(adapter.addListener).not.toHaveBeenCalled();
 
   actor.on("initializePanel", () => {});

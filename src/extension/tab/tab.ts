@@ -6,8 +6,6 @@ import {
   createWindowMessageAdapter,
 } from "../messageAdapters";
 
-declare const __IS_FIREFOX__: boolean;
-
 const portAdapter = createPortMessageAdapter(() =>
   browser.runtime.connect({ name: "tab" })
 );

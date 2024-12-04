@@ -31,7 +31,7 @@ async function createDevtoolsPanel() {
     } else {
       createMessageBridge(createWindowMessageAdapter(window), portAdapter);
 
-      panelWindow.send({ type: "initializePanel" });
+      panelWindow.send({ type: "initializePanel", initialContext: {} });
 
       connectedToPanel = true;
     }

@@ -30,6 +30,10 @@ export default {
   testEnvironment: "jsdom",
   globals: {
     VERSION: "0.0.0",
+    __IS_FIREFOX__: false,
+    __IS_CHROME__: true,
+    __IS_VSCODE__: false,
+    __IS_EXTENSION__: true,
   },
   testPathIgnorePatterns: [
     "<rootDir>/build",

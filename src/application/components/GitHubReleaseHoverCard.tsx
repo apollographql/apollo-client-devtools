@@ -14,6 +14,7 @@ import {
 } from "../utilities/github";
 import { useGitHubApi } from "../hooks/useGitHubAPI";
 import { StatusBadge } from "./StatusBadge";
+import { ExternalLink } from "./ExternalLink";
 
 interface GitHubReleaseHoverCardProps {
   children?: ReactNode;
@@ -68,27 +69,25 @@ function SnapshotCardContents({ version }: { version: SnapshotVersion }) {
             <div className="flex gap-1 items-center text-xs font-bold uppercase text-secondary dark:text-secondary-dark">
               Published {formatDate(parseSnapshotTimestamp(release.timestamp))}
             </div>
-            <a
+            <ExternalLink
               className="flex gap-1 items-center mt-2"
               href={`https://github.com/apollographql/apollo-client/pull/${release.prNumber}`}
-              target="_blank"
-              rel="noreferrer"
             >
               View pull request in GitHub <IconOutlink className="size-3" />
-            </a>
+            </ExternalLink>
           </>
         )}
       </header>
 
       <section>
         <div className="mb-2">
-          <a href={pullRequest.user.html_url} target="_blank" rel="noreferrer">
+          <ExternalLink href={pullRequest.user.html_url}>
             @{pullRequest.user.login}
-          </a>{" "}
+          </ExternalLink>{" "}
           opened{" "}
-          <a href={pullRequest.html_url} target="_blank" rel="noreferrer">
+          <ExternalLink href={pullRequest.html_url}>
             #{pullRequest.number}
-          </a>{" "}
+          </ExternalLink>{" "}
           on {formatDate(Date.parse(pullRequest.created_at))}:
         </div>
         <h2 className="text-lg text-heading dark:text-heading-dark font-medium mb-2">
@@ -103,13 +102,11 @@ function SnapshotCardContents({ version }: { version: SnapshotVersion }) {
               icon={<IconBranch />}
             >
               Merged {formatDate(Date.parse(pullRequest.merged_at))} into{" "}
-              <a
+              <ExternalLink
                 href={`https://github.com/apollographql/apollo-client/commit/${pullRequest.merge_commit_sha}`}
-                target="_blank"
-                rel="noreferrer"
               >
                 {pullRequest.merge_commit_sha.slice(0, 7)}
-              </a>
+              </ExternalLink>
             </StatusBadge>
           ) : pullRequest.state === "closed" ? (
             <StatusBadge
@@ -178,14 +175,12 @@ function ReleaseCardContents({ version }: { version: string }) {
         <div className="flex gap-1 items-center text-xs font-bold uppercase text-secondary dark:text-secondary-dark">
           Published {formatDate(Date.parse(release.published_at))}
         </div>
-        <a
+        <ExternalLink
           className="flex gap-1 items-center mt-2"
           href={`https://github.com/apollographql/apollo-client/releases/tag/v${version}`}
-          target="_blank"
-          rel="noreferrer"
         >
           View release in GitHub <IconOutlink className="size-3" />
-        </a>
+        </ExternalLink>
       </header>
       <Markdown>{release.body}</Markdown>
     </div>
