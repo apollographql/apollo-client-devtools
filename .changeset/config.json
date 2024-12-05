@@ -5,7 +5,7 @@
     { "repo": "apollographql/apollo-client-devtools" }
   ],
   "commit": false,
-  "fixed": [],
+  "fixed": [["apollo-client-devtools", "@apollo/client-devtools-vscode"]],
   "linked": [],
   "access": "public",
   "baseBranch": "main",
