@@ -2,8 +2,8 @@ import { expectTypeOf } from "expect-type";
 import { Modal } from "../Modal";
 import { Disclosure } from "../Disclosure";
 import { useDevToolsSelector } from "../../machines/devtoolsMachine";
-import { VSCodeCommandButton } from "../VSCode/VSCodeCommandButton";
-import { VSCodeSettingButton } from "../VSCode/VSCodeSettingButton";
+import { VSCodeCommandButton } from "../VSCode/VSCodeCommandButton.vscode";
+import { VSCodeSettingButton } from "../VSCode/VSCodeSettingButton.vscode";
 import { ButtonGroup } from "../ButtonGroup";
 
 expectTypeOf<typeof import("./PortNotOpenModal.jsx")>().toMatchTypeOf<
