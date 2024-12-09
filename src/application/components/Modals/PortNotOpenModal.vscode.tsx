@@ -14,10 +14,10 @@ interface ErrorModalProps {
   open: boolean;
 }
 
-const StartCommandLabel = "Apollo: Start Apollo Client DevTools Server";
-const StartCommand = "apollographql/startDevToolsServer";
-const StopCommandLabel = "Apollo: Stop Apollo Client DevTools Server";
-const PortSetting = "apollographql.devTools.serverPort";
+const startCommandLabel = "Apollo: Start Apollo Client DevTools Server";
+const startCommand = "apollographql/startDevToolsServer";
+const stopCommandLabel = "Apollo: Stop Apollo Client DevTools Server";
+const portSetting = "apollographql.devTools.serverPort";
 
 export function PortNotOpenModal({ open }: ErrorModalProps) {
   const port = useDevToolsSelector(
@@ -47,7 +47,7 @@ export function PortNotOpenModal({ open }: ErrorModalProps) {
               <ul className="list-disc list-outside ml-4">
                 <li>
                   By stopping the server in that other instance (e.g. by running
-                  the <code>&quot;{StopCommandLabel}&quot;</code> command or by
+                  the <code>&quot;{stopCommandLabel}&quot;</code> command or by
                   closing the Workspace)
                 </li>
                 <li>
@@ -56,10 +56,10 @@ export function PortNotOpenModal({ open }: ErrorModalProps) {
                 </li>
               </ul>
               <VSCodeCommandButton
-                command={StartCommand}
+                command={startCommand}
                 className="ml-auto mt-2"
               >
-                {StartCommandLabel}
+                {startCommandLabel}
               </VSCodeCommandButton>
             </Disclosure.Panel>
           </Disclosure>
@@ -112,10 +112,10 @@ export function PortNotOpenModal({ open }: ErrorModalProps) {
                 </li>
               </ul>
               <ButtonGroup className="justify-end mt-2">
-                <VSCodeCommandButton command={StartCommand}>
-                  {StartCommandLabel}
+                <VSCodeCommandButton command={startCommand}>
+                  {startCommandLabel}
                 </VSCodeCommandButton>
-                <VSCodeSettingButton settingsKey={PortSetting}>
+                <VSCodeSettingButton settingsKey={portSetting}>
                   Open Settings
                 </VSCodeSettingButton>
               </ButtonGroup>
@@ -128,16 +128,16 @@ export function PortNotOpenModal({ open }: ErrorModalProps) {
             <Disclosure.Panel>
               <p>
                 You might have stopped the DevTools Server with the{" "}
-                <code>&quot;{StopCommandLabel}&quot;</code> command.
+                <code>&quot;{stopCommandLabel}&quot;</code> command.
                 <br />
                 You can start it again with the{" "}
-                <code>&quot;{StartCommandLabel}&quot;</code> command.
+                <code>&quot;{startCommandLabel}&quot;</code> command.
               </p>
               <VSCodeCommandButton
-                command={StartCommand}
+                command={startCommand}
                 className="ml-auto mt-2"
               >
-                {StartCommandLabel}
+                {startCommandLabel}
               </VSCodeCommandButton>
             </Disclosure.Panel>
           </Disclosure>
