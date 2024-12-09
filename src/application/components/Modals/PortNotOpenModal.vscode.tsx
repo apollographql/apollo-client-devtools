@@ -116,7 +116,7 @@ export function PortNotOpenModal({ open }: ErrorModalProps) {
                   {startCommandLabel}
                 </VSCodeCommandButton>
                 <VSCodeSettingButton settingsKey={portSetting}>
-                  Open Settings
+                  Open settings
                 </VSCodeSettingButton>
               </ButtonGroup>
             </Disclosure.Panel>

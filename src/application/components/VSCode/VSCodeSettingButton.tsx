@@ -1,5 +1,5 @@
 import { getPanelActor } from "../../../extension/devtools/panelActor";
-import IconRun from "@apollo/icons/default/IconRun.svg";
+import IconSettings from "@apollo/icons/default/IconSettings.svg";
 import { Button, type ButtonProps } from "../Button";
 import { forwardRef } from "react";
 
@@ -13,7 +13,7 @@ export const VSCodeSettingButton = forwardRef<
     <Button
       variant="primary"
       size="sm"
-      icon={<IconRun />}
+      icon={<IconSettings />}
       onClick={(e) => {
         e.preventDefault();
         getPanelActor(window).send({
