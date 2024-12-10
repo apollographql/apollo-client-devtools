@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { useReactiveVar, gql, useQuery } from "@apollo/client";
-import { useMachine } from "@xstate/react";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { currentScreen, Screens } from "./components/Layouts/Navigation";
@@ -23,8 +22,8 @@ import IconGitHubSolid from "@apollo/icons/small/IconGitHubSolid.svg";
 import { SettingsModal } from "./components/Layouts/SettingsModal";
 import Logo from "@apollo/icons/logos/LogoSymbol.svg";
 import { BannerAlert } from "./components/BannerAlert";
-import { devtoolsMachine } from "./machines/devtoolsMachine";
-import { ClientNotFoundModal } from "./components/ClientNotFoundModal";
+import { useDevToolsActorRef } from "./machines/devtoolsMachine";
+import { ErrorModals } from "./components/ErrorModals/ErrorModals";
 import { ButtonGroup } from "./components/ButtonGroup";
 import {
   GitHubIssueLink,
@@ -41,6 +40,7 @@ import { useActorEvent } from "./hooks/useActorEvent";
 import { removeClient } from ".";
 import { PageError } from "./components/PageError";
 import { SidebarLayout } from "./components/Layouts/SidebarLayout";
+import { ExternalLink } from "./components/ExternalLink";
 
 const APP_QUERY: TypedDocumentNode<AppQuery, AppQueryVariables> = gql`
   query AppQuery {
@@ -74,26 +74,13 @@ ${SECTIONS.devtoolsVersion}
 `;
 
 const stableEmptyClients: Required<AppQuery["clients"]> = [];
-const noop = () => {};
 
 export const App = () => {
-  const [snapshot, send] = useMachine(
-    devtoolsMachine.provide({
-      actions: {
-        resetStore: () => {
-          apolloClient.clearStore().catch(noop);
-        },
-      },
-    })
-  );
-  const {
-    data,
-    client: apolloClient,
-    refetch,
-  } = useQuery(APP_QUERY, { errorPolicy: "all" });
+  const { send } = useDevToolsActorRef();
+  const { data, refetch } = useQuery(APP_QUERY, { errorPolicy: "all" });
 
   useActorEvent("registerClient", () => {
-    send({ type: "connect" });
+    send({ type: "client.register" });
     // Unfortunately after we clear the store above, the query ends up "stuck"
     // holding onto the old list of clients even if we manually write a cache
     // update to properly resolve the list. Instead we refetch the list again to
@@ -102,17 +89,12 @@ export const App = () => {
   });
 
   useActorEvent("clientTerminated", (message) => {
-    // Disconnect if we are terminating the last client. We assume that 1 client
-    // means we are terminating the selected client
-    if (clients.length === 1) {
-      send({ type: "disconnect" });
-    }
-
+    send({ type: "client.terminated" });
     removeClient(message.clientId);
   });
 
   useActorEvent("pageNavigated", () => {
-    send({ type: "disconnect" });
+    send({ type: "client.setCount", count: 0 });
   });
 
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -149,18 +131,14 @@ export const App = () => {
 
   useEffect(() => {
     if (clients.length) {
-      send({ type: "connect" });
+      send({ type: "client.setCount", count: clients.length });
     }
   }, [send, clients.length]);
 
   return (
     <>
       <SettingsModal open={settingsOpen} onOpen={setSettingsOpen} />
-      <ClientNotFoundModal
-        open={snapshot.context.modalOpen}
-        onClose={() => send({ type: "closeModal" })}
-        onRetry={() => send({ type: "retry" })}
-      />
+      <ErrorModals />
       <BannerAlert />
       <Tabs
         value={selected}
@@ -168,12 +146,10 @@ export const App = () => {
         className="flex flex-col h-screen bg-primary dark:bg-primary-dark"
       >
         <div className="flex items-center border-b border-b-primary dark:border-b-primary-dark gap-4 px-4">
-          <a
+          <ExternalLink
             href="https://go.apollo.dev/c/docs"
-            target="_blank"
             title="Apollo Client developer documentation"
             className="block"
-            rel="noreferrer"
           >
             <Logo
               role="img"
@@ -182,7 +158,7 @@ export const App = () => {
               fill="currentColor"
               className="text-icon-primary dark:text-icon-primary-dark"
             />
-          </a>
+          </ExternalLink>
           <Divider orientation="vertical" />
           <Tabs.List className="-mb-px">
             <Tabs.Trigger value={Screens.Queries}>
@@ -197,21 +173,19 @@ export const App = () => {
           <div className="ml-auto flex-1 justify-end flex items-center gap-2 h-full">
             {client?.version && (
               <GitHubReleaseHoverCard version={client.version}>
-                <a
+                <ExternalLink
                   className="no-underline"
                   href={
                     isSnapshotRelease(client.version)
                       ? `https://github.com/apollographql/apollo-client/pull/${parseSnapshotRelease(client.version).prNumber}`
                       : `https://github.com/apollographql/apollo-client/releases/tag/v${client.version}`
                   }
-                  target="_blank"
-                  rel="noreferrer"
                 >
                   <Badge variant="info" className="cursor-pointer">
                     Apollo Client <span className="lowercase">v</span>
                     {client.version}
                   </Badge>
-                </a>
+                </ExternalLink>
               </GitHubReleaseHoverCard>
             )}
             {clients.length > 1 && (

@@ -18,15 +18,17 @@ interface ModalProps {
   className?: string;
   children: ReactNode;
   open: boolean;
-  onClose: (value: boolean) => void;
+  onClose?: (value: boolean) => void;
   size: "sm" | "md" | "lg" | "xl";
 }
+
+function noop() {}
 
 export function Modal({
   className,
   children,
   open,
-  onClose,
+  onClose = noop,
   size,
 }: ModalProps) {
   return (

@@ -1,5 +1,8 @@
-import { initDevTools } from "../../application";
+import { forwardDevToolsActorEvent } from "../../application";
 import "./panel.css";
 import { getPanelActor } from "./panelActor";
 
-getPanelActor(window).on("initializePanel", initDevTools);
+forwardDevToolsActorEvent(getPanelActor(window), [
+  "initializePanel",
+  "port.changed",
+]);
