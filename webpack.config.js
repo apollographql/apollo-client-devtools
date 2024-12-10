@@ -27,6 +27,8 @@ export default /** @returns {import("webpack").Configuration} */ (env) => {
           devtool: false,
         };
 
+  const TARGET_DIR = path.resolve(__dirname, env.TARGET_DIR ?? "build");
+
   if (!target) {
     throw new Error("Must set a `TARGET`");
   }
@@ -61,19 +63,19 @@ export default /** @returns {import("webpack").Configuration} */ (env) => {
         patterns: [
           {
             from: "./src/extension/devtools/panel.html",
-            to: path.resolve(__dirname, "build"),
+            to: TARGET_DIR,
           },
           {
             from: "./src/extension/devtools/devtools.html",
-            to: path.resolve(__dirname, "build"),
+            to: TARGET_DIR,
           },
           {
             from: "./src/extension/images",
-            to: path.resolve(__dirname, "build/images"),
+            to: path.resolve(TARGET_DIR, "images"),
           },
           {
             from: `./src/extension/${target}/manifest.json`,
-            to: path.resolve(__dirname, "build/manifest.json"),
+            to: path.resolve(TARGET_DIR, "manifest.json"),
           },
         ],
       })
@@ -84,7 +86,7 @@ export default /** @returns {import("webpack").Configuration} */ (env) => {
       new WebExtPlugin({
         browserConsole: true,
         runLint: false,
-        sourceDir: path.resolve(__dirname, "build"),
+        sourceDir: TARGET_DIR,
         startUrl: "http://localhost:3000",
         target: WEB_EXT_TARGETS[target],
       })
@@ -113,7 +115,7 @@ export default /** @returns {import("webpack").Configuration} */ (env) => {
             hook: "./src/extension/tab/hook.ts",
           },
     output: {
-      path: path.join(__dirname, "build"),
+      path: TARGET_DIR,
       filename: "[name].js",
       chunkFormat: "commonjs",
     },
@@ -181,7 +183,7 @@ export default /** @returns {import("webpack").Configuration} */ (env) => {
               "vscode-client": "./src/extension/vscode/client.ts",
             },
             output: {
-              path: path.join(__dirname, "build"),
+              path: TARGET_DIR,
               filename: "[name].js",
               chunkFormat: "module",
               library: {
@@ -207,14 +209,6 @@ export default /** @returns {import("webpack").Configuration} */ (env) => {
             plugins: [
               new CopyPlugin({
                 patterns: [
-                  {
-                    from: "./package.vscode.json",
-                    to: path.resolve(__dirname, "build", "package.json"),
-                  },
-                  {
-                    from: "./README.vscode.md",
-                    to: path.resolve(__dirname, "build", "README.md"),
-                  },
                   {
                     from: "./LICENSE",
                     to: path.resolve(__dirname, "build", "LICENSE.md"),

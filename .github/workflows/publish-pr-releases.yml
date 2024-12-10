@@ -24,4 +24,4 @@ jobs:
       - run: npm ci
 
       - name: Publish to pkg.pr.new
-        run: npm run pkg-pr-new-publish
+        run: npx pkg-pr-new publish  --no-template ./packages/apollo-client-devtools ./packages/client-devtools-vscode

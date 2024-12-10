@@ -1,11 +1,16 @@
 {
   "name": "@apollo/client-devtools-vscode",
-  "version": "4.18.4-pre.0",
+  "version": "4.18.17",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/apollographql/apollo-client-devtools.git"
   },
-  "keywords": ["apollo", "apollo-client", "devtools", "vscode"],
+  "keywords": [
+    "apollo",
+    "apollo-client",
+    "devtools",
+    "vscode"
+  ],
   "type": "module",
   "exports": {
     ".": "./vscode-client.js",
@@ -19,9 +24,7 @@
   "author": "packages@apollographql.com",
   "license": "MIT",
   "files": [
-    "vscode-client.js",
-    "vscode-server.js",
-    "panel.js",
+    "*.js",
     "*.d.ts",
     "package.json",
     "LICENSE.md",
@@ -32,5 +35,10 @@
   },
   "dependencies": {
     "zen-observable": "^0.8.0"
+  },
+  "scripts": {
+    "clean": "git clean -Xf .",
+    "build": "cd ../..; webpack --env NODE_ENV=production --env TARGET=vscode --env TARGET_DIR=packages/client-devtools-vscode",
+    "prepack": "npm run clean && npm run build && cp ../../LICENSE ./LICENSE.md && cp ../../dist/src/extension/vscode/server.d.ts vscode-server.d.ts && cp ../../dist/src/extension/vscode/client.d.ts vscode-client.d.ts"
   }
 }

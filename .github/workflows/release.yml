@@ -56,15 +56,19 @@ jobs:
         if: steps.check_files.outputs.files_exists == 'false'
         uses: changesets/action@v1
         with:
-          version: npm run changeset-version
-          publish: npm run changeset-publish
+          publish: npx changeset publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Create chrome zip file
         if: steps.changesets.outcome == 'success' && steps.changesets.outputs.published == 'true'
-        run: npm run dist:chrome
+        run: |
+          jq --slurpfile package ./packages/apollo-client-devtools/package.json \
+            '.version=$package[0].version' ./src/extension/chrome/manifest.json \
+            > ./src/extension/chrome/manifest.json.updated
+          mv ./src/extension/chrome/manifest.json.updated ./src/extension/chrome/manifest.json
+          npm run dist:chrome
 
       - name: Upload & release Chrome extension
         if: steps.changesets.outcome == 'success' && steps.changesets.outputs.published == 'true'
@@ -78,7 +82,12 @@ jobs:
 
       - name: Create firefox zip files
         if: steps.changesets.outcome == 'success' && steps.changesets.outputs.published == 'true'
-        run: npm run dist:firefox
+        run: |
+          jq --slurpfile package ./packages/apollo-client-devtools/package.json \
+            '.version=$package[0].version' ./src/extension/firefox/manifest.json \
+            > ./src/extension/firefox/manifest.json.updated
+          mv ./src/extension/firefox/manifest.json.updated ./src/extension/firefox/manifest.json
+          npm run dist:firefox
 
       - name: Publish the extension for Firefox
         if: steps.changesets.outcome == 'success' && steps.changesets.outputs.published == 'true'

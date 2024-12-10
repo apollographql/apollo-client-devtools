@@ -1,0 +1,22 @@
+{
+  "name": "apollo-client-devtools",
+  "description": "Developer tools for Apollo Client, with Studio Explorer integration, cache inspection, and query watching.",
+  "license": "MIT",
+  "version": "4.18.17",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/apollographql/apollo-client-devtools.git"
+  },
+  "scripts": {
+    "clean": "git clean -Xf .",
+    "build": "cd ../..; webpack --env NODE_ENV=production --env TARGET=firefox --env TARGET_DIR=packages/apollo-client-devtools/build",
+    "prepack": "npm run clean && npm run build && cp ../../LICENSE ./LICENSE && cp ../../README.md ./README.md"
+  },
+  "files": [
+    "build",
+    "package.json",
+    "LICENSE",
+    "README.md"
+  ]
+}

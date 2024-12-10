@@ -1,0 +1,1 @@
+This package is meant to be used to connect your Apollo Client instance with the Apollo Client devtools in the [Apollo GraphQL](https://marketplace.visualstudio.com/items?itemName=apollographql.vscode-apollo) VSCode extension.
