@@ -23,7 +23,7 @@ import { SettingsModal } from "./components/Layouts/SettingsModal";
 import Logo from "@apollo/icons/logos/LogoSymbol.svg";
 import { BannerAlert } from "./components/BannerAlert";
 import { useDevToolsActorRef } from "./machines/devtoolsMachine";
-import { Modals } from "./components/Modals/Modals";
+import { ErrorModals } from "./components/ErrorModals/ErrorModals";
 import { ButtonGroup } from "./components/ButtonGroup";
 import {
   GitHubIssueLink,
@@ -138,7 +138,7 @@ export const App = () => {
   return (
     <>
       <SettingsModal open={settingsOpen} onOpen={setSettingsOpen} />
-      <Modals />
+      <ErrorModals />
       <BannerAlert />
       <Tabs
         value={selected}

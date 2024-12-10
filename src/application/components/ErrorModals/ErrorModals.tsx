@@ -8,7 +8,7 @@ import { PortNotOpenModal } from "./PortNotOpenModal";
 import { UnknownErrorModal } from "./UnknownErrorModal";
 import { cloneElement } from "react";
 
-export function Modals() {
+export function ErrorModals() {
   const { send } = useDevToolsActorRef();
 
   const openPortNotOpenModal = useDevToolsSelector(
