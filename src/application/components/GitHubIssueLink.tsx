@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { forwardRef } from "react";
+import { ExternalLink } from "./ExternalLink";
 
 declare const VERSION: string;
 
@@ -21,7 +22,7 @@ export const SECTIONS = {
 <!-- Please provide the version of \`@apollo/client\` you are using. -->
 `,
   devtoolsVersion: `### Apollo Client Devtools version
-${VERSION}
+${VERSION} (${__IS_FIREFOX__ ? "Firefox" : __IS_VSCODE__ ? "VSCode" : "Chrome"})
 `,
   reproduction: `### Link to Reproduction
 <!-- Please provide a link to the reproduction of the issue. -->
@@ -58,15 +59,13 @@ export const GitHubIssueLink = forwardRef<
   }
 
   return (
-    <a
+    <ExternalLink
       {...props}
       ref={ref}
       className={className}
-      rel="noreferrer noopener"
-      target="_blank"
       href={`https://github.com/apollographql/${repository}/issues/new?${params}`}
     >
       {children}
-    </a>
+    </ExternalLink>
   );
 });
