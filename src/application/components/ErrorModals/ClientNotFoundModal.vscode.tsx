@@ -48,18 +48,19 @@ npm install @apollo/client-devtools-vscode
               </li>
               <li>
                 After initializing your <code>ApolloClient</code> instance, call{" "}
-                <code>registerClient</code> with your client instance.
+                <code>connectApolloClientToVSCodeDevTools</code> with your
+                client instance.
                 <CodeBlock
                   language="javascript"
                   // disabling the copy button because it overlaps the import path too much - might consider enabling it after visual improvements
                   copyable={false}
                   code={`
-import { registerClient } from "@apollo/client-devtools-vscode";
+import { connectApolloClientToVSCodeDevTools } from "@apollo/client-devtools-vscode";
 
 const client = new ApolloClient({ /* ... */ });
 
 // we recommend wrapping this statement in a check for e.g. process.env.NODE_ENV === "development"
-const devtoolsRegistration = registerClient(
+const devtoolsRegistration = connectApolloClientToVSCodeDevTools(
   client,
   // the default port of the VSCode DevTools is 7095
   "ws://localhost:7095",
@@ -120,12 +121,13 @@ const devtoolsRegistration = registerClient(
               <p>
                 <b>If you are fine with the public visibility</b>, copy the
                 forwarded address, change the protocol from <code>ws</code> to{" "}
-                <code>wss</code> and adjust your <code>registerClient</code>{" "}
-                call accordingly:
+                <code>wss</code> and adjust your{" "}
+                <code>connectApolloClientToVSCodeDevTools</code> call
+                accordingly:
                 <CodeBlock
                   language="javascript"
                   code={`
-const devtoolsRegistration = registerClient(
+const devtoolsRegistration = connectApolloClientToVSCodeDevTools(
   client,
   "wss://your-tunnel-url.devtunnels.ms/",
 );
@@ -222,11 +224,11 @@ Ready to accept connections for tunnel: your-tunnel-id
               </ol>
               <p>
                 Add the tunnel url and the token copied from step 3 to your
-                <code>registerClient</code> call.
+                <code>connectApolloClientToVSCodeDevTools</code> call.
                 <CodeBlock
                   language="javascript"
                   code={`
-const devtoolsRegistration = registerClient(client, [
+const devtoolsRegistration = connectApolloClientToVSCodeDevTools(client, [
   "wss://your-tunnel-url.devtunnels.ms",
   {
     headers: {
