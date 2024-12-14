@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "dependencies": {
-    "@angular/common": "17.3.12",
+    "@angular/common": "19.0.4",
     "@angular/compiler": "17.3.12",
     "@angular/core": "17.3.12",
     "@angular/platform-browser": "17.3.12",
