@@ -5,7 +5,7 @@
 </p>
 <h1>Apollo Client Devtools</h1>
 
-[![Chrome Web Store][ChromeWebStoreBadge]][WebStore] [![Addons.mozilla.org][FirefoxAddonBadge]][Amo] [![Discord][DiscordBadge]][Discord] [![Build Status](https://circleci.com/gh/apollographql/apollo-client-devtools.svg?style=svg)](https://circleci.com/gh/apollographql/apollo-client-devtools)
+[![Chrome Web Store][ChromeWebStoreBadge]][WebStore] [![Addons.mozilla.org][FirefoxAddonBadge]][Amo] [![Build Status](https://circleci.com/gh/apollographql/apollo-client-devtools.svg?style=svg)](https://circleci.com/gh/apollographql/apollo-client-devtools)
 
 </div>
 
@@ -146,7 +146,6 @@ Check out the [Odyssey](https://odyssey.apollographql.com/) learning platform, t
 <!-- Badges -->
 
 [FirefoxAddonBadge]: https://img.shields.io/amo/v/apollo-developer-tools.svg?label=firefox&logo=firefox-browser&logoColor=white
-[DiscordBadge]: https://img.shields.io/discord/1022972389463687228.svg?color=7389D8&labelColor=6A7EC2&logo=discord&logoColor=ffffff
 [ChromeWebStoreBadge]: https://img.shields.io/chrome-web-store/v/jdkknkkbebbapilgoeccciglkfbmbnfm.svg?label=chrome&logo=google-chrome&logoColor=white
 
 <!-- Download -->
@@ -156,4 +155,4 @@ Check out the [Odyssey](https://odyssey.apollographql.com/) learning platform, t
 
 <!-- Related pages -->
 
-[Discord]: https://discord.gg/graphos
+[Apollo Community Forum]: https://community.apollographql.com/
