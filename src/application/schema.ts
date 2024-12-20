@@ -379,6 +379,7 @@ function getLinkCacheSize(
   | null {
   if (isPersistedQueryLinkCache(linkCache)) {
     return {
+      __typename: "PersistedQueryLinkCacheSizes",
       persistedQueryHashes: getCacheSize(
         "PersistedQueryLink.persistedQueryHashes",
         linkCache.PersistedQueryLink.persistedQueryHashes,
@@ -389,6 +390,7 @@ function getLinkCacheSize(
 
   if (isRemoveTypenameFromVariablesLinkCache(linkCache)) {
     return {
+      __typename: "RemoveTypenameFromVariablesLinkCacheSizes",
       getVariableDefinitions: getCacheSize(
         "removeTypenameFromVariables.getVariableDefinitions",
         linkCache.removeTypenameFromVariables.getVariableDefinitions,
