@@ -437,6 +437,7 @@ export type MemoryInternalsQuery = {
     | {
         __typename: "ClientV3";
         id: string;
+        version: string;
         memoryInternals: {
           __typename: "MemoryInternals";
           raw: JSON | null;
@@ -564,6 +565,7 @@ export type MemoryInternalsQuery = {
     | {
         __typename: "ClientV4";
         id: string;
+        version: string;
         memoryInternals: {
           __typename: "MemoryInternals";
           raw: JSON | null;
