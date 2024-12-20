@@ -19,10 +19,11 @@ type Query {
 }
 
 type BaseCacheSizes {
-  fragmentQueryDocuments: CacheSize
+  fragmentQueryDocuments: CacheSize!
 }
 
 type CacheSize {
+  key: String!
   limit: Int
   size: Int
 }
@@ -88,19 +89,19 @@ type ClientV4Mutations implements ClientMutations {
 }
 
 type DocumentTransformCacheSizes {
-  cache: CacheSize
+  cache: CacheSize!
 }
 
 type FragmentRegistryCacheSizes {
-  lookup: CacheSize
-  findFragmentSpreads: CacheSize
-  transform: CacheSize
+  lookup: CacheSize!
+  findFragmentSpreads: CacheSize!
+  transform: CacheSize!
 }
 
 type InMemoryCacheSizes {
-  maybeBroadcastWatch: CacheSize
-  executeSelectionSet: CacheSize
-  executeSubSelectedArray: CacheSize
+  maybeBroadcastWatch: CacheSize!
+  executeSelectionSet: CacheSize!
+  executeSubSelectedArray: CacheSize!
 }
 
 union LinkCacheSize =
@@ -113,9 +114,9 @@ type MemoryInternals {
 }
 
 type MemoryInternalsCaches {
-  print: CacheSize
-  parser: CacheSize
-  canonicalStringify: CacheSize
+  print: CacheSize!
+  parser: CacheSize!
+  canonicalStringify: CacheSize!
   links: [LinkCacheSize!]!
   queryManager: QueryManagerCacheSizes!
   fragmentRegistry: FragmentRegistryCacheSizes!
@@ -125,16 +126,16 @@ type MemoryInternalsCaches {
 }
 
 type QueryManagerCacheSizes {
-  getDocumentInfo: CacheSize
+  getDocumentInfo: CacheSize!
   documentTransforms: [DocumentTransformCacheSizes!]
 }
 
 type PersistedQueryLinkCacheSizes {
-  persistedQueryHashes: CacheSize
+  persistedQueryHashes: CacheSize!
 }
 
 type RemoveTypenameFromVariablesLinkCacheSizes {
-  getVariableDefinitions: CacheSize
+  getVariableDefinitions: CacheSize!
 }
 
 interface ClientMutation {

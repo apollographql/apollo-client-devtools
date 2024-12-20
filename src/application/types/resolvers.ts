@@ -64,11 +64,12 @@ export type Scalars = {
 
 export type BaseCacheSizes = {
   __typename?: "BaseCacheSizes";
-  fragmentQueryDocuments: Maybe<CacheSize>;
+  fragmentQueryDocuments: CacheSize;
 };
 
 export type CacheSize = {
   __typename?: "CacheSize";
+  key: Scalars["String"]["output"];
   limit: Maybe<Scalars["Int"]["output"]>;
   size: Maybe<Scalars["Int"]["output"]>;
 };
@@ -214,7 +215,7 @@ export type ClientWatchedQuery = {
 
 export type DocumentTransformCacheSizes = {
   __typename?: "DocumentTransformCacheSizes";
-  cache: Maybe<CacheSize>;
+  cache: CacheSize;
 };
 
 export type ErrorLike = {
@@ -225,9 +226,9 @@ export type ErrorLike = {
 
 export type FragmentRegistryCacheSizes = {
   __typename?: "FragmentRegistryCacheSizes";
-  findFragmentSpreads: Maybe<CacheSize>;
-  lookup: Maybe<CacheSize>;
-  transform: Maybe<CacheSize>;
+  findFragmentSpreads: CacheSize;
+  lookup: CacheSize;
+  transform: CacheSize;
 };
 
 export type GraphQlErrorSourceLocation = {
@@ -238,9 +239,9 @@ export type GraphQlErrorSourceLocation = {
 
 export type InMemoryCacheSizes = {
   __typename?: "InMemoryCacheSizes";
-  executeSelectionSet: Maybe<CacheSize>;
-  executeSubSelectedArray: Maybe<CacheSize>;
-  maybeBroadcastWatch: Maybe<CacheSize>;
+  executeSelectionSet: CacheSize;
+  executeSubSelectedArray: CacheSize;
+  maybeBroadcastWatch: CacheSize;
 };
 
 export type LinkCacheSize =
@@ -257,18 +258,18 @@ export type MemoryInternalsCaches = {
   __typename?: "MemoryInternalsCaches";
   addTypenameDocumentTransform: Maybe<Array<DocumentTransformCacheSizes>>;
   cache: BaseCacheSizes;
-  canonicalStringify: Maybe<CacheSize>;
+  canonicalStringify: CacheSize;
   fragmentRegistry: FragmentRegistryCacheSizes;
   inMemoryCache: InMemoryCacheSizes;
   links: Array<LinkCacheSize>;
-  parser: Maybe<CacheSize>;
-  print: Maybe<CacheSize>;
+  parser: CacheSize;
+  print: CacheSize;
   queryManager: QueryManagerCacheSizes;
 };
 
 export type PersistedQueryLinkCacheSizes = {
   __typename?: "PersistedQueryLinkCacheSizes";
-  persistedQueryHashes: Maybe<CacheSize>;
+  persistedQueryHashes: CacheSize;
 };
 
 export type Query = {
@@ -284,12 +285,12 @@ export type QueryClientArgs = {
 export type QueryManagerCacheSizes = {
   __typename?: "QueryManagerCacheSizes";
   documentTransforms: Maybe<Array<DocumentTransformCacheSizes>>;
-  getDocumentInfo: Maybe<CacheSize>;
+  getDocumentInfo: CacheSize;
 };
 
 export type RemoveTypenameFromVariablesLinkCacheSizes = {
   __typename?: "RemoveTypenameFromVariablesLinkCacheSizes";
-  getVariableDefinitions: Maybe<CacheSize>;
+  getVariableDefinitions: CacheSize;
 };
 
 export type SerializedApolloError = {
@@ -677,7 +678,7 @@ export type BaseCacheSizesResolvers<
     ResolversParentTypes["BaseCacheSizes"] = ResolversParentTypes["BaseCacheSizes"],
 > = {
   fragmentQueryDocuments?: Resolver<
-    Maybe<ResolversTypes["CacheSize"]>,
+    ResolversTypes["CacheSize"],
     ParentType,
     ContextType
   >;
@@ -694,6 +695,7 @@ export type CacheSizeResolvers<
   ParentType extends
     ResolversParentTypes["CacheSize"] = ResolversParentTypes["CacheSize"],
 > = {
+  key?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   limit?: Resolver<Maybe<ResolversTypes["Int"]>, ParentType, ContextType>;
   size?: Resolver<Maybe<ResolversTypes["Int"]>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -1010,7 +1012,7 @@ export type DocumentTransformCacheSizesResolvers<
   ParentType extends
     ResolversParentTypes["DocumentTransformCacheSizes"] = ResolversParentTypes["DocumentTransformCacheSizes"],
 > = {
-  cache?: Resolver<Maybe<ResolversTypes["CacheSize"]>, ParentType, ContextType>;
+  cache?: Resolver<ResolversTypes["CacheSize"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1038,20 +1040,12 @@ export type FragmentRegistryCacheSizesResolvers<
     ResolversParentTypes["FragmentRegistryCacheSizes"] = ResolversParentTypes["FragmentRegistryCacheSizes"],
 > = {
   findFragmentSpreads?: Resolver<
-    Maybe<ResolversTypes["CacheSize"]>,
+    ResolversTypes["CacheSize"],
     ParentType,
     ContextType
   >;
-  lookup?: Resolver<
-    Maybe<ResolversTypes["CacheSize"]>,
-    ParentType,
-    ContextType
-  >;
-  transform?: Resolver<
-    Maybe<ResolversTypes["CacheSize"]>,
-    ParentType,
-    ContextType
-  >;
+  lookup?: Resolver<ResolversTypes["CacheSize"], ParentType, ContextType>;
+  transform?: Resolver<ResolversTypes["CacheSize"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1076,17 +1070,17 @@ export type InMemoryCacheSizesResolvers<
     ResolversParentTypes["InMemoryCacheSizes"] = ResolversParentTypes["InMemoryCacheSizes"],
 > = {
   executeSelectionSet?: Resolver<
-    Maybe<ResolversTypes["CacheSize"]>,
+    ResolversTypes["CacheSize"],
     ParentType,
     ContextType
   >;
   executeSubSelectedArray?: Resolver<
-    Maybe<ResolversTypes["CacheSize"]>,
+    ResolversTypes["CacheSize"],
     ParentType,
     ContextType
   >;
   maybeBroadcastWatch?: Resolver<
-    Maybe<ResolversTypes["CacheSize"]>,
+    ResolversTypes["CacheSize"],
     ParentType,
     ContextType
   >;
@@ -1137,7 +1131,7 @@ export type MemoryInternalsCachesResolvers<
   >;
   cache?: Resolver<ResolversTypes["BaseCacheSizes"], ParentType, ContextType>;
   canonicalStringify?: Resolver<
-    Maybe<ResolversTypes["CacheSize"]>,
+    ResolversTypes["CacheSize"],
     ParentType,
     ContextType
   >;
@@ -1156,12 +1150,8 @@ export type MemoryInternalsCachesResolvers<
     ParentType,
     ContextType
   >;
-  parser?: Resolver<
-    Maybe<ResolversTypes["CacheSize"]>,
-    ParentType,
-    ContextType
-  >;
-  print?: Resolver<Maybe<ResolversTypes["CacheSize"]>, ParentType, ContextType>;
+  parser?: Resolver<ResolversTypes["CacheSize"], ParentType, ContextType>;
+  print?: Resolver<ResolversTypes["CacheSize"], ParentType, ContextType>;
   queryManager?: Resolver<
     ResolversTypes["QueryManagerCacheSizes"],
     ParentType,
@@ -1176,7 +1166,7 @@ export type PersistedQueryLinkCacheSizesResolvers<
     ResolversParentTypes["PersistedQueryLinkCacheSizes"] = ResolversParentTypes["PersistedQueryLinkCacheSizes"],
 > = {
   persistedQueryHashes?: Resolver<
-    Maybe<ResolversTypes["CacheSize"]>,
+    ResolversTypes["CacheSize"],
     ParentType,
     ContextType
   >;
@@ -1213,7 +1203,7 @@ export type QueryManagerCacheSizesResolvers<
     ContextType
   >;
   getDocumentInfo?: Resolver<
-    Maybe<ResolversTypes["CacheSize"]>,
+    ResolversTypes["CacheSize"],
     ParentType,
     ContextType
   >;
@@ -1231,7 +1221,7 @@ export type RemoveTypenameFromVariablesLinkCacheSizesResolvers<
     ResolversParentTypes["RemoveTypenameFromVariablesLinkCacheSizes"] = ResolversParentTypes["RemoveTypenameFromVariablesLinkCacheSizes"],
 > = {
   getVariableDefinitions?: Resolver<
-    Maybe<ResolversTypes["CacheSize"]>,
+    ResolversTypes["CacheSize"],
     ParentType,
     ContextType
   >;
