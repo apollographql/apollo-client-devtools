@@ -55,7 +55,7 @@
     "graphql-tag": "^2.11.0",
     "polished": "^4.1.1",
     "prism-react-renderer": "^2.0.0",
-    "react": "^18.2.0",
+    "react": "^19.0.0",
     "react-copy-to-clipboard": "^5.1.0",
     "react-dom": "^18.2.0",
     "react-error-boundary": "^4.0.13",
