@@ -1,6 +1,6 @@
 {
   "name": "@apollo/client-devtools-vscode",
-  "version": "4.19.6",
+  "version": "4.19.7",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/apollographql/apollo-client-devtools.git"
