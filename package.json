@@ -73,6 +73,7 @@
   "devDependencies": {
     "@changesets/changelog-github": "0.5.0",
     "@changesets/cli": "2.27.12",
+    "@eslint/js": "^9.21.0",
     "@graphql-codegen/cli": "5.0.3",
     "@graphql-codegen/typescript": "4.0.9",
     "@graphql-codegen/typescript-operations": "4.2.3",
@@ -125,7 +126,7 @@
     "tsx": "4.11.0",
     "typescript": "5.5.4",
     "typescript-eslint": "7.14.1",
-    "web-ext-plugin": "2.9.0",
+    "web-ext-plugin": "2.11.0",
     "webextension-polyfill": "0.12.0",
     "webpack": "5.94.0",
     "webpack-cli": "5.1.4",
