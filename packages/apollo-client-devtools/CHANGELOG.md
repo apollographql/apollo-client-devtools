@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.19.10
+
+### Patch Changes
+
+- [#1652](https://github.com/apollographql/apollo-client-devtools/pull/1652) [`2f1068f`](https://github.com/apollographql/apollo-client-devtools/commit/2f1068fd22cd58a62be736a62c85fe09dba8c514) Thanks [@github-actions](https://github.com/apps/github-actions)! - add error codes for new Apollo Client version
+
+- [#1647](https://github.com/apollographql/apollo-client-devtools/pull/1647) [`7aecc19`](https://github.com/apollographql/apollo-client-devtools/commit/7aecc19a9dd993caa2904f505eebbb709e312254) Thanks [@Killian-Aidalinfo](https://github.com/Killian-Aidalinfo)! - Make the background script persistent in Firefox extension to address an issue where the devtools would disconnect periodically.
+
 ## 4.19.9
 
 ### Patch Changes
