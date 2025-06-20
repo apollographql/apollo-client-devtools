@@ -2,6 +2,7 @@
   "name": "colors-client",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "devDependencies": {
     "@apollo/client": "4.0.0-rc.0",
     "@testing-library/jest-dom": "^6.0.0",
