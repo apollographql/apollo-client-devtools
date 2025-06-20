@@ -29,7 +29,7 @@ const ColorSchemeGenerator = () => {
   });
 
   useEffect(() => {
-    function onKeyPress(e) {
+    function onKeyPress(e: KeyboardEvent) {
       if (e.keyCode === 32) {
         refetch();
       }

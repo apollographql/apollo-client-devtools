@@ -12,7 +12,9 @@ const RandomColorQuery = () => {
   const [loadColor, { data }] = useLazyQuery(GET_COLOR);
   const randomColorHexCode = randomColorData?.random?.color?.hex;
 
-  useEffect(() => loadRandomColor(), [loadRandomColor]);
+  useEffect(() => {
+    loadRandomColor();
+  }, [loadRandomColor]);
 
   useEffect(() => {
     if (randomColorHexCode) {

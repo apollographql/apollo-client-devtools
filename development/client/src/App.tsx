@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import type { Reference } from "@apollo/client";
 import {
   ApolloClient,
   ApolloProvider,
@@ -108,7 +109,7 @@ function App() {
   );
 }
 
-function createClient(name) {
+function createClient(name?: string) {
   return new ApolloClient({
     cache: new InMemoryCache({
       typePolicies: {
@@ -118,7 +119,9 @@ function createClient(name) {
             saved: {
               read(_, { readField }) {
                 const hex = readField("hex");
-                const favoritedColors =
+                const favoritedColors: ReadonlyArray<{
+                  favoritedColors?: Reference[];
+                }> =
                   readField("favoritedColors", makeReference("ROOT_QUERY")) ??
                   [];
                 return favoritedColors.some((colorRef) => {
