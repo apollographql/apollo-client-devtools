@@ -1,0 +1,136 @@
+body {
+  font-family: "Roboto", Arial, Helvetica, sans-serif;
+}
+
+h1,
+h2,
+h3 {
+  font-family: "Abril Fatface";
+}
+
+a {
+  text-decoration: none;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding: 16px;
+  font-family: "Abril Fatface";
+}
+
+header h1 {
+  margin-right: 40px;
+}
+
+header nav a {
+  margin: 0 16px;
+  font-size: 24px;
+}
+
+main {
+  height: calc(100vh - 72px);
+}
+
+.home {
+  display: flex;
+  justify-content: center;
+}
+
+.contrast-dark {
+  color: #000000;
+}
+
+.contrast-light {
+  color: #ffffff;
+}
+
+.favorites {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+}
+
+.favorites .favorites__color {
+  height: calc((100vh - 72px) / 2);
+}
+
+.favorites.favorites--empty {
+  display: flex;
+  justify-content: center;
+  padding-top: 48px;
+}
+
+.scheme {
+  height: 100%;
+}
+
+.color {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+}
+
+.color__save-icon {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  fill: white;
+  cursor: pointer;
+}
+
+.color__name {
+  font-weight: light;
+}
+
+.color__hexCode {
+  padding: 8px 0 16px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.icon {
+  width: 30px;
+}
+
+.scheme {
+  display: flex;
+  justify-content: center;
+}
+
+.scheme__color {
+  flex: 1 1;
+}
+
+.lookup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.lookup form {
+  padding: 48px;
+}
+
+.lookup input {
+  width: 320px;
+  margin: 16px;
+  padding: 8px;
+}
+
+.lookup button {
+  padding: 8px;
+}
+
+.lookup .color {
+  width: 80%;
+  padding: 16px;
+  border-radius: 6px;
+}
+
+.lookup .color .color__hexCode {
+  padding: 8px 0 0 0;
+}
