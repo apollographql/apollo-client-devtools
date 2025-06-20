@@ -1,12 +1,8 @@
 import React, { useState } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import type { Reference } from "@apollo/client";
-import {
-  ApolloClient,
-  ApolloProvider,
-  InMemoryCache,
-  makeReference,
-} from "@apollo/client";
+import { ApolloClient, InMemoryCache, makeReference } from "@apollo/client";
+import { ApolloProvider } from "@apollo/client/react";
 import ColorSchemeGenerator from "./ColorSchemeGenerator";
 import Favorites from "./Favorites";
 import ColorLookup from "./ColorLookup";

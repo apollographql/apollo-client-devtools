@@ -1,5 +1,5 @@
 import React from "react";
-import { useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { GET_SAVED_COLORS } from "./queries";
 import Color from "./components/Color";
 

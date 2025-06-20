@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import SaveIcon from "./SaveIcon";
 import cx from "classnames";
-import { useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client/react";
 import { GET_SAVED_COLORS } from "../queries";
 import {
   ADD_COLOR_TO_FAVORITES,
