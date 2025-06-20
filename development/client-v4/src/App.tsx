@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import type { Reference } from "@apollo/client";
-import { ApolloClient, InMemoryCache, makeReference } from "@apollo/client";
+import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client";
+import { makeReference } from "@apollo/client/utilities/internal";
 import { ApolloProvider } from "@apollo/client/react";
 import ColorSchemeGenerator from "./ColorSchemeGenerator";
 import Favorites from "./Favorites";
 import ColorLookup from "./ColorLookup";
 import "./App.css";
+import { LocalState } from "@apollo/client/local-state";
 
 function App() {
   const [clients, setClients] = useState(() => [createClient("Root client")]);
@@ -129,7 +131,8 @@ function createClient(name?: string) {
         },
       },
     }),
-    uri: "http://localhost:4000",
+    link: new HttpLink({ uri: "http://localhost:4000" }),
+    localState: new LocalState(),
     devtools: {
       enabled: true,
       name,
