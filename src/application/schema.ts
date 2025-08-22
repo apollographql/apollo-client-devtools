@@ -4,6 +4,7 @@ import { makeExecutableSchema } from "@graphql-tools/schema";
 import type { Resolvers } from "./types/resolvers";
 import { getOperationName } from "@apollo/client/utilities/internal";
 import { print } from "graphql";
+import { gte } from "semver";
 
 export function createSchemaWithRpcClient(rpcClient: RpcClient) {
   return makeExecutableSchema({
@@ -21,11 +22,16 @@ function createResolvers(client: RpcClient): Resolvers {
       client: (_, { id }) => rpcClient.request("getClient", id),
     },
     Client: {
+      cache: (client) => rpcClient.request("getCache", client.id),
+      __resolveType: (client) => {
+        return gte(client.version, "4.0.0") ? "ClientV4" : "ClientV3";
+      },
+    },
+    ClientV3: {
       queries: (client) => client,
       mutations: (client) => client,
-      cache: (client) => rpcClient.request("getCache", client.id),
     },
-    ClientQueries: {
+    ClientV3Queries: {
       total: (client) => client.queryCount,
       items: async (client) => {
         const queries = await rpcClient.request("getQueries", client.id);
