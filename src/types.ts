@@ -1,10 +1,8 @@
-import type { ApolloQueryResult } from "@apollo/client";
-
-export type QueryResult = ApolloQueryResult<any>;
+import type { ObservableQuery } from "@apollo/client";
 
 export interface ExplorerResponse {
   operationName: string | undefined;
-  response: QueryResult;
+  response: ObservableQuery.Result<unknown>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

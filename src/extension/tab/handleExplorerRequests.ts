@@ -1,6 +1,9 @@
 import type { Actor, OptionsWithAbortSignal } from "../actor";
-import type { QueryResult, SafeAny } from "../../types";
-import type { ApolloClient, ApolloError } from "@apollo/client";
+import type {
+  ApolloClient,
+  ApolloError,
+  ObservableQuery,
+} from "@apollo/client";
 
 // Note that we are intentionally not using Apollo Client's gql and
 // Observable exports, as we don't want Apollo Client and its dependencies
@@ -63,11 +66,11 @@ export function handleExplorerRequests(
           definition.kind === "OperationDefinition" &&
           definition.operation === "mutation"
         ) {
-          return new Observable<QueryResult>((observer) => {
+          return new Observable<ObservableQuery.Result<unknown>>((observer) => {
             client
               .mutate({ mutation: clonedQueryAst, variables })
               .then((result) => {
-                observer.next(result as QueryResult);
+                observer.next(result as ObservableQuery.Result<unknown>);
               });
           });
         } else {
@@ -80,7 +83,7 @@ export function handleExplorerRequests(
       })();
 
       const operationObservable = operation?.subscribe(
-        (response: QueryResult) => {
+        (response: ObservableQuery.Result<unknown>) => {
           actor.send({
             type: "explorerResponse",
             payload: { operationName, response },

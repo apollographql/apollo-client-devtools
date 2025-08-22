@@ -12,7 +12,6 @@ import type { IntrospectionQuery } from "graphql";
 import { getIntrospectionQuery } from "graphql/utilities";
 import { colorTheme } from "../../theme";
 import { FullWidthLayout } from "../Layouts/FullWidthLayout";
-import type { QueryResult } from "../../../types";
 import type { IncomingMessageEvent } from "./postMessageHelpers";
 import {
   postMessageToEmbed,
