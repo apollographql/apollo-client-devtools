@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
-import { useReactiveVar, gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery, useReactiveVar } from "@apollo/client/react";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { currentScreen, Screens } from "./components/Layouts/Navigation";

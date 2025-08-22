@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { List } from "../List";
 import { ListItem } from "../ListItem";
 import IconErrorSolid from "@apollo/icons/default/IconErrorSolid.svg";

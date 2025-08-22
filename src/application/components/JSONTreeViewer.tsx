@@ -3,7 +3,7 @@ import {
   type CSSProperties,
   type ComponentPropsWithoutRef,
 } from "react";
-import { useReactiveVar } from "@apollo/client";
+import { useReactiveVar } from "@apollo/client/react";
 import { JSONTree } from "react-json-tree";
 import { ColorTheme, colorTheme } from "../theme";
 import { colors } from "@apollo/brand";

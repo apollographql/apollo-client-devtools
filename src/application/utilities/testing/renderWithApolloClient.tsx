@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
 import { render } from "@testing-library/react";
-import { ApolloProvider } from "@apollo/client";
+import { ApolloProvider } from "@apollo/client/react";
 import userEvent from "@testing-library/user-event";
 import * as Tooltip from "@radix-ui/react-tooltip";
 

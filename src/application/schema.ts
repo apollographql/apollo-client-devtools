@@ -2,7 +2,7 @@ import type { RpcClient } from "../extension/rpc";
 import typeDefs from "./localSchema.graphql";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import type { Resolvers } from "./types/resolvers";
-import { getOperationName } from "@apollo/client/utilities";
+import { getOperationName } from "@apollo/client/utilities/internal";
 import { print } from "graphql";
 
 export function createSchemaWithRpcClient(rpcClient: RpcClient) {

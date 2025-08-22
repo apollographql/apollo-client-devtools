@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useState, useEffect } from "react";
-import { Observable, useReactiveVar, NetworkStatus, gql } from "@apollo/client";
+import { Observable, NetworkStatus, gql } from "@apollo/client";
+import { useReactiveVar } from "@apollo/client/react";
 import type { IntrospectionQuery } from "graphql";
 import { getIntrospectionQuery } from "graphql/utilities";
 import { colorTheme } from "../../theme";
