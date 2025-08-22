@@ -24,3 +24,8 @@ export interface ApolloClientInfo {
   queryCount: number;
   mutationCount: number;
 }
+
+// This is copied from `@apollo/client` since it is not exported
+export interface ErrorCodes {
+  [key: number]: { file: string; condition?: string; message?: string };
+}

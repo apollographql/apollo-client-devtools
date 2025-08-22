@@ -1,6 +1,5 @@
-import type { ErrorCodes } from "@apollo/client/invariantErrorCodes";
 import type { JSONObject } from "../application/types/json";
-import type { ApolloClientInfo, NoInfer, SafeAny } from "../types";
+import type { ApolloClientInfo, ErrorCodes, NoInfer, SafeAny } from "../types";
 import { createId } from "../utils/createId";
 import { RPC_MESSAGE_TIMEOUT } from "./errorMessages";
 import { deserializeError, serializeError } from "./errorSerialization";
