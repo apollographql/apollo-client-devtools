@@ -57,25 +57,54 @@ export type Scalars = {
 };
 
 export type Client = {
-  __typename?: "Client";
   cache: Scalars["Cache"]["output"];
   id: Scalars["String"]["output"];
-  mutations: ClientMutations;
   name?: Maybe<Scalars["String"]["output"]>;
-  queries: ClientQueries;
   version: Scalars["String"]["output"];
 };
 
-export type ClientMutations = {
-  __typename?: "ClientMutations";
-  items: Array<WatchedMutation>;
+export type ClientV3 = Client & {
+  __typename?: "ClientV3";
+  cache: Scalars["Cache"]["output"];
+  id: Scalars["String"]["output"];
+  mutations: ClientV3Mutations;
+  name?: Maybe<Scalars["String"]["output"]>;
+  queries: ClientV3Queries;
+  version: Scalars["String"]["output"];
+};
+
+export type ClientV3Mutations = {
+  __typename?: "ClientV3Mutations";
+  items: Array<ClientV3WatchedMutation>;
   total: Scalars["Int"]["output"];
 };
 
-export type ClientQueries = {
-  __typename?: "ClientQueries";
+export type ClientV3Queries = {
+  __typename?: "ClientV3Queries";
   items: Array<WatchedQuery>;
   total: Scalars["Int"]["output"];
+};
+
+export type ClientV3WatchedMutation = {
+  __typename?: "ClientV3WatchedMutation";
+  error?: Maybe<ClientV3WatchedMutationError>;
+  id: Scalars["ID"]["output"];
+  loading: Scalars["Boolean"]["output"];
+  mutationString: Scalars["String"]["output"];
+  name?: Maybe<Scalars["String"]["output"]>;
+  variables?: Maybe<Scalars["Variables"]["output"]>;
+};
+
+export type ClientV3WatchedMutationError =
+  | SerializedApolloError
+  | SerializedError;
+
+export type ClientV4 = Client & {
+  __typename?: "ClientV4";
+  cache: Scalars["Cache"]["output"];
+  id: Scalars["String"]["output"];
+  name?: Maybe<Scalars["String"]["output"]>;
+  version: Scalars["String"]["output"];
 };
 
 export type GraphQlErrorSourceLocation = {
@@ -118,18 +147,6 @@ export type SerializedGraphQlError = {
   message: Scalars["String"]["output"];
   path?: Maybe<Scalars["GraphQLErrorPath"]["output"]>;
 };
-
-export type WatchedMutation = {
-  __typename?: "WatchedMutation";
-  error?: Maybe<WatchedMutationError>;
-  id: Scalars["ID"]["output"];
-  loading: Scalars["Boolean"]["output"];
-  mutationString: Scalars["String"]["output"];
-  name?: Maybe<Scalars["String"]["output"]>;
-  variables?: Maybe<Scalars["Variables"]["output"]>;
-};
-
-export type WatchedMutationError = SerializedApolloError | SerializedError;
 
 export type WatchedQueries = {
   __typename?: "WatchedQueries";
@@ -257,7 +274,7 @@ export type DirectiveResolverFn<
 
 /** Mapping of union types */
 export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = {
-  WatchedMutationError: RpcSerializedApolloError | RpcSerializedError;
+  ClientV3WatchedMutationError: RpcSerializedApolloError | RpcSerializedError;
 };
 
 /** Mapping between all available schema types and the resolvers types */
@@ -265,8 +282,24 @@ export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars["Boolean"]["output"]>;
   Cache: ResolverTypeWrapper<Scalars["Cache"]["output"]>;
   Client: ResolverTypeWrapper<ApolloClientInfo>;
-  ClientMutations: ResolverTypeWrapper<ApolloClientInfo>;
-  ClientQueries: ResolverTypeWrapper<ApolloClientInfo>;
+  ClientV3: ResolverTypeWrapper<
+    Omit<ClientV3, "queries"> & { queries: ResolversTypes["ClientV3Queries"] }
+  >;
+  ClientV3Mutations: ResolverTypeWrapper<ClientV3Mutations>;
+  ClientV3Queries: ResolverTypeWrapper<
+    Omit<ClientV3Queries, "items"> & {
+      items: Array<ResolversTypes["WatchedQuery"]>;
+    }
+  >;
+  ClientV3WatchedMutation: ResolverTypeWrapper<
+    Omit<ClientV3WatchedMutation, "error"> & {
+      error?: Maybe<ResolversTypes["ClientV3WatchedMutationError"]>;
+    }
+  >;
+  ClientV3WatchedMutationError: ResolverTypeWrapper<
+    ResolversUnionTypes<ResolversTypes>["ClientV3WatchedMutationError"]
+  >;
+  ClientV4: ResolverTypeWrapper<ClientV4>;
   GraphQLErrorPath: ResolverTypeWrapper<Scalars["GraphQLErrorPath"]["output"]>;
   GraphQLErrorSourceLocation: ResolverTypeWrapper<GraphQlErrorSourceLocation>;
   ID: ResolverTypeWrapper<Scalars["ID"]["output"]>;
@@ -280,14 +313,6 @@ export type ResolversTypes = {
   SerializedGraphQLError: ResolverTypeWrapper<GraphQLFormattedError>;
   String: ResolverTypeWrapper<Scalars["String"]["output"]>;
   Variables: ResolverTypeWrapper<Scalars["Variables"]["output"]>;
-  WatchedMutation: ResolverTypeWrapper<
-    Omit<WatchedMutation, "error"> & {
-      error?: Maybe<ResolversTypes["WatchedMutationError"]>;
-    }
-  >;
-  WatchedMutationError: ResolverTypeWrapper<
-    ResolversUnionTypes<ResolversTypes>["WatchedMutationError"]
-  >;
   WatchedQueries: ResolverTypeWrapper<
     Omit<WatchedQueries, "queries"> & {
       queries: Array<ResolversTypes["WatchedQuery"]>;
@@ -305,8 +330,18 @@ export type ResolversParentTypes = {
   Boolean: Scalars["Boolean"]["output"];
   Cache: Scalars["Cache"]["output"];
   Client: ApolloClientInfo;
-  ClientMutations: ApolloClientInfo;
-  ClientQueries: ApolloClientInfo;
+  ClientV3: Omit<ClientV3, "queries"> & {
+    queries: ResolversParentTypes["ClientV3Queries"];
+  };
+  ClientV3Mutations: ClientV3Mutations;
+  ClientV3Queries: Omit<ClientV3Queries, "items"> & {
+    items: Array<ResolversParentTypes["WatchedQuery"]>;
+  };
+  ClientV3WatchedMutation: Omit<ClientV3WatchedMutation, "error"> & {
+    error?: Maybe<ResolversParentTypes["ClientV3WatchedMutationError"]>;
+  };
+  ClientV3WatchedMutationError: ResolversUnionTypes<ResolversParentTypes>["ClientV3WatchedMutationError"];
+  ClientV4: ClientV4;
   GraphQLErrorPath: Scalars["GraphQLErrorPath"]["output"];
   GraphQLErrorSourceLocation: GraphQlErrorSourceLocation;
   ID: Scalars["ID"]["output"];
@@ -320,10 +355,6 @@ export type ResolversParentTypes = {
   SerializedGraphQLError: GraphQLFormattedError;
   String: Scalars["String"]["output"];
   Variables: Scalars["Variables"]["output"];
-  WatchedMutation: Omit<WatchedMutation, "error"> & {
-    error?: Maybe<ResolversParentTypes["WatchedMutationError"]>;
-  };
-  WatchedMutationError: ResolversUnionTypes<ResolversParentTypes>["WatchedMutationError"];
   WatchedQueries: Omit<WatchedQueries, "queries"> & {
     queries: Array<ResolversParentTypes["WatchedQuery"]>;
   };
@@ -342,26 +373,46 @@ export type ClientResolvers<
   ParentType extends
     ResolversParentTypes["Client"] = ResolversParentTypes["Client"],
 > = {
+  __resolveType: TypeResolveFn<
+    "ClientV3" | "ClientV4",
+    ParentType,
+    ContextType
+  >;
+  cache?: Resolver<ResolversTypes["Cache"], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  name?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  version?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+};
+
+export type ClientV3Resolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["ClientV3"] = ResolversParentTypes["ClientV3"],
+> = {
   cache?: Resolver<ResolversTypes["Cache"], ParentType, ContextType>;
   id?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   mutations?: Resolver<
-    ResolversTypes["ClientMutations"],
+    ResolversTypes["ClientV3Mutations"],
     ParentType,
     ContextType
   >;
   name?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  queries?: Resolver<ResolversTypes["ClientQueries"], ParentType, ContextType>;
+  queries?: Resolver<
+    ResolversTypes["ClientV3Queries"],
+    ParentType,
+    ContextType
+  >;
   version?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type ClientMutationsResolvers<
+export type ClientV3MutationsResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes["ClientMutations"] = ResolversParentTypes["ClientMutations"],
+    ResolversParentTypes["ClientV3Mutations"] = ResolversParentTypes["ClientV3Mutations"],
 > = {
   items?: Resolver<
-    Array<ResolversTypes["WatchedMutation"]>,
+    Array<ResolversTypes["ClientV3WatchedMutation"]>,
     ParentType,
     ContextType
   >;
@@ -369,10 +420,10 @@ export type ClientMutationsResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type ClientQueriesResolvers<
+export type ClientV3QueriesResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes["ClientQueries"] = ResolversParentTypes["ClientQueries"],
+    ResolversParentTypes["ClientV3Queries"] = ResolversParentTypes["ClientV3Queries"],
 > = {
   items?: Resolver<
     Array<ResolversTypes["WatchedQuery"]>,
@@ -380,6 +431,52 @@ export type ClientQueriesResolvers<
     ContextType
   >;
   total?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ClientV3WatchedMutationResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["ClientV3WatchedMutation"] = ResolversParentTypes["ClientV3WatchedMutation"],
+> = {
+  error?: Resolver<
+    Maybe<ResolversTypes["ClientV3WatchedMutationError"]>,
+    ParentType,
+    ContextType
+  >;
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  loading?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>;
+  mutationString?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  name?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  variables?: Resolver<
+    Maybe<ResolversTypes["Variables"]>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ClientV3WatchedMutationErrorResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["ClientV3WatchedMutationError"] = ResolversParentTypes["ClientV3WatchedMutationError"],
+> = {
+  __resolveType: TypeResolveFn<
+    "SerializedApolloError" | "SerializedError",
+    ParentType,
+    ContextType
+  >;
+};
+
+export type ClientV4Resolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["ClientV4"] = ResolversParentTypes["ClientV4"],
+> = {
+  cache?: Resolver<ResolversTypes["Cache"], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  name?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  version?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -493,40 +590,6 @@ export interface VariablesScalarConfig
   name: "Variables";
 }
 
-export type WatchedMutationResolvers<
-  ContextType = any,
-  ParentType extends
-    ResolversParentTypes["WatchedMutation"] = ResolversParentTypes["WatchedMutation"],
-> = {
-  error?: Resolver<
-    Maybe<ResolversTypes["WatchedMutationError"]>,
-    ParentType,
-    ContextType
-  >;
-  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
-  loading?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>;
-  mutationString?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  variables?: Resolver<
-    Maybe<ResolversTypes["Variables"]>,
-    ParentType,
-    ContextType
-  >;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type WatchedMutationErrorResolvers<
-  ContextType = any,
-  ParentType extends
-    ResolversParentTypes["WatchedMutationError"] = ResolversParentTypes["WatchedMutationError"],
-> = {
-  __resolveType: TypeResolveFn<
-    "SerializedApolloError" | "SerializedError",
-    ParentType,
-    ContextType
-  >;
-};
-
 export type WatchedQueriesResolvers<
   ContextType = any,
   ParentType extends
@@ -581,8 +644,12 @@ export type WatchedQueryResolvers<
 export type Resolvers<ContextType = any> = {
   Cache?: GraphQLScalarType;
   Client?: ClientResolvers<ContextType>;
-  ClientMutations?: ClientMutationsResolvers<ContextType>;
-  ClientQueries?: ClientQueriesResolvers<ContextType>;
+  ClientV3?: ClientV3Resolvers<ContextType>;
+  ClientV3Mutations?: ClientV3MutationsResolvers<ContextType>;
+  ClientV3Queries?: ClientV3QueriesResolvers<ContextType>;
+  ClientV3WatchedMutation?: ClientV3WatchedMutationResolvers<ContextType>;
+  ClientV3WatchedMutationError?: ClientV3WatchedMutationErrorResolvers<ContextType>;
+  ClientV4?: ClientV4Resolvers<ContextType>;
   GraphQLErrorPath?: GraphQLScalarType;
   GraphQLErrorSourceLocation?: GraphQlErrorSourceLocationResolvers<ContextType>;
   JSON?: GraphQLScalarType;
@@ -593,8 +660,6 @@ export type Resolvers<ContextType = any> = {
   SerializedError?: SerializedErrorResolvers<ContextType>;
   SerializedGraphQLError?: SerializedGraphQlErrorResolvers<ContextType>;
   Variables?: GraphQLScalarType;
-  WatchedMutation?: WatchedMutationResolvers<ContextType>;
-  WatchedMutationError?: WatchedMutationErrorResolvers<ContextType>;
   WatchedQueries?: WatchedQueriesResolvers<ContextType>;
   WatchedQuery?: WatchedQueryResolvers<ContextType>;
 };

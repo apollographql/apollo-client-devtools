@@ -44,25 +44,54 @@ export type Scalars = {
 };
 
 export type Client = {
-  __typename: "Client";
   cache: Scalars["Cache"]["output"];
   id: Scalars["String"]["output"];
-  mutations: ClientMutations;
   name: Maybe<Scalars["String"]["output"]>;
-  queries: ClientQueries;
   version: Scalars["String"]["output"];
 };
 
-export type ClientMutations = {
-  __typename: "ClientMutations";
-  items: Array<WatchedMutation>;
+export type ClientV3 = Client & {
+  __typename: "ClientV3";
+  cache: Scalars["Cache"]["output"];
+  id: Scalars["String"]["output"];
+  mutations: ClientV3Mutations;
+  name: Maybe<Scalars["String"]["output"]>;
+  queries: ClientV3Queries;
+  version: Scalars["String"]["output"];
+};
+
+export type ClientV3Mutations = {
+  __typename: "ClientV3Mutations";
+  items: Array<ClientV3WatchedMutation>;
   total: Scalars["Int"]["output"];
 };
 
-export type ClientQueries = {
-  __typename: "ClientQueries";
+export type ClientV3Queries = {
+  __typename: "ClientV3Queries";
   items: Array<WatchedQuery>;
   total: Scalars["Int"]["output"];
+};
+
+export type ClientV3WatchedMutation = {
+  __typename: "ClientV3WatchedMutation";
+  error: Maybe<ClientV3WatchedMutationError>;
+  id: Scalars["ID"]["output"];
+  loading: Scalars["Boolean"]["output"];
+  mutationString: Scalars["String"]["output"];
+  name: Maybe<Scalars["String"]["output"]>;
+  variables: Maybe<Scalars["Variables"]["output"]>;
+};
+
+export type ClientV3WatchedMutationError =
+  | SerializedApolloError
+  | SerializedError;
+
+export type ClientV4 = Client & {
+  __typename: "ClientV4";
+  cache: Scalars["Cache"]["output"];
+  id: Scalars["String"]["output"];
+  name: Maybe<Scalars["String"]["output"]>;
+  version: Scalars["String"]["output"];
 };
 
 export type GraphQLErrorSourceLocation = {
@@ -106,18 +135,6 @@ export type SerializedGraphQLError = {
   path: Maybe<Scalars["GraphQLErrorPath"]["output"]>;
 };
 
-export type WatchedMutation = {
-  __typename: "WatchedMutation";
-  error: Maybe<WatchedMutationError>;
-  id: Scalars["ID"]["output"];
-  loading: Scalars["Boolean"]["output"];
-  mutationString: Scalars["String"]["output"];
-  name: Maybe<Scalars["String"]["output"]>;
-  variables: Maybe<Scalars["Variables"]["output"]>;
-};
-
-export type WatchedMutationError = SerializedApolloError | SerializedError;
-
 export type WatchedQueries = {
   __typename: "WatchedQueries";
   count: Scalars["Int"]["output"];
@@ -140,7 +157,10 @@ export type WatchedQuery = {
 export type AppQueryVariables = Exact<{ [key: string]: never }>;
 
 export type AppQuery = {
-  clients: Array<{ __typename: "Client"; id: string; name: string | null }>;
+  clients: Array<
+    | { __typename: "ClientV3"; id: string; name: string | null }
+    | { __typename: "ClientV4"; id: string; name: string | null }
+  >;
 };
 
 export type ClientQueryVariables = Exact<{
@@ -148,13 +168,16 @@ export type ClientQueryVariables = Exact<{
 }>;
 
 export type ClientQuery = {
-  client: {
-    __typename: "Client";
-    id: string;
-    version: string;
-    queries: { __typename: "ClientQueries"; total: number };
-    mutations: { __typename: "ClientMutations"; total: number };
-  } | null;
+  client:
+    | {
+        __typename: "ClientV3";
+        id: string;
+        version: string;
+        queries: { __typename: "ClientV3Queries"; total: number };
+        mutations: { __typename: "ClientV3Mutations"; total: number };
+      }
+    | { __typename: "ClientV4"; id: string; version: string }
+    | null;
 };
 
 export type ApolloErrorAlertDisclosurePanel_error = {
@@ -180,7 +203,10 @@ export type GetCacheVariables = Exact<{
 }>;
 
 export type GetCache = {
-  client: { __typename: "Client"; id: string; cache: Cache } | null;
+  client:
+    | { __typename: "ClientV3"; id: string; cache: Cache }
+    | { __typename: "ClientV4"; id: string; cache: Cache }
+    | null;
 };
 
 export type GetMutationsVariables = Exact<{
@@ -188,21 +214,74 @@ export type GetMutationsVariables = Exact<{
 }>;
 
 export type GetMutations = {
-  client: {
-    __typename: "Client";
-    id: string;
-    mutations: {
-      __typename: "ClientMutations";
-      total: number;
-      items: Array<{
-        __typename: "WatchedMutation";
+  client:
+    | {
+        __typename: "ClientV3";
         id: string;
-        name: string | null;
-        mutationString: string;
-        variables: Variables | null;
-        loading: boolean;
-        error:
-          | {
+        mutations: {
+          __typename: "ClientV3Mutations";
+          total: number;
+          items: Array<{
+            __typename: "ClientV3WatchedMutation";
+            id: string;
+            name: string | null;
+            mutationString: string;
+            variables: Variables | null;
+            loading: boolean;
+            error:
+              | {
+                  __typename: "SerializedApolloError";
+                  clientErrors: Array<string>;
+                  protocolErrors: Array<string>;
+                  networkError: {
+                    __typename: "SerializedError";
+                    message: string;
+                    name: string;
+                    stack: string | null;
+                  } | null;
+                  graphQLErrors: Array<{
+                    __typename: "SerializedGraphQLError";
+                    message: string;
+                    path: GraphQLErrorPath | null;
+                    extensions: JSON | null;
+                  }>;
+                }
+              | {
+                  __typename: "SerializedError";
+                  message: string;
+                  name: string;
+                  stack: string | null;
+                }
+              | null;
+          }>;
+        };
+      }
+    | { __typename: "ClientV4"; id: string }
+    | null;
+};
+
+export type GetQueriesVariables = Exact<{
+  clientId: Scalars["ID"]["input"];
+}>;
+
+export type GetQueries = {
+  client:
+    | {
+        __typename: "ClientV3";
+        id: string;
+        queries: {
+          __typename: "ClientV3Queries";
+          items: Array<{
+            __typename: "WatchedQuery";
+            id: string;
+            name: string | null;
+            queryString: string;
+            variables: Variables | null;
+            cachedData: QueryData | null;
+            options: QueryOptions | null;
+            networkStatus: number;
+            pollInterval: number | null;
+            error: {
               __typename: "SerializedApolloError";
               clientErrors: Array<string>;
               protocolErrors: Array<string>;
@@ -218,59 +297,12 @@ export type GetMutations = {
                 path: GraphQLErrorPath | null;
                 extensions: JSON | null;
               }>;
-            }
-          | {
-              __typename: "SerializedError";
-              message: string;
-              name: string;
-              stack: string | null;
-            }
-          | null;
-      }>;
-    };
-  } | null;
-};
-
-export type GetQueriesVariables = Exact<{
-  clientId: Scalars["ID"]["input"];
-}>;
-
-export type GetQueries = {
-  client: {
-    __typename: "Client";
-    id: string;
-    queries: {
-      __typename: "ClientQueries";
-      items: Array<{
-        __typename: "WatchedQuery";
-        id: string;
-        name: string | null;
-        queryString: string;
-        variables: Variables | null;
-        cachedData: QueryData | null;
-        options: QueryOptions | null;
-        networkStatus: number;
-        pollInterval: number | null;
-        error: {
-          __typename: "SerializedApolloError";
-          clientErrors: Array<string>;
-          protocolErrors: Array<string>;
-          networkError: {
-            __typename: "SerializedError";
-            message: string;
-            name: string;
-            stack: string | null;
-          } | null;
-          graphQLErrors: Array<{
-            __typename: "SerializedGraphQLError";
-            message: string;
-            path: GraphQLErrorPath | null;
-            extensions: JSON | null;
+            } | null;
           }>;
-        } | null;
-      }>;
-    };
-  } | null;
+        };
+      }
+    | { __typename: "ClientV4"; id: string }
+    | null;
 };
 
 export type SerializedErrorAlertDisclosureItem_error = {

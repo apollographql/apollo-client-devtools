@@ -39,18 +39,20 @@ export const GET_QUERIES: TypedDocumentNode<GetQueries, GetQueriesVariables> =
     query GetQueries($clientId: ID!) {
       client(id: $clientId) {
         id
-        queries {
-          items {
-            id
-            name
-            queryString
-            variables
-            cachedData
-            options
-            networkStatus
-            pollInterval
-            error {
-              ...ApolloErrorAlertDisclosurePanel_error
+        ... on ClientV3 {
+          queries {
+            items {
+              id
+              name
+              queryString
+              variables
+              cachedData
+              options
+              networkStatus
+              pollInterval
+              error {
+                ...ApolloErrorAlertDisclosurePanel_error
+              }
             }
           }
         }
