@@ -50,8 +50,9 @@ const config: CodegenConfig = {
         },
         mappers: {
           Client: "../../types.ts#ApolloClientInfo",
-          ClientQueries: "../../types.ts#ApolloClientInfo",
-          ClientMutations: "../../types.ts#ApolloClientInfo",
+          ClientV3: "../../types.ts#ApolloClientInfo",
+          ClientV3Queries: "../../types.ts#ApolloClientInfo",
+          ClientV3Mutations: "../../types.ts#ApolloClientInfo",
           SerializedApolloError:
             "../../extension/tab/helpers#SerializedApolloError as RpcSerializedApolloError",
           SerializedError:

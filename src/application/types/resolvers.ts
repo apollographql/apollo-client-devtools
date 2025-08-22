@@ -282,15 +282,9 @@ export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars["Boolean"]["output"]>;
   Cache: ResolverTypeWrapper<Scalars["Cache"]["output"]>;
   Client: ResolverTypeWrapper<ApolloClientInfo>;
-  ClientV3: ResolverTypeWrapper<
-    Omit<ClientV3, "queries"> & { queries: ResolversTypes["ClientV3Queries"] }
-  >;
-  ClientV3Mutations: ResolverTypeWrapper<ClientV3Mutations>;
-  ClientV3Queries: ResolverTypeWrapper<
-    Omit<ClientV3Queries, "items"> & {
-      items: Array<ResolversTypes["WatchedQuery"]>;
-    }
-  >;
+  ClientV3: ResolverTypeWrapper<ApolloClientInfo>;
+  ClientV3Mutations: ResolverTypeWrapper<ApolloClientInfo>;
+  ClientV3Queries: ResolverTypeWrapper<ApolloClientInfo>;
   ClientV3WatchedMutation: ResolverTypeWrapper<
     Omit<ClientV3WatchedMutation, "error"> & {
       error?: Maybe<ResolversTypes["ClientV3WatchedMutationError"]>;
@@ -330,13 +324,9 @@ export type ResolversParentTypes = {
   Boolean: Scalars["Boolean"]["output"];
   Cache: Scalars["Cache"]["output"];
   Client: ApolloClientInfo;
-  ClientV3: Omit<ClientV3, "queries"> & {
-    queries: ResolversParentTypes["ClientV3Queries"];
-  };
-  ClientV3Mutations: ClientV3Mutations;
-  ClientV3Queries: Omit<ClientV3Queries, "items"> & {
-    items: Array<ResolversParentTypes["WatchedQuery"]>;
-  };
+  ClientV3: ApolloClientInfo;
+  ClientV3Mutations: ApolloClientInfo;
+  ClientV3Queries: ApolloClientInfo;
   ClientV3WatchedMutation: Omit<ClientV3WatchedMutation, "error"> & {
     error?: Maybe<ResolversParentTypes["ClientV3WatchedMutationError"]>;
   };
