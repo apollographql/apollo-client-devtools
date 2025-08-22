@@ -286,7 +286,7 @@ const QueryStatusIcon = ({
   networkStatus,
   pollInterval,
 }: QueryStatusIconProps) => {
-  if (isNetworkRequestInFlight(networkStatus)) {
+  if (!isNetworkRequestSettled(networkStatus)) {
     return <Spinner size="xs" className="shrink-0" />;
   }
 
