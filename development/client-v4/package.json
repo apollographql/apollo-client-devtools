@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "devDependencies": {
-    "@apollo/client": "4.0.0-rc.0",
+    "@apollo/client": "4.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
     "@testing-library/user-event": "^14.5.1",
