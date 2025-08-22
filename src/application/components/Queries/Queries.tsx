@@ -275,6 +275,7 @@ const NETWORK_STATUS_LABELS: Record<NetworkStatus, string> = {
   [NetworkStatus.poll]: "Polling",
   [NetworkStatus.error]: "Error",
   [NetworkStatus.ready]: "Ready",
+  [NetworkStatus.streaming]: "Streaming",
 } as const;
 
 function getNetworkStatusLabel(networkStatus: NetworkStatus) {
