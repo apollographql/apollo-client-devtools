@@ -58,14 +58,14 @@ function createResolvers(client: RpcClient): Resolvers {
           .filter(Boolean);
       },
     },
-    ClientMutations: {
+    ClientV3Mutations: {
       total: (client) => client.mutationCount,
       items: async (client) => {
         const mutations = await rpcClient.request("getMutations", client.id);
 
         return mutations.map((mutation, index) => ({
           id: String(index),
-          __typename: "WatchedMutation",
+          __typename: "ClientV3WatchedMutation",
           name: getOperationName(mutation.document),
           mutationString: print(mutation.document),
           variables: mutation.variables ?? null,
@@ -74,7 +74,7 @@ function createResolvers(client: RpcClient): Resolvers {
         }));
       },
     },
-    WatchedMutationError: {
+    ClientV3WatchedMutationError: {
       __resolveType: (error) => {
         if (error.name === "ApolloError") {
           return "SerializedApolloError";
