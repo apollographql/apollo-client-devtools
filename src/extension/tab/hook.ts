@@ -1,4 +1,5 @@
-import type { ApolloClient } from "@apollo/client";
+import type { ApolloClient as ApolloClient4 } from "@apollo/client";
+import type { ApolloClient as ApolloClient3 } from "@apollo/client-3";
 
 // All manifests should contain the same version number so it shouldn't matter
 // which one we import from.
@@ -6,7 +7,7 @@ import * as manifest from "../chrome/manifest.json";
 const { version: devtoolsVersion } = manifest;
 import type { MutationDetails, QueryDetails } from "./helpers";
 import { getQueries, getQueriesLegacy, getMutations } from "./helpers";
-import type { ApolloClientInfo, SafeAny } from "../../types";
+import type { ApolloClientInfo } from "../../types";
 import { getPrivateAccess } from "../../privateAccess";
 import type { JSONObject } from "../../application/types/json";
 import { createWindowActor } from "../actor";
@@ -15,6 +16,12 @@ import { createRpcClient, createRpcHandler } from "../rpc";
 import { loadErrorCodes } from "./loadErrorCodes";
 import { createId } from "../../utils/createId";
 import { handleExplorerRequests } from "./handleExplorerRequests";
+import type { ClientHandler } from "./clientHandler";
+import { ClientV3Handler } from "./v3/handler";
+import { ClientV4Handler } from "./v4/handler";
+import { gte } from "semver";
+
+type ApolloClient = ApolloClient3<any> | ApolloClient4;
 
 declare global {
   type TCache = any;
@@ -68,6 +75,7 @@ function getMutationsForClient(client: ApolloClient | undefined) {
 // Keep a reverse mapping of client -> id to ensure we don't register the same
 // client multiple times.
 const knownClients = new Map<ApolloClient, string>();
+const handlers = new Map<string, ClientHandler<ApolloClient>>();
 const hook: Hook = {
   get ApolloClient() {
     logDeprecation("window.__APOLLO_DEVTOOLS_GLOBAL_HOOK__.ApolloClient");
@@ -160,6 +168,10 @@ function registerClient(client: ApolloClient) {
   if (!knownClients.has(client)) {
     const id = createId();
     knownClients.set(client, id);
+    const handler = gte(client.version, "4.0.0")
+      ? new ClientV4Handler(client as ApolloClient4)
+      : new ClientV3Handler(client as ApolloClient3<any>);
+    handlers.set(id, handler);
     watchForClientTermination(client);
 
     tab.send({ type: "registerClient", payload: getClientInfo(client) });
