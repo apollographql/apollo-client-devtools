@@ -18,7 +18,13 @@ type Query {
   client(id: ID!): Client
 }
 
-type Client {
+interface Client {
+  id: String!
+  name: String
+  version: String!
+}
+
+type ClientV3 implements Client {
   id: String!
   name: String
   version: String!
@@ -27,26 +33,35 @@ type Client {
   cache: Cache!
 }
 
-type ClientQueries {
+type ClientV4 implements Client {
+  id: String!
+  name: String
+  version: String!
+  queries: ClientQueries!
+  mutations: ClientMutations!
+  cache: Cache!
+}
+
+type ClientV3Queries {
   total: Int!
   items: [WatchedQuery!]!
 }
 
-type ClientMutations {
+type ClientV3Mutations {
   total: Int!
-  items: [WatchedMutation!]!
+  items: [ClientV3WatchedMutation!]!
 }
 
-type WatchedMutation {
+type ClientV3WatchedMutation {
   id: ID!
   name: String
   mutationString: String!
   variables: Variables
   loading: Boolean!
-  error: WatchedMutationError
+  error: ClientV3WatchedMutationError
 }
 
-union WatchedMutationError = SerializedError | SerializedApolloError
+union ClientV3WatchedMutationError = SerializedError | SerializedApolloError
 
 type WatchedQueries {
   count: Int!
