@@ -13,5 +13,5 @@ export abstract class ClientHandler<
 
   abstract getMutations(): TClient extends ApolloClient3<any>
     ? MutationDetails[]
-    : never;
+    : never[];
 }
