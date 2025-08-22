@@ -1,16 +1,33 @@
 import type { ApolloClient, ObservableQuery } from "@apollo/client";
-import type { QueryInfo } from "@apollo/client/core/QueryInfo";
-import type { QueryManager } from "@apollo/client/core/QueryManager";
+import type {
+  ApolloClient as ApolloClient3,
+  ObservableQuery as ObservableQuery3,
+} from "@apollo/client-3";
+import type { InternalTypes } from "@apollo/client";
+
+type QueryInfo = import("@apollo/client-3/core/QueryInfo").QueryInfo;
 
 type KnownPrivates = [
   [
-    ApolloClient<any>,
+    ApolloClient,
     {
-      queryManager: QueryManager<any>;
+      queryManager: InternalTypes.QueryManager;
+    },
+  ],
+  [
+    ApolloClient3<any>,
+    {
+      queryManager: import("@apollo/client-3/core/QueryManager").QueryManager<any>;
     },
   ],
   [
     ObservableQuery,
+    {
+      polllingInfo?: { interval: number; timeout: NodeJS.Timeout };
+    },
+  ],
+  [
+    ObservableQuery3,
     {
       queryInfo: QueryInfo;
       pollingInfo?: { interval: number; timeout: NodeJS.Timeout };
