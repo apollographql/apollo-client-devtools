@@ -20,15 +20,15 @@ declare global {
   type TCache = any;
 
   interface Window {
-    __APOLLO_CLIENT__?: ApolloClient<TCache>;
+    __APOLLO_CLIENT__?: ApolloClient;
     [DEVTOOLS_KEY]?: {
-      push(client: ApolloClient<any>): void;
+      push(client: ApolloClient): void;
     };
   }
 }
 
 type Hook = {
-  ApolloClient: ApolloClient<any> | undefined;
+  ApolloClient: ApolloClient | undefined;
   version: string;
   getQueries: () => QueryDetails[];
   getMutations: () => MutationDetails[];
@@ -44,7 +44,7 @@ const messageAdapter = createWindowMessageAdapter(window, {
 const handleRpc = createRpcHandler(messageAdapter);
 const rpcClient = createRpcClient(messageAdapter);
 
-function getQueriesForClient(client: ApolloClient<unknown> | undefined) {
+function getQueriesForClient(client: ApolloClient | undefined) {
   const ac = getPrivateAccess(client);
   if (ac?.queryManager.getObservableQueries) {
     return getQueries(ac.queryManager.getObservableQueries("active"));
@@ -53,7 +53,7 @@ function getQueriesForClient(client: ApolloClient<unknown> | undefined) {
   }
 }
 
-function getMutationsForClient(client: ApolloClient<unknown> | undefined) {
+function getMutationsForClient(client: ApolloClient | undefined) {
   const ac = getPrivateAccess(client);
 
   return getMutations(
@@ -67,7 +67,7 @@ function getMutationsForClient(client: ApolloClient<unknown> | undefined) {
 
 // Keep a reverse mapping of client -> id to ensure we don't register the same
 // client multiple times.
-const knownClients = new Map<ApolloClient<SafeAny>, string>();
+const knownClients = new Map<ApolloClient, string>();
 const hook: Hook = {
   get ApolloClient() {
     logDeprecation("window.__APOLLO_DEVTOOLS_GLOBAL_HOOK__.ApolloClient");
@@ -88,7 +88,7 @@ const hook: Hook = {
   getCache: () => {
     logDeprecation("window.__APOLLO_DEVTOOLS_GLOBAL_HOOK__.getCache()");
 
-    return hook.ApolloClient?.cache.extract(true) ?? {};
+    return (hook.ApolloClient?.cache.extract(true) as JSONObject) ?? {};
   },
 };
 
@@ -99,7 +99,7 @@ Object.defineProperty(window, "__APOLLO_DEVTOOLS_GLOBAL_HOOK__", {
   configurable: true,
 });
 
-function getClientInfo(client: ApolloClient<unknown>): ApolloClientInfo {
+function getClientInfo(client: ApolloClient): ApolloClientInfo {
   return {
     id: knownClients.get(client)!,
     name: "devtoolsConfig" in client ? client.devtoolsConfig.name : undefined,
@@ -128,7 +128,7 @@ handleRpc("getMutations", (clientId) =>
 );
 
 handleRpc("getCache", (clientId) => {
-  return getClientById(clientId)?.cache.extract(true) ?? {};
+  return (getClientById(clientId)?.cache.extract(true) as JSONObject) ?? {};
 });
 
 function getClientById(clientId: string) {
@@ -140,7 +140,7 @@ function getClientById(clientId: string) {
 
 handleExplorerRequests(tab, getClientById);
 
-function watchForClientTermination(client: ApolloClient<any>) {
+function watchForClientTermination(client: ApolloClient) {
   const originalStop = client.stop;
 
   client.stop = () => {
@@ -156,7 +156,7 @@ function watchForClientTermination(client: ApolloClient<any>) {
   };
 }
 
-function registerClient(client: ApolloClient<any>) {
+function registerClient(client: ApolloClient) {
   if (!knownClients.has(client)) {
     const id = createId();
     knownClients.set(client, id);
@@ -182,7 +182,7 @@ function registerClient(client: ApolloClient<any>) {
 const preExisting = window[DEVTOOLS_KEY];
 window[DEVTOOLS_KEY] = { push: registerClient };
 if (Array.isArray(preExisting)) {
-  (preExisting as Array<ApolloClient<any>>).forEach(registerClient);
+  (preExisting as Array<ApolloClient>).forEach(registerClient);
 }
 
 // Handles registering legacy clients (< v3.7) which do not use the new
@@ -192,7 +192,7 @@ Object.defineProperty(window, "__APOLLO_CLIENT__", {
   get() {
     return globalClient;
   },
-  set(client: ApolloClient<SafeAny> | undefined) {
+  set(client: ApolloClient | undefined) {
     if (client) {
       // We call this in a setTimeout because the client is not fully
       // instantiated before the property on window is assigned since it
