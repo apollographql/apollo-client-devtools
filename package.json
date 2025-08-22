@@ -38,7 +38,8 @@
   },
   "dependencies": {
     "@apollo/brand": "^0.7.0",
-    "@apollo/client": "3.11.10",
+    "@apollo/client": "4.0.0",
+    "@apollo/client-3": "npm:@apollo/client@3.13.9",
     "@apollo/icons": "^0.7.0",
     "@apollo/tailwind-preset": "^0.2.0",
     "@headlessui/react": "^2.1.0",
@@ -68,6 +69,7 @@
     "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.0",
     "remark-github": "^12.0.0",
+    "rxjs": "^7.8.2",
     "tailwind-merge": "^2.3.0",
     "xstate": "^5.14.0",
     "zen-observable": "^0.10.0"
