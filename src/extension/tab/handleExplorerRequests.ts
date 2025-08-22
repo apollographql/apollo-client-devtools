@@ -18,7 +18,7 @@ export function handleExplorerRequests(
   actor: Actor,
   getClientById: (
     clientId: string
-  ) => Pick<ApolloClient<SafeAny>, "mutate" | "watchQuery"> | undefined,
+  ) => Pick<ApolloClient, "mutate" | "watchQuery"> | undefined,
   options: OptionsWithAbortSignal = {}
 ) {
   return actor.on(

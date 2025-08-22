@@ -9,6 +9,7 @@ import type { MessageAdapter } from "../messageAdapters";
 import { handleExplorerRequests } from "../tab/handleExplorerRequests";
 import { setMaxListeners, WeakRef, FinalizationRegistry } from "./polyfills";
 import { createId } from "../../utils/createId";
+import type { JSONObject } from "../../application/types/json";
 
 type Reason =
   | "WS_DISCONNECTED"
@@ -46,7 +47,7 @@ interface ApolloClientDevToolsConnection {
  * @returns {ApolloClientDevToolsConnection}
  */
 export function connectApolloClientToVSCodeDevTools(
-  client: ApolloClient<any>,
+  client: ApolloClient,
   vsCodeServerUrl:
     | ConstructorParameters<typeof WebSocket>[0]
     | ConstructorParameters<typeof WebSocket>
@@ -68,7 +69,7 @@ function makeErrorHandler(cleanup: (reason?: Reason) => void): EventListener {
 }
 
 function registerClient(
-  clientRef: WeakRef<ApolloClient<any>>,
+  clientRef: WeakRef<ApolloClient>,
   url:
     | ConstructorParameters<typeof WebSocket>[0]
     | ConstructorParameters<typeof WebSocket>
@@ -112,9 +113,13 @@ function registerClient(
   }
   wsRpcHandler("getQueries", getQueriesForClient, { signal });
   wsRpcHandler("getMutations", getMutationsForClient, { signal });
-  wsRpcHandler("getCache", () => getClient()?.cache.extract(true) ?? {}, {
-    signal,
-  });
+  wsRpcHandler(
+    "getCache",
+    () => (getClient()?.cache.extract(true) as JSONObject) ?? {},
+    {
+      signal,
+    }
+  );
   handleExplorerRequests(wsActor, getClient, { signal });
 
   const id = createId();
