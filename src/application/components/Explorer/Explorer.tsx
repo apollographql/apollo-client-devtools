@@ -1,6 +1,12 @@
 import { useMemo } from "react";
 import { useState, useEffect } from "react";
-import { Observable, NetworkStatus, gql } from "@apollo/client";
+import type { ObservableQuery } from "@apollo/client";
+import {
+  Observable,
+  NetworkStatus,
+  gql,
+  CombinedGraphQLErrors,
+} from "@apollo/client";
 import { useReactiveVar } from "@apollo/client/react";
 import type { IntrospectionQuery } from "graphql";
 import { getIntrospectionQuery } from "graphql/utilities";
@@ -27,7 +33,7 @@ import {
 import { GraphRefModal } from "./GraphRefModal";
 import { Button } from "../Button";
 import { getPanelActor } from "../../../extension/devtools/panelActor";
-import type { JSONObject } from "../../types/json";
+import type { JSONObject, JSONValue } from "../../types/json";
 
 const panelWindow = getPanelActor(window);
 
@@ -51,7 +57,7 @@ function executeOperation({
   isSubscription?: boolean;
   clientId: string;
 }) {
-  return new Observable<QueryResult>((observer) => {
+  return new Observable<ObservableQuery.Result<unknown>>((observer) => {
     panelWindow.send({
       type: "explorerRequest",
       payload: {
@@ -191,10 +197,9 @@ export const Explorer = ({
       });
 
       observer.subscribe((response) => {
-        // If we have errors in the response it means we assume this was a graphql
-        // response which means we did hit a graphql endpoint but introspection
-        // was specifically disabled
-        if (response.errors) {
+        // This means this was a graphql response which means we did hit a
+        // graphql endpoint but introspection was specifically disabled
+        if (CombinedGraphQLErrors.is(response.error)) {
           // if you can't introspect the schema, default to the last used
           // graph ref, otherwise, trigger the embed to ask the user
           // for their graph ref, and allow them to authenticate
@@ -210,7 +215,9 @@ export const Explorer = ({
             embeddedExplorerIFrame,
             message: {
               name: SCHEMA_ERROR,
-              errors: response.errors,
+              errors: CombinedGraphQLErrors.is(response.error)
+                ? response.error.errors
+                : undefined,
               error: response.error?.message,
             },
           });
@@ -221,7 +228,7 @@ export const Explorer = ({
             embeddedExplorerIFrame,
             message: {
               name: SCHEMA_RESPONSE,
-              schema: response.data,
+              schema: response.data as IntrospectionQuery,
             },
           });
         }
@@ -247,6 +254,8 @@ export const Explorer = ({
           const currentOperationId = event.data.operationId;
 
           observer.subscribe((response) => {
+            const { data, error } = response;
+
             postMessageToEmbed({
               embeddedExplorerIFrame,
               message: {
@@ -254,7 +263,15 @@ export const Explorer = ({
                   ? EXPLORER_RESPONSE
                   : EXPLORER_SUBSCRIPTION_RESPONSE,
                 operationId: currentOperationId,
-                response: response,
+                response: {
+                  data: data as JSONValue | undefined,
+                  errors: CombinedGraphQLErrors.is(error)
+                    ? error.errors
+                    : undefined,
+                  error: error
+                    ? { message: error.message, stack: error.stack }
+                    : undefined,
+                },
               },
             });
           });
