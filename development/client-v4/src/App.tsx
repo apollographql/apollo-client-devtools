@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import type { Reference } from "@apollo/client";
 import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client";
+import { Defer20220824Handler } from "@apollo/client/incremental";
 import { makeReference } from "@apollo/client/utilities/internal";
 import { ApolloProvider } from "@apollo/client/react";
 import ColorSchemeGenerator from "./ColorSchemeGenerator";
@@ -131,12 +132,16 @@ function createClient(name?: string) {
         },
       },
     }),
+
     link: new HttpLink({ uri: "http://localhost:4000" }),
     localState: new LocalState(),
+
     devtools: {
       enabled: true,
       name,
     },
+
+    incrementalHandler: new Defer20220824Handler(),
   });
 }
 
