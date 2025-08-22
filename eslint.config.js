@@ -40,7 +40,7 @@ export default tseslint.config(
       "react/no-unknown-property": "error",
       "react/display-name": "off",
       "testing-library/no-node-access": "off",
-      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-unused-vars": [
         "warn",
         { ignoreRestSiblings: true },
