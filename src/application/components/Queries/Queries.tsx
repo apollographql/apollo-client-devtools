@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { NetworkStatus, gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
-import { isNetworkRequestInFlight } from "@apollo/client/core/networkStatus";
+import { isNetworkRequestSettled } from "@apollo/client";
 import { List } from "../List";
 import { ListItem } from "../ListItem";
 import IconErrorSolid from "@apollo/icons/default/IconErrorSolid.svg";
@@ -161,7 +161,7 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
               <QueryLayout.Header>
                 <QueryLayout.Title className="flex gap-6 items-center">
                   {selectedQuery.name}
-                  {isNetworkRequestInFlight(selectedQuery.networkStatus) &&
+                  {!isNetworkRequestSettled(selectedQuery.networkStatus) &&
                   selectedQuery.networkStatus !== NetworkStatus.poll ? (
                     <>
                       <StatusBadge
