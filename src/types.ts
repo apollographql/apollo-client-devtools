@@ -29,3 +29,9 @@ export interface ApolloClientInfo {
 export interface ErrorCodes {
   [key: number]: { file: string; condition?: string; message?: string };
 }
+
+export interface SerializedError {
+  message: string;
+  name: string;
+  stack?: string;
+}
