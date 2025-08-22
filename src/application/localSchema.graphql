@@ -22,14 +22,15 @@ interface Client {
   id: String!
   name: String
   version: String!
+  cache: Cache!
 }
 
 type ClientV3 implements Client {
   id: String!
   name: String
   version: String!
-  queries: ClientQueries!
-  mutations: ClientMutations!
+  queries: ClientV3Queries!
+  mutations: ClientV3Mutations!
   cache: Cache!
 }
 
@@ -37,8 +38,6 @@ type ClientV4 implements Client {
   id: String!
   name: String
   version: String!
-  queries: ClientQueries!
-  mutations: ClientMutations!
   cache: Cache!
 }
 
