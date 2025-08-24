@@ -79,6 +79,12 @@ type WatchedQuery {
   pollInterval: Int
 }
 
+interface ErrorLike {
+  message: String!
+  name: String!
+  stack: String
+}
+
 type SerializedApolloError {
   message: String!
   clientErrors: [String!]!
@@ -88,7 +94,7 @@ type SerializedApolloError {
   protocolErrors: [String!]!
 }
 
-type SerializedError {
+type SerializedError implements ErrorLike {
   message: String!
   name: String!
   stack: String
