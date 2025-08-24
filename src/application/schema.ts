@@ -58,6 +58,33 @@ function createResolvers(client: RpcClient): Resolvers {
           .filter(Boolean);
       },
     },
+    ClientV4Queries: {
+      total: (client) => client.queryCount,
+      items: async (client) => {
+        const queries = await rpcClient.request("getV4Queries", client.id);
+
+        return queries
+          .map((query) => {
+            const name = getOperationName(query.document);
+            if (name === "IntrospectionQuery") {
+              return;
+            }
+
+            return {
+              id: query.id,
+              name,
+              queryString: print(query.document),
+              variables: query.variables ?? null,
+              cachedData: query.cachedData ?? null,
+              options: query.options ?? null,
+              networkStatus: query.networkStatus,
+              error: query.error,
+              pollInterval: query.pollInterval,
+            };
+          })
+          .filter(Boolean);
+      },
+    },
     ClientV3Mutations: {
       total: (client) => client.mutationCount,
       items: async (client) => {
