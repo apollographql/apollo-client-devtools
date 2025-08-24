@@ -31,7 +31,7 @@ import type { JSONObject, JSONValue } from "@/application/types/json";
 // Observable exports, as we don't want Apollo Client and its dependencies
 // to be loaded into each browser tab, when this hook triggered.
 import type { Observable } from "rxjs";
-import { map } from "rxjs";
+import { filter, map } from "rxjs";
 import { getPrivateAccess } from "@/privateAccess";
 import { pick } from "@/application/utilities/pick";
 
@@ -59,6 +59,7 @@ export class ClientV4Handler extends ClientHandler<ApolloClient> {
     fetchPolicy: FetchPolicy;
   }): Observable<EmbeddedExplorerResponse> {
     return this.client.watchQuery<JSONObject>(options).pipe(
+      filter((result) => result.dataState !== "empty"),
       map(
         (result): EmbeddedExplorerResponse => ({
           data: result.data,
