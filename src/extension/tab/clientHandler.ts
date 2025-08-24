@@ -81,7 +81,7 @@ export abstract class ClientHandler<
     ).pipe(map((response) => ({ operationName, response })));
   }
 
-  abstract executeQuery(options: {
+  protected abstract executeQuery(options: {
     query: DocumentNode;
     variables: JSONObject | undefined;
     fetchPolicy: FetchPolicy;
@@ -89,14 +89,14 @@ export abstract class ClientHandler<
     ? ObservableV4<EmbeddedExplorerResponse>
     : ObservableV3<EmbeddedExplorerResponse>;
 
-  abstract executeMutation(options: {
+  protected abstract executeMutation(options: {
     mutation: DocumentNode;
     variables: JSONObject | undefined;
   }): TClient extends ApolloClient4
     ? Promise<EmbeddedExplorerResponse>
     : Promise<EmbeddedExplorerResponse>;
 
-  abstract executeSubsription(options: {
+  protected abstract executeSubsription(options: {
     subscription: DocumentNode;
     variables: JSONObject | undefined;
   }): TClient extends ApolloClient4
