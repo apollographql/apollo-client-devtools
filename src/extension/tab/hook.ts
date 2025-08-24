@@ -15,7 +15,6 @@ import { handleExplorerRequests } from "./handleExplorerRequests";
 import type { ClientHandler, IDv3, IDv4 } from "./clientHandler";
 import type { ClientV3Handler } from "./v3/handler";
 import type { ClientV4Handler } from "./v4/handler";
-import { gte } from "semver";
 import { createHandler } from "./helpers";
 
 declare global {
