@@ -27,6 +27,7 @@ import type { JSONObject, JSONValue } from "@/application/types/json";
 // to be loaded into each browser tab, when this hook triggered.
 import type { Observable } from "rxjs";
 import { map } from "rxjs";
+import { getPrivateAccess } from "@/privateAccess";
 
 export class ClientV4Handler extends ClientHandler<ApolloClient> {
   protected async executeMutation(options: {
@@ -93,7 +94,24 @@ export class ClientV4Handler extends ClientHandler<ApolloClient> {
   }
 
   getQueries(): QueryV4Details[] {
-    return [];
+    return Array.from(this.client.getObservableQueries("active")).map(
+      (oq, idx) => {
+        const observableQuery = getPrivateAccess(oq);
+        const { networkStatus, error } = observableQuery.getCurrentResult();
+        const diff = observableQuery.getCacheDiff();
+        const { pollingInfo } = observableQuery;
+
+        return {
+          id: String(idx),
+          document: observableQuery.query,
+          variables: observableQuery.variables,
+          cachedData: diff.result,
+          networkStatus,
+          error: error ? serializeError(error) : null,
+          pollInterval: pollingInfo && Math.floor(pollingInfo.interval),
+        };
+      }
+    );
   }
 }
 
