@@ -49,9 +49,7 @@ export abstract class ClientHandler<
     return this.client as unknown as TClient;
   }
 
-  executeOperationForExplorer(
-    payload: ExplorerRequest
-  ): Observable<ExplorerResponse> {
+  executeOperation(payload: ExplorerRequest): Observable<ExplorerResponse> {
     const { operation, operationName, variables } = payload;
     const document = filterDocumentForOperation(operation, operationName);
     const definition = getOperationDefinition(document);
