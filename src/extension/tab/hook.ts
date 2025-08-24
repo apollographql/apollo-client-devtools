@@ -35,11 +35,7 @@ declare global {
 }
 
 type Hook = {
-  ApolloClient: ApolloClient | undefined;
   version: string;
-  getQueries: () => QueryDetails[];
-  getMutations: () => MutationDetails[];
-  getCache: () => JSONObject;
 };
 
 const DEVTOOLS_KEY = Symbol.for("apollo.devtools");
@@ -77,27 +73,7 @@ function getMutationsForClient(client: ApolloClient | undefined) {
 const knownClients = new Map<ApolloClient, string>();
 const handlers = new Map<string, ClientHandler<ApolloClient>>();
 const hook: Hook = {
-  get ApolloClient() {
-    logDeprecation("window.__APOLLO_DEVTOOLS_GLOBAL_HOOK__.ApolloClient");
-
-    return globalClient;
-  },
   version: devtoolsVersion,
-  getQueries() {
-    logDeprecation("window.__APOLLO_DEVTOOLS_GLOBAL_HOOK__.getQueries()");
-
-    return getQueriesForClient(hook.ApolloClient);
-  },
-  getMutations: () => {
-    logDeprecation("window.__APOLLO_DEVTOOLS_GLOBAL_HOOK__.getMutations()");
-
-    return getMutationsForClient(hook.ApolloClient);
-  },
-  getCache: () => {
-    logDeprecation("window.__APOLLO_DEVTOOLS_GLOBAL_HOOK__.getCache()");
-
-    return (hook.ApolloClient?.cache.extract(true) as JSONObject) ?? {};
-  },
 };
 
 Object.defineProperty(window, "__APOLLO_DEVTOOLS_GLOBAL_HOOK__", {
