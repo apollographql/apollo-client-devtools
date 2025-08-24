@@ -1,6 +1,12 @@
-import type { ApolloError, OperationVariables } from "@apollo/client-3";
+import type {
+  ApolloError,
+  NetworkStatus,
+  OperationVariables,
+  WatchQueryOptions,
+} from "@apollo/client-3";
 import type { SerializedError } from "../../../types";
 import type { DocumentNode, GraphQLFormattedError } from "graphql";
+import type { QueryData } from "@/application/types/scalars";
 
 export interface MutationStoreValue {
   mutation: DocumentNode;
@@ -23,3 +29,27 @@ export interface SerializedApolloError extends Pick<ApolloError, "message"> {
   graphQLErrors: ReadonlyArray<GraphQLFormattedError>;
   protocolErrors: string[];
 }
+
+export interface QueryV3Details {
+  id: string;
+  document: DocumentNode;
+  variables?: OperationVariables;
+  cachedData?: QueryData; // Not a member of the actual Apollo Client QueryInfo type
+  options?: QueryV3Options;
+  networkStatus: NetworkStatus;
+  error?: SerializedApolloError;
+  pollInterval?: number;
+}
+
+export type QueryV3Options = Pick<
+  WatchQueryOptions,
+  | "context"
+  | "fetchPolicy"
+  | "errorPolicy"
+  | "pollInterval"
+  | "partialRefetch"
+  | "canonizeResults"
+  | "returnPartialData"
+  | "refetchWritePolicy"
+  | "notifyOnNetworkStatusChange"
+> & { nextFetchPolicy?: string };
