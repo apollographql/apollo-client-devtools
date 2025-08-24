@@ -22,16 +22,17 @@ function createResolvers(client: RpcClient): Resolvers {
       client: (_, { id }) => rpcClient.request("getClient", id),
     },
     Client: {
-      cache: (client) => rpcClient.request("getCache", client.id),
       __resolveType: (client) => {
         return gte(client.version, "4.0.0") ? "ClientV4" : "ClientV3";
       },
     },
     ClientV3: {
+      cache: (client) => rpcClient.request("getCache", client.id),
       queries: (client) => client,
       mutations: (client) => client,
     },
     ClientV4: {
+      cache: (client) => rpcClient.request("getCache", client.id),
       queries: (client) => client,
       mutations: (client) => client,
     },
