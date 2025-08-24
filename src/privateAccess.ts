@@ -23,7 +23,7 @@ type KnownPrivates = [
   [
     ObservableQuery,
     {
-      polllingInfo?: { interval: number; timeout: NodeJS.Timeout };
+      pollingInfo?: { interval: number; timeout: NodeJS.Timeout };
     },
   ],
   [
