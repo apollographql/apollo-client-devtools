@@ -97,18 +97,10 @@ type ClientV4Mutation implements ClientMutation {
   mutationString: String!
   variables: Variables
   loading: Boolean!
-  error: ClientV4Error
+  error: ErrorLike
 }
 
 union ClientV3MutationError = SerializedError | SerializedApolloError
-union ClientV4Error =
-  | SerializedError
-  | SerializedCombinedGraphQLErrors
-  | SerializedCombinedProtocolErrors
-  | SerializedLocalStateError
-  | SerializedServerError
-  | SerializedServerParseError
-  | SerializedUnconventionalError
 
 type ClientV3WatchedQueries {
   count: Int!
@@ -135,7 +127,7 @@ type ClientV4WatchedQuery {
   variables: Variables
   options: QueryOptions
   networkStatus: Int!
-  error: ClientV4Error
+  error: ErrorLike
   pollInterval: Int
 }
 

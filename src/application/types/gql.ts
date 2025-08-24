@@ -132,18 +132,9 @@ export type ClientV4 = Client & {
   version: Scalars["String"]["output"];
 };
 
-export type ClientV4Error =
-  | SerializedCombinedGraphQLErrors
-  | SerializedCombinedProtocolErrors
-  | SerializedError
-  | SerializedLocalStateError
-  | SerializedServerError
-  | SerializedServerParseError
-  | SerializedUnconventionalError;
-
 export type ClientV4Mutation = ClientMutation & {
   __typename: "ClientV4Mutation";
-  error: Maybe<ClientV4Error>;
+  error: Maybe<ErrorLike>;
   id: Scalars["ID"]["output"];
   loading: Scalars["Boolean"]["output"];
   mutationString: Scalars["String"]["output"];
@@ -166,7 +157,7 @@ export type ClientV4Queries = ClientQueries & {
 export type ClientV4WatchedQuery = {
   __typename: "ClientV4WatchedQuery";
   cachedData: Maybe<Scalars["QueryData"]["output"]>;
-  error: Maybe<ClientV4Error>;
+  error: Maybe<ErrorLike>;
   id: Scalars["ID"]["output"];
   name: Maybe<Scalars["String"]["output"]>;
   networkStatus: Scalars["Int"]["output"];

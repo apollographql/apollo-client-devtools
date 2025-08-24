@@ -124,7 +124,7 @@ function createResolvers(client: RpcClient): Resolvers {
         }));
       },
     },
-    ClientV4Error: {
+    ErrorLike: {
       __resolveType: (error) => {
         switch (error.name) {
           case "CombinedGraphQLErrors":

@@ -151,18 +151,9 @@ export type ClientV4 = Client & {
   version: Scalars["String"]["output"];
 };
 
-export type ClientV4Error =
-  | SerializedCombinedGraphQlErrors
-  | SerializedCombinedProtocolErrors
-  | SerializedError
-  | SerializedLocalStateError
-  | SerializedServerError
-  | SerializedServerParseError
-  | SerializedUnconventionalError;
-
 export type ClientV4Mutation = ClientMutation & {
   __typename?: "ClientV4Mutation";
-  error: Maybe<ClientV4Error>;
+  error: Maybe<ErrorLike>;
   id: Scalars["ID"]["output"];
   loading: Scalars["Boolean"]["output"];
   mutationString: Scalars["String"]["output"];
@@ -185,7 +176,7 @@ export type ClientV4Queries = ClientQueries & {
 export type ClientV4WatchedQuery = {
   __typename?: "ClientV4WatchedQuery";
   cachedData: Maybe<Scalars["QueryData"]["output"]>;
-  error: Maybe<ClientV4Error>;
+  error: Maybe<ErrorLike>;
   id: Scalars["ID"]["output"];
   name: Maybe<Scalars["String"]["output"]>;
   networkStatus: Scalars["Int"]["output"];
@@ -403,14 +394,6 @@ export type DirectiveResolverFn<
 /** Mapping of union types */
 export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = {
   ClientV3MutationError: RpcSerializedApolloError | RpcSerializedError;
-  ClientV4Error:
-    | RpcSerializedCombinedGraphQLErrors
-    | RpcSerializedCombinedProtocolErrors
-    | RpcSerializedError
-    | RpcSerializedLocalStateError
-    | RpcSerializedServerError
-    | RpcSerializedServerParseError
-    | RpcSerializedUnconventionalError;
 };
 
 /** Mapping of interface types */
@@ -427,7 +410,7 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> =
           error: Maybe<_RefType["ClientV3MutationError"]>;
         })
       | (Omit<ClientV4Mutation, "error"> & {
-          error: Maybe<_RefType["ClientV4Error"]>;
+          error: Maybe<_RefType["ErrorLike"]>;
         });
     ClientMutations: ApolloClientInfo | ApolloClientInfo;
     ClientQueries: ApolloClientInfo | ApolloClientInfo;
@@ -482,19 +465,16 @@ export type ResolversTypes = {
       queries: ResolversTypes["ClientV4Queries"];
     }
   >;
-  ClientV4Error: ResolverTypeWrapper<
-    ResolversUnionTypes<ResolversTypes>["ClientV4Error"]
-  >;
   ClientV4Mutation: ResolverTypeWrapper<
     Omit<ClientV4Mutation, "error"> & {
-      error: Maybe<ResolversTypes["ClientV4Error"]>;
+      error: Maybe<ResolversTypes["ErrorLike"]>;
     }
   >;
   ClientV4Mutations: ResolverTypeWrapper<ApolloClientInfo>;
   ClientV4Queries: ResolverTypeWrapper<ApolloClientInfo>;
   ClientV4WatchedQuery: ResolverTypeWrapper<
     Omit<ClientV4WatchedQuery, "error"> & {
-      error: Maybe<ResolversTypes["ClientV4Error"]>;
+      error: Maybe<ResolversTypes["ErrorLike"]>;
     }
   >;
   ErrorLike: ResolverTypeWrapper<
@@ -546,14 +526,13 @@ export type ResolversParentTypes = {
     mutations: ResolversParentTypes["ClientV4Mutations"];
     queries: ResolversParentTypes["ClientV4Queries"];
   };
-  ClientV4Error: ResolversUnionTypes<ResolversParentTypes>["ClientV4Error"];
   ClientV4Mutation: Omit<ClientV4Mutation, "error"> & {
-    error: Maybe<ResolversParentTypes["ClientV4Error"]>;
+    error: Maybe<ResolversParentTypes["ErrorLike"]>;
   };
   ClientV4Mutations: ApolloClientInfo;
   ClientV4Queries: ApolloClientInfo;
   ClientV4WatchedQuery: Omit<ClientV4WatchedQuery, "error"> & {
-    error: Maybe<ResolversParentTypes["ClientV4Error"]>;
+    error: Maybe<ResolversParentTypes["ErrorLike"]>;
   };
   ErrorLike: ResolversInterfaceTypes<ResolversParentTypes>["ErrorLike"];
   GraphQLErrorPath: Scalars["GraphQLErrorPath"]["output"];
@@ -817,34 +796,12 @@ export type ClientV4Resolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type ClientV4ErrorResolvers<
-  ContextType = any,
-  ParentType extends
-    ResolversParentTypes["ClientV4Error"] = ResolversParentTypes["ClientV4Error"],
-> = {
-  __resolveType: TypeResolveFn<
-    | "SerializedCombinedGraphQLErrors"
-    | "SerializedCombinedProtocolErrors"
-    | "SerializedError"
-    | "SerializedLocalStateError"
-    | "SerializedServerError"
-    | "SerializedServerParseError"
-    | "SerializedUnconventionalError",
-    ParentType,
-    ContextType
-  >;
-};
-
 export type ClientV4MutationResolvers<
   ContextType = any,
   ParentType extends
     ResolversParentTypes["ClientV4Mutation"] = ResolversParentTypes["ClientV4Mutation"],
 > = {
-  error?: Resolver<
-    Maybe<ResolversTypes["ClientV4Error"]>,
-    ParentType,
-    ContextType
-  >;
+  error?: Resolver<Maybe<ResolversTypes["ErrorLike"]>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
   loading?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>;
   mutationString?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
@@ -895,11 +852,7 @@ export type ClientV4WatchedQueryResolvers<
     ParentType,
     ContextType
   >;
-  error?: Resolver<
-    Maybe<ResolversTypes["ClientV4Error"]>,
-    ParentType,
-    ContextType
-  >;
+  error?: Resolver<Maybe<ResolversTypes["ErrorLike"]>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   networkStatus?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
@@ -1160,7 +1113,6 @@ export type Resolvers<ContextType = any> = {
   ClientV3WatchedQueries?: ClientV3WatchedQueriesResolvers<ContextType>;
   ClientV3WatchedQuery?: ClientV3WatchedQueryResolvers<ContextType>;
   ClientV4?: ClientV4Resolvers<ContextType>;
-  ClientV4Error?: ClientV4ErrorResolvers<ContextType>;
   ClientV4Mutation?: ClientV4MutationResolvers<ContextType>;
   ClientV4Mutations?: ClientV4MutationsResolvers<ContextType>;
   ClientV4Queries?: ClientV4QueriesResolvers<ContextType>;
