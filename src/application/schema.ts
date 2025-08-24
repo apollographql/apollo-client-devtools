@@ -65,7 +65,6 @@ function createResolvers(client: RpcClient): Resolvers {
 
         return mutations.map((mutation, index) => ({
           id: String(index),
-          __typename: "ClientV3WatchedMutation",
           name: getOperationName(mutation.document),
           mutationString: print(mutation.document),
           variables: mutation.variables ?? null,
