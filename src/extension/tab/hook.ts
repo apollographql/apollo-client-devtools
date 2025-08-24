@@ -13,9 +13,10 @@ import { createRpcClient, createRpcHandler } from "../rpc";
 import { loadErrorCodes } from "./loadErrorCodes";
 import { handleExplorerRequests } from "./handleExplorerRequests";
 import type { ClientHandler, IDv3, IDv4 } from "./clientHandler";
-import { ClientV3Handler } from "./v3/handler";
-import { ClientV4Handler } from "./v4/handler";
+import type { ClientV3Handler } from "./v3/handler";
+import type { ClientV4Handler } from "./v4/handler";
 import { gte } from "semver";
+import { createHandler } from "./helpers";
 
 declare global {
   type TCache = any;
@@ -134,10 +135,7 @@ function registerClient(client: ApolloClient) {
   if (!knownClients.has(client)) {
     knownClients.add(client);
 
-    const handler = gte(client.version, "4.0.0")
-      ? new ClientV4Handler(client as ApolloClient4)
-      : new ClientV3Handler(client as ApolloClient3<any>);
-    handlers.set(client, handler);
+    handlers.set(client, createHandler(client));
     watchForClientTermination(client);
 
     tab.send({ type: "registerClient", payload: getClientInfo(client) });
