@@ -28,7 +28,7 @@ import type { Observable } from "rxjs";
 import { map } from "rxjs";
 
 export class ClientV4Handler extends ClientHandler<ApolloClient> {
-  async executeMutation(options: {
+  protected async executeMutation(options: {
     mutation: DocumentNode;
     variables: JSONObject | undefined;
   }): Promise<EmbeddedExplorerResponse> {
@@ -45,7 +45,7 @@ export class ClientV4Handler extends ClientHandler<ApolloClient> {
     }
   }
 
-  executeQuery(options: {
+  protected executeQuery(options: {
     query: DocumentNode;
     variables: JSONObject | undefined;
     fetchPolicy: FetchPolicy;
@@ -60,7 +60,7 @@ export class ClientV4Handler extends ClientHandler<ApolloClient> {
     );
   }
 
-  executeSubscription({
+  protected executeSubscription({
     subscription,
     variables,
   }: {

@@ -26,7 +26,7 @@ import type { JSONObject } from "@/application/types/json";
 import { getOperationName } from "@apollo/client/utilities/internal";
 
 export class ClientV3Handler extends ClientHandler<ApolloClient<any>> {
-  async executeMutation(options: {
+  protected async executeMutation(options: {
     mutation: DocumentNode;
     variables: JSONObject | undefined;
   }): Promise<ExplorerResponse["response"]> {
@@ -49,7 +49,7 @@ export class ClientV3Handler extends ClientHandler<ApolloClient<any>> {
     }
   }
 
-  executeQuery(options: {
+  protected executeQuery(options: {
     query: DocumentNode;
     variables: JSONObject | undefined;
     fetchPolicy: FetchPolicy;
@@ -77,7 +77,7 @@ export class ClientV3Handler extends ClientHandler<ApolloClient<any>> {
     });
   }
 
-  executeSubscription({
+  protected executeSubscription({
     subscription,
     variables,
   }: {
