@@ -59,7 +59,7 @@ export type Scalars = {
 export type Client = {
   cache: Scalars["Cache"]["output"];
   id: Scalars["String"]["output"];
-  name?: Maybe<Scalars["String"]["output"]>;
+  name: Maybe<Scalars["String"]["output"]>;
   version: Scalars["String"]["output"];
 };
 
@@ -68,7 +68,7 @@ export type ClientV3 = Client & {
   cache: Scalars["Cache"]["output"];
   id: Scalars["String"]["output"];
   mutations: ClientV3Mutations;
-  name?: Maybe<Scalars["String"]["output"]>;
+  name: Maybe<Scalars["String"]["output"]>;
   queries: ClientV3Queries;
   version: Scalars["String"]["output"];
 };
@@ -87,12 +87,12 @@ export type ClientV3Queries = {
 
 export type ClientV3WatchedMutation = {
   __typename?: "ClientV3WatchedMutation";
-  error?: Maybe<ClientV3WatchedMutationError>;
+  error: Maybe<ClientV3WatchedMutationError>;
   id: Scalars["ID"]["output"];
   loading: Scalars["Boolean"]["output"];
   mutationString: Scalars["String"]["output"];
-  name?: Maybe<Scalars["String"]["output"]>;
-  variables?: Maybe<Scalars["Variables"]["output"]>;
+  name: Maybe<Scalars["String"]["output"]>;
+  variables: Maybe<Scalars["Variables"]["output"]>;
 };
 
 export type ClientV3WatchedMutationError =
@@ -104,7 +104,7 @@ export type ClientV4 = Client & {
   cache: Scalars["Cache"]["output"];
   id: Scalars["String"]["output"];
   mutations: ClientV4Mutations;
-  name?: Maybe<Scalars["String"]["output"]>;
+  name: Maybe<Scalars["String"]["output"]>;
   version: Scalars["String"]["output"];
 };
 
@@ -119,24 +119,24 @@ export type ClientV4Error =
 
 export type ClientV4Mutations = {
   __typename?: "ClientV4Mutations";
-  items?: Maybe<Array<ClientV4WatchedMutation>>;
+  items: Maybe<Array<ClientV4WatchedMutation>>;
   total: Scalars["Int"]["output"];
 };
 
 export type ClientV4WatchedMutation = {
   __typename?: "ClientV4WatchedMutation";
-  error?: Maybe<ClientV4Error>;
+  error: Maybe<ClientV4Error>;
   id: Scalars["ID"]["output"];
   loading: Scalars["Boolean"]["output"];
   mutationString: Scalars["String"]["output"];
-  name?: Maybe<Scalars["String"]["output"]>;
-  variables?: Maybe<Scalars["Variables"]["output"]>;
+  name: Maybe<Scalars["String"]["output"]>;
+  variables: Maybe<Scalars["Variables"]["output"]>;
 };
 
 export type ErrorLike = {
   message: Scalars["String"]["output"];
   name: Scalars["String"]["output"];
-  stack?: Maybe<Scalars["String"]["output"]>;
+  stack: Maybe<Scalars["String"]["output"]>;
 };
 
 export type GraphQlErrorSourceLocation = {
@@ -147,7 +147,7 @@ export type GraphQlErrorSourceLocation = {
 
 export type Query = {
   __typename?: "Query";
-  client?: Maybe<Client>;
+  client: Maybe<Client>;
   clients: Array<Client>;
 };
 
@@ -161,18 +161,18 @@ export type SerializedApolloError = {
   graphQLErrors: Array<SerializedGraphQlError>;
   message: Scalars["String"]["output"];
   name: Scalars["String"]["output"];
-  networkError?: Maybe<SerializedError>;
+  networkError: Maybe<SerializedError>;
   protocolErrors: Array<Scalars["String"]["output"]>;
 };
 
 export type SerializedCombinedGraphQlErrors = ErrorLike & {
   __typename?: "SerializedCombinedGraphQLErrors";
-  data?: Maybe<Scalars["QueryData"]["output"]>;
+  data: Maybe<Scalars["QueryData"]["output"]>;
   errors: Array<SerializedGraphQlError>;
-  extensions?: Maybe<Scalars["JSON"]["output"]>;
+  extensions: Maybe<Scalars["JSON"]["output"]>;
   message: Scalars["String"]["output"];
   name: Scalars["String"]["output"];
-  stack?: Maybe<Scalars["String"]["output"]>;
+  stack: Maybe<Scalars["String"]["output"]>;
 };
 
 export type SerializedCombinedProtocolErrors = ErrorLike & {
@@ -180,31 +180,31 @@ export type SerializedCombinedProtocolErrors = ErrorLike & {
   errors: Array<SerializedGraphQlError>;
   message: Scalars["String"]["output"];
   name: Scalars["String"]["output"];
-  stack?: Maybe<Scalars["String"]["output"]>;
+  stack: Maybe<Scalars["String"]["output"]>;
 };
 
 export type SerializedError = ErrorLike & {
   __typename?: "SerializedError";
   message: Scalars["String"]["output"];
   name: Scalars["String"]["output"];
-  stack?: Maybe<Scalars["String"]["output"]>;
+  stack: Maybe<Scalars["String"]["output"]>;
 };
 
 export type SerializedGraphQlError = {
   __typename?: "SerializedGraphQLError";
-  extensions?: Maybe<Scalars["JSON"]["output"]>;
-  locations?: Maybe<Array<GraphQlErrorSourceLocation>>;
+  extensions: Maybe<Scalars["JSON"]["output"]>;
+  locations: Maybe<Array<GraphQlErrorSourceLocation>>;
   message: Scalars["String"]["output"];
-  path?: Maybe<Scalars["GraphQLErrorPath"]["output"]>;
+  path: Maybe<Scalars["GraphQLErrorPath"]["output"]>;
 };
 
 export type SerializedLocalStateError = ErrorLike & {
   __typename?: "SerializedLocalStateError";
-  cause?: Maybe<SerializedError>;
+  cause: Maybe<SerializedError>;
   message: Scalars["String"]["output"];
   name: Scalars["String"]["output"];
-  path?: Maybe<Scalars["GraphQLErrorPath"]["output"]>;
-  stack?: Maybe<Scalars["String"]["output"]>;
+  path: Maybe<Scalars["GraphQLErrorPath"]["output"]>;
+  stack: Maybe<Scalars["String"]["output"]>;
 };
 
 export type SerializedServerError = ErrorLike & {
@@ -212,7 +212,7 @@ export type SerializedServerError = ErrorLike & {
   bodyText: Scalars["String"]["output"];
   message: Scalars["String"]["output"];
   name: Scalars["String"]["output"];
-  stack?: Maybe<Scalars["String"]["output"]>;
+  stack: Maybe<Scalars["String"]["output"]>;
   statusCode: Scalars["Int"]["output"];
 };
 
@@ -221,16 +221,16 @@ export type SerializedServerParseError = ErrorLike & {
   bodyText: Scalars["String"]["output"];
   message: Scalars["String"]["output"];
   name: Scalars["String"]["output"];
-  stack?: Maybe<Scalars["String"]["output"]>;
+  stack: Maybe<Scalars["String"]["output"]>;
   statusCode: Scalars["Int"]["output"];
 };
 
 export type SerializedUnconventionalError = ErrorLike & {
   __typename?: "SerializedUnconventionalError";
-  cause?: Maybe<Scalars["JSON"]["output"]>;
+  cause: Maybe<Scalars["JSON"]["output"]>;
   message: Scalars["String"]["output"];
   name: Scalars["String"]["output"];
-  stack?: Maybe<Scalars["String"]["output"]>;
+  stack: Maybe<Scalars["String"]["output"]>;
 };
 
 export type WatchedQueries = {
@@ -241,15 +241,15 @@ export type WatchedQueries = {
 
 export type WatchedQuery = {
   __typename?: "WatchedQuery";
-  cachedData?: Maybe<Scalars["QueryData"]["output"]>;
-  error?: Maybe<SerializedApolloError>;
+  cachedData: Maybe<Scalars["QueryData"]["output"]>;
+  error: Maybe<SerializedApolloError>;
   id: Scalars["ID"]["output"];
-  name?: Maybe<Scalars["String"]["output"]>;
+  name: Maybe<Scalars["String"]["output"]>;
   networkStatus: Scalars["Int"]["output"];
-  options?: Maybe<Scalars["QueryOptions"]["output"]>;
-  pollInterval?: Maybe<Scalars["Int"]["output"]>;
+  options: Maybe<Scalars["QueryOptions"]["output"]>;
+  pollInterval: Maybe<Scalars["Int"]["output"]>;
   queryString: Scalars["String"]["output"];
-  variables?: Maybe<Scalars["Variables"]["output"]>;
+  variables: Maybe<Scalars["Variables"]["output"]>;
 };
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
@@ -369,7 +369,7 @@ export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = {
       })
     | RpcSerializedError
     | (Omit<SerializedLocalStateError, "cause"> & {
-        cause?: Maybe<_RefType["SerializedError"]>;
+        cause: Maybe<_RefType["SerializedError"]>;
       })
     | SerializedServerError
     | SerializedServerParseError
@@ -379,7 +379,11 @@ export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = {
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> =
   {
-    Client: ApolloClientInfo | ClientV4;
+    Client:
+      | ApolloClientInfo
+      | (Omit<ClientV4, "mutations"> & {
+          mutations: _RefType["ClientV4Mutations"];
+        });
     ErrorLike:
       | (Omit<SerializedCombinedGraphQlErrors, "errors"> & {
           errors: Array<_RefType["SerializedGraphQLError"]>;
@@ -389,7 +393,7 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> =
         })
       | RpcSerializedError
       | (Omit<SerializedLocalStateError, "cause"> & {
-          cause?: Maybe<_RefType["SerializedError"]>;
+          cause: Maybe<_RefType["SerializedError"]>;
         })
       | SerializedServerError
       | SerializedServerParseError
@@ -406,20 +410,24 @@ export type ResolversTypes = {
   ClientV3Queries: ResolverTypeWrapper<ApolloClientInfo>;
   ClientV3WatchedMutation: ResolverTypeWrapper<
     Omit<ClientV3WatchedMutation, "error"> & {
-      error?: Maybe<ResolversTypes["ClientV3WatchedMutationError"]>;
+      error: Maybe<ResolversTypes["ClientV3WatchedMutationError"]>;
     }
   >;
   ClientV3WatchedMutationError: ResolverTypeWrapper<
     ResolversUnionTypes<ResolversTypes>["ClientV3WatchedMutationError"]
   >;
-  ClientV4: ResolverTypeWrapper<ClientV4>;
+  ClientV4: ResolverTypeWrapper<
+    Omit<ClientV4, "mutations"> & {
+      mutations: ResolversTypes["ClientV4Mutations"];
+    }
+  >;
   ClientV4Error: ResolverTypeWrapper<
     ResolversUnionTypes<ResolversTypes>["ClientV4Error"]
   >;
-  ClientV4Mutations: ResolverTypeWrapper<ClientV4Mutations>;
+  ClientV4Mutations: ResolverTypeWrapper<ApolloClientInfo>;
   ClientV4WatchedMutation: ResolverTypeWrapper<
     Omit<ClientV4WatchedMutation, "error"> & {
-      error?: Maybe<ResolversTypes["ClientV4Error"]>;
+      error: Maybe<ResolversTypes["ClientV4Error"]>;
     }
   >;
   ErrorLike: ResolverTypeWrapper<
@@ -448,7 +456,7 @@ export type ResolversTypes = {
   SerializedGraphQLError: ResolverTypeWrapper<GraphQLFormattedError>;
   SerializedLocalStateError: ResolverTypeWrapper<
     Omit<SerializedLocalStateError, "cause"> & {
-      cause?: Maybe<ResolversTypes["SerializedError"]>;
+      cause: Maybe<ResolversTypes["SerializedError"]>;
     }
   >;
   SerializedServerError: ResolverTypeWrapper<SerializedServerError>;
@@ -463,7 +471,7 @@ export type ResolversTypes = {
   >;
   WatchedQuery: ResolverTypeWrapper<
     Omit<WatchedQuery, "error"> & {
-      error?: Maybe<ResolversTypes["SerializedApolloError"]>;
+      error: Maybe<ResolversTypes["SerializedApolloError"]>;
     }
   >;
 };
@@ -477,14 +485,16 @@ export type ResolversParentTypes = {
   ClientV3Mutations: ApolloClientInfo;
   ClientV3Queries: ApolloClientInfo;
   ClientV3WatchedMutation: Omit<ClientV3WatchedMutation, "error"> & {
-    error?: Maybe<ResolversParentTypes["ClientV3WatchedMutationError"]>;
+    error: Maybe<ResolversParentTypes["ClientV3WatchedMutationError"]>;
   };
   ClientV3WatchedMutationError: ResolversUnionTypes<ResolversParentTypes>["ClientV3WatchedMutationError"];
-  ClientV4: ClientV4;
+  ClientV4: Omit<ClientV4, "mutations"> & {
+    mutations: ResolversParentTypes["ClientV4Mutations"];
+  };
   ClientV4Error: ResolversUnionTypes<ResolversParentTypes>["ClientV4Error"];
-  ClientV4Mutations: ClientV4Mutations;
+  ClientV4Mutations: ApolloClientInfo;
   ClientV4WatchedMutation: Omit<ClientV4WatchedMutation, "error"> & {
-    error?: Maybe<ResolversParentTypes["ClientV4Error"]>;
+    error: Maybe<ResolversParentTypes["ClientV4Error"]>;
   };
   ErrorLike: ResolversInterfaceTypes<ResolversParentTypes>["ErrorLike"];
   GraphQLErrorPath: Scalars["GraphQLErrorPath"]["output"];
@@ -507,7 +517,7 @@ export type ResolversParentTypes = {
   SerializedError: RpcSerializedError;
   SerializedGraphQLError: GraphQLFormattedError;
   SerializedLocalStateError: Omit<SerializedLocalStateError, "cause"> & {
-    cause?: Maybe<ResolversParentTypes["SerializedError"]>;
+    cause: Maybe<ResolversParentTypes["SerializedError"]>;
   };
   SerializedServerError: SerializedServerError;
   SerializedServerParseError: SerializedServerParseError;
@@ -518,7 +528,7 @@ export type ResolversParentTypes = {
     queries: Array<ResolversParentTypes["WatchedQuery"]>;
   };
   WatchedQuery: Omit<WatchedQuery, "error"> & {
-    error?: Maybe<ResolversParentTypes["SerializedApolloError"]>;
+    error: Maybe<ResolversParentTypes["SerializedApolloError"]>;
   };
 };
 

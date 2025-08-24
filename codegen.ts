@@ -48,6 +48,9 @@ const config: CodegenConfig = {
           Variables: "./scalars#Variables",
           QueryOptions: "./scalars#QueryOptions",
         },
+        avoidOptionals: {
+          field: true,
+        },
         mappers: {
           Client: "../../types.ts#ApolloClientInfo",
           ClientV3: "../../types.ts#ApolloClientInfo",
