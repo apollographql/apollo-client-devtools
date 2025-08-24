@@ -68,7 +68,7 @@ export type ClientV3Mutations = {
 
 export type ClientV3Queries = {
   __typename: "ClientV3Queries";
-  items: Array<WatchedQuery>;
+  items: Array<ClientV3WatchedQuery>;
   total: Scalars["Int"]["output"];
 };
 
@@ -86,12 +86,32 @@ export type ClientV3WatchedMutationError =
   | SerializedApolloError
   | SerializedError;
 
+export type ClientV3WatchedQueries = {
+  __typename: "ClientV3WatchedQueries";
+  count: Scalars["Int"]["output"];
+  queries: Array<ClientV3WatchedQuery>;
+};
+
+export type ClientV3WatchedQuery = {
+  __typename: "ClientV3WatchedQuery";
+  cachedData: Maybe<Scalars["QueryData"]["output"]>;
+  error: Maybe<SerializedApolloError>;
+  id: Scalars["ID"]["output"];
+  name: Maybe<Scalars["String"]["output"]>;
+  networkStatus: Scalars["Int"]["output"];
+  options: Maybe<Scalars["QueryOptions"]["output"]>;
+  pollInterval: Maybe<Scalars["Int"]["output"]>;
+  queryString: Scalars["String"]["output"];
+  variables: Maybe<Scalars["Variables"]["output"]>;
+};
+
 export type ClientV4 = Client & {
   __typename: "ClientV4";
   cache: Scalars["Cache"]["output"];
   id: Scalars["String"]["output"];
   mutations: ClientV4Mutations;
   name: Maybe<Scalars["String"]["output"]>;
+  queries: ClientV4Queries;
   version: Scalars["String"]["output"];
 };
 
@@ -110,6 +130,12 @@ export type ClientV4Mutations = {
   total: Scalars["Int"]["output"];
 };
 
+export type ClientV4Queries = {
+  __typename: "ClientV4Queries";
+  items: Array<ClientV4WatchedQuery>;
+  total: Scalars["Int"]["output"];
+};
+
 export type ClientV4WatchedMutation = {
   __typename: "ClientV4WatchedMutation";
   error: Maybe<ClientV4Error>;
@@ -117,6 +143,19 @@ export type ClientV4WatchedMutation = {
   loading: Scalars["Boolean"]["output"];
   mutationString: Scalars["String"]["output"];
   name: Maybe<Scalars["String"]["output"]>;
+  variables: Maybe<Scalars["Variables"]["output"]>;
+};
+
+export type ClientV4WatchedQuery = {
+  __typename: "ClientV4WatchedQuery";
+  cachedData: Maybe<Scalars["QueryData"]["output"]>;
+  error: Maybe<ClientV4Error>;
+  id: Scalars["ID"]["output"];
+  name: Maybe<Scalars["String"]["output"]>;
+  networkStatus: Scalars["Int"]["output"];
+  options: Maybe<Scalars["QueryOptions"]["output"]>;
+  pollInterval: Maybe<Scalars["Int"]["output"]>;
+  queryString: Scalars["String"]["output"];
   variables: Maybe<Scalars["Variables"]["output"]>;
 };
 
@@ -218,25 +257,6 @@ export type SerializedUnconventionalError = ErrorLike & {
   message: Scalars["String"]["output"];
   name: Scalars["String"]["output"];
   stack: Maybe<Scalars["String"]["output"]>;
-};
-
-export type WatchedQueries = {
-  __typename: "WatchedQueries";
-  count: Scalars["Int"]["output"];
-  queries: Array<WatchedQuery>;
-};
-
-export type WatchedQuery = {
-  __typename: "WatchedQuery";
-  cachedData: Maybe<Scalars["QueryData"]["output"]>;
-  error: Maybe<SerializedApolloError>;
-  id: Scalars["ID"]["output"];
-  name: Maybe<Scalars["String"]["output"]>;
-  networkStatus: Scalars["Int"]["output"];
-  options: Maybe<Scalars["QueryOptions"]["output"]>;
-  pollInterval: Maybe<Scalars["Int"]["output"]>;
-  queryString: Scalars["String"]["output"];
-  variables: Maybe<Scalars["Variables"]["output"]>;
 };
 
 export type AppQueryVariables = Exact<{ [key: string]: never }>;
@@ -357,7 +377,7 @@ export type GetQueries = {
         queries: {
           __typename: "ClientV3Queries";
           items: Array<{
-            __typename: "WatchedQuery";
+            __typename: "ClientV3WatchedQuery";
             id: string;
             name: string | null;
             queryString: string;

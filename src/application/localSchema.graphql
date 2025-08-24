@@ -40,11 +40,17 @@ type ClientV4 implements Client {
   version: String!
   cache: Cache!
   mutations: ClientV4Mutations!
+  queries: ClientV4Queries!
 }
 
 type ClientV3Queries {
   total: Int!
-  items: [WatchedQuery!]!
+  items: [ClientV3WatchedQuery!]!
+}
+
+type ClientV4Queries {
+  total: Int!
+  items: [ClientV4WatchedQuery!]!
 }
 
 type ClientV3Mutations {
@@ -85,12 +91,12 @@ union ClientV4Error =
   | SerializedServerParseError
   | SerializedUnconventionalError
 
-type WatchedQueries {
+type ClientV3WatchedQueries {
   count: Int!
-  queries: [WatchedQuery!]!
+  queries: [ClientV3WatchedQuery!]!
 }
 
-type WatchedQuery {
+type ClientV3WatchedQuery {
   id: ID!
   name: String
   queryString: String!
@@ -99,6 +105,18 @@ type WatchedQuery {
   options: QueryOptions
   networkStatus: Int!
   error: SerializedApolloError
+  pollInterval: Int
+}
+
+type ClientV4WatchedQuery {
+  id: ID!
+  name: String
+  queryString: String!
+  cachedData: QueryData
+  variables: Variables
+  options: QueryOptions
+  networkStatus: Int!
+  error: ClientV4Error
   pollInterval: Int
 }
 
