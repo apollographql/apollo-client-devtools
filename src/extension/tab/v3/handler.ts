@@ -6,18 +6,16 @@ import type {
   MutationStoreValue,
   SerializedApolloError,
 } from "./types";
-import { getPrivateAccess } from "../../../privateAccess";
 import { serializeError } from "../helpers";
 
 export class ClientV3Handler extends ClientHandler<ApolloClient<any>> {
   getMutations(): MutationDetails[] {
-    const ac = getPrivateAccess(this.client);
     const mutationsObj: Record<string, MutationStoreValue> =
-      (ac?.queryManager.mutationStore?.getStore
+      (this.client?.queryManager.mutationStore?.getStore
         ? // @ts-expect-error Apollo Client 3.0 - 3.2
-          ac.queryManager.mutationStore?.getStore()
+          this.client.queryManager.mutationStore?.getStore()
         : // Apollo Client 3.3
-          ac?.queryManager.mutationStore) ?? {};
+          this.client?.queryManager.mutationStore) ?? {};
 
     const keys = Object.keys(mutationsObj);
 
