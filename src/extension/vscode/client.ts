@@ -1,15 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { ApolloClient } from "@apollo/client";
-import { getPrivateAccess } from "../../privateAccess";
+import type { ApolloClient } from "@/types";
 import { createActor } from "../actor";
 import { createRpcClient, createRpcHandler } from "../rpc";
-import { getQueries, getMutations } from "../tab/helpers";
+import { createHandler } from "../tab/helpers";
 import { loadErrorCodes } from "../tab/loadErrorCodes";
 import type { MessageAdapter } from "../messageAdapters";
 import { handleExplorerRequests } from "../tab/handleExplorerRequests";
 import { setMaxListeners, WeakRef, FinalizationRegistry } from "./polyfills";
 import { createId } from "../../utils/createId";
-import type { JSONObject } from "../../application/types/json";
+import type { ClientHandler, IDv3, IDv4 } from "../tab/clientHandler";
+import type { ClientV3Handler } from "../tab/v3/handler";
+import type { ClientV4Handler } from "../tab/v4/handler";
 
 type Reason =
   | "WS_DISCONNECTED"
@@ -76,10 +77,14 @@ function registerClient(
 ): ApolloClientDevToolsConnection {
   const { signal, cleanup, onCleanup } = getCleanupController();
 
-  function getClient() {
+  function getClientHandler(clientId: IDv3): ClientV3Handler | undefined;
+  function getClientHandler(clientId: IDv4): ClientV4Handler | undefined;
+  function getClientHandler(): ClientHandler<ApolloClient> | undefined;
+
+  function getClientHandler(_id?: IDv3 | IDv4) {
     const client = clientRef.deref();
     if (client) {
-      return getPrivateAccess(client);
+      return createHandler(client) as ClientHandler<ApolloClient>;
     } else {
       cleanup("CLIENT_GC");
     }
@@ -103,31 +108,48 @@ function registerClient(
   const wsRpcClient = createRpcClient(wsAdapter);
   const wsRpcHandler = createRpcHandler(wsAdapter);
   const wsActor = createActor(wsAdapter);
+
   function getQueriesForClient() {
-    return getQueries(
-      getClient()?.queryManager.getObservableQueries("active") ?? new Map()
-    );
+    return getClientHandler()?.getQueries() ?? [];
   }
   function getMutationsForClient() {
-    return getMutations(getClient()?.queryManager.mutationStore ?? {});
+    return getClientHandler()?.getMutations() ?? [];
   }
-  wsRpcHandler("getQueries", getQueriesForClient, { signal });
-  wsRpcHandler("getMutations", getMutationsForClient, { signal });
+
+  wsRpcHandler(
+    "getV3Queries",
+    (id) => getClientHandler(id)?.getQueries() ?? [],
+    { signal }
+  );
+  wsRpcHandler(
+    "getV4Queries",
+    (id) => getClientHandler(id)?.getQueries() ?? [],
+    { signal }
+  );
+  wsRpcHandler(
+    "getV3Mutations",
+    (id) => getClientHandler(id)?.getMutations() ?? [],
+    { signal }
+  );
+  wsRpcHandler(
+    "getV4Mutations",
+    (id) => getClientHandler(id)?.getMutations() ?? [],
+    { signal }
+  );
   wsRpcHandler(
     "getCache",
-    () => (getClient()?.cache.extract(true) as JSONObject) ?? {},
-    {
-      signal,
-    }
+    () => getClientHandler()?.getClient().cache.extract(true) ?? {},
+    { signal }
   );
-  handleExplorerRequests(wsActor, getClient, { signal });
+  handleExplorerRequests(wsActor, getClientHandler, { signal });
 
   const id = createId();
 
   ws.addEventListener(
     "open",
     function open() {
-      const client = getClient();
+      const handler = getClientHandler();
+      const client = handler?.getClient();
       if (!client) {
         return;
       }
