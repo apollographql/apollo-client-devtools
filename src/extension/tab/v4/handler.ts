@@ -3,11 +3,17 @@ import {
   CombinedProtocolErrors,
   LocalStateError,
 } from "@apollo/client";
-import type { ApolloClient, ErrorLike } from "@apollo/client";
+import type {
+  ApolloClient,
+  DocumentNode,
+  ErrorLike,
+  Observable,
+} from "@apollo/client";
 import { UnconventionalError } from "@apollo/client";
 import { ServerParseError } from "@apollo/client";
 import { ServerError } from "@apollo/client";
 import { isPlainObject } from "@apollo/client/utilities/internal";
+import type { FetchPolicy } from "../clientHandler";
 import { ClientHandler } from "../clientHandler";
 import type {
   MutationV4Details,
@@ -17,11 +23,44 @@ import type {
   SerializedServerParseError,
   SerializedUnconventionalError,
 } from "./types";
-import type { SerializedError } from "@/types";
+import type { EmbeddedExplorerResponse, SerializedError } from "@/types";
 import { isErrorLike } from "@apollo/client/errors";
-import type { JSONValue } from "@/application/types/json";
+import type { JSONObject, JSONValue } from "@/application/types/json";
+import { map } from "rxjs";
 
 export class ClientV4Handler extends ClientHandler<ApolloClient> {
+  async executeMutation(options: {
+    mutation: DocumentNode;
+    variables: JSONObject | undefined;
+  }): Promise<EmbeddedExplorerResponse> {
+    try {
+      const result = await this.client.mutate<JSONObject>(options);
+
+      return {
+        data: result.data,
+        extensions: result.extensions,
+        ...getErrorProperties(result.error),
+      };
+    } catch (error) {
+      return getErrorProperties(error);
+    }
+  }
+
+  executeQuery(options: {
+    query: DocumentNode;
+    variables: JSONObject | undefined;
+    fetchPolicy: FetchPolicy;
+  }): Observable<EmbeddedExplorerResponse> {
+    return this.client.watchQuery<JSONObject>(options).pipe(
+      map(
+        (result): EmbeddedExplorerResponse => ({
+          data: result.data,
+          ...getErrorProperties(result.error),
+        })
+      )
+    );
+  }
+
   getMutations(): MutationV4Details[] {
     return Object.values(this.client.queryManager.mutationStore ?? {}).map(
       (value) => ({
@@ -165,4 +204,20 @@ function serializeUnknownError(
   if (isPlainObject(error)) {
     return error;
   }
+}
+
+function getErrorProperties(error: unknown): EmbeddedExplorerResponse {
+  if (CombinedGraphQLErrors.is(error)) {
+    return {
+      data: error.data,
+      errors: error.errors,
+      extensions: error.extensions,
+    };
+  }
+
+  if (isErrorLike(error)) {
+    return { error };
+  }
+
+  return {};
 }

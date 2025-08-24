@@ -5,7 +5,9 @@ import type {
   ObservableQuery,
   NetworkStatus,
 } from "@apollo/client-3";
+import { Observable } from "@apollo/client-3";
 import { isApolloError, type ApolloClient } from "@apollo/client-3";
+import type { FetchPolicy } from "../clientHandler";
 import { ClientHandler } from "../clientHandler";
 import type {
   MutationV3Details,
@@ -15,10 +17,63 @@ import type {
 } from "./types";
 import { pick } from "@/application/utilities/pick";
 import { getPrivateAccess } from "@/privateAccess";
-import { getOperationName } from "@apollo/client/utilities/internal";
 import type { OperationVariables } from "@apollo/client";
+import type { EmbeddedExplorerResponse, ExplorerResponse } from "@/types";
+import type { JSONObject } from "@/application/types/json";
+import { getOperationName } from "@apollo/client/utilities/internal";
 
 export class ClientV3Handler extends ClientHandler<ApolloClient<any>> {
+  async executeMutation(options: {
+    mutation: DocumentNode;
+    variables: JSONObject | undefined;
+  }): Promise<ExplorerResponse["response"]> {
+    try {
+      const result = await this.client.mutate(options);
+
+      return {
+        data: result.data,
+        errors: result.errors,
+        extensions: result.extensions,
+      };
+    } catch (e) {
+      const error = e as Error;
+
+      if (isApolloError(error)) {
+        return getErrorProperties(error);
+      }
+
+      return { error };
+    }
+  }
+
+  executeQuery(options: {
+    query: DocumentNode;
+    variables: JSONObject | undefined;
+    fetchPolicy: FetchPolicy;
+  }): Observable<ExplorerResponse["response"]> {
+    return new Observable((observer) => {
+      const subscription = this.client
+        .watchQuery(options)
+        .map(
+          (result): EmbeddedExplorerResponse => ({
+            data: result.data,
+            error: result.error,
+            errors: result.errors,
+          })
+        )
+        .subscribe({
+          next: observer.next.bind(observer),
+          complete: observer.complete.bind(observer),
+          error: (error: ApolloError) => {
+            observer.next(getErrorProperties(error));
+            observer.complete();
+          },
+        });
+
+      return () => subscription.unsubscribe();
+    });
+  }
+
   getMutations(): MutationV3Details[] {
     const mutationsObj: Record<string, MutationStoreValue> =
       (this.client?.queryManager.mutationStore?.getStore
@@ -182,4 +237,19 @@ function serializeError(error: Error | string) {
   return typeof error !== "object"
     ? { message: String(error), name: typeof error }
     : { message: error.message, name: error.name, stack: error.stack };
+}
+
+function getErrorProperties(
+  error: ApolloError
+): Pick<EmbeddedExplorerResponse, "error" | "errors"> {
+  return {
+    error,
+    errors: error.graphQLErrors.length
+      ? error.graphQLErrors
+      : error.networkError && "result" in error.networkError
+        ? typeof error.networkError?.result === "string"
+          ? error.networkError?.result
+          : error.networkError?.result.errors ?? []
+        : undefined,
+  };
 }
