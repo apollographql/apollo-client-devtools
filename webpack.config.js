@@ -129,6 +129,9 @@ export default /** @returns {import("webpack").Configuration} */ (env) => {
         ".tsx",
         ".css",
       ],
+      alias: {
+        "@/*": path.resolve(__dirname, "./src/*"),
+      },
     },
     module: {
       rules: [
