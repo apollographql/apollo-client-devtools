@@ -66,17 +66,13 @@ export abstract class ClientHandler<
       );
     }
 
-    return new Observable((observer) => {
-      const subscription = this.executeQuery({
+    return wrapObservable(
+      this.executeQuery({
         query: document,
         variables,
         fetchPolicy: payload.fetchPolicy,
-      }).subscribe((response) => {
-        observer.next({ operationName, response });
-      });
-
-      return () => subscription.unsubscribe();
-    });
+      })
+    ).pipe(map((response) => ({ operationName, response })));
   }
 
   abstract executeQuery(options: {
@@ -101,4 +97,14 @@ export abstract class ClientHandler<
   abstract getQueries(): TClient extends ApolloClient3<any>
     ? QueryV3Details[]
     : never[];
+}
+
+function wrapObservable<T>(
+  inner: ObservableV3<T> | ObservableV4<T>
+): Observable<T> {
+  return new Observable((observer) => {
+    const subscription = inner.subscribe(observer);
+
+    return () => subscription.unsubscribe();
+  });
 }
