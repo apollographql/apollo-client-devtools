@@ -7,14 +7,13 @@ import * as manifest from "../chrome/manifest.json";
 const { version: devtoolsVersion } = manifest;
 import type { MutationDetails, QueryDetails } from "./helpers";
 import { getQueries, getQueriesLegacy, getMutations } from "./helpers";
-import type { ApolloClientInfo } from "../../types";
+import type { ApolloClient, ApolloClientInfo } from "@/types";
 import { getPrivateAccess } from "../../privateAccess";
 import type { JSONObject } from "../../application/types/json";
 import { createWindowActor } from "../actor";
 import { createWindowMessageAdapter } from "../messageAdapters";
 import { createRpcClient, createRpcHandler } from "../rpc";
 import { loadErrorCodes } from "./loadErrorCodes";
-import { createId } from "../../utils/createId";
 import { handleExplorerRequests } from "./handleExplorerRequests";
 import type { ClientHandler } from "./clientHandler";
 import { ClientV3Handler } from "./v3/handler";
@@ -66,13 +65,8 @@ function getMutationsForClient(client: ApolloClient | undefined) {
   );
 }
 
-// Keep a reverse mapping of client -> id to ensure we don't register the same
-// client multiple times.
-const knownClients = new Map<ApolloClient, string>();
-const handlers = new Map<string, ClientHandler<ApolloClient>>();
-const hook: Hook = {
-  version: devtoolsVersion,
-};
+const knownClients = new Set<ApolloClient>();
+const handlers = new Map<ApolloClient, ClientHandler<ApolloClient>>();
 
 Object.defineProperty(window, "__APOLLO_DEVTOOLS_GLOBAL_HOOK__", {
   get(): Hook {
@@ -82,17 +76,19 @@ Object.defineProperty(window, "__APOLLO_DEVTOOLS_GLOBAL_HOOK__", {
 });
 
 function getClientInfo(client: ApolloClient): ApolloClientInfo {
+  const handler = handlers.get(client)!;
+
   return {
-    id: knownClients.get(client)!,
+    id: handler.id,
     name: "devtoolsConfig" in client ? client.devtoolsConfig.name : undefined,
     version: client.version,
     queryCount: getQueriesForClient(client).length,
-    mutationCount: getMutationsForClient(client).length,
+    mutationCount: handler.getMutations().length,
   };
 }
 
 handleRpc("getClients", () => {
-  return [...knownClients.keys()].map(getClientInfo);
+  return Array.from(knownClients).map(getClientInfo);
 });
 
 handleRpc("getClient", (clientId) => {
@@ -115,16 +111,11 @@ handleRpc("getCache", (clientId) => {
 });
 
 function getClientById(clientId: string) {
-  const [client] =
-    [...knownClients.entries()].find(([, id]) => id === clientId) ?? [];
-
-  return client;
+  return getHandlerByClientId(clientId)?.getClient();
 }
 
 function getHandlerByClientId(clientId: string) {
-  const client = getClientById(clientId);
-
-  return client && handlers.get(client);
+  return [...handlers.values()].find((handler) => handler.id === clientId);
 }
 
 handleExplorerRequests(tab, getClientById);
@@ -133,26 +124,27 @@ function watchForClientTermination(client: ApolloClient) {
   const originalStop = client.stop;
 
   client.stop = () => {
-    const clientId = knownClients.get(client)!;
     knownClients.delete(client);
+    const handler = handlers.get(client)!;
+    handlers.delete(client);
 
     if (window.__APOLLO_CLIENT__ === client) {
       window.__APOLLO_CLIENT__ = undefined;
     }
 
-    tab.send({ type: "clientTerminated", clientId });
+    tab.send({ type: "clientTerminated", clientId: handler.id });
     originalStop.call(client);
   };
 }
 
 function registerClient(client: ApolloClient) {
   if (!knownClients.has(client)) {
-    const id = createId();
-    knownClients.set(client, id);
+    knownClients.add(client);
+
     const handler = gte(client.version, "4.0.0")
       ? new ClientV4Handler(client as ApolloClient4)
       : new ClientV3Handler(client as ApolloClient3<any>);
-    handlers.set(id, handler);
+    handlers.set(client, handler);
     watchForClientTermination(client);
 
     tab.send({ type: "registerClient", payload: getClientInfo(client) });
