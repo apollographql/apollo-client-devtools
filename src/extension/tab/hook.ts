@@ -53,18 +53,6 @@ function getQueriesForClient(client: ApolloClient | undefined) {
   }
 }
 
-function getMutationsForClient(client: ApolloClient | undefined) {
-  const ac = getPrivateAccess(client);
-
-  return getMutations(
-    (ac?.queryManager.mutationStore?.getStore
-      ? // @ts-expect-error Apollo Client 3.0 - 3.2
-        ac.queryManager.mutationStore?.getStore()
-      : // Apollo Client 3.3
-        ac?.queryManager.mutationStore) ?? {}
-  );
-}
-
 const knownClients = new Set<ApolloClient>();
 const handlers = new Map<ApolloClient, ClientHandler<ApolloClient>>();
 

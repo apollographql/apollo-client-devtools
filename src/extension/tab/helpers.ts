@@ -175,51 +175,10 @@ export function getQueriesLegacy(
   return queries;
 }
 
-interface MutationStoreValue {
-  mutation: DocumentNode;
-  variables: Variables;
-  loading: boolean;
-  error: Error | null;
-}
-
-export function getMutations(
-  mutationsObj: Record<string, MutationStoreValue>
-): MutationDetails[] {
-  const keys = Object.keys(mutationsObj);
-
-  if (keys.length === 0) {
-    return [];
-  }
-
-  return keys.map((key) => {
-    const { mutation, variables, loading, error } = mutationsObj[key];
-    return {
-      document: mutation,
-      variables,
-      loading,
-      error: getSerializedMutationError(error),
-    };
-  });
-}
-
 export function serializeError(error: Error | string) {
   return typeof error !== "object"
     ? { message: String(error), name: typeof error }
     : { message: error.message, name: error.name, stack: error.stack };
-}
-
-function isApolloError(error: Error): error is ApolloError {
-  return error.name === "ApolloError";
-}
-
-function getSerializedMutationError(error: Error | null) {
-  if (!error) {
-    return null;
-  }
-
-  return isApolloError(error)
-    ? serializeApolloError(error)
-    : serializeError(error);
 }
 
 export function getMainDefinition(
