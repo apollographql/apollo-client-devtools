@@ -3,7 +3,7 @@ import type { ApolloClient as ApolloClient3 } from "@apollo/client-3";
 import type { WithPrivateAccess } from "@/privateAccess";
 import { getPrivateAccess } from "@/privateAccess";
 import { createId } from "../../utils/createId";
-import type { MutationV3Details } from "./v3/types";
+import type { MutationV3Details, QueryV3Details } from "./v3/types";
 import type { MutationV4Details } from "./v4/types";
 
 export type IDv3 = string & { __version?: "v3" };
@@ -31,4 +31,8 @@ export abstract class ClientHandler<
   abstract getMutations(): TClient extends ApolloClient3<any>
     ? MutationV3Details[]
     : MutationV4Details[];
+
+  abstract getQueries(): TClient extends ApolloClient3<any>
+    ? QueryV3Details[]
+    : never[];
 }
