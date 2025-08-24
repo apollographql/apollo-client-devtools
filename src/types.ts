@@ -37,5 +37,5 @@ export interface ErrorCodes {
 export interface SerializedError {
   message: string;
   name: string;
-  stack?: string;
+  stack: string | undefined;
 }
