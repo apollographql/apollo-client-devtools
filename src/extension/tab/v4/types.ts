@@ -5,7 +5,7 @@ import type { DocumentNode, GraphQLFormattedError } from "graphql";
 
 export interface MutationV4Details {
   document: DocumentNode;
-  variables?: OperationVariables;
+  variables: OperationVariables | undefined;
   loading: boolean;
   error:
     | SerializedError
