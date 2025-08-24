@@ -29,6 +29,7 @@ interface Client {
 
 interface ClientQueries {
   total: Int!
+  items: [ClientWatchedQuery!]!
 }
 
 interface ClientMutations {
@@ -107,7 +108,18 @@ type ClientV3WatchedQueries {
   queries: [ClientV3WatchedQuery!]!
 }
 
-type ClientV3WatchedQuery {
+interface ClientWatchedQuery {
+  id: ID!
+  name: String
+  queryString: String!
+  cachedData: QueryData
+  variables: Variables
+  options: QueryOptions
+  networkStatus: Int!
+  pollInterval: Int
+}
+
+type ClientV3WatchedQuery implements ClientWatchedQuery {
   id: ID!
   name: String
   queryString: String!
@@ -119,7 +131,7 @@ type ClientV3WatchedQuery {
   pollInterval: Int
 }
 
-type ClientV4WatchedQuery {
+type ClientV4WatchedQuery implements ClientWatchedQuery {
   id: ID!
   name: String
   queryString: String!
