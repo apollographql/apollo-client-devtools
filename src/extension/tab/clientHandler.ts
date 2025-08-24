@@ -4,6 +4,7 @@ import type { MutationDetails } from "./v3/types";
 import type { WithPrivateAccess } from "@/privateAccess";
 import { getPrivateAccess } from "@/privateAccess";
 import { createId } from "../../utils/createId";
+import type { MutationV4Details } from "./v4/types";
 
 export type IDv3 = string & { __version?: "v3" };
 export type IDv4 = string & { __version?: "v4" };
@@ -29,5 +30,5 @@ export abstract class ClientHandler<
 
   abstract getMutations(): TClient extends ApolloClient3<any>
     ? MutationDetails[]
-    : never[];
+    : MutationV4Details[];
 }
