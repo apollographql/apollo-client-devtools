@@ -3,13 +3,16 @@ import type { ApolloClient as ApolloClient3 } from "@apollo/client-3";
 import type { MutationDetails } from "./v3/types";
 import type { WithPrivateAccess } from "../../privateAccess";
 import { getPrivateAccess } from "../../privateAccess";
+import { createId } from "../../utils/createId";
 
 export abstract class ClientHandler<
   TClient extends ApolloClient3<any> | ApolloClient4,
 > {
-  client: WithPrivateAccess<TClient>;
+  readonly id: string;
+  readonly client: WithPrivateAccess<TClient>;
 
   constructor(client: TClient) {
+    this.id = createId();
     this.client = getPrivateAccess(client);
   }
 
