@@ -11,7 +11,7 @@ import type { WithPrivateAccess } from "@/privateAccess";
 import { getPrivateAccess } from "@/privateAccess";
 import { createId } from "../../utils/createId";
 import type { MutationV3Details, QueryV3Details } from "./v3/types";
-import type { MutationV4Details } from "./v4/types";
+import type { MutationV4Details, QueryV4Details } from "./v4/types";
 import type { ActorMessage } from "../actor";
 import type { EmbeddedExplorerResponse, ExplorerResponse } from "@/types";
 import { Observable } from "rxjs";
@@ -109,7 +109,7 @@ export abstract class ClientHandler<
 
   abstract getQueries(): TClient extends ApolloClient3<any>
     ? QueryV3Details[]
-    : never[];
+    : QueryV4Details[];
 }
 
 function wrapObservable<T>(

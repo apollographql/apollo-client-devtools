@@ -1,6 +1,11 @@
 import type { JSONValue } from "@/application/types/json";
+import type { QueryData } from "@/application/types/scalars";
 import type { SerializedError } from "@/types";
-import type { OperationVariables } from "@apollo/client";
+import type {
+  ApolloClient,
+  NetworkStatus,
+  OperationVariables,
+} from "@apollo/client";
 import type { DocumentNode, GraphQLFormattedError } from "graphql";
 
 export interface MutationV4Details {
@@ -16,6 +21,36 @@ export interface MutationV4Details {
     | SerializedUnconventionalError
     | null;
 }
+
+export interface QueryV4Details {
+  id: string;
+  document: DocumentNode;
+  variables?: OperationVariables;
+  cachedData?: QueryData;
+  options?: QueryV4Options;
+  networkStatus: NetworkStatus;
+  error:
+    | SerializedError
+    | SerializedCombinedGraphQLErrors
+    | SerializedCombinedProtocolErrors
+    | SerializedLocalStateError
+    | SerializedServerError
+    | SerializedServerParseError
+    | SerializedUnconventionalError
+    | null;
+  pollInterval?: number;
+}
+
+export type QueryV4Options = Pick<
+  ApolloClient.WatchQueryOptions,
+  | "context"
+  | "fetchPolicy"
+  | "errorPolicy"
+  | "pollInterval"
+  | "returnPartialData"
+  | "refetchWritePolicy"
+  | "notifyOnNetworkStatusChange"
+> & { nextFetchPolicy?: string };
 
 export interface SerializedCombinedGraphQLErrors extends SerializedError {
   errors: ReadonlyArray<GraphQLFormattedError>;

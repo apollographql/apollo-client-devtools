@@ -12,6 +12,7 @@ import type { FetchPolicy } from "../clientHandler";
 import { ClientHandler } from "../clientHandler";
 import type {
   MutationV4Details,
+  QueryV4Details,
   SerializedCombinedGraphQLErrors,
   SerializedCombinedProtocolErrors,
   SerializedServerError,
@@ -91,7 +92,7 @@ export class ClientV4Handler extends ClientHandler<ApolloClient> {
     );
   }
 
-  getQueries(): never[] {
+  getQueries(): QueryV4Details[] {
     return [];
   }
 }
