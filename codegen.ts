@@ -51,6 +51,7 @@ const config: CodegenConfig = {
         avoidOptionals: {
           field: true,
         },
+        onlyResolveTypeForInterfaces: true,
         mappers: {
           Client: "@/types.ts#ApolloClientInfo",
           ClientV3: "@/types.ts#ApolloClientInfo",

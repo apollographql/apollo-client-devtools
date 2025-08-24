@@ -581,16 +581,6 @@ export type ClientResolvers<
     ParentType,
     ContextType
   >;
-  cache?: Resolver<ResolversTypes["Cache"], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  mutations?: Resolver<
-    ResolversTypes["ClientMutations"],
-    ParentType,
-    ContextType
-  >;
-  name?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  queries?: Resolver<ResolversTypes["ClientQueries"], ParentType, ContextType>;
-  version?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
 };
 
 export type ClientMutationResolvers<
@@ -600,15 +590,6 @@ export type ClientMutationResolvers<
 > = {
   __resolveType: TypeResolveFn<
     "ClientV3Mutation" | "ClientV4Mutation",
-    ParentType,
-    ContextType
-  >;
-  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
-  loading?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>;
-  mutationString?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  variables?: Resolver<
-    Maybe<ResolversTypes["Variables"]>,
     ParentType,
     ContextType
   >;
@@ -624,12 +605,6 @@ export type ClientMutationsResolvers<
     ParentType,
     ContextType
   >;
-  items?: Resolver<
-    Array<ResolversTypes["ClientMutation"]>,
-    ParentType,
-    ContextType
-  >;
-  total?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
 };
 
 export type ClientQueriesResolvers<
@@ -642,12 +617,6 @@ export type ClientQueriesResolvers<
     ParentType,
     ContextType
   >;
-  items?: Resolver<
-    Array<ResolversTypes["ClientWatchedQuery"]>,
-    ParentType,
-    ContextType
-  >;
-  total?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
 };
 
 export type ClientV3Resolvers<
@@ -896,30 +865,6 @@ export type ClientWatchedQueryResolvers<
     ParentType,
     ContextType
   >;
-  cachedData?: Resolver<
-    Maybe<ResolversTypes["QueryData"]>,
-    ParentType,
-    ContextType
-  >;
-  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  networkStatus?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
-  options?: Resolver<
-    Maybe<ResolversTypes["QueryOptions"]>,
-    ParentType,
-    ContextType
-  >;
-  pollInterval?: Resolver<
-    Maybe<ResolversTypes["Int"]>,
-    ParentType,
-    ContextType
-  >;
-  queryString?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  variables?: Resolver<
-    Maybe<ResolversTypes["Variables"]>,
-    ParentType,
-    ContextType
-  >;
 };
 
 export type ErrorLikeResolvers<
@@ -938,9 +883,6 @@ export type ErrorLikeResolvers<
     ParentType,
     ContextType
   >;
-  message?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  name?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  stack?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
 };
 
 export interface GraphQlErrorPathScalarConfig
