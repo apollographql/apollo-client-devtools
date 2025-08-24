@@ -32,6 +32,10 @@ export class ClientV4Handler extends ClientHandler<ApolloClient> {
       })
     );
   }
+
+  getQueries(): never[] {
+    return [];
+  }
 }
 
 function serializeError(error: ErrorLike) {
