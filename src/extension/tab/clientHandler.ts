@@ -5,10 +5,13 @@ import type { WithPrivateAccess } from "@/privateAccess";
 import { getPrivateAccess } from "@/privateAccess";
 import { createId } from "../../utils/createId";
 
+export type IDv3 = string & { __version?: "v3" };
+export type IDv4 = string & { __version?: "v4" };
+
 export abstract class ClientHandler<
   TClient extends ApolloClient3<any> | ApolloClient4,
 > {
-  readonly id: string;
+  readonly id: TClient extends ApolloClient3<any> ? IDv3 : IDv4;
   protected readonly client: WithPrivateAccess<TClient>;
 
   constructor(client: TClient) {

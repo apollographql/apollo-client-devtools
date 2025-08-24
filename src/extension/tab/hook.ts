@@ -5,8 +5,7 @@ import type { ApolloClient as ApolloClient3 } from "@apollo/client-3";
 // which one we import from.
 import * as manifest from "../chrome/manifest.json";
 const { version: devtoolsVersion } = manifest;
-import type { MutationDetails, QueryDetails } from "./helpers";
-import { getQueries, getQueriesLegacy, getMutations } from "./helpers";
+import { getQueries, getQueriesLegacy } from "./helpers";
 import type { ApolloClient, ApolloClientInfo } from "@/types";
 import { getPrivateAccess } from "../../privateAccess";
 import type { JSONObject } from "../../application/types/json";
@@ -15,7 +14,7 @@ import { createWindowMessageAdapter } from "../messageAdapters";
 import { createRpcClient, createRpcHandler } from "../rpc";
 import { loadErrorCodes } from "./loadErrorCodes";
 import { handleExplorerRequests } from "./handleExplorerRequests";
-import type { ClientHandler } from "./clientHandler";
+import type { ClientHandler, IDv3, IDv4 } from "./clientHandler";
 import { ClientV3Handler } from "./v3/handler";
 import { ClientV4Handler } from "./v4/handler";
 import { gte } from "semver";
@@ -90,7 +89,12 @@ handleRpc("getQueries", (clientId) =>
 );
 
 handleRpc(
-  "getMutations",
+  "getV3Mutations",
+  (clientId) => getHandlerByClientId(clientId)?.getMutations() ?? []
+);
+
+handleRpc(
+  "getV4Mutations",
   (clientId) => getHandlerByClientId(clientId)?.getMutations() ?? []
 );
 
@@ -98,15 +102,21 @@ handleRpc("getCache", (clientId) => {
   return (getClientById(clientId)?.cache.extract(true) as JSONObject) ?? {};
 });
 
-function getClientById(clientId: string) {
-  return getHandlerByClientId(clientId)?.getClient();
+function getClientById(clientId: IDv3): ApolloClient3<any>;
+function getClientById(clientId: IDv4): ApolloClient4;
+
+function getClientById(clientId: IDv3 | IDv4): ApolloClient | undefined {
+  return getHandlerByClientId(clientId as any)?.getClient();
 }
 
-function getHandlerByClientId(clientId: string) {
+function getHandlerByClientId(clientId: IDv3): ClientV3Handler | undefined;
+function getHandlerByClientId(clientId: IDv4): ClientV4Handler | undefined;
+
+function getHandlerByClientId(clientId: IDv3 | IDv4) {
   return [...handlers.values()].find((handler) => handler.id === clientId);
 }
 
-handleExplorerRequests(tab, getClientById);
+// handleExplorerRequests(tab, getClientById);
 
 function watchForClientTermination(client: ApolloClient) {
   const originalStop = client.stop;

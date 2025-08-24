@@ -61,7 +61,7 @@ function createResolvers(client: RpcClient): Resolvers {
     ClientV3Mutations: {
       total: (client) => client.mutationCount,
       items: async (client) => {
-        const mutations = await rpcClient.request("getMutations", client.id);
+        const mutations = await rpcClient.request("getV3Mutations", client.id);
 
         return mutations.map((mutation, index) => ({
           id: String(index),

@@ -5,13 +5,15 @@ import { RPC_MESSAGE_TIMEOUT } from "./errorMessages";
 import { deserializeError, serializeError } from "./errorSerialization";
 import type { MessageAdapter } from "./messageAdapters";
 import { MessageType, isDevtoolsMessage } from "./messages";
+import type { IDv3, IDv4 } from "./tab/clientHandler";
 import type { MutationDetails, QueryDetails } from "./tab/helpers";
 
 export type RPCRequest = {
   getClients(): ApolloClientInfo[];
   getClient(id: string): ApolloClientInfo | null;
   getQueries(clientId: string): QueryDetails[];
-  getMutations(clientId: string): MutationDetails[];
+  getV3Mutations(clientId: IDv3): MutationDetails[];
+  getV4Mutations(clientId: IDv4): never[];
   getCache(clientId: string): JSONObject;
   getErrorCodes(version: string): Promise<ErrorCodes | undefined>;
 };
