@@ -73,6 +73,21 @@ function createResolvers(client: RpcClient): Resolvers {
         }));
       },
     },
+    ClientV4Mutations: {
+      total: (client) => client.mutationCount,
+      items: async (client) => {
+        const mutations = await rpcClient.request("getV4Mutations", client.id);
+
+        return mutations.map((mutation, index) => ({
+          id: String(index),
+          name: getOperationName(mutation.document),
+          loading: mutation.loading,
+          mutationString: print(mutation.document),
+          variables: mutation.variables ?? null,
+          error: mutation.error,
+        }));
+      },
+    },
     ClientV3WatchedMutationError: {
       __resolveType: (error) => {
         if (error.name === "ApolloError") {
