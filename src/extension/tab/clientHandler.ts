@@ -58,6 +58,14 @@ export abstract class ClientHandler<
       return EMPTY;
     }
 
+    if (operationName === "IntrospectionQuery") {
+      return from(
+        this.client
+          .query({ query: document, fetchPolicy: "no-cache" })
+          .then((response) => ({ operationName, response }))
+      );
+    }
+
     if (definition.operation === OperationTypeNode.MUTATION) {
       return from(
         this.executeMutation({ mutation: document, variables }).then(
