@@ -5,9 +5,7 @@ import type { ApolloClient as ApolloClient3 } from "@apollo/client-3";
 // which one we import from.
 import * as manifest from "../chrome/manifest.json";
 const { version: devtoolsVersion } = manifest;
-import { getQueries, getQueriesLegacy } from "./helpers";
 import type { ApolloClient, ApolloClientInfo } from "@/types";
-import { getPrivateAccess } from "../../privateAccess";
 import type { JSONObject } from "../../application/types/json";
 import { createWindowActor } from "../actor";
 import { createWindowMessageAdapter } from "../messageAdapters";
@@ -43,15 +41,6 @@ const messageAdapter = createWindowMessageAdapter(window, {
 const handleRpc = createRpcHandler(messageAdapter);
 const rpcClient = createRpcClient(messageAdapter);
 
-function getQueriesForClient(client: ApolloClient | undefined) {
-  const ac = getPrivateAccess(client);
-  if (ac?.queryManager.getObservableQueries) {
-    return getQueries(ac.queryManager.getObservableQueries("active"));
-  } else {
-    return getQueriesLegacy(ac?.queryManager["queries"]);
-  }
-}
-
 const knownClients = new Set<ApolloClient>();
 const handlers = new Map<ApolloClient, ClientHandler<ApolloClient>>();
 
@@ -69,7 +58,7 @@ function getClientInfo(client: ApolloClient): ApolloClientInfo {
     id: handler.id,
     name: "devtoolsConfig" in client ? client.devtoolsConfig.name : undefined,
     version: client.version,
-    queryCount: getQueriesForClient(client).length,
+    queryCount: handler.getQueries().length,
     mutationCount: handler.getMutations().length,
   };
 }
@@ -84,8 +73,14 @@ handleRpc("getClient", (clientId) => {
   return client ? getClientInfo(client) : null;
 });
 
-handleRpc("getQueries", (clientId) =>
-  getQueriesForClient(getClientById(clientId))
+handleRpc(
+  "getV3Queries",
+  (clientId) => getHandlerByClientId(clientId)?.getQueries() ?? []
+);
+
+handleRpc(
+  "getV4Queries",
+  (clientId) => getHandlerByClientId(clientId)?.getQueries() ?? []
 );
 
 handleRpc(
