@@ -34,7 +34,7 @@ function createResolvers(client: RpcClient): Resolvers {
     ClientV3Queries: {
       total: (client) => client.queryCount,
       items: async (client) => {
-        const queries = await rpcClient.request("getQueries", client.id);
+        const queries = await rpcClient.request("getV3Queries", client.id);
 
         return queries
           .map((query) => {

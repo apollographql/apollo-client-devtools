@@ -6,14 +6,14 @@ import { deserializeError, serializeError } from "./errorSerialization";
 import type { MessageAdapter } from "./messageAdapters";
 import { MessageType, isDevtoolsMessage } from "./messages";
 import type { IDv3, IDv4 } from "./tab/clientHandler";
-import type { QueryDetails } from "./tab/helpers";
-import type { MutationV3Details } from "./tab/v3/types";
+import type { MutationV3Details, QueryV3Details } from "./tab/v3/types";
 import type { MutationV4Details } from "./tab/v4/types";
 
 export type RPCRequest = {
   getClients(): ApolloClientInfo[];
   getClient(id: string): ApolloClientInfo | null;
-  getQueries(clientId: string): QueryDetails[];
+  getV3Queries(clientId: IDv3): QueryV3Details[];
+  getV4Queries(clientId: IDv4): never[];
   getV3Mutations(clientId: IDv3): MutationV3Details[];
   getV4Mutations(clientId: IDv4): MutationV4Details[];
   getCache(clientId: string): JSONObject;
