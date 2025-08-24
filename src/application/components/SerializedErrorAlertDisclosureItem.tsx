@@ -34,7 +34,7 @@ export function SerializedErrorAlertDisclosureItem({
 
 SerializedErrorAlertDisclosureItem.fragments = {
   error: gql`
-    fragment SerializedErrorAlertDisclosureItem_error on SerializedError {
+    fragment SerializedErrorAlertDisclosureItem_error on ErrorLike {
       message
       name
       stack
