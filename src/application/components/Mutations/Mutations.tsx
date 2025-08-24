@@ -31,15 +31,15 @@ const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
     query GetMutations($id: ID!) {
       client(id: $id) {
         id
-        ... on ClientV3 {
-          mutations {
-            total
-            items {
-              id
-              name
-              mutationString
-              variables
-              loading
+        mutations {
+          total
+          items {
+            id
+            name
+            mutationString
+            variables
+            loading
+            ... on ClientV3Mutation {
               error {
                 ... on SerializedError {
                   ...SerializedErrorAlertDisclosureItem_error
@@ -47,6 +47,11 @@ const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
                 ... on SerializedApolloError {
                   ...ApolloErrorAlertDisclosurePanel_error
                 }
+              }
+            }
+            ... on ClientV4Mutation {
+              error {
+                ...SerializedErrorAlertDisclosureItem_error
               }
             }
           }
