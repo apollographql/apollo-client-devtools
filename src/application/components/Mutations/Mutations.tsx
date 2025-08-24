@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
-import { gql } from "@apollo/client";
+import { gql, NetworkStatus } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import { List } from "../List";
 import { ListItem } from "../ListItem";
@@ -76,7 +76,7 @@ export const Mutations = ({ clientId, explorerIFrame }: MutationsProps) => {
   const [selected, setSelected] = useState<number>(0);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { data, error, loading, startPolling, stopPolling } = useQuery(
+  const { data, error, networkStatus, startPolling, stopPolling } = useQuery(
     GET_MUTATIONS,
     {
       variables: { id: clientId as string },
@@ -147,7 +147,7 @@ export const Mutations = ({ clientId, explorerIFrame }: MutationsProps) => {
           })}
         </List>
       </SidebarLayout.Sidebar>
-      {loading ? (
+      {networkStatus === NetworkStatus.loading ? (
         <SidebarLayout.Main>
           <PageSpinner />
         </SidebarLayout.Main>
