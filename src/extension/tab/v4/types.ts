@@ -8,18 +8,20 @@ import type {
 } from "@apollo/client";
 import type { DocumentNode, GraphQLFormattedError } from "graphql";
 
+type ErrorType =
+  | SerializedError
+  | SerializedCombinedGraphQLErrors
+  | SerializedCombinedProtocolErrors
+  | SerializedLocalStateError
+  | SerializedServerError
+  | SerializedServerParseError
+  | SerializedUnconventionalError;
+
 export interface MutationV4Details {
   document: DocumentNode;
   variables: OperationVariables | undefined;
   loading: boolean;
-  error:
-    | SerializedError
-    | SerializedCombinedGraphQLErrors
-    | SerializedLocalStateError
-    | SerializedServerError
-    | SerializedServerParseError
-    | SerializedUnconventionalError
-    | null;
+  error: ErrorType | null;
 }
 
 export interface QueryV4Details {
@@ -29,15 +31,7 @@ export interface QueryV4Details {
   cachedData?: QueryData;
   options?: QueryV4Options;
   networkStatus: NetworkStatus;
-  error:
-    | SerializedError
-    | SerializedCombinedGraphQLErrors
-    | SerializedCombinedProtocolErrors
-    | SerializedLocalStateError
-    | SerializedServerError
-    | SerializedServerParseError
-    | SerializedUnconventionalError
-    | null;
+  error: ErrorType | null;
   pollInterval?: number;
 }
 
