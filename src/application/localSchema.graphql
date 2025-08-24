@@ -23,6 +23,17 @@ interface Client {
   name: String
   version: String!
   cache: Cache!
+  queries: ClientQueries
+  mutations: ClientMutations
+}
+
+interface ClientQueries {
+  total: Int!
+}
+
+interface ClientMutations {
+  total: Int!
+  items: [ClientMutation!]!
 }
 
 type ClientV3 implements Client {
@@ -43,27 +54,35 @@ type ClientV4 implements Client {
   queries: ClientV4Queries!
 }
 
-type ClientV3Queries {
+type ClientV3Queries implements ClientQueries {
   total: Int!
   items: [ClientV3WatchedQuery!]!
 }
 
-type ClientV4Queries {
+type ClientV4Queries implements ClientQueries {
   total: Int!
   items: [ClientV4WatchedQuery!]!
 }
 
-type ClientV3Mutations {
+type ClientV3Mutations implements ClientMutations {
   total: Int!
   items: [ClientV3Mutation!]!
 }
 
-type ClientV4Mutations {
+type ClientV4Mutations implements ClientMutations {
   total: Int!
-  items: [ClientV4Mutation!]
+  items: [ClientV4Mutation!]!
 }
 
-type ClientV3Mutation {
+interface ClientMutation {
+  id: ID!
+  name: String
+  mutationString: String!
+  variables: Variables
+  loading: Boolean!
+}
+
+type ClientV3Mutation implements ClientMutation {
   id: ID!
   name: String
   mutationString: String!
@@ -72,7 +91,7 @@ type ClientV3Mutation {
   error: ClientV3MutationError
 }
 
-type ClientV4Mutation {
+type ClientV4Mutation implements ClientMutation {
   id: ID!
   name: String
   mutationString: String!

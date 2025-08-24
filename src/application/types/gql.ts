@@ -46,8 +46,27 @@ export type Scalars = {
 export type Client = {
   cache: Scalars["Cache"]["output"];
   id: Scalars["String"]["output"];
+  mutations: Maybe<ClientMutations>;
   name: Maybe<Scalars["String"]["output"]>;
+  queries: Maybe<ClientQueries>;
   version: Scalars["String"]["output"];
+};
+
+export type ClientMutation = {
+  id: Scalars["ID"]["output"];
+  loading: Scalars["Boolean"]["output"];
+  mutationString: Scalars["String"]["output"];
+  name: Maybe<Scalars["String"]["output"]>;
+  variables: Maybe<Scalars["Variables"]["output"]>;
+};
+
+export type ClientMutations = {
+  items: Array<ClientMutation>;
+  total: Scalars["Int"]["output"];
+};
+
+export type ClientQueries = {
+  total: Scalars["Int"]["output"];
 };
 
 export type ClientV3 = Client & {
@@ -60,7 +79,7 @@ export type ClientV3 = Client & {
   version: Scalars["String"]["output"];
 };
 
-export type ClientV3Mutation = {
+export type ClientV3Mutation = ClientMutation & {
   __typename: "ClientV3Mutation";
   error: Maybe<ClientV3MutationError>;
   id: Scalars["ID"]["output"];
@@ -72,13 +91,13 @@ export type ClientV3Mutation = {
 
 export type ClientV3MutationError = SerializedApolloError | SerializedError;
 
-export type ClientV3Mutations = {
+export type ClientV3Mutations = ClientMutations & {
   __typename: "ClientV3Mutations";
   items: Array<ClientV3Mutation>;
   total: Scalars["Int"]["output"];
 };
 
-export type ClientV3Queries = {
+export type ClientV3Queries = ClientQueries & {
   __typename: "ClientV3Queries";
   items: Array<ClientV3WatchedQuery>;
   total: Scalars["Int"]["output"];
@@ -122,7 +141,7 @@ export type ClientV4Error =
   | SerializedServerParseError
   | SerializedUnconventionalError;
 
-export type ClientV4Mutation = {
+export type ClientV4Mutation = ClientMutation & {
   __typename: "ClientV4Mutation";
   error: Maybe<ClientV4Error>;
   id: Scalars["ID"]["output"];
@@ -132,13 +151,13 @@ export type ClientV4Mutation = {
   variables: Maybe<Scalars["Variables"]["output"]>;
 };
 
-export type ClientV4Mutations = {
+export type ClientV4Mutations = ClientMutations & {
   __typename: "ClientV4Mutations";
-  items: Maybe<Array<ClientV4Mutation>>;
+  items: Array<ClientV4Mutation>;
   total: Scalars["Int"]["output"];
 };
 
-export type ClientV4Queries = {
+export type ClientV4Queries = ClientQueries & {
   __typename: "ClientV4Queries";
   items: Array<ClientV4WatchedQuery>;
   total: Scalars["Int"]["output"];
@@ -279,7 +298,13 @@ export type ClientQuery = {
         queries: { __typename: "ClientV3Queries"; total: number };
         mutations: { __typename: "ClientV3Mutations"; total: number };
       }
-    | { __typename: "ClientV4"; id: string; version: string }
+    | {
+        __typename: "ClientV4";
+        id: string;
+        version: string;
+        queries: { __typename: "ClientV4Queries"; total: number };
+        mutations: { __typename: "ClientV4Mutations"; total: number };
+      }
     | null;
 };
 
@@ -359,7 +384,36 @@ export type GetMutations = {
           }>;
         };
       }
-    | { __typename: "ClientV4"; id: string }
+    | {
+        __typename: "ClientV4";
+        id: string;
+        mutations: {
+          __typename: "ClientV4Mutations";
+          total: number;
+          items: Array<{
+            __typename: "ClientV4Mutation";
+            id: string;
+            name: string | null;
+            mutationString: string;
+            variables: Variables | null;
+            loading: boolean;
+            error:
+              | { __typename: "SerializedCombinedGraphQLErrors" }
+              | { __typename: "SerializedCombinedProtocolErrors" }
+              | {
+                  __typename: "SerializedError";
+                  message: string;
+                  name: string;
+                  stack: string | null;
+                }
+              | { __typename: "SerializedLocalStateError" }
+              | { __typename: "SerializedServerError" }
+              | { __typename: "SerializedServerParseError" }
+              | { __typename: "SerializedUnconventionalError" }
+              | null;
+          }>;
+        };
+      }
     | null;
 };
 
