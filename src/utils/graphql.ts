@@ -1,5 +1,7 @@
-import type { FieldNode, SelectionSetNode } from "graphql";
+import type { DocumentNode, FieldNode, SelectionSetNode } from "graphql";
 import { Kind } from "graphql";
+
+type Writable<T> = { -readonly [P in keyof T]: T[P] };
 
 export function selectsField(path: string[], selectionSet: SelectionSetNode) {
   const [field, ...rest] = path;
@@ -34,4 +36,20 @@ function getSelection(
         );
     }
   });
+}
+
+export function filterDocumentForOperation(
+  document: DocumentNode,
+  operationName: string | undefined
+): DocumentNode {
+  const cloned = JSON.parse(JSON.stringify(document)) as Writable<DocumentNode>;
+
+  cloned.definitions = document.definitions.filter((definition) => {
+    return (
+      definition.kind !== Kind.OPERATION_DEFINITION ||
+      definition.name?.value === operationName
+    );
+  });
+
+  return cloned;
 }
