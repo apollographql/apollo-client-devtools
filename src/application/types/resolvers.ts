@@ -7,12 +7,18 @@ import type {
   GraphQLScalarType,
   GraphQLScalarTypeConfig,
 } from "graphql";
-import type { ApolloClientInfo } from "../../types.ts";
-import type {
-  SerializedApolloError as RpcSerializedApolloError,
-  SerializedError as RpcSerializedError,
-} from "../../extension/tab/helpers";
+import type { ApolloClientInfo } from "@/types.ts";
+import type { SerializedApolloError as RpcSerializedApolloError } from "@/extension/tab/helpers";
+import type { SerializedError as RpcSerializedError } from "@/types";
 import type { GraphQLFormattedError } from "graphql";
+import type {
+  SerializedCombinedGraphQLErrors as RpcSerializedCombinedGraphQLErrors,
+  SerializedCombinedProtocolErrors as RpcSerializedCombinedProtocolErrors,
+  SerializedLocalStateError as RpcSerializedLocalStateError,
+  SerializedServerError as RpcSerializedServerError,
+  SerializedServerParseError as RpcSerializedServerParseError,
+  SerializedUnconventionalError as RpcSerializedUnconventionalError,
+} from "@/extension/tab/v4/types";
 export type Maybe<T> = T | null | undefined;
 export type InputMaybe<T> = T | null | undefined;
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -361,19 +367,13 @@ export type DirectiveResolverFn<
 export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = {
   ClientV3WatchedMutationError: RpcSerializedApolloError | RpcSerializedError;
   ClientV4Error:
-    | (Omit<SerializedCombinedGraphQlErrors, "errors"> & {
-        errors: Array<_RefType["SerializedGraphQLError"]>;
-      })
-    | (Omit<SerializedCombinedProtocolErrors, "errors"> & {
-        errors: Array<_RefType["SerializedGraphQLError"]>;
-      })
+    | RpcSerializedCombinedGraphQLErrors
+    | RpcSerializedCombinedProtocolErrors
     | RpcSerializedError
-    | (Omit<SerializedLocalStateError, "cause"> & {
-        cause: Maybe<_RefType["SerializedError"]>;
-      })
-    | SerializedServerError
-    | SerializedServerParseError
-    | SerializedUnconventionalError;
+    | RpcSerializedLocalStateError
+    | RpcSerializedServerError
+    | RpcSerializedServerParseError
+    | RpcSerializedUnconventionalError;
 };
 
 /** Mapping of interface types */
@@ -385,19 +385,13 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> =
           mutations: _RefType["ClientV4Mutations"];
         });
     ErrorLike:
-      | (Omit<SerializedCombinedGraphQlErrors, "errors"> & {
-          errors: Array<_RefType["SerializedGraphQLError"]>;
-        })
-      | (Omit<SerializedCombinedProtocolErrors, "errors"> & {
-          errors: Array<_RefType["SerializedGraphQLError"]>;
-        })
+      | RpcSerializedCombinedGraphQLErrors
+      | RpcSerializedCombinedProtocolErrors
       | RpcSerializedError
-      | (Omit<SerializedLocalStateError, "cause"> & {
-          cause: Maybe<_RefType["SerializedError"]>;
-        })
-      | SerializedServerError
-      | SerializedServerParseError
-      | SerializedUnconventionalError;
+      | RpcSerializedLocalStateError
+      | RpcSerializedServerError
+      | RpcSerializedServerParseError
+      | RpcSerializedUnconventionalError;
   };
 
 /** Mapping between all available schema types and the resolvers types */
@@ -442,26 +436,14 @@ export type ResolversTypes = {
   QueryData: ResolverTypeWrapper<Scalars["QueryData"]["output"]>;
   QueryOptions: ResolverTypeWrapper<Scalars["QueryOptions"]["output"]>;
   SerializedApolloError: ResolverTypeWrapper<RpcSerializedApolloError>;
-  SerializedCombinedGraphQLErrors: ResolverTypeWrapper<
-    Omit<SerializedCombinedGraphQlErrors, "errors"> & {
-      errors: Array<ResolversTypes["SerializedGraphQLError"]>;
-    }
-  >;
-  SerializedCombinedProtocolErrors: ResolverTypeWrapper<
-    Omit<SerializedCombinedProtocolErrors, "errors"> & {
-      errors: Array<ResolversTypes["SerializedGraphQLError"]>;
-    }
-  >;
+  SerializedCombinedGraphQLErrors: ResolverTypeWrapper<RpcSerializedCombinedGraphQLErrors>;
+  SerializedCombinedProtocolErrors: ResolverTypeWrapper<RpcSerializedCombinedProtocolErrors>;
   SerializedError: ResolverTypeWrapper<RpcSerializedError>;
   SerializedGraphQLError: ResolverTypeWrapper<GraphQLFormattedError>;
-  SerializedLocalStateError: ResolverTypeWrapper<
-    Omit<SerializedLocalStateError, "cause"> & {
-      cause: Maybe<ResolversTypes["SerializedError"]>;
-    }
-  >;
-  SerializedServerError: ResolverTypeWrapper<SerializedServerError>;
-  SerializedServerParseError: ResolverTypeWrapper<SerializedServerParseError>;
-  SerializedUnconventionalError: ResolverTypeWrapper<SerializedUnconventionalError>;
+  SerializedLocalStateError: ResolverTypeWrapper<RpcSerializedLocalStateError>;
+  SerializedServerError: ResolverTypeWrapper<RpcSerializedServerError>;
+  SerializedServerParseError: ResolverTypeWrapper<RpcSerializedServerParseError>;
+  SerializedUnconventionalError: ResolverTypeWrapper<RpcSerializedUnconventionalError>;
   String: ResolverTypeWrapper<Scalars["String"]["output"]>;
   Variables: ResolverTypeWrapper<Scalars["Variables"]["output"]>;
   WatchedQueries: ResolverTypeWrapper<
@@ -506,22 +488,14 @@ export type ResolversParentTypes = {
   QueryData: Scalars["QueryData"]["output"];
   QueryOptions: Scalars["QueryOptions"]["output"];
   SerializedApolloError: RpcSerializedApolloError;
-  SerializedCombinedGraphQLErrors: Omit<
-    SerializedCombinedGraphQlErrors,
-    "errors"
-  > & { errors: Array<ResolversParentTypes["SerializedGraphQLError"]> };
-  SerializedCombinedProtocolErrors: Omit<
-    SerializedCombinedProtocolErrors,
-    "errors"
-  > & { errors: Array<ResolversParentTypes["SerializedGraphQLError"]> };
+  SerializedCombinedGraphQLErrors: RpcSerializedCombinedGraphQLErrors;
+  SerializedCombinedProtocolErrors: RpcSerializedCombinedProtocolErrors;
   SerializedError: RpcSerializedError;
   SerializedGraphQLError: GraphQLFormattedError;
-  SerializedLocalStateError: Omit<SerializedLocalStateError, "cause"> & {
-    cause: Maybe<ResolversParentTypes["SerializedError"]>;
-  };
-  SerializedServerError: SerializedServerError;
-  SerializedServerParseError: SerializedServerParseError;
-  SerializedUnconventionalError: SerializedUnconventionalError;
+  SerializedLocalStateError: RpcSerializedLocalStateError;
+  SerializedServerError: RpcSerializedServerError;
+  SerializedServerParseError: RpcSerializedServerParseError;
+  SerializedUnconventionalError: RpcSerializedUnconventionalError;
   String: Scalars["String"]["output"];
   Variables: Scalars["Variables"]["output"];
   WatchedQueries: Omit<WatchedQueries, "queries"> & {
