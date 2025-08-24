@@ -1,4 +1,8 @@
+import type { ApolloClient as ApolloClient4 } from "@apollo/client";
+import type { ApolloClient as ApolloClient3 } from "@apollo/client-3";
 import type { ObservableQuery } from "@apollo/client";
+
+export type ApolloClient = ApolloClient3<any> | ApolloClient4;
 
 export interface ExplorerResponse {
   operationName: string | undefined;

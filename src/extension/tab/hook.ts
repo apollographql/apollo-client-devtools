@@ -21,8 +21,6 @@ import { ClientV3Handler } from "./v3/handler";
 import { ClientV4Handler } from "./v4/handler";
 import { gte } from "semver";
 
-type ApolloClient = ApolloClient3<any> | ApolloClient4;
-
 declare global {
   type TCache = any;
 
