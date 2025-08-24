@@ -9,7 +9,7 @@ export interface MutationStoreValue {
   error: Error | null;
 }
 
-export interface MutationDetails {
+export interface MutationV3Details {
   document: DocumentNode;
   variables?: OperationVariables;
   loading: boolean;

@@ -2,14 +2,14 @@ import type { ApolloError } from "@apollo/client-3";
 import { isApolloError, type ApolloClient } from "@apollo/client-3";
 import { ClientHandler } from "../clientHandler";
 import type {
-  MutationDetails,
+  MutationV3Details,
   MutationStoreValue,
   SerializedApolloError,
 } from "./types";
 import { serializeError } from "../helpers";
 
 export class ClientV3Handler extends ClientHandler<ApolloClient<any>> {
-  getMutations(): MutationDetails[] {
+  getMutations(): MutationV3Details[] {
     const mutationsObj: Record<string, MutationStoreValue> =
       (this.client?.queryManager.mutationStore?.getStore
         ? // @ts-expect-error Apollo Client 3.0 - 3.2
