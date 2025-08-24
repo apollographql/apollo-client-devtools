@@ -74,6 +74,35 @@ export class ClientV3Handler extends ClientHandler<ApolloClient<any>> {
     });
   }
 
+  executeSubsription({
+    subscription,
+    variables,
+  }: {
+    subscription: DocumentNode;
+    variables: JSONObject | undefined;
+  }): Observable<EmbeddedExplorerResponse> {
+    return new Observable((observer) => {
+      const sub = this.client
+        .subscribe({ query: subscription, variables })
+        .map(
+          (result): EmbeddedExplorerResponse => ({
+            data: result.data,
+            errors: result.errors,
+          })
+        )
+        .subscribe({
+          next: observer.next.bind(observer),
+          complete: observer.complete.bind(observer),
+          error: (error: ApolloError) => {
+            observer.next(getErrorProperties(error));
+            observer.complete();
+          },
+        });
+
+      return () => sub.unsubscribe();
+    });
+  }
+
   getMutations(): MutationV3Details[] {
     const mutationsObj: Record<string, MutationStoreValue> =
       (this.client?.queryManager.mutationStore?.getStore

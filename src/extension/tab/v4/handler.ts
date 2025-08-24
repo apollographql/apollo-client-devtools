@@ -61,6 +61,26 @@ export class ClientV4Handler extends ClientHandler<ApolloClient> {
     );
   }
 
+  executeSubsription({
+    subscription,
+    variables,
+  }: {
+    subscription: DocumentNode;
+    variables: JSONObject | undefined;
+  }): Observable<EmbeddedExplorerResponse> {
+    return this.client
+      .subscribe<JSONObject>({ query: subscription, variables })
+      .pipe(
+        map(
+          (result): EmbeddedExplorerResponse => ({
+            data: result.data,
+            extensions: result.extensions,
+            ...getErrorProperties(result.error),
+          })
+        )
+      );
+  }
+
   getMutations(): MutationV4Details[] {
     return Object.values(this.client.queryManager.mutationStore ?? {}).map(
       (value) => ({
