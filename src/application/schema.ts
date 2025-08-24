@@ -1,7 +1,7 @@
 import type { RpcClient } from "../extension/rpc";
 import typeDefs from "./localSchema.graphql";
 import { makeExecutableSchema } from "@graphql-tools/schema";
-import type { Resolvers } from "./types/resolvers";
+import type { Resolvers, ClientV3WatchedQuery } from "./types/resolvers";
 import { getOperationName } from "@apollo/client/utilities/internal";
 import { print } from "graphql";
 import { gte } from "semver";
@@ -53,7 +53,7 @@ function createResolvers(client: RpcClient): Resolvers {
               networkStatus: query.networkStatus,
               error: query.error,
               pollInterval: query.pollInterval,
-            };
+            } satisfies ClientV3WatchedQuery;
           })
           .filter(Boolean);
       },
