@@ -3,7 +3,12 @@ import {
   CombinedProtocolErrors,
   LocalStateError,
 } from "@apollo/client";
-import type { ApolloClient, DocumentNode, ErrorLike } from "@apollo/client";
+import type {
+  ApolloClient,
+  DocumentNode,
+  ErrorLike,
+  ObservableQuery,
+} from "@apollo/client";
 import { UnconventionalError } from "@apollo/client";
 import { ServerParseError } from "@apollo/client";
 import { ServerError } from "@apollo/client";
@@ -28,6 +33,7 @@ import type { JSONObject, JSONValue } from "@/application/types/json";
 import type { Observable } from "rxjs";
 import { map } from "rxjs";
 import { getPrivateAccess } from "@/privateAccess";
+import { pick } from "@/application/utilities/pick";
 
 export class ClientV4Handler extends ClientHandler<ApolloClient> {
   protected async executeMutation(options: {
@@ -106,6 +112,7 @@ export class ClientV4Handler extends ClientHandler<ApolloClient> {
           document: observableQuery.query,
           variables: observableQuery.variables,
           cachedData: diff.result,
+          options: getQueryOptions(oq),
           networkStatus,
           error: error ? serializeError(error) : null,
           pollInterval: pollingInfo && Math.floor(pollingInfo.interval),
@@ -113,6 +120,44 @@ export class ClientV4Handler extends ClientHandler<ApolloClient> {
       }
     );
   }
+}
+
+function getQueryOptions(observableQuery: ObservableQuery) {
+  const { options } = observableQuery;
+
+  const queryOptions = {
+    ...pick(options, [
+      "context",
+      "pollInterval",
+      "returnPartialData",
+      "refetchWritePolicy",
+      "notifyOnNetworkStatusChange",
+      "fetchPolicy",
+      "errorPolicy",
+    ]),
+    nextFetchPolicy:
+      typeof options.nextFetchPolicy === "function"
+        ? "<function>"
+        : options.nextFetchPolicy,
+  };
+
+  if (queryOptions.nextFetchPolicy == null) {
+    delete queryOptions.nextFetchPolicy;
+  }
+
+  if (queryOptions.context) {
+    queryOptions.context = JSON.parse(
+      JSON.stringify(queryOptions.context, (_key, value) => {
+        if (typeof value === "function") {
+          return `<function>`;
+        }
+
+        return value;
+      })
+    ) as Record<string, unknown>;
+  }
+
+  return queryOptions;
 }
 
 function serializeError(error: ErrorLike) {
