@@ -5,7 +5,10 @@ import type {
   ObservableQuery,
   NetworkStatus,
 } from "@apollo/client-3";
-import { Observable } from "@apollo/client-3";
+// Note that we are intentionally not using Apollo Client's gql and
+// Observable exports, as we don't want Apollo Client and its dependencies
+// to be loaded into each browser tab, when this hook triggered.
+import Observable from "zen-observable";
 import { isApolloError, type ApolloClient } from "@apollo/client-3";
 import type { FetchPolicy } from "../clientHandler";
 import { ClientHandler } from "../clientHandler";

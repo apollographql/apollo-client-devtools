@@ -3,12 +3,7 @@ import {
   CombinedProtocolErrors,
   LocalStateError,
 } from "@apollo/client";
-import type {
-  ApolloClient,
-  DocumentNode,
-  ErrorLike,
-  Observable,
-} from "@apollo/client";
+import type { ApolloClient, DocumentNode, ErrorLike } from "@apollo/client";
 import { UnconventionalError } from "@apollo/client";
 import { ServerParseError } from "@apollo/client";
 import { ServerError } from "@apollo/client";
@@ -26,6 +21,10 @@ import type {
 import type { EmbeddedExplorerResponse, SerializedError } from "@/types";
 import { isErrorLike } from "@apollo/client/errors";
 import type { JSONObject, JSONValue } from "@/application/types/json";
+// Note that we are intentionally not using Apollo Client's gql and
+// Observable exports, as we don't want Apollo Client and its dependencies
+// to be loaded into each browser tab, when this hook triggered.
+import type { Observable } from "rxjs";
 import { map } from "rxjs";
 
 export class ClientV4Handler extends ClientHandler<ApolloClient> {
