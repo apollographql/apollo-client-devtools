@@ -39,6 +39,7 @@ type ClientV4 implements Client {
   name: String
   version: String!
   cache: Cache!
+  mutations: ClientV4Mutations!
 }
 
 type ClientV3Queries {
@@ -51,6 +52,11 @@ type ClientV3Mutations {
   items: [ClientV3WatchedMutation!]!
 }
 
+type ClientV4Mutations {
+  total: Int!
+  items: [ClientV4WatchedMutation!]
+}
+
 type ClientV3WatchedMutation {
   id: ID!
   name: String
@@ -60,7 +66,24 @@ type ClientV3WatchedMutation {
   error: ClientV3WatchedMutationError
 }
 
+type ClientV4WatchedMutation {
+  id: ID!
+  name: String
+  mutationString: String!
+  variables: Variables
+  loading: Boolean!
+  error: ClientV4Error
+}
+
 union ClientV3WatchedMutationError = SerializedError | SerializedApolloError
+union ClientV4Error =
+  | SerializedError
+  | SerializedCombinedGraphQLErrors
+  | SerializedCombinedProtocolErrors
+  | SerializedLocalStateError
+  | SerializedServerError
+  | SerializedServerParseError
+  | SerializedUnconventionalError
 
 type WatchedQueries {
   count: Int!
@@ -92,6 +115,53 @@ type SerializedApolloError {
   networkError: SerializedError
   graphQLErrors: [SerializedGraphQLError!]!
   protocolErrors: [String!]!
+}
+
+type SerializedCombinedGraphQLErrors implements ErrorLike {
+  message: String!
+  name: String!
+  stack: String
+  errors: [SerializedGraphQLError!]!
+  data: QueryData
+  extensions: JSON
+}
+
+type SerializedCombinedProtocolErrors implements ErrorLike {
+  message: String!
+  name: String!
+  stack: String
+  errors: [SerializedGraphQLError!]!
+}
+
+type SerializedLocalStateError implements ErrorLike {
+  message: String!
+  name: String!
+  stack: String
+  path: GraphQLErrorPath
+  cause: SerializedError
+}
+
+type SerializedServerError implements ErrorLike {
+  message: String!
+  name: String!
+  stack: String
+  bodyText: String!
+  statusCode: Int!
+}
+
+type SerializedServerParseError implements ErrorLike {
+  message: String!
+  name: String!
+  stack: String
+  bodyText: String!
+  statusCode: Int!
+}
+
+type SerializedUnconventionalError implements ErrorLike {
+  message: String!
+  name: String!
+  stack: String
+  cause: JSON
 }
 
 type SerializedError implements ErrorLike {
