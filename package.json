@@ -54,7 +54,7 @@
     "clsx": "^2.1.0",
     "expect-type": "^0.20.0",
     "framer-motion": "^11.0.3",
-    "graphql": "^16.0.0",
+    "graphql": "^16.11.0",
     "graphql-tag": "^2.11.0",
     "polished": "^4.1.1",
     "prism-react-renderer": "^2.0.0",
