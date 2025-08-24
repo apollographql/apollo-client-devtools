@@ -77,8 +77,8 @@ const hook: Hook = {
 };
 
 Object.defineProperty(window, "__APOLLO_DEVTOOLS_GLOBAL_HOOK__", {
-  get() {
-    return hook;
+  get(): Hook {
+    return { version: devtoolsVersion };
   },
   configurable: true,
 });
