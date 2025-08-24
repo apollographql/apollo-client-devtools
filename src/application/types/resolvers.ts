@@ -8,7 +8,7 @@ import type {
   GraphQLScalarTypeConfig,
 } from "graphql";
 import type { ApolloClientInfo } from "@/types.ts";
-import type { SerializedApolloError as RpcSerializedApolloError } from "@/extension/tab/helpers";
+import type { SerializedApolloError as RpcSerializedApolloError } from "@/extension/tab/v3/types";
 import type { SerializedError as RpcSerializedError } from "@/types";
 import type { GraphQLFormattedError } from "graphql";
 import type {

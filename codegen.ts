@@ -58,7 +58,7 @@ const config: CodegenConfig = {
           ClientV3Mutations: "@/types.ts#ApolloClientInfo",
           ClientV4Mutations: "@/types.ts#ApolloClientInfo",
           SerializedApolloError:
-            "@/extension/tab/helpers#SerializedApolloError as RpcSerializedApolloError",
+            "@/extension/tab/v3/types#SerializedApolloError as RpcSerializedApolloError",
           SerializedError: "@/types#SerializedError as RpcSerializedError",
           SerializedGraphQLError: "graphql#GraphQLFormattedError",
           SerializedCombinedGraphQLErrors:
