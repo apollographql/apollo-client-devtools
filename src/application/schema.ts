@@ -73,6 +73,15 @@ function createResolvers(client: RpcClient): Resolvers {
         }));
       },
     },
+    ClientV3WatchedMutationError: {
+      __resolveType: (error) => {
+        if (error.name === "ApolloError") {
+          return "SerializedApolloError";
+        }
+
+        return "SerializedError";
+      },
+    },
     ClientV4Mutations: {
       total: (client) => client.mutationCount,
       items: async (client) => {
@@ -86,15 +95,6 @@ function createResolvers(client: RpcClient): Resolvers {
           variables: mutation.variables ?? null,
           error: mutation.error,
         }));
-      },
-    },
-    ClientV3WatchedMutationError: {
-      __resolveType: (error) => {
-        if (error.name === "ApolloError") {
-          return "SerializedApolloError";
-        }
-
-        return "SerializedError";
       },
     },
     ClientV4Error: {
