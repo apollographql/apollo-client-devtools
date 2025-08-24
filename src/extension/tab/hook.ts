@@ -111,7 +111,7 @@ function getHandlerByClientId(clientId: IDv3 | IDv4) {
   return [...handlers.values()].find((handler) => handler.id === clientId);
 }
 
-handleExplorerRequests(tab, getClientById);
+handleExplorerRequests(tab, getHandlerByClientId);
 
 function watchForClientTermination(client: ApolloClient) {
   const originalStop = client.stop;
