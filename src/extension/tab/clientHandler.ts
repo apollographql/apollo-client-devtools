@@ -66,6 +66,12 @@ export abstract class ClientHandler<
       );
     }
 
+    if (definition.operation === OperationTypeNode.SUBSCRIPTION) {
+      return wrapObservable(
+        this.executeSubsription({ subscription: document, variables })
+      ).pipe(map((response) => ({ operationName, response })));
+    }
+
     return wrapObservable(
       this.executeQuery({
         query: document,
@@ -89,6 +95,13 @@ export abstract class ClientHandler<
   }): TClient extends ApolloClient4
     ? Promise<EmbeddedExplorerResponse>
     : Promise<EmbeddedExplorerResponse>;
+
+  abstract executeSubsription(options: {
+    subscription: DocumentNode;
+    variables: JSONObject | undefined;
+  }): TClient extends ApolloClient4
+    ? ObservableV4<EmbeddedExplorerResponse>
+    : ObservableV3<EmbeddedExplorerResponse>;
 
   abstract getMutations(): TClient extends ApolloClient3<any>
     ? MutationV3Details[]
