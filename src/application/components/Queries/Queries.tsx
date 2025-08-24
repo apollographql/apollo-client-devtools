@@ -27,6 +27,7 @@ import { SearchField } from "../SearchField";
 import HighlightMatch from "../HighlightMatch";
 import { PageSpinner } from "../PageSpinner";
 import { isIgnoredError } from "../../utilities/ignoredErrors";
+import { SerializedErrorAlertDisclosureItem } from "../SerializedErrorAlertDisclosureItem";
 
 enum QueryTabs {
   Variables = "Variables",
@@ -39,19 +40,24 @@ export const GET_QUERIES: TypedDocumentNode<GetQueries, GetQueriesVariables> =
     query GetQueries($clientId: ID!) {
       client(id: $clientId) {
         id
-        ... on ClientV3 {
-          queries {
-            items {
-              id
-              name
-              queryString
-              variables
-              cachedData
-              options
-              networkStatus
-              pollInterval
+        queries {
+          items {
+            id
+            name
+            queryString
+            variables
+            cachedData
+            options
+            networkStatus
+            pollInterval
+            ... on ClientV3WatchedQuery {
               error {
                 ...ApolloErrorAlertDisclosurePanel_error
+              }
+            }
+            ... on ClientV4WatchedQuery {
+              error {
+                ...SerializedErrorAlertDisclosureItem_error
               }
             }
           }
@@ -209,9 +215,20 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
                     <AlertDisclosure.Button>
                       Query completed with errors
                     </AlertDisclosure.Button>
-                    <ApolloErrorAlertDisclosurePanel
-                      error={selectedQuery.error}
-                    />
+                    {selectedQuery.error.__typename ===
+                    "SerializedApolloError" ? (
+                      <ApolloErrorAlertDisclosurePanel
+                        error={selectedQuery.error}
+                      />
+                    ) : (
+                      <AlertDisclosure.Panel>
+                        <ul>
+                          <SerializedErrorAlertDisclosureItem
+                            error={selectedQuery.error}
+                          />
+                        </ul>
+                      </AlertDisclosure.Panel>
+                    )}
                   </AlertDisclosure>
                 )}
                 <QueryLayout.QueryString code={selectedQuery.queryString} />
