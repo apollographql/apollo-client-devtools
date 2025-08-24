@@ -15,6 +15,7 @@ import {
 import { useGitHubApi } from "../hooks/useGitHubAPI";
 import { StatusBadge } from "./StatusBadge";
 import { ExternalLink } from "./ExternalLink";
+import { gte } from "semver";
 
 interface GitHubReleaseHoverCardProps {
   children?: ReactNode;
@@ -135,8 +136,12 @@ function SnapshotCardContents({ version }: { version: SnapshotVersion }) {
 }
 
 function ReleaseCardContents({ version }: { version: string }) {
+  const tag = gte(version, "4.0.0")
+    ? `@apollo/client@${version}`
+    : `v${version}`;
+
   const currentRelease = useGitHubApi<GitHubRelease>(
-    `/repos/apollographql/apollo-client/releases/tags/v${version}`,
+    `/repos/apollographql/apollo-client/releases/tags/${tag}`,
     { cache: true }
   );
 
