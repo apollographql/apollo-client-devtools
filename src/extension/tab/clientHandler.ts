@@ -68,7 +68,7 @@ export abstract class ClientHandler<
 
     if (definition.operation === OperationTypeNode.SUBSCRIPTION) {
       return wrapObservable(
-        this.executeSubsription({ subscription: document, variables })
+        this.executeSubscription({ subscription: document, variables })
       ).pipe(map((response) => ({ operationName, response })));
     }
 
@@ -96,7 +96,7 @@ export abstract class ClientHandler<
     ? Promise<EmbeddedExplorerResponse>
     : Promise<EmbeddedExplorerResponse>;
 
-  protected abstract executeSubsription(options: {
+  protected abstract executeSubscription(options: {
     subscription: DocumentNode;
     variables: JSONObject | undefined;
   }): TClient extends ApolloClient4

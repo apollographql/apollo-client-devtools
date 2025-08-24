@@ -60,7 +60,7 @@ export class ClientV4Handler extends ClientHandler<ApolloClient> {
     );
   }
 
-  executeSubsription({
+  executeSubscription({
     subscription,
     variables,
   }: {
