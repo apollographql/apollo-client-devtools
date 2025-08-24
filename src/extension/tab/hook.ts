@@ -107,8 +107,9 @@ handleRpc("getQueries", (clientId) =>
   getQueriesForClient(getClientById(clientId))
 );
 
-handleRpc("getMutations", (clientId) =>
-  getMutationsForClient(getClientById(clientId))
+handleRpc(
+  "getMutations",
+  (clientId) => getHandlerByClientId(clientId)?.getMutations() ?? []
 );
 
 handleRpc("getCache", (clientId) => {
@@ -120,6 +121,12 @@ function getClientById(clientId: string) {
     [...knownClients.entries()].find(([, id]) => id === clientId) ?? [];
 
   return client;
+}
+
+function getHandlerByClientId(clientId: string) {
+  const client = getClientById(clientId);
+
+  return client && handlers.get(client);
 }
 
 handleExplorerRequests(tab, getClientById);
