@@ -13,41 +13,36 @@ export interface MutationV4Details {
     | SerializedLocalStateError
     | SerializedServerError
     | SerializedServerParseError
-    | SerializedUnconventionalError;
+    | SerializedUnconventionalError
+    | null;
 }
 
-interface SerializedErrorLike {
-  message: string;
-  name: string;
-  stack?: string;
-}
-
-export interface SerializedCombinedGraphQLErrors extends SerializedErrorLike {
-  errors: GraphQLFormattedError[];
+export interface SerializedCombinedGraphQLErrors extends SerializedError {
+  errors: ReadonlyArray<GraphQLFormattedError>;
   data: Record<string, any> | null | undefined;
   extensions: Record<string, any> | undefined;
 }
 
-export interface SerializedCombinedProtocolErrors extends SerializedErrorLike {
-  errors: GraphQLFormattedError[];
+export interface SerializedCombinedProtocolErrors extends SerializedError {
+  errors: ReadonlyArray<GraphQLFormattedError>;
 }
 
-export interface SerializedLocalStateError extends SerializedErrorLike {
+export interface SerializedLocalStateError extends SerializedError {
   path: Array<string | number> | undefined;
-  cause: SerializedErrorLike | undefined;
+  cause: SerializedError | undefined;
 }
 
-export interface SerializedServerError extends SerializedErrorLike {
+export interface SerializedServerError extends SerializedError {
   bodyText: string;
   statusCode: number;
 }
 
-export interface SerializedServerParseError extends SerializedErrorLike {
+export interface SerializedServerParseError extends SerializedError {
   bodyText: string;
   statusCode: number;
-  cause: SerializedErrorLike | undefined;
+  cause: SerializedError | undefined;
 }
 
-export interface SerializedUnconventionalError extends SerializedErrorLike {
+export interface SerializedUnconventionalError extends SerializedError {
   cause: JSONValue | undefined;
 }
