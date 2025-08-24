@@ -8,6 +8,7 @@ import IconGitHub from "@apollo/icons/default/IconGitHubSolid.svg";
 import IconBranch from "@apollo/icons/default/IconBranch.svg";
 import type { SnapshotVersion } from "../utilities/github";
 import {
+  getReleaseLink,
   isSnapshotRelease,
   parseSnapshotRelease,
   parseSnapshotTimestamp,
@@ -182,7 +183,7 @@ function ReleaseCardContents({ version }: { version: string }) {
         </div>
         <ExternalLink
           className="flex gap-1 items-center mt-2"
-          href={`https://github.com/apollographql/apollo-client/releases/tag/v${version}`}
+          href={getReleaseLink(version)}
         >
           View release in GitHub <IconOutlink className="size-3" />
         </ExternalLink>
