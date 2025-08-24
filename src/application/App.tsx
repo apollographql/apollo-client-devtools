@@ -57,13 +57,11 @@ const CLIENT_QUERY: TypedDocumentNode<ClientQuery, ClientQueryVariables> = gql`
     client(id: $id) {
       id
       version
-      ... on ClientV3 {
-        queries {
-          total
-        }
-        mutations {
-          total
-        }
+      queries {
+        total
+      }
+      mutations {
+        total
       }
     }
   }
