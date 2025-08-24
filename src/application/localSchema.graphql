@@ -55,24 +55,24 @@ type ClientV4Queries {
 
 type ClientV3Mutations {
   total: Int!
-  items: [ClientV3WatchedMutation!]!
+  items: [ClientV3Mutation!]!
 }
 
 type ClientV4Mutations {
   total: Int!
-  items: [ClientV4WatchedMutation!]
+  items: [ClientV4Mutation!]
 }
 
-type ClientV3WatchedMutation {
+type ClientV3Mutation {
   id: ID!
   name: String
   mutationString: String!
   variables: Variables
   loading: Boolean!
-  error: ClientV3WatchedMutationError
+  error: ClientV3MutationError
 }
 
-type ClientV4WatchedMutation {
+type ClientV4Mutation {
   id: ID!
   name: String
   mutationString: String!
@@ -81,7 +81,7 @@ type ClientV4WatchedMutation {
   error: ClientV4Error
 }
 
-union ClientV3WatchedMutationError = SerializedError | SerializedApolloError
+union ClientV3MutationError = SerializedError | SerializedApolloError
 union ClientV4Error =
   | SerializedError
   | SerializedCombinedGraphQLErrors

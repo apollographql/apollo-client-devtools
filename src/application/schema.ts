@@ -73,7 +73,7 @@ function createResolvers(client: RpcClient): Resolvers {
         }));
       },
     },
-    ClientV3WatchedMutationError: {
+    ClientV3MutationError: {
       __resolveType: (error) => {
         if (error.name === "ApolloError") {
           return "SerializedApolloError";

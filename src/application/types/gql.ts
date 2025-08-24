@@ -60,9 +60,21 @@ export type ClientV3 = Client & {
   version: Scalars["String"]["output"];
 };
 
+export type ClientV3Mutation = {
+  __typename: "ClientV3Mutation";
+  error: Maybe<ClientV3MutationError>;
+  id: Scalars["ID"]["output"];
+  loading: Scalars["Boolean"]["output"];
+  mutationString: Scalars["String"]["output"];
+  name: Maybe<Scalars["String"]["output"]>;
+  variables: Maybe<Scalars["Variables"]["output"]>;
+};
+
+export type ClientV3MutationError = SerializedApolloError | SerializedError;
+
 export type ClientV3Mutations = {
   __typename: "ClientV3Mutations";
-  items: Array<ClientV3WatchedMutation>;
+  items: Array<ClientV3Mutation>;
   total: Scalars["Int"]["output"];
 };
 
@@ -71,20 +83,6 @@ export type ClientV3Queries = {
   items: Array<ClientV3WatchedQuery>;
   total: Scalars["Int"]["output"];
 };
-
-export type ClientV3WatchedMutation = {
-  __typename: "ClientV3WatchedMutation";
-  error: Maybe<ClientV3WatchedMutationError>;
-  id: Scalars["ID"]["output"];
-  loading: Scalars["Boolean"]["output"];
-  mutationString: Scalars["String"]["output"];
-  name: Maybe<Scalars["String"]["output"]>;
-  variables: Maybe<Scalars["Variables"]["output"]>;
-};
-
-export type ClientV3WatchedMutationError =
-  | SerializedApolloError
-  | SerializedError;
 
 export type ClientV3WatchedQueries = {
   __typename: "ClientV3WatchedQueries";
@@ -124,9 +122,19 @@ export type ClientV4Error =
   | SerializedServerParseError
   | SerializedUnconventionalError;
 
+export type ClientV4Mutation = {
+  __typename: "ClientV4Mutation";
+  error: Maybe<ClientV4Error>;
+  id: Scalars["ID"]["output"];
+  loading: Scalars["Boolean"]["output"];
+  mutationString: Scalars["String"]["output"];
+  name: Maybe<Scalars["String"]["output"]>;
+  variables: Maybe<Scalars["Variables"]["output"]>;
+};
+
 export type ClientV4Mutations = {
   __typename: "ClientV4Mutations";
-  items: Maybe<Array<ClientV4WatchedMutation>>;
+  items: Maybe<Array<ClientV4Mutation>>;
   total: Scalars["Int"]["output"];
 };
 
@@ -134,16 +142,6 @@ export type ClientV4Queries = {
   __typename: "ClientV4Queries";
   items: Array<ClientV4WatchedQuery>;
   total: Scalars["Int"]["output"];
-};
-
-export type ClientV4WatchedMutation = {
-  __typename: "ClientV4WatchedMutation";
-  error: Maybe<ClientV4Error>;
-  id: Scalars["ID"]["output"];
-  loading: Scalars["Boolean"]["output"];
-  mutationString: Scalars["String"]["output"];
-  name: Maybe<Scalars["String"]["output"]>;
-  variables: Maybe<Scalars["Variables"]["output"]>;
 };
 
 export type ClientV4WatchedQuery = {
@@ -327,7 +325,7 @@ export type GetMutations = {
           __typename: "ClientV3Mutations";
           total: number;
           items: Array<{
-            __typename: "ClientV3WatchedMutation";
+            __typename: "ClientV3Mutation";
             id: string;
             name: string | null;
             mutationString: string;
