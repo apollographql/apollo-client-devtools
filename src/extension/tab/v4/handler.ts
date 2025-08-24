@@ -229,6 +229,7 @@ function getErrorProperties(error: unknown): EmbeddedExplorerResponse {
   if (CombinedGraphQLErrors.is(error)) {
     return {
       data: error.data,
+      error,
       errors: error.errors,
       extensions: error.extensions,
     };
