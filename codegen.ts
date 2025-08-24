@@ -55,6 +55,7 @@ const config: CodegenConfig = {
           Client: "@/types.ts#ApolloClientInfo",
           ClientV3: "@/types.ts#ApolloClientInfo",
           ClientV3Queries: "@/types.ts#ApolloClientInfo",
+          ClientV4Queries: "@/types.ts#ApolloClientInfo",
           ClientV3Mutations: "@/types.ts#ApolloClientInfo",
           ClientV4Mutations: "@/types.ts#ApolloClientInfo",
           SerializedApolloError:

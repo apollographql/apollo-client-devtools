@@ -399,8 +399,9 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> =
   {
     Client:
       | ApolloClientInfo
-      | (Omit<ClientV4, "mutations"> & {
+      | (Omit<ClientV4, "mutations" | "queries"> & {
           mutations: _RefType["ClientV4Mutations"];
+          queries: _RefType["ClientV4Queries"];
         });
     ErrorLike:
       | RpcSerializedCombinedGraphQLErrors
@@ -439,8 +440,9 @@ export type ResolversTypes = {
     }
   >;
   ClientV4: ResolverTypeWrapper<
-    Omit<ClientV4, "mutations"> & {
+    Omit<ClientV4, "mutations" | "queries"> & {
       mutations: ResolversTypes["ClientV4Mutations"];
+      queries: ResolversTypes["ClientV4Queries"];
     }
   >;
   ClientV4Error: ResolverTypeWrapper<
@@ -452,7 +454,7 @@ export type ResolversTypes = {
     }
   >;
   ClientV4Mutations: ResolverTypeWrapper<ApolloClientInfo>;
-  ClientV4Queries: ResolverTypeWrapper<ClientV4Queries>;
+  ClientV4Queries: ResolverTypeWrapper<ApolloClientInfo>;
   ClientV4WatchedQuery: ResolverTypeWrapper<
     Omit<ClientV4WatchedQuery, "error"> & {
       error: Maybe<ResolversTypes["ClientV4Error"]>;
@@ -500,15 +502,16 @@ export type ResolversParentTypes = {
   ClientV3WatchedQuery: Omit<ClientV3WatchedQuery, "error"> & {
     error: Maybe<ResolversParentTypes["SerializedApolloError"]>;
   };
-  ClientV4: Omit<ClientV4, "mutations"> & {
+  ClientV4: Omit<ClientV4, "mutations" | "queries"> & {
     mutations: ResolversParentTypes["ClientV4Mutations"];
+    queries: ResolversParentTypes["ClientV4Queries"];
   };
   ClientV4Error: ResolversUnionTypes<ResolversParentTypes>["ClientV4Error"];
   ClientV4Mutation: Omit<ClientV4Mutation, "error"> & {
     error: Maybe<ResolversParentTypes["ClientV4Error"]>;
   };
   ClientV4Mutations: ApolloClientInfo;
-  ClientV4Queries: ClientV4Queries;
+  ClientV4Queries: ApolloClientInfo;
   ClientV4WatchedQuery: Omit<ClientV4WatchedQuery, "error"> & {
     error: Maybe<ResolversParentTypes["ClientV4Error"]>;
   };
