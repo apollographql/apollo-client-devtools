@@ -197,9 +197,3 @@ Object.defineProperty(window, "__APOLLO_CLIENT__", {
 if (globalClient) {
   registerClient(globalClient);
 }
-
-function logDeprecation(api: string) {
-  console.warn(
-    `[Apollo Client Devtools]: '${api}' is deprecated and will be removed in a future version.`
-  );
-}
