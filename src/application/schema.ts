@@ -36,7 +36,6 @@ function createResolvers(client: RpcClient): Resolvers {
       mutations: (client) => client,
     },
     ClientQueries: {
-      total: (client) => client.queryCount,
       __resolveType: (client) => {
         return gte(client.version, "4.0.0")
           ? "ClientV4Queries"
@@ -44,6 +43,7 @@ function createResolvers(client: RpcClient): Resolvers {
       },
     },
     ClientV3Queries: {
+      total: (client) => client.queryCount,
       items: async (client) => {
         const queries = await rpcClient.request("getV3Queries", client.id);
 
@@ -70,6 +70,7 @@ function createResolvers(client: RpcClient): Resolvers {
       },
     },
     ClientV4Queries: {
+      total: (client) => client.queryCount,
       items: async (client) => {
         const queries = await rpcClient.request("getV4Queries", client.id);
 
