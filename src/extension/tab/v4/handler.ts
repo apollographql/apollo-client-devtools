@@ -103,9 +103,9 @@ export class ClientV4Handler extends ClientHandler<ApolloClient> {
     return Array.from(this.client.getObservableQueries("active")).map(
       (oq, idx) => {
         const observableQuery = getPrivateAccess(oq);
+        const { pollingInfo } = observableQuery;
         const { networkStatus, error } = observableQuery.getCurrentResult();
         const diff = observableQuery.getCacheDiff();
-        const { pollingInfo } = observableQuery;
 
         return {
           id: String(idx),

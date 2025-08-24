@@ -176,9 +176,6 @@ function getQueries(
       const diff = observableQuery.queryInfo.getDiff();
       if (!document) return;
       const name = getOperationName(document);
-      if (name === "IntrospectionQuery") {
-        return;
-      }
 
       const { pollingInfo } = observableQuery;
       const { networkStatus, error } = observableQuery.getCurrentResult(false);

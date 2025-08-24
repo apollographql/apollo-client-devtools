@@ -47,26 +47,19 @@ function createResolvers(client: RpcClient): Resolvers {
       items: async (client) => {
         const queries = await rpcClient.request("getV3Queries", client.id);
 
-        return queries
-          .map((query) => {
-            const name = getOperationName(query.document);
-            if (name === "IntrospectionQuery") {
-              return;
-            }
-
-            return {
-              id: query.id,
-              name,
-              queryString: print(query.document),
-              variables: query.variables ?? null,
-              cachedData: query.cachedData ?? null,
-              options: query.options ?? null,
-              networkStatus: query.networkStatus,
-              error: query.error,
-              pollInterval: query.pollInterval,
-            };
-          })
-          .filter(Boolean);
+        return queries.map((query) => {
+          return {
+            id: query.id,
+            name: getOperationName(query.document),
+            queryString: print(query.document),
+            variables: query.variables ?? null,
+            cachedData: query.cachedData ?? null,
+            options: query.options ?? null,
+            networkStatus: query.networkStatus,
+            error: query.error,
+            pollInterval: query.pollInterval,
+          };
+        });
       },
     },
     ClientV4Queries: {
@@ -74,26 +67,19 @@ function createResolvers(client: RpcClient): Resolvers {
       items: async (client) => {
         const queries = await rpcClient.request("getV4Queries", client.id);
 
-        return queries
-          .map((query) => {
-            const name = getOperationName(query.document);
-            if (name === "IntrospectionQuery") {
-              return;
-            }
-
-            return {
-              id: query.id,
-              name,
-              queryString: print(query.document),
-              variables: query.variables ?? null,
-              cachedData: query.cachedData ?? null,
-              options: query.options ?? null,
-              networkStatus: query.networkStatus,
-              error: query.error,
-              pollInterval: query.pollInterval,
-            };
-          })
-          .filter(Boolean);
+        return queries.map((query) => {
+          return {
+            id: query.id,
+            name: getOperationName(query.document),
+            queryString: print(query.document),
+            variables: query.variables ?? null,
+            cachedData: query.cachedData ?? null,
+            options: query.options ?? null,
+            networkStatus: query.networkStatus,
+            error: query.error,
+            pollInterval: query.pollInterval,
+          };
+        });
       },
     },
     ClientV3Mutations: {
