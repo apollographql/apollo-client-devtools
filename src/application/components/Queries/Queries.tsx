@@ -81,7 +81,7 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
   const [selected, setSelected] = useState("1");
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { loading, error, data, startPolling, stopPolling } = useQuery(
+  const { error, data, startPolling, stopPolling, networkStatus } = useQuery(
     GET_QUERIES,
     {
       variables: { clientId: clientId as string },
@@ -158,7 +158,7 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
           })}
         </List>
       </SidebarLayout.Sidebar>
-      {loading ? (
+      {networkStatus === NetworkStatus.loading ? (
         <SidebarLayout.Main>
           <PageSpinner />
         </SidebarLayout.Main>
