@@ -1,13 +1,15 @@
 import type { ApolloClient as ApolloClient4 } from "@apollo/client";
 import type { ApolloClient as ApolloClient3 } from "@apollo/client-3";
-import type { ObservableQuery } from "@apollo/client";
+import type { ExplorerResponse as EmbeddedExplorerResponse } from "./application/components/Explorer/postMessageHelpers";
 
 export type ApolloClient = ApolloClient3<any> | ApolloClient4;
 
 export interface ExplorerResponse {
   operationName: string | undefined;
-  response: ObservableQuery.Result<unknown>;
+  response: EmbeddedExplorerResponse;
 }
+
+export { EmbeddedExplorerResponse };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type NoInfer<T> = [T][T extends any ? 0 : never];
