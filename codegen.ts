@@ -63,6 +63,7 @@ const config: CodegenConfig = {
             "../../extension/tab/helpers#SerializedError as RpcSerializedError",
           SerializedGraphQLError: "graphql#GraphQLFormattedError",
         },
+        maybeValue: "T | null | undefined",
       },
       plugins: [
         {
