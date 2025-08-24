@@ -97,5 +97,25 @@ function createResolvers(client: RpcClient): Resolvers {
         return "SerializedError";
       },
     },
+    ClientV4Error: {
+      __resolveType: (error) => {
+        switch (error.name) {
+          case "CombinedGraphQLErrors":
+            return "SerializedCombinedGraphQLErrors";
+          case "CombinedProtocolErrors":
+            return "SerializedCombinedProtocolErrors";
+          case "LocalStateError":
+            return "SerializedLocalStateError";
+          case "ServerError":
+            return "SerializedServerError";
+          case "ServerParserError":
+            return "SerializedServerParseError";
+          case "UnconventionalError":
+            return "SerializedUnconventionalError";
+          default:
+            return "SerializedError";
+        }
+      },
+    },
   };
 }
