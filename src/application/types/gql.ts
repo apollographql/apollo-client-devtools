@@ -389,18 +389,48 @@ export type GetMutations = {
             variables: Variables | null;
             loading: boolean;
             error:
-              | { __typename: "SerializedCombinedGraphQLErrors" }
-              | { __typename: "SerializedCombinedProtocolErrors" }
+              | {
+                  __typename: "SerializedCombinedGraphQLErrors";
+                  message: string;
+                  name: string;
+                  stack: string | null;
+                }
+              | {
+                  __typename: "SerializedCombinedProtocolErrors";
+                  message: string;
+                  name: string;
+                  stack: string | null;
+                }
               | {
                   __typename: "SerializedError";
                   message: string;
                   name: string;
                   stack: string | null;
                 }
-              | { __typename: "SerializedLocalStateError" }
-              | { __typename: "SerializedServerError" }
-              | { __typename: "SerializedServerParseError" }
-              | { __typename: "SerializedUnconventionalError" }
+              | {
+                  __typename: "SerializedLocalStateError";
+                  message: string;
+                  name: string;
+                  stack: string | null;
+                }
+              | {
+                  __typename: "SerializedServerError";
+                  message: string;
+                  name: string;
+                  stack: string | null;
+                }
+              | {
+                  __typename: "SerializedServerParseError";
+                  message: string;
+                  name: string;
+                  stack: string | null;
+                }
+              | {
+                  __typename: "SerializedUnconventionalError";
+                  message: string;
+                  name: string;
+                  stack: string | null;
+                }
               | null;
           }>;
         };
@@ -453,9 +483,62 @@ export type GetQueries = {
     | null;
 };
 
-export type SerializedErrorAlertDisclosureItem_error = {
+type SerializedErrorAlertDisclosureItem_error_SerializedCombinedGraphQLErrors =
+  {
+    __typename: "SerializedCombinedGraphQLErrors";
+    message: string;
+    name: string;
+    stack: string | null;
+  };
+
+type SerializedErrorAlertDisclosureItem_error_SerializedCombinedProtocolErrors =
+  {
+    __typename: "SerializedCombinedProtocolErrors";
+    message: string;
+    name: string;
+    stack: string | null;
+  };
+
+type SerializedErrorAlertDisclosureItem_error_SerializedError = {
   __typename: "SerializedError";
   message: string;
   name: string;
   stack: string | null;
 };
+
+type SerializedErrorAlertDisclosureItem_error_SerializedLocalStateError = {
+  __typename: "SerializedLocalStateError";
+  message: string;
+  name: string;
+  stack: string | null;
+};
+
+type SerializedErrorAlertDisclosureItem_error_SerializedServerError = {
+  __typename: "SerializedServerError";
+  message: string;
+  name: string;
+  stack: string | null;
+};
+
+type SerializedErrorAlertDisclosureItem_error_SerializedServerParseError = {
+  __typename: "SerializedServerParseError";
+  message: string;
+  name: string;
+  stack: string | null;
+};
+
+type SerializedErrorAlertDisclosureItem_error_SerializedUnconventionalError = {
+  __typename: "SerializedUnconventionalError";
+  message: string;
+  name: string;
+  stack: string | null;
+};
+
+export type SerializedErrorAlertDisclosureItem_error =
+  | SerializedErrorAlertDisclosureItem_error_SerializedCombinedGraphQLErrors
+  | SerializedErrorAlertDisclosureItem_error_SerializedCombinedProtocolErrors
+  | SerializedErrorAlertDisclosureItem_error_SerializedError
+  | SerializedErrorAlertDisclosureItem_error_SerializedLocalStateError
+  | SerializedErrorAlertDisclosureItem_error_SerializedServerError
+  | SerializedErrorAlertDisclosureItem_error_SerializedServerParseError
+  | SerializedErrorAlertDisclosureItem_error_SerializedUnconventionalError;
