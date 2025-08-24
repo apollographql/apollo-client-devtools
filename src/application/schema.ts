@@ -31,6 +31,10 @@ function createResolvers(client: RpcClient): Resolvers {
       queries: (client) => client,
       mutations: (client) => client,
     },
+    ClientV4: {
+      queries: (client) => client,
+      mutations: (client) => client,
+    },
     ClientQueries: {
       total: (client) => client.queryCount,
       __resolveType: (client) => {

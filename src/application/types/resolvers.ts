@@ -65,9 +65,9 @@ export type Scalars = {
 export type Client = {
   cache: Scalars["Cache"]["output"];
   id: Scalars["String"]["output"];
-  mutations: Maybe<ClientMutations>;
+  mutations: ClientMutations;
   name: Maybe<Scalars["String"]["output"]>;
-  queries: Maybe<ClientQueries>;
+  queries: ClientQueries;
   version: Scalars["String"]["output"];
 };
 
@@ -411,12 +411,7 @@ export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = {
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> =
   {
-    Client:
-      | ApolloClientInfo
-      | (Omit<ClientV4, "mutations" | "queries"> & {
-          mutations: _RefType["ClientV4Mutations"];
-          queries: _RefType["ClientV4Queries"];
-        });
+    Client: ApolloClientInfo | ApolloClientInfo;
     ClientMutation:
       | (Omit<ClientV3Mutation, "error"> & {
           error: Maybe<_RefType["ClientV3MutationError"]>;
@@ -478,12 +473,7 @@ export type ResolversTypes = {
       error: Maybe<ResolversTypes["SerializedApolloError"]>;
     }
   >;
-  ClientV4: ResolverTypeWrapper<
-    Omit<ClientV4, "mutations" | "queries"> & {
-      mutations: ResolversTypes["ClientV4Mutations"];
-      queries: ResolversTypes["ClientV4Queries"];
-    }
-  >;
+  ClientV4: ResolverTypeWrapper<ApolloClientInfo>;
   ClientV4Mutation: ResolverTypeWrapper<
     Omit<ClientV4Mutation, "error"> & {
       error: Maybe<ResolversTypes["ErrorLike"]>;
@@ -544,10 +534,7 @@ export type ResolversParentTypes = {
   ClientV3WatchedQuery: Omit<ClientV3WatchedQuery, "error"> & {
     error: Maybe<ResolversParentTypes["SerializedApolloError"]>;
   };
-  ClientV4: Omit<ClientV4, "mutations" | "queries"> & {
-    mutations: ResolversParentTypes["ClientV4Mutations"];
-    queries: ResolversParentTypes["ClientV4Queries"];
-  };
+  ClientV4: ApolloClientInfo;
   ClientV4Mutation: Omit<ClientV4Mutation, "error"> & {
     error: Maybe<ResolversParentTypes["ErrorLike"]>;
   };
@@ -597,16 +584,12 @@ export type ClientResolvers<
   cache?: Resolver<ResolversTypes["Cache"], ParentType, ContextType>;
   id?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   mutations?: Resolver<
-    Maybe<ResolversTypes["ClientMutations"]>,
+    ResolversTypes["ClientMutations"],
     ParentType,
     ContextType
   >;
   name?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  queries?: Resolver<
-    Maybe<ResolversTypes["ClientQueries"]>,
-    ParentType,
-    ContextType
-  >;
+  queries?: Resolver<ResolversTypes["ClientQueries"], ParentType, ContextType>;
   version?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
 };
 

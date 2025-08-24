@@ -23,8 +23,8 @@ interface Client {
   name: String
   version: String!
   cache: Cache!
-  queries: ClientQueries
-  mutations: ClientMutations
+  queries: ClientQueries!
+  mutations: ClientMutations!
 }
 
 interface ClientQueries {
