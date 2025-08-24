@@ -152,7 +152,7 @@ function getQueryOptions(observableQuery: ObservableQuery) {
 }
 
 // Version of getQueries compatible with Apollo Client versions < 3.4.0
-export function getQueriesLegacy(
+function getQueriesLegacy(
   queryMap: Map<
     string,
     {
