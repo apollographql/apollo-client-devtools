@@ -1,18 +1,15 @@
 import { useMemo } from "react";
 import { useState, useEffect } from "react";
-import type { ObservableQuery } from "@apollo/client";
-import {
-  Observable,
-  NetworkStatus,
-  gql,
-  CombinedGraphQLErrors,
-} from "@apollo/client";
+import { Observable, gql } from "@apollo/client";
 import { useReactiveVar } from "@apollo/client/react";
 import type { IntrospectionQuery } from "graphql";
 import { getIntrospectionQuery } from "graphql/utilities";
 import { colorTheme } from "../../theme";
 import { FullWidthLayout } from "../Layouts/FullWidthLayout";
-import type { IncomingMessageEvent } from "./postMessageHelpers";
+import type {
+  ExplorerResponse,
+  IncomingMessageEvent,
+} from "./postMessageHelpers";
 import {
   postMessageToEmbed,
   EMBEDDABLE_EXPLORER_URL,
@@ -32,7 +29,7 @@ import {
 import { GraphRefModal } from "./GraphRefModal";
 import { Button } from "../Button";
 import { getPanelActor } from "../../../extension/devtools/panelActor";
-import type { JSONObject, JSONValue } from "../../types/json";
+import type { JSONObject } from "../../types/json";
 
 const panelWindow = getPanelActor(window);
 
@@ -56,7 +53,7 @@ function executeOperation({
   isSubscription?: boolean;
   clientId: string;
 }) {
-  return new Observable<ObservableQuery.Result<unknown>>((observer) => {
+  return new Observable<ExplorerResponse>((observer) => {
     panelWindow.send({
       type: "explorerRequest",
       payload: {
@@ -198,7 +195,7 @@ export const Explorer = ({
       observer.subscribe((response) => {
         // This means this was a graphql response which means we did hit a
         // graphql endpoint but introspection was specifically disabled
-        if (CombinedGraphQLErrors.is(response.error)) {
+        if (response.error || response.errors) {
           // if you can't introspect the schema, default to the last used
           // graph ref, otherwise, trigger the embed to ask the user
           // for their graph ref, and allow them to authenticate
@@ -208,26 +205,23 @@ export const Explorer = ({
           } else {
             setShowGraphRefModal("triggeredByIntrospectionFailure");
           }
-        }
-        if (response.networkStatus === NetworkStatus.error) {
+
           postMessageToEmbed({
             embeddedExplorerIFrame,
             message: {
               name: SCHEMA_ERROR,
-              errors: CombinedGraphQLErrors.is(response.error)
-                ? response.error.errors
-                : undefined,
+              errors: response.errors,
               error: response.error?.message,
             },
           });
         } else {
-          setSchema(response.data as IntrospectionQuery);
+          setSchema(response.data as unknown as IntrospectionQuery);
           // send introspected schema to embedded explorer
           postMessageToEmbed({
             embeddedExplorerIFrame,
             message: {
               name: SCHEMA_RESPONSE,
-              schema: response.data as IntrospectionQuery,
+              schema: response.data as unknown as IntrospectionQuery,
             },
           });
         }
@@ -253,8 +247,6 @@ export const Explorer = ({
           const currentOperationId = event.data.operationId;
 
           observer.subscribe((response) => {
-            const { data, error } = response;
-
             postMessageToEmbed({
               embeddedExplorerIFrame,
               message: {
@@ -262,15 +254,7 @@ export const Explorer = ({
                   ? EXPLORER_RESPONSE
                   : EXPLORER_SUBSCRIPTION_RESPONSE,
                 operationId: currentOperationId,
-                response: {
-                  data: data as JSONValue | undefined,
-                  errors: CombinedGraphQLErrors.is(error)
-                    ? error.errors
-                    : undefined,
-                  error: error
-                    ? { message: error.message, stack: error.stack }
-                    : undefined,
-                },
+                response,
               },
             });
           });
