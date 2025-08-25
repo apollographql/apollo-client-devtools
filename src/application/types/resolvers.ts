@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable */
 import type { QueryData } from "./scalars";
 import type { QueryOptions } from "./scalars";
 import type { Variables } from "./scalars";

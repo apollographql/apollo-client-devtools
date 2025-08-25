@@ -82,7 +82,7 @@ const config: CodegenConfig = {
       plugins: [
         {
           add: {
-            content: "/* eslint-disable @typescript-eslint/ban-types */",
+            content: "/* eslint-disable */",
           },
         },
         "typescript",
