@@ -41,15 +41,15 @@ const cache = new InMemoryCache({
   typePolicies: {
     ClientWatchedQuery: {
       fields: {
-        name(_) {
-          return _ ?? "(anonymous)";
+        name(name) {
+          return name ?? "(anonymous)";
         },
       },
     },
     ClientMutation: {
       fields: {
-        name(_) {
-          return _ ?? "(anonymous)";
+        name(name) {
+          return name ?? "(anonymous)";
         },
       },
     },
