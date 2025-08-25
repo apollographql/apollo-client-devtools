@@ -57,7 +57,7 @@ export const GET_QUERIES: TypedDocumentNode<GetQueries, GetQueriesVariables> =
             }
             ... on ClientV4WatchedQuery {
               error {
-                ...SerializedErrorAlertDisclosureItem_error
+                ...SerializedErrorAlertDisclosurePanel_error
               }
             }
           }
