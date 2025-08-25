@@ -274,8 +274,12 @@ function serializeError(error: Error | string) {
 }
 
 function getErrorProperties(
-  error: ApolloError
+  error: ApolloError | undefined
 ): Pick<EmbeddedExplorerResponse, "error" | "errors"> {
+  if (!error) {
+    return {};
+  }
+
   return {
     error,
     errors: error.graphQLErrors.length
@@ -292,5 +296,5 @@ function toExplorerResponse({
   data,
   error,
 }: ApolloQueryResult<any>): EmbeddedExplorerResponse {
-  return error ? { data, ...getErrorProperties(error) } : { data };
+  return { data, ...getErrorProperties(error) };
 }
