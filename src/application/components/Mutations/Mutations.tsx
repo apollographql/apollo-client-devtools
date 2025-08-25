@@ -42,7 +42,7 @@ const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
             ... on ClientV3Mutation {
               error {
                 ... on SerializedError {
-                  ...SerializedErrorAlertDisclosureItem_error
+                  ...SerializedErrorAlertDisclosurePanel_error
                 }
                 ... on SerializedApolloError {
                   ...ApolloErrorAlertDisclosurePanel_error
