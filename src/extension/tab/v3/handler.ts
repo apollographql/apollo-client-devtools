@@ -4,6 +4,7 @@ import type {
   DocumentNode,
   ObservableQuery,
   NetworkStatus,
+  ApolloQueryResult,
 } from "@apollo/client-3";
 // Note that we are intentionally not using Apollo Client's gql and
 // Observable exports, as we don't want Apollo Client and its dependencies
@@ -54,9 +55,9 @@ export class ClientV3Handler extends ClientHandler<ApolloClient<any>> {
     variables?: JSONObject | undefined;
     fetchPolicy?: FetchPolicy;
   }): Promise<EmbeddedExplorerResponse> {
-    const { data, error } = await this.client.query(options);
+    const result = await this.client.query(options);
 
-    return error ? { data, ...getErrorProperties(error) } : { data };
+    return toExplorerResponse(result);
   }
 
   protected watchQuery(options: {
@@ -67,13 +68,7 @@ export class ClientV3Handler extends ClientHandler<ApolloClient<any>> {
     return new Observable((observer) => {
       const subscription = this.client
         .watchQuery(options)
-        .map(
-          (result): EmbeddedExplorerResponse => ({
-            data: result.data,
-            error: result.error,
-            errors: result.errors,
-          })
-        )
+        .map(toExplorerResponse)
         .subscribe({
           next: observer.next.bind(observer),
           complete: observer.complete.bind(observer),
@@ -291,4 +286,11 @@ function getErrorProperties(
           : error.networkError?.result.errors ?? []
         : undefined,
   };
+}
+
+function toExplorerResponse({
+  data,
+  error,
+}: ApolloQueryResult<any>): EmbeddedExplorerResponse {
+  return error ? { data, ...getErrorProperties(error) } : { data };
 }
