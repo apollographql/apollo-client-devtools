@@ -11,6 +11,8 @@ import { createId } from "../../utils/createId";
 import type { ClientHandler, IDv3, IDv4 } from "../tab/clientHandler";
 import type { ClientV3Handler } from "../tab/v3/handler";
 import type { ClientV4Handler } from "../tab/v4/handler";
+import type { MutationV3Details, QueryV3Details } from "../tab/v3/types";
+import type { MutationV4Details, QueryV4Details } from "../tab/v4/types";
 
 type Reason =
   | "WS_DISCONNECTED"
@@ -81,7 +83,7 @@ function registerClient(
   function getClientHandler(clientId: IDv4): ClientV4Handler | undefined;
   function getClientHandler(): ClientHandler<ApolloClient> | undefined;
 
-  function getClientHandler(_id?: IDv3 | IDv4) {
+  function getClientHandler() {
     const client = clientRef.deref();
     if (client) {
       return createHandler(client) as ClientHandler<ApolloClient>;
@@ -109,33 +111,26 @@ function registerClient(
   const wsRpcHandler = createRpcHandler(wsAdapter);
   const wsActor = createActor(wsAdapter);
 
-  function getQueriesForClient() {
+  function getQueries(clientId: IDv3): QueryV3Details[];
+  function getQueries(clientId: IDv4): QueryV4Details[];
+  function getQueries(): QueryV3Details[] | QueryV4Details[];
+
+  function getQueries() {
     return getClientHandler()?.getQueries() ?? [];
   }
-  function getMutationsForClient() {
+
+  function getMutations(clientId: IDv3): MutationV3Details[];
+  function getMutations(clientId: IDv4): MutationV4Details[];
+  function getMutations(): MutationV3Details[] | MutationV4Details[];
+
+  function getMutations() {
     return getClientHandler()?.getMutations() ?? [];
   }
 
-  wsRpcHandler(
-    "getV3Queries",
-    (id) => getClientHandler(id)?.getQueries() ?? [],
-    { signal }
-  );
-  wsRpcHandler(
-    "getV4Queries",
-    (id) => getClientHandler(id)?.getQueries() ?? [],
-    { signal }
-  );
-  wsRpcHandler(
-    "getV3Mutations",
-    (id) => getClientHandler(id)?.getMutations() ?? [],
-    { signal }
-  );
-  wsRpcHandler(
-    "getV4Mutations",
-    (id) => getClientHandler(id)?.getMutations() ?? [],
-    { signal }
-  );
+  wsRpcHandler("getV3Queries", getQueries, { signal });
+  wsRpcHandler("getV4Queries", getQueries, { signal });
+  wsRpcHandler("getV3Mutations", getMutations, { signal });
+  wsRpcHandler("getV4Mutations", getMutations, { signal });
   wsRpcHandler(
     "getCache",
     () => getClientHandler()?.getClient().cache.extract(true) ?? {},
@@ -160,8 +155,8 @@ function registerClient(
           name:
             "devtoolsConfig" in client ? client.devtoolsConfig.name : undefined,
           version: client.version,
-          queryCount: getQueriesForClient().length,
-          mutationCount: getMutationsForClient().length,
+          queryCount: getQueries().length,
+          mutationCount: getMutations().length,
         },
       });
       loadErrorCodes(wsRpcClient, client.version);
