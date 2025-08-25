@@ -43,6 +43,13 @@ function createResolvers(client: RpcClient): Resolvers {
           : "ClientV3Queries";
       },
     },
+    ClientMutations: {
+      __resolveType: (client) => {
+        return gte(client.version, "4.0.0")
+          ? "ClientV4Mutations"
+          : "ClientV3Mutations";
+      },
+    },
     ClientV3Queries: {
       total: (client) => client.queryCount,
       items: async (client) => {
