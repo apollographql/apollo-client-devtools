@@ -34,11 +34,7 @@ import {
 import { Tooltip } from "./components/Tooltip";
 import { Badge } from "./components/Badge";
 import { GitHubReleaseHoverCard } from "./components/GitHubReleaseHoverCard";
-import {
-  getReleaseLink,
-  isSnapshotRelease,
-  parseSnapshotRelease,
-} from "./utilities/github";
+import { getReleaseLink } from "./utilities/github";
 import { Select } from "./components/Select";
 import { Divider } from "./components/Divider";
 import { useActorEvent } from "./hooks/useActorEvent";

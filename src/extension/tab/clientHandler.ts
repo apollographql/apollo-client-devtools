@@ -15,7 +15,7 @@ import type { MutationV4Details, QueryV4Details } from "./v4/types";
 import type { ActorMessage } from "../actor";
 import type { EmbeddedExplorerResponse, ExplorerResponse } from "@/types";
 import { Observable } from "rxjs";
-import { EMPTY, from, map, of } from "rxjs";
+import { EMPTY, from, map } from "rxjs";
 import { filterDocumentForOperation } from "@/utils/graphql";
 import { getOperationDefinition } from "@apollo/client/utilities/internal";
 import { OperationTypeNode } from "graphql";

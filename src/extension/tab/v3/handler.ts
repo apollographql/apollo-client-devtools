@@ -24,7 +24,6 @@ import { getPrivateAccess } from "@/privateAccess";
 import type { OperationVariables } from "@apollo/client";
 import type { EmbeddedExplorerResponse, ExplorerResponse } from "@/types";
 import type { JSONObject } from "@/application/types/json";
-import { getOperationName } from "@apollo/client/utilities/internal";
 
 export class ClientV3Handler extends ClientHandler<ApolloClient<any>> {
   protected async executeMutation(options: {
@@ -180,7 +179,6 @@ function getQueries(
       const { document, variables } = observableQuery.queryInfo;
       const diff = observableQuery.queryInfo.getDiff();
       if (!document) return;
-      const name = getOperationName(document);
 
       const { pollingInfo } = observableQuery;
       const { networkStatus, error } = observableQuery.getCurrentResult(false);
