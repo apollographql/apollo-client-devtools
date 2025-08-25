@@ -49,7 +49,7 @@ export class ClientV3Handler extends ClientHandler<ApolloClient<any>> {
     }
   }
 
-  protected executeQuery(options: {
+  protected watchQuery(options: {
     query: DocumentNode;
     variables: JSONObject | undefined;
     fetchPolicy: FetchPolicy;

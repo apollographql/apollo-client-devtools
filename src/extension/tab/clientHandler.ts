@@ -81,7 +81,7 @@ export abstract class ClientHandler<
     }
 
     return wrapObservable(
-      this.executeQuery({
+      this.watchQuery({
         query: document,
         variables,
         fetchPolicy: payload.fetchPolicy,
@@ -89,7 +89,7 @@ export abstract class ClientHandler<
     ).pipe(map((response) => ({ operationName, response })));
   }
 
-  protected abstract executeQuery(options: {
+  protected abstract watchQuery(options: {
     query: DocumentNode;
     variables: JSONObject | undefined;
     fetchPolicy: FetchPolicy;
