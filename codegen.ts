@@ -92,6 +92,10 @@ const config: CodegenConfig = {
         afterOneFileWrite: ["prettier --write"],
       },
     },
+
+    "./src/application/possibleTypes.json": {
+      plugins: ["fragment-matcher"],
+    },
   },
   hooks: {
     afterAllFileWrite: ["prettier --write"],

@@ -26,6 +26,7 @@ import type {
   Actor as WindowActor,
   ActorMessage as WindowActorMessage,
 } from "../extension/actor";
+import { possibleTypes } from "./possibleTypes.json";
 
 loadDevMessages();
 loadErrorMessages();
@@ -36,9 +37,7 @@ const link = new SchemaLink({ schema });
 
 const cache = new InMemoryCache({
   fragments: fragmentRegistry,
-  possibleTypes: {
-    WatchedMutationError: ["SerializedError", "SerializedApolloError"],
-  },
+  possibleTypes,
   typePolicies: {
     WatchedQuery: {
       fields: {
