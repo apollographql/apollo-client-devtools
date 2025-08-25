@@ -39,14 +39,14 @@ const cache = new InMemoryCache({
   fragments: fragmentRegistry,
   possibleTypes,
   typePolicies: {
-    WatchedQuery: {
+    ClientWatchedQuery: {
       fields: {
         name(_) {
           return _ ?? "(anonymous)";
         },
       },
     },
-    WatchedMutation: {
+    ClientMutation: {
       fields: {
         name(_) {
           return _ ?? "(anonymous)";
