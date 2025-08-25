@@ -86,7 +86,7 @@ function registerClient(
   function getClientHandler() {
     const client = clientRef.deref();
     if (client) {
-      return createHandler(client) as ClientHandler<ApolloClient>;
+      return createHandler(client);
     } else {
       cleanup("CLIENT_GC");
     }
