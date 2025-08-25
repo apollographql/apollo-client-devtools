@@ -615,3 +615,63 @@ export type SerializedErrorAlertDisclosureItem_error =
   | SerializedErrorAlertDisclosureItem_error_SerializedServerError
   | SerializedErrorAlertDisclosureItem_error_SerializedServerParseError
   | SerializedErrorAlertDisclosureItem_error_SerializedUnconventionalError;
+
+type SerializedErrorAlertDisclosurePanel_error_SerializedCombinedGraphQLErrors =
+  {
+    __typename: "SerializedCombinedGraphQLErrors";
+    message: string;
+    name: string;
+    stack: string | null;
+  };
+
+type SerializedErrorAlertDisclosurePanel_error_SerializedCombinedProtocolErrors =
+  {
+    __typename: "SerializedCombinedProtocolErrors";
+    message: string;
+    name: string;
+    stack: string | null;
+  };
+
+type SerializedErrorAlertDisclosurePanel_error_SerializedError = {
+  __typename: "SerializedError";
+  message: string;
+  name: string;
+  stack: string | null;
+};
+
+type SerializedErrorAlertDisclosurePanel_error_SerializedLocalStateError = {
+  __typename: "SerializedLocalStateError";
+  message: string;
+  name: string;
+  stack: string | null;
+};
+
+type SerializedErrorAlertDisclosurePanel_error_SerializedServerError = {
+  __typename: "SerializedServerError";
+  message: string;
+  name: string;
+  stack: string | null;
+};
+
+type SerializedErrorAlertDisclosurePanel_error_SerializedServerParseError = {
+  __typename: "SerializedServerParseError";
+  message: string;
+  name: string;
+  stack: string | null;
+};
+
+type SerializedErrorAlertDisclosurePanel_error_SerializedUnconventionalError = {
+  __typename: "SerializedUnconventionalError";
+  message: string;
+  name: string;
+  stack: string | null;
+};
+
+export type SerializedErrorAlertDisclosurePanel_error =
+  | SerializedErrorAlertDisclosurePanel_error_SerializedCombinedGraphQLErrors
+  | SerializedErrorAlertDisclosurePanel_error_SerializedCombinedProtocolErrors
+  | SerializedErrorAlertDisclosurePanel_error_SerializedError
+  | SerializedErrorAlertDisclosurePanel_error_SerializedLocalStateError
+  | SerializedErrorAlertDisclosurePanel_error_SerializedServerError
+  | SerializedErrorAlertDisclosurePanel_error_SerializedServerParseError
+  | SerializedErrorAlertDisclosurePanel_error_SerializedUnconventionalError;

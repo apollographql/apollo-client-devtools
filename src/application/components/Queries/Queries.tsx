@@ -27,7 +27,7 @@ import { SearchField } from "../SearchField";
 import HighlightMatch from "../HighlightMatch";
 import { PageSpinner } from "../PageSpinner";
 import { isIgnoredError } from "../../utilities/ignoredErrors";
-import { SerializedErrorAlertDisclosureItem } from "../SerializedErrorAlertDisclosureItem";
+import { SerializedErrorAlertDisclosurePanel } from "../SerializedErrorAlertDisclosurePanel";
 
 enum QueryTabs {
   Variables = "Variables",
@@ -221,13 +221,9 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
                         error={selectedQuery.error}
                       />
                     ) : (
-                      <AlertDisclosure.Panel>
-                        <ul>
-                          <SerializedErrorAlertDisclosureItem
-                            error={selectedQuery.error}
-                          />
-                        </ul>
-                      </AlertDisclosure.Panel>
+                      <SerializedErrorAlertDisclosurePanel
+                        error={selectedQuery.error}
+                      />
                     )}
                   </AlertDisclosure>
                 )}

@@ -18,13 +18,13 @@ import { isEmpty } from "../../utilities/isEmpty";
 import { Spinner } from "../Spinner";
 import { StatusBadge } from "../StatusBadge";
 import { AlertDisclosure } from "../AlertDisclosure";
-import { SerializedErrorAlertDisclosureItem } from "../SerializedErrorAlertDisclosureItem";
 import { ApolloErrorAlertDisclosurePanel } from "../ApolloErrorAlertDisclosurePanel";
 import { useActorEvent } from "../../hooks/useActorEvent";
 import { SearchField } from "../SearchField";
 import HighlightMatch from "../HighlightMatch";
 import { PageSpinner } from "../PageSpinner";
 import { isIgnoredError } from "../../utilities/ignoredErrors";
+import { SerializedErrorAlertDisclosurePanel } from "../SerializedErrorAlertDisclosurePanel";
 
 const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
   gql`
@@ -51,7 +51,7 @@ const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
             }
             ... on ClientV4Mutation {
               error {
-                ...SerializedErrorAlertDisclosureItem_error
+                ...SerializedErrorAlertDisclosurePanel_error
               }
             }
           }
@@ -60,7 +60,6 @@ const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
     }
 
     ${ApolloErrorAlertDisclosurePanel.fragments.error}
-    ${SerializedErrorAlertDisclosureItem.fragments.error}
   `;
 
 interface MutationsProps {
@@ -186,13 +185,9 @@ export const Mutations = ({ clientId, explorerIFrame }: MutationsProps) => {
                         error={selectedMutation.error}
                       />
                     ) : (
-                      <AlertDisclosure.Panel>
-                        <ul>
-                          <SerializedErrorAlertDisclosureItem
-                            error={selectedMutation.error}
-                          />
-                        </ul>
-                      </AlertDisclosure.Panel>
+                      <SerializedErrorAlertDisclosurePanel
+                        error={selectedMutation.error}
+                      />
                     )}
                   </AlertDisclosure>
                 )}
