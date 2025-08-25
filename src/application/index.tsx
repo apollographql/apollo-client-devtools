@@ -68,6 +68,9 @@ const cache = new InMemoryCache({
       keyFields: false,
       merge: true,
     },
+    ErrorLike: {
+      keyFields: false,
+    },
     SerializedApolloError: {
       keyFields: false,
     },
