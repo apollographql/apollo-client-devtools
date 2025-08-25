@@ -29,7 +29,7 @@
     "firefox": "npm run build:dev -- --watch --env TARGET=firefox",
     "format": "prettier --write .",
     "check:format": "prettier --check .",
-    "lint": "ESLINT_USE_FLAT_CONFIG=true yarn eslint src",
+    "lint": "ESLINT_USE_FLAT_CONFIG=true eslint --max-warnings 0 src",
     "test": "jest",
     "type-check": "tsc --noEmit",
     "test:circleci": "jest --maxWorkers=2",
