@@ -350,6 +350,11 @@ export type CombinedGraphQLErrorsAlertDisclosurePanel_error = {
   }>;
 };
 
+export type CombinedProtocolErrorsAlertDisclosurePanel_error = {
+  __typename: "SerializedCombinedProtocolErrors";
+  errors: Array<{ __typename: "SerializedGraphQLError"; message: string }>;
+};
+
 export type GetMutationsVariables = Exact<{
   id: Scalars["ID"]["input"];
 }>;
@@ -428,6 +433,10 @@ export type GetMutations = {
                   message: string;
                   name: string;
                   stack: string | null;
+                  errors: Array<{
+                    __typename: "SerializedGraphQLError";
+                    message: string;
+                  }>;
                 }
               | {
                   __typename: "SerializedError";
@@ -540,6 +549,10 @@ export type GetQueries = {
                   message: string;
                   name: string;
                   stack: string | null;
+                  errors: Array<{
+                    __typename: "SerializedGraphQLError";
+                    message: string;
+                  }>;
                 }
               | {
                   __typename: "SerializedError";
@@ -658,6 +671,7 @@ type SerializedErrorAlertDisclosurePanel_error_SerializedCombinedProtocolErrors 
     message: string;
     name: string;
     stack: string | null;
+    errors: Array<{ __typename: "SerializedGraphQLError"; message: string }>;
   };
 
 type SerializedErrorAlertDisclosurePanel_error_SerializedError = {

@@ -3,6 +3,7 @@ import { fragmentRegistry } from "../fragmentRegistry";
 import { AlertDisclosure } from "./AlertDisclosure";
 import { SerializedErrorAlertDisclosureItem } from "./SerializedErrorAlertDisclosureItem";
 import { CombinedGraphQLErrorsAlertDisclosurePanel } from "./CombinedGraphQLErrorsAlertDiscloserPanel";
+import { CombinedProtocolErrorsAlertDisclosurePanel } from "./CombinedProtocolErrorsAlertDisclosurePanel";
 import type { SerializedErrorAlertDisclosurePanel_error } from "@/application/types/gql";
 
 export function SerializedErrorAlertDisclosurePanel({
@@ -12,6 +13,10 @@ export function SerializedErrorAlertDisclosurePanel({
 }) {
   if (error.__typename === "SerializedCombinedGraphQLErrors") {
     return <CombinedGraphQLErrorsAlertDisclosurePanel error={error} />;
+  }
+
+  if (error.__typename === "SerializedCombinedProtocolErrors") {
+    return <CombinedProtocolErrorsAlertDisclosurePanel error={error} />;
   }
 
   return (
@@ -26,6 +31,7 @@ export function SerializedErrorAlertDisclosurePanel({
 fragmentRegistry.register(gql`
   fragment SerializedErrorAlertDisclosurePanel_error on ErrorLike {
     ...CombinedGraphQLErrorsAlertDisclosurePanel_error
+    ...CombinedProtocolErrorsAlertDisclosurePanel_error
     ...SerializedErrorAlertDisclosureItem_error
   }
 
