@@ -1,4 +1,4 @@
-import { ErrorCodes } from "../../types";
+import type { ErrorCodes } from "@/types";
 import type { RpcClient } from "../rpc";
 
 export function loadErrorCodes(rpcClient: RpcClient, version: string) {
