@@ -49,6 +49,16 @@ export class ClientV3Handler extends ClientHandler<ApolloClient<any>> {
     }
   }
 
+  protected async executeQuery(options: {
+    query: DocumentNode;
+    variables?: JSONObject | undefined;
+    fetchPolicy?: FetchPolicy;
+  }): Promise<EmbeddedExplorerResponse> {
+    const { data, error } = await this.client.query(options);
+
+    return error ? { data, ...getErrorProperties(error) } : { data };
+  }
+
   protected watchQuery(options: {
     query: DocumentNode;
     variables: JSONObject | undefined;

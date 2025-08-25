@@ -60,9 +60,9 @@ export abstract class ClientHandler<
 
     if (operationName === "IntrospectionQuery") {
       return from(
-        this.client
-          .query({ query: document, fetchPolicy: "no-cache" })
-          .then((response) => ({ operationName, response }))
+        this.executeQuery({ query: document, fetchPolicy: "no-cache" }).then(
+          (response) => ({ operationName, response })
+        )
       );
     }
 
@@ -88,6 +88,14 @@ export abstract class ClientHandler<
       })
     ).pipe(map((response) => ({ operationName, response })));
   }
+
+  protected abstract executeQuery(options: {
+    query: DocumentNode;
+    variables?: JSONObject | undefined;
+    fetchPolicy?: FetchPolicy;
+  }): TClient extends ApolloClient4
+    ? Promise<EmbeddedExplorerResponse>
+    : Promise<EmbeddedExplorerResponse>;
 
   protected abstract watchQuery(options: {
     query: DocumentNode;
