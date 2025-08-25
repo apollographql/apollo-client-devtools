@@ -41,12 +41,8 @@ const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
             loading
             ... on ClientV3Mutation {
               error {
-                ... on SerializedError {
-                  ...SerializedErrorAlertDisclosurePanel_error
-                }
-                ... on SerializedApolloError {
-                  ...ApolloErrorAlertDisclosurePanel_error
-                }
+                ...SerializedErrorAlertDisclosurePanel_error
+                ...ApolloErrorAlertDisclosurePanel_error
               }
             }
             ... on ClientV4Mutation {
