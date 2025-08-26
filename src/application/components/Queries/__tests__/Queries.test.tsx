@@ -1,13 +1,12 @@
-import React from "react";
 import { screen, within, waitFor, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { renderWithApolloClient } from "../../../utilities/testing/renderWithApolloClient";
 import { client } from "../../../index";
 import { Queries } from "../Queries";
-import { gql, NetworkStatus } from "@apollo/client";
+import { gql, NetworkStatus } from "@apollo/client-3";
 import { print } from "graphql";
-import type { QueryDetails } from "../../../../extension/tab/helpers";
+import type { QueryV3Details } from "../../../../extension/tab/v3/types";
 import { getRpcClient } from "../../../../extension/devtools/panelRpcClient";
 import type { GetRpcClientMock } from "../../../../extension/devtools/__mocks__/panelRpcClient";
 
@@ -20,7 +19,7 @@ beforeEach(() => {
 });
 
 describe("<Queries />", () => {
-  const defaultQueries: QueryDetails[] = [
+  const defaultQueries: QueryV3Details[] = [
     {
       id: "1",
       document: gql`
@@ -43,8 +42,8 @@ describe("<Queries />", () => {
     },
   ];
 
-  function mockRpcRequests(queries: QueryDetails[] = defaultQueries) {
-    getRpcClientMock.__adapter.handleRpcRequest("getQueries", () => queries);
+  function mockRpcRequests(queries: QueryV3Details[] = defaultQueries) {
+    getRpcClientMock.__adapter.handleRpcRequest("getV3Queries", () => queries);
     getRpcClientMock.__adapter.handleRpcRequest("getClient", (id) => ({
       id,
       name: undefined,
@@ -186,7 +185,7 @@ describe("<Queries />", () => {
 
   test("can copy the query data", async () => {
     window.prompt = jest.fn();
-    const query: QueryDetails = {
+    const query: QueryV3Details = {
       id: "1",
       document: gql`
         query GetColor($hex: String!) {

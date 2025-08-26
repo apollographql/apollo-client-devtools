@@ -1,0 +1,19 @@
+{
+  "possibleTypes": {
+    "Client": ["ClientV3", "ClientV4"],
+    "ClientMutation": ["ClientV3Mutation", "ClientV4Mutation"],
+    "ClientMutations": ["ClientV3Mutations", "ClientV4Mutations"],
+    "ClientQueries": ["ClientV3Queries", "ClientV4Queries"],
+    "ClientV3MutationError": ["SerializedApolloError", "SerializedError"],
+    "ClientWatchedQuery": ["ClientV3WatchedQuery", "ClientV4WatchedQuery"],
+    "ErrorLike": [
+      "SerializedCombinedGraphQLErrors",
+      "SerializedCombinedProtocolErrors",
+      "SerializedError",
+      "SerializedLocalStateError",
+      "SerializedServerError",
+      "SerializedServerParseError",
+      "SerializedUnconventionalError"
+    ]
+  }
+}

@@ -35,11 +35,17 @@ export function runServer(
     Array.from(clients.values()).map(({ info }) => info)
   );
   handleRpc("getClient", (id) => clients.get(id)!.info);
-  handleRpc("getQueries", (id) =>
-    clients.get(id)!.rpcClient.request("getQueries", id)
+  handleRpc("getV3Queries", (id) =>
+    clients.get(id)!.rpcClient.request("getV3Queries", id)
   );
-  handleRpc("getMutations", (id) =>
-    clients.get(id)!.rpcClient.request("getMutations", id)
+  handleRpc("getV4Queries", (id) =>
+    clients.get(id)!.rpcClient.request("getV4Queries", id)
+  );
+  handleRpc("getV3Mutations", (id) =>
+    clients.get(id)!.rpcClient.request("getV3Mutations", id)
+  );
+  handleRpc("getV4Mutations", (id) =>
+    clients.get(id)!.rpcClient.request("getV4Mutations", id)
   );
   handleRpc("getCache", (id) =>
     clients.get(id)!.rpcClient.request("getCache", id)

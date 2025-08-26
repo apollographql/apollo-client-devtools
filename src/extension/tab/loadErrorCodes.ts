@@ -1,4 +1,4 @@
-import type { ErrorCodes } from "@apollo/client/invariantErrorCodes";
+import type { ErrorCodes } from "@/types";
 import type { RpcClient } from "../rpc";
 
 export function loadErrorCodes(rpcClient: RpcClient, version: string) {

@@ -1,3 +1,4 @@
+import { gte } from "semver";
 import type { Brand } from "../types/utils";
 
 const SNAPSHOT_MATCHER = /^0.0.0-pr-(?<prNumber>\d+)-(?<timestamp>\d+)$/;
@@ -26,4 +27,15 @@ export function parseSnapshotTimestamp(timestamp: string) {
       "$<year>-$<month>-$<day>T$<hour>:$<minutes>:$<seconds>.000Z"
     )
   );
+}
+
+export function getReleaseLink(version: string) {
+  if (gte(version, "4.0.0")) {
+    const tag = `@apollo/client@${version}`;
+    return `https://github.com/apollographql/apollo-client/releases/tag/${encodeURIComponent(tag)}`;
+  }
+
+  return isSnapshotRelease(version)
+    ? `https://github.com/apollographql/apollo-client/pull/${parseSnapshotRelease(version).prNumber}`
+    : `https://github.com/apollographql/apollo-client/releases/tag/v${version}`;
 }

@@ -1,14 +1,26 @@
 import React, { useState } from "react";
 import SaveIcon from "./SaveIcon";
 import cx from "classnames";
-import { useMutation } from "@apollo/client";
+import { useMutation } from "../ClientContext";
 import { GET_SAVED_COLORS } from "../queries";
 import {
   ADD_COLOR_TO_FAVORITES,
   REMOVE_COLOR_FROM_FAVORITES,
 } from "../mutations";
 
-const Color = ({ className, contrast, hexCode, name, isSaved = false }) => {
+const Color = ({
+  className,
+  contrast,
+  hexCode,
+  name,
+  isSaved = false,
+}: {
+  className?: string;
+  contrast?: string;
+  hexCode?: string;
+  name?: string;
+  isSaved?: boolean;
+}) => {
   const [saved, setSaved] = useState(isSaved);
   const variables = { color: { name, hex: hexCode, contrast } };
   const [addColor] = useMutation(ADD_COLOR_TO_FAVORITES, {
@@ -24,9 +36,11 @@ const Color = ({ className, contrast, hexCode, name, isSaved = false }) => {
     variables,
     update(cache, { data: { removeColor } }) {
       const colorToRemove = removeColor[0];
-      const { favoritedColors } = cache.readQuery({ query: GET_SAVED_COLORS });
+      const { favoritedColors } = cache.readQuery<any>({
+        query: GET_SAVED_COLORS,
+      });
       const updatedColors = favoritedColors.filter(
-        (color) => color.hex !== colorToRemove.hex
+        (color: { hex: string }) => color.hex !== colorToRemove.hex
       );
       cache.writeQuery({
         query: GET_SAVED_COLORS,

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useQuery, useLazyQuery } from "@apollo/client";
+import { useLazyQuery } from "./ClientContext";
 import { GET_RANDOM_COLOR, GET_COLOR } from "./queries";
 import Color from "./components/Color";
 import RefreshIcon from "./components/RefreshIcon";
@@ -12,7 +12,9 @@ const RandomColorQuery = () => {
   const [loadColor, { data }] = useLazyQuery(GET_COLOR);
   const randomColorHexCode = randomColorData?.random?.color?.hex;
 
-  useEffect(() => loadRandomColor(), [loadRandomColor]);
+  useEffect(() => {
+    loadRandomColor();
+  }, [loadRandomColor]);
 
   useEffect(() => {
     if (randomColorHexCode) {

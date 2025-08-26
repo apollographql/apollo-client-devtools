@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 
 import { GET_COLOR_SCHEME, GET_RANDOM_COLOR } from "./queries";
 import ColorScheme from "./components/ColorScheme";
@@ -29,7 +29,7 @@ const ColorSchemeGenerator = () => {
   });
 
   useEffect(() => {
-    function onKeyPress(e) {
+    function onKeyPress(e: KeyboardEvent) {
       if (e.keyCode === 32) {
         refetch();
       }

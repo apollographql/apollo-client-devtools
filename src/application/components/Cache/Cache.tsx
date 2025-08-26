@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 import { useState, useMemo, useSyncExternalStore } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
-import { gql, useQuery } from "@apollo/client";
+import { gql, NetworkStatus } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import IconArrowLeft from "@apollo/icons/small/IconArrowLeft.svg";
 import IconArrowRight from "@apollo/icons/small/IconArrowRight.svg";
 
@@ -64,7 +65,7 @@ export function Cache({ clientId }: CacheProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const cacheId = useSyncExternalStore(history.listen, history.getCurrent);
 
-  const { loading, data, error, startPolling, stopPolling } = useQuery(
+  const { networkStatus, data, error, startPolling, stopPolling } = useQuery(
     GET_CACHE,
     {
       variables: { id: clientId as string },
@@ -163,7 +164,7 @@ export function Cache({ clientId }: CacheProps) {
           </>
         ) : null}
 
-        {loading ? (
+        {networkStatus === NetworkStatus.loading ? (
           <PageSpinner />
         ) : cacheItem ? (
           <JSONTreeViewer

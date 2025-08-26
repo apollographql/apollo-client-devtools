@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "esnext",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -13,7 +13,8 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react",
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "types": ["vite/client"]
   },
   "include": ["src"]
 }

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
-import { useReactiveVar, gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery, useReactiveVar } from "@apollo/client/react";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { currentScreen, Screens } from "./components/Layouts/Navigation";
@@ -33,7 +34,7 @@ import {
 import { Tooltip } from "./components/Tooltip";
 import { Badge } from "./components/Badge";
 import { GitHubReleaseHoverCard } from "./components/GitHubReleaseHoverCard";
-import { isSnapshotRelease, parseSnapshotRelease } from "./utilities/github";
+import { getReleaseLink } from "./utilities/github";
 import { Select } from "./components/Select";
 import { Divider } from "./components/Divider";
 import { useActorEvent } from "./hooks/useActorEvent";
@@ -175,11 +176,7 @@ export const App = () => {
               <GitHubReleaseHoverCard version={client.version}>
                 <ExternalLink
                   className="no-underline"
-                  href={
-                    isSnapshotRelease(client.version)
-                      ? `https://github.com/apollographql/apollo-client/pull/${parseSnapshotRelease(client.version).prNumber}`
-                      : `https://github.com/apollographql/apollo-client/releases/tag/v${client.version}`
-                  }
+                  href={getReleaseLink(client.version)}
                 >
                   <Badge variant="info" className="cursor-pointer">
                     Apollo Client <span className="lowercase">v</span>

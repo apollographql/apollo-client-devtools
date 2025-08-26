@@ -14,7 +14,10 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "declaration": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "$schema": "https://json.schemastore.org/tsconfig",
   "compileOnSave": true,

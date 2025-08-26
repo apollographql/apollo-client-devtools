@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
-import { NetworkStatus, gql, useQuery } from "@apollo/client";
-import { isNetworkRequestInFlight } from "@apollo/client/core/networkStatus";
+import { NetworkStatus, gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
+import { isNetworkRequestInFlight } from "@apollo/client/utilities";
 import { List } from "../List";
 import { ListItem } from "../ListItem";
 import IconErrorSolid from "@apollo/icons/default/IconErrorSolid.svg";
@@ -26,6 +27,7 @@ import { SearchField } from "../SearchField";
 import HighlightMatch from "../HighlightMatch";
 import { PageSpinner } from "../PageSpinner";
 import { isIgnoredError } from "../../utilities/ignoredErrors";
+import { SerializedErrorAlertDisclosurePanel } from "../SerializedErrorAlertDisclosurePanel";
 
 enum QueryTabs {
   Variables = "Variables",
@@ -48,8 +50,15 @@ export const GET_QUERIES: TypedDocumentNode<GetQueries, GetQueriesVariables> =
             options
             networkStatus
             pollInterval
-            error {
-              ...ApolloErrorAlertDisclosurePanel_error
+            ... on ClientV3WatchedQuery {
+              error {
+                ...ApolloErrorAlertDisclosurePanel_error
+              }
+            }
+            ... on ClientV4WatchedQuery {
+              error {
+                ...SerializedErrorAlertDisclosurePanel_error
+              }
             }
           }
         }
@@ -72,7 +81,7 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
   const [selected, setSelected] = useState("1");
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { loading, error, data, startPolling, stopPolling } = useQuery(
+  const { error, data, startPolling, stopPolling, networkStatus } = useQuery(
     GET_QUERIES,
     {
       variables: { clientId: clientId as string },
@@ -149,7 +158,7 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
           })}
         </List>
       </SidebarLayout.Sidebar>
-      {loading ? (
+      {networkStatus === NetworkStatus.loading ? (
         <SidebarLayout.Main>
           <PageSpinner />
         </SidebarLayout.Main>
@@ -206,9 +215,16 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
                     <AlertDisclosure.Button>
                       Query completed with errors
                     </AlertDisclosure.Button>
-                    <ApolloErrorAlertDisclosurePanel
-                      error={selectedQuery.error}
-                    />
+                    {selectedQuery.error.__typename ===
+                    "SerializedApolloError" ? (
+                      <ApolloErrorAlertDisclosurePanel
+                        error={selectedQuery.error}
+                      />
+                    ) : (
+                      <SerializedErrorAlertDisclosurePanel
+                        error={selectedQuery.error}
+                      />
+                    )}
                   </AlertDisclosure>
                 )}
                 <QueryLayout.QueryString code={selectedQuery.queryString} />
@@ -274,6 +290,7 @@ const NETWORK_STATUS_LABELS: Record<NetworkStatus, string> = {
   [NetworkStatus.poll]: "Polling",
   [NetworkStatus.error]: "Error",
   [NetworkStatus.ready]: "Ready",
+  [NetworkStatus.streaming]: "Streaming",
 } as const;
 
 function getNetworkStatusLabel(networkStatus: NetworkStatus) {

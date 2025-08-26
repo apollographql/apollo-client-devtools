@@ -2,29 +2,31 @@
   "name": "colors-client",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "devDependencies": {
-    "@apollo/client": "3.11.10",
+    "@apollo/client": "4.0.0",
+    "@apollo/client-3": "npm:@apollo/client@3.13.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
     "@testing-library/user-event": "^14.5.1",
     "@types/classnames": "^2.2.10",
     "@types/jest": "^29.5.0",
     "@types/node": "^22.0.0",
-    "@types/react": "^18.0.26",
-    "@types/react-dom": "^18.0.10",
+    "@types/react": "^18.3.23",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react": "^4.5.2",
     "classnames": "^2.2.6",
     "graphql": "^16.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.0.0",
-    "react-scripts": "5.0.1",
-    "typescript": "^4.9.4"
+    "rxjs": "^7.8.2",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "vite",
+    "build": "vite build"
   },
   "eslintConfig": {
     "extends": "react-app"

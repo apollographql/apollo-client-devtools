@@ -1,18 +1,21 @@
-import type { ErrorCodes } from "@apollo/client/invariantErrorCodes";
 import type { JSONObject } from "../application/types/json";
-import type { ApolloClientInfo, NoInfer, SafeAny } from "../types";
+import type { ApolloClientInfo, ErrorCodes, NoInfer, SafeAny } from "../types";
 import { createId } from "../utils/createId";
 import { RPC_MESSAGE_TIMEOUT } from "./errorMessages";
 import { deserializeError, serializeError } from "./errorSerialization";
 import type { MessageAdapter } from "./messageAdapters";
 import { MessageType, isDevtoolsMessage } from "./messages";
-import type { MutationDetails, QueryDetails } from "./tab/helpers";
+import type { IDv3, IDv4 } from "./tab/clientHandler";
+import type { MutationV3Details, QueryV3Details } from "./tab/v3/types";
+import type { MutationV4Details, QueryV4Details } from "./tab/v4/types";
 
 export type RPCRequest = {
   getClients(): ApolloClientInfo[];
   getClient(id: string): ApolloClientInfo | null;
-  getQueries(clientId: string): QueryDetails[];
-  getMutations(clientId: string): MutationDetails[];
+  getV3Queries(clientId: IDv3): QueryV3Details[];
+  getV4Queries(clientId: IDv4): QueryV4Details[];
+  getV3Mutations(clientId: IDv3): MutationV3Details[];
+  getV4Mutations(clientId: IDv4): MutationV4Details[];
   getCache(clientId: string): JSONObject;
   getErrorCodes(version: string): Promise<ErrorCodes | undefined>;
 };

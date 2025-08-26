@@ -18,42 +18,108 @@ type Query {
   client(id: ID!): Client
 }
 
-type Client {
+interface Client {
   id: String!
   name: String
   version: String!
+  cache: Cache!
   queries: ClientQueries!
   mutations: ClientMutations!
+}
+
+interface ClientQueries {
+  total: Int!
+  items: [ClientWatchedQuery!]!
+}
+
+interface ClientMutations {
+  total: Int!
+  items: [ClientMutation!]!
+}
+
+type ClientV3 implements Client {
+  id: String!
+  name: String
+  version: String!
+  queries: ClientV3Queries!
+  mutations: ClientV3Mutations!
   cache: Cache!
 }
 
-type ClientQueries {
-  total: Int!
-  items: [WatchedQuery!]!
+type ClientV4 implements Client {
+  id: String!
+  name: String
+  version: String!
+  cache: Cache!
+  mutations: ClientV4Mutations!
+  queries: ClientV4Queries!
 }
 
-type ClientMutations {
+type ClientV3Queries implements ClientQueries {
   total: Int!
-  items: [WatchedMutation!]!
+  items: [ClientV3WatchedQuery!]!
 }
 
-type WatchedMutation {
+type ClientV4Queries implements ClientQueries {
+  total: Int!
+  items: [ClientV4WatchedQuery!]!
+}
+
+type ClientV3Mutations implements ClientMutations {
+  total: Int!
+  items: [ClientV3Mutation!]!
+}
+
+type ClientV4Mutations implements ClientMutations {
+  total: Int!
+  items: [ClientV4Mutation!]!
+}
+
+interface ClientMutation {
   id: ID!
   name: String
   mutationString: String!
   variables: Variables
   loading: Boolean!
-  error: WatchedMutationError
 }
 
-union WatchedMutationError = SerializedError | SerializedApolloError
+type ClientV3Mutation implements ClientMutation {
+  id: ID!
+  name: String
+  mutationString: String!
+  variables: Variables
+  loading: Boolean!
+  error: ClientV3MutationError
+}
 
-type WatchedQueries {
+type ClientV4Mutation implements ClientMutation {
+  id: ID!
+  name: String
+  mutationString: String!
+  variables: Variables
+  loading: Boolean!
+  error: ErrorLike
+}
+
+union ClientV3MutationError = SerializedError | SerializedApolloError
+
+type ClientV3WatchedQueries {
   count: Int!
-  queries: [WatchedQuery!]!
+  queries: [ClientV3WatchedQuery!]!
 }
 
-type WatchedQuery {
+interface ClientWatchedQuery {
+  id: ID!
+  name: String
+  queryString: String!
+  cachedData: QueryData
+  variables: Variables
+  options: QueryOptions
+  networkStatus: Int!
+  pollInterval: Int
+}
+
+type ClientV3WatchedQuery implements ClientWatchedQuery {
   id: ID!
   name: String
   queryString: String!
@@ -65,6 +131,24 @@ type WatchedQuery {
   pollInterval: Int
 }
 
+type ClientV4WatchedQuery implements ClientWatchedQuery {
+  id: ID!
+  name: String
+  queryString: String!
+  cachedData: QueryData
+  variables: Variables
+  options: QueryOptions
+  networkStatus: Int!
+  error: ErrorLike
+  pollInterval: Int
+}
+
+interface ErrorLike {
+  message: String!
+  name: String!
+  stack: String
+}
+
 type SerializedApolloError {
   message: String!
   clientErrors: [String!]!
@@ -74,7 +158,54 @@ type SerializedApolloError {
   protocolErrors: [String!]!
 }
 
-type SerializedError {
+type SerializedCombinedGraphQLErrors implements ErrorLike {
+  message: String!
+  name: String!
+  stack: String
+  errors: [SerializedGraphQLError!]!
+  data: QueryData
+  extensions: JSON
+}
+
+type SerializedCombinedProtocolErrors implements ErrorLike {
+  message: String!
+  name: String!
+  stack: String
+  errors: [SerializedGraphQLError!]!
+}
+
+type SerializedLocalStateError implements ErrorLike {
+  message: String!
+  name: String!
+  stack: String
+  path: GraphQLErrorPath
+  cause: SerializedError
+}
+
+type SerializedServerError implements ErrorLike {
+  message: String!
+  name: String!
+  stack: String
+  bodyText: String!
+  statusCode: Int!
+}
+
+type SerializedServerParseError implements ErrorLike {
+  message: String!
+  name: String!
+  stack: String
+  bodyText: String!
+  statusCode: Int!
+}
+
+type SerializedUnconventionalError implements ErrorLike {
+  message: String!
+  name: String!
+  stack: String
+  cause: JSON
+}
+
+type SerializedError implements ErrorLike {
   message: String!
   name: String!
   stack: String

@@ -2,7 +2,8 @@ import { useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import type { Reference } from "@apollo/client";
 import { loadDevMessages, loadErrorMessages } from "@apollo/client/dev";
-import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
+import { ApolloClient, InMemoryCache } from "@apollo/client";
+import { ApolloProvider } from "@apollo/client/react";
 import { SchemaLink } from "@apollo/client/link/schema";
 
 import { colorTheme, listenForThemeChange } from "./theme";
@@ -25,6 +26,7 @@ import type {
   Actor as WindowActor,
   ActorMessage as WindowActorMessage,
 } from "../extension/actor";
+import { possibleTypes } from "./possibleTypes.json";
 
 loadDevMessages();
 loadErrorMessages();
@@ -35,21 +37,19 @@ const link = new SchemaLink({ schema });
 
 const cache = new InMemoryCache({
   fragments: fragmentRegistry,
-  possibleTypes: {
-    WatchedMutationError: ["SerializedError", "SerializedApolloError"],
-  },
+  possibleTypes,
   typePolicies: {
-    WatchedQuery: {
+    ClientWatchedQuery: {
       fields: {
-        name(_) {
-          return _ ?? "(anonymous)";
+        name(name) {
+          return name ?? "(anonymous)";
         },
       },
     },
-    WatchedMutation: {
+    ClientMutation: {
       fields: {
-        name(_) {
-          return _ ?? "(anonymous)";
+        name(name) {
+          return name ?? "(anonymous)";
         },
       },
     },
@@ -67,6 +67,9 @@ const cache = new InMemoryCache({
     ClientMutations: {
       keyFields: false,
       merge: true,
+    },
+    ErrorLike: {
+      keyFields: false,
     },
     SerializedApolloError: {
       keyFields: false,

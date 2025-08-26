@@ -1,6 +1,7 @@
 import type { GraphQLFormattedError, IntrospectionQuery } from "graphql";
 
 import type { JSONValue, JSONPrimitive, JSONObject } from "../../types/json";
+import type { ObjMap } from "graphql/jsutils/ObjMap";
 export type { JSONValue, JSONPrimitive, JSONObject };
 
 export const EXPLORER_LISTENING_FOR_SCHEMA = "ExplorerListeningForSchema";
@@ -20,17 +21,30 @@ export const EMBEDDABLE_EXPLORER_URL =
 export const EXPLORER_SUBSCRIPTION_TERMINATION =
   "ExplorerSubscriptionTermination";
 
-export type ExplorerResponse = {
-  data?: JSONValue | undefined;
-  errors?: readonly GraphQLFormattedError[] | undefined;
-  error?:
-    | {
-        message: string;
-        stack?: string;
-      }
-    | undefined;
+// https://github.com/apollographql/embeddable-explorer/blob/528d3791addb56b404fd875738526f67a16e23ba/packages/explorer/src/helpers/postMessageRelayHelpers.ts#L78
+export interface ResponseData {
+  data?: Record<string, unknown> | JSONValue | ObjMap<unknown>;
+  path?: Array<string | number>;
+  errors?: readonly GraphQLFormattedError[];
+  extensions?: Record<string, any>;
+}
+
+// https://github.com/apollographql/embeddable-explorer/blob/528d3791addb56b404fd875738526f67a16e23ba/packages/explorer/src/helpers/postMessageRelayHelpers.ts#L73
+export type ResponseError = {
+  message: string;
+  stack?: string;
+};
+
+// https://github.com/apollographql/embeddable-explorer/blob/528d3791addb56b404fd875738526f67a16e23ba/packages/explorer/src/helpers/postMessageRelayHelpers.ts#L84
+export type ExplorerResponse = ResponseData & {
+  incremental?: Array<
+    ResponseData & { path: NonNullable<ResponseData["path"]> }
+  >;
+  error?: ResponseError;
   status?: number;
-  headers?: Record<string, string>;
+  headers?: Record<string, string> | Record<string, string>[];
+  hasNext?: boolean;
+  size?: number;
 };
 
 export type OutgoingMessageEvent =

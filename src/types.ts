@@ -1,11 +1,15 @@
-import type { ApolloQueryResult } from "@apollo/client";
+import type { ApolloClient as ApolloClient4 } from "@apollo/client";
+import type { ApolloClient as ApolloClient3 } from "@apollo/client-3";
+import type { ExplorerResponse as EmbeddedExplorerResponse } from "./application/components/Explorer/postMessageHelpers";
 
-export type QueryResult = ApolloQueryResult<any>;
+export type ApolloClient = ApolloClient3<any> | ApolloClient4;
 
 export interface ExplorerResponse {
   operationName: string | undefined;
-  response: QueryResult;
+  response: EmbeddedExplorerResponse;
 }
+
+export { EmbeddedExplorerResponse };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type NoInfer<T> = [T][T extends any ? 0 : never];
@@ -25,4 +29,15 @@ export interface ApolloClientInfo {
   version: string;
   queryCount: number;
   mutationCount: number;
+}
+
+// This is copied from `@apollo/client` since it is not exported
+export interface ErrorCodes {
+  [key: number]: { file: string; condition?: string; message?: string };
+}
+
+export interface SerializedError {
+  message: string;
+  name: string;
+  stack?: string;
 }

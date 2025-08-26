@@ -203,10 +203,10 @@ test("can handle multiple rpc messages", async () => {
   const handle = createRpcHandler(handlerAdapter);
 
   handle("getClient", defaultGetClient);
-  handle("getQueries", () => Promise.resolve([]));
+  handle("getV3Queries", () => Promise.resolve([]));
 
   const result = await client.request("getClient", "1");
-  const queries = await client.request("getQueries", "1");
+  const queries = await client.request("getV3Queries", "1");
 
   expect(result).toEqual(defaultGetClient("1"));
   expect(queries).toEqual([]);
@@ -310,8 +310,8 @@ test("adds a single listener regardless of active handlers", () => {
   expect(adapter.addListener).not.toHaveBeenCalled();
 
   handle("getClient", defaultGetClient);
-  handle("getQueries", () => []);
-  handle("getMutations", () => []);
+  handle("getV3Queries", () => []);
+  handle("getV3Mutations", () => []);
 
   expect(adapter.addListener).toHaveBeenCalledTimes(1);
 });
@@ -350,7 +350,7 @@ test("removes listener on adapter when unsubscribing from last handler", () => {
   const handle = createRpcHandler(adapter);
 
   const unsubscribeGetClient = handle("getClient", defaultGetClient);
-  const unsubscribeGetQueries = handle("getQueries", () => []);
+  const unsubscribeGetQueries = handle("getV3Queries", () => []);
 
   unsubscribeGetClient();
   expect(adapter.mocks.listeners.size).toBe(1);

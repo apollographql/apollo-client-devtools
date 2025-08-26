@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
-import { gql, useQuery } from "@apollo/client";
+import { gql, NetworkStatus } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { List } from "../List";
 import { ListItem } from "../ListItem";
 import IconErrorSolid from "@apollo/icons/default/IconErrorSolid.svg";
@@ -17,13 +18,13 @@ import { isEmpty } from "../../utilities/isEmpty";
 import { Spinner } from "../Spinner";
 import { StatusBadge } from "../StatusBadge";
 import { AlertDisclosure } from "../AlertDisclosure";
-import { SerializedErrorAlertDisclosureItem } from "../SerializedErrorAlertDisclosureItem";
 import { ApolloErrorAlertDisclosurePanel } from "../ApolloErrorAlertDisclosurePanel";
 import { useActorEvent } from "../../hooks/useActorEvent";
 import { SearchField } from "../SearchField";
 import HighlightMatch from "../HighlightMatch";
 import { PageSpinner } from "../PageSpinner";
 import { isIgnoredError } from "../../utilities/ignoredErrors";
+import { SerializedErrorAlertDisclosurePanel } from "../SerializedErrorAlertDisclosurePanel";
 
 const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
   gql`
@@ -38,12 +39,15 @@ const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
             mutationString
             variables
             loading
-            error {
-              ... on SerializedError {
-                ...SerializedErrorAlertDisclosureItem_error
-              }
-              ... on SerializedApolloError {
+            ... on ClientV3Mutation {
+              error {
+                ...SerializedErrorAlertDisclosurePanel_error
                 ...ApolloErrorAlertDisclosurePanel_error
+              }
+            }
+            ... on ClientV4Mutation {
+              error {
+                ...SerializedErrorAlertDisclosurePanel_error
               }
             }
           }
@@ -52,7 +56,6 @@ const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
     }
 
     ${ApolloErrorAlertDisclosurePanel.fragments.error}
-    ${SerializedErrorAlertDisclosureItem.fragments.error}
   `;
 
 interface MutationsProps {
@@ -68,7 +71,7 @@ export const Mutations = ({ clientId, explorerIFrame }: MutationsProps) => {
   const [selected, setSelected] = useState<number>(0);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { data, error, loading, startPolling, stopPolling } = useQuery(
+  const { data, error, networkStatus, startPolling, stopPolling } = useQuery(
     GET_MUTATIONS,
     {
       variables: { id: clientId as string },
@@ -139,7 +142,7 @@ export const Mutations = ({ clientId, explorerIFrame }: MutationsProps) => {
           })}
         </List>
       </SidebarLayout.Sidebar>
-      {loading ? (
+      {networkStatus === NetworkStatus.loading ? (
         <SidebarLayout.Main>
           <PageSpinner />
         </SidebarLayout.Main>
@@ -178,13 +181,9 @@ export const Mutations = ({ clientId, explorerIFrame }: MutationsProps) => {
                         error={selectedMutation.error}
                       />
                     ) : (
-                      <AlertDisclosure.Panel>
-                        <ul>
-                          <SerializedErrorAlertDisclosureItem
-                            error={selectedMutation.error}
-                          />
-                        </ul>
-                      </AlertDisclosure.Panel>
+                      <SerializedErrorAlertDisclosurePanel
+                        error={selectedMutation.error}
+                      />
                     )}
                   </AlertDisclosure>
                 )}

@@ -1,6 +1,6 @@
 import type { Language, PrismTheme } from "prism-react-renderer";
 import { Highlight } from "prism-react-renderer";
-import { useReactiveVar } from "@apollo/client";
+import { useReactiveVar } from "@apollo/client/react";
 import { colors } from "@apollo/brand";
 import { clsx } from "clsx";
 import { CopyToClipboard } from "react-copy-to-clipboard";

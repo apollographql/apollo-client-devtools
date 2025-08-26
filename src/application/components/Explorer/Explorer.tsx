@@ -1,12 +1,15 @@
 import { useMemo } from "react";
 import { useState, useEffect } from "react";
-import { Observable, useReactiveVar, NetworkStatus, gql } from "@apollo/client";
+import { Observable, gql } from "@apollo/client";
+import { useReactiveVar } from "@apollo/client/react";
 import type { IntrospectionQuery } from "graphql";
 import { getIntrospectionQuery } from "graphql/utilities";
 import { colorTheme } from "../../theme";
 import { FullWidthLayout } from "../Layouts/FullWidthLayout";
-import type { QueryResult } from "../../../types";
-import type { IncomingMessageEvent } from "./postMessageHelpers";
+import type {
+  ExplorerResponse,
+  IncomingMessageEvent,
+} from "./postMessageHelpers";
 import {
   postMessageToEmbed,
   EMBEDDABLE_EXPLORER_URL,
@@ -50,7 +53,7 @@ function executeOperation({
   isSubscription?: boolean;
   clientId: string;
 }) {
-  return new Observable<QueryResult>((observer) => {
+  return new Observable<ExplorerResponse>((observer) => {
     panelWindow.send({
       type: "explorerRequest",
       payload: {
@@ -190,10 +193,9 @@ export const Explorer = ({
       });
 
       observer.subscribe((response) => {
-        // If we have errors in the response it means we assume this was a graphql
-        // response which means we did hit a graphql endpoint but introspection
-        // was specifically disabled
-        if (response.errors) {
+        // This means this was a graphql response which means we did hit a
+        // graphql endpoint but introspection was specifically disabled
+        if (response.error || response.errors) {
           // if you can't introspect the schema, default to the last used
           // graph ref, otherwise, trigger the embed to ask the user
           // for their graph ref, and allow them to authenticate
@@ -203,8 +205,7 @@ export const Explorer = ({
           } else {
             setShowGraphRefModal("triggeredByIntrospectionFailure");
           }
-        }
-        if (response.networkStatus === NetworkStatus.error) {
+
           postMessageToEmbed({
             embeddedExplorerIFrame,
             message: {
@@ -214,13 +215,13 @@ export const Explorer = ({
             },
           });
         } else {
-          setSchema(response.data as IntrospectionQuery);
+          setSchema(response.data as unknown as IntrospectionQuery);
           // send introspected schema to embedded explorer
           postMessageToEmbed({
             embeddedExplorerIFrame,
             message: {
               name: SCHEMA_RESPONSE,
-              schema: response.data,
+              schema: response.data as unknown as IntrospectionQuery,
             },
           });
         }
@@ -253,7 +254,7 @@ export const Explorer = ({
                   ? EXPLORER_RESPONSE
                   : EXPLORER_SUBSCRIPTION_RESPONSE,
                 operationId: currentOperationId,
-                response: response,
+                response,
               },
             });
           });

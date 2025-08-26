@@ -48,21 +48,41 @@ const config: CodegenConfig = {
           Variables: "./scalars#Variables",
           QueryOptions: "./scalars#QueryOptions",
         },
-        mappers: {
-          Client: "../../types.ts#ApolloClientInfo",
-          ClientQueries: "../../types.ts#ApolloClientInfo",
-          ClientMutations: "../../types.ts#ApolloClientInfo",
-          SerializedApolloError:
-            "../../extension/tab/helpers#SerializedApolloError as RpcSerializedApolloError",
-          SerializedError:
-            "../../extension/tab/helpers#SerializedError as RpcSerializedError",
-          SerializedGraphQLError: "graphql#GraphQLFormattedError",
+        avoidOptionals: {
+          field: true,
         },
+        onlyResolveTypeForInterfaces: true,
+        mappers: {
+          Client: "@/types.ts#ApolloClientInfo",
+          ClientV3: "@/types.ts#ApolloClientInfo",
+          ClientV4: "@/types.ts#ApolloClientInfo",
+          ClientV3Queries: "@/types.ts#ApolloClientInfo",
+          ClientV4Queries: "@/types.ts#ApolloClientInfo",
+          ClientV3Mutations: "@/types.ts#ApolloClientInfo",
+          ClientV4Mutations: "@/types.ts#ApolloClientInfo",
+          SerializedApolloError:
+            "@/extension/tab/v3/types#SerializedApolloError as RpcSerializedApolloError",
+          SerializedError: "@/types#SerializedError as RpcSerializedError",
+          SerializedGraphQLError: "graphql#GraphQLFormattedError",
+          SerializedCombinedGraphQLErrors:
+            "@/extension/tab/v4/types#SerializedCombinedGraphQLErrors as RpcSerializedCombinedGraphQLErrors",
+          SerializedCombinedProtocolErrors:
+            "@/extension/tab/v4/types#SerializedCombinedProtocolErrors as RpcSerializedCombinedProtocolErrors",
+          SerializedLocalStateError:
+            "@/extension/tab/v4/types#SerializedLocalStateError as RpcSerializedLocalStateError",
+          SerializedServerError:
+            "@/extension/tab/v4/types#SerializedServerError as RpcSerializedServerError",
+          SerializedServerParseError:
+            "@/extension/tab/v4/types#SerializedServerParseError as RpcSerializedServerParseError",
+          SerializedUnconventionalError:
+            "@/extension/tab/v4/types#SerializedUnconventionalError as RpcSerializedUnconventionalError",
+        },
+        maybeValue: "T | null | undefined",
       },
       plugins: [
         {
           add: {
-            content: "/* eslint-disable @typescript-eslint/ban-types */",
+            content: "/* eslint-disable */",
           },
         },
         "typescript",
@@ -71,6 +91,10 @@ const config: CodegenConfig = {
       hooks: {
         afterOneFileWrite: ["prettier --write"],
       },
+    },
+
+    "./src/application/possibleTypes.json": {
+      plugins: ["fragment-matcher"],
     },
   },
   hooks: {

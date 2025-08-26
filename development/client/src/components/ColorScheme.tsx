@@ -1,7 +1,16 @@
 import React from "react";
 import Color from "./Color";
 
-const ColorScheme = ({ colors }) => {
+const ColorScheme = ({
+  colors,
+}: {
+  colors: Array<{
+    contrast: string;
+    hex: string;
+    name: string;
+    saved: boolean;
+  }> | null;
+}) => {
   if (!colors) {
     return null;
   }

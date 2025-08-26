@@ -44,7 +44,6 @@ export type Scalars = {
 };
 
 export type Client = {
-  __typename: "Client";
   cache: Scalars["Cache"]["output"];
   id: Scalars["String"]["output"];
   mutations: ClientMutations;
@@ -53,16 +52,137 @@ export type Client = {
   version: Scalars["String"]["output"];
 };
 
+export type ClientMutation = {
+  id: Scalars["ID"]["output"];
+  loading: Scalars["Boolean"]["output"];
+  mutationString: Scalars["String"]["output"];
+  name: Maybe<Scalars["String"]["output"]>;
+  variables: Maybe<Scalars["Variables"]["output"]>;
+};
+
 export type ClientMutations = {
-  __typename: "ClientMutations";
-  items: Array<WatchedMutation>;
+  items: Array<ClientMutation>;
   total: Scalars["Int"]["output"];
 };
 
 export type ClientQueries = {
-  __typename: "ClientQueries";
-  items: Array<WatchedQuery>;
+  items: Array<ClientWatchedQuery>;
   total: Scalars["Int"]["output"];
+};
+
+export type ClientV3 = Client & {
+  __typename: "ClientV3";
+  cache: Scalars["Cache"]["output"];
+  id: Scalars["String"]["output"];
+  mutations: ClientV3Mutations;
+  name: Maybe<Scalars["String"]["output"]>;
+  queries: ClientV3Queries;
+  version: Scalars["String"]["output"];
+};
+
+export type ClientV3Mutation = ClientMutation & {
+  __typename: "ClientV3Mutation";
+  error: Maybe<ClientV3MutationError>;
+  id: Scalars["ID"]["output"];
+  loading: Scalars["Boolean"]["output"];
+  mutationString: Scalars["String"]["output"];
+  name: Maybe<Scalars["String"]["output"]>;
+  variables: Maybe<Scalars["Variables"]["output"]>;
+};
+
+export type ClientV3MutationError = SerializedApolloError | SerializedError;
+
+export type ClientV3Mutations = ClientMutations & {
+  __typename: "ClientV3Mutations";
+  items: Array<ClientV3Mutation>;
+  total: Scalars["Int"]["output"];
+};
+
+export type ClientV3Queries = ClientQueries & {
+  __typename: "ClientV3Queries";
+  items: Array<ClientV3WatchedQuery>;
+  total: Scalars["Int"]["output"];
+};
+
+export type ClientV3WatchedQueries = {
+  __typename: "ClientV3WatchedQueries";
+  count: Scalars["Int"]["output"];
+  queries: Array<ClientV3WatchedQuery>;
+};
+
+export type ClientV3WatchedQuery = ClientWatchedQuery & {
+  __typename: "ClientV3WatchedQuery";
+  cachedData: Maybe<Scalars["QueryData"]["output"]>;
+  error: Maybe<SerializedApolloError>;
+  id: Scalars["ID"]["output"];
+  name: Maybe<Scalars["String"]["output"]>;
+  networkStatus: Scalars["Int"]["output"];
+  options: Maybe<Scalars["QueryOptions"]["output"]>;
+  pollInterval: Maybe<Scalars["Int"]["output"]>;
+  queryString: Scalars["String"]["output"];
+  variables: Maybe<Scalars["Variables"]["output"]>;
+};
+
+export type ClientV4 = Client & {
+  __typename: "ClientV4";
+  cache: Scalars["Cache"]["output"];
+  id: Scalars["String"]["output"];
+  mutations: ClientV4Mutations;
+  name: Maybe<Scalars["String"]["output"]>;
+  queries: ClientV4Queries;
+  version: Scalars["String"]["output"];
+};
+
+export type ClientV4Mutation = ClientMutation & {
+  __typename: "ClientV4Mutation";
+  error: Maybe<ErrorLike>;
+  id: Scalars["ID"]["output"];
+  loading: Scalars["Boolean"]["output"];
+  mutationString: Scalars["String"]["output"];
+  name: Maybe<Scalars["String"]["output"]>;
+  variables: Maybe<Scalars["Variables"]["output"]>;
+};
+
+export type ClientV4Mutations = ClientMutations & {
+  __typename: "ClientV4Mutations";
+  items: Array<ClientV4Mutation>;
+  total: Scalars["Int"]["output"];
+};
+
+export type ClientV4Queries = ClientQueries & {
+  __typename: "ClientV4Queries";
+  items: Array<ClientV4WatchedQuery>;
+  total: Scalars["Int"]["output"];
+};
+
+export type ClientV4WatchedQuery = ClientWatchedQuery & {
+  __typename: "ClientV4WatchedQuery";
+  cachedData: Maybe<Scalars["QueryData"]["output"]>;
+  error: Maybe<ErrorLike>;
+  id: Scalars["ID"]["output"];
+  name: Maybe<Scalars["String"]["output"]>;
+  networkStatus: Scalars["Int"]["output"];
+  options: Maybe<Scalars["QueryOptions"]["output"]>;
+  pollInterval: Maybe<Scalars["Int"]["output"]>;
+  queryString: Scalars["String"]["output"];
+  variables: Maybe<Scalars["Variables"]["output"]>;
+};
+
+export type ClientWatchedQuery = {
+  cachedData: Maybe<Scalars["QueryData"]["output"]>;
+  id: Scalars["ID"]["output"];
+  name: Maybe<Scalars["String"]["output"]>;
+  networkStatus: Scalars["Int"]["output"];
+  options: Maybe<Scalars["QueryOptions"]["output"]>;
+  pollInterval: Maybe<Scalars["Int"]["output"]>;
+  queryString: Scalars["String"]["output"];
+  variables: Maybe<Scalars["Variables"]["output"]>;
+};
+
+export type ErrorLike = {
+  message: Scalars["String"]["output"];
+  name: Scalars["String"]["output"];
+  stack: Maybe<Scalars["String"]["output"]>;
 };
 
 export type GraphQLErrorSourceLocation = {
@@ -91,7 +211,25 @@ export type SerializedApolloError = {
   protocolErrors: Array<Scalars["String"]["output"]>;
 };
 
-export type SerializedError = {
+export type SerializedCombinedGraphQLErrors = ErrorLike & {
+  __typename: "SerializedCombinedGraphQLErrors";
+  data: Maybe<Scalars["QueryData"]["output"]>;
+  errors: Array<SerializedGraphQLError>;
+  extensions: Maybe<Scalars["JSON"]["output"]>;
+  message: Scalars["String"]["output"];
+  name: Scalars["String"]["output"];
+  stack: Maybe<Scalars["String"]["output"]>;
+};
+
+export type SerializedCombinedProtocolErrors = ErrorLike & {
+  __typename: "SerializedCombinedProtocolErrors";
+  errors: Array<SerializedGraphQLError>;
+  message: Scalars["String"]["output"];
+  name: Scalars["String"]["output"];
+  stack: Maybe<Scalars["String"]["output"]>;
+};
+
+export type SerializedError = ErrorLike & {
   __typename: "SerializedError";
   message: Scalars["String"]["output"];
   name: Scalars["String"]["output"];
@@ -106,41 +244,48 @@ export type SerializedGraphQLError = {
   path: Maybe<Scalars["GraphQLErrorPath"]["output"]>;
 };
 
-export type WatchedMutation = {
-  __typename: "WatchedMutation";
-  error: Maybe<WatchedMutationError>;
-  id: Scalars["ID"]["output"];
-  loading: Scalars["Boolean"]["output"];
-  mutationString: Scalars["String"]["output"];
-  name: Maybe<Scalars["String"]["output"]>;
-  variables: Maybe<Scalars["Variables"]["output"]>;
+export type SerializedLocalStateError = ErrorLike & {
+  __typename: "SerializedLocalStateError";
+  cause: Maybe<SerializedError>;
+  message: Scalars["String"]["output"];
+  name: Scalars["String"]["output"];
+  path: Maybe<Scalars["GraphQLErrorPath"]["output"]>;
+  stack: Maybe<Scalars["String"]["output"]>;
 };
 
-export type WatchedMutationError = SerializedApolloError | SerializedError;
-
-export type WatchedQueries = {
-  __typename: "WatchedQueries";
-  count: Scalars["Int"]["output"];
-  queries: Array<WatchedQuery>;
+export type SerializedServerError = ErrorLike & {
+  __typename: "SerializedServerError";
+  bodyText: Scalars["String"]["output"];
+  message: Scalars["String"]["output"];
+  name: Scalars["String"]["output"];
+  stack: Maybe<Scalars["String"]["output"]>;
+  statusCode: Scalars["Int"]["output"];
 };
 
-export type WatchedQuery = {
-  __typename: "WatchedQuery";
-  cachedData: Maybe<Scalars["QueryData"]["output"]>;
-  error: Maybe<SerializedApolloError>;
-  id: Scalars["ID"]["output"];
-  name: Maybe<Scalars["String"]["output"]>;
-  networkStatus: Scalars["Int"]["output"];
-  options: Maybe<Scalars["QueryOptions"]["output"]>;
-  pollInterval: Maybe<Scalars["Int"]["output"]>;
-  queryString: Scalars["String"]["output"];
-  variables: Maybe<Scalars["Variables"]["output"]>;
+export type SerializedServerParseError = ErrorLike & {
+  __typename: "SerializedServerParseError";
+  bodyText: Scalars["String"]["output"];
+  message: Scalars["String"]["output"];
+  name: Scalars["String"]["output"];
+  stack: Maybe<Scalars["String"]["output"]>;
+  statusCode: Scalars["Int"]["output"];
+};
+
+export type SerializedUnconventionalError = ErrorLike & {
+  __typename: "SerializedUnconventionalError";
+  cause: Maybe<Scalars["JSON"]["output"]>;
+  message: Scalars["String"]["output"];
+  name: Scalars["String"]["output"];
+  stack: Maybe<Scalars["String"]["output"]>;
 };
 
 export type AppQueryVariables = Exact<{ [key: string]: never }>;
 
 export type AppQuery = {
-  clients: Array<{ __typename: "Client"; id: string; name: string | null }>;
+  clients: Array<
+    | { __typename: "ClientV3"; id: string; name: string | null }
+    | { __typename: "ClientV4"; id: string; name: string | null }
+  >;
 };
 
 export type ClientQueryVariables = Exact<{
@@ -148,13 +293,22 @@ export type ClientQueryVariables = Exact<{
 }>;
 
 export type ClientQuery = {
-  client: {
-    __typename: "Client";
-    id: string;
-    version: string;
-    queries: { __typename: "ClientQueries"; total: number };
-    mutations: { __typename: "ClientMutations"; total: number };
-  } | null;
+  client:
+    | {
+        __typename: "ClientV3";
+        id: string;
+        version: string;
+        queries: { __typename: "ClientV3Queries"; total: number };
+        mutations: { __typename: "ClientV3Mutations"; total: number };
+      }
+    | {
+        __typename: "ClientV4";
+        id: string;
+        version: string;
+        queries: { __typename: "ClientV4Queries"; total: number };
+        mutations: { __typename: "ClientV4Mutations"; total: number };
+      }
+    | null;
 };
 
 export type ApolloErrorAlertDisclosurePanel_error = {
@@ -180,7 +334,25 @@ export type GetCacheVariables = Exact<{
 }>;
 
 export type GetCache = {
-  client: { __typename: "Client"; id: string; cache: Cache } | null;
+  client:
+    | { __typename: "ClientV3"; id: string; cache: Cache }
+    | { __typename: "ClientV4"; id: string; cache: Cache }
+    | null;
+};
+
+export type CombinedGraphQLErrorsAlertDisclosurePanel_error = {
+  __typename: "SerializedCombinedGraphQLErrors";
+  errors: Array<{
+    __typename: "SerializedGraphQLError";
+    message: string;
+    path: GraphQLErrorPath | null;
+    extensions: JSON | null;
+  }>;
+};
+
+export type CombinedProtocolErrorsAlertDisclosurePanel_error = {
+  __typename: "SerializedCombinedProtocolErrors";
+  errors: Array<{ __typename: "SerializedGraphQLError"; message: string }>;
 };
 
 export type GetMutationsVariables = Exact<{
@@ -188,21 +360,143 @@ export type GetMutationsVariables = Exact<{
 }>;
 
 export type GetMutations = {
-  client: {
-    __typename: "Client";
-    id: string;
-    mutations: {
-      __typename: "ClientMutations";
-      total: number;
-      items: Array<{
-        __typename: "WatchedMutation";
+  client:
+    | {
+        __typename: "ClientV3";
         id: string;
-        name: string | null;
-        mutationString: string;
-        variables: Variables | null;
-        loading: boolean;
-        error:
-          | {
+        mutations: {
+          __typename: "ClientV3Mutations";
+          total: number;
+          items: Array<{
+            __typename: "ClientV3Mutation";
+            id: string;
+            name: string | null;
+            mutationString: string;
+            variables: Variables | null;
+            loading: boolean;
+            error:
+              | {
+                  __typename: "SerializedApolloError";
+                  clientErrors: Array<string>;
+                  protocolErrors: Array<string>;
+                  networkError: {
+                    __typename: "SerializedError";
+                    message: string;
+                    name: string;
+                    stack: string | null;
+                  } | null;
+                  graphQLErrors: Array<{
+                    __typename: "SerializedGraphQLError";
+                    message: string;
+                    path: GraphQLErrorPath | null;
+                    extensions: JSON | null;
+                  }>;
+                }
+              | {
+                  __typename: "SerializedError";
+                  message: string;
+                  name: string;
+                  stack: string | null;
+                }
+              | null;
+          }>;
+        };
+      }
+    | {
+        __typename: "ClientV4";
+        id: string;
+        mutations: {
+          __typename: "ClientV4Mutations";
+          total: number;
+          items: Array<{
+            __typename: "ClientV4Mutation";
+            id: string;
+            name: string | null;
+            mutationString: string;
+            variables: Variables | null;
+            loading: boolean;
+            error:
+              | {
+                  __typename: "SerializedCombinedGraphQLErrors";
+                  message: string;
+                  name: string;
+                  stack: string | null;
+                  errors: Array<{
+                    __typename: "SerializedGraphQLError";
+                    message: string;
+                    path: GraphQLErrorPath | null;
+                    extensions: JSON | null;
+                  }>;
+                }
+              | {
+                  __typename: "SerializedCombinedProtocolErrors";
+                  message: string;
+                  name: string;
+                  stack: string | null;
+                  errors: Array<{
+                    __typename: "SerializedGraphQLError";
+                    message: string;
+                  }>;
+                }
+              | {
+                  __typename: "SerializedError";
+                  message: string;
+                  name: string;
+                  stack: string | null;
+                }
+              | {
+                  __typename: "SerializedLocalStateError";
+                  message: string;
+                  name: string;
+                  stack: string | null;
+                }
+              | {
+                  __typename: "SerializedServerError";
+                  message: string;
+                  name: string;
+                  stack: string | null;
+                }
+              | {
+                  __typename: "SerializedServerParseError";
+                  message: string;
+                  name: string;
+                  stack: string | null;
+                }
+              | {
+                  __typename: "SerializedUnconventionalError";
+                  message: string;
+                  name: string;
+                  stack: string | null;
+                }
+              | null;
+          }>;
+        };
+      }
+    | null;
+};
+
+export type GetQueriesVariables = Exact<{
+  clientId: Scalars["ID"]["input"];
+}>;
+
+export type GetQueries = {
+  client:
+    | {
+        __typename: "ClientV3";
+        id: string;
+        queries: {
+          __typename: "ClientV3Queries";
+          items: Array<{
+            __typename: "ClientV3WatchedQuery";
+            id: string;
+            name: string | null;
+            queryString: string;
+            variables: Variables | null;
+            cachedData: QueryData | null;
+            options: QueryOptions | null;
+            networkStatus: number;
+            pollInterval: number | null;
+            error: {
               __typename: "SerializedApolloError";
               clientErrors: Array<string>;
               protocolErrors: Array<string>;
@@ -218,64 +512,208 @@ export type GetMutations = {
                 path: GraphQLErrorPath | null;
                 extensions: JSON | null;
               }>;
-            }
-          | {
-              __typename: "SerializedError";
-              message: string;
-              name: string;
-              stack: string | null;
-            }
-          | null;
-      }>;
-    };
-  } | null;
-};
-
-export type GetQueriesVariables = Exact<{
-  clientId: Scalars["ID"]["input"];
-}>;
-
-export type GetQueries = {
-  client: {
-    __typename: "Client";
-    id: string;
-    queries: {
-      __typename: "ClientQueries";
-      items: Array<{
-        __typename: "WatchedQuery";
-        id: string;
-        name: string | null;
-        queryString: string;
-        variables: Variables | null;
-        cachedData: QueryData | null;
-        options: QueryOptions | null;
-        networkStatus: number;
-        pollInterval: number | null;
-        error: {
-          __typename: "SerializedApolloError";
-          clientErrors: Array<string>;
-          protocolErrors: Array<string>;
-          networkError: {
-            __typename: "SerializedError";
-            message: string;
-            name: string;
-            stack: string | null;
-          } | null;
-          graphQLErrors: Array<{
-            __typename: "SerializedGraphQLError";
-            message: string;
-            path: GraphQLErrorPath | null;
-            extensions: JSON | null;
+            } | null;
           }>;
-        } | null;
-      }>;
-    };
-  } | null;
+        };
+      }
+    | {
+        __typename: "ClientV4";
+        id: string;
+        queries: {
+          __typename: "ClientV4Queries";
+          items: Array<{
+            __typename: "ClientV4WatchedQuery";
+            id: string;
+            name: string | null;
+            queryString: string;
+            variables: Variables | null;
+            cachedData: QueryData | null;
+            options: QueryOptions | null;
+            networkStatus: number;
+            pollInterval: number | null;
+            error:
+              | {
+                  __typename: "SerializedCombinedGraphQLErrors";
+                  message: string;
+                  name: string;
+                  stack: string | null;
+                  errors: Array<{
+                    __typename: "SerializedGraphQLError";
+                    message: string;
+                    path: GraphQLErrorPath | null;
+                    extensions: JSON | null;
+                  }>;
+                }
+              | {
+                  __typename: "SerializedCombinedProtocolErrors";
+                  message: string;
+                  name: string;
+                  stack: string | null;
+                  errors: Array<{
+                    __typename: "SerializedGraphQLError";
+                    message: string;
+                  }>;
+                }
+              | {
+                  __typename: "SerializedError";
+                  message: string;
+                  name: string;
+                  stack: string | null;
+                }
+              | {
+                  __typename: "SerializedLocalStateError";
+                  message: string;
+                  name: string;
+                  stack: string | null;
+                }
+              | {
+                  __typename: "SerializedServerError";
+                  message: string;
+                  name: string;
+                  stack: string | null;
+                }
+              | {
+                  __typename: "SerializedServerParseError";
+                  message: string;
+                  name: string;
+                  stack: string | null;
+                }
+              | {
+                  __typename: "SerializedUnconventionalError";
+                  message: string;
+                  name: string;
+                  stack: string | null;
+                }
+              | null;
+          }>;
+        };
+      }
+    | null;
 };
 
-export type SerializedErrorAlertDisclosureItem_error = {
+type SerializedErrorAlertDisclosureItem_error_SerializedCombinedGraphQLErrors =
+  {
+    __typename: "SerializedCombinedGraphQLErrors";
+    message: string;
+    name: string;
+    stack: string | null;
+  };
+
+type SerializedErrorAlertDisclosureItem_error_SerializedCombinedProtocolErrors =
+  {
+    __typename: "SerializedCombinedProtocolErrors";
+    message: string;
+    name: string;
+    stack: string | null;
+  };
+
+type SerializedErrorAlertDisclosureItem_error_SerializedError = {
   __typename: "SerializedError";
   message: string;
   name: string;
   stack: string | null;
 };
+
+type SerializedErrorAlertDisclosureItem_error_SerializedLocalStateError = {
+  __typename: "SerializedLocalStateError";
+  message: string;
+  name: string;
+  stack: string | null;
+};
+
+type SerializedErrorAlertDisclosureItem_error_SerializedServerError = {
+  __typename: "SerializedServerError";
+  message: string;
+  name: string;
+  stack: string | null;
+};
+
+type SerializedErrorAlertDisclosureItem_error_SerializedServerParseError = {
+  __typename: "SerializedServerParseError";
+  message: string;
+  name: string;
+  stack: string | null;
+};
+
+type SerializedErrorAlertDisclosureItem_error_SerializedUnconventionalError = {
+  __typename: "SerializedUnconventionalError";
+  message: string;
+  name: string;
+  stack: string | null;
+};
+
+export type SerializedErrorAlertDisclosureItem_error =
+  | SerializedErrorAlertDisclosureItem_error_SerializedCombinedGraphQLErrors
+  | SerializedErrorAlertDisclosureItem_error_SerializedCombinedProtocolErrors
+  | SerializedErrorAlertDisclosureItem_error_SerializedError
+  | SerializedErrorAlertDisclosureItem_error_SerializedLocalStateError
+  | SerializedErrorAlertDisclosureItem_error_SerializedServerError
+  | SerializedErrorAlertDisclosureItem_error_SerializedServerParseError
+  | SerializedErrorAlertDisclosureItem_error_SerializedUnconventionalError;
+
+type SerializedErrorAlertDisclosurePanel_error_SerializedCombinedGraphQLErrors =
+  {
+    __typename: "SerializedCombinedGraphQLErrors";
+    message: string;
+    name: string;
+    stack: string | null;
+    errors: Array<{
+      __typename: "SerializedGraphQLError";
+      message: string;
+      path: GraphQLErrorPath | null;
+      extensions: JSON | null;
+    }>;
+  };
+
+type SerializedErrorAlertDisclosurePanel_error_SerializedCombinedProtocolErrors =
+  {
+    __typename: "SerializedCombinedProtocolErrors";
+    message: string;
+    name: string;
+    stack: string | null;
+    errors: Array<{ __typename: "SerializedGraphQLError"; message: string }>;
+  };
+
+type SerializedErrorAlertDisclosurePanel_error_SerializedError = {
+  __typename: "SerializedError";
+  message: string;
+  name: string;
+  stack: string | null;
+};
+
+type SerializedErrorAlertDisclosurePanel_error_SerializedLocalStateError = {
+  __typename: "SerializedLocalStateError";
+  message: string;
+  name: string;
+  stack: string | null;
+};
+
+type SerializedErrorAlertDisclosurePanel_error_SerializedServerError = {
+  __typename: "SerializedServerError";
+  message: string;
+  name: string;
+  stack: string | null;
+};
+
+type SerializedErrorAlertDisclosurePanel_error_SerializedServerParseError = {
+  __typename: "SerializedServerParseError";
+  message: string;
+  name: string;
+  stack: string | null;
+};
+
+type SerializedErrorAlertDisclosurePanel_error_SerializedUnconventionalError = {
+  __typename: "SerializedUnconventionalError";
+  message: string;
+  name: string;
+  stack: string | null;
+};
+
+export type SerializedErrorAlertDisclosurePanel_error =
+  | SerializedErrorAlertDisclosurePanel_error_SerializedCombinedGraphQLErrors
+  | SerializedErrorAlertDisclosurePanel_error_SerializedCombinedProtocolErrors
+  | SerializedErrorAlertDisclosurePanel_error_SerializedError
+  | SerializedErrorAlertDisclosurePanel_error_SerializedLocalStateError
+  | SerializedErrorAlertDisclosurePanel_error_SerializedServerError
+  | SerializedErrorAlertDisclosurePanel_error_SerializedServerParseError
+  | SerializedErrorAlertDisclosurePanel_error_SerializedUnconventionalError;

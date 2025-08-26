@@ -8,6 +8,7 @@ import IconGitHub from "@apollo/icons/default/IconGitHubSolid.svg";
 import IconBranch from "@apollo/icons/default/IconBranch.svg";
 import type { SnapshotVersion } from "../utilities/github";
 import {
+  getReleaseLink,
   isSnapshotRelease,
   parseSnapshotRelease,
   parseSnapshotTimestamp,
@@ -15,6 +16,7 @@ import {
 import { useGitHubApi } from "../hooks/useGitHubAPI";
 import { StatusBadge } from "./StatusBadge";
 import { ExternalLink } from "./ExternalLink";
+import { gte } from "semver";
 
 interface GitHubReleaseHoverCardProps {
   children?: ReactNode;
@@ -135,8 +137,12 @@ function SnapshotCardContents({ version }: { version: SnapshotVersion }) {
 }
 
 function ReleaseCardContents({ version }: { version: string }) {
+  const tag = gte(version, "4.0.0")
+    ? `@apollo/client@${version}`
+    : `v${version}`;
+
   const currentRelease = useGitHubApi<GitHubRelease>(
-    `/repos/apollographql/apollo-client/releases/tags/v${version}`,
+    `/repos/apollographql/apollo-client/releases/tags/${tag}`,
     { cache: true }
   );
 
@@ -177,7 +183,7 @@ function ReleaseCardContents({ version }: { version: string }) {
         </div>
         <ExternalLink
           className="flex gap-1 items-center mt-2"
-          href={`https://github.com/apollographql/apollo-client/releases/tag/v${version}`}
+          href={getReleaseLink(version)}
         >
           View release in GitHub <IconOutlink className="size-3" />
         </ExternalLink>

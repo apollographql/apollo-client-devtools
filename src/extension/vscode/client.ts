@@ -1,14 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { ApolloClient } from "@apollo/client";
-import { getPrivateAccess } from "../../privateAccess";
+import type { ApolloClient } from "@/types";
 import { createActor } from "../actor";
 import { createRpcClient, createRpcHandler } from "../rpc";
-import { getQueries, getMutations } from "../tab/helpers";
+import { createHandler } from "../tab/helpers";
 import { loadErrorCodes } from "../tab/loadErrorCodes";
 import type { MessageAdapter } from "../messageAdapters";
 import { handleExplorerRequests } from "../tab/handleExplorerRequests";
 import { setMaxListeners, WeakRef, FinalizationRegistry } from "./polyfills";
 import { createId } from "../../utils/createId";
+import type { ClientHandler, IDv3, IDv4 } from "../tab/clientHandler";
+import type { ClientV3Handler } from "../tab/v3/handler";
+import type { ClientV4Handler } from "../tab/v4/handler";
+import type { MutationV3Details, QueryV3Details } from "../tab/v3/types";
+import type { MutationV4Details, QueryV4Details } from "../tab/v4/types";
 
 type Reason =
   | "WS_DISCONNECTED"
@@ -46,7 +50,7 @@ interface ApolloClientDevToolsConnection {
  * @returns {ApolloClientDevToolsConnection}
  */
 export function connectApolloClientToVSCodeDevTools(
-  client: ApolloClient<any>,
+  client: ApolloClient,
   vsCodeServerUrl:
     | ConstructorParameters<typeof WebSocket>[0]
     | ConstructorParameters<typeof WebSocket>
@@ -68,17 +72,21 @@ function makeErrorHandler(cleanup: (reason?: Reason) => void): EventListener {
 }
 
 function registerClient(
-  clientRef: WeakRef<ApolloClient<any>>,
+  clientRef: WeakRef<ApolloClient>,
   url:
     | ConstructorParameters<typeof WebSocket>[0]
     | ConstructorParameters<typeof WebSocket>
 ): ApolloClientDevToolsConnection {
   const { signal, cleanup, onCleanup } = getCleanupController();
 
-  function getClient() {
+  function getClientHandler(clientId: IDv3): ClientV3Handler | undefined;
+  function getClientHandler(clientId: IDv4): ClientV4Handler | undefined;
+  function getClientHandler(): ClientHandler<ApolloClient> | undefined;
+
+  function getClientHandler() {
     const client = clientRef.deref();
     if (client) {
-      return getPrivateAccess(client);
+      return createHandler(client);
     } else {
       cleanup("CLIENT_GC");
     }
@@ -102,27 +110,41 @@ function registerClient(
   const wsRpcClient = createRpcClient(wsAdapter);
   const wsRpcHandler = createRpcHandler(wsAdapter);
   const wsActor = createActor(wsAdapter);
-  function getQueriesForClient() {
-    return getQueries(
-      getClient()?.queryManager.getObservableQueries("active") ?? new Map()
-    );
+
+  function getQueries(clientId: IDv3): QueryV3Details[];
+  function getQueries(clientId: IDv4): QueryV4Details[];
+  function getQueries(): QueryV3Details[] | QueryV4Details[];
+
+  function getQueries() {
+    return getClientHandler()?.getQueries() ?? [];
   }
-  function getMutationsForClient() {
-    return getMutations(getClient()?.queryManager.mutationStore ?? {});
+
+  function getMutations(clientId: IDv3): MutationV3Details[];
+  function getMutations(clientId: IDv4): MutationV4Details[];
+  function getMutations(): MutationV3Details[] | MutationV4Details[];
+
+  function getMutations() {
+    return getClientHandler()?.getMutations() ?? [];
   }
-  wsRpcHandler("getQueries", getQueriesForClient, { signal });
-  wsRpcHandler("getMutations", getMutationsForClient, { signal });
-  wsRpcHandler("getCache", () => getClient()?.cache.extract(true) ?? {}, {
-    signal,
-  });
-  handleExplorerRequests(wsActor, getClient, { signal });
+
+  wsRpcHandler("getV3Queries", getQueries, { signal });
+  wsRpcHandler("getV4Queries", getQueries, { signal });
+  wsRpcHandler("getV3Mutations", getMutations, { signal });
+  wsRpcHandler("getV4Mutations", getMutations, { signal });
+  wsRpcHandler(
+    "getCache",
+    () => getClientHandler()?.getClient().cache.extract(true) ?? {},
+    { signal }
+  );
+  handleExplorerRequests(wsActor, getClientHandler, { signal });
 
   const id = createId();
 
   ws.addEventListener(
     "open",
     function open() {
-      const client = getClient();
+      const handler = getClientHandler();
+      const client = handler?.getClient();
       if (!client) {
         return;
       }
@@ -133,8 +155,8 @@ function registerClient(
           name:
             "devtoolsConfig" in client ? client.devtoolsConfig.name : undefined,
           version: client.version,
-          queryCount: getQueriesForClient().length,
-          mutationCount: getMutationsForClient().length,
+          queryCount: getQueries().length,
+          mutationCount: getMutations().length,
         },
       });
       loadErrorCodes(wsRpcClient, client.version);
