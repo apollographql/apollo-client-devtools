@@ -1,5 +1,15 @@
 # Changelog
 
+## 4.20.0
+
+### Minor Changes
+
+- [#1693](https://github.com/apollographql/apollo-client-devtools/pull/1693) [`bd953e0`](https://github.com/apollographql/apollo-client-devtools/commit/bd953e0e66ad37eb57a7c3e2297ea5583534a538) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Add support for `@apollo/client` 4.0.
+
+### Patch Changes
+
+- [#1693](https://github.com/apollographql/apollo-client-devtools/pull/1693) [`bd953e0`](https://github.com/apollographql/apollo-client-devtools/commit/bd953e0e66ad37eb57a7c3e2297ea5583534a538) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Ensure `SerializedApolloError.graphqlErrors` falls back to an empty array if its value is set to `null` to prevent GraphQL errors.
+
 ## 4.19.13
 
 ### Patch Changes
