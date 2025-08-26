@@ -9,7 +9,8 @@ import type {
 // Note that we are intentionally not using Apollo Client's gql and
 // Observable exports, as we don't want Apollo Client and its dependencies
 // to be loaded into each browser tab, when this hook triggered.
-import Observable from "zen-observable";
+import type ZenObservable from "zen-observable";
+import { catchError, map, Observable, of } from "rxjs";
 import { isApolloError, type ApolloClient } from "@apollo/client-3";
 import type { FetchPolicy } from "../clientHandler";
 import { ClientHandler } from "../clientHandler";
@@ -64,21 +65,10 @@ export class ClientV3Handler extends ClientHandler<ApolloClient<any>> {
     variables: JSONObject | undefined;
     fetchPolicy: FetchPolicy;
   }): Observable<ExplorerResponse["response"]> {
-    return new Observable((observer) => {
-      const subscription = this.client
-        .watchQuery(options)
-        .map(toExplorerResponse)
-        .subscribe({
-          next: observer.next.bind(observer),
-          complete: observer.complete.bind(observer),
-          error: (error: ApolloError) => {
-            observer.next(getErrorProperties(error));
-            observer.complete();
-          },
-        });
-
-      return () => subscription.unsubscribe();
-    });
+    return toRxjsObservable(this.client.watchQuery(options)).pipe(
+      map(toExplorerResponse),
+      catchError((error: ApolloError) => of(getErrorProperties(error)))
+    );
   }
 
   protected executeSubscription({
@@ -88,26 +78,17 @@ export class ClientV3Handler extends ClientHandler<ApolloClient<any>> {
     subscription: DocumentNode;
     variables: JSONObject | undefined;
   }): Observable<EmbeddedExplorerResponse> {
-    return new Observable((observer) => {
-      const sub = this.client
-        .subscribe({ query: subscription, variables })
-        .map(
-          (result): EmbeddedExplorerResponse => ({
-            data: result.data,
-            errors: result.errors,
-          })
-        )
-        .subscribe({
-          next: observer.next.bind(observer),
-          complete: observer.complete.bind(observer),
-          error: (error: ApolloError) => {
-            observer.next(getErrorProperties(error));
-            observer.complete();
-          },
-        });
-
-      return () => sub.unsubscribe();
-    });
+    return toRxjsObservable(
+      this.client.subscribe({ query: subscription, variables })
+    ).pipe(
+      map(
+        (result): EmbeddedExplorerResponse => ({
+          data: result.data,
+          errors: result.errors,
+        })
+      ),
+      catchError((error: ApolloError) => of(getErrorProperties(error)))
+    );
   }
 
   getMutations(): MutationV3Details[] {
@@ -295,4 +276,12 @@ function toExplorerResponse({
   error,
 }: ApolloQueryResult<any>): EmbeddedExplorerResponse {
   return { data, ...getErrorProperties(error) };
+}
+
+function toRxjsObservable<T>(inner: ZenObservable<T>): Observable<T> {
+  return new Observable((observer) => {
+    const subscription = inner.subscribe(observer);
+
+    return () => subscription.unsubscribe();
+  });
 }

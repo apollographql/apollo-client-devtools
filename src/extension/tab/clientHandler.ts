@@ -1,12 +1,8 @@
 import type {
   ApolloClient as ApolloClient4,
   DocumentNode,
-  Observable as ObservableV4,
 } from "@apollo/client";
-import type {
-  ApolloClient as ApolloClient3,
-  Observable as ObservableV3,
-} from "@apollo/client-3";
+import type { ApolloClient as ApolloClient3 } from "@apollo/client-3";
 import type { WithPrivateAccess } from "@/privateAccess";
 import { getPrivateAccess } from "@/privateAccess";
 import { createId } from "../../utils/createId";
@@ -14,7 +10,7 @@ import type { MutationV3Details, QueryV3Details } from "./v3/types";
 import type { MutationV4Details, QueryV4Details } from "./v4/types";
 import type { ActorMessage } from "../actor";
 import type { EmbeddedExplorerResponse, ExplorerResponse } from "@/types";
-import { Observable } from "rxjs";
+import type { Observable } from "rxjs";
 import { EMPTY, from, map } from "rxjs";
 import { filterDocumentForOperation } from "@/utils/graphql";
 import { getOperationDefinition } from "@apollo/client/utilities/internal";
@@ -75,49 +71,40 @@ export abstract class ClientHandler<
     }
 
     if (definition.operation === OperationTypeNode.SUBSCRIPTION) {
-      return wrapObservable(
-        this.executeSubscription({ subscription: document, variables })
-      ).pipe(map((response) => ({ operationName, response })));
+      return this.executeSubscription({
+        subscription: document,
+        variables,
+      }).pipe(map((response) => ({ operationName, response })));
     }
 
-    return wrapObservable(
-      this.watchQuery({
-        query: document,
-        variables,
-        fetchPolicy: payload.fetchPolicy,
-      })
-    ).pipe(map((response) => ({ operationName, response })));
+    return this.watchQuery({
+      query: document,
+      variables,
+      fetchPolicy: payload.fetchPolicy,
+    }).pipe(map((response) => ({ operationName, response })));
   }
 
   protected abstract executeQuery(options: {
     query: DocumentNode;
     variables?: JSONObject | undefined;
     fetchPolicy?: FetchPolicy;
-  }): TClient extends ApolloClient4
-    ? Promise<EmbeddedExplorerResponse>
-    : Promise<EmbeddedExplorerResponse>;
+  }): Promise<EmbeddedExplorerResponse>;
 
   protected abstract watchQuery(options: {
     query: DocumentNode;
     variables: JSONObject | undefined;
     fetchPolicy: FetchPolicy;
-  }): TClient extends ApolloClient4
-    ? ObservableV4<EmbeddedExplorerResponse>
-    : ObservableV3<EmbeddedExplorerResponse>;
+  }): Observable<EmbeddedExplorerResponse>;
 
   protected abstract executeMutation(options: {
     mutation: DocumentNode;
     variables: JSONObject | undefined;
-  }): TClient extends ApolloClient4
-    ? Promise<EmbeddedExplorerResponse>
-    : Promise<EmbeddedExplorerResponse>;
+  }): Promise<EmbeddedExplorerResponse>;
 
   protected abstract executeSubscription(options: {
     subscription: DocumentNode;
     variables: JSONObject | undefined;
-  }): TClient extends ApolloClient4
-    ? ObservableV4<EmbeddedExplorerResponse>
-    : ObservableV3<EmbeddedExplorerResponse>;
+  }): Observable<EmbeddedExplorerResponse>;
 
   abstract getMutations(): TClient extends ApolloClient3<any>
     ? MutationV3Details[]
@@ -126,14 +113,4 @@ export abstract class ClientHandler<
   abstract getQueries(): TClient extends ApolloClient3<any>
     ? QueryV3Details[]
     : QueryV4Details[];
-}
-
-function wrapObservable<T>(
-  inner: ObservableV3<T> | ObservableV4<T>
-): Observable<T> {
-  return new Observable((observer) => {
-    const subscription = inner.subscribe(observer);
-
-    return () => subscription.unsubscribe();
-  });
 }
