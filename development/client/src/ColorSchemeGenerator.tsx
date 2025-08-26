@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useQuery } from "./ClientContext";
+import { useQuery } from "@apollo/client/react";
 
 import { GET_COLOR_SCHEME, GET_RANDOM_COLOR } from "./queries";
 import ColorScheme from "./components/ColorScheme";
