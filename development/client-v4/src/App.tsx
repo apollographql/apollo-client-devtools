@@ -88,10 +88,10 @@ function App() {
               </button>
               <button
                 onClick={() =>
-                  setClients((c) => [...c, createApolloClient4Provider()])
+                  setClients((c) => [...c, createApolloClient3Provider()])
                 }
               >
-                Add anonymous client (AC4)
+                Add anonymous client (AC3)
               </button>
               <button
                 onClick={() =>
