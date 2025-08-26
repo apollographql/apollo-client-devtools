@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useLazyQuery } from "@apollo/client/react";
+import { useLazyQuery } from "./ClientContext";
 import { GET_COLOR } from "./queries";
 import Color from "./components/Color";
 

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useQuery, useLazyQuery } from "@apollo/client/react";
+import { useLazyQuery } from "./ClientContext";
 import { GET_RANDOM_COLOR, GET_COLOR } from "./queries";
 import Color from "./components/Color";
 import RefreshIcon from "./components/RefreshIcon";
