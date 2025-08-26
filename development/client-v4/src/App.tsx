@@ -1,20 +1,20 @@
 import React, { useState } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import type { Reference } from "@apollo/client";
-import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client";
-import { Defer20220824Handler } from "@apollo/client/incremental";
-import { makeReference } from "@apollo/client/utilities/internal";
-import { ApolloProvider } from "@apollo/client/react";
 import ColorSchemeGenerator from "./ColorSchemeGenerator";
 import Favorites from "./Favorites";
 import ColorLookup from "./ColorLookup";
 import "./App.css";
-import { LocalState } from "@apollo/client/local-state";
+import { createApolloClient4Provider } from "./createApolloClient4Provider";
+import { createApolloClient3Provider } from "./createApolloClient3Provider";
 
 function App() {
-  const [clients, setClients] = useState(() => [createClient("Root client")]);
+  const [clients, setClients] = useState<
+    Array<
+      | ReturnType<typeof createApolloClient3Provider>
+      | ReturnType<typeof createApolloClient4Provider>
+    >
+  >(() => [createApolloClient4Provider("Root client")]);
   const [selectedClientIndex, setSelectedClientIndex] = useState(0);
-  let client = clients[selectedClientIndex];
 
   if (clients.length === 0) {
     return (
@@ -22,22 +22,29 @@ function App() {
         <h1>Client was terminated</h1>
         <button
           onClick={() => {
-            setClients([createClient("Root client")]);
+            setClients([createApolloClient3Provider("Root client")]);
           }}
         >
-          Recreate client
+          Recreate client (AC3)
+        </button>
+        <button
+          onClick={() => {
+            setClients([createApolloClient4Provider("Root client")]);
+          }}
+        >
+          Recreate client (AC4)
         </button>
       </div>
     );
   }
-
+  let { client, Provider } = clients[selectedClientIndex];
   if (!client) {
     setSelectedClientIndex(0);
-    client = clients[0];
+    ({ client, Provider } = clients[0]);
   }
 
   return (
-    <ApolloProvider client={client}>
+    <Provider>
       <BrowserRouter>
         <div className="App">
           <header style={{ display: "flex" }}>
@@ -50,7 +57,7 @@ function App() {
             </nav>
             <div style={{ display: "flex", gap: "1rem" }}>
               <select
-                value={clients.indexOf(client)}
+                value={clients.findIndex(({ client: c }) => c === client)}
                 onChange={(e) => setSelectedClientIndex(Number(e.target.value))}
               >
                 {clients.map((_, index) => (
@@ -63,21 +70,48 @@ function App() {
                 onClick={() =>
                   setClients((c) => [
                     ...c,
-                    createClient(`Added client ${c.length}`),
+                    createApolloClient3Provider(`Added client ${c.length}`),
                   ])
                 }
               >
-                Add client
+                Add AC3
               </button>
-              <button onClick={() => setClients((c) => [...c, createClient()])}>
-                Add anonymous client
+              <button
+                onClick={() =>
+                  setClients((c) => [
+                    ...c,
+                    createApolloClient4Provider(`Added client ${c.length}`),
+                  ])
+                }
+              >
+                Add AC4
+              </button>
+              <button
+                onClick={() =>
+                  setClients((c) => [...c, createApolloClient4Provider()])
+                }
+              >
+                Add anonymous client (AC4)
+              </button>
+              <button
+                onClick={() =>
+                  setClients((c) => [...c, createApolloClient4Provider()])
+                }
+              >
+                Add anonymous client (AC4)
               </button>
               <button
                 onClick={() => {
                   client.stop();
                   setClients((c) => [
                     ...c.slice(0, selectedClientIndex),
-                    createClient(`Recreated client ${selectedClientIndex}`),
+                    client instanceof createApolloClient3Provider.ClientClass
+                      ? createApolloClient3Provider(
+                          `Recreated AC3 ${selectedClientIndex}`
+                        )
+                      : createApolloClient4Provider(
+                          `Recreated AC4 ${selectedClientIndex}`
+                        ),
                     ...c.slice(selectedClientIndex + 1),
                   ]);
                 }}
@@ -87,7 +121,9 @@ function App() {
               <button
                 onClick={() => {
                   client.stop();
-                  setClients((clients) => clients.filter((c) => c !== client));
+                  setClients((clients) =>
+                    clients.filter(({ client: c }) => c !== client)
+                  );
                   setSelectedClientIndex(0);
                 }}
               >
@@ -104,45 +140,8 @@ function App() {
           </main>
         </div>
       </BrowserRouter>
-    </ApolloProvider>
+    </Provider>
   );
-}
-
-function createClient(name?: string) {
-  return new ApolloClient({
-    cache: new InMemoryCache({
-      typePolicies: {
-        Color: {
-          keyFields: ["hex"],
-          fields: {
-            saved: {
-              read(_, { readField }) {
-                const hex = readField("hex");
-                const favoritedColors: ReadonlyArray<{
-                  favoritedColors?: Reference[];
-                }> =
-                  readField("favoritedColors", makeReference("ROOT_QUERY")) ??
-                  [];
-                return favoritedColors.some((colorRef) => {
-                  return hex === readField("hex", colorRef);
-                });
-              },
-            },
-          },
-        },
-      },
-    }),
-
-    link: new HttpLink({ uri: "http://localhost:4000" }),
-    localState: new LocalState(),
-
-    devtools: {
-      enabled: true,
-      name,
-    },
-
-    incrementalHandler: new Defer20220824Handler(),
-  });
 }
 
 export default App;

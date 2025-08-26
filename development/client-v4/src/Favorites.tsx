@@ -1,11 +1,10 @@
 import React from "react";
-import { useQuery } from "@apollo/client/react";
+import { useQuery } from "./ClientContext";
 import { GET_SAVED_COLORS } from "./queries";
 import Color from "./components/Color";
 
 const Favorites = () => {
   const { data, loading } = useQuery(GET_SAVED_COLORS);
-
   if (loading) {
     return null;
   }
