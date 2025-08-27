@@ -75,3 +75,7 @@ export interface SerializedServerParseError extends SerializedError {
 export interface SerializedUnconventionalError extends SerializedError {
   cause: JSONValue | undefined;
 }
+
+export type MemoryInternalsV4 = ReturnType<
+  NonNullable<ApolloClient["getMemoryInternals"]>
+>;

@@ -97,7 +97,11 @@ handleRpc("getCache", (clientId) => {
   return (getClientById(clientId)?.cache.extract(true) as JSONObject) ?? {};
 });
 
-handleRpc("getMemoryInternals", (clientId) => {
+handleRpc("getV3MemoryInternals", (clientId) => {
+  return getClientById(clientId)?.getMemoryInternals?.();
+});
+
+handleRpc("getV4MemoryInternals", (clientId) => {
   return getClientById(clientId)?.getMemoryInternals?.();
 });
 

@@ -41,7 +41,3 @@ export interface SerializedError {
   name: string;
   stack?: string;
 }
-
-export type MemoryInternals = ReturnType<
-  NonNullable<ApolloClient["getMemoryInternals"]>
->;

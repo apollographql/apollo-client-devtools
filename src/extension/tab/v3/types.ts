@@ -1,4 +1,5 @@
 import type {
+  ApolloClient,
   ApolloError,
   NetworkStatus,
   OperationVariables,
@@ -53,3 +54,7 @@ export type QueryV3Options = Pick<
   | "refetchWritePolicy"
   | "notifyOnNetworkStatusChange"
 > & { nextFetchPolicy?: string };
+
+export type MemoryInternalsV3 = ReturnType<
+  NonNullable<ApolloClient<any>["getMemoryInternals"]>
+>;
