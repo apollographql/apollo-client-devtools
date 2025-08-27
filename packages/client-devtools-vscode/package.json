@@ -30,11 +30,14 @@
     "LICENSE.md",
     "README.md"
   ],
+  "sideEffects": false,
   "peerDependencies": {
-    "@apollo/client": "^3.4.0 || ^4.0.0"
+    "@apollo/client": "^3.4.0 || ^4.0.0",
+    "graphql": "^16.0.0",
+    "rxjs": "^7.3.0"
   },
   "dependencies": {
-    "zen-observable": "^0.10.0"
+    "semver": "^7.7.2"
   },
   "scripts": {
     "clean": "git clean -Xf .",

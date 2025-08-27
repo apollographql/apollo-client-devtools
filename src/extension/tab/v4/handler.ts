@@ -1,4 +1,4 @@
-import {
+import type {
   CombinedGraphQLErrors,
   CombinedProtocolErrors,
   LocalStateError,
@@ -9,10 +9,9 @@ import type {
   ErrorLike,
   ObservableQuery,
 } from "@apollo/client";
-import { UnconventionalError } from "@apollo/client";
-import { ServerParseError } from "@apollo/client";
-import { ServerError } from "@apollo/client";
-import { isPlainObject } from "@apollo/client/utilities/internal";
+import type { UnconventionalError } from "@apollo/client";
+import type { ServerParseError } from "@apollo/client";
+import type { ServerError } from "@apollo/client";
 import type { FetchPolicy } from "../clientHandler";
 import { ClientHandler } from "../clientHandler";
 import type {
@@ -25,7 +24,6 @@ import type {
   SerializedUnconventionalError,
 } from "./types";
 import type { EmbeddedExplorerResponse, SerializedError } from "@/types";
-import { isErrorLike } from "@apollo/client/errors";
 import type { JSONObject, JSONValue } from "@/application/types/json";
 // Note that we are intentionally not using Apollo Client's gql and
 // Observable exports, as we don't want Apollo Client and its dependencies
@@ -34,6 +32,37 @@ import type { Observable } from "rxjs";
 import { filter, map } from "rxjs";
 import { getPrivateAccess } from "@/privateAccess";
 import { pick } from "@/application/utilities/pick";
+import { isPlainObject } from "@/utils/isPlainObject";
+
+type BrandedErrors = {
+  UnconventionalError: UnconventionalError;
+  ServerParseError: ServerParseError;
+  ServerError: ServerError;
+  CombinedGraphQLErrors: CombinedGraphQLErrors;
+  CombinedProtocolErrors: CombinedProtocolErrors;
+  LocalStateError: LocalStateError;
+};
+
+function isBranded<T extends keyof BrandedErrors>(
+  error: unknown,
+  name: T
+): error is BrandedErrors[T] {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    (error as any)[Symbol.for("apollo.error")] === name
+  );
+}
+function isErrorLike(error: unknown): error is ErrorLike {
+  return (
+    error !== null &&
+    typeof error === "object" &&
+    typeof (error as ErrorLike).message === "string" &&
+    typeof (error as ErrorLike).name === "string" &&
+    (typeof (error as ErrorLike).stack === "string" ||
+      typeof (error as ErrorLike).stack === "undefined")
+  );
+}
 
 export class ClientV4Handler extends ClientHandler<ApolloClient> {
   protected async executeMutation(options: {
@@ -172,27 +201,27 @@ function getQueryOptions(observableQuery: ObservableQuery) {
 }
 
 function serializeError(error: ErrorLike) {
-  if (CombinedGraphQLErrors.is(error)) {
+  if (isBranded(error, "CombinedGraphQLErrors")) {
     return serializeCombinedGraphQLErrors(error);
   }
 
-  if (CombinedProtocolErrors.is(error)) {
+  if (isBranded(error, "CombinedProtocolErrors")) {
     return serializeCombinedProtocolErrors(error);
   }
 
-  if (LocalStateError.is(error)) {
+  if (isBranded(error, "LocalStateError")) {
     return serializeLocalStateError(error);
   }
 
-  if (ServerError.is(error)) {
+  if (isBranded(error, "ServerError")) {
     return serializeServerError(error);
   }
 
-  if (ServerParseError.is(error)) {
+  if (isBranded(error, "ServerParseError")) {
     return serializeServerParseError(error);
   }
 
-  if (UnconventionalError.is(error)) {
+  if (isBranded(error, "UnconventionalError")) {
     return serializeUnconventionalError(error);
   }
 
@@ -301,7 +330,7 @@ function serializeUnknownError(
 }
 
 function getErrorProperties(error: unknown): EmbeddedExplorerResponse {
-  if (CombinedGraphQLErrors.is(error)) {
+  if (isBranded(error, "CombinedGraphQLErrors")) {
     return {
       data: error.data,
       error,

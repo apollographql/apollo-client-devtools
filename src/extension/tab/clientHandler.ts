@@ -13,9 +13,9 @@ import type { EmbeddedExplorerResponse, ExplorerResponse } from "@/types";
 import type { Observable } from "rxjs";
 import { EMPTY, from, map } from "rxjs";
 import { filterDocumentForOperation } from "@/utils/graphql";
-import { getOperationDefinition } from "@apollo/client/utilities/internal";
 import { OperationTypeNode } from "graphql";
 import type { JSONObject } from "@/application/types/json";
+import { getOperationDefinition } from "@/utils/getOperationDefinition";
 
 export type IDv3 = string & { __version?: "v3" };
 export type IDv4 = string & { __version?: "v4" };

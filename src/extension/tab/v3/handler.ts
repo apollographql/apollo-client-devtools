@@ -11,7 +11,7 @@ import type {
 // to be loaded into each browser tab, when this hook triggered.
 import type ZenObservable from "zen-observable";
 import { catchError, map, Observable, of } from "rxjs";
-import { isApolloError, type ApolloClient } from "@apollo/client-3";
+import { type ApolloClient } from "@apollo/client-3";
 import type { FetchPolicy } from "../clientHandler";
 import { ClientHandler } from "../clientHandler";
 import type {
@@ -25,6 +25,11 @@ import { getPrivateAccess } from "@/privateAccess";
 import type { OperationVariables } from "@apollo/client";
 import type { EmbeddedExplorerResponse, ExplorerResponse } from "@/types";
 import type { JSONObject } from "@/application/types/json";
+
+// inlined to prevent a direct dependency on AC3 from `@apollo/client-devtools-vscode`
+function isApolloError(err: unknown): err is ApolloError {
+  return !!err && Object.hasOwn(err, "graphQLErrors");
+}
 
 export class ClientV3Handler extends ClientHandler<ApolloClient<any>> {
   protected async executeMutation(options: {
