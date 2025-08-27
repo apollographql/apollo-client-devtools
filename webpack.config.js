@@ -7,6 +7,12 @@ import { StatsWriterPlugin } from "webpack-stats-plugin";
 import webpack from "webpack";
 import packageJson from "./package.json" with { type: "json" };
 
+import vscodeClientPkg from "./packages/client-devtools-vscode/package.json" with { type: "json" };
+
+const validExternals = Object.keys(vscodeClientPkg.dependencies).concat(
+  Object.keys(vscodeClientPkg.peerDependencies)
+);
+
 const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
 const WEB_EXT_TARGETS = {
@@ -194,13 +200,29 @@ export default /** @returns {import("webpack").Configuration} */ (env) => {
               },
             },
             externals: function (ctx, callback) {
-              if (ctx.request.startsWith(".")) {
+              if (ctx.request.startsWith(".") || ctx.request.startsWith("@/")) {
+                // inline
                 return callback();
               }
-              if (ctx.request.startsWith("@apollo/client")) {
-                return callback(null, ctx.request + "/index.js", "module");
+              if (ctx.request.startsWith("@apollo/client-3")) {
+                throw new Error(
+                  "Introducing a runtime dependency on AC3 should be avoided. Please inline any required code instead. Tried to import " +
+                    ctx.request
+                );
               }
-              callback(null, ctx.request, "module");
+              if (ctx.request.startsWith("@apollo/client")) {
+                throw new Error(
+                  "Introducing a runtime dependency on AC4 should be avoided. Please inline any required code instead. Tried to import " +
+                    ctx.request
+                );
+              }
+              if (validExternals.includes(ctx.request)) {
+                // treat as external
+                return callback(null, ctx.request, "module");
+              }
+              throw new Error(
+                `Invalid external import: ${ctx.request}. Valid externals are: ${validExternals.join(",")}`
+              );
             },
             experiments: {
               outputModule: true,
