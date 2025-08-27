@@ -1,5 +1,6 @@
 import type { TypedDocumentNode } from "@apollo/client";
-import { gql, NetworkStatus, useQuery } from "@apollo/client";
+import { gql, NetworkStatus } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import IconOutlink from "@apollo/icons/default/IconOutlink.svg";
 import IconOperations from "@apollo/icons/default/IconOperations.svg";
 import IconObserve from "@apollo/icons/default/IconObserve.svg";
