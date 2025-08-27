@@ -147,6 +147,7 @@ type ClientV3MemoryInternalsCaches implements MemoryInternalsCaches {
 }
 
 type ClientV4MemoryInternalsCaches implements MemoryInternalsCaches {
+  checkDocument: CacheSize!
   print: CacheSize!
   canonicalStringify: CacheSize!
   links: [LinkCacheSize!]!

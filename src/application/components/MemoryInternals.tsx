@@ -45,6 +45,11 @@ const MEMORY_INTERNALS_QUERY: TypedDocumentNode<
               ...CacheSizeFields
             }
           }
+          ... on ClientV4MemoryInternalsCaches {
+            checkDocument {
+              ...CacheSizeFields
+            }
+          }
           canonicalStringify {
             ...CacheSizeFields
           }
@@ -226,6 +231,9 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
         {selectedView === "chart" ? (
           <div className="grid grid-cols-1 md:flex md:flex-wrap gap-4">
             <CacheSize cacheSize={caches.cache.fragmentQueryDocuments} />
+            {"checkDocument" in caches && (
+              <CacheSize cacheSize={caches.checkDocument} />
+            )}
             <CacheSize
               cacheSize={caches.fragmentRegistry.findFragmentSpreads}
             />

@@ -72,9 +72,14 @@ function createResolvers(client: RpcClient): Resolvers {
           return null;
         }
 
+        const { limits } = memoryInternals;
+
         return {
           raw: memoryInternals,
-          caches: formatMemoryInternalsCaches(memoryInternals),
+          caches: {
+            ...formatMemoryInternalsCaches(memoryInternals),
+            checkDocument: getCacheSize("checkDocument", undefined, limits),
+          },
         };
       },
     },
