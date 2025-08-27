@@ -5,6 +5,8 @@ import type {
   Resolvers,
   PersistedQueryLinkCacheSizes,
   RemoveTypenameFromVariablesLinkCacheSizes,
+  ClientV3MemoryInternalsCaches,
+  ClientV4MemoryInternalsCaches,
 } from "./types/resolvers";
 import { getOperationName } from "@apollo/client/utilities/internal";
 import { print } from "graphql";
@@ -36,90 +38,7 @@ function createResolvers(client: RpcClient): Resolvers {
       mutations: (client) => client,
       memoryInternals: async (client) => {
         const memoryInternals = await rpcClient.request(
-          "getMemoryInternals",
-          client.id
-        );
-
-        if (!memoryInternals) {
-          return null;
-        }
-
-        const sizes = memoryInternals.sizes;
-        const limits = memoryInternals.limits;
-
-        return {
-          raw: memoryInternals,
-          caches: {
-            print: getCacheSize(sizes.print, limits.print),
-            parser: getCacheSize(sizes.parser, limits.parser),
-            canonicalStringify: getCacheSize(
-              sizes.canonicalStringify,
-              limits.canonicalStringify
-            ),
-            links: sizes.links
-              .map((linkCache) => getLinkCacheSize(linkCache, limits))
-              .filter(Boolean),
-            queryManager: {
-              getDocumentInfo: getCacheSize(
-                sizes.queryManager.getDocumentInfo,
-                limits["queryManager.getDocumentInfo"]
-              ),
-              documentTransforms: getDocumentTransformCacheSizes(
-                sizes.queryManager.documentTransforms,
-                limits
-              ),
-            },
-            fragmentRegistry: {
-              lookup: getCacheSize(
-                sizes.fragmentRegistry?.lookup,
-                limits["fragmentRegistry.lookup"]
-              ),
-              findFragmentSpreads: getCacheSize(
-                sizes.fragmentRegistry?.findFragmentSpreads,
-                limits["fragmentRegistry.findFragmentSpreads"]
-              ),
-              transform: getCacheSize(
-                sizes.fragmentRegistry?.transform,
-                limits["fragmentRegistry.transform"]
-              ),
-            },
-            cache: {
-              fragmentQueryDocuments: getCacheSize(
-                sizes.cache?.fragmentQueryDocuments,
-                limits["cache.fragmentQueryDocuments"]
-              ),
-            },
-            addTypenameDocumentTransform: sizes.addTypenameDocumentTransform
-              ? getDocumentTransformCacheSizes(
-                  sizes.addTypenameDocumentTransform,
-                  limits
-                )
-              : null,
-            inMemoryCache: {
-              maybeBroadcastWatch: getCacheSize(
-                sizes.inMemoryCache?.maybeBroadcastWatch,
-                limits["inMemoryCache.maybeBroadcastWatch"]
-              ),
-              executeSelectionSet: getCacheSize(
-                sizes.inMemoryCache?.executeSelectionSet,
-                limits["inMemoryCache.executeSelectionSet"]
-              ),
-              executeSubSelectedArray: getCacheSize(
-                sizes.inMemoryCache?.executeSubSelectedArray,
-                limits["inMemoryCache.executeSubSelectedArray"]
-              ),
-            },
-          },
-        };
-      },
-    },
-    ClientV4: {
-      cache: (client) => rpcClient.request("getCache", client.id),
-      queries: (client) => client,
-      mutations: (client) => client,
-      memoryInternals: async (client) => {
-        const memoryInternals = await rpcClient.request(
-          "getMemoryInternals",
+          "getV3MemoryInternals",
           client.id
         );
 
@@ -201,7 +120,98 @@ function createResolvers(client: RpcClient): Resolvers {
                 limits
               ),
             },
-          },
+          } satisfies ClientV3MemoryInternalsCaches,
+        };
+      },
+    },
+    ClientV4: {
+      cache: (client) => rpcClient.request("getCache", client.id),
+      queries: (client) => client,
+      mutations: (client) => client,
+      memoryInternals: async (client) => {
+        const memoryInternals = await rpcClient.request(
+          "getV4MemoryInternals",
+          client.id
+        );
+
+        if (!memoryInternals) {
+          return null;
+        }
+
+        const sizes = memoryInternals.sizes;
+        const limits = memoryInternals.limits;
+
+        return {
+          raw: memoryInternals,
+          caches: {
+            print: getCacheSize("print", sizes.print, limits),
+            canonicalStringify: getCacheSize(
+              "canonicalStringify",
+              sizes.canonicalStringify,
+              limits
+            ),
+            links: sizes.links
+              .map((linkCache) => getLinkCacheSize(linkCache, limits))
+              .filter(Boolean),
+            queryManager: {
+              getDocumentInfo: getCacheSize(
+                "queryManager.getDocumentInfo",
+                sizes.queryManager.getDocumentInfo,
+                limits
+              ),
+              documentTransforms: getDocumentTransformCacheSizes(
+                sizes.queryManager.documentTransforms,
+                limits
+              ),
+            },
+            fragmentRegistry: {
+              lookup: getCacheSize(
+                "fragmentRegistry.lookup",
+                sizes.fragmentRegistry?.lookup,
+                limits
+              ),
+              findFragmentSpreads: getCacheSize(
+                "fragmentRegistry.findFragmentSpreads",
+                sizes.fragmentRegistry?.findFragmentSpreads,
+                limits
+              ),
+              transform: getCacheSize(
+                "fragmentRegistry.transform",
+                sizes.fragmentRegistry?.transform,
+                limits
+              ),
+            },
+            cache: {
+              fragmentQueryDocuments: getCacheSize(
+                "cache.fragmentQueryDocuments",
+                sizes.cache?.fragmentQueryDocuments,
+                limits
+              ),
+            },
+            addTypenameDocumentTransform: sizes.addTypenameDocumentTransform
+              ? getDocumentTransformCacheSizes(
+                  sizes.addTypenameDocumentTransform,
+                  limits
+                )
+              : null,
+            inMemoryCache: {
+              maybeBroadcastWatch: getCacheSize(
+                "inMemoryCache.maybeBroadcastWatch",
+                sizes.inMemoryCache?.maybeBroadcastWatch,
+                limits
+              ),
+              executeSelectionSet: getCacheSize(
+                "inMemoryCache.executeSelectionSet",
+                sizes.inMemoryCache?.executeSelectionSet,
+                limits
+              ),
+              executeSubSelectedArray: getCacheSize(
+                "inMemoryCache.executeSubSelectedArray",
+                sizes.inMemoryCache?.executeSubSelectedArray,
+                limits
+              ),
+            },
+          } satisfies ClientV4MemoryInternalsCaches,
         };
       },
     },
