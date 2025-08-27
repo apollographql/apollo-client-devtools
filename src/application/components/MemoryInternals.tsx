@@ -239,7 +239,7 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
             <CacheSize cacheSize={caches.queryManager.getDocumentInfo} />
 
             <CacheSize cacheSize={caches.canonicalStringify} />
-            <CacheSize cacheSize={caches.parser} />
+            {"parser" in caches && <CacheSize cacheSize={caches.parser} />}
             <CacheSize cacheSize={caches.print} />
             {caches.queryManager.documentTransforms?.map(({ cache }, index) => (
               <CacheSize key={index} cacheSize={cache} />
