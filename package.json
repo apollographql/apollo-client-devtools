@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@apollo/brand": "^0.7.0",
-    "@apollo/client": "4.0.1",
+    "@apollo/client": "4.0.2",
     "@apollo/client-3": "npm:@apollo/client@3.14.0",
     "@apollo/icons": "^0.8.0",
     "@apollo/tailwind-preset": "^0.2.0",
@@ -116,7 +116,7 @@
     "jest-environment-jsdom": "29.7.0",
     "jest-matchmedia-mock": "1.1.0",
     "npm-run-all": "4.1.5",
-    "pkg-pr-new": "^0.0.57",
+    "pkg-pr-new": "^0.0.58",
     "postcss": "8.4.49",
     "postcss-loader": "8.1.1",
     "prettier": "3.3.2",
