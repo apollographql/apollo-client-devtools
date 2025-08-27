@@ -1,5 +1,11 @@
 # @apollo/client-devtools-vscode
 
+## 4.20.1
+
+### Patch Changes
+
+- [#1698](https://github.com/apollographql/apollo-client-devtools/pull/1698) [`b1395d0`](https://github.com/apollographql/apollo-client-devtools/commit/b1395d0352894c7e3b44f5778a820b5f6e05acae) Thanks [@phryneas](https://github.com/phryneas)! - Fix build for @apollo/client-devtools-vscode
+
 ## 4.20.0
 
 ### Minor Changes
