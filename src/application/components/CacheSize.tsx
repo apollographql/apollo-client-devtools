@@ -4,11 +4,26 @@ import IconInfo from "@apollo/icons/default/IconInfo.svg";
 import IconWarning from "@apollo/icons/large/IconWarning.svg";
 import { ExternalLink } from "./ExternalLink";
 import { Tooltip } from "./Tooltip";
-import type { CacheSizes } from "@apollo/client/utilities";
+import type { CacheSizes as CacheSizesV4 } from "@apollo/client/utilities";
+import type { CacheSizes as CacheSizesV3 } from "@apollo/client-3/utilities";
 import type { CacheSize as CacheSizeType } from "../types/gql";
 import clsx from "clsx";
 
-const DESCRIPTIONS: Record<keyof CacheSizes, ReactNode> = {
+type CacheSizeKeys = keyof CacheSizesV3 | keyof CacheSizesV4;
+
+const DESCRIPTIONS: Record<CacheSizeKeys, ReactNode> = {
+  checkDocument: (
+    <>
+      <p>
+        Cache size for the{" "}
+        <TooltipLink href="https://github.com/apollographql/apollo-client/blob/main/src/utilities/internal/checkDocument.ts">
+          <code>checkDocument</code>
+        </TooltipLink>{" "}
+        function that traverses GraphQL documents and throws an error if the
+        document is invalid.
+      </p>
+    </>
+  ),
   print: (
     <>
       <p>
@@ -219,7 +234,7 @@ export function CacheSize({ cacheSize }: { cacheSize: CacheSizeType }) {
     return null;
   }
 
-  const description = DESCRIPTIONS[cacheSize.key as keyof CacheSizes];
+  const description = DESCRIPTIONS[cacheSize.key as keyof CacheSizesV4];
   const percentUsed = (cacheSize.size / cacheSize.limit) * 100;
 
   return (
