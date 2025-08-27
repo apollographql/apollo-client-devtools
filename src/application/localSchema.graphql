@@ -55,7 +55,7 @@ type ClientV3 implements Client {
   queries: ClientV3Queries!
   mutations: ClientV3Mutations!
   cache: Cache!
-  memoryInternals: MemoryInternals
+  memoryInternals: ClientV3MemoryInternals
 }
 
 type ClientV4 implements Client {
@@ -65,7 +65,7 @@ type ClientV4 implements Client {
   cache: Cache!
   mutations: ClientV4Mutations!
   queries: ClientV4Queries!
-  memoryInternals: MemoryInternals
+  memoryInternals: ClientV4MemoryInternals
 }
 
 type ClientV3Queries implements ClientQueries {
@@ -108,14 +108,46 @@ union LinkCacheSize =
   | PersistedQueryLinkCacheSizes
   | RemoveTypenameFromVariablesLinkCacheSizes
 
-type MemoryInternals {
+interface MemoryInternals {
   raw: JSON
-  caches: MemoryInternalsCaches!
+  caches: MemoryInternalsCaches
 }
 
-type MemoryInternalsCaches {
+interface MemoryInternalsCaches {
+  print: CacheSize!
+  canonicalStringify: CacheSize!
+  links: [LinkCacheSize!]!
+  queryManager: QueryManagerCacheSizes!
+  fragmentRegistry: FragmentRegistryCacheSizes!
+  cache: BaseCacheSizes!
+  addTypenameDocumentTransform: [DocumentTransformCacheSizes!]
+  inMemoryCache: InMemoryCacheSizes!
+}
+
+type ClientV3MemoryInternals implements MemoryInternals {
+  raw: JSON
+  caches: ClientV3MemoryInternalsCaches!
+}
+
+type ClientV4MemoryInternals implements MemoryInternals {
+  raw: JSON
+  caches: ClientV4MemoryInternalsCaches!
+}
+
+type ClientV3MemoryInternalsCaches implements MemoryInternalsCaches {
   print: CacheSize!
   parser: CacheSize!
+  canonicalStringify: CacheSize!
+  links: [LinkCacheSize!]!
+  queryManager: QueryManagerCacheSizes!
+  fragmentRegistry: FragmentRegistryCacheSizes!
+  cache: BaseCacheSizes!
+  addTypenameDocumentTransform: [DocumentTransformCacheSizes!]
+  inMemoryCache: InMemoryCacheSizes!
+}
+
+type ClientV4MemoryInternalsCaches implements MemoryInternalsCaches {
+  print: CacheSize!
   canonicalStringify: CacheSize!
   links: [LinkCacheSize!]!
   queryManager: QueryManagerCacheSizes!
