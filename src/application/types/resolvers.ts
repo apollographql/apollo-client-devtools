@@ -197,7 +197,6 @@ export type ClientV4MemoryInternalsCaches = MemoryInternalsCaches & {
   addTypenameDocumentTransform: Maybe<Array<DocumentTransformCacheSizes>>;
   cache: BaseCacheSizes;
   canonicalStringify: CacheSize;
-  checkDocument: CacheSize;
   fragmentRegistry: FragmentRegistryCacheSizes;
   inMemoryCache: InMemoryCacheSizes;
   links: Array<LinkCacheSize>;
@@ -1060,11 +1059,6 @@ export type ClientV4MemoryInternalsCachesResolvers<
   >;
   cache?: Resolver<ResolversTypes["BaseCacheSizes"], ParentType, ContextType>;
   canonicalStringify?: Resolver<
-    ResolversTypes["CacheSize"],
-    ParentType,
-    ContextType
-  >;
-  checkDocument?: Resolver<
     ResolversTypes["CacheSize"],
     ParentType,
     ContextType

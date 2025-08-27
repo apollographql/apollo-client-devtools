@@ -178,7 +178,6 @@ export type ClientV4MemoryInternalsCaches = MemoryInternalsCaches & {
   addTypenameDocumentTransform: Maybe<Array<DocumentTransformCacheSizes>>;
   cache: BaseCacheSizes;
   canonicalStringify: CacheSize;
-  checkDocument: CacheSize;
   fragmentRegistry: FragmentRegistryCacheSizes;
   inMemoryCache: InMemoryCacheSizes;
   links: Array<LinkCacheSize>;
@@ -606,12 +605,6 @@ export type MemoryInternalsQuery = {
           raw: JSON | null;
           caches: {
             __typename: "ClientV4MemoryInternalsCaches";
-            checkDocument: {
-              __typename: "CacheSize";
-              key: string;
-              size: number | null;
-              limit: number | null;
-            };
             print: {
               __typename: "CacheSize";
               key: string;
