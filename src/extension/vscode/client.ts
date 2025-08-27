@@ -11,8 +11,16 @@ import { createId } from "../../utils/createId";
 import type { ClientHandler, IDv3, IDv4 } from "../tab/clientHandler";
 import type { ClientV3Handler } from "../tab/v3/handler";
 import type { ClientV4Handler } from "../tab/v4/handler";
-import type { MutationV3Details, QueryV3Details } from "../tab/v3/types";
-import type { MutationV4Details, QueryV4Details } from "../tab/v4/types";
+import type {
+  MemoryInternalsV3,
+  MutationV3Details,
+  QueryV3Details,
+} from "../tab/v3/types";
+import type {
+  MutationV4Details,
+  QueryV4Details,
+  MemoryInternalsV4,
+} from "../tab/v4/types";
 
 type Reason =
   | "WS_DISCONNECTED"
@@ -127,6 +135,17 @@ function registerClient(
     return getClientHandler()?.getMutations() ?? [];
   }
 
+  function getMemoryInternalsForClient(
+    clientId: IDv3
+  ): MemoryInternalsV3 | undefined;
+  function getMemoryInternalsForClient(
+    clientId: IDv4
+  ): MemoryInternalsV4 | undefined;
+  function getMemoryInternalsForClient():
+    | MemoryInternalsV3
+    | MemoryInternalsV4
+    | undefined;
+
   function getMemoryInternalsForClient() {
     return getClientHandler()?.getClient().getMemoryInternals?.();
   }
@@ -135,7 +154,8 @@ function registerClient(
   wsRpcHandler("getV4Queries", getQueries, { signal });
   wsRpcHandler("getV3Mutations", getMutations, { signal });
   wsRpcHandler("getV4Mutations", getMutations, { signal });
-  wsRpcHandler("getMemoryInternals", getMemoryInternalsForClient, { signal });
+  wsRpcHandler("getV3MemoryInternals", getMemoryInternalsForClient, { signal });
+  wsRpcHandler("getV4MemoryInternals", getMemoryInternalsForClient, { signal });
   wsRpcHandler(
     "getCache",
     () => getClientHandler()?.getClient().cache.extract(true) ?? {},

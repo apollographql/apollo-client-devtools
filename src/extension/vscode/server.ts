@@ -51,8 +51,11 @@ export function runServer(
     clients.get(id)!.rpcClient.request("getCache", id)
   );
 
-  handleRpc("getMemoryInternals", (id) =>
-    clients.get(id)!.rpcClient.request("getMemoryInternals", id)
+  handleRpc("getV3MemoryInternals", (id) =>
+    clients.get(id)!.rpcClient.request("getV3MemoryInternals", id)
+  );
+  handleRpc("getV4MemoryInternals", (id) =>
+    clients.get(id)!.rpcClient.request("getV4MemoryInternals", id)
   );
 
   server.on("connection", function connection(ws) {
