@@ -18,6 +18,11 @@
     "LinkCacheSize": [
       "PersistedQueryLinkCacheSizes",
       "RemoveTypenameFromVariablesLinkCacheSizes"
+    ],
+    "MemoryInternals": ["ClientV3MemoryInternals", "ClientV4MemoryInternals"],
+    "MemoryInternalsCaches": [
+      "ClientV3MemoryInternalsCaches",
+      "ClientV4MemoryInternalsCaches"
     ]
   }
 }

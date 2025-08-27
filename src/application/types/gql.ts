@@ -87,11 +87,30 @@ export type ClientV3 = Client & {
   __typename: "ClientV3";
   cache: Scalars["Cache"]["output"];
   id: Scalars["String"]["output"];
-  memoryInternals: Maybe<MemoryInternals>;
+  memoryInternals: Maybe<ClientV3MemoryInternals>;
   mutations: ClientV3Mutations;
   name: Maybe<Scalars["String"]["output"]>;
   queries: ClientV3Queries;
   version: Scalars["String"]["output"];
+};
+
+export type ClientV3MemoryInternals = MemoryInternals & {
+  __typename: "ClientV3MemoryInternals";
+  caches: ClientV3MemoryInternalsCaches;
+  raw: Maybe<Scalars["JSON"]["output"]>;
+};
+
+export type ClientV3MemoryInternalsCaches = MemoryInternalsCaches & {
+  __typename: "ClientV3MemoryInternalsCaches";
+  addTypenameDocumentTransform: Maybe<Array<DocumentTransformCacheSizes>>;
+  cache: BaseCacheSizes;
+  canonicalStringify: CacheSize;
+  fragmentRegistry: FragmentRegistryCacheSizes;
+  inMemoryCache: InMemoryCacheSizes;
+  links: Array<LinkCacheSize>;
+  parser: CacheSize;
+  print: CacheSize;
+  queryManager: QueryManagerCacheSizes;
 };
 
 export type ClientV3Mutation = ClientMutation & {
@@ -141,11 +160,29 @@ export type ClientV4 = Client & {
   __typename: "ClientV4";
   cache: Scalars["Cache"]["output"];
   id: Scalars["String"]["output"];
-  memoryInternals: Maybe<MemoryInternals>;
+  memoryInternals: Maybe<ClientV4MemoryInternals>;
   mutations: ClientV4Mutations;
   name: Maybe<Scalars["String"]["output"]>;
   queries: ClientV4Queries;
   version: Scalars["String"]["output"];
+};
+
+export type ClientV4MemoryInternals = MemoryInternals & {
+  __typename: "ClientV4MemoryInternals";
+  caches: ClientV4MemoryInternalsCaches;
+  raw: Maybe<Scalars["JSON"]["output"]>;
+};
+
+export type ClientV4MemoryInternalsCaches = MemoryInternalsCaches & {
+  __typename: "ClientV4MemoryInternalsCaches";
+  addTypenameDocumentTransform: Maybe<Array<DocumentTransformCacheSizes>>;
+  cache: BaseCacheSizes;
+  canonicalStringify: CacheSize;
+  fragmentRegistry: FragmentRegistryCacheSizes;
+  inMemoryCache: InMemoryCacheSizes;
+  links: Array<LinkCacheSize>;
+  print: CacheSize;
+  queryManager: QueryManagerCacheSizes;
 };
 
 export type ClientV4Mutation = ClientMutation & {
@@ -230,20 +267,17 @@ export type LinkCacheSize =
   | RemoveTypenameFromVariablesLinkCacheSizes;
 
 export type MemoryInternals = {
-  __typename: "MemoryInternals";
-  caches: MemoryInternalsCaches;
+  caches: Maybe<MemoryInternalsCaches>;
   raw: Maybe<Scalars["JSON"]["output"]>;
 };
 
 export type MemoryInternalsCaches = {
-  __typename: "MemoryInternalsCaches";
   addTypenameDocumentTransform: Maybe<Array<DocumentTransformCacheSizes>>;
   cache: BaseCacheSizes;
   canonicalStringify: CacheSize;
   fragmentRegistry: FragmentRegistryCacheSizes;
   inMemoryCache: InMemoryCacheSizes;
   links: Array<LinkCacheSize>;
-  parser: CacheSize;
   print: CacheSize;
   queryManager: QueryManagerCacheSizes;
 };
@@ -439,17 +473,17 @@ export type MemoryInternalsQuery = {
         id: string;
         version: string;
         memoryInternals: {
-          __typename: "MemoryInternals";
+          __typename: "ClientV3MemoryInternals";
           raw: JSON | null;
           caches: {
-            __typename: "MemoryInternalsCaches";
-            print: {
+            __typename: "ClientV3MemoryInternalsCaches";
+            parser: {
               __typename: "CacheSize";
               key: string;
               size: number | null;
               limit: number | null;
             };
-            parser: {
+            print: {
               __typename: "CacheSize";
               key: string;
               size: number | null;
@@ -567,17 +601,11 @@ export type MemoryInternalsQuery = {
         id: string;
         version: string;
         memoryInternals: {
-          __typename: "MemoryInternals";
+          __typename: "ClientV4MemoryInternals";
           raw: JSON | null;
           caches: {
-            __typename: "MemoryInternalsCaches";
+            __typename: "ClientV4MemoryInternalsCaches";
             print: {
-              __typename: "CacheSize";
-              key: string;
-              size: number | null;
-              limit: number | null;
-            };
-            parser: {
               __typename: "CacheSize";
               key: string;
               size: number | null;

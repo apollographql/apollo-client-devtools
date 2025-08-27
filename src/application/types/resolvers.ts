@@ -106,11 +106,30 @@ export type ClientV3 = Client & {
   __typename?: "ClientV3";
   cache: Scalars["Cache"]["output"];
   id: Scalars["String"]["output"];
-  memoryInternals: Maybe<MemoryInternals>;
+  memoryInternals: Maybe<ClientV3MemoryInternals>;
   mutations: ClientV3Mutations;
   name: Maybe<Scalars["String"]["output"]>;
   queries: ClientV3Queries;
   version: Scalars["String"]["output"];
+};
+
+export type ClientV3MemoryInternals = MemoryInternals & {
+  __typename?: "ClientV3MemoryInternals";
+  caches: ClientV3MemoryInternalsCaches;
+  raw: Maybe<Scalars["JSON"]["output"]>;
+};
+
+export type ClientV3MemoryInternalsCaches = MemoryInternalsCaches & {
+  __typename?: "ClientV3MemoryInternalsCaches";
+  addTypenameDocumentTransform: Maybe<Array<DocumentTransformCacheSizes>>;
+  cache: BaseCacheSizes;
+  canonicalStringify: CacheSize;
+  fragmentRegistry: FragmentRegistryCacheSizes;
+  inMemoryCache: InMemoryCacheSizes;
+  links: Array<LinkCacheSize>;
+  parser: CacheSize;
+  print: CacheSize;
+  queryManager: QueryManagerCacheSizes;
 };
 
 export type ClientV3Mutation = ClientMutation & {
@@ -160,11 +179,29 @@ export type ClientV4 = Client & {
   __typename?: "ClientV4";
   cache: Scalars["Cache"]["output"];
   id: Scalars["String"]["output"];
-  memoryInternals: Maybe<MemoryInternals>;
+  memoryInternals: Maybe<ClientV4MemoryInternals>;
   mutations: ClientV4Mutations;
   name: Maybe<Scalars["String"]["output"]>;
   queries: ClientV4Queries;
   version: Scalars["String"]["output"];
+};
+
+export type ClientV4MemoryInternals = MemoryInternals & {
+  __typename?: "ClientV4MemoryInternals";
+  caches: ClientV4MemoryInternalsCaches;
+  raw: Maybe<Scalars["JSON"]["output"]>;
+};
+
+export type ClientV4MemoryInternalsCaches = MemoryInternalsCaches & {
+  __typename?: "ClientV4MemoryInternalsCaches";
+  addTypenameDocumentTransform: Maybe<Array<DocumentTransformCacheSizes>>;
+  cache: BaseCacheSizes;
+  canonicalStringify: CacheSize;
+  fragmentRegistry: FragmentRegistryCacheSizes;
+  inMemoryCache: InMemoryCacheSizes;
+  links: Array<LinkCacheSize>;
+  print: CacheSize;
+  queryManager: QueryManagerCacheSizes;
 };
 
 export type ClientV4Mutation = ClientMutation & {
@@ -249,20 +286,17 @@ export type LinkCacheSize =
   | RemoveTypenameFromVariablesLinkCacheSizes;
 
 export type MemoryInternals = {
-  __typename?: "MemoryInternals";
-  caches: MemoryInternalsCaches;
+  caches: Maybe<MemoryInternalsCaches>;
   raw: Maybe<Scalars["JSON"]["output"]>;
 };
 
 export type MemoryInternalsCaches = {
-  __typename?: "MemoryInternalsCaches";
   addTypenameDocumentTransform: Maybe<Array<DocumentTransformCacheSizes>>;
   cache: BaseCacheSizes;
   canonicalStringify: CacheSize;
   fragmentRegistry: FragmentRegistryCacheSizes;
   inMemoryCache: InMemoryCacheSizes;
   links: Array<LinkCacheSize>;
-  parser: CacheSize;
   print: CacheSize;
   queryManager: QueryManagerCacheSizes;
 };
@@ -512,6 +546,14 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> =
       | RpcSerializedServerError
       | RpcSerializedServerParseError
       | RpcSerializedUnconventionalError;
+    MemoryInternals: ClientV3MemoryInternals | ClientV4MemoryInternals;
+    MemoryInternalsCaches:
+      | (Omit<ClientV3MemoryInternalsCaches, "links"> & {
+          links: Array<_RefType["LinkCacheSize"]>;
+        })
+      | (Omit<ClientV4MemoryInternalsCaches, "links"> & {
+          links: Array<_RefType["LinkCacheSize"]>;
+        });
   };
 
 /** Mapping between all available schema types and the resolvers types */
@@ -531,6 +573,12 @@ export type ResolversTypes = {
     ResolversInterfaceTypes<ResolversTypes>["ClientQueries"]
   >;
   ClientV3: ResolverTypeWrapper<ApolloClientInfo>;
+  ClientV3MemoryInternals: ResolverTypeWrapper<ClientV3MemoryInternals>;
+  ClientV3MemoryInternalsCaches: ResolverTypeWrapper<
+    Omit<ClientV3MemoryInternalsCaches, "links"> & {
+      links: Array<ResolversTypes["LinkCacheSize"]>;
+    }
+  >;
   ClientV3Mutation: ResolverTypeWrapper<
     Omit<ClientV3Mutation, "error"> & {
       error: Maybe<ResolversTypes["ClientV3MutationError"]>;
@@ -552,6 +600,12 @@ export type ResolversTypes = {
     }
   >;
   ClientV4: ResolverTypeWrapper<ApolloClientInfo>;
+  ClientV4MemoryInternals: ResolverTypeWrapper<ClientV4MemoryInternals>;
+  ClientV4MemoryInternalsCaches: ResolverTypeWrapper<
+    Omit<ClientV4MemoryInternalsCaches, "links"> & {
+      links: Array<ResolversTypes["LinkCacheSize"]>;
+    }
+  >;
   ClientV4Mutation: ResolverTypeWrapper<
     Omit<ClientV4Mutation, "error"> & {
       error: Maybe<ResolversTypes["ErrorLike"]>;
@@ -581,11 +635,11 @@ export type ResolversTypes = {
   LinkCacheSize: ResolverTypeWrapper<
     ResolversUnionTypes<ResolversTypes>["LinkCacheSize"]
   >;
-  MemoryInternals: ResolverTypeWrapper<MemoryInternals>;
+  MemoryInternals: ResolverTypeWrapper<
+    ResolversInterfaceTypes<ResolversTypes>["MemoryInternals"]
+  >;
   MemoryInternalsCaches: ResolverTypeWrapper<
-    Omit<MemoryInternalsCaches, "links"> & {
-      links: Array<ResolversTypes["LinkCacheSize"]>;
-    }
+    ResolversInterfaceTypes<ResolversTypes>["MemoryInternalsCaches"]
   >;
   PersistedQueryLinkCacheSizes: ResolverTypeWrapper<PersistedQueryLinkCacheSizes>;
   Query: ResolverTypeWrapper<never>;
@@ -617,6 +671,11 @@ export type ResolversParentTypes = {
   ClientMutations: ResolversInterfaceTypes<ResolversParentTypes>["ClientMutations"];
   ClientQueries: ResolversInterfaceTypes<ResolversParentTypes>["ClientQueries"];
   ClientV3: ApolloClientInfo;
+  ClientV3MemoryInternals: ClientV3MemoryInternals;
+  ClientV3MemoryInternalsCaches: Omit<
+    ClientV3MemoryInternalsCaches,
+    "links"
+  > & { links: Array<ResolversParentTypes["LinkCacheSize"]> };
   ClientV3Mutation: Omit<ClientV3Mutation, "error"> & {
     error: Maybe<ResolversParentTypes["ClientV3MutationError"]>;
   };
@@ -630,6 +689,11 @@ export type ResolversParentTypes = {
     error: Maybe<ResolversParentTypes["SerializedApolloError"]>;
   };
   ClientV4: ApolloClientInfo;
+  ClientV4MemoryInternals: ClientV4MemoryInternals;
+  ClientV4MemoryInternalsCaches: Omit<
+    ClientV4MemoryInternalsCaches,
+    "links"
+  > & { links: Array<ResolversParentTypes["LinkCacheSize"]> };
   ClientV4Mutation: Omit<ClientV4Mutation, "error"> & {
     error: Maybe<ResolversParentTypes["ErrorLike"]>;
   };
@@ -649,10 +713,8 @@ export type ResolversParentTypes = {
   Int: Scalars["Int"]["output"];
   JSON: Scalars["JSON"]["output"];
   LinkCacheSize: ResolversUnionTypes<ResolversParentTypes>["LinkCacheSize"];
-  MemoryInternals: MemoryInternals;
-  MemoryInternalsCaches: Omit<MemoryInternalsCaches, "links"> & {
-    links: Array<ResolversParentTypes["LinkCacheSize"]>;
-  };
+  MemoryInternals: ResolversInterfaceTypes<ResolversParentTypes>["MemoryInternals"];
+  MemoryInternalsCaches: ResolversInterfaceTypes<ResolversParentTypes>["MemoryInternalsCaches"];
   PersistedQueryLinkCacheSizes: PersistedQueryLinkCacheSizes;
   Query: never;
   QueryData: Scalars["QueryData"]["output"];
@@ -757,7 +819,7 @@ export type ClientV3Resolvers<
   cache?: Resolver<ResolversTypes["Cache"], ParentType, ContextType>;
   id?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   memoryInternals?: Resolver<
-    Maybe<ResolversTypes["MemoryInternals"]>,
+    Maybe<ResolversTypes["ClientV3MemoryInternals"]>,
     ParentType,
     ContextType
   >;
@@ -773,6 +835,61 @@ export type ClientV3Resolvers<
     ContextType
   >;
   version?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ClientV3MemoryInternalsResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["ClientV3MemoryInternals"] = ResolversParentTypes["ClientV3MemoryInternals"],
+> = {
+  caches?: Resolver<
+    ResolversTypes["ClientV3MemoryInternalsCaches"],
+    ParentType,
+    ContextType
+  >;
+  raw?: Resolver<Maybe<ResolversTypes["JSON"]>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ClientV3MemoryInternalsCachesResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["ClientV3MemoryInternalsCaches"] = ResolversParentTypes["ClientV3MemoryInternalsCaches"],
+> = {
+  addTypenameDocumentTransform?: Resolver<
+    Maybe<Array<ResolversTypes["DocumentTransformCacheSizes"]>>,
+    ParentType,
+    ContextType
+  >;
+  cache?: Resolver<ResolversTypes["BaseCacheSizes"], ParentType, ContextType>;
+  canonicalStringify?: Resolver<
+    ResolversTypes["CacheSize"],
+    ParentType,
+    ContextType
+  >;
+  fragmentRegistry?: Resolver<
+    ResolversTypes["FragmentRegistryCacheSizes"],
+    ParentType,
+    ContextType
+  >;
+  inMemoryCache?: Resolver<
+    ResolversTypes["InMemoryCacheSizes"],
+    ParentType,
+    ContextType
+  >;
+  links?: Resolver<
+    Array<ResolversTypes["LinkCacheSize"]>,
+    ParentType,
+    ContextType
+  >;
+  parser?: Resolver<ResolversTypes["CacheSize"], ParentType, ContextType>;
+  print?: Resolver<ResolversTypes["CacheSize"], ParentType, ContextType>;
+  queryManager?: Resolver<
+    ResolversTypes["QueryManagerCacheSizes"],
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -897,7 +1014,7 @@ export type ClientV4Resolvers<
   cache?: Resolver<ResolversTypes["Cache"], ParentType, ContextType>;
   id?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   memoryInternals?: Resolver<
-    Maybe<ResolversTypes["MemoryInternals"]>,
+    Maybe<ResolversTypes["ClientV4MemoryInternals"]>,
     ParentType,
     ContextType
   >;
@@ -913,6 +1030,60 @@ export type ClientV4Resolvers<
     ContextType
   >;
   version?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ClientV4MemoryInternalsResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["ClientV4MemoryInternals"] = ResolversParentTypes["ClientV4MemoryInternals"],
+> = {
+  caches?: Resolver<
+    ResolversTypes["ClientV4MemoryInternalsCaches"],
+    ParentType,
+    ContextType
+  >;
+  raw?: Resolver<Maybe<ResolversTypes["JSON"]>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ClientV4MemoryInternalsCachesResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["ClientV4MemoryInternalsCaches"] = ResolversParentTypes["ClientV4MemoryInternalsCaches"],
+> = {
+  addTypenameDocumentTransform?: Resolver<
+    Maybe<Array<ResolversTypes["DocumentTransformCacheSizes"]>>,
+    ParentType,
+    ContextType
+  >;
+  cache?: Resolver<ResolversTypes["BaseCacheSizes"], ParentType, ContextType>;
+  canonicalStringify?: Resolver<
+    ResolversTypes["CacheSize"],
+    ParentType,
+    ContextType
+  >;
+  fragmentRegistry?: Resolver<
+    ResolversTypes["FragmentRegistryCacheSizes"],
+    ParentType,
+    ContextType
+  >;
+  inMemoryCache?: Resolver<
+    ResolversTypes["InMemoryCacheSizes"],
+    ParentType,
+    ContextType
+  >;
+  links?: Resolver<
+    Array<ResolversTypes["LinkCacheSize"]>,
+    ParentType,
+    ContextType
+  >;
+  print?: Resolver<ResolversTypes["CacheSize"], ParentType, ContextType>;
+  queryManager?: Resolver<
+    ResolversTypes["QueryManagerCacheSizes"],
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1110,13 +1281,11 @@ export type MemoryInternalsResolvers<
   ParentType extends
     ResolversParentTypes["MemoryInternals"] = ResolversParentTypes["MemoryInternals"],
 > = {
-  caches?: Resolver<
-    ResolversTypes["MemoryInternalsCaches"],
+  __resolveType: TypeResolveFn<
+    "ClientV3MemoryInternals" | "ClientV4MemoryInternals",
     ParentType,
     ContextType
   >;
-  raw?: Resolver<Maybe<ResolversTypes["JSON"]>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type MemoryInternalsCachesResolvers<
@@ -1124,40 +1293,11 @@ export type MemoryInternalsCachesResolvers<
   ParentType extends
     ResolversParentTypes["MemoryInternalsCaches"] = ResolversParentTypes["MemoryInternalsCaches"],
 > = {
-  addTypenameDocumentTransform?: Resolver<
-    Maybe<Array<ResolversTypes["DocumentTransformCacheSizes"]>>,
+  __resolveType: TypeResolveFn<
+    "ClientV3MemoryInternalsCaches" | "ClientV4MemoryInternalsCaches",
     ParentType,
     ContextType
   >;
-  cache?: Resolver<ResolversTypes["BaseCacheSizes"], ParentType, ContextType>;
-  canonicalStringify?: Resolver<
-    ResolversTypes["CacheSize"],
-    ParentType,
-    ContextType
-  >;
-  fragmentRegistry?: Resolver<
-    ResolversTypes["FragmentRegistryCacheSizes"],
-    ParentType,
-    ContextType
-  >;
-  inMemoryCache?: Resolver<
-    ResolversTypes["InMemoryCacheSizes"],
-    ParentType,
-    ContextType
-  >;
-  links?: Resolver<
-    Array<ResolversTypes["LinkCacheSize"]>,
-    ParentType,
-    ContextType
-  >;
-  parser?: Resolver<ResolversTypes["CacheSize"], ParentType, ContextType>;
-  print?: Resolver<ResolversTypes["CacheSize"], ParentType, ContextType>;
-  queryManager?: Resolver<
-    ResolversTypes["QueryManagerCacheSizes"],
-    ParentType,
-    ContextType
-  >;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type PersistedQueryLinkCacheSizesResolvers<
@@ -1396,6 +1536,8 @@ export type Resolvers<ContextType = any> = {
   ClientMutations?: ClientMutationsResolvers<ContextType>;
   ClientQueries?: ClientQueriesResolvers<ContextType>;
   ClientV3?: ClientV3Resolvers<ContextType>;
+  ClientV3MemoryInternals?: ClientV3MemoryInternalsResolvers<ContextType>;
+  ClientV3MemoryInternalsCaches?: ClientV3MemoryInternalsCachesResolvers<ContextType>;
   ClientV3Mutation?: ClientV3MutationResolvers<ContextType>;
   ClientV3MutationError?: ClientV3MutationErrorResolvers<ContextType>;
   ClientV3Mutations?: ClientV3MutationsResolvers<ContextType>;
@@ -1403,6 +1545,8 @@ export type Resolvers<ContextType = any> = {
   ClientV3WatchedQueries?: ClientV3WatchedQueriesResolvers<ContextType>;
   ClientV3WatchedQuery?: ClientV3WatchedQueryResolvers<ContextType>;
   ClientV4?: ClientV4Resolvers<ContextType>;
+  ClientV4MemoryInternals?: ClientV4MemoryInternalsResolvers<ContextType>;
+  ClientV4MemoryInternalsCaches?: ClientV4MemoryInternalsCachesResolvers<ContextType>;
   ClientV4Mutation?: ClientV4MutationResolvers<ContextType>;
   ClientV4Mutations?: ClientV4MutationsResolvers<ContextType>;
   ClientV4Queries?: ClientV4QueriesResolvers<ContextType>;

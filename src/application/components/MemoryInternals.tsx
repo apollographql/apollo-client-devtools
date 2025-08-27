@@ -40,8 +40,10 @@ const MEMORY_INTERNALS_QUERY: TypedDocumentNode<
           print {
             ...CacheSizeFields
           }
-          parser {
-            ...CacheSizeFields
+          ... on ClientV3MemoryInternalsCaches {
+            parser {
+              ...CacheSizeFields
+            }
           }
           canonicalStringify {
             ...CacheSizeFields
