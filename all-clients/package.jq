@@ -2,11 +2,14 @@
 map(
     select(
         (
-            # versions >= 3.8 < 4.0
-            (. | match("^3\\.(\\d+)") | (.captures[0].string | tonumber) >= 8)
-            or
-            # versions >= 4.0
-            (. | match("^(\\d+)") | (.captures[0].string | tonumber) > 3)
+          . | match("^(\\d+)\\.(\\d+)") |
+            (
+              # versions >= 3.8 < 4.0
+              ((.captures[0].string | tonumber == 3) and (.captures[1].string | tonumber >= 8))
+              or
+              # versions >= 4.0
+              (.captures[0].string | tonumber >= 4)
+            )
         )
         and
         # skip 3.8 alphas (error codes were only introduced in beta)
