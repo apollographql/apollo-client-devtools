@@ -104,7 +104,13 @@
     "@apollo-client/3.13.4": "npm:@apollo/client@3.13.4",
     "@apollo-client/3.13.5": "npm:@apollo/client@3.13.5",
     "@apollo-client/3.13.6": "npm:@apollo/client@3.13.6",
-    "@apollo-client/3.13.7": "npm:@apollo/client@3.13.7"
+    "@apollo-client/3.13.7": "npm:@apollo/client@3.13.7",
+    "@apollo-client/3.13.8": "npm:@apollo/client@3.13.8",
+    "@apollo-client/3.13.9": "npm:@apollo/client@3.13.9",
+    "@apollo-client/3.14.0-alpha.0": "npm:@apollo/client@3.14.0-alpha.0",
+    "@apollo-client/3.14.0-alpha.1": "npm:@apollo/client@3.14.0-alpha.1",
+    "@apollo-client/3.14.0-rc.0": "npm:@apollo/client@3.14.0-rc.0",
+    "@apollo-client/3.14.0": "npm:@apollo/client@3.14.0"
   },
   "devDependencies": {
     "semver": "7.6.0"

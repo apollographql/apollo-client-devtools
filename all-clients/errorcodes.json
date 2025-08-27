@@ -99,7 +99,36 @@
     "@unmask 'mode' argument does not support variables.",
     "@unmask 'mode' argument must be of type string.",
     "@unmask 'mode' argument does not recognize value '%s'.",
-    "Unknown anonymous query requested in refetchQueries options.include array"
+    "Unknown anonymous query requested in refetchQueries options.include array",
+    "[ApolloClient]: Apollo Client 4.0 will require a `link` option and will not create a default link when not provided. Please provide a `link` option.",
+    "[Mutation]: The `<Mutation />` component is deprecated and will be removed in Apollo Client 4.0. Please use the `useMutation` React hook instead.",
+    "[Query]: The `<Query />` component is deprecated and will be removed in Apollo Client 4.0. Please use an available React hook such as `useQuery` instead.",
+    "[Subscription]: The `<Subscription />` component is deprecated and will be removed in Apollo Client 4.0. Please use the `useSubscription` React hook instead.",
+    "[resetApolloContext]: `resetApolloContext` is deprecated and will be removed in Apollo Client 4.0. Please use `getApolloContext` instead.",
+    "[graphql]: The `graphql` higher order component is deprecated and will be removed in Apollo Client 4.0. Please switch to an available React hook such as `useQuery`, `useMutation`, or `useSubscription`.",
+    "[withMutation]: The `withMutation` higher order component is deprecated and will be removed in Apollo Client 4.0. Please switch to an available React hook such as `useQuery`.",
+    "[withQuery]: The `withQuery` higher order component is deprecated and will be removed in Apollo Client 4.0. Please switch to an available React hook such as `useQuery`.",
+    "[withSubscription]: The `withSubscription` higher order component is deprecated and will be removed in Apollo Client 4.0. Please switch to an available React hook such as `useSubscription`.",
+    "[%s]: `%s` is a deprecated hook option and will be removed in Apollo Client 4.0. %s",
+    "[useLazyQuery]: `reobserve` is deprecated and will removed in Apollo Client 4.0. Please change options by rerendering `useLazyQuery` with new options.",
+    "[useLazyQuery]: Calling `execute` in render will throw in Apollo Client 4.0. Either switch to `useQuery` to run the query during render or move the `execute` call inside of `useEffect`.",
+    "[useQuery]: `reobserve` is deprecated and will removed in Apollo Client 4.0. Please change options by rerendering `useQuery` with new options.",
+    "[useSubscription]: `onSubscriptionData` is deprecated and will be removed in Apollo Client 4.0. Please use the 'onData' option instead.",
+    "[useSubscription]: `onSubscriptionComplete` is deprecated and will be removed in Apollo Client 4.0. Please use the 'onComplete' option instead.",
+    "[parser]: `parser` is deprecated and will be removed in Apollo Client 4.0. Please remove all usages of `parser`.",
+    "[%s]: `%s` is deprecated and will be removed in Apollo Client 4.0. %s",
+    "[client.query]: Apollo Client 4.0 will no longer support the `standby` fetch policy with `client.query`. Please use a different fetch policy.",
+    "[observableQuery.result]: `result` is deprecated and will be removed with Apollo Client 4.0.",
+    "[ObservableQuery]: `getLastResult` is deprecated and will be removed in Apollo Client 4.0. Please discontinue using this method.",
+    "[observableQuery.resetQueryStoreErrors]: `resetQueryStoreErrors` is deprecated and will be removed with Apollo Client 4.0. Please discontinue using this method.",
+    "[observableQuery.setOptions] `setOptions` is deprecated and will be removed in Apollo Client 4.0. Please use `observableQuery.reobserve(newOptions)` instead.",
+    "[BatchHttpLink]: Apollo Client 4.0 will no longer remove `@client` fields from queries sent through the link chain. Please open an issue if this warning is displayed under standard usage.",
+    "[ApolloLink] `onError` is deprecated and will be removed with Apollo Client 4.0. Please discontinue using it.",
+    "[ApolloLink] `setOnError` is deprecated and will be removed with Apollo Client 4.0. Please discontinue using it.",
+    "[HttpLink]: Apollo Client 4.0 will no longer remove `@client` fields from queries sent through the link chain. Please open an issue if this warning is displayed under standard usage.",
+    "The configured cache does not support data masking which effectively disables it. Please use a cache that supports data masking or disable data masking to silence this warning. Caches will be required to support the necessary data masking APIs in Apollo Client 4.0.",
+    "[MockLink]: `newData` is deprecated and will be removed in Apollo Client 4.0. Please use the `result` option with a callback function and set the `maxUsageCount` option to `Number.POSITIVE_INFINITY`.\n\nFound `newData` on response:\n%o",
+    "[MockLink]: Apollo Client 4.0 will throw when mocking client-only query '%s'. Please ensure the query has at least 1 non-client field."
   ],
   "allConditions": [
     null,
@@ -216,7 +245,18 @@
     "@apollo/client/masking/maskDefinition.js",
     "@apollo/client/masking/maskFragment.js",
     "@apollo/client/masking/maskOperation.js",
-    "@apollo/client/masking/utils.js"
+    "@apollo/client/masking/utils.js",
+    "@apollo/client/react/components/Mutation.js",
+    "@apollo/client/react/components/Query.js",
+    "@apollo/client/react/components/Subscription.js",
+    "@apollo/client/react/hoc/graphql.js",
+    "@apollo/client/react/hoc/mutation-hoc.js",
+    "@apollo/client/react/hoc/query-hoc.js",
+    "@apollo/client/react/hoc/subscription-hoc.js",
+    "@apollo/client/react/hooks/internal/useWarnRemovedOption.js",
+    "@apollo/client/react/hooks/useLazyQuery.js",
+    "@apollo/client/utilities/deprecation/index.js",
+    "@apollo/client/link/batch-http/batchHttpLink.js"
   ],
   "byVersion": {
     "3.8.0-beta.0": "1",
@@ -316,7 +356,13 @@
     "3.13.4": "21",
     "3.13.5": "21",
     "3.13.6": "21",
-    "3.13.7": "21"
+    "3.13.7": "21",
+    "3.13.8": "21",
+    "3.13.9": "21",
+    "3.14.0-alpha.0": "22",
+    "3.14.0-alpha.1": "23",
+    "3.14.0-rc.0": "23",
+    "3.14.0": "23"
   },
   "errors": {
     "1": "AQEBAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUECwUEDAYEDQYEDgYGDwYEEAcHBwgIBwgIEQkEEgkEEwkJFAkEFQkEFgoEFwoKGAoLGQoMGgoNGwoOHAoPHQoEHgoEHwoEIAsEIQsEIgwEIw0EJA4EJQ8QJg8RJxAEKBEEKRISKhMTKxQULBUVLBYWLRcXLhgYLxkEMBoEMRoEMhoEMxoENBsZNRwaNhwENx0EOB4bOR4cOh4dOx4ePB4fPR8gPiAhPyAiQCAjQSAkQiEEQyElByEIRCImRSIERiInRyIoRCIpSCIqSSIrSiIESyMETCQETSQE",
@@ -339,6 +385,8 @@
     "18": "WSkEAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEDAYEDgYvDwYEBwgIBwgIEQkEWAk/EgkEEwkJFAkEFQkEFgoEFwoKGAowGQoMGgoxGwoOHAoPHQoEHgoEVAoEWgoEWypAQyolXCpBXSoIXioEXyoEIAsEIQsEIgwEIw0EJA4EJQ8yJg8RJxAEKBEEKRISKhMtKxQULBUVLBYWLRcXUyc6Vic9MBoEMRoEMhoEMxoEVxo+NRwaNhwENx0EVSg7OB4bOR4uOh4dOx4ePB4fPR88Uh85ECUHPiAhPyAiQCAzQSA0YCAEYSAEYiAEQiEEQyElByEIRCI1RSIERiInRyI2RCI3SCIqSSI4SiIESyMETCQETSQE",
     "19": "WSkEAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEDAYEDgYvDwYEBwgIBwgIEQkEWAk/EgkEEwkJFAkEFQkEFgoEFwoKGAowGQoMGgoxGwoOHAoPHQoEHgoEVAoEWypAQyolXCpBXSoIXioEXyoEIAsEIQsEIgwEIw0EJA4EJQ8yJg8RJxAEKBEEKRISKhMtKxQULBUVLBYWLRcXUyc6Vic9MBoEMRoEMhoEMxoEVxo+NRwaNhwENx0EVSg7OB4bOR4uOh4dOx4ePB4fPR88Uh85ECUHPiAhPyAiQCAzQSA0YCAEYSAEYiAEQiEEQyElByEIRCI1RSIERiInRyI2RCI3SCIqSSI4SiIESyMETCQETSQE",
     "20": "WSkEAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEDAYEDgYvDwYEBwgIBwgIEQkEWAk/EgkEEwkJFAkEFQkEFgoEFwoKGAowGQoMGgoxGwoOHAoPHQoEHgoEVAoEWgoEIAsEIQsEIgwEIw0EJA4EJQ8yJg8RJxAEKBEEXSsIXisEQywlXCxBWy1AXy4EKRISKhMtKxQULBUVLBYWLRcXUyc6Vic9MBoEMRoEMhoEMxoEVxo+NRwaNhwENx0EVSg7OB4bOR4uOh4dOx4ePB4fPR88Uh85ECUHPiAhPyAiQCAzQSA0YCAEYSAEYiAEQiEEQyElByEIRCI1RSIERiInRyI2RCI3SCIqSSI4SiIESyMETCQETSQE",
-    "21": "WSkEAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEDAYEDgYvDwYEBwgIBwgIEQkEWAk/EgkEEwkJFAkEFQkEFgoEFwoKGAowGQoMGgoxGwoOHAoPHQoEHgoEYwoEWgoEIAsEIQsEIgwEIw0EJA4EJQ8yJg8RJxAEKBEEXSsIXisEQywlXCxBWy1AXy4EKRISKhMtKxQULBUVLBYWLRcXUyc6Vic9MBoEMRoEMhoEMxoEVxo+NRwaNhwENx0EVSg7OB4bOR4uOh4dOx4ePB4fPR88Uh85ECUHPiAhPyAiQCAzQSA0YCAEYSAEYiAEQiEEQyElByEIRCI1RSIERiInRyI2RCI3SCIqSSI4SiIESyMETCQETSQE"
+    "21": "WSkEAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEDAYEDgYvDwYEBwgIBwgIEQkEWAk/EgkEEwkJFAkEFQkEFgoEFwoKGAowGQoMGgoxGwoOHAoPHQoEHgoEYwoEWgoEIAsEIQsEIgwEIw0EJA4EJQ8yJg8RJxAEKBEEXSsIXisEQywlXCxBWy1AXy4EKRISKhMtKxQULBUVLBYWLRcXUyc6Vic9MBoEMRoEMhoEMxoEVxo+NRwaNhwENx0EVSg7OB4bOR4uOh4dOx4ePB4fPR88Uh85ECUHPiAhPyAiQCAzQSA0YCAEYSAEYiAEQiEEQyElByEIRCI1RSIERiInRyI2RCI3SCIqSSI4SiIESyMETCQETSQE",
+    "22": "WSkEAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEDAYEZAYEDgYvDwYEBwgIBwgIEQkEWAk/EgkEEwkJFAkEFQkEFgoEFwoKGAowGQoMGgoxGwoOHAoPHQoEHgoEYwoEWgoEIAsEIQsEIgwEIw0EJA4EJQ8yJg8RJxAEKBEEXSsIXisEQywlXCxBWy1AXy4EZS8EZjAEZzEEKRISKhMtaBMEKxQUaTIELBUVajMEazQEbDUELBYWbTYELRcXbjcEbzcEUyc6Vic9cBkEMBoEcRoEMhoEchoEVxo+NRwaNhwENx0EVSg7cx4EOB4bOR4uOh4dOx4ePB4fPR88Uh85dDgEECUHPiAhPyAiQCAzQSA0YCAEYSAEYiAEQiEEQyElByEIRCI1RSIERiInRyI2RCI3SCIqSSI4SiIESyMETCQETSQE",
+    "23": "WSkEAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEDAYEZAYEDgYvdQYEDwYEBwgIBwgIdgkEdwkEdwkEdwkEeAkEEQkEWAk/EgkEeQkEEwkJFAkEFQkEFgoEFwoKGAowGQoMGgoxGwoOHAoPHQoEHgoEYwoEWgoEejkEIAsEIQsEewsEfAsEIgwEfQ0EIw0EJA4EJQ8yJg8RJxAEKBEEXSsIXisEQywlXCxBWy1Afi4EZS8EZjAEZzEEKRISKhMtaBMEKxQUaTIELBUVajMEazQEbDUELBYWbTYELRcXbjcEbzcEUyc6Vic9cBkEMBoEcRoEMhoEchoEVxo+NRwaNhwENx0EVSg7cx4EOB4bOR4uOh4dOx4ePB4ffx8EgB8EPR88Uh85dDgEECUHPiAhPyAiQCAzQSA0YCAEYSAEYiAEQiEEQyElByEIRCI1RSIERiInRyI2RCI3SCIqSSI4SiIESyMETCQETSQE"
   }
 }
