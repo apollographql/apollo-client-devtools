@@ -3,7 +3,7 @@ import pkg from "./package.json" with { type: "json" };
 import { writeFile } from "node:fs/promises";
 import { restoreErrorCodes } from "./restore-errorcodes.mjs";
 import assert from "node:assert";
-import { gt, satisfies } from "semver";
+import { gt } from "semver";
 
 registerHooks({
   resolve(specifier, context, nextResolve) {
@@ -11,12 +11,10 @@ registerHooks({
     const match = regex.exec(specifier);
     const version = match?.[1];
 
-    if (!version || !satisfies(version, ">=4.0.0-alpha <=4.0.2")) {
-      return nextResolve(specifier, context);
-    }
-
     return nextResolve(
-      `./node_modules/@apollo-client/${version}/invariantErrorCodes.js`,
+      version
+        ? `./node_modules/@apollo-client/${version}/invariantErrorCodes.js`
+        : specifier,
       context
     );
   },
