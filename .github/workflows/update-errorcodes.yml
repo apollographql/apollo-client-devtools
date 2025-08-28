@@ -15,7 +15,7 @@ jobs:
           node-version: "20.x"
       - run: |
           npm run rebuild
-          npm install
+          npm install --force
           npm run encode
           if git diff --exit-code --quiet HEAD errorcodes.json; then
             echo "No new error codes were added."
