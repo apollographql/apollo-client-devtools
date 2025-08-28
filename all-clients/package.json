@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "rebuild": "cp package.json package.json.bak; npm info @apollo/client --json | jq --slurpfile package package.json.bak --from-file package.jq | tee package.json && rm package.json.bak",
-    "encode": "node --import './errorCodesLoader.js' ./encode-errorcodes.mjs"
+    "encode": "node ./encode-errorcodes.mjs"
   },
   "dependencies": {
     "@apollo-client/3.8.0-beta.0": "npm:@apollo/client@3.8.0-beta.0",
