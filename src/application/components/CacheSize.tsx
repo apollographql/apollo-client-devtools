@@ -179,53 +179,31 @@ const DESCRIPTIONS: Record<CacheSizeKeys, ReactNode> = {
     </>
   ),
   "inMemoryCache.executeSelectionSet": (
-    <>
-      <p>
-        Cache size for the <code>executeSelectionSet</code> method on{" "}
-        <TooltipLink href="https://github.com/apollographql/apollo-client/blob/main/src/cache/inmemory/readFromStore.ts">
-          <code>StoreReader</code>
-        </TooltipLink>
-        .
-      </p>
-      <p>
-        Note: <code>executeSelectionSet</code> will be set to the{" "}
-        <code>resultCacheMaxSize</code> option and will fall back to this
-        configuration value if the option is not set.
-      </p>
-    </>
+    <p>
+      Cache size for the <code>executeSelectionSet</code> method on{" "}
+      <TooltipLink href="https://github.com/apollographql/apollo-client/blob/main/src/cache/inmemory/readFromStore.ts">
+        <code>StoreReader</code>
+      </TooltipLink>
+      .
+    </p>
   ),
   "inMemoryCache.executeSubSelectedArray": (
-    <>
-      <p>
-        Cache size for the <code>executeSubSelectedArray</code> method on{" "}
-        <TooltipLink href="https://github.com/apollographql/apollo-client/blob/main/src/cache/inmemory/readFromStore.ts">
-          <code>StoreReader</code>
-        </TooltipLink>
-        .
-      </p>
-
-      <p>
-        Note: <code>executeSubSelectedArray</code> will be set to the{" "}
-        <code>resultCacheMaxSize</code> option and will fall back to this
-        configuration value if the option is not set.
-      </p>
-    </>
+    <p>
+      Cache size for the <code>executeSubSelectedArray</code> method on{" "}
+      <TooltipLink href="https://github.com/apollographql/apollo-client/blob/main/src/cache/inmemory/readFromStore.ts">
+        <code>StoreReader</code>
+      </TooltipLink>
+      .
+    </p>
   ),
   "inMemoryCache.maybeBroadcastWatch": (
-    <>
-      <p>
-        Cache size for the <code>maybeBroadcastWatch</code> method on{" "}
-        <TooltipLink href="https://github.com/apollographql/apollo-client/blob/main/src/cache/inmemory/inMemoryCache.ts">
-          <code>InMemoryCache</code>
-        </TooltipLink>
-        .
-      </p>
-      <p>
-        Note: <code>maybeBroadcastWatch</code> will be set to the{" "}
-        <code>resultCacheMaxSize</code> option and will fall back to this
-        configuration value if the option is not set.
-      </p>
-    </>
+    <p>
+      Cache size for the <code>maybeBroadcastWatch</code> method on{" "}
+      <TooltipLink href="https://github.com/apollographql/apollo-client/blob/main/src/cache/inmemory/inMemoryCache.ts">
+        <code>InMemoryCache</code>
+      </TooltipLink>
+      .
+    </p>
   ),
 };
 
