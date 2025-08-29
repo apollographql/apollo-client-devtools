@@ -5,7 +5,7 @@ import TerserPlugin from "terser-webpack-plugin";
 import WebExtPlugin from "web-ext-plugin";
 import { StatsWriterPlugin } from "webpack-stats-plugin";
 import webpack from "webpack";
-import packageJson from "./package.json" with { type: "json" };
+import packageJson from "./packages/apollo-client-devtools/package.json" with { type: "json" };
 
 import vscodeClientPkg from "./packages/client-devtools-vscode/package.json" with { type: "json" };
 
