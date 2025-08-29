@@ -1,5 +1,11 @@
 # @apollo/client-devtools-vscode
 
+## 4.21.0
+
+### Minor Changes
+
+- [#1607](https://github.com/apollographql/apollo-client-devtools/pull/1607) [`b935cf8`](https://github.com/apollographql/apollo-client-devtools/commit/b935cf8c933493e692a42158df0bc5a86ec52bd5) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Add a memory panel to monitor internal Apollo Client caches.
+
 ## 4.20.2
 
 ### Patch Changes
