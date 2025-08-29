@@ -204,7 +204,7 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
         </header>
 
         <ButtonGroup>
-          <Tooltip content="View historical">
+          <Tooltip content="View dashboard">
             <Button
               icon={<IconObserve className="size-4" />}
               size="md"
