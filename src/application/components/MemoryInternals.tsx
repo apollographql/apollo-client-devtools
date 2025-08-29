@@ -185,11 +185,11 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
       <div className="flex gap-2 justify-between items-start">
         <header className="flex flex-col gap-2">
           <h1 className="font-medium text-2xl text-heading dark:text-heading-dark">
-            Memory
+            Memoization cache
           </h1>
           <p className="text-secondary dark:text-secondary-dark">
-            Learn how Apollo Client manages memory and how to set custom cache
-            size limits in the{" "}
+            Learn how Apollo Client manages memory and how to set custom
+            memoization cache size limits in the{" "}
             <a
               href="https://www.apollographql.com/docs/react/caching/memory-management/"
               className="font-medium underline inline-flex items-center gap-2"
@@ -272,7 +272,7 @@ function EmptyLayout({ children }: { children: ReactNode }) {
     <FullWidthLayout className="p-4 gap-4">
       <header className="flex flex-col gap-2">
         <h1 className="font-medium text-2xl text-heading dark:text-heading-dark">
-          Memory
+          Memoization cache
         </h1>
         <p className="text-secondary dark:text-secondary-dark">
           Learn how Apollo Client manages memory and how to set custom cache

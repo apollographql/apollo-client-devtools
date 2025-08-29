@@ -170,7 +170,9 @@ export const App = () => {
               Mutations ({client?.mutations.total ?? 0})
             </Tabs.Trigger>
             <Tabs.Trigger value={Screens.Cache}>Cache</Tabs.Trigger>
-            <Tabs.Trigger value={Screens.Memory}>Memory</Tabs.Trigger>
+            <Tabs.Trigger value={Screens.Memory}>
+              Memoization cache
+            </Tabs.Trigger>
             <Tabs.Trigger value={Screens.Explorer}>Explorer</Tabs.Trigger>
           </Tabs.List>
           <div className="ml-auto flex-1 justify-end flex items-center gap-2 h-full">
