@@ -1,13 +1,21 @@
 import type { JSONObject } from "../application/types/json";
-import type { ApolloClientInfo, ErrorCodes, NoInfer, SafeAny } from "../types";
+import type { ApolloClientInfo, ErrorCodes, NoInfer, SafeAny } from "@/types";
 import { createId } from "../utils/createId";
 import { RPC_MESSAGE_TIMEOUT } from "./errorMessages";
 import { deserializeError, serializeError } from "./errorSerialization";
 import type { MessageAdapter } from "./messageAdapters";
 import { MessageType, isDevtoolsMessage } from "./messages";
 import type { IDv3, IDv4 } from "./tab/clientHandler";
-import type { MutationV3Details, QueryV3Details } from "./tab/v3/types";
-import type { MutationV4Details, QueryV4Details } from "./tab/v4/types";
+import type {
+  MutationV3Details,
+  QueryV3Details,
+  MemoryInternalsV3,
+} from "./tab/v3/types";
+import type {
+  MutationV4Details,
+  QueryV4Details,
+  MemoryInternalsV4,
+} from "./tab/v4/types";
 
 export type RPCRequest = {
   getClients(): ApolloClientInfo[];
@@ -18,6 +26,8 @@ export type RPCRequest = {
   getV4Mutations(clientId: IDv4): MutationV4Details[];
   getCache(clientId: string): JSONObject;
   getErrorCodes(version: string): Promise<ErrorCodes | undefined>;
+  getV3MemoryInternals(clientId: IDv3): MemoryInternalsV3 | undefined;
+  getV4MemoryInternals(clientId: IDv4): MemoryInternalsV4 | undefined;
 };
 
 export interface RpcClient {

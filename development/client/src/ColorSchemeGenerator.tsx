@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useQuery } from "@apollo/client/react";
+import { useQuery } from "./ClientContext";
 
 import { GET_COLOR_SCHEME, GET_RANDOM_COLOR } from "./queries";
 import ColorScheme from "./components/ColorScheme";
@@ -16,11 +16,11 @@ const MODE = {
 };
 
 const ColorSchemeGenerator = () => {
-  const { data, refetch, startPolling, stopPolling } = useQuery(
+  const { data, refetch, startPolling, stopPolling } = useQuery<any>(
     GET_RANDOM_COLOR,
     { fetchPolicy: "no-cache" }
   );
-  const { data: schemeData } = useQuery(GET_COLOR_SCHEME, {
+  const { data: schemeData } = useQuery<any>(GET_COLOR_SCHEME, {
     variables: {
       hex: data?.random?.color?.hex,
       mode: MODE.ANALOGIC,

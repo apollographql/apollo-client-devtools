@@ -17,7 +17,13 @@
     "outDir": "dist",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "plugins": [
+      {
+        "name": "@0no-co/graphqlsp",
+        "schema": "./src/application/localSchema.graphql"
+      }
+    ]
   },
   "$schema": "https://json.schemastore.org/tsconfig",
   "compileOnSave": true,

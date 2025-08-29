@@ -1,10 +1,17 @@
 import type { RpcClient } from "../extension/rpc";
 import typeDefs from "./localSchema.graphql";
 import { makeExecutableSchema } from "@graphql-tools/schema";
-import type { Resolvers } from "./types/resolvers";
+import type {
+  Resolvers,
+  PersistedQueryLinkCacheSizes,
+  RemoveTypenameFromVariablesLinkCacheSizes,
+  MemoryInternalsCaches,
+} from "./types/resolvers";
 import { getOperationName } from "@apollo/client/utilities/internal";
 import { print } from "graphql";
 import { gte } from "semver";
+import type { MemoryInternalsV3 } from "@/extension/tab/v3/types";
+import type { MemoryInternalsV4 } from "@/extension/tab/v4/types";
 
 export function createSchemaWithRpcClient(rpcClient: RpcClient) {
   return makeExecutableSchema({
@@ -30,11 +37,46 @@ function createResolvers(client: RpcClient): Resolvers {
       cache: (client) => rpcClient.request("getCache", client.id),
       queries: (client) => client,
       mutations: (client) => client,
+      memoryInternals: async (client) => {
+        const memoryInternals = await rpcClient.request(
+          "getV3MemoryInternals",
+          client.id
+        );
+
+        if (!memoryInternals) {
+          return null;
+        }
+
+        const { sizes, limits } = memoryInternals;
+
+        return {
+          raw: memoryInternals,
+          caches: {
+            ...formatMemoryInternalsCaches(memoryInternals),
+            parser: getCacheSize("parser", sizes.parser, limits),
+          },
+        };
+      },
     },
     ClientV4: {
       cache: (client) => rpcClient.request("getCache", client.id),
       queries: (client) => client,
       mutations: (client) => client,
+      memoryInternals: async (client) => {
+        const memoryInternals = await rpcClient.request(
+          "getV4MemoryInternals",
+          client.id
+        );
+
+        if (!memoryInternals) {
+          return null;
+        }
+
+        return {
+          raw: memoryInternals,
+          caches: formatMemoryInternalsCaches(memoryInternals),
+        };
+      },
     },
     ClientQueries: {
       __resolveType: (client) => {
@@ -148,6 +190,163 @@ function createResolvers(client: RpcClient): Resolvers {
             return "SerializedError";
         }
       },
+    },
+  };
+}
+
+type MemoryLimits = Record<string, number | undefined>;
+
+function getCacheSize(
+  key: string,
+  size: number | undefined,
+  limits: MemoryLimits
+) {
+  return { key, size: size ?? null, limit: limits[key] ?? null };
+}
+
+function getDocumentTransformCacheSizes(
+  caches: Array<{ cache: number }>,
+  limits: MemoryLimits
+) {
+  return caches.map(({ cache }) => ({
+    cache: getCacheSize("documentTransform.cache", cache, limits),
+  }));
+}
+
+interface PersistedQueryLinkCache {
+  PersistedQueryLink: {
+    persistedQueryHashes: number;
+  };
+}
+
+function isPersistedQueryLinkCache(
+  cache: unknown
+): cache is PersistedQueryLinkCache {
+  return (
+    typeof cache === "object" && cache !== null && "PersistedQueryLink" in cache
+  );
+}
+
+interface RemoveTypenameFromVariablesLinkCache {
+  removeTypenameFromVariables: {
+    getVariableDefinitions: number;
+  };
+}
+
+function isRemoveTypenameFromVariablesLinkCache(
+  cache: unknown
+): cache is RemoveTypenameFromVariablesLinkCache {
+  return (
+    typeof cache === "object" &&
+    cache !== null &&
+    "removeTypenameFromVariables" in cache
+  );
+}
+
+function getLinkCacheSize(
+  linkCache: unknown,
+  limits: MemoryLimits
+):
+  | PersistedQueryLinkCacheSizes
+  | RemoveTypenameFromVariablesLinkCacheSizes
+  | null {
+  if (isPersistedQueryLinkCache(linkCache)) {
+    return {
+      __typename: "PersistedQueryLinkCacheSizes",
+      persistedQueryHashes: getCacheSize(
+        "PersistedQueryLink.persistedQueryHashes",
+        linkCache.PersistedQueryLink.persistedQueryHashes,
+        limits
+      ),
+    } satisfies PersistedQueryLinkCacheSizes;
+  }
+
+  if (isRemoveTypenameFromVariablesLinkCache(linkCache)) {
+    return {
+      __typename: "RemoveTypenameFromVariablesLinkCacheSizes",
+      getVariableDefinitions: getCacheSize(
+        "removeTypenameFromVariables.getVariableDefinitions",
+        linkCache.removeTypenameFromVariables.getVariableDefinitions,
+        limits
+      ),
+    } satisfies RemoveTypenameFromVariablesLinkCacheSizes;
+  }
+
+  return null;
+}
+
+function formatMemoryInternalsCaches(
+  memoryInternals: MemoryInternalsV3 | MemoryInternalsV4
+): MemoryInternalsCaches {
+  const { sizes, limits } = memoryInternals;
+
+  return {
+    print: getCacheSize("print", sizes.print, limits),
+    canonicalStringify: getCacheSize(
+      "canonicalStringify",
+      sizes.canonicalStringify,
+      limits
+    ),
+    links: sizes.links
+      .map((linkCache) => getLinkCacheSize(linkCache, limits))
+      .filter(Boolean),
+    queryManager: {
+      getDocumentInfo: getCacheSize(
+        "queryManager.getDocumentInfo",
+        sizes.queryManager.getDocumentInfo,
+        limits
+      ),
+      documentTransforms: getDocumentTransformCacheSizes(
+        sizes.queryManager.documentTransforms,
+        limits
+      ),
+    },
+    fragmentRegistry: {
+      lookup: getCacheSize(
+        "fragmentRegistry.lookup",
+        sizes.fragmentRegistry?.lookup,
+        limits
+      ),
+      findFragmentSpreads: getCacheSize(
+        "fragmentRegistry.findFragmentSpreads",
+        sizes.fragmentRegistry?.findFragmentSpreads,
+        limits
+      ),
+      transform: getCacheSize(
+        "fragmentRegistry.transform",
+        sizes.fragmentRegistry?.transform,
+        limits
+      ),
+    },
+    cache: {
+      fragmentQueryDocuments: getCacheSize(
+        "cache.fragmentQueryDocuments",
+        sizes.cache?.fragmentQueryDocuments,
+        limits
+      ),
+    },
+    addTypenameDocumentTransform: sizes.addTypenameDocumentTransform
+      ? getDocumentTransformCacheSizes(
+          sizes.addTypenameDocumentTransform,
+          limits
+        )
+      : null,
+    inMemoryCache: {
+      maybeBroadcastWatch: getCacheSize(
+        "inMemoryCache.maybeBroadcastWatch",
+        sizes.inMemoryCache?.maybeBroadcastWatch,
+        limits
+      ),
+      executeSelectionSet: getCacheSize(
+        "inMemoryCache.executeSelectionSet",
+        sizes.inMemoryCache?.executeSelectionSet,
+        limits
+      ),
+      executeSubSelectedArray: getCacheSize(
+        "inMemoryCache.executeSubSelectedArray",
+        sizes.inMemoryCache?.executeSubSelectedArray,
+        limits
+      ),
     },
   };
 }

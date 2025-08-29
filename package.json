@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@apollo/brand": "^0.7.0",
-    "@apollo/client": "4.0.2",
+    "@apollo/client": "4.0.3",
     "@apollo/client-3": "npm:@apollo/client@3.14.0",
     "@apollo/icons": "^0.8.0",
     "@apollo/tailwind-preset": "^0.2.0",
@@ -74,6 +74,7 @@
     "zen-observable": "^0.10.0"
   },
   "devDependencies": {
+    "@0no-co/graphqlsp": "^1.12.13",
     "@changesets/changelog-github": "0.5.1",
     "@changesets/cli": "2.27.12",
     "@eslint/js": "^9.21.0",
