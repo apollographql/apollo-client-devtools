@@ -126,14 +126,15 @@ function watchForClientTermination(client: ApolloClient) {
 
   client.stop = () => {
     knownClients.delete(client);
-    const handler = handlers.get(client)!;
+    const handler = handlers.get(client);
     handlers.delete(client);
 
     if (window.__APOLLO_CLIENT__ === client) {
       window.__APOLLO_CLIENT__ = undefined;
     }
-
-    tab.send({ type: "clientTerminated", clientId: handler.id });
+    if (handler) {
+      tab.send({ type: "clientTerminated", clientId: handler.id });
+    }
     originalStop.call(client);
   };
 }
