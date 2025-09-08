@@ -1,5 +1,11 @@
 # @apollo/client-devtools-vscode
 
+## 4.21.2
+
+### Patch Changes
+
+- [#1713](https://github.com/apollographql/apollo-client-devtools/pull/1713) [`0302538`](https://github.com/apollographql/apollo-client-devtools/commit/03025387eef2e08a457ae595e4be9bf66306a5e0) Thanks [@braineo](https://github.com/braineo)! - fix calling client.stop twice causing app crashing by checking if handler exist before sending tab command
+
 ## 4.21.1
 
 ### Patch Changes
