@@ -153,7 +153,8 @@
     "@apollo-client/4.0.1": "npm:@apollo/client@4.0.1",
     "@apollo-client/4.0.2": "npm:@apollo/client@4.0.2",
     "@apollo-client/4.0.3": "npm:@apollo/client@4.0.3",
-    "@apollo-client/4.0.4": "npm:@apollo/client@4.0.4"
+    "@apollo-client/4.0.4": "npm:@apollo/client@4.0.4",
+    "@apollo-client/4.0.5": "npm:@apollo/client@4.0.5"
   },
   "devDependencies": {
     "semver": "7.6.0"
