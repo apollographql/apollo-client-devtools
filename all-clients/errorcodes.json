@@ -162,7 +162,8 @@
     "%s '%s' contains `@client` and `@defer` directives. These cannot be used together.",
     "[ApolloLink.split]: The test function returned a non-boolean value which could result in subtle bugs (e.g. such as using an `async` function which always returns a truthy value). Got `%o`.",
     "The terminating link provided to `ApolloLink.execute` called `forward` instead of handling the request. This results in an observable that immediately completes and does not emit a value. Please provide a terminating link that properly handles the request.\n\nIf you are using a split link, ensure each branch contains a terminating link that handles the request.",
-    "`WebSocketLink` uses the deprecated and unmaintained `subscriptions-transport-ws` library. This link is no longer maintained and will be removed in a future major version of Apollo Client. We recommend switching to `GraphQLWsLink` which uses the `graphql-ws` library to send GraphQL operations through WebSocket connections (https://the-guild.dev/graphql/ws)."
+    "`WebSocketLink` uses the deprecated and unmaintained `subscriptions-transport-ws` library. This link is no longer maintained and will be removed in a future major version of Apollo Client. We recommend switching to `GraphQLWsLink` which uses the `graphql-ws` library to send GraphQL operations through WebSocket connections (https://the-guild.dev/graphql/ws).",
+    "Could not find pending chunk for incremental value. Please file an issue for the Apollo Client team to investigate."
   ],
   "allConditions": [
     null,
@@ -253,7 +254,8 @@
     "optionsWithDefaults.fetchPolicy === \"network-only\" ||\n    optionsWithDefaults.fetchPolicy === \"no-cache\"",
     "!hasDirectives([\"defer\"], request.query)",
     "this.options.fetchPolicy !== \"cache-only\"",
-    "!hasIncrementalDirective"
+    "!hasIncrementalDirective",
+    "pending"
   ],
   "allFiles": [
     null,
@@ -328,7 +330,8 @@
     "@apollo/client/utilities/internal/valueToObjectRepresentation.js",
     "@apollo/client/local-state/LocalState.js",
     "@apollo/client/incremental/handlers/notImplemented.js",
-    "@apollo/client/link/ws/index.js"
+    "@apollo/client/link/ws/index.js",
+    "@apollo/client/incremental/handlers/graphql17Alpha9.js"
   ],
   "byVersion": {
     "3.8.0-beta.0": "1",
@@ -478,7 +481,8 @@
     "4.0.2": "41",
     "4.0.3": "41",
     "4.0.4": "41",
-    "4.0.5": "41"
+    "4.0.5": "41",
+    "4.1.0-alpha.0": "42"
   },
   "errors": {
     "1": "AQEBAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUECwUEDAYEDQYEDgYGDwYEEAcHBwgIBwgIEQkEEgkEEwkJFAkEFQkEFgoEFwoKGAoLGQoMGgoNGwoOHAoPHQoEHgoEHwoEIAsEIQsEIgwEIw0EJA4EJQ8QJg8RJxAEKBEEKRISKhMTKxQULBUVLBYWLRcXLhgYLxkEMBoEMRoEMhoEMxoENBsZNRwaNhwENx0EOB4bOR4cOh4dOx4ePB4fPR8gPiAhPyAiQCAjQSAkQiEEQyElByEIRCImRSIERiInRyIoRCIpSCIqSSIrSiIESyMETCQETSQE",
@@ -521,6 +525,7 @@
     "38": "RD01RT0ERj0nPD1ImT0ERD43SD4qST44Bz8IQkAEQ0AlSkEER0I2TEMEPkQhP0QiQEQzQUQ0S0UEECUHhx9JPR88iB9KiR9LhDtFhTtGVSg7LRcXgTdCgjc6Uyc6Vic9Vxo+Nx0ENTwaNjwEKRISKhMtKxQUXSsIXisEQywlXCxBWy1AYC4EYS4EYi4EjUZQjUZQB0YIj0YEkEYEkUYEkkYEB0YIk0ZRKBEEJQ8yJg8RIgxDgzpEJA4EIAsEIQsEnEdWDAZOjAZPDgYvigZMGQYMGgYxGwYOHAYPiwZNmgZUmwZVDwYEEQkEnQlXWAk/EgkEngkEFQkEFgoElApSHQoEHgoEYwoElQpTlgpSnwpYlwpSWgoEmApShgpHAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEWSkE",
     "39": "RD01RT0ERj0nPD1ImT0ERD43SD4qST44Bz8IQkAEQ0AlSkEER0I2TEMEPkQhP0QiQEQzQUQ0S0UEECUHhx9JPR88iB9KiR9LhDtFhTtGVSg7LRcXgTdCgjc6Uyc6Vic9Vxo+Nx0ENTwaNjwEKhMtKxQUXSsIXisEQywlXCxBWy1AYC4EYS4EYi4EjUZQjUZQB0YIj0YEkEYEkUYEkkYEB0YIk0ZRKBEEJQ8yJg8RIgxDgzpEJA4EIAsEIQsEnEdWDAZOjAZPDgYvigZMGQYMGgYxGwYOHAYPiwZNmgZUmwZVDwYEEQkEnQlXWAk/EgkEngkEFQkEFgoElApSHQoEHgoEYwoElQpTlgpSnwpYlwpSWgoEmApShgpHAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEWSkE",
     "40": "RD01RT0ERj0nPD1ImT0ERD43SD4qST44Bz8IQkAEQ0AlSkEER0I2TEMEPkQhP0QiQEQzQUQ0S0UEECUHhx9JPR88iB9KiR9LhDtFhTtGVSg7LRcXgTdCgjc6Uyc6Vic9Vxo+Nx0ENTwaNjwEKhMtKxQUXSsIXisEQywlXCxBWy1AYC4EYS4EYi4EjUZQjUZQB0YIj0YEkEYEkUYEkkYEB0YIk0ZRJQ8yJg8RIgxDgzpEJA4EoAsEoQsEIQsEnEdWDAZOjAZPDgYvigZMGQYMGgYxGwYOHAYPiwZNmgZUmwZVDwYEEQkEnQlXWAk/EgkEngkEFQkEFgoElApSHQoEHgoEYwoElQpTlgpSnwpYlwpSWgoEmApShgpHAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEWSkE",
-    "41": "RD01RT0ERj0nPD1ImT0ERD43SD4qST44Bz8IQkAEQ0AlSkEER0I2TEMEPkQhP0QiQEQzQUQ0S0UEECUHhx9JPR88iB9KiR9LhDtFhTtGVSg7LRcXgTdCgjc6Uyc6Vic9Vxo+Nx0ENTwaNjwEKhMtKxQUXSsIXisEQywlXCxBWy1AYC4EYS4EYi4EjUZQjUZQB0YIj0YEkEYEkUYEkkYEB0YIk0ZRokgEJQ8yJg8RIgxDgzpEoAsEoQsEIQsEnEdWDAZOjAZPDgYvigZMGQYMGgYxGwYOHAYPiwZNmgZUmwZVDwYEEQkEnQlXWAk/EgkEngkEFQkEFgoElApSHQoEHgoEYwoElQpTlgpSnwpYlwpSWgoEmApShgpHAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEWSkE"
+    "41": "RD01RT0ERj0nPD1ImT0ERD43SD4qST44Bz8IQkAEQ0AlSkEER0I2TEMEPkQhP0QiQEQzQUQ0S0UEECUHhx9JPR88iB9KiR9LhDtFhTtGVSg7LRcXgTdCgjc6Uyc6Vic9Vxo+Nx0ENTwaNjwEKhMtKxQUXSsIXisEQywlXCxBWy1AYC4EYS4EYi4EjUZQjUZQB0YIj0YEkEYEkUYEkkYEB0YIk0ZRokgEJQ8yJg8RIgxDgzpEoAsEoQsEIQsEnEdWDAZOjAZPDgYvigZMGQYMGgYxGwYOHAYPiwZNmgZUmwZVDwYEEQkEnQlXWAk/EgkEngkEFQkEFgoElApSHQoEHgoEYwoElQpTlgpSnwpYlwpSWgoEmApShgpHAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEWSkE",
+    "42": "RD01RT0ERj0nPD1ImT0ERD43SD4qST44Bz8IQkAEQ0AlSkEER0I2TEMEPkQhP0QiQEQzQUQ0S0UEECUHhx9JPR88iB9KiR9LhDtFhTtGVSg7LRcXgTdCgjc6Uyc6Vic9Vxo+Nx0ENTwaNjwEKhMtKxQUXSsIXisEQywlXCxBWy1AYC4EYS4EYi4EjUZQjUZQB0YIj0YEkEYEkUYEkkYEB0YIk0ZRokgEJQ8yJg8RIgxDgzpEoAsEoQsEIQsEo0lZnEdWDAZOjAZPDgYvigZMGQYMGgYxGwYOHAYPiwZNmgZUmwZVDwYEEQkEnQlXWAk/EgkEngkEFQkEFgoElApSHQoEHgoEYwoElQpTlgpSnwpYlwpSWgoEmApShgpHAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEWSkE"
   }
 }
