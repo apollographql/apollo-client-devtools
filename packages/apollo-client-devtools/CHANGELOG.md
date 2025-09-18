@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.21.5
+
+### Patch Changes
+
+- [#1722](https://github.com/apollographql/apollo-client-devtools/pull/1722) [`f2d469e`](https://github.com/apollographql/apollo-client-devtools/commit/f2d469eecb58c76c237c72d96a835b26eb44b4bc) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Fix an issue where executing a query in the explorer tab that returned errors would get stuck in the loading state indefinitely.
+
 ## 4.21.4
 
 ### Patch Changes
