@@ -99,7 +99,11 @@ export class ClientV4Handler extends ClientHandler<ApolloClient> {
     fetchPolicy: FetchPolicy;
   }): Observable<EmbeddedExplorerResponse> {
     return this.client.watchQuery<JSONObject>(options).pipe(
-      filter((result) => isNetworkRequestSettled(result.networkStatus)),
+      filter(
+        (result) =>
+          isNetworkRequestSettled(result.networkStatus) ||
+          result.dataState !== "empty"
+      ),
       map(
         (result): EmbeddedExplorerResponse => ({
           data: result.data,
