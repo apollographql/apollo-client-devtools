@@ -3,6 +3,7 @@ import type {
   CombinedProtocolErrors,
   LocalStateError,
 } from "@apollo/client";
+import { isNetworkRequestSettled } from "@apollo/client/utilities";
 import type {
   ApolloClient,
   DocumentNode,
@@ -98,7 +99,7 @@ export class ClientV4Handler extends ClientHandler<ApolloClient> {
     fetchPolicy: FetchPolicy;
   }): Observable<EmbeddedExplorerResponse> {
     return this.client.watchQuery<JSONObject>(options).pipe(
-      filter((result) => result.dataState !== "empty"),
+      filter((result) => isNetworkRequestSettled(result.networkStatus)),
       map(
         (result): EmbeddedExplorerResponse => ({
           data: result.data,
