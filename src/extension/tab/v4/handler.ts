@@ -333,14 +333,15 @@ function getErrorProperties(error: unknown): EmbeddedExplorerResponse {
   if (isBranded(error, "CombinedGraphQLErrors")) {
     return {
       data: error.data,
-      error,
       errors: error.errors,
       extensions: error.extensions,
     };
   }
 
   if (isErrorLike(error)) {
-    return { error };
+    return {
+      error: { message: error.message, stack: error.stack },
+    };
   }
 
   return {};
