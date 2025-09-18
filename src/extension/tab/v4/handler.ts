@@ -3,6 +3,7 @@ import type {
   CombinedProtocolErrors,
   LocalStateError,
 } from "@apollo/client";
+import { isNetworkRequestSettled } from "@apollo/client/utilities";
 import type {
   ApolloClient,
   DocumentNode,
@@ -98,7 +99,11 @@ export class ClientV4Handler extends ClientHandler<ApolloClient> {
     fetchPolicy: FetchPolicy;
   }): Observable<EmbeddedExplorerResponse> {
     return this.client.watchQuery<JSONObject>(options).pipe(
-      filter((result) => result.dataState !== "empty"),
+      filter(
+        (result) =>
+          isNetworkRequestSettled(result.networkStatus) ||
+          result.dataState !== "empty"
+      ),
       map(
         (result): EmbeddedExplorerResponse => ({
           data: result.data,
@@ -333,14 +338,15 @@ function getErrorProperties(error: unknown): EmbeddedExplorerResponse {
   if (isBranded(error, "CombinedGraphQLErrors")) {
     return {
       data: error.data,
-      error,
       errors: error.errors,
       extensions: error.extensions,
     };
   }
 
   if (isErrorLike(error)) {
-    return { error };
+    return {
+      error: { message: error.message, stack: error.stack },
+    };
   }
 
   return {};
