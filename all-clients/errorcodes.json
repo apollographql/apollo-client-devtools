@@ -163,7 +163,9 @@
     "[ApolloLink.split]: The test function returned a non-boolean value which could result in subtle bugs (e.g. such as using an `async` function which always returns a truthy value). Got `%o`.",
     "The terminating link provided to `ApolloLink.execute` called `forward` instead of handling the request. This results in an observable that immediately completes and does not emit a value. Please provide a terminating link that properly handles the request.\n\nIf you are using a split link, ensure each branch contains a terminating link that handles the request.",
     "`WebSocketLink` uses the deprecated and unmaintained `subscriptions-transport-ws` library. This link is no longer maintained and will be removed in a future major version of Apollo Client. We recommend switching to `GraphQLWsLink` which uses the `graphql-ws` library to send GraphQL operations through WebSocket connections (https://the-guild.dev/graphql/ws).",
-    "Could not find pending chunk for incremental value. Please file an issue for the Apollo Client team to investigate."
+    "Could not find pending chunk for incremental value. Please file an issue for the Apollo Client team to investigate.",
+    "The '%s' field resolves the value from the cache, for example from a 'read' function, but a 'no-cache' fetch policy was used. The field value has been set to `null`. Either define a local resolver or use a fetch policy that uses the cache to ensure the field is resolved correctly.",
+    "Could not find a resolver for the '%s' field nor does the cache resolve the field. The field value has been set to `null`. Either define a resolver for the field or ensure the cache can resolve the value, for example, by adding a 'read' function to a field policy in 'InMemoryCache'."
   ],
   "allConditions": [
     null,
@@ -483,7 +485,8 @@
     "4.0.4": "41",
     "4.0.5": "41",
     "4.0.6": "41",
-    "4.1.0-alpha.0": "42"
+    "4.1.0-alpha.0": "42",
+    "4.1.0-alpha.1": "43"
   },
   "errors": {
     "1": "AQEBAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUECwUEDAYEDQYEDgYGDwYEEAcHBwgIBwgIEQkEEgkEEwkJFAkEFQkEFgoEFwoKGAoLGQoMGgoNGwoOHAoPHQoEHgoEHwoEIAsEIQsEIgwEIw0EJA4EJQ8QJg8RJxAEKBEEKRISKhMTKxQULBUVLBYWLRcXLhgYLxkEMBoEMRoEMhoEMxoENBsZNRwaNhwENx0EOB4bOR4cOh4dOx4ePB4fPR8gPiAhPyAiQCAjQSAkQiEEQyElByEIRCImRSIERiInRyIoRCIpSCIqSSIrSiIESyMETCQETSQE",
@@ -527,6 +530,7 @@
     "39": "RD01RT0ERj0nPD1ImT0ERD43SD4qST44Bz8IQkAEQ0AlSkEER0I2TEMEPkQhP0QiQEQzQUQ0S0UEECUHhx9JPR88iB9KiR9LhDtFhTtGVSg7LRcXgTdCgjc6Uyc6Vic9Vxo+Nx0ENTwaNjwEKhMtKxQUXSsIXisEQywlXCxBWy1AYC4EYS4EYi4EjUZQjUZQB0YIj0YEkEYEkUYEkkYEB0YIk0ZRKBEEJQ8yJg8RIgxDgzpEJA4EIAsEIQsEnEdWDAZOjAZPDgYvigZMGQYMGgYxGwYOHAYPiwZNmgZUmwZVDwYEEQkEnQlXWAk/EgkEngkEFQkEFgoElApSHQoEHgoEYwoElQpTlgpSnwpYlwpSWgoEmApShgpHAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEWSkE",
     "40": "RD01RT0ERj0nPD1ImT0ERD43SD4qST44Bz8IQkAEQ0AlSkEER0I2TEMEPkQhP0QiQEQzQUQ0S0UEECUHhx9JPR88iB9KiR9LhDtFhTtGVSg7LRcXgTdCgjc6Uyc6Vic9Vxo+Nx0ENTwaNjwEKhMtKxQUXSsIXisEQywlXCxBWy1AYC4EYS4EYi4EjUZQjUZQB0YIj0YEkEYEkUYEkkYEB0YIk0ZRJQ8yJg8RIgxDgzpEJA4EoAsEoQsEIQsEnEdWDAZOjAZPDgYvigZMGQYMGgYxGwYOHAYPiwZNmgZUmwZVDwYEEQkEnQlXWAk/EgkEngkEFQkEFgoElApSHQoEHgoEYwoElQpTlgpSnwpYlwpSWgoEmApShgpHAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEWSkE",
     "41": "RD01RT0ERj0nPD1ImT0ERD43SD4qST44Bz8IQkAEQ0AlSkEER0I2TEMEPkQhP0QiQEQzQUQ0S0UEECUHhx9JPR88iB9KiR9LhDtFhTtGVSg7LRcXgTdCgjc6Uyc6Vic9Vxo+Nx0ENTwaNjwEKhMtKxQUXSsIXisEQywlXCxBWy1AYC4EYS4EYi4EjUZQjUZQB0YIj0YEkEYEkUYEkkYEB0YIk0ZRokgEJQ8yJg8RIgxDgzpEoAsEoQsEIQsEnEdWDAZOjAZPDgYvigZMGQYMGgYxGwYOHAYPiwZNmgZUmwZVDwYEEQkEnQlXWAk/EgkEngkEFQkEFgoElApSHQoEHgoEYwoElQpTlgpSnwpYlwpSWgoEmApShgpHAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEWSkE",
-    "42": "RD01RT0ERj0nPD1ImT0ERD43SD4qST44Bz8IQkAEQ0AlSkEER0I2TEMEPkQhP0QiQEQzQUQ0S0UEECUHhx9JPR88iB9KiR9LhDtFhTtGVSg7LRcXgTdCgjc6Uyc6Vic9Vxo+Nx0ENTwaNjwEKhMtKxQUXSsIXisEQywlXCxBWy1AYC4EYS4EYi4EjUZQjUZQB0YIj0YEkEYEkUYEkkYEB0YIk0ZRokgEJQ8yJg8RIgxDgzpEoAsEoQsEIQsEo0lZnEdWDAZOjAZPDgYvigZMGQYMGgYxGwYOHAYPiwZNmgZUmwZVDwYEEQkEnQlXWAk/EgkEngkEFQkEFgoElApSHQoEHgoEYwoElQpTlgpSnwpYlwpSWgoEmApShgpHAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEWSkE"
+    "42": "RD01RT0ERj0nPD1ImT0ERD43SD4qST44Bz8IQkAEQ0AlSkEER0I2TEMEPkQhP0QiQEQzQUQ0S0UEECUHhx9JPR88iB9KiR9LhDtFhTtGVSg7LRcXgTdCgjc6Uyc6Vic9Vxo+Nx0ENTwaNjwEKhMtKxQUXSsIXisEQywlXCxBWy1AYC4EYS4EYi4EjUZQjUZQB0YIj0YEkEYEkUYEkkYEB0YIk0ZRokgEJQ8yJg8RIgxDgzpEoAsEoQsEIQsEo0lZnEdWDAZOjAZPDgYvigZMGQYMGgYxGwYOHAYPiwZNmgZUmwZVDwYEEQkEnQlXWAk/EgkEngkEFQkEFgoElApSHQoEHgoEYwoElQpTlgpSnwpYlwpSWgoEmApShgpHAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEWSkE",
+    "43": "RD01RT0ERj0nPD1ImT0ERD43SD4qST44Bz8IQkAEQ0AlSkEER0I2TEMEPkQhP0QiQEQzQUQ0S0UEECUHhx9JPR88iB9KiR9LhDtFhTtGVSg7LRcXgTdCgjc6Uyc6Vic9Vxo+Nx0ENTwaNjwEKhMtKxQUXSsIXisEQywlXCxBWy1AYC4EYS4EYi4EjUZQjUZQB0YIpEYEpUYEj0YEkEYEkUYEkkYEB0YIk0ZRokgEJQ8yJg8RIgxDgzpEoAsEoQsEIQsEo0lZnEdWDAZOjAZPDgYvigZMGQYMGgYxGwYOHAYPiwZNmgZUmwZVDwYEEQkEnQlXWAk/EgkEngkEFQkEFgoElApSHQoEHgoEYwoElQpTlgpSnwpYlwpSWgoEmApShgpHAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEWSkE"
   }
 }
