@@ -1,4 +1,8 @@
-import type { ApolloClient as ApolloClient4, Cache } from "@apollo/client";
+import type {
+  ApolloClient as ApolloClient4,
+  Cache,
+  OperationVariables,
+} from "@apollo/client";
 import type { ApolloClient as ApolloClient3 } from "@apollo/client-3";
 
 // All manifests should contain the same version number so it shouldn't matter
@@ -10,7 +14,11 @@ import type { JSONObject } from "../../application/types/json";
 import type { ActorMessage } from "../actor";
 import { createWindowActor } from "../actor";
 import { createWindowMessageAdapter } from "../messageAdapters";
-import { createRpcClient, createRpcHandler } from "../rpc";
+import {
+  createRpcClient,
+  createRpcHandler,
+  createRpcStreamHandler,
+} from "../rpc";
 import { loadErrorCodes } from "./loadErrorCodes";
 import { handleExplorerRequests } from "./handleExplorerRequests";
 import type { ClientHandler, IDv3, IDv4 } from "./clientHandler";
@@ -40,6 +48,7 @@ const messageAdapter = createWindowMessageAdapter(window, {
   jsonSerialize: true,
 });
 const handleRpc = createRpcHandler(messageAdapter);
+const handleRpcStream = createRpcStreamHandler(messageAdapter);
 const rpcClient = createRpcClient(messageAdapter);
 
 const knownClients = new Set<ApolloClient>();
@@ -106,8 +115,41 @@ handleRpc("getV4MemoryInternals", (clientId) => {
   return getClientById(clientId)?.getMemoryInternals?.();
 });
 
+handleRpcStream("cacheWrite", (push, clientId) => {
+  // Both v3 and v4 have the same options/return value so we can treat the
+  // client the same for both versions
+  const client = getClientById(clientId) as ApolloClient4;
+
+  const { cache } = client;
+  const originalWrite = cache.write;
+
+  cache.write = (options: Parameters<typeof originalWrite>[0]) => {
+    // const cacheBefore = cache.extract(true);
+    const ret = originalWrite.call(cache, options);
+    // const cacheAfter = cache.extract(true);
+
+    push({
+      dataId: options.dataId,
+      document: options.query,
+      variables: options.variables as OperationVariables,
+      overwrite: options.overwrite,
+      broadcast: options.broadcast,
+      data: options.result as JSONObject | null,
+    });
+
+    return ret;
+  };
+
+  return () => {
+    cache.write = originalWrite;
+  };
+});
+
 function getClientById(clientId: IDv3): ApolloClient3<any>;
 function getClientById(clientId: IDv4): ApolloClient4;
+function getClientById(
+  clientId: IDv3 | IDv4
+): ApolloClient3<any> | ApolloClient4;
 
 function getClientById(clientId: IDv3 | IDv4): ApolloClient | undefined {
   return getHandlerByClientId(clientId as any)?.getClient();
