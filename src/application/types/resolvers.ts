@@ -423,7 +423,7 @@ export type SerializedUnconventionalError = ErrorLike & {
 
 export type Subscription = {
   __typename?: "Subscription";
-  cacheWritten: Maybe<CacheWrite>;
+  cacheWritten: CacheWrite;
 };
 
 export type SubscriptionCacheWrittenArgs = {
@@ -1602,7 +1602,7 @@ export type SubscriptionResolvers<
     ResolversParentTypes["Subscription"] = ResolversParentTypes["Subscription"],
 > = {
   cacheWritten?: SubscriptionResolver<
-    Maybe<ResolversTypes["CacheWrite"]>,
+    ResolversTypes["CacheWrite"],
     "cacheWritten",
     ParentType,
     ContextType,

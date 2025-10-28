@@ -22,7 +22,7 @@ type Query {
 }
 
 type Subscription {
-  cacheWritten(clientId: ID!): CacheWrite
+  cacheWritten(clientId: ID!): CacheWrite!
 }
 
 type CacheWrite {

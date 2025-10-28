@@ -2,13 +2,18 @@ import type { ReactNode } from "react";
 import { useState, useMemo, useSyncExternalStore } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { gql, NetworkStatus } from "@apollo/client";
-import { useQuery } from "@apollo/client/react";
+import { useQuery, useSubscription } from "@apollo/client/react";
 import IconArrowLeft from "@apollo/icons/small/IconArrowLeft.svg";
 import IconArrowRight from "@apollo/icons/small/IconArrowRight.svg";
 
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { SearchField } from "../SearchField";
-import type { GetCache, GetCacheVariables } from "../../types/gql";
+import type {
+  CacheWrites,
+  CacheWritesVariables,
+  GetCache,
+  GetCacheVariables,
+} from "../../types/gql";
 import type { JSONObject } from "../../types/json";
 import { JSONTreeViewer } from "../JSONTreeViewer";
 import clsx from "clsx";
@@ -35,6 +40,18 @@ const GET_CACHE: TypedDocumentNode<GetCache, GetCacheVariables> = gql`
     client(id: $id) {
       id
       cache
+    }
+  }
+`;
+
+const SUBSCRIBE_TO_CACHE_WRITES: TypedDocumentNode<
+  CacheWrites,
+  CacheWritesVariables
+> = gql`
+  subscription CacheWrites($clientId: ID!) {
+    cacheWritten(clientId: $clientId) {
+      subscriptionString
+      data
     }
   }
 `;
@@ -83,6 +100,14 @@ export function Cache({ clientId }: CacheProps) {
 
   useActorEvent("panelHidden", () => stopPolling());
   useActorEvent("panelShown", () => startPolling(500));
+  useSubscription(SUBSCRIBE_TO_CACHE_WRITES, {
+    variables: { clientId: clientId! },
+    skip: !clientId,
+    onData: (result) => {
+      console.log(result);
+    },
+    ignoreResults: true,
+  });
 
   const cache = data?.client?.cache ?? STABLE_EMPTY_OBJ;
 

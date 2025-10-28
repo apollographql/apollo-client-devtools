@@ -6,6 +6,7 @@ import type {
   PersistedQueryLinkCacheSizes,
   RemoveTypenameFromVariablesLinkCacheSizes,
   MemoryInternalsCaches,
+  CacheWrite,
 } from "./types/resolvers";
 import { getOperationName } from "@apollo/client/utilities/internal";
 import { GraphQLError, print } from "graphql";
@@ -13,6 +14,9 @@ import { gte } from "semver";
 import type { MemoryInternalsV3 } from "@/extension/tab/v3/types";
 import type { MemoryInternalsV4 } from "@/extension/tab/v4/types";
 import { isExtensionInvalidatedError } from "@/extension/errorMessages";
+import { getMessageStream } from "./utilities/actorIterable";
+import { getPanelActor } from "@/extension/devtools/panelActor";
+import type { ActorMessage } from "@/extension/actor";
 
 export function createSchemaWithRpcClient(rpcClient: RpcClient) {
   return makeExecutableSchema({
@@ -44,6 +48,36 @@ function createResolvers(client: RpcClient): Resolvers {
     Query: {
       clients: () => request("getClients"),
       client: (_, { id }) => request("getClient", id),
+    },
+    Subscription: {
+      cacheWritten: {
+        subscribe: (_, args, context: { abortSignal?: AbortSignal }) => {
+          const cacheWriteStream = getMessageStream(
+            "cacheWrite",
+            getPanelActor(window),
+            context.abortSignal
+          );
+          const toResultStream = new TransformStream<
+            Extract<ActorMessage, { type: "cacheWrite" }>,
+            { cacheWritten: CacheWrite }
+          >({
+            transform: (chunk, controller) => {
+              if (chunk.clientId === args.clientId) {
+                controller.enqueue({
+                  cacheWritten: {
+                    data: chunk.options.result as any,
+                    subscriptionString: print(chunk.options.query),
+                    options: null,
+                    variables: chunk.options.variables,
+                  },
+                });
+              }
+            },
+          });
+
+          return cacheWriteStream.pipeThrough(toResultStream);
+        },
+      },
     },
     Client: {
       __resolveType: (client) => {
