@@ -984,3 +984,58 @@ test("calls cleanup function when unsubscribing stream handler", async () => {
   unsubscribe();
   expect(cleanup).toHaveBeenCalledTimes(1);
 });
+
+test("runs cleanup only on terminated handler", async () => {
+  const handlerAdapter = createTestAdapter();
+  const clientAdapter = createTestAdapter();
+  const controller = new AbortController();
+  createBridge(clientAdapter, handlerAdapter);
+
+  const client = createRpcClient(clientAdapter);
+  const handleRpcStream = createRpcStreamHandler(handlerAdapter);
+
+  const cleanup = jest.fn();
+  handleRpcStream("cacheWrite", (push, clientId) => {
+    wait(50).then(() => {
+      push({
+        document: gql`
+          query {
+            foo
+          }
+        `,
+        data: { foo: clientId },
+        dataId: undefined,
+        variables: undefined,
+        overwrite: undefined,
+        broadcast: undefined,
+      });
+    });
+
+    return () => cleanup(clientId);
+  });
+
+  const stream = client.stream("cacheWrite", "1");
+  const reader = stream.getReader();
+  client.withSignal(controller.signal).stream("cacheWrite", "2");
+
+  controller.abort();
+
+  expect(cleanup).toHaveBeenCalledTimes(1);
+  expect(cleanup).toHaveBeenCalledWith("2");
+
+  await expect(reader.read()).resolves.toEqual({
+    value: {
+      document: gql`
+        query {
+          foo
+        }
+      `,
+      data: { foo: "1" },
+      dataId: undefined,
+      variables: undefined,
+      overwrite: undefined,
+      broadcast: undefined,
+    },
+    done: false,
+  });
+});
