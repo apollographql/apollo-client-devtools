@@ -666,7 +666,11 @@ test("can stream messages from adapter", async () => {
     value: {
       dataId: undefined,
       data: { foo: true },
-      documentString: "query { foo }",
+      document: gql`
+        query {
+          foo
+        }
+      `,
       variables: undefined,
       overwrite: undefined,
       broadcast: undefined,
@@ -677,7 +681,11 @@ test("can stream messages from adapter", async () => {
     value: {
       dataId: undefined,
       data: { bar: false },
-      documentString: "query { bar }",
+      document: gql`
+        query {
+          bar
+        }
+      `,
       variables: undefined,
       overwrite: undefined,
       broadcast: undefined,
@@ -694,15 +702,16 @@ test("closes stream when abort controller aborts", async () => {
   const stream = client.withSignal(controller.signal).stream("cacheWrite", "1");
   const reader = stream.getReader();
   const { id } = adapter.mocks.messages[0] as RPCStreamStartMessage;
+  const query = gql`
+    query {
+      foo
+    }
+  `;
 
   adapter.simulateRPCStreamChunk<CacheWrite>(id, {
     dataId: undefined,
     data: { foo: true },
-    document: gql`
-      query {
-        foo
-      }
-    `,
+    document: query,
     variables: undefined,
     overwrite: undefined,
     broadcast: undefined,
@@ -712,7 +721,7 @@ test("closes stream when abort controller aborts", async () => {
     value: {
       dataId: undefined,
       data: { foo: true },
-      documentString: "query { foo }",
+      document: query,
       variables: undefined,
       overwrite: undefined,
       broadcast: undefined,
@@ -734,15 +743,16 @@ test("does not mistakenly handle messages from different rpc streams", async () 
 
   const stream = client.stream("cacheWrite", "1");
   const reader = stream.getReader();
+  const query = gql`
+    query {
+      foo
+    }
+  `;
 
   adapter.simulateRPCStreamChunk<GetStreamValueType<typeof stream>>("xyz", {
     dataId: undefined,
     data: { foo: true },
-    document: gql`
-      query {
-        foo
-      }
-    `,
+    document: query,
     variables: undefined,
     overwrite: undefined,
     broadcast: undefined,
