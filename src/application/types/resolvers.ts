@@ -74,6 +74,22 @@ export type CacheSize = {
   size: Maybe<Scalars["Int"]["output"]>;
 };
 
+export type CacheWrite = {
+  __typename?: "CacheWrite";
+  data: Maybe<Scalars["QueryData"]["output"]>;
+  options: Maybe<CacheWriteOptions>;
+  subscriptionString: Scalars["String"]["output"];
+  variables: Maybe<Scalars["Variables"]["output"]>;
+};
+
+/** Represents options for a cache write */
+export type CacheWriteOptions = {
+  __typename?: "CacheWriteOptions";
+  broadcast: Maybe<Scalars["Boolean"]["output"]>;
+  cacheKey: Maybe<Scalars["String"]["output"]>;
+  overwrite: Maybe<Scalars["Boolean"]["output"]>;
+};
+
 export type Client = {
   cache: Scalars["Cache"]["output"];
   id: Scalars["String"]["output"];
@@ -405,6 +421,15 @@ export type SerializedUnconventionalError = ErrorLike & {
   stack: Maybe<Scalars["String"]["output"]>;
 };
 
+export type Subscription = {
+  __typename?: "Subscription";
+  cacheWritten: Maybe<CacheWrite>;
+};
+
+export type SubscriptionCacheWrittenArgs = {
+  clientId: Scalars["ID"]["input"];
+};
+
 export type ResolverTypeWrapper<T> = Promise<T> | T;
 
 export type ResolverWithResolve<TResult, TParent, TContext, TArgs> = {
@@ -562,6 +587,8 @@ export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars["Boolean"]["output"]>;
   Cache: ResolverTypeWrapper<Scalars["Cache"]["output"]>;
   CacheSize: ResolverTypeWrapper<CacheSize>;
+  CacheWrite: ResolverTypeWrapper<CacheWrite>;
+  CacheWriteOptions: ResolverTypeWrapper<CacheWriteOptions>;
   Client: ResolverTypeWrapper<ApolloClientInfo>;
   ClientMutation: ResolverTypeWrapper<
     ResolversInterfaceTypes<ResolversTypes>["ClientMutation"]
@@ -657,6 +684,7 @@ export type ResolversTypes = {
   SerializedServerParseError: ResolverTypeWrapper<RpcSerializedServerParseError>;
   SerializedUnconventionalError: ResolverTypeWrapper<RpcSerializedUnconventionalError>;
   String: ResolverTypeWrapper<Scalars["String"]["output"]>;
+  Subscription: ResolverTypeWrapper<never>;
   Variables: ResolverTypeWrapper<Scalars["Variables"]["output"]>;
 };
 
@@ -666,6 +694,8 @@ export type ResolversParentTypes = {
   Boolean: Scalars["Boolean"]["output"];
   Cache: Scalars["Cache"]["output"];
   CacheSize: CacheSize;
+  CacheWrite: CacheWrite;
+  CacheWriteOptions: CacheWriteOptions;
   Client: ApolloClientInfo;
   ClientMutation: ResolversInterfaceTypes<ResolversParentTypes>["ClientMutation"];
   ClientMutations: ResolversInterfaceTypes<ResolversParentTypes>["ClientMutations"];
@@ -731,6 +761,7 @@ export type ResolversParentTypes = {
   SerializedServerParseError: RpcSerializedServerParseError;
   SerializedUnconventionalError: RpcSerializedUnconventionalError;
   String: Scalars["String"]["output"];
+  Subscription: never;
   Variables: Scalars["Variables"]["output"];
 };
 
@@ -760,6 +791,49 @@ export type CacheSizeResolvers<
   key?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   limit?: Resolver<Maybe<ResolversTypes["Int"]>, ParentType, ContextType>;
   size?: Resolver<Maybe<ResolversTypes["Int"]>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CacheWriteResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["CacheWrite"] = ResolversParentTypes["CacheWrite"],
+> = {
+  data?: Resolver<Maybe<ResolversTypes["QueryData"]>, ParentType, ContextType>;
+  options?: Resolver<
+    Maybe<ResolversTypes["CacheWriteOptions"]>,
+    ParentType,
+    ContextType
+  >;
+  subscriptionString?: Resolver<
+    ResolversTypes["String"],
+    ParentType,
+    ContextType
+  >;
+  variables?: Resolver<
+    Maybe<ResolversTypes["Variables"]>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CacheWriteOptionsResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["CacheWriteOptions"] = ResolversParentTypes["CacheWriteOptions"],
+> = {
+  broadcast?: Resolver<
+    Maybe<ResolversTypes["Boolean"]>,
+    ParentType,
+    ContextType
+  >;
+  cacheKey?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  overwrite?: Resolver<
+    Maybe<ResolversTypes["Boolean"]>,
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1522,6 +1596,20 @@ export type SerializedUnconventionalErrorResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type SubscriptionResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["Subscription"] = ResolversParentTypes["Subscription"],
+> = {
+  cacheWritten?: SubscriptionResolver<
+    Maybe<ResolversTypes["CacheWrite"]>,
+    "cacheWritten",
+    ParentType,
+    ContextType,
+    RequireFields<SubscriptionCacheWrittenArgs, "clientId">
+  >;
+};
+
 export interface VariablesScalarConfig
   extends GraphQLScalarTypeConfig<ResolversTypes["Variables"], any> {
   name: "Variables";
@@ -1531,6 +1619,8 @@ export type Resolvers<ContextType = any> = {
   BaseCacheSizes?: BaseCacheSizesResolvers<ContextType>;
   Cache?: GraphQLScalarType;
   CacheSize?: CacheSizeResolvers<ContextType>;
+  CacheWrite?: CacheWriteResolvers<ContextType>;
+  CacheWriteOptions?: CacheWriteOptionsResolvers<ContextType>;
   Client?: ClientResolvers<ContextType>;
   ClientMutation?: ClientMutationResolvers<ContextType>;
   ClientMutations?: ClientMutationsResolvers<ContextType>;
@@ -1577,5 +1667,6 @@ export type Resolvers<ContextType = any> = {
   SerializedServerError?: SerializedServerErrorResolvers<ContextType>;
   SerializedServerParseError?: SerializedServerParseErrorResolvers<ContextType>;
   SerializedUnconventionalError?: SerializedUnconventionalErrorResolvers<ContextType>;
+  Subscription?: SubscriptionResolvers<ContextType>;
   Variables?: GraphQLScalarType;
 };
