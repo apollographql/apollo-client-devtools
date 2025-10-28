@@ -12,7 +12,11 @@ import type {
   RPCResponseMessage,
   RPCStreamStartMessage,
 } from "../rpc";
-import { createRpcClient, createRpcHandler } from "../rpc";
+import {
+  createRpcClient,
+  createRpcHandler,
+  createRpcStreamHandler,
+} from "../rpc";
 import type { CacheWrite } from "../tab/shared/types";
 
 type RPCMessage = RPCRequestMessage | RPCResponseMessage;
@@ -57,7 +61,7 @@ function createTestAdapter(): TestAdapter {
           source: "apollo-client-devtools",
           type: MessageType.RPCStreamChunk,
           id: createId(),
-          sourceId: streamId,
+          streamId,
           value,
         })
       );
@@ -810,4 +814,78 @@ test("does not mistakenly handle messages from different rpc streams", async () 
   ]);
 
   await expect(promise).rejects.toThrow(new Error("Timeout"));
+});
+
+test("can handle rpc streams and send messages back", async () => {
+  const handlerAdapter = createTestAdapter();
+  const clientAdapter = createTestAdapter();
+  createBridge(clientAdapter, handlerAdapter);
+
+  const client = createRpcClient(clientAdapter);
+  const handleRpcStream = createRpcStreamHandler(handlerAdapter);
+
+  handleRpcStream("cacheWrite", (push, clientId) => {
+    push({
+      document: gql`
+        query {
+          foo
+        }
+      `,
+      data: { foo: clientId },
+      dataId: undefined,
+      variables: undefined,
+      overwrite: undefined,
+      broadcast: undefined,
+    });
+
+    push({
+      document: gql`
+        query {
+          bar
+        }
+      `,
+      data: { bar: clientId },
+      dataId: undefined,
+      variables: undefined,
+      overwrite: undefined,
+      broadcast: undefined,
+    });
+
+    return () => {};
+  });
+
+  const stream = client.stream("cacheWrite", "1");
+  const reader = stream.getReader();
+
+  await expect(reader.read()).resolves.toEqual({
+    value: {
+      document: gql`
+        query {
+          foo
+        }
+      `,
+      data: { foo: "1" },
+      dataId: undefined,
+      variables: undefined,
+      overwrite: undefined,
+      broadcast: undefined,
+    },
+    done: false,
+  });
+
+  await expect(reader.read()).resolves.toEqual({
+    value: {
+      document: gql`
+        query {
+          bar
+        }
+      `,
+      data: { bar: "1" },
+      dataId: undefined,
+      variables: undefined,
+      overwrite: undefined,
+      broadcast: undefined,
+    },
+    done: false,
+  });
 });
