@@ -760,3 +760,29 @@ test("closes stream when abort controller aborts", async () => {
     done: true,
   });
 });
+
+test("does not mistakenly handle messages from different rpc streams", async () => {
+  const adapter = createTestAdapter();
+  const client = createRpcClient(adapter);
+
+  const stream = client.stream("cacheWrite", "1");
+  const reader = stream.getReader();
+
+  adapter.simulateRPCStreamChunk<GetStreamValueType<typeof stream>>("xyz", {
+    dataId: undefined,
+    data: { foo: true },
+    documentString: "query { foo }",
+    variables: undefined,
+    overwrite: undefined,
+    broadcast: undefined,
+  });
+
+  const promise = Promise.race([
+    reader.read(),
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Timeout")), 10)
+    ),
+  ]);
+
+  await expect(promise).rejects.toThrow(new Error("Timeout"));
+});
