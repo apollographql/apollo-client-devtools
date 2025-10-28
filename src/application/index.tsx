@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import type { Reference } from "@apollo/client";
 import { loadDevMessages, loadErrorMessages } from "@apollo/client/dev";
-import { ApolloClient, InMemoryCache } from "@apollo/client";
+import { ApolloClient, ApolloLink, InMemoryCache } from "@apollo/client";
 import { ApolloProvider } from "@apollo/client/react";
 import { SchemaLink } from "@apollo/client/link/schema";
 
@@ -27,13 +27,16 @@ import type {
   ActorMessage as WindowActorMessage,
 } from "../extension/actor";
 import fragmentTypes from "./possibleTypes.json";
+import { LocalSubscriptionLink } from "./apollo/LocalSubscriptionLink";
+import { OperationTypeNode } from "graphql";
 
 loadDevMessages();
 loadErrorMessages();
 
 const rpcClient = getRpcClient();
 const schema = createSchemaWithRpcClient(rpcClient);
-const link = new SchemaLink({ schema });
+const schemaLink = new SchemaLink({ schema });
+const subscriptionLink = new LocalSubscriptionLink({ schema });
 
 const cache = new InMemoryCache({
   fragments: fragmentRegistry,
@@ -83,7 +86,14 @@ const cache = new InMemoryCache({
   },
 });
 
-export const client = new ApolloClient({ cache, link });
+export const client = new ApolloClient({
+  cache,
+  link: ApolloLink.split(
+    (operation) => operation.operationType === OperationTypeNode.SUBSCRIPTION,
+    subscriptionLink,
+    schemaLink
+  ),
+});
 
 export const removeClient = (clientId: string) => {
   client.cache.modify({
