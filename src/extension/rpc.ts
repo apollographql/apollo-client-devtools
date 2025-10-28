@@ -32,7 +32,9 @@ export type RPCRequest = {
 
 export interface RpcClient {
   readonly timeout: number;
+  readonly signal?: AbortSignal;
   withTimeout: (timeoutMs: number) => RpcClient;
+  withSignal: (abortSignal?: AbortSignal) => RpcClient;
   request: <TName extends keyof RPCRequest & string>(
     name: TName,
     ...params: Parameters<RPCRequest[TName]>
@@ -75,7 +77,16 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
     withTimeout(timeoutMs) {
       return { ...this, timeout: timeoutMs };
     },
+    withSignal(signal?: AbortSignal) {
+      return { ...this, signal };
+    },
     request(name, ...params) {
+      const { signal } = this;
+
+      if (signal?.aborted) {
+        return Promise.reject(getAbortError(signal));
+      }
+
       return new Promise<SafeAny>((resolve, reject) => {
         const id = createId();
 
@@ -107,6 +118,14 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
 
           cleanup();
         });
+
+        if (signal) {
+          signal.addEventListener("abort", () => {
+            clearTimeout(timeout);
+            removeListener();
+            reject(getAbortError(signal));
+          });
+        }
 
         adapter.postMessage({
           source: "apollo-client-devtools",
@@ -204,4 +223,12 @@ export function isRPCRequestMessage(
 
 function isRPCResponseMessage(message: unknown): message is RPCResponseMessage {
   return isDevtoolsMessage(message) && message.type === MessageType.RPCResponse;
+}
+
+function getAbortError(signal: AbortSignal) {
+  const { reason } = signal;
+
+  return reason instanceof DOMException
+    ? reason
+    : new DOMException(reason, "AbortError");
 }

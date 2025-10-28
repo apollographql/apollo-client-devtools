@@ -10,6 +10,10 @@ import { createRpcClient, createRpcHandler } from "../rpc";
 
 type RPCMessage = RPCRequestMessage | RPCResponseMessage;
 
+function wait(ms: number) {
+  return new Promise<void>((resolve) => setTimeout(resolve, ms));
+}
+
 interface TestAdapter extends MessageAdapter {
   mocks: { listeners: Set<(message: unknown) => void>; messages: unknown[] };
   simulateMessage: (message: unknown) => void;
@@ -469,6 +473,55 @@ test("resets timeout to default timeout after sending request", async () => {
   await expect(promise3).rejects.toEqual(new Error(RPC_MESSAGE_TIMEOUT));
 
   jest.useRealTimers();
+});
+
+test("rejects with abort error when provided signal aborts", async () => {
+  const adapter = createTestAdapter();
+  const client = createRpcClient(adapter);
+  const controller = new AbortController();
+
+  const promise = client
+    .withSignal(controller.signal)
+    .request("getClient", "1");
+
+  await wait(10);
+  controller.abort();
+
+  await expect(promise).rejects.toEqual(
+    new DOMException("The operation was aborted.", "AbortError")
+  );
+});
+
+test("rejects when provided signal is already aborted", async () => {
+  const adapter = createTestAdapter();
+  const client = createRpcClient(adapter);
+  const controller = new AbortController();
+  controller.abort();
+
+  const promise = client
+    .withSignal(controller.signal)
+    .request("getClient", "1");
+
+  await expect(promise).rejects.toEqual(
+    new DOMException("The operation was aborted.", "AbortError")
+  );
+});
+
+test("forwards abort reason if provided", async () => {
+  const adapter = createTestAdapter();
+  const client = createRpcClient(adapter);
+  const controller = new AbortController();
+
+  const promise = client
+    .withSignal(controller.signal)
+    .request("getClient", "1");
+
+  await wait(10);
+  controller.abort("Manually aborted");
+
+  await expect(promise).rejects.toEqual(
+    new DOMException("Manually aborted", "AbortError")
+  );
 });
 
 test("forwards rpc messages from one adapter to another with bridge", () => {
