@@ -1,3 +1,4 @@
+import { gql } from "@apollo/client";
 import type { ApolloClientInfo, DistributiveOmit } from "../../types";
 import { createId } from "../../utils/createId";
 import { RPC_MESSAGE_TIMEOUT } from "../errorMessages";
@@ -12,6 +13,7 @@ import type {
   RPCStreamStartMessage,
 } from "../rpc";
 import { createRpcClient, createRpcHandler } from "../rpc";
+import type { CacheWrite } from "../tab/shared/types";
 
 type RPCMessage = RPCRequestMessage | RPCResponseMessage;
 
@@ -685,7 +687,11 @@ test("can stream messages from adapter", async () => {
   adapter.simulateRPCStreamChunk<GetStreamValueType<typeof stream>>(id, {
     dataId: undefined,
     data: { foo: true },
-    documentString: "query { foo }",
+    document: gql`
+      query {
+        foo
+      }
+    `,
     variables: undefined,
     overwrite: undefined,
     broadcast: undefined,
@@ -693,7 +699,11 @@ test("can stream messages from adapter", async () => {
   adapter.simulateRPCStreamChunk<GetStreamValueType<typeof stream>>(id, {
     dataId: undefined,
     data: { bar: false },
-    documentString: "query { bar }",
+    document: gql`
+      query {
+        bar
+      }
+    `,
     variables: undefined,
     overwrite: undefined,
     broadcast: undefined,
@@ -732,10 +742,14 @@ test("closes stream when abort controller aborts", async () => {
   const reader = stream.getReader();
   const { id } = adapter.mocks.messages[0] as RPCStreamStartMessage;
 
-  adapter.simulateRPCStreamChunk<GetStreamValueType<typeof stream>>(id, {
+  adapter.simulateRPCStreamChunk<CacheWrite>(id, {
     dataId: undefined,
     data: { foo: true },
-    documentString: "query { foo }",
+    document: gql`
+      query {
+        foo
+      }
+    `,
     variables: undefined,
     overwrite: undefined,
     broadcast: undefined,
@@ -771,7 +785,11 @@ test("does not mistakenly handle messages from different rpc streams", async () 
   adapter.simulateRPCStreamChunk<GetStreamValueType<typeof stream>>("xyz", {
     dataId: undefined,
     data: { foo: true },
-    documentString: "query { foo }",
+    document: gql`
+      query {
+        foo
+      }
+    `,
     variables: undefined,
     overwrite: undefined,
     broadcast: undefined,
