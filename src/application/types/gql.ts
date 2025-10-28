@@ -404,7 +404,7 @@ export type SerializedUnconventionalError = ErrorLike & {
 
 export type Subscription = {
   __typename: "Subscription";
-  cacheWritten: Maybe<CacheWrite>;
+  cacheWritten: CacheWrite;
 };
 
 export type SubscriptioncacheWrittenArgs = {
@@ -470,6 +470,18 @@ export type GetCache = {
     | { __typename: "ClientV3"; id: string; cache: Cache }
     | { __typename: "ClientV4"; id: string; cache: Cache }
     | null;
+};
+
+export type CacheWritesVariables = Exact<{
+  clientId: Scalars["ID"]["input"];
+}>;
+
+export type CacheWrites = {
+  cacheWritten: {
+    __typename: "CacheWrite";
+    subscriptionString: string;
+    data: QueryData | null;
+  };
 };
 
 export type CombinedGraphQLErrorsAlertDisclosurePanel_error = {
