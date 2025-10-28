@@ -342,7 +342,7 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
     handler: (
       push: (value: ReturnType<RPCStream[TName]>) => void,
       ...params: Parameters<RPCStream[TName]>
-    ) => () => void,
+    ) => (() => void) | void,
     options: { signal?: AbortSignal } = {}
   ) {
     if (listeners.has(name)) {
@@ -370,7 +370,7 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
       );
 
       cleanupFnsByStreamId.set(id, () => {
-        cleanup();
+        cleanup?.();
         streamIdsByName.get(name)!.delete(id);
         cleanupFnsByStreamId.delete(id);
       });
