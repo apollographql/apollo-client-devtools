@@ -1,4 +1,3 @@
-import type { OperationVariables } from "@apollo/client";
 import type { JSONObject } from "../application/types/json";
 import type { ApolloClientInfo, ErrorCodes, NoInfer, SafeAny } from "@/types";
 import { createId } from "../utils/createId";
@@ -17,6 +16,7 @@ import type {
   QueryV4Details,
   MemoryInternalsV4,
 } from "./tab/v4/types";
+import type { CacheWrite } from "./tab/shared/types";
 
 export type RPCRequest = {
   getClients(): ApolloClientInfo[];
@@ -32,14 +32,7 @@ export type RPCRequest = {
 };
 
 export type RPCStream = {
-  cacheWrite(clientId: IDv3 | IDv4): {
-    dataId: string | undefined;
-    data: JSONObject | null;
-    variables: OperationVariables | undefined;
-    documentString: string;
-    overwrite: boolean | undefined;
-    broadcast: boolean | undefined;
-  };
+  cacheWrite(clientId: IDv3 | IDv4): CacheWrite;
 };
 
 export interface RpcClient {
