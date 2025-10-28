@@ -10,12 +10,32 @@ scalar Variables
 "Represents options for a query"
 scalar QueryOptions
 
+"Represents options for a cache write"
+scalar CacheWriteOptions
+
 scalar JSON
 scalar GraphQLErrorPath
 
 type Query {
   clients: [Client!]!
   client(id: ID!): Client
+}
+
+type Subscription {
+  cacheWritten(clientId: ID!): CacheWrite
+}
+
+type CacheWrite {
+  data: QueryData
+  subscriptionString: String!
+  variables: Variables
+  options: CacheWriteOptions
+}
+
+type CacheWriteOptions {
+  cacheKey: String
+  overwrite: Boolean
+  broadcast: Boolean
 }
 
 type BaseCacheSizes {
