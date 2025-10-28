@@ -15,9 +15,6 @@ import type { CacheWrite } from "../tab/shared/types";
 
 type RPCMessage = RPCRequestMessage | RPCResponseMessage;
 
-type GetStreamValueType<Stream> =
-  Stream extends ReadableStream<infer TValue> ? TValue : never;
-
 function wait(ms: number) {
   return new Promise<void>((resolve) => setTimeout(resolve, ms));
 }
@@ -637,7 +634,7 @@ test("can stream messages from adapter", async () => {
   const reader = stream.getReader();
   const { id } = adapter.mocks.messages[0] as RPCStreamStartMessage;
 
-  adapter.simulateRPCStreamChunk<GetStreamValueType<typeof stream>>(id, {
+  adapter.simulateRPCStreamChunk<CacheWrite>(id, {
     dataId: undefined,
     data: { foo: true },
     document: gql`
@@ -649,7 +646,7 @@ test("can stream messages from adapter", async () => {
     overwrite: undefined,
     broadcast: undefined,
   });
-  adapter.simulateRPCStreamChunk<GetStreamValueType<typeof stream>>(id, {
+  adapter.simulateRPCStreamChunk<CacheWrite>(id, {
     dataId: undefined,
     data: { bar: false },
     document: gql`
@@ -749,7 +746,7 @@ test("does not mistakenly handle messages from different rpc streams", async () 
     }
   `;
 
-  adapter.simulateRPCStreamChunk<GetStreamValueType<typeof stream>>("xyz", {
+  adapter.simulateRPCStreamChunk<CacheWrite>("xyz", {
     dataId: undefined,
     data: { foo: true },
     document: query,
