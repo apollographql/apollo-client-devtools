@@ -55,6 +55,22 @@ export type CacheSize = {
   size: Maybe<Scalars["Int"]["output"]>;
 };
 
+export type CacheWrite = {
+  __typename: "CacheWrite";
+  data: Maybe<Scalars["QueryData"]["output"]>;
+  options: Maybe<CacheWriteOptions>;
+  subscriptionString: Scalars["String"]["output"];
+  variables: Maybe<Scalars["Variables"]["output"]>;
+};
+
+/** Represents options for a cache write */
+export type CacheWriteOptions = {
+  __typename: "CacheWriteOptions";
+  broadcast: Maybe<Scalars["Boolean"]["output"]>;
+  cacheKey: Maybe<Scalars["String"]["output"]>;
+  overwrite: Maybe<Scalars["Boolean"]["output"]>;
+};
+
 export type Client = {
   cache: Scalars["Cache"]["output"];
   id: Scalars["String"]["output"];
@@ -384,6 +400,15 @@ export type SerializedUnconventionalError = ErrorLike & {
   message: Scalars["String"]["output"];
   name: Scalars["String"]["output"];
   stack: Maybe<Scalars["String"]["output"]>;
+};
+
+export type Subscription = {
+  __typename: "Subscription";
+  cacheWritten: Maybe<CacheWrite>;
+};
+
+export type SubscriptioncacheWrittenArgs = {
+  clientId: Scalars["ID"]["input"];
 };
 
 export type AppQueryVariables = Exact<{ [key: string]: never }>;
