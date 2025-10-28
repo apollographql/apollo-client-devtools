@@ -31,9 +31,9 @@ export type RPCRequest = {
   getV4MemoryInternals(clientId: IDv4): MemoryInternalsV4 | undefined;
 };
 
-export type RPCStream = {
+export interface RPCStream {
   cacheWrite(clientId: IDv3 | IDv4): CacheWrite;
-};
+}
 
 export interface RpcClient {
   readonly timeout: number;
