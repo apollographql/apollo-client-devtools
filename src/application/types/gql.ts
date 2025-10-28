@@ -57,18 +57,12 @@ export type CacheSize = {
 
 export type CacheWrite = {
   __typename: "CacheWrite";
-  data: Maybe<Scalars["QueryData"]["output"]>;
-  options: Maybe<CacheWriteOptions>;
-  subscriptionString: Scalars["String"]["output"];
-  variables: Maybe<Scalars["Variables"]["output"]>;
-};
-
-/** Represents options for a cache write */
-export type CacheWriteOptions = {
-  __typename: "CacheWriteOptions";
   broadcast: Maybe<Scalars["Boolean"]["output"]>;
-  cacheKey: Maybe<Scalars["String"]["output"]>;
+  data: Maybe<Scalars["QueryData"]["output"]>;
+  dataId: Maybe<Scalars["String"]["output"]>;
+  documentString: Scalars["String"]["output"];
   overwrite: Maybe<Scalars["Boolean"]["output"]>;
+  variables: Maybe<Scalars["Variables"]["output"]>;
 };
 
 export type Client = {
@@ -479,8 +473,8 @@ export type CacheWritesVariables = Exact<{
 export type CacheWrites = {
   cacheWritten: {
     __typename: "CacheWrite";
-    subscriptionString: string;
     data: QueryData | null;
+    documentString: string;
   };
 };
 

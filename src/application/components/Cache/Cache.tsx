@@ -49,8 +49,8 @@ const SUBSCRIBE_TO_CACHE_WRITES: TypedDocumentNode<
 > = gql`
   subscription CacheWrites($clientId: ID!) {
     cacheWritten(clientId: $clientId) {
-      subscriptionString
       data
+      documentString
     }
   }
 `;
@@ -100,8 +100,8 @@ export function Cache({ clientId }: CacheProps) {
   useSubscription(SUBSCRIBE_TO_CACHE_WRITES, {
     variables: { clientId: clientId! },
     skip: !clientId,
-    onData: (result) => {
-      console.log(result);
+    onData: ({ data }) => {
+      console.log(data.data);
     },
     ignoreResults: true,
   });

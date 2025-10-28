@@ -76,18 +76,12 @@ export type CacheSize = {
 
 export type CacheWrite = {
   __typename?: "CacheWrite";
-  data: Maybe<Scalars["QueryData"]["output"]>;
-  options: Maybe<CacheWriteOptions>;
-  subscriptionString: Scalars["String"]["output"];
-  variables: Maybe<Scalars["Variables"]["output"]>;
-};
-
-/** Represents options for a cache write */
-export type CacheWriteOptions = {
-  __typename?: "CacheWriteOptions";
   broadcast: Maybe<Scalars["Boolean"]["output"]>;
-  cacheKey: Maybe<Scalars["String"]["output"]>;
+  data: Maybe<Scalars["QueryData"]["output"]>;
+  dataId: Maybe<Scalars["String"]["output"]>;
+  documentString: Scalars["String"]["output"];
   overwrite: Maybe<Scalars["Boolean"]["output"]>;
+  variables: Maybe<Scalars["Variables"]["output"]>;
 };
 
 export type Client = {
@@ -588,7 +582,6 @@ export type ResolversTypes = {
   Cache: ResolverTypeWrapper<Scalars["Cache"]["output"]>;
   CacheSize: ResolverTypeWrapper<CacheSize>;
   CacheWrite: ResolverTypeWrapper<CacheWrite>;
-  CacheWriteOptions: ResolverTypeWrapper<CacheWriteOptions>;
   Client: ResolverTypeWrapper<ApolloClientInfo>;
   ClientMutation: ResolverTypeWrapper<
     ResolversInterfaceTypes<ResolversTypes>["ClientMutation"]
@@ -695,7 +688,6 @@ export type ResolversParentTypes = {
   Cache: Scalars["Cache"]["output"];
   CacheSize: CacheSize;
   CacheWrite: CacheWrite;
-  CacheWriteOptions: CacheWriteOptions;
   Client: ApolloClientInfo;
   ClientMutation: ResolversInterfaceTypes<ResolversParentTypes>["ClientMutation"];
   ClientMutations: ResolversInterfaceTypes<ResolversParentTypes>["ClientMutations"];
@@ -799,38 +791,21 @@ export type CacheWriteResolvers<
   ParentType extends
     ResolversParentTypes["CacheWrite"] = ResolversParentTypes["CacheWrite"],
 > = {
-  data?: Resolver<Maybe<ResolversTypes["QueryData"]>, ParentType, ContextType>;
-  options?: Resolver<
-    Maybe<ResolversTypes["CacheWriteOptions"]>,
-    ParentType,
-    ContextType
-  >;
-  subscriptionString?: Resolver<
-    ResolversTypes["String"],
-    ParentType,
-    ContextType
-  >;
-  variables?: Resolver<
-    Maybe<ResolversTypes["Variables"]>,
-    ParentType,
-    ContextType
-  >;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type CacheWriteOptionsResolvers<
-  ContextType = any,
-  ParentType extends
-    ResolversParentTypes["CacheWriteOptions"] = ResolversParentTypes["CacheWriteOptions"],
-> = {
   broadcast?: Resolver<
     Maybe<ResolversTypes["Boolean"]>,
     ParentType,
     ContextType
   >;
-  cacheKey?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  data?: Resolver<Maybe<ResolversTypes["QueryData"]>, ParentType, ContextType>;
+  dataId?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  documentString?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   overwrite?: Resolver<
     Maybe<ResolversTypes["Boolean"]>,
+    ParentType,
+    ContextType
+  >;
+  variables?: Resolver<
+    Maybe<ResolversTypes["Variables"]>,
     ParentType,
     ContextType
   >;
@@ -1620,7 +1595,6 @@ export type Resolvers<ContextType = any> = {
   Cache?: GraphQLScalarType;
   CacheSize?: CacheSizeResolvers<ContextType>;
   CacheWrite?: CacheWriteResolvers<ContextType>;
-  CacheWriteOptions?: CacheWriteOptionsResolvers<ContextType>;
   Client?: ClientResolvers<ContextType>;
   ClientMutation?: ClientMutationResolvers<ContextType>;
   ClientMutations?: ClientMutationsResolvers<ContextType>;
