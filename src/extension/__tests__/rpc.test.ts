@@ -889,3 +889,98 @@ test("can handle rpc streams and send messages back", async () => {
     done: false,
   });
 });
+
+test("can create multiple streams with same handler", async () => {
+  const handlerAdapter = createTestAdapter();
+  const clientAdapter = createTestAdapter();
+  createBridge(clientAdapter, handlerAdapter);
+
+  const client = createRpcClient(clientAdapter);
+  const handleRpcStream = createRpcStreamHandler(handlerAdapter);
+
+  handleRpcStream("cacheWrite", (push, clientId) => {
+    push({
+      document: gql`
+        query {
+          foo
+        }
+      `,
+      data: { foo: clientId },
+      dataId: undefined,
+      variables: undefined,
+      overwrite: undefined,
+      broadcast: undefined,
+    });
+  });
+
+  const stream1 = client.stream("cacheWrite", "1");
+  const stream2 = client.stream("cacheWrite", "2");
+  const reader1 = stream1.getReader();
+  const reader2 = stream2.getReader();
+
+  await expect(reader1.read()).resolves.toEqual({
+    value: {
+      document: gql`
+        query {
+          foo
+        }
+      `,
+      data: { foo: "1" },
+      dataId: undefined,
+      variables: undefined,
+      overwrite: undefined,
+      broadcast: undefined,
+    },
+    done: false,
+  });
+
+  await expect(reader2.read()).resolves.toEqual({
+    value: {
+      document: gql`
+        query {
+          foo
+        }
+      `,
+      data: { foo: "2" },
+      dataId: undefined,
+      variables: undefined,
+      overwrite: undefined,
+      broadcast: undefined,
+    },
+    done: false,
+  });
+});
+
+test("cleanup function is called when the stream terminates", async () => {
+  const handlerAdapter = createTestAdapter();
+  const clientAdapter = createTestAdapter();
+  const controller = new AbortController();
+  createBridge(clientAdapter, handlerAdapter);
+
+  const client = createRpcClient(clientAdapter).withSignal(controller.signal);
+  const handleRpcStream = createRpcStreamHandler(handlerAdapter);
+
+  const cleanup = jest.fn();
+  handleRpcStream("cacheWrite", () => cleanup);
+
+  client.stream("cacheWrite", "1");
+  controller.abort();
+
+  expect(cleanup).toHaveBeenCalledTimes(1);
+});
+
+test("calls cleanup function when unsubscribing stream handler", async () => {
+  const handlerAdapter = createTestAdapter();
+  const clientAdapter = createTestAdapter();
+  createBridge(clientAdapter, handlerAdapter);
+
+  const client = createRpcClient(clientAdapter);
+  const handleRpcStream = createRpcStreamHandler(handlerAdapter);
+
+  const cleanup = jest.fn();
+  const unsubscribe = handleRpcStream("cacheWrite", () => cleanup);
+  client.stream("cacheWrite", "1");
+
+  unsubscribe();
+  expect(cleanup).toHaveBeenCalledTimes(1);
+});
