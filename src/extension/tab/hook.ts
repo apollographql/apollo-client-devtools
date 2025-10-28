@@ -1,6 +1,5 @@
 import type {
   ApolloClient as ApolloClient4,
-  Cache,
   OperationVariables,
 } from "@apollo/client";
 import type { ApolloClient as ApolloClient3 } from "@apollo/client-3";
@@ -11,7 +10,6 @@ import * as manifest from "../chrome/manifest.json";
 const { version: devtoolsVersion } = manifest;
 import type { ApolloClient, ApolloClientInfo } from "@/types";
 import type { JSONObject } from "../../application/types/json";
-import type { ActorMessage } from "../actor";
 import { createWindowActor } from "../actor";
 import { createWindowMessageAdapter } from "../messageAdapters";
 import {
@@ -115,13 +113,19 @@ handleRpc("getV4MemoryInternals", (clientId) => {
   return getClientById(clientId)?.getMemoryInternals?.();
 });
 
-handleRpcStream("cacheWrite", (push, clientId) => {
+handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
   // Both v3 and v4 have the same options/return value so we can treat the
   // client the same for both versions
   const client = getClientById(clientId) as ApolloClient4;
 
   const { cache } = client;
   const originalWrite = cache.write;
+  const originalStop = client.stop;
+
+  client.stop = () => {
+    close();
+    return originalStop.call(client);
+  };
 
   cache.write = (options: Parameters<typeof originalWrite>[0]) => {
     // const cacheBefore = cache.extract(true);
@@ -182,51 +186,12 @@ function watchForClientTermination(client: ApolloClient) {
   };
 }
 
-const messageQueue: ActorMessage[] = [];
-function queueMessage(message: ActorMessage) {
-  messageQueue.push(message);
-  processQueue();
-}
-
-function processQueue() {
-  requestAnimationFrame(() => {
-    const message = messageQueue.shift();
-
-    if (message) {
-      tab.send(message);
-    }
-
-    if (messageQueue.length) {
-      processQueue();
-    }
-  });
-}
-
-function watchForCacheWrites(client: ApolloClient) {
-  const handler = handlers.get(client);
-  const { cache } = client;
-  const originalWrite = cache.write;
-
-  cache.write = (options: Cache.WriteOptions) => {
-    // const cacheBefore = cache.extract(true);
-    const ret = originalWrite.call(cache, options);
-    // const cacheAfter = cache.extract(true);
-
-    if (handler) {
-      queueMessage({ type: "cacheWrite", clientId: handler.id, options });
-    }
-
-    return ret;
-  };
-}
-
 function registerClient(client: ApolloClient) {
   if (!knownClients.has(client)) {
     knownClients.add(client);
 
     handlers.set(client, createHandler(client));
     watchForClientTermination(client);
-    watchForCacheWrites(client);
 
     tab.send({ type: "registerClient", payload: getClientInfo(client) });
   }
