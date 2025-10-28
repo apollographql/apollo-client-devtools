@@ -1,16 +1,28 @@
 import type { ApolloClientDevtoolsActorMessage } from "./actor";
-import type { RPCRequestMessage, RPCResponseMessage } from "./rpc";
+import type {
+  RPCRequestMessage,
+  RPCResponseMessage,
+  RPCStreamChunkMessage,
+  RPCStreamStartMessage,
+  RPCTerminateStreamMessage,
+} from "./rpc";
 
 export const enum MessageType {
   RPCRequest = "rpcRequest",
   RPCResponse = "rpcResponse",
+  RPCStartStream = "rcpStartStream",
+  RPCTerminateStream = "rpcTerminateStream",
+  RPCStreamChunk = "rpcStreamChunk",
   Actor = "actor",
 }
 
 export type ApolloClientDevtoolsMessage =
   | ApolloClientDevtoolsActorMessage
   | RPCRequestMessage
-  | RPCResponseMessage;
+  | RPCResponseMessage
+  | RPCStreamStartMessage
+  | RPCTerminateStreamMessage
+  | RPCStreamChunkMessage;
 
 export function isDevtoolsMessage(
   message: unknown
