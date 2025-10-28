@@ -26,7 +26,7 @@ const esModules = [
 
 export default {
   preset: "ts-jest/presets/js-with-babel",
-  setupFilesAfterEnv: ["./test.setup.ts"],
+  setupFilesAfterEnv: ["./test.setup.ts", "./jest/polyfills.ts"],
   testEnvironment: "jsdom",
   globals: {
     VERSION: "0.0.0",
