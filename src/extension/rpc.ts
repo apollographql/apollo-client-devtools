@@ -1,3 +1,4 @@
+import type { OperationVariables } from "@apollo/client";
 import type { JSONObject } from "../application/types/json";
 import type { ApolloClientInfo, ErrorCodes, NoInfer, SafeAny } from "@/types";
 import { createId } from "../utils/createId";
@@ -30,6 +31,17 @@ export type RPCRequest = {
   getV4MemoryInternals(clientId: IDv4): MemoryInternalsV4 | undefined;
 };
 
+export type RPCStream = {
+  cacheWrite(clientId: IDv3 | IDv4): {
+    dataId: string | undefined;
+    data: JSONObject | null;
+    variables: OperationVariables | undefined;
+    documentString: string;
+    overwrite: boolean | undefined;
+    broadcast: boolean | undefined;
+  };
+};
+
 export interface RpcClient {
   readonly timeout: number;
   readonly signal?: AbortSignal;
@@ -39,6 +51,10 @@ export interface RpcClient {
     name: TName,
     ...params: Parameters<RPCRequest[TName]>
   ) => Promise<Awaited<ReturnType<RPCRequest[TName]>>>;
+  stream: <TName extends keyof RPCStream & string>(
+    name: TName,
+    ...params: Parameters<RPCStream[TName]>
+  ) => ReadableStream<ReturnType<RPCStream[TName]>>;
 }
 
 type RPCErrorResponseMessage = {
@@ -63,6 +79,29 @@ export type RPCRequestMessage<Params extends SafeAny[] = unknown[]> = {
   id: string;
   name: string;
   params: Params;
+};
+
+export type RPCStreamStartMessage<Params extends any[] = unknown[]> = {
+  source: "apollo-client-devtools";
+  type: MessageType.RPCStartStream;
+  id: string;
+  name: string;
+  params: Params;
+};
+
+export type RPCTerminateStreamMessage = {
+  source: "apollo-client-devtools";
+  type: MessageType.RPCTerminateStream;
+  id: string;
+  sourceId: string;
+};
+
+export type RPCStreamChunkMessage<Value = unknown> = {
+  source: "apollo-client-devtools";
+  type: MessageType.RPCStreamChunk;
+  id: string;
+  sourceId: string;
+  value: Value;
 };
 
 export type RPCResponseMessage<Result = unknown> =
@@ -134,6 +173,41 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
           name,
           params,
         });
+      });
+    },
+    stream(name, ...params) {
+      const id = createId();
+      const { signal } = this;
+      let removeListener!: () => void;
+
+      return new ReadableStream({
+        start: (controller) => {
+          removeListener = adapter.addListener((message) => {
+            if (!isRPCStreamChunkMessage(message) || message.sourceId !== id) {
+              return;
+            }
+
+            controller.enqueue(message.value as any);
+          });
+
+          adapter.postMessage({
+            source: "apollo-client-devtools",
+            type: MessageType.RPCStartStream,
+            id,
+            name,
+            params,
+          });
+
+          function cleanup() {
+            controller.close();
+            removeListener();
+          }
+
+          if (signal) {
+            signal.addEventListener("abort", cleanup, { once: true });
+          }
+        },
+        cancel: () => removeListener(),
       });
     },
   };
@@ -223,6 +297,14 @@ export function isRPCRequestMessage(
 
 function isRPCResponseMessage(message: unknown): message is RPCResponseMessage {
   return isDevtoolsMessage(message) && message.type === MessageType.RPCResponse;
+}
+
+function isRPCStreamChunkMessage(
+  message: unknown
+): message is RPCStreamChunkMessage {
+  return (
+    isDevtoolsMessage(message) && message.type === MessageType.RPCStreamChunk
+  );
 }
 
 function getAbortError(signal: AbortSignal) {

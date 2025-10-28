@@ -1,14 +1,22 @@
 import type { ApolloClientInfo, DistributiveOmit } from "../../types";
+import { createId } from "../../utils/createId";
 import { RPC_MESSAGE_TIMEOUT } from "../errorMessages";
 import { serializeError } from "../errorSerialization";
 import type { MessageAdapter } from "../messageAdapters";
 import { createMessageBridge } from "../messageAdapters";
 import type { PostMessageError } from "../messages";
 import { MessageType } from "../messages";
-import type { RPCRequestMessage, RPCResponseMessage } from "../rpc";
+import type {
+  RPCRequestMessage,
+  RPCResponseMessage,
+  RPCStreamStartMessage,
+} from "../rpc";
 import { createRpcClient, createRpcHandler } from "../rpc";
 
 type RPCMessage = RPCRequestMessage | RPCResponseMessage;
+
+type GetStreamValueType<Stream> =
+  Stream extends ReadableStream<infer TValue> ? TValue : never;
 
 function wait(ms: number) {
   return new Promise<void>((resolve) => setTimeout(resolve, ms));
@@ -18,6 +26,10 @@ interface TestAdapter extends MessageAdapter {
   mocks: { listeners: Set<(message: unknown) => void>; messages: unknown[] };
   simulateMessage: (message: unknown) => void;
   simulateRPCMessage: (message: DistributiveOmit<RPCMessage, "source">) => void;
+  simulateRPCStreamChunk: <TValue = unknown>(
+    streamId: string,
+    value: TValue
+  ) => void;
   postMessage: jest.Mock<void, [message: unknown]>;
   connect: (adapter: TestAdapter) => void;
 }
@@ -37,6 +49,17 @@ function createTestAdapter(): TestAdapter {
         fn({
           ...message,
           source: "apollo-client-devtools",
+        })
+      );
+    },
+    simulateRPCStreamChunk: (streamId, value) => {
+      listeners.forEach((fn) =>
+        fn({
+          source: "apollo-client-devtools",
+          type: MessageType.RPCStreamChunk,
+          id: createId(),
+          sourceId: streamId,
+          value,
         })
       );
     },
@@ -649,4 +672,53 @@ test("ignores post message errors for a different rpc request", async () => {
   });
 
   await expect(promise).resolves.toEqual(defaultGetClient("1"));
+});
+
+test("can stream messages from adapter", async () => {
+  const adapter = createTestAdapter();
+  const client = createRpcClient(adapter);
+
+  const stream = client.stream("cacheWrite", "1");
+  const reader = stream.getReader();
+  const { id } = adapter.mocks.messages[0] as RPCStreamStartMessage;
+
+  adapter.simulateRPCStreamChunk<GetStreamValueType<typeof stream>>(id, {
+    dataId: undefined,
+    data: { foo: true },
+    documentString: "query { foo }",
+    variables: undefined,
+    overwrite: undefined,
+    broadcast: undefined,
+  });
+  adapter.simulateRPCStreamChunk<GetStreamValueType<typeof stream>>(id, {
+    dataId: undefined,
+    data: { bar: false },
+    documentString: "query { bar }",
+    variables: undefined,
+    overwrite: undefined,
+    broadcast: undefined,
+  });
+
+  await expect(reader.read()).resolves.toEqual({
+    value: {
+      dataId: undefined,
+      data: { foo: true },
+      documentString: "query { foo }",
+      variables: undefined,
+      overwrite: undefined,
+      broadcast: undefined,
+    },
+    done: false,
+  });
+  await expect(reader.read()).resolves.toEqual({
+    value: {
+      dataId: undefined,
+      data: { bar: false },
+      documentString: "query { bar }",
+      variables: undefined,
+      overwrite: undefined,
+      broadcast: undefined,
+    },
+    done: false,
+  });
 });
