@@ -17,7 +17,6 @@ import {
   createRpcHandler,
   createRpcStreamHandler,
 } from "../rpc";
-import type { CacheWrite } from "../tab/shared/types";
 
 type RPCMessage = RPCRequestMessage | RPCResponseMessage;
 
@@ -689,62 +688,30 @@ test("can stream messages from adapter", async () => {
   const adapter = createTestAdapter();
   const client = createRpcClient(adapter);
 
-  const stream = client.stream("cacheWrite", "1");
+  const stream = client.stream("testStream", "1");
   const reader = stream.getReader();
   const { id } = adapter.mocks.messages[0] as RPCStreamStartMessage;
 
-  adapter.simulateRPCStreamChunk<CacheWrite>(id, {
-    dataId: undefined,
-    data: { foo: true },
-    document: gql`
-      query {
-        foo
-      }
-    `,
-    variables: undefined,
-    overwrite: undefined,
-    broadcast: undefined,
+  adapter.simulateRPCStreamChunk<TestStreamValue>(id, {
+    id: "1",
+    value: true,
   });
-  adapter.simulateRPCStreamChunk<CacheWrite>(id, {
-    dataId: undefined,
-    data: { bar: false },
-    document: gql`
-      query {
-        bar
-      }
-    `,
-    variables: undefined,
-    overwrite: undefined,
-    broadcast: undefined,
+  adapter.simulateRPCStreamChunk<TestStreamValue>(id, {
+    id: "1",
+    value: false,
   });
 
   await expect(reader.read()).resolves.toEqual({
     value: {
-      dataId: undefined,
-      data: { foo: true },
-      document: gql`
-        query {
-          foo
-        }
-      `,
-      variables: undefined,
-      overwrite: undefined,
-      broadcast: undefined,
+      id: "1",
+      value: true,
     },
     done: false,
   });
   await expect(reader.read()).resolves.toEqual({
     value: {
-      dataId: undefined,
-      data: { bar: false },
-      document: gql`
-        query {
-          bar
-        }
-      `,
-      variables: undefined,
-      overwrite: undefined,
-      broadcast: undefined,
+      id: "1",
+      value: false,
     },
     done: false,
   });
@@ -755,32 +722,19 @@ test("closes stream when abort controller aborts", async () => {
   const client = createRpcClient(adapter);
   const controller = new AbortController();
 
-  const stream = client.withSignal(controller.signal).stream("cacheWrite", "1");
+  const stream = client.withSignal(controller.signal).stream("testStream", "1");
   const reader = stream.getReader();
   const { id } = adapter.mocks.messages[0] as RPCStreamStartMessage;
-  const query = gql`
-    query {
-      foo
-    }
-  `;
 
-  adapter.simulateRPCStreamChunk<CacheWrite>(id, {
-    dataId: undefined,
-    data: { foo: true },
-    document: query,
-    variables: undefined,
-    overwrite: undefined,
-    broadcast: undefined,
+  adapter.simulateRPCStreamChunk<TestStreamValue>(id, {
+    id: "1",
+    value: true,
   });
 
   await expect(reader.read()).resolves.toEqual({
     value: {
-      dataId: undefined,
-      data: { foo: true },
-      document: query,
-      variables: undefined,
-      overwrite: undefined,
-      broadcast: undefined,
+      id: "1",
+      value: true,
     },
     done: false,
   });
@@ -797,21 +751,12 @@ test("does not mistakenly handle messages from different rpc streams", async () 
   const adapter = createTestAdapter();
   const client = createRpcClient(adapter);
 
-  const stream = client.stream("cacheWrite", "1");
+  const stream = client.stream("testStream", "1");
   const reader = stream.getReader();
-  const query = gql`
-    query {
-      foo
-    }
-  `;
 
-  adapter.simulateRPCStreamChunk<CacheWrite>("xyz", {
-    dataId: undefined,
-    data: { foo: true },
-    document: query,
-    variables: undefined,
-    overwrite: undefined,
-    broadcast: undefined,
+  adapter.simulateRPCStreamChunk<TestStreamValue>("xyz", {
+    id: "xyz",
+    value: true,
   });
 
   const promise = Promise.race([
@@ -832,68 +777,20 @@ test("can handle rpc streams and send messages back", async () => {
   const client = createRpcClient(clientAdapter);
   const handleRpcStream = createRpcStreamHandler(handlerAdapter);
 
-  handleRpcStream("cacheWrite", (push, clientId) => {
-    push({
-      document: gql`
-        query {
-          foo
-        }
-      `,
-      data: { foo: clientId },
-      dataId: undefined,
-      variables: undefined,
-      overwrite: undefined,
-      broadcast: undefined,
-    });
-
-    push({
-      document: gql`
-        query {
-          bar
-        }
-      `,
-      data: { bar: clientId },
-      dataId: undefined,
-      variables: undefined,
-      overwrite: undefined,
-      broadcast: undefined,
-    });
-
-    return () => {};
+  handleRpcStream("testStream", (push, id) => {
+    push({ id, value: true });
+    push({ id, value: false });
   });
 
-  const stream = client.stream("cacheWrite", "1");
+  const stream = client.stream("testStream", "1");
   const reader = stream.getReader();
 
   await expect(reader.read()).resolves.toEqual({
-    value: {
-      document: gql`
-        query {
-          foo
-        }
-      `,
-      data: { foo: "1" },
-      dataId: undefined,
-      variables: undefined,
-      overwrite: undefined,
-      broadcast: undefined,
-    },
+    value: { id: "1", value: true },
     done: false,
   });
-
   await expect(reader.read()).resolves.toEqual({
-    value: {
-      document: gql`
-        query {
-          bar
-        }
-      `,
-      data: { bar: "1" },
-      dataId: undefined,
-      variables: undefined,
-      overwrite: undefined,
-      broadcast: undefined,
-    },
+    value: { id: "1", value: false },
     done: false,
   });
 });
@@ -906,55 +803,22 @@ test("can create multiple streams with same handler", async () => {
   const client = createRpcClient(clientAdapter);
   const handleRpcStream = createRpcStreamHandler(handlerAdapter);
 
-  handleRpcStream("cacheWrite", (push, clientId) => {
-    push({
-      document: gql`
-        query {
-          foo
-        }
-      `,
-      data: { foo: clientId },
-      dataId: undefined,
-      variables: undefined,
-      overwrite: undefined,
-      broadcast: undefined,
-    });
+  handleRpcStream("testStream", (push, id) => {
+    push({ id, value: id === "1" });
   });
 
-  const stream1 = client.stream("cacheWrite", "1");
-  const stream2 = client.stream("cacheWrite", "2");
+  const stream1 = client.stream("testStream", "1");
+  const stream2 = client.stream("testStream", "2");
   const reader1 = stream1.getReader();
   const reader2 = stream2.getReader();
 
   await expect(reader1.read()).resolves.toEqual({
-    value: {
-      document: gql`
-        query {
-          foo
-        }
-      `,
-      data: { foo: "1" },
-      dataId: undefined,
-      variables: undefined,
-      overwrite: undefined,
-      broadcast: undefined,
-    },
+    value: { id: "1", value: true },
     done: false,
   });
 
   await expect(reader2.read()).resolves.toEqual({
-    value: {
-      document: gql`
-        query {
-          foo
-        }
-      `,
-      data: { foo: "2" },
-      dataId: undefined,
-      variables: undefined,
-      overwrite: undefined,
-      broadcast: undefined,
-    },
+    value: { id: "2", value: false },
     done: false,
   });
 });
@@ -969,9 +833,9 @@ test("cleanup function is called when the stream terminates", async () => {
   const handleRpcStream = createRpcStreamHandler(handlerAdapter);
 
   const cleanup = jest.fn();
-  handleRpcStream("cacheWrite", () => cleanup);
+  handleRpcStream("testStream", () => cleanup);
 
-  client.stream("cacheWrite", "1");
+  client.stream("testStream", "1");
   controller.abort();
 
   expect(cleanup).toHaveBeenCalledTimes(1);
@@ -986,8 +850,8 @@ test("calls cleanup function when unsubscribing stream handler", async () => {
   const handleRpcStream = createRpcStreamHandler(handlerAdapter);
 
   const cleanup = jest.fn();
-  const unsubscribe = handleRpcStream("cacheWrite", () => cleanup);
-  client.stream("cacheWrite", "1");
+  const unsubscribe = handleRpcStream("testStream", () => cleanup);
+  client.stream("testStream", "1");
 
   unsubscribe();
   expect(cleanup).toHaveBeenCalledTimes(1);
@@ -1003,28 +867,17 @@ test("runs cleanup only on terminated handler", async () => {
   const handleRpcStream = createRpcStreamHandler(handlerAdapter);
 
   const cleanup = jest.fn();
-  handleRpcStream("cacheWrite", (push, clientId) => {
+  handleRpcStream("testStream", (push, id) => {
     wait(50).then(() => {
-      push({
-        document: gql`
-          query {
-            foo
-          }
-        `,
-        data: { foo: clientId },
-        dataId: undefined,
-        variables: undefined,
-        overwrite: undefined,
-        broadcast: undefined,
-      });
+      push({ id, value: true });
     });
 
-    return () => cleanup(clientId);
+    return () => cleanup(id);
   });
 
-  const stream = client.stream("cacheWrite", "1");
+  const stream = client.stream("testStream", "1");
   const reader = stream.getReader();
-  client.withSignal(controller.signal).stream("cacheWrite", "2");
+  client.withSignal(controller.signal).stream("testStream", "2");
 
   controller.abort();
 
@@ -1032,18 +885,7 @@ test("runs cleanup only on terminated handler", async () => {
   expect(cleanup).toHaveBeenCalledWith("2");
 
   await expect(reader.read()).resolves.toEqual({
-    value: {
-      document: gql`
-        query {
-          foo
-        }
-      `,
-      data: { foo: "1" },
-      dataId: undefined,
-      variables: undefined,
-      overwrite: undefined,
-      broadcast: undefined,
-    },
+    value: { id: "1", value: true },
     done: false,
   });
 });
