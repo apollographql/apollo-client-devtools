@@ -1,6 +1,12 @@
 import type { SerializedErrorLike } from "./errors";
 import type { ApolloClientDevtoolsActorMessage } from "./actor";
-import type { RPCRequestMessage, RPCResponseMessage } from "./rpc";
+import type {
+  RPCRequestMessage,
+  RPCResponseMessage,
+  RPCStreamChunkMessage,
+  RPCStreamStartMessage,
+  RPCTerminateStreamMessage,
+} from "./rpc";
 
 export interface PostMessageError {
   source: "apollo-client-devtools";
@@ -13,6 +19,9 @@ export interface PostMessageError {
 export const enum MessageType {
   RPCRequest = "rpcRequest",
   RPCResponse = "rpcResponse",
+  RPCStartStream = "rcpStartStream",
+  RPCTerminateStream = "rpcTerminateStream",
+  RPCStreamChunk = "rpcStreamChunk",
   Actor = "actor",
   PostMessageError = "postMessageError",
 }
@@ -21,7 +30,10 @@ export type ApolloClientDevtoolsMessage =
   | ApolloClientDevtoolsActorMessage
   | RPCRequestMessage
   | RPCResponseMessage
-  | PostMessageError;
+  | PostMessageError
+  | RPCStreamStartMessage
+  | RPCTerminateStreamMessage
+  | RPCStreamChunkMessage;
 
 export function isDevtoolsMessage(
   message: unknown
