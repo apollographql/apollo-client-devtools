@@ -1,4 +1,3 @@
-import { gql } from "@apollo/client";
 import type { ApolloClientInfo, DistributiveOmit } from "../../types";
 import { createId } from "../../utils/createId";
 import { RPC_MESSAGE_TIMEOUT } from "../errorMessages";
@@ -777,7 +776,7 @@ test("can handle rpc streams and send messages back", async () => {
   const client = createRpcClient(clientAdapter);
   const handleRpcStream = createRpcStreamHandler(handlerAdapter);
 
-  handleRpcStream("testStream", (push, id) => {
+  handleRpcStream("testStream", ({ push }, id) => {
     push({ id, value: true });
     push({ id, value: false });
   });
@@ -803,7 +802,7 @@ test("can create multiple streams with same handler", async () => {
   const client = createRpcClient(clientAdapter);
   const handleRpcStream = createRpcStreamHandler(handlerAdapter);
 
-  handleRpcStream("testStream", (push, id) => {
+  handleRpcStream("testStream", ({ push }, id) => {
     push({ id, value: id === "1" });
   });
 
@@ -867,7 +866,7 @@ test("runs cleanup only on terminated handler", async () => {
   const handleRpcStream = createRpcStreamHandler(handlerAdapter);
 
   const cleanup = jest.fn();
-  handleRpcStream("testStream", (push, id) => {
+  handleRpcStream("testStream", ({ push }, id) => {
     wait(50).then(() => {
       push({ id, value: true });
     });
@@ -887,5 +886,40 @@ test("runs cleanup only on terminated handler", async () => {
   await expect(reader.read()).resolves.toEqual({
     value: { id: "1", value: true },
     done: false,
+  });
+});
+
+test("runs cleanup and closes stream when calling close", async () => {
+  const handlerAdapter = createTestAdapter();
+  const clientAdapter = createTestAdapter();
+  createBridge(clientAdapter, handlerAdapter);
+
+  const client = createRpcClient(clientAdapter);
+  const handleRpcStream = createRpcStreamHandler(handlerAdapter);
+
+  const cleanup = jest.fn();
+  handleRpcStream("testStream", ({ push, close }, id) => {
+    push({ id, value: true });
+    setTimeout(close, 10);
+
+    return () => cleanup(id);
+  });
+
+  const stream = client.stream("testStream", "1");
+  const reader = stream.getReader();
+
+  await expect(reader.read()).resolves.toEqual({
+    value: { id: "1", value: true },
+    done: false,
+  });
+
+  await wait(20);
+
+  expect(cleanup).toHaveBeenCalledTimes(1);
+  expect(cleanup).toHaveBeenCalledWith("1");
+
+  await expect(reader.read()).resolves.toEqual({
+    value: undefined,
+    done: true,
   });
 });

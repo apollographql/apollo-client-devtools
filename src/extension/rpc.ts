@@ -187,13 +187,20 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
         start: (controller) => {
           removeListener = adapter.addListener((message) => {
             if (
-              !isRPCStreamChunkMessage(message) ||
-              message.streamId !== streamId
+              isRPCTerminateStreamMessage(message) &&
+              message.streamId === streamId
             ) {
+              controller.close();
+              removeListener();
               return;
             }
 
-            controller.enqueue(message.value as any);
+            if (
+              isRPCStreamChunkMessage(message) &&
+              message.streamId === streamId
+            ) {
+              controller.enqueue(message.value as any);
+            }
           });
 
           adapter.postMessage({
@@ -340,7 +347,10 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
   return function <TName extends keyof RPCStream & string>(
     name: TName,
     handler: (
-      push: (value: ReturnType<RPCStream[TName]>) => void,
+      controller: {
+        push: (value: ReturnType<RPCStream[TName]>) => void;
+        close: () => void;
+      },
       ...params: Parameters<RPCStream[TName]>
     ) => (() => void) | void,
     options: { signal?: AbortSignal } = {}
@@ -351,28 +361,38 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
 
     streamIdsByName.set(name, new Set());
 
-    listeners.set(name, async ({ id, params }) => {
-      streamIdsByName.get(name)!.add(id);
+    listeners.set(name, async ({ id: streamId, params }) => {
+      streamIdsByName.get(name)!.add(streamId);
 
       function push(value: ReturnType<RPCStream[TName]>) {
         adapter.postMessage({
           source: "apollo-client-devtools",
           type: MessageType.RPCStreamChunk,
           id: createId(),
-          streamId: id,
+          streamId: streamId,
           value,
         });
       }
 
+      function close() {
+        cleanupFnsByStreamId.get(streamId)?.();
+        adapter.postMessage({
+          source: "apollo-client-devtools",
+          type: MessageType.RPCTerminateStream,
+          id: createId(),
+          streamId,
+        });
+      }
+
       const cleanup = handler(
-        push,
+        { push, close },
         ...(params as Parameters<RPCStream[TName]>)
       );
 
-      cleanupFnsByStreamId.set(id, () => {
+      cleanupFnsByStreamId.set(streamId, () => {
         cleanup?.();
-        streamIdsByName.get(name)!.delete(id);
-        cleanupFnsByStreamId.delete(id);
+        streamIdsByName.get(name)!.delete(streamId);
+        cleanupFnsByStreamId.delete(streamId);
       });
     });
 
