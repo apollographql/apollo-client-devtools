@@ -16,11 +16,14 @@ export class LocalSubscriptionLink extends ApolloLink {
 
   request(operation: ApolloLink.Operation): Observable<ApolloLink.Result> {
     return new Observable((observer) => {
+      const controller = new AbortController();
+
       subscribe({
         schema: this.schema,
         document: operation.query,
         operationName: operation.operationName,
         variableValues: operation.variables,
+        contextValue: { abortSignal: controller.signal },
       }).then(async (result) => {
         if (isAsyncIterable(result)) {
           for await (const value of result) {
@@ -32,6 +35,10 @@ export class LocalSubscriptionLink extends ApolloLink {
 
         observer.complete();
       });
+
+      return () => {
+        controller.abort();
+      };
     });
   }
 }
