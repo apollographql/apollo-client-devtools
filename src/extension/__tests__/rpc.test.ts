@@ -21,6 +21,14 @@ import type { CacheWrite } from "../tab/shared/types";
 
 type RPCMessage = RPCRequestMessage | RPCResponseMessage;
 
+type TestStreamValue = { id: string; value: any };
+
+declare module "../rpc" {
+  export interface RPCStream {
+    testStream(id: string): TestStreamValue;
+  }
+}
+
 function wait(ms: number) {
   return new Promise<void>((resolve) => setTimeout(resolve, ms));
 }
