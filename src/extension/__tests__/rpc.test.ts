@@ -722,3 +722,41 @@ test("can stream messages from adapter", async () => {
     done: false,
   });
 });
+
+test("closes stream when abort controller aborts", async () => {
+  const adapter = createTestAdapter();
+  const client = createRpcClient(adapter);
+  const controller = new AbortController();
+
+  const stream = client.withSignal(controller.signal).stream("cacheWrite", "1");
+  const reader = stream.getReader();
+  const { id } = adapter.mocks.messages[0] as RPCStreamStartMessage;
+
+  adapter.simulateRPCStreamChunk<GetStreamValueType<typeof stream>>(id, {
+    dataId: undefined,
+    data: { foo: true },
+    documentString: "query { foo }",
+    variables: undefined,
+    overwrite: undefined,
+    broadcast: undefined,
+  });
+
+  await expect(reader.read()).resolves.toEqual({
+    value: {
+      dataId: undefined,
+      data: { foo: true },
+      documentString: "query { foo }",
+      variables: undefined,
+      overwrite: undefined,
+      broadcast: undefined,
+    },
+    done: false,
+  });
+
+  controller.abort();
+
+  await expect(reader.read()).resolves.toEqual({
+    value: undefined,
+    done: true,
+  });
+});
