@@ -29,6 +29,8 @@ import type {
 import fragmentTypes from "./possibleTypes.json";
 import { tap } from "rxjs";
 import { hasExtensionInvalidatedError } from "./utilities/errors";
+import { LocalSubscriptionLink } from "./apollo/LocalSubscriptionLink";
+import { OperationTypeNode } from "graphql";
 
 loadDevMessages();
 loadErrorMessages();
@@ -48,7 +50,11 @@ const extensionInvalidatedLink = new ApolloLink((operation, forward) => {
   );
 });
 
-const link = ApolloLink.from([extensionInvalidatedLink, schemaLink]);
+const link = ApolloLink.split(
+  (operation) => operation.operationType === OperationTypeNode.SUBSCRIPTION,
+  new LocalSubscriptionLink({ schema }),
+  ApolloLink.from([extensionInvalidatedLink, schemaLink])
+);
 
 const cache = new InMemoryCache({
   fragments: fragmentRegistry,
