@@ -3,7 +3,7 @@ import type { MessageAdapter } from "./messageAdapters";
 import { createWindowMessageAdapter } from "./messageAdapters";
 import { createId } from "../utils/createId";
 import type { ApolloClientInfo, ExplorerResponse } from "../types";
-import type { DocumentNode, FetchPolicy } from "@apollo/client";
+import type { Cache, DocumentNode, FetchPolicy } from "@apollo/client";
 import type { JSONObject } from "../application/types/json";
 import type { DevToolsMachineEvents } from "../application/machines/devtoolsMachine";
 
@@ -34,6 +34,7 @@ export type ActorMessage =
       command: string;
       arguments?: unknown[];
     }
+  | { type: "cacheWrite"; clientId: string; options: Cache.WriteOptions }
   | Extract<
       DevToolsMachineEvents,
       { type: "initializePanel" | "port.changed" }
