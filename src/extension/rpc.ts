@@ -353,9 +353,14 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
     streamIdsByName.set(name, new Set());
 
     listeners.set(name, async ({ id: streamId, params }) => {
+      let closed = false;
       streamIdsByName.get(name)!.add(streamId);
 
       function push(value: ReturnType<RPCStream[TName]>) {
+        if (closed) {
+          return;
+        }
+
         adapter.postMessage({
           source: "apollo-client-devtools",
           type: MessageType.RPCStreamChunk,
@@ -366,6 +371,10 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
       }
 
       function close() {
+        if (closed) {
+          return;
+        }
+
         cleanupFnsByStreamId.get(streamId)?.();
         adapter.postMessage({
           source: "apollo-client-devtools",
@@ -381,6 +390,7 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
       );
 
       cleanupFnsByStreamId.set(streamId, () => {
+        closed = true;
         cleanup?.();
         streamIdsByName.get(name)!.delete(streamId);
         cleanupFnsByStreamId.delete(streamId);
