@@ -1,4 +1,4 @@
-import type { ApolloClient as ApolloClient4 } from "@apollo/client";
+import type { ApolloClient as ApolloClient4, Cache } from "@apollo/client";
 import type { ApolloClient as ApolloClient3 } from "@apollo/client-3";
 
 // All manifests should contain the same version number so it shouldn't matter
@@ -7,6 +7,7 @@ import * as manifest from "../chrome/manifest.json";
 const { version: devtoolsVersion } = manifest;
 import type { ApolloClient, ApolloClientInfo } from "@/types";
 import type { JSONObject } from "../../application/types/json";
+import type { ActorMessage } from "../actor";
 import { createWindowActor } from "../actor";
 import { createWindowMessageAdapter } from "../messageAdapters";
 import { createRpcClient, createRpcHandler } from "../rpc";
@@ -139,12 +140,51 @@ function watchForClientTermination(client: ApolloClient) {
   };
 }
 
+const messageQueue: ActorMessage[] = [];
+function queueMessage(message: ActorMessage) {
+  messageQueue.push(message);
+  processQueue();
+}
+
+function processQueue() {
+  requestAnimationFrame(() => {
+    const message = messageQueue.shift();
+
+    if (message) {
+      tab.send(message);
+    }
+
+    if (messageQueue.length) {
+      processQueue();
+    }
+  });
+}
+
+function watchForCacheWrites(client: ApolloClient) {
+  const handler = handlers.get(client);
+  const { cache } = client;
+  const originalWrite = cache.write;
+
+  cache.write = (options: Cache.WriteOptions) => {
+    // const cacheBefore = cache.extract(true);
+    const ret = originalWrite.call(cache, options);
+    // const cacheAfter = cache.extract(true);
+
+    if (handler) {
+      queueMessage({ type: "cacheWrite", clientId: handler.id, options });
+    }
+
+    return ret;
+  };
+}
+
 function registerClient(client: ApolloClient) {
   if (!knownClients.has(client)) {
     knownClients.add(client);
 
     handlers.set(client, createHandler(client));
     watchForClientTermination(client);
+    watchForCacheWrites(client);
 
     tab.send({ type: "registerClient", payload: getClientInfo(client) });
   }
