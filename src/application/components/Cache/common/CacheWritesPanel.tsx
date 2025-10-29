@@ -57,7 +57,7 @@ export function CacheWritesPanel({ cacheWrites }: Props) {
       <PanelGroup direction="horizontal" className="flex grow">
         <Panel id="cacheWriteList" className="grow !overflow-auto" minSize={25}>
           <List className="p-4">
-            {data.map((cacheWrite) => (
+            {[...data].reverse().map((cacheWrite) => (
               <ListItem
                 key={cacheWrite.id}
                 onClick={() => setSelectedId(cacheWrite.id)}
