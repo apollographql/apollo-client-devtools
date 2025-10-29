@@ -319,7 +319,7 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
       return;
     }
 
-    requestAnimationFrame(() => {
+    requestIdleCallback(() => {
       const message = messageQueue.shift();
 
       if (message) {
