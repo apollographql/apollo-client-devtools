@@ -26,6 +26,7 @@ type Subscription {
 }
 
 type CacheWrite {
+  id: ID!
   data: QueryData
   documentString: String!
   variables: Variables
