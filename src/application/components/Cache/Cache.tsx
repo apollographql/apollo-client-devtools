@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
-import { useState, useMemo, useSyncExternalStore } from "react";
+import { useState, useMemo, useSyncExternalStore, useEffect } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { gql, NetworkStatus } from "@apollo/client";
-import { useQuery, useSubscription } from "@apollo/client/react";
+import { useQuery } from "@apollo/client/react";
 import IconArrowLeft from "@apollo/icons/small/IconArrowLeft.svg";
 import IconArrowRight from "@apollo/icons/small/IconArrowRight.svg";
 
@@ -40,6 +40,11 @@ const GET_CACHE: TypedDocumentNode<GetCache, GetCacheVariables> = gql`
     client(id: $id) {
       id
       cache
+      cacheWrites {
+        data
+        documentString
+        cacheDiff
+      }
     }
   }
 `;
@@ -85,15 +90,20 @@ export function Cache({ clientId }: CacheProps) {
   const cacheId = useSyncExternalStore(history.listen, history.getCurrent);
   const isExtensionInvalidated = useIsExtensionInvalidated();
 
-  const { networkStatus, data, error, startPolling, stopPolling } = useQuery(
-    GET_CACHE,
-    {
-      variables: { id: clientId as string },
-      skip: clientId == null,
-      pollInterval: 500,
-      fetchPolicy: isExtensionInvalidated ? "cache-only" : "cache-first",
-    }
-  );
+  const {
+    networkStatus,
+    data,
+    dataState,
+    error,
+    startPolling,
+    stopPolling,
+    subscribeToMore,
+  } = useQuery(GET_CACHE, {
+    variables: { id: clientId as string },
+    skip: clientId == null,
+    pollInterval: 500,
+    fetchPolicy: isExtensionInvalidated ? "cache-only" : "cache-first",
+  });
 
   if (error && !isIgnoredError(error)) {
     throw error;
@@ -101,15 +111,33 @@ export function Cache({ clientId }: CacheProps) {
 
   useActorEvent("panelHidden", () => stopPolling());
   useActorEvent("panelShown", () => startPolling(500));
-  useSubscription(SUBSCRIBE_TO_CACHE_WRITES, {
-    variables: { clientId: clientId! },
-    skip: !clientId,
-    onData: ({ data }) => {
-      console.log(data.data);
-    },
-    ignoreResults: true,
-  });
 
+  useEffect(() => {
+    if (clientId && dataState === "complete") {
+      return subscribeToMore({
+        document: SUBSCRIBE_TO_CACHE_WRITES,
+        variables: { clientId },
+        updateQuery: (_, { complete, previousData, subscriptionData }) => {
+          if (!complete || !previousData.client) {
+            return;
+          }
+
+          const cacheWrites = previousData.client?.cacheWrites ?? [];
+
+          const result = {
+            client: {
+              ...previousData.client,
+              cacheWrites: [...cacheWrites, subscriptionData.data.cacheWritten],
+            },
+          } satisfies GetCache;
+
+          console.log({ complete, previousData, subscriptionData, result });
+
+          return result;
+        },
+      });
+    }
+  }, [clientId, dataState, subscribeToMore]);
   const cache = data?.client?.cache ?? STABLE_EMPTY_OBJ;
 
   const filteredCache = useMemo(

@@ -60,6 +60,9 @@ const cache = new InMemoryCache({
   fragments: fragmentRegistry,
   possibleTypes: fragmentTypes.possibleTypes,
   typePolicies: {
+    CacheWrite: {
+      keyFields: false,
+    },
     ClientWatchedQuery: {
       fields: {
         name(name) {
@@ -84,6 +87,9 @@ const cache = new InMemoryCache({
         },
         cacheWrites: {
           read: (existing) => existing ?? [],
+          merge: (existing = [], incoming: unknown[]) => {
+            return incoming.length === 0 ? existing : incoming;
+          },
         },
       },
     },
