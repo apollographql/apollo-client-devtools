@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { Diff } from "./scalars";
+import type { Diff } from "@/application/utilities/diff";
 import type { QueryData } from "./scalars";
 import type { QueryOptions } from "./scalars";
 import type { Variables } from "./scalars";
@@ -8,7 +8,7 @@ import type {
   GraphQLScalarType,
   GraphQLScalarTypeConfig,
 } from "graphql";
-import type { CacheWrite } from "@/extension/tab/shared/types.ts";
+import type { CacheWrite as RemoteCacheWrite } from "@/extension/tab/shared/types.ts";
 import type { ApolloClientInfo } from "@/types.ts";
 import type { SerializedApolloError as RpcSerializedApolloError } from "@/extension/tab/v3/types";
 import type { SerializedError as RpcSerializedError } from "@/types";
@@ -585,7 +585,7 @@ export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars["Boolean"]["output"]>;
   Cache: ResolverTypeWrapper<Scalars["Cache"]["output"]>;
   CacheSize: ResolverTypeWrapper<CacheSize>;
-  CacheWrite: ResolverTypeWrapper<CacheWrite>;
+  CacheWrite: ResolverTypeWrapper<RemoteCacheWrite>;
   Client: ResolverTypeWrapper<ApolloClientInfo>;
   ClientMutation: ResolverTypeWrapper<
     ResolversInterfaceTypes<ResolversTypes>["ClientMutation"]
@@ -692,7 +692,7 @@ export type ResolversParentTypes = {
   Boolean: Scalars["Boolean"]["output"];
   Cache: Scalars["Cache"]["output"];
   CacheSize: CacheSize;
-  CacheWrite: CacheWrite;
+  CacheWrite: RemoteCacheWrite;
   Client: ApolloClientInfo;
   ClientMutation: ResolversInterfaceTypes<ResolversParentTypes>["ClientMutation"];
   ClientMutations: ResolversInterfaceTypes<ResolversParentTypes>["ClientMutations"];
