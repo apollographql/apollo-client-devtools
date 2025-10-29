@@ -6,7 +6,6 @@ import type {
   PersistedQueryLinkCacheSizes,
   RemoveTypenameFromVariablesLinkCacheSizes,
   MemoryInternalsCaches,
-  CacheWrite as CacheWrittenResolverType,
 } from "./types/resolvers";
 import { getOperationName } from "@apollo/client/utilities/internal";
 import { GraphQLError, print } from "graphql";
@@ -49,26 +48,16 @@ function createResolvers(client: RpcClient): Resolvers {
     },
     Subscription: {
       cacheWritten: {
+        resolve: (cacheWrite: CacheWrite) => {
+          return {
+            ...cacheWrite,
+            documentString: print(cacheWrite.document),
+          };
+        },
         subscribe: (_, args, context: { abortSignal?: AbortSignal }) => {
-          const stream = rpcClient
+          return rpcClient
             .withSignal(context.abortSignal)
             .stream("cacheWrite", args.clientId);
-
-          const toResultStream = new TransformStream<
-            CacheWrite,
-            { cacheWritten: CacheWrittenResolverType }
-          >({
-            transform: (chunk, controller) => {
-              controller.enqueue({
-                cacheWritten: {
-                  ...chunk,
-                  documentString: print(chunk.document),
-                },
-              });
-            },
-          });
-
-          return stream.pipeThrough(toResultStream);
         },
       },
     },
