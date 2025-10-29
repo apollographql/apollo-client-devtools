@@ -25,7 +25,7 @@ const config: CodegenConfig = {
         useTypeImports: true,
         scalars: {
           Cache: "./scalars#Cache",
-          Diff: "./scalars#Diff",
+          Diff: "@/application/utilities/diff#Diff",
           QueryData: "./scalars#QueryData",
           Variables: "./scalars#Variables",
           QueryOptions: "./scalars#QueryOptions",
@@ -45,7 +45,7 @@ const config: CodegenConfig = {
         rootValueType: "never",
         useTypeImports: true,
         scalars: {
-          Diff: "./scalars#Diff",
+          Diff: "@/application/utilities/diff#Diff",
           QueryData: "./scalars#QueryData",
           Variables: "./scalars#Variables",
           QueryOptions: "./scalars#QueryOptions",
@@ -55,7 +55,8 @@ const config: CodegenConfig = {
         },
         onlyResolveTypeForInterfaces: true,
         mappers: {
-          CacheWrite: "@/extension/tab/shared/types.ts#CacheWrite",
+          CacheWrite:
+            "@/extension/tab/shared/types.ts#CacheWrite as RemoteCacheWrite",
           Client: "@/types.ts#ApolloClientInfo",
           ClientV3: "@/types.ts#ApolloClientInfo",
           ClientV4: "@/types.ts#ApolloClientInfo",

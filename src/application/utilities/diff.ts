@@ -2,8 +2,16 @@ export const DELETED = -1;
 export const ADDED = 1;
 export const CHANGED = 0;
 
+export type DiffValue =
+  | typeof ADDED
+  | [typeof DELETED, value: unknown]
+  | [typeof CHANGED, oldValue: unknown, newValue: unknown];
+
+export type DiffObject = { [key: string]: Diff };
+export type Diff = DiffValue | DiffValue[] | DiffObject;
+
 // return of `undefined` means the values are equal
-export function diff(a: any, b: any) {
+export function diff(a: any, b: any): Diff | undefined {
   if (a === b) {
     return;
   }

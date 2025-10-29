@@ -1,5 +1,5 @@
 import type { Cache } from "./scalars";
-import type { Diff } from "./scalars";
+import type { Diff } from "@/application/utilities/diff";
 import type { GraphQLErrorPath } from "./scalars";
 import type { JSON } from "./scalars";
 import type { QueryData } from "./scalars";
@@ -478,6 +478,7 @@ export type CacheWrites = {
     __typename: "CacheWrite";
     data: QueryData | null;
     documentString: string;
+    cacheDiff: Diff | null;
   };
 };
 

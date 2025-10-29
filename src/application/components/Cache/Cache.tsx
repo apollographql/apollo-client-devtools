@@ -52,6 +52,7 @@ const SUBSCRIBE_TO_CACHE_WRITES: TypedDocumentNode<
     cacheWritten(clientId: $clientId) {
       data
       documentString
+      cacheDiff
     }
   }
 `;
