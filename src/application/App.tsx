@@ -86,7 +86,7 @@ const CACHE_WRITES_SUBSCRIPTION: TypedDocumentNode<
   subscription CacheWritesSubscription($clientId: ID!) {
     cacheWritten(clientId: $clientId) {
       id
-      ...CacheWriteFragment
+      ...CacheWritesPanelFragment
     }
   }
 `;
@@ -175,7 +175,7 @@ export const App = () => {
         fragment: gql`
           fragment ClientWriteSubscriptionFragment on Client {
             cacheWrites {
-              ...CacheWriteFragment
+              ...CacheWritesPanelFragment
             }
           }
         ` as TypedDocumentNode<ClientWriteSubscriptionFragment>,
