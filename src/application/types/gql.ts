@@ -464,12 +464,22 @@ export type CacheWritesSubscription = {
 
 type ClientWriteSubscriptionFragment_ClientV3 = {
   __typename: "ClientV3";
-  cacheWrites: Array<{ __typename: "CacheWrite"; id: string }>;
+  cacheWrites: Array<{
+    __typename: "CacheWrite";
+    id: string;
+    documentString: string;
+    timestamp: DateTime | null;
+  }>;
 };
 
 type ClientWriteSubscriptionFragment_ClientV4 = {
   __typename: "ClientV4";
-  cacheWrites: Array<{ __typename: "CacheWrite"; id: string }>;
+  cacheWrites: Array<{
+    __typename: "CacheWrite";
+    id: string;
+    documentString: string;
+    timestamp: DateTime | null;
+  }>;
 };
 
 export type ClientWriteSubscriptionFragment =
@@ -525,20 +535,6 @@ export type GetCache = {
         }>;
       }
     | null;
-};
-
-export type CacheWritesVariables = Exact<{
-  clientId: Scalars["ID"]["input"];
-}>;
-
-export type CacheWrites = {
-  cacheWritten: {
-    __typename: "CacheWrite";
-    data: QueryData | null;
-    documentString: string;
-    cacheDiff: Diff | null;
-    timestamp: DateTime | null;
-  };
 };
 
 export type CombinedGraphQLErrorsAlertDisclosurePanel_error = {
