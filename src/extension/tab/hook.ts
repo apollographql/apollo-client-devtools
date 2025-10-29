@@ -145,6 +145,7 @@ handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
   };
 
   return () => {
+    client.stop = originalStop;
     cache.write = originalWrite;
   };
 });
