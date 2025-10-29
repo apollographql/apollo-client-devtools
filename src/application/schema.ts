@@ -68,6 +68,7 @@ function createResolvers(client: RpcClient): Resolvers {
     },
     ClientV3: {
       cache: (client) => request("getCache", client.id),
+      cacheWrites: () => [],
       queries: (client) => client,
       mutations: (client) => client,
       memoryInternals: async (client) => {
@@ -93,6 +94,7 @@ function createResolvers(client: RpcClient): Resolvers {
     },
     ClientV4: {
       cache: (client) => request("getCache", client.id),
+      cacheWrites: () => [],
       queries: (client) => client,
       mutations: (client) => client,
       memoryInternals: async (client) => {
