@@ -1,6 +1,7 @@
 import type { JSONObject, JSONValue } from "./json";
 
 export type Cache = JSONObject;
+export type DateTime = string;
 export type Variables = JSONObject;
 export type QueryData = JSONObject;
 export type QueryOptions = JSONObject;

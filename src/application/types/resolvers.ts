@@ -1,4 +1,5 @@
 /* eslint-disable */
+import type { DateTime } from "./scalars";
 import type { Diff } from "@/application/utilities/diff";
 import type { QueryData } from "./scalars";
 import type { QueryOptions } from "./scalars";
@@ -54,6 +55,7 @@ export type Scalars = {
   Float: { input: number; output: number };
   /** Represents JSON cache data */
   Cache: { input: unknown; output: unknown };
+  DateTime: { input: DateTime; output: DateTime };
   Diff: { input: Diff; output: Diff };
   GraphQLErrorPath: { input: unknown; output: unknown };
   JSON: { input: unknown; output: unknown };
@@ -85,6 +87,7 @@ export type CacheWrite = {
   dataId: Maybe<Scalars["String"]["output"]>;
   documentString: Scalars["String"]["output"];
   overwrite: Maybe<Scalars["Boolean"]["output"]>;
+  timestamp: Maybe<Scalars["DateTime"]["output"]>;
   variables: Maybe<Scalars["Variables"]["output"]>;
 };
 
@@ -648,6 +651,7 @@ export type ResolversTypes = {
   ClientWatchedQuery: ResolverTypeWrapper<
     ResolversInterfaceTypes<ResolversTypes>["ClientWatchedQuery"]
   >;
+  DateTime: ResolverTypeWrapper<Scalars["DateTime"]["output"]>;
   Diff: ResolverTypeWrapper<Scalars["Diff"]["output"]>;
   DocumentTransformCacheSizes: ResolverTypeWrapper<DocumentTransformCacheSizes>;
   ErrorLike: ResolverTypeWrapper<
@@ -733,6 +737,7 @@ export type ResolversParentTypes = {
     error: Maybe<ResolversParentTypes["ErrorLike"]>;
   };
   ClientWatchedQuery: ResolversInterfaceTypes<ResolversParentTypes>["ClientWatchedQuery"];
+  DateTime: Scalars["DateTime"]["output"];
   Diff: Scalars["Diff"]["output"];
   DocumentTransformCacheSizes: DocumentTransformCacheSizes;
   ErrorLike: ResolversInterfaceTypes<ResolversParentTypes>["ErrorLike"];
@@ -811,6 +816,11 @@ export type CacheWriteResolvers<
   documentString?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   overwrite?: Resolver<
     Maybe<ResolversTypes["Boolean"]>,
+    ParentType,
+    ContextType
+  >;
+  timestamp?: Resolver<
+    Maybe<ResolversTypes["DateTime"]>,
     ParentType,
     ContextType
   >;
@@ -1247,6 +1257,11 @@ export type ClientWatchedQueryResolvers<
   >;
 };
 
+export interface DateTimeScalarConfig
+  extends GraphQLScalarTypeConfig<ResolversTypes["DateTime"], any> {
+  name: "DateTime";
+}
+
 export interface DiffScalarConfig
   extends GraphQLScalarTypeConfig<ResolversTypes["Diff"], any> {
   name: "Diff";
@@ -1641,6 +1656,7 @@ export type Resolvers<ContextType = any> = {
   ClientV4Queries?: ClientV4QueriesResolvers<ContextType>;
   ClientV4WatchedQuery?: ClientV4WatchedQueryResolvers<ContextType>;
   ClientWatchedQuery?: ClientWatchedQueryResolvers<ContextType>;
+  DateTime?: GraphQLScalarType;
   Diff?: GraphQLScalarType;
   DocumentTransformCacheSizes?: DocumentTransformCacheSizesResolvers<ContextType>;
   ErrorLike?: ErrorLikeResolvers<ContextType>;

@@ -9,6 +9,7 @@ export interface CacheWrite {
   dataId: string | undefined;
   overwrite: boolean | undefined;
   broadcast: boolean | undefined;
+  timestamp: Date;
   cache: {
     before: Cache;
     after: Cache;

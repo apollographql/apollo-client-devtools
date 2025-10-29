@@ -44,6 +44,7 @@ const GET_CACHE: TypedDocumentNode<GetCache, GetCacheVariables> = gql`
         data
         documentString
         cacheDiff
+        timestamp
       }
     }
   }
@@ -58,6 +59,7 @@ const SUBSCRIBE_TO_CACHE_WRITES: TypedDocumentNode<
       data
       documentString
       cacheDiff
+      timestamp
     }
   }
 `;
