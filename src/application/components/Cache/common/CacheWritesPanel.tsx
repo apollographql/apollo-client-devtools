@@ -3,12 +3,21 @@ import type { CacheWritesPanelFragment } from "@/application/types/gql";
 import type { TypedDocumentNode } from "@apollo/client";
 import { gql } from "@apollo/client";
 import { useFragment } from "@apollo/client/react";
-import { Panel } from "react-resizable-panels";
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import { JSONTreeViewer } from "../../JSONTreeViewer";
+import { CodeBlock } from "../../CodeBlock";
+import { useState } from "react";
+import { getOperationName } from "@apollo/client/utilities/internal";
+import { List } from "../../List";
+import { ListItem } from "../../ListItem";
+import { format } from "date-fns";
 
 const CACHE_WRITES_PANEL_FRAGMENT: TypedDocumentNode<CacheWritesPanelFragment> = gql`
   fragment CacheWritesPanelFragment on CacheWrite {
     id
     data
+    documentString
+    timestamp
   }
 `;
 
@@ -24,21 +33,63 @@ export function CacheWritesPanel({ cacheWrites }: Props) {
     from: cacheWrites,
   });
 
+  const [selectedId, setSelectedId] = useState<string>();
+
   if (!complete) {
     return null;
   }
 
+  const selectedCacheWrite = data.find(
+    (cacheWrite) => cacheWrite.id === selectedId
+  );
+
   return (
     <Panel
       id="cacheWrites"
-      className="!overflow-auto flex flex-col basis-1/2 p-4"
+      className="flex flex-col grow basis-1/2"
       minSize={10}
       defaultSize={25}
     >
-      <h1>Cache writes</h1>
-      {data.map((cacheWrite) => (
-        <div key={cacheWrite.id}>{JSON.stringify(data, null, 2)}</div>
-      ))}
+      <h1 className="font-medium text-xl text-heading dark:text-heading-dark p-4 border-b border-b-primary dark:border-b-primary-dark">
+        Cache writes
+      </h1>
+      <PanelGroup direction="horizontal" className="overflow-auto flex grow">
+        <Panel id="cacheWriteList" className="grow" minSize={25}>
+          <List className="p-4">
+            {data.map((cacheWrite) => (
+              <ListItem
+                key={cacheWrite.id}
+                onClick={() => setSelectedId(cacheWrite.id)}
+                selected={cacheWrite.id === selectedId}
+              >
+                <div className="flex flex-col gap-1">
+                  <span className="font-code text-lg">
+                    {getOperationName(gql(cacheWrite.documentString))}
+                  </span>
+                  <span className="text-xs">
+                    {format(new Date(cacheWrite.timestamp), "MMM do, yyyy pp")}
+                  </span>
+                </div>
+              </ListItem>
+            ))}
+          </List>
+        </Panel>
+        {selectedCacheWrite && (
+          <>
+            <PanelResizeHandle className="border-l border-l-primary dark:border-l-primary-dark" />
+            <Panel
+              id="cacheWriteDetails"
+              className="flex flex-col grow p-4 overflow-auto"
+            >
+              <CodeBlock
+                language="graphql"
+                code={selectedCacheWrite.documentString}
+              />
+              <JSONTreeViewer data={selectedCacheWrite.data} hideRoot />
+            </Panel>
+          </>
+        )}
+      </PanelGroup>
     </Panel>
   );
 }

@@ -34,7 +34,7 @@ type CacheWrite {
   overwrite: Boolean
   broadcast: Boolean
   cacheDiff: Diff
-  timestamp: DateTime
+  timestamp: DateTime!
 }
 
 type BaseCacheSizes {
