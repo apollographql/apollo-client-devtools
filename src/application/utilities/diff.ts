@@ -15,13 +15,13 @@ export function diff(a: any, b: any) {
     const result = [];
 
     for (let i = 0; i < Math.max(a.length, b.length); i++) {
-      if (i in a && i in b) {
+      if (Object.hasOwn(a, i) && Object.hasOwn(b, i)) {
         const itemDiff = diff(a[i], b[i]) as any;
 
         if (itemDiff !== undefined) {
           result[i] = itemDiff;
         }
-      } else if (i in a) {
+      } else if (Object.hasOwn(a, i)) {
         result[i] = [DELETED, a[i]];
       } else {
         result[i] = ADDED;
@@ -39,13 +39,13 @@ export function diff(a: any, b: any) {
     const result: Record<string, any> = {};
 
     for (const key of keys) {
-      if (key in a && key in b) {
+      if (Object.hasOwn(a, key) && Object.hasOwn(b, key)) {
         const keyDiff = diff(a[key], b[key]);
 
         if (keyDiff !== undefined) {
           result[key] = keyDiff;
         }
-      } else if (key in a) {
+      } else if (Object.hasOwn(a, key)) {
         result[key] = [DELETED, a[key]];
       } else {
         result[key] = ADDED;
