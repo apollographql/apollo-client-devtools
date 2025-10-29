@@ -85,7 +85,7 @@ const cache = new InMemoryCache({
         cacheWrites: {
           read: (existing) => existing ?? [],
           merge: (existing = [], incoming: unknown[]) => {
-            return incoming.length === 0 ? existing : incoming;
+            return existing.concat(incoming);
           },
         },
       },
