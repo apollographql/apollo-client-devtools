@@ -129,6 +129,7 @@ handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
   };
 
   cache.write = (options: Parameters<typeof originalWrite>[0]) => {
+    const timestamp = new Date();
     const before = cache.extract(true) as Cache;
     const result = originalWrite.call(cache, options);
     const after = cache.extract(true) as Cache;
@@ -141,6 +142,7 @@ handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
       broadcast: options.broadcast,
       data: options.result as JSONObject | null,
       cache: { before, after },
+      timestamp,
     });
 
     return result;

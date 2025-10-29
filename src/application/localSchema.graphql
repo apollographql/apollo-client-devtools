@@ -10,6 +10,8 @@ scalar Variables
 "Represents options for a query"
 scalar QueryOptions
 
+scalar DateTime
+
 scalar JSON
 scalar Diff
 scalar GraphQLErrorPath
@@ -31,6 +33,7 @@ type CacheWrite {
   overwrite: Boolean
   broadcast: Boolean
   cacheDiff: Diff
+  timestamp: DateTime
 }
 
 type BaseCacheSizes {

@@ -1,4 +1,5 @@
 import type { Cache } from "./scalars";
+import type { DateTime } from "./scalars";
 import type { Diff } from "@/application/utilities/diff";
 import type { GraphQLErrorPath } from "./scalars";
 import type { JSON } from "./scalars";
@@ -34,6 +35,7 @@ export type Scalars = {
   Float: { input: number; output: number };
   /** Represents JSON cache data */
   Cache: { input: Cache; output: Cache };
+  DateTime: { input: DateTime; output: DateTime };
   Diff: { input: Diff; output: Diff };
   GraphQLErrorPath: { input: GraphQLErrorPath; output: GraphQLErrorPath };
   JSON: { input: JSON; output: JSON };
@@ -65,6 +67,7 @@ export type CacheWrite = {
   dataId: Maybe<Scalars["String"]["output"]>;
   documentString: Scalars["String"]["output"];
   overwrite: Maybe<Scalars["Boolean"]["output"]>;
+  timestamp: Maybe<Scalars["DateTime"]["output"]>;
   variables: Maybe<Scalars["Variables"]["output"]>;
 };
 
