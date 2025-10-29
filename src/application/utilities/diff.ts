@@ -20,7 +20,7 @@ export function diff(a: any, b: any) {
           result[i] = itemDiff;
         }
       } else if (i in a) {
-        result[i] = DELETED;
+        result[i] = [DELETED, a[i]];
       } else {
         result[i] = ADDED;
       }
@@ -41,7 +41,7 @@ export function diff(a: any, b: any) {
           result[key] = keyDiff;
         }
       } else if (key in a) {
-        result[key] = DELETED;
+        result[key] = [DELETED, a[key]];
       } else {
         result[key] = ADDED;
       }

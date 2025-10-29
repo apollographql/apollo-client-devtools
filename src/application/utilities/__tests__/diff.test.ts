@@ -15,7 +15,7 @@ test("diffs objects with new keys", () => {
 test("diffs objects with removed keys", () => {
   const result = diff({ a: 1, b: 1 }, { a: 1 });
 
-  expect(result).toEqual({ b: DELETED });
+  expect(result).toEqual({ b: [DELETED, 1] });
 });
 
 test("diffs changes to existing keys", () => {
@@ -39,7 +39,7 @@ test("diffs arrays with new items", () => {
 test("diffs arrays with removed items", () => {
   const result = diff([0, 1], [0]);
 
-  expect(result).toEqual([undefined, DELETED]);
+  expect(result).toEqual([undefined, [DELETED, 1]]);
 });
 
 test("diffs arrays with changed items", () => {
@@ -75,8 +75,8 @@ test("kitchen sink", () => {
         },
       },
     },
-    foo: DELETED,
-    bar: [undefined, DELETED],
-    baz: [undefined, { b: [CHANGED, 2, 3], c: ADDED }, DELETED],
+    foo: [DELETED, true],
+    bar: [undefined, [DELETED, 1]],
+    baz: [undefined, { b: [CHANGED, 2, 3], c: ADDED }, [DELETED, { c: 2 }]],
   });
 });
