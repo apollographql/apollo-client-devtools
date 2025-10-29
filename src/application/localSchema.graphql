@@ -11,6 +11,7 @@ scalar Variables
 scalar QueryOptions
 
 scalar JSON
+scalar Diff
 scalar GraphQLErrorPath
 
 type Query {
@@ -29,6 +30,7 @@ type CacheWrite {
   dataId: String
   overwrite: Boolean
   broadcast: Boolean
+  cacheDiff: Diff
 }
 
 type BaseCacheSizes {

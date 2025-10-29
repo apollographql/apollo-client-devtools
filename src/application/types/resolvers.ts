@@ -7,6 +7,7 @@ import type {
   GraphQLScalarType,
   GraphQLScalarTypeConfig,
 } from "graphql";
+import type { CacheWrite } from "@/extension/tab/shared/types.ts";
 import type { ApolloClientInfo } from "@/types.ts";
 import type { SerializedApolloError as RpcSerializedApolloError } from "@/extension/tab/v3/types";
 import type { SerializedError as RpcSerializedError } from "@/types";
@@ -52,6 +53,7 @@ export type Scalars = {
   Float: { input: number; output: number };
   /** Represents JSON cache data */
   Cache: { input: unknown; output: unknown };
+  Diff: { input: unknown; output: unknown };
   GraphQLErrorPath: { input: unknown; output: unknown };
   JSON: { input: unknown; output: unknown };
   /** Represents data for a specific query */
@@ -77,6 +79,7 @@ export type CacheSize = {
 export type CacheWrite = {
   __typename?: "CacheWrite";
   broadcast: Maybe<Scalars["Boolean"]["output"]>;
+  cacheDiff: Maybe<Scalars["Diff"]["output"]>;
   data: Maybe<Scalars["QueryData"]["output"]>;
   dataId: Maybe<Scalars["String"]["output"]>;
   documentString: Scalars["String"]["output"];
@@ -641,6 +644,7 @@ export type ResolversTypes = {
   ClientWatchedQuery: ResolverTypeWrapper<
     ResolversInterfaceTypes<ResolversTypes>["ClientWatchedQuery"]
   >;
+  Diff: ResolverTypeWrapper<Scalars["Diff"]["output"]>;
   DocumentTransformCacheSizes: ResolverTypeWrapper<DocumentTransformCacheSizes>;
   ErrorLike: ResolverTypeWrapper<
     ResolversInterfaceTypes<ResolversTypes>["ErrorLike"]
@@ -725,6 +729,7 @@ export type ResolversParentTypes = {
     error: Maybe<ResolversParentTypes["ErrorLike"]>;
   };
   ClientWatchedQuery: ResolversInterfaceTypes<ResolversParentTypes>["ClientWatchedQuery"];
+  Diff: Scalars["Diff"]["output"];
   DocumentTransformCacheSizes: DocumentTransformCacheSizes;
   ErrorLike: ResolversInterfaceTypes<ResolversParentTypes>["ErrorLike"];
   FragmentRegistryCacheSizes: FragmentRegistryCacheSizes;
@@ -796,6 +801,7 @@ export type CacheWriteResolvers<
     ParentType,
     ContextType
   >;
+  cacheDiff?: Resolver<Maybe<ResolversTypes["Diff"]>, ParentType, ContextType>;
   data?: Resolver<Maybe<ResolversTypes["QueryData"]>, ParentType, ContextType>;
   dataId?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   documentString?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
@@ -1227,6 +1233,11 @@ export type ClientWatchedQueryResolvers<
   >;
 };
 
+export interface DiffScalarConfig
+  extends GraphQLScalarTypeConfig<ResolversTypes["Diff"], any> {
+  name: "Diff";
+}
+
 export type DocumentTransformCacheSizesResolvers<
   ContextType = any,
   ParentType extends
@@ -1616,6 +1627,7 @@ export type Resolvers<ContextType = any> = {
   ClientV4Queries?: ClientV4QueriesResolvers<ContextType>;
   ClientV4WatchedQuery?: ClientV4WatchedQueryResolvers<ContextType>;
   ClientWatchedQuery?: ClientWatchedQueryResolvers<ContextType>;
+  Diff?: GraphQLScalarType;
   DocumentTransformCacheSizes?: DocumentTransformCacheSizesResolvers<ContextType>;
   ErrorLike?: ErrorLikeResolvers<ContextType>;
   FragmentRegistryCacheSizes?: FragmentRegistryCacheSizesResolvers<ContextType>;
