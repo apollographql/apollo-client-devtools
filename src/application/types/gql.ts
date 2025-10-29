@@ -1,4 +1,5 @@
 import type { Cache } from "./scalars";
+import type { Diff } from "./scalars";
 import type { GraphQLErrorPath } from "./scalars";
 import type { JSON } from "./scalars";
 import type { QueryData } from "./scalars";
@@ -33,7 +34,7 @@ export type Scalars = {
   Float: { input: number; output: number };
   /** Represents JSON cache data */
   Cache: { input: Cache; output: Cache };
-  Diff: { input: unknown; output: unknown };
+  Diff: { input: Diff; output: Diff };
   GraphQLErrorPath: { input: GraphQLErrorPath; output: GraphQLErrorPath };
   JSON: { input: JSON; output: JSON };
   /** Represents data for a specific query */

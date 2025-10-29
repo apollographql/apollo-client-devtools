@@ -1,4 +1,5 @@
 /* eslint-disable */
+import type { Diff } from "./scalars";
 import type { QueryData } from "./scalars";
 import type { QueryOptions } from "./scalars";
 import type { Variables } from "./scalars";
@@ -53,7 +54,7 @@ export type Scalars = {
   Float: { input: number; output: number };
   /** Represents JSON cache data */
   Cache: { input: unknown; output: unknown };
-  Diff: { input: unknown; output: unknown };
+  Diff: { input: Diff; output: Diff };
   GraphQLErrorPath: { input: unknown; output: unknown };
   JSON: { input: unknown; output: unknown };
   /** Represents data for a specific query */

@@ -25,6 +25,7 @@ const config: CodegenConfig = {
         useTypeImports: true,
         scalars: {
           Cache: "./scalars#Cache",
+          Diff: "./scalars#Diff",
           QueryData: "./scalars#QueryData",
           Variables: "./scalars#Variables",
           QueryOptions: "./scalars#QueryOptions",
@@ -44,6 +45,7 @@ const config: CodegenConfig = {
         rootValueType: "never",
         useTypeImports: true,
         scalars: {
+          Diff: "./scalars#Diff",
           QueryData: "./scalars#QueryData",
           Variables: "./scalars#Variables",
           QueryOptions: "./scalars#QueryOptions",
