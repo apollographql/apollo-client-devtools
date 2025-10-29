@@ -130,7 +130,7 @@ handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
 
   cache.write = (options: Parameters<typeof originalWrite>[0]) => {
     const before = cache.extract(true) as Cache;
-    const ret = originalWrite.call(cache, options);
+    const result = originalWrite.call(cache, options);
     const after = cache.extract(true) as Cache;
 
     push({
@@ -143,7 +143,7 @@ handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
       cache: { before, after },
     });
 
-    return ret;
+    return result;
   };
 
   return () => {
