@@ -10,7 +10,7 @@ export type DiffValue =
 export type DiffObject = { [key: string | number | symbol]: Diff };
 export type Diff = DiffValue | DiffValue[] | DiffObject;
 
-// return of `undefined` means the values are equal
+// return value of `undefined` means inputs are deeply equal
 export function diff(a: any, b: any): Diff | undefined {
   if (a === b) {
     return;
