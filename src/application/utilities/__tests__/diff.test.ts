@@ -24,6 +24,12 @@ test("diffs changes to existing keys", () => {
   expect(result).toEqual({ a: [CHANGED, 1, 2] });
 });
 
+test("returns changed if object changes type", () => {
+  const result = diff({ a: { b: 1 } }, { a: 2 });
+
+  expect(result).toEqual({ a: [CHANGED, { b: 1 }, 2] });
+});
+
 test("returns undefined when arrays are deeply equal", () => {
   const result = diff([0], [0]);
 

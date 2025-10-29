@@ -8,7 +8,10 @@ export function diff(a: any, b: any) {
     return;
   }
 
-  if (Array.isArray(a) && Array.isArray(b)) {
+  if (Array.isArray(a)) {
+    if (!Array.isArray(b)) {
+      return [CHANGED, a, b];
+    }
     const length = Math.max(a.length, b.length);
     const result = [];
 
@@ -29,7 +32,10 @@ export function diff(a: any, b: any) {
     return result.length === 0 ? undefined : result;
   }
 
-  if (isPlainObject(a) && isPlainObject(b)) {
+  if (isPlainObject(a)) {
+    if (!isPlainObject(b)) {
+      return [CHANGED, a, b];
+    }
     const keys = new Set([...Object.keys(a), ...Object.keys(b)]);
     const result: Record<string, any> = {};
 
