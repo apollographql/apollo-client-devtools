@@ -68,7 +68,7 @@ export type CacheWrite = {
   documentString: Scalars["String"]["output"];
   id: Scalars["ID"]["output"];
   overwrite: Maybe<Scalars["Boolean"]["output"]>;
-  timestamp: Maybe<Scalars["DateTime"]["output"]>;
+  timestamp: Scalars["DateTime"]["output"];
   variables: Maybe<Scalars["Variables"]["output"]>;
 };
 
@@ -456,6 +456,8 @@ export type CacheWritesSubscription = {
     __typename: "CacheWrite";
     id: string;
     data: QueryData | null;
+    documentString: string;
+    timestamp: DateTime;
   };
 };
 
@@ -465,6 +467,8 @@ type ClientWriteSubscriptionFragment_ClientV3 = {
     __typename: "CacheWrite";
     id: string;
     data: QueryData | null;
+    documentString: string;
+    timestamp: DateTime;
   }>;
 };
 
@@ -474,6 +478,8 @@ type ClientWriteSubscriptionFragment_ClientV4 = {
     __typename: "CacheWrite";
     id: string;
     data: QueryData | null;
+    documentString: string;
+    timestamp: DateTime;
   }>;
 };
 
@@ -513,6 +519,8 @@ export type GetCache = {
           __typename: "CacheWrite";
           id: string;
           data: QueryData | null;
+          documentString: string;
+          timestamp: DateTime;
         }>;
       }
     | {
@@ -523,6 +531,8 @@ export type GetCache = {
           __typename: "CacheWrite";
           id: string;
           data: QueryData | null;
+          documentString: string;
+          timestamp: DateTime;
         }>;
       }
     | null;
@@ -532,6 +542,8 @@ export type CacheWritesPanelFragment = {
   __typename: "CacheWrite";
   id: string;
   data: QueryData | null;
+  documentString: string;
+  timestamp: DateTime;
 };
 
 export type CombinedGraphQLErrorsAlertDisclosurePanel_error = {

@@ -88,7 +88,7 @@ export type CacheWrite = {
   documentString: Scalars["String"]["output"];
   id: Scalars["ID"]["output"];
   overwrite: Maybe<Scalars["Boolean"]["output"]>;
-  timestamp: Maybe<Scalars["DateTime"]["output"]>;
+  timestamp: Scalars["DateTime"]["output"];
   variables: Maybe<Scalars["Variables"]["output"]>;
 };
 
@@ -821,11 +821,7 @@ export type CacheWriteResolvers<
     ParentType,
     ContextType
   >;
-  timestamp?: Resolver<
-    Maybe<ResolversTypes["DateTime"]>,
-    ParentType,
-    ContextType
-  >;
+  timestamp?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
   variables?: Resolver<
     Maybe<ResolversTypes["Variables"]>,
     ParentType,
