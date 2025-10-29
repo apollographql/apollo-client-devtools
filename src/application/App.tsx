@@ -171,21 +171,19 @@ export const App = () => {
         return;
       }
 
-      const fragment: TypedDocumentNode<ClientWriteSubscriptionFragment> = gql`
-        fragment ClientWriteSubscriptionFragment on Client {
-          cacheWrites {
-            id
-            documentString
-            timestamp
-          }
-        }
-      `;
-
       // the merge function handles concatenating this cache write with the
       // existing values
       cache.writeFragment({
         id: cache.identify(client),
-        fragment,
+        fragment: gql`
+          fragment ClientWriteSubscriptionFragment on Client {
+            cacheWrites {
+              id
+              documentString
+              timestamp
+            }
+          }
+        ` as TypedDocumentNode<ClientWriteSubscriptionFragment>,
         data: {
           __typename: client.__typename,
           cacheWrites: [data.cacheWritten],
