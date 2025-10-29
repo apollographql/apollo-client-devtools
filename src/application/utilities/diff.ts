@@ -12,10 +12,9 @@ export function diff(a: any, b: any) {
     if (!Array.isArray(b)) {
       return [CHANGED, a, b];
     }
-    const length = Math.max(a.length, b.length);
     const result = [];
 
-    for (let i = 0; i < length; i++) {
+    for (let i = 0; i < Math.max(a.length, b.length); i++) {
       if (i in a && i in b) {
         const itemDiff = diff(a[i], b[i]) as any;
 
