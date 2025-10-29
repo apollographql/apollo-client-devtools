@@ -900,7 +900,7 @@ test("runs cleanup and closes stream when calling close", async () => {
   const cleanup = jest.fn();
   handleRpcStream("testStream", ({ push, close }, id) => {
     push({ id, value: true });
-    setTimeout(close, 10);
+    requestAnimationFrame(close);
 
     return () => cleanup(id);
   });
