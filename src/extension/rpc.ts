@@ -194,9 +194,8 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
               isRPCTerminateStreamMessage(message) &&
               message.streamId === streamId
             ) {
-              controller.close();
               removeListener();
-              return;
+              return controller.close();
             }
 
             if (
