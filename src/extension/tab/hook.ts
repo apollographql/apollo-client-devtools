@@ -22,6 +22,7 @@ import { handleExplorerRequests } from "./handleExplorerRequests";
 import type { ClientHandler, IDv3, IDv4 } from "./clientHandler";
 import type { ClientV3Handler } from "./v3/handler";
 import type { ClientV4Handler } from "./v4/handler";
+import type { Cache } from "@/application/types/scalars";
 import { createHandler } from "./helpers";
 
 declare global {
@@ -128,9 +129,9 @@ handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
   };
 
   cache.write = (options: Parameters<typeof originalWrite>[0]) => {
-    // const cacheBefore = cache.extract(true);
+    const before = cache.extract(true) as Cache;
     const ret = originalWrite.call(cache, options);
-    // const cacheAfter = cache.extract(true);
+    const after = cache.extract(true) as Cache;
 
     push({
       dataId: options.dataId,
@@ -139,6 +140,7 @@ handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
       overwrite: options.overwrite,
       broadcast: options.broadcast,
       data: options.result as JSONObject | null,
+      cache: { before, after },
     });
 
     return ret;

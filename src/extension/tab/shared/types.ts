@@ -1,4 +1,5 @@
 import type { JSONObject } from "@/application/types/json";
+import type { Cache } from "@/application/types/scalars";
 import type { DocumentNode, OperationVariables } from "@apollo/client";
 
 export interface CacheWrite {
@@ -8,4 +9,8 @@ export interface CacheWrite {
   dataId: string | undefined;
   overwrite: boolean | undefined;
   broadcast: boolean | undefined;
+  cache: {
+    before: Cache;
+    after: Cache;
+  };
 }
