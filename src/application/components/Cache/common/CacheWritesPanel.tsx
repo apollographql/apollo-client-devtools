@@ -18,6 +18,7 @@ const CACHE_WRITES_PANEL_FRAGMENT: TypedDocumentNode<CacheWritesPanelFragment> =
     data
     documentString
     timestamp
+    variables
   }
 `;
 
@@ -95,6 +96,21 @@ export function CacheWritesPanel({ cacheWrites }: Props) {
                   Data
                 </h2>
                 <JSONTreeViewer data={selectedCacheWrite.data} hideRoot />
+              </div>
+              <div className="flex flex-col gap-2">
+                <h2 className="text-md text-heading dark:text-heading-dark">
+                  Variables
+                </h2>
+                {selectedCacheWrite.variables === null ? (
+                  <span className="text-disabled dark:text-disabled-dark">
+                    undefined
+                  </span>
+                ) : (
+                  <JSONTreeViewer
+                    data={selectedCacheWrite.variables}
+                    hideRoot
+                  />
+                )}
               </div>
             </Panel>
           </>

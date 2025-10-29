@@ -458,6 +458,7 @@ export type CacheWritesSubscription = {
     data: QueryData | null;
     documentString: string;
     timestamp: DateTime;
+    variables: Variables | null;
   };
 };
 
@@ -469,6 +470,7 @@ type ClientWriteSubscriptionFragment_ClientV3 = {
     data: QueryData | null;
     documentString: string;
     timestamp: DateTime;
+    variables: Variables | null;
   }>;
 };
 
@@ -480,6 +482,7 @@ type ClientWriteSubscriptionFragment_ClientV4 = {
     data: QueryData | null;
     documentString: string;
     timestamp: DateTime;
+    variables: Variables | null;
   }>;
 };
 
@@ -521,6 +524,7 @@ export type GetCache = {
           data: QueryData | null;
           documentString: string;
           timestamp: DateTime;
+          variables: Variables | null;
         }>;
       }
     | {
@@ -533,6 +537,7 @@ export type GetCache = {
           data: QueryData | null;
           documentString: string;
           timestamp: DateTime;
+          variables: Variables | null;
         }>;
       }
     | null;
@@ -544,6 +549,7 @@ export type CacheWritesPanelFragment = {
   data: QueryData | null;
   documentString: string;
   timestamp: DateTime;
+  variables: Variables | null;
 };
 
 export type CombinedGraphQLErrorsAlertDisclosurePanel_error = {
