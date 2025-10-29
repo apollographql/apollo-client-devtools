@@ -15,6 +15,7 @@ import type { MemoryInternalsV4 } from "@/extension/tab/v4/types";
 import { isExtensionInvalidatedError } from "@/extension/errorMessages";
 import type { CacheWrite } from "@/extension/tab/shared/types";
 import { diff } from "./utilities/diff";
+import { createId } from "@/utils/createId";
 
 export function createSchemaWithRpcClient(rpcClient: RpcClient) {
   return makeExecutableSchema({
@@ -49,7 +50,10 @@ function createResolvers(client: RpcClient): Resolvers {
     },
     Subscription: {
       cacheWritten: {
-        resolve: (cacheWrite: CacheWrite) => cacheWrite,
+        resolve: (cacheWrite: CacheWrite) => ({
+          ...cacheWrite,
+          id: createId(),
+        }),
         subscribe: (_, args, context: { abortSignal?: AbortSignal }) => {
           return rpcClient
             .withSignal(context.abortSignal)

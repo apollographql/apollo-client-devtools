@@ -86,6 +86,7 @@ export type CacheWrite = {
   data: Maybe<Scalars["QueryData"]["output"]>;
   dataId: Maybe<Scalars["String"]["output"]>;
   documentString: Scalars["String"]["output"];
+  id: Scalars["ID"]["output"];
   overwrite: Maybe<Scalars["Boolean"]["output"]>;
   timestamp: Maybe<Scalars["DateTime"]["output"]>;
   variables: Maybe<Scalars["Variables"]["output"]>;
@@ -814,6 +815,7 @@ export type CacheWriteResolvers<
   data?: Resolver<Maybe<ResolversTypes["QueryData"]>, ParentType, ContextType>;
   dataId?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   documentString?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
   overwrite?: Resolver<
     Maybe<ResolversTypes["Boolean"]>,
     ParentType,

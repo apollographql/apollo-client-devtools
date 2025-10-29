@@ -66,6 +66,7 @@ export type CacheWrite = {
   data: Maybe<Scalars["QueryData"]["output"]>;
   dataId: Maybe<Scalars["String"]["output"]>;
   documentString: Scalars["String"]["output"];
+  id: Scalars["ID"]["output"];
   overwrite: Maybe<Scalars["Boolean"]["output"]>;
   timestamp: Maybe<Scalars["DateTime"]["output"]>;
   variables: Maybe<Scalars["Variables"]["output"]>;
@@ -446,6 +447,35 @@ export type ClientQuery = {
     | null;
 };
 
+export type CacheWritesSubscriptionVariables = Exact<{
+  clientId: Scalars["ID"]["input"];
+}>;
+
+export type CacheWritesSubscription = {
+  cacheWritten: {
+    __typename: "CacheWrite";
+    id: string;
+    data: QueryData | null;
+    documentString: string;
+    cacheDiff: Diff | null;
+    timestamp: DateTime | null;
+  };
+};
+
+type ClientWriteSubscriptionFragment_ClientV3 = {
+  __typename: "ClientV3";
+  cacheWrites: Array<{ __typename: "CacheWrite"; id: string }>;
+};
+
+type ClientWriteSubscriptionFragment_ClientV4 = {
+  __typename: "ClientV4";
+  cacheWrites: Array<{ __typename: "CacheWrite"; id: string }>;
+};
+
+export type ClientWriteSubscriptionFragment =
+  | ClientWriteSubscriptionFragment_ClientV3
+  | ClientWriteSubscriptionFragment_ClientV4;
+
 export type ApolloErrorAlertDisclosurePanel_error = {
   __typename: "SerializedApolloError";
   clientErrors: Array<string>;
@@ -479,6 +509,7 @@ export type GetCache = {
           data: QueryData | null;
           documentString: string;
           cacheDiff: Diff | null;
+          timestamp: DateTime | null;
         }>;
       }
     | {
@@ -490,6 +521,7 @@ export type GetCache = {
           data: QueryData | null;
           documentString: string;
           cacheDiff: Diff | null;
+          timestamp: DateTime | null;
         }>;
       }
     | null;
@@ -505,6 +537,7 @@ export type CacheWrites = {
     data: QueryData | null;
     documentString: string;
     cacheDiff: Diff | null;
+    timestamp: DateTime | null;
   };
 };
 
