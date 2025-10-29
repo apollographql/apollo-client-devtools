@@ -70,6 +70,7 @@ export type CacheWrite = {
 
 export type Client = {
   cache: Scalars["Cache"]["output"];
+  cacheWrites: Array<CacheWrite>;
   id: Scalars["String"]["output"];
   memoryInternals: Maybe<MemoryInternals>;
   mutations: ClientMutations;
@@ -99,6 +100,7 @@ export type ClientQueries = {
 export type ClientV3 = Client & {
   __typename: "ClientV3";
   cache: Scalars["Cache"]["output"];
+  cacheWrites: Array<CacheWrite>;
   id: Scalars["String"]["output"];
   memoryInternals: Maybe<ClientV3MemoryInternals>;
   mutations: ClientV3Mutations;
@@ -172,6 +174,7 @@ export type ClientV3WatchedQuery = ClientWatchedQuery & {
 export type ClientV4 = Client & {
   __typename: "ClientV4";
   cache: Scalars["Cache"]["output"];
+  cacheWrites: Array<CacheWrite>;
   id: Scalars["String"]["output"];
   memoryInternals: Maybe<ClientV4MemoryInternals>;
   mutations: ClientV4Mutations;
