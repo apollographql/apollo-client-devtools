@@ -60,9 +60,6 @@ const cache = new InMemoryCache({
   fragments: fragmentRegistry,
   possibleTypes: fragmentTypes.possibleTypes,
   typePolicies: {
-    CacheWrite: {
-      keyFields: false,
-    },
     ClientWatchedQuery: {
       fields: {
         name(name) {
