@@ -189,8 +189,6 @@ export const App = () => {
           cacheWrites: [data.cacheWritten],
         },
       });
-
-      console.log(cache.extract());
     },
   });
 
