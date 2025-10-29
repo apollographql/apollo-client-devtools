@@ -27,6 +27,7 @@ import { useActorEvent } from "../../hooks/useActorEvent";
 import { PageSpinner } from "../PageSpinner";
 import { isIgnoredError } from "../../utilities/ignoredErrors";
 import { useIsExtensionInvalidated } from "@/application/machines/devtoolsMachine";
+import { fragmentRegistry } from "@/application/fragmentRegistry";
 
 const { Sidebar, Main } = SidebarLayout;
 
@@ -44,6 +45,16 @@ const GET_CACHE: TypedDocumentNode<GetCache, GetCacheVariables> = gql`
     }
   }
 `;
+
+fragmentRegistry.register(gql`
+  fragment CacheWriteFragment on CacheWrite {
+    id
+    data
+    documentString
+    cacheDiff
+    timestamp
+  }
+`);
 
 function filterCache(cache: JSONObject, searchTerm: string) {
   const regex = new RegExp(searchTerm, "i");
