@@ -319,6 +319,31 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
   const streamIdsByName = new Map<string, Set<string>>();
   let removeListener: (() => void) | null = null;
 
+  // In case messages in the stream get pushed very fast, we want to keep the
+  // source app fast so we process the messages async
+  const messageQueue: RPCStreamChunkMessage[] = [];
+
+  function processQueue() {
+    if (!messageQueue.length) {
+      return;
+    }
+
+    requestAnimationFrame(() => {
+      const message = messageQueue.shift();
+
+      if (message) {
+        adapter.postMessage(message);
+      }
+
+      processQueue();
+    });
+  }
+
+  function postMessage(message: RPCStreamChunkMessage) {
+    messageQueue.push(message);
+    processQueue();
+  }
+
   function handleMessage(message: unknown) {
     if (isRPCStartStreamMessage(message)) {
       listeners.get(message.name)?.(message);
@@ -368,7 +393,7 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
           return;
         }
 
-        adapter.postMessage({
+        postMessage({
           source: "apollo-client-devtools",
           type: MessageType.RPCStreamChunk,
           id: createId(),
