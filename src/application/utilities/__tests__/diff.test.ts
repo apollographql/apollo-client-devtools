@@ -30,6 +30,27 @@ test("returns changed if object changes type", () => {
   expect(result).toEqual({ a: [CHANGED, { b: 1 }, 2] });
 });
 
+test("handles changes to values deep in the object", () => {
+  const result = diff(
+    { a: { b: { c: { d: { e: { f: true } } } } } },
+    { a: { b: { c: { d: { e: { f: false } } } } } }
+  );
+
+  expect(result).toEqual({
+    a: {
+      b: {
+        c: {
+          d: {
+            e: {
+              f: [CHANGED, true, false],
+            },
+          },
+        },
+      },
+    },
+  });
+});
+
 test("returns undefined when arrays are deeply equal", () => {
   const result = diff([0], [0]);
 
@@ -52,6 +73,29 @@ test("diffs arrays with changed items", () => {
   const result = diff([0], [1]);
 
   expect(result).toEqual([[CHANGED, 0, 1]]);
+});
+
+test("handles changes to values deep in an array", () => {
+  const result = diff(
+    { a: [{ b: { c: { d: { e: { f: true } } } } }] },
+    { a: [{ b: { c: { d: { e: { f: false } } } } }] }
+  );
+
+  expect(result).toEqual({
+    a: [
+      {
+        b: {
+          c: {
+            d: {
+              e: {
+                f: [CHANGED, true, false],
+              },
+            },
+          },
+        },
+      },
+    ],
+  });
 });
 
 test("kitchen sink", () => {
