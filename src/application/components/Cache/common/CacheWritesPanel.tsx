@@ -53,8 +53,8 @@ export function CacheWritesPanel({ cacheWrites }: Props) {
       <h1 className="font-medium text-xl text-heading dark:text-heading-dark p-4 border-b border-b-primary dark:border-b-primary-dark">
         Cache writes
       </h1>
-      <PanelGroup direction="horizontal" className="overflow-auto flex grow">
-        <Panel id="cacheWriteList" className="grow" minSize={25}>
+      <PanelGroup direction="horizontal" className="flex grow">
+        <Panel id="cacheWriteList" className="grow !overflow-auto" minSize={25}>
           <List className="p-4">
             {data.map((cacheWrite) => (
               <ListItem
@@ -79,13 +79,23 @@ export function CacheWritesPanel({ cacheWrites }: Props) {
             <PanelResizeHandle className="border-l border-l-primary dark:border-l-primary-dark" />
             <Panel
               id="cacheWriteDetails"
-              className="flex flex-col grow p-4 overflow-auto"
+              className="flex flex-col gap-4 grow p-4 !overflow-auto"
             >
-              <CodeBlock
-                language="graphql"
-                code={selectedCacheWrite.documentString}
-              />
-              <JSONTreeViewer data={selectedCacheWrite.data} hideRoot />
+              <div className="flex flex-col gap-2">
+                <h2 className="text-md text-heading dark:text-heading-dark">
+                  Operation
+                </h2>
+                <CodeBlock
+                  language="graphql"
+                  code={selectedCacheWrite.documentString}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <h2 className="text-md text-heading dark:text-heading-dark">
+                  Data
+                </h2>
+                <JSONTreeViewer data={selectedCacheWrite.data} hideRoot />
+              </div>
             </Panel>
           </>
         )}
