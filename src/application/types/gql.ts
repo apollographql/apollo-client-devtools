@@ -33,6 +33,7 @@ export type Scalars = {
   Float: { input: number; output: number };
   /** Represents JSON cache data */
   Cache: { input: Cache; output: Cache };
+  Diff: { input: unknown; output: unknown };
   GraphQLErrorPath: { input: GraphQLErrorPath; output: GraphQLErrorPath };
   JSON: { input: JSON; output: JSON };
   /** Represents data for a specific query */
@@ -58,6 +59,7 @@ export type CacheSize = {
 export type CacheWrite = {
   __typename: "CacheWrite";
   broadcast: Maybe<Scalars["Boolean"]["output"]>;
+  cacheDiff: Maybe<Scalars["Diff"]["output"]>;
   data: Maybe<Scalars["QueryData"]["output"]>;
   dataId: Maybe<Scalars["String"]["output"]>;
   documentString: Scalars["String"]["output"];

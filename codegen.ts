@@ -53,6 +53,7 @@ const config: CodegenConfig = {
         },
         onlyResolveTypeForInterfaces: true,
         mappers: {
+          CacheWrite: "@/extension/tab/shared/types.ts#CacheWrite",
           Client: "@/types.ts#ApolloClientInfo",
           ClientV3: "@/types.ts#ApolloClientInfo",
           ClientV4: "@/types.ts#ApolloClientInfo",

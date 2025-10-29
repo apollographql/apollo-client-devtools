@@ -13,6 +13,7 @@ import { gte } from "semver";
 import type { MemoryInternalsV3 } from "@/extension/tab/v3/types";
 import type { MemoryInternalsV4 } from "@/extension/tab/v4/types";
 import type { CacheWrite } from "@/extension/tab/shared/types";
+import { diff } from "./utilities/diff";
 
 export function createSchemaWithRpcClient(rpcClient: RpcClient) {
   return makeExecutableSchema({
@@ -31,18 +32,17 @@ function createResolvers(client: RpcClient): Resolvers {
     },
     Subscription: {
       cacheWritten: {
-        resolve: (cacheWrite: CacheWrite) => {
-          return {
-            ...cacheWrite,
-            documentString: print(cacheWrite.document),
-          };
-        },
+        resolve: (cacheWrite: CacheWrite) => cacheWrite,
         subscribe: (_, args, context: { abortSignal?: AbortSignal }) => {
           return rpcClient
             .withSignal(context.abortSignal)
             .stream("cacheWrite", args.clientId);
         },
       },
+    },
+    CacheWrite: {
+      documentString: ({ document }) => print(document),
+      cacheDiff: ({ cache }) => diff(cache.before, cache.after),
     },
     Client: {
       __resolveType: (client) => {
