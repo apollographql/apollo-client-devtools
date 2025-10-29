@@ -215,23 +215,18 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
             params,
           });
 
-          function cleanup() {
-            adapter.postMessage({
-              source: "apollo-client-devtools",
-              type: MessageType.RPCTerminateStream,
-              id: createId(),
-              streamId,
-            });
-            controller.close();
-            removeListener();
-          }
-
           if (signal) {
             signal.addEventListener(
               "abort",
               () => {
+                removeListener();
+                adapter.postMessage({
+                  source: "apollo-client-devtools",
+                  type: MessageType.RPCTerminateStream,
+                  id: createId(),
+                  streamId,
+                });
                 controller.close();
-                cleanup();
               },
               { once: true }
             );
