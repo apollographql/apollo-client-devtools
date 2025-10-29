@@ -185,6 +185,10 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
 
       return new ReadableStream({
         start: (controller) => {
+          if (signal?.aborted) {
+            return controller.close();
+          }
+
           removeListener = adapter.addListener((message) => {
             if (
               isRPCTerminateStreamMessage(message) &&
