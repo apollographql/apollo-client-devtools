@@ -7,7 +7,7 @@ export type DiffValue =
   | [typeof DELETED, value: unknown]
   | [typeof CHANGED, oldValue: unknown, newValue: unknown];
 
-export type DiffObject = { [key: string]: Diff };
+export type DiffObject = { [key: string | number | symbol]: Diff };
 export type Diff = DiffValue | DiffValue[] | DiffObject;
 
 // return of `undefined` means the values are equal
