@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { useState, useMemo, useSyncExternalStore, useEffect } from "react";
+import { useState, useMemo, useSyncExternalStore } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { gql, NetworkStatus } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
@@ -8,12 +8,7 @@ import IconArrowRight from "@apollo/icons/small/IconArrowRight.svg";
 
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { SearchField } from "../SearchField";
-import type {
-  CacheWrites,
-  CacheWritesVariables,
-  GetCache,
-  GetCacheVariables,
-} from "../../types/gql";
+import type { GetCache, GetCacheVariables } from "../../types/gql";
 import type { JSONObject } from "../../types/json";
 import { JSONTreeViewer } from "../JSONTreeViewer";
 import clsx from "clsx";
@@ -50,20 +45,6 @@ const GET_CACHE: TypedDocumentNode<GetCache, GetCacheVariables> = gql`
   }
 `;
 
-const SUBSCRIBE_TO_CACHE_WRITES: TypedDocumentNode<
-  CacheWrites,
-  CacheWritesVariables
-> = gql`
-  subscription CacheWrites($clientId: ID!) {
-    cacheWritten(clientId: $clientId) {
-      data
-      documentString
-      cacheDiff
-      timestamp
-    }
-  }
-`;
-
 function filterCache(cache: JSONObject, searchTerm: string) {
   const regex = new RegExp(searchTerm, "i");
 
@@ -92,20 +73,15 @@ export function Cache({ clientId }: CacheProps) {
   const cacheId = useSyncExternalStore(history.listen, history.getCurrent);
   const isExtensionInvalidated = useIsExtensionInvalidated();
 
-  const {
-    networkStatus,
-    data,
-    dataState,
-    error,
-    startPolling,
-    stopPolling,
-    subscribeToMore,
-  } = useQuery(GET_CACHE, {
-    variables: { id: clientId as string },
-    skip: clientId == null,
-    pollInterval: 500,
-    fetchPolicy: isExtensionInvalidated ? "cache-only" : "cache-first",
-  });
+  const { networkStatus, data, error, startPolling, stopPolling } = useQuery(
+    GET_CACHE,
+    {
+      variables: { id: clientId as string },
+      skip: clientId == null,
+      pollInterval: 500,
+      fetchPolicy: isExtensionInvalidated ? "cache-only" : "cache-first",
+    }
+  );
 
   if (error && !isIgnoredError(error)) {
     throw error;
@@ -114,32 +90,6 @@ export function Cache({ clientId }: CacheProps) {
   useActorEvent("panelHidden", () => stopPolling());
   useActorEvent("panelShown", () => startPolling(500));
 
-  useEffect(() => {
-    if (clientId && dataState === "complete") {
-      return subscribeToMore({
-        document: SUBSCRIBE_TO_CACHE_WRITES,
-        variables: { clientId },
-        updateQuery: (_, { complete, previousData, subscriptionData }) => {
-          if (!complete || !previousData.client) {
-            return;
-          }
-
-          const cacheWrites = previousData.client?.cacheWrites ?? [];
-
-          const result = {
-            client: {
-              ...previousData.client,
-              cacheWrites: [...cacheWrites, subscriptionData.data.cacheWritten],
-            },
-          } satisfies GetCache;
-
-          console.log({ complete, previousData, subscriptionData, result });
-
-          return result;
-        },
-      });
-    }
-  }, [clientId, dataState, subscribeToMore]);
   const cache = data?.client?.cache ?? STABLE_EMPTY_OBJ;
 
   const filteredCache = useMemo(
