@@ -456,9 +456,6 @@ export type CacheWritesSubscription = {
     __typename: "CacheWrite";
     id: string;
     data: QueryData | null;
-    documentString: string;
-    cacheDiff: Diff | null;
-    timestamp: DateTime | null;
   };
 };
 
@@ -467,8 +464,7 @@ type ClientWriteSubscriptionFragment_ClientV3 = {
   cacheWrites: Array<{
     __typename: "CacheWrite";
     id: string;
-    documentString: string;
-    timestamp: DateTime | null;
+    data: QueryData | null;
   }>;
 };
 
@@ -477,8 +473,7 @@ type ClientWriteSubscriptionFragment_ClientV4 = {
   cacheWrites: Array<{
     __typename: "CacheWrite";
     id: string;
-    documentString: string;
-    timestamp: DateTime | null;
+    data: QueryData | null;
   }>;
 };
 
@@ -516,10 +511,8 @@ export type GetCache = {
         cache: Cache;
         cacheWrites: Array<{
           __typename: "CacheWrite";
+          id: string;
           data: QueryData | null;
-          documentString: string;
-          cacheDiff: Diff | null;
-          timestamp: DateTime | null;
         }>;
       }
     | {
@@ -528,13 +521,17 @@ export type GetCache = {
         cache: Cache;
         cacheWrites: Array<{
           __typename: "CacheWrite";
+          id: string;
           data: QueryData | null;
-          documentString: string;
-          cacheDiff: Diff | null;
-          timestamp: DateTime | null;
         }>;
       }
     | null;
+};
+
+export type CacheWritesPanelFragment = {
+  __typename: "CacheWrite";
+  id: string;
+  data: QueryData | null;
 };
 
 export type CombinedGraphQLErrorsAlertDisclosurePanel_error = {

@@ -27,7 +27,8 @@ import { useActorEvent } from "../../hooks/useActorEvent";
 import { PageSpinner } from "../PageSpinner";
 import { isIgnoredError } from "../../utilities/ignoredErrors";
 import { useIsExtensionInvalidated } from "@/application/machines/devtoolsMachine";
-import { fragmentRegistry } from "@/application/fragmentRegistry";
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import { CacheWritesPanel } from "./common/CacheWritesPanel";
 
 const { Sidebar, Main } = SidebarLayout;
 
@@ -36,25 +37,12 @@ const GET_CACHE: TypedDocumentNode<GetCache, GetCacheVariables> = gql`
     client(id: $id) {
       id
       cache
-      cacheWrites {
-        data
-        documentString
-        cacheDiff
-        timestamp
+      cacheWrites @nonreactive {
+        ...CacheWritesPanelFragment
       }
     }
   }
 `;
-
-fragmentRegistry.register(gql`
-  fragment CacheWriteFragment on CacheWrite {
-    id
-    data
-    documentString
-    cacheDiff
-    timestamp
-  }
-`);
 
 function filterCache(cache: JSONObject, searchTerm: string) {
   const regex = new RegExp(searchTerm, "i");
@@ -111,6 +99,7 @@ export function Cache({ clientId }: CacheProps) {
   const dataExists = Object.keys(cache).length > 0;
   const cacheItem = cache[cacheId];
   const cacheIds = getRootCacheIds(filteredCache);
+  const cacheWrites = data?.client?.cacheWrites ?? [];
 
   return (
     <SidebarLayout>
@@ -140,81 +129,92 @@ export function Cache({ clientId }: CacheProps) {
           })}
         </List>
       </Sidebar>
-      <Main className="!overflow-auto flex flex-col">
-        {dataExists ? (
-          <>
-            <div className="flex items-start justify-between">
-              <ButtonGroup>
-                <Tooltip content="Go back" delayDuration={500}>
-                  <Button
-                    aria-label="Go back"
-                    icon={<IconArrowLeft />}
-                    size="xs"
-                    variant="secondary"
-                    disabled={!history.canGoBack()}
-                    onClick={() => history.back()}
+      <Main className="!p-0">
+        <PanelGroup direction="horizontal" autoSaveId="cacheLayout">
+          <Panel
+            id="cacheData"
+            minSize={25}
+            className="!overflow-auto flex flex-col p-4"
+          >
+            {dataExists ? (
+              <>
+                <div className="flex items-start justify-between">
+                  <ButtonGroup>
+                    <Tooltip content="Go back" delayDuration={500}>
+                      <Button
+                        aria-label="Go back"
+                        icon={<IconArrowLeft />}
+                        size="xs"
+                        variant="secondary"
+                        disabled={!history.canGoBack()}
+                        onClick={() => history.back()}
+                      />
+                    </Tooltip>
+                    <Tooltip content="Go forward" delayDuration={500}>
+                      <Button
+                        aria-label="Go forward"
+                        icon={<IconArrowRight />}
+                        size="xs"
+                        variant="secondary"
+                        disabled={!history.canGoForward()}
+                        onClick={() => history.forward()}
+                      />
+                    </Tooltip>
+                  </ButtonGroup>
+                  <CopyButton
+                    size="sm"
+                    text={JSON.stringify(cacheItem)}
+                    className={clsx({ invisible: !cacheItem })}
                   />
-                </Tooltip>
-                <Tooltip content="Go forward" delayDuration={500}>
-                  <Button
-                    aria-label="Go forward"
-                    icon={<IconArrowRight />}
-                    size="xs"
-                    variant="secondary"
-                    disabled={!history.canGoForward()}
-                    onClick={() => history.forward()}
-                  />
-                </Tooltip>
-              </ButtonGroup>
-              <CopyButton
-                size="sm"
-                text={JSON.stringify(cacheItem)}
-                className={clsx({ invisible: !cacheItem })}
-              />
-            </div>
-            <div className="my-2">
-              <div className="text-xs font-bold uppercase">Cache ID</div>
-              <h1
-                className="font-code font-medium text-xl text-heading dark:text-heading-dark break-all"
-                data-testid="cache-id"
-              >
-                {cacheId}
-              </h1>
-            </div>
-          </>
-        ) : null}
+                </div>
+                <div className="my-2">
+                  <div className="text-xs font-bold uppercase">Cache ID</div>
+                  <h1
+                    className="font-code font-medium text-xl text-heading dark:text-heading-dark break-all"
+                    data-testid="cache-id"
+                  >
+                    {cacheId}
+                  </h1>
+                </div>
+              </>
+            ) : null}
 
-        {networkStatus === NetworkStatus.loading ? (
-          <PageSpinner />
-        ) : cacheItem ? (
-          <JSONTreeViewer
-            data={cacheItem}
-            hideRoot={true}
-            valueRenderer={(valueAsString, value, key) => {
-              return (
-                <span
-                  className={clsx({
-                    ["hover:underline hover:cursor-pointer"]: key === "__ref",
-                  })}
-                  onClick={() => {
-                    if (key === "__ref") {
-                      history.push(value as string);
-                    }
-                  }}
-                >
-                  {valueAsString as ReactNode}
-                </span>
-              );
-            }}
-          />
-        ) : dataExists ? (
-          <Alert variant="error" className="mt-4">
-            This cache entry was either removed from the cache or does not
-            exist.
-          </Alert>
-        ) : (
-          <EmptyMessage className="m-auto mt-20" />
-        )}
+            {networkStatus === NetworkStatus.loading ? (
+              <PageSpinner />
+            ) : cacheItem ? (
+              <JSONTreeViewer
+                data={cacheItem}
+                hideRoot={true}
+                valueRenderer={(valueAsString, value, key) => {
+                  return (
+                    <span
+                      className={clsx({
+                        ["hover:underline hover:cursor-pointer"]:
+                          key === "__ref",
+                      })}
+                      onClick={() => {
+                        if (key === "__ref") {
+                          history.push(value as string);
+                        }
+                      }}
+                    >
+                      {valueAsString as ReactNode}
+                    </span>
+                  );
+                }}
+              />
+            ) : dataExists ? (
+              <Alert variant="error" className="mt-4">
+                This cache entry was either removed from the cache or does not
+                exist.
+              </Alert>
+            ) : (
+              <EmptyMessage className="m-auto mt-20" />
+            )}
+          </Panel>
+          <PanelResizeHandle className="border-r border-primary dark:border-primary-dark" />
+          <CacheWritesPanel cacheWrites={cacheWrites} />
+        </PanelGroup>
       </Main>
     </SidebarLayout>
   );
