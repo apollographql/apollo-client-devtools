@@ -467,8 +467,28 @@ export type GetCacheVariables = Exact<{
 
 export type GetCache = {
   client:
-    | { __typename: "ClientV3"; id: string; cache: Cache }
-    | { __typename: "ClientV4"; id: string; cache: Cache }
+    | {
+        __typename: "ClientV3";
+        id: string;
+        cache: Cache;
+        cacheWrites: Array<{
+          __typename: "CacheWrite";
+          data: QueryData | null;
+          documentString: string;
+          cacheDiff: Diff | null;
+        }>;
+      }
+    | {
+        __typename: "ClientV4";
+        id: string;
+        cache: Cache;
+        cacheWrites: Array<{
+          __typename: "CacheWrite";
+          data: QueryData | null;
+          documentString: string;
+          cacheDiff: Diff | null;
+        }>;
+      }
     | null;
 };
 
