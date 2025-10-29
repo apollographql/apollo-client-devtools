@@ -90,6 +90,7 @@ export type CacheWrite = {
 
 export type Client = {
   cache: Scalars["Cache"]["output"];
+  cacheWrites: Array<CacheWrite>;
   id: Scalars["String"]["output"];
   memoryInternals: Maybe<MemoryInternals>;
   mutations: ClientMutations;
@@ -119,6 +120,7 @@ export type ClientQueries = {
 export type ClientV3 = Client & {
   __typename?: "ClientV3";
   cache: Scalars["Cache"]["output"];
+  cacheWrites: Array<CacheWrite>;
   id: Scalars["String"]["output"];
   memoryInternals: Maybe<ClientV3MemoryInternals>;
   mutations: ClientV3Mutations;
@@ -192,6 +194,7 @@ export type ClientV3WatchedQuery = ClientWatchedQuery & {
 export type ClientV4 = Client & {
   __typename?: "ClientV4";
   cache: Scalars["Cache"]["output"];
+  cacheWrites: Array<CacheWrite>;
   id: Scalars["String"]["output"];
   memoryInternals: Maybe<ClientV4MemoryInternals>;
   mutations: ClientV4Mutations;
@@ -873,6 +876,11 @@ export type ClientV3Resolvers<
     ResolversParentTypes["ClientV3"] = ResolversParentTypes["ClientV3"],
 > = {
   cache?: Resolver<ResolversTypes["Cache"], ParentType, ContextType>;
+  cacheWrites?: Resolver<
+    Array<ResolversTypes["CacheWrite"]>,
+    ParentType,
+    ContextType
+  >;
   id?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   memoryInternals?: Resolver<
     Maybe<ResolversTypes["ClientV3MemoryInternals"]>,
@@ -1068,6 +1076,11 @@ export type ClientV4Resolvers<
     ResolversParentTypes["ClientV4"] = ResolversParentTypes["ClientV4"],
 > = {
   cache?: Resolver<ResolversTypes["Cache"], ParentType, ContextType>;
+  cacheWrites?: Resolver<
+    Array<ResolversTypes["CacheWrite"]>,
+    ParentType,
+    ContextType
+  >;
   id?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   memoryInternals?: Resolver<
     Maybe<ResolversTypes["ClientV4MemoryInternals"]>,

@@ -82,6 +82,9 @@ const cache = new InMemoryCache({
         memoryInternals: {
           merge: false,
         },
+        cacheWrites: {
+          read: (existing) => existing ?? [],
+        },
       },
     },
     ClientQueries: {
