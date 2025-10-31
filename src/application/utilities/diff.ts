@@ -1,14 +1,33 @@
-export const DELETED = -1;
-export const ADDED = 1;
-export const CHANGED = 0;
-
-export type DiffValue =
-  | [typeof ADDED, value: unknown]
-  | [typeof DELETED, value: unknown]
-  | [typeof CHANGED, oldValue: unknown, newValue: unknown];
+export type DiffValue = Added | Deleted | Changed;
 
 export type DiffObject = { [key: string | number | symbol]: Diff };
 export type Diff = DiffValue | DiffValue[] | DiffObject;
+
+export class Changed {
+  readonly oldValue: unknown;
+  readonly newValue: unknown;
+
+  constructor(oldValue: unknown, newValue: unknown) {
+    this.oldValue = oldValue;
+    this.newValue = newValue;
+  }
+}
+
+export class Added {
+  readonly value: unknown;
+
+  constructor(value: unknown) {
+    this.value = value;
+  }
+}
+
+export class Deleted {
+  readonly value: unknown;
+
+  constructor(value: unknown) {
+    this.value = value;
+  }
+}
 
 // return value of `undefined` means inputs are deeply equal
 export function diff(a: any, b: any): Diff | undefined {
@@ -18,7 +37,7 @@ export function diff(a: any, b: any): Diff | undefined {
 
   if (Array.isArray(a)) {
     if (!Array.isArray(b)) {
-      return [CHANGED, a, b];
+      return new Changed(a, b);
     }
     const result = [];
 
@@ -30,9 +49,9 @@ export function diff(a: any, b: any): Diff | undefined {
           result[i] = itemDiff;
         }
       } else if (Object.hasOwn(a, i)) {
-        result[i] = [DELETED, a[i]];
+        result[i] = new Deleted(a[i]);
       } else {
-        result[i] = [ADDED, b[i]];
+        result[i] = new Added(b[i]);
       }
     }
 
@@ -41,7 +60,7 @@ export function diff(a: any, b: any): Diff | undefined {
 
   if (isPlainObject(a)) {
     if (!isPlainObject(b)) {
-      return [CHANGED, a, b];
+      return new Changed(a, b);
     }
     const keys = new Set([...Object.keys(a), ...Object.keys(b)]);
     const result: Record<string, any> = {};
@@ -54,16 +73,16 @@ export function diff(a: any, b: any): Diff | undefined {
           result[key] = keyDiff;
         }
       } else if (Object.hasOwn(a, key)) {
-        result[key] = [DELETED, a[key]];
+        result[key] = new Deleted(a[key]);
       } else {
-        result[key] = [ADDED, b[key]];
+        result[key] = new Added(b[key]);
       }
     }
 
     return Object.keys(result).length === 0 ? undefined : result;
   }
 
-  return [CHANGED, a, b];
+  return new Changed(a, b);
 }
 
 function isPlainObject(obj: unknown): obj is Record<string, any> {
