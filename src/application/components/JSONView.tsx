@@ -36,10 +36,7 @@ const THEME: Theme = {
   "--w-rjv-type-undefined-color": "var(--w-rjv-type-null-color)",
 };
 
-export function JSONView<TValue extends object>({
-  children,
-  value,
-}: Props<TValue>) {
+function _JSONView<TValue extends object>({ children, value }: Props<TValue>) {
   const colorKey =
     useReactiveVar(colorTheme) === ColorTheme.Dark ? "dark" : "base";
 
@@ -62,3 +59,9 @@ export function JSONView<TValue extends object>({
     </JsonView>
   );
 }
+
+Object.assign(_JSONView, JsonView);
+
+export const JSONView = _JSONView as typeof _JSONView & {
+  [K in keyof typeof JsonView]: (typeof JsonView)[K];
+};
