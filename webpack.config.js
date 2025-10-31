@@ -136,6 +136,10 @@ export default /** @returns {import("webpack").Configuration} */ (env) => {
         ".css",
       ],
       alias: {
+        "@/react-object-viewer": path.resolve(
+          __dirname,
+          "./src/application/components/react-object-viewer/src/index.ts"
+        ),
         "@/*": path.resolve(__dirname, "./src/*"),
       },
     },
