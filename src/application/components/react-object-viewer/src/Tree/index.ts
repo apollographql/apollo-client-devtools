@@ -1,2 +1,1 @@
-export * from './Tree'
-import './Tree.less'
+export * from "./Tree";
