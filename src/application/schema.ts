@@ -62,8 +62,12 @@ function createResolvers(client: RpcClient): Resolvers {
       },
     },
     CacheWrite: {
-      documentString: ({ document }) => print(document),
+      document: ({ document }) => document,
       cacheDiff: ({ cache }) => diff(cache.before, cache.after),
+    },
+    GraphQLDocument: {
+      string: print,
+      ast: (document) => document,
     },
     Client: {
       __resolveType: (client) => {

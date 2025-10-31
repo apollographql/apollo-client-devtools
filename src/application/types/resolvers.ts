@@ -1,6 +1,7 @@
 /* eslint-disable */
 import type { DateTime } from "./scalars";
 import type { Diff } from "@/application/utilities/diff";
+import type { DocumentNode } from "@apollo/client";
 import type { QueryData } from "./scalars";
 import type { QueryOptions } from "./scalars";
 import type { Variables } from "./scalars";
@@ -57,6 +58,7 @@ export type Scalars = {
   Cache: { input: unknown; output: unknown };
   DateTime: { input: DateTime; output: DateTime };
   Diff: { input: Diff; output: Diff };
+  DocumentNode: { input: DocumentNode; output: DocumentNode };
   GraphQLErrorPath: { input: unknown; output: unknown };
   JSON: { input: unknown; output: unknown };
   /** Represents data for a specific query */
@@ -85,7 +87,7 @@ export type CacheWrite = {
   cacheDiff: Maybe<Scalars["Diff"]["output"]>;
   data: Maybe<Scalars["QueryData"]["output"]>;
   dataId: Maybe<Scalars["String"]["output"]>;
-  documentString: Scalars["String"]["output"];
+  document: GraphQlDocument;
   id: Scalars["ID"]["output"];
   overwrite: Maybe<Scalars["Boolean"]["output"]>;
   timestamp: Scalars["DateTime"]["output"];
@@ -287,6 +289,12 @@ export type FragmentRegistryCacheSizes = {
   findFragmentSpreads: CacheSize;
   lookup: CacheSize;
   transform: CacheSize;
+};
+
+export type GraphQlDocument = {
+  __typename?: "GraphQLDocument";
+  ast: Scalars["DocumentNode"]["output"];
+  string: Scalars["String"]["output"];
 };
 
 export type GraphQlErrorSourceLocation = {
@@ -654,11 +662,13 @@ export type ResolversTypes = {
   >;
   DateTime: ResolverTypeWrapper<Scalars["DateTime"]["output"]>;
   Diff: ResolverTypeWrapper<Scalars["Diff"]["output"]>;
+  DocumentNode: ResolverTypeWrapper<Scalars["DocumentNode"]["output"]>;
   DocumentTransformCacheSizes: ResolverTypeWrapper<DocumentTransformCacheSizes>;
   ErrorLike: ResolverTypeWrapper<
     ResolversInterfaceTypes<ResolversTypes>["ErrorLike"]
   >;
   FragmentRegistryCacheSizes: ResolverTypeWrapper<FragmentRegistryCacheSizes>;
+  GraphQLDocument: ResolverTypeWrapper<DocumentNode>;
   GraphQLErrorPath: ResolverTypeWrapper<Scalars["GraphQLErrorPath"]["output"]>;
   GraphQLErrorSourceLocation: ResolverTypeWrapper<GraphQlErrorSourceLocation>;
   ID: ResolverTypeWrapper<Scalars["ID"]["output"]>;
@@ -740,9 +750,11 @@ export type ResolversParentTypes = {
   ClientWatchedQuery: ResolversInterfaceTypes<ResolversParentTypes>["ClientWatchedQuery"];
   DateTime: Scalars["DateTime"]["output"];
   Diff: Scalars["Diff"]["output"];
+  DocumentNode: Scalars["DocumentNode"]["output"];
   DocumentTransformCacheSizes: DocumentTransformCacheSizes;
   ErrorLike: ResolversInterfaceTypes<ResolversParentTypes>["ErrorLike"];
   FragmentRegistryCacheSizes: FragmentRegistryCacheSizes;
+  GraphQLDocument: DocumentNode;
   GraphQLErrorPath: Scalars["GraphQLErrorPath"]["output"];
   GraphQLErrorSourceLocation: GraphQlErrorSourceLocation;
   ID: Scalars["ID"]["output"];
@@ -814,7 +826,11 @@ export type CacheWriteResolvers<
   cacheDiff?: Resolver<Maybe<ResolversTypes["Diff"]>, ParentType, ContextType>;
   data?: Resolver<Maybe<ResolversTypes["QueryData"]>, ParentType, ContextType>;
   dataId?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  documentString?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  document?: Resolver<
+    ResolversTypes["GraphQLDocument"],
+    ParentType,
+    ContextType
+  >;
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
   overwrite?: Resolver<
     Maybe<ResolversTypes["Boolean"]>,
@@ -1265,6 +1281,11 @@ export interface DiffScalarConfig
   name: "Diff";
 }
 
+export interface DocumentNodeScalarConfig
+  extends GraphQLScalarTypeConfig<ResolversTypes["DocumentNode"], any> {
+  name: "DocumentNode";
+}
+
 export type DocumentTransformCacheSizesResolvers<
   ContextType = any,
   ParentType extends
@@ -1304,6 +1325,16 @@ export type FragmentRegistryCacheSizesResolvers<
   >;
   lookup?: Resolver<ResolversTypes["CacheSize"], ParentType, ContextType>;
   transform?: Resolver<ResolversTypes["CacheSize"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type GraphQlDocumentResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["GraphQLDocument"] = ResolversParentTypes["GraphQLDocument"],
+> = {
+  ast?: Resolver<ResolversTypes["DocumentNode"], ParentType, ContextType>;
+  string?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1656,9 +1687,11 @@ export type Resolvers<ContextType = any> = {
   ClientWatchedQuery?: ClientWatchedQueryResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
   Diff?: GraphQLScalarType;
+  DocumentNode?: GraphQLScalarType;
   DocumentTransformCacheSizes?: DocumentTransformCacheSizesResolvers<ContextType>;
   ErrorLike?: ErrorLikeResolvers<ContextType>;
   FragmentRegistryCacheSizes?: FragmentRegistryCacheSizesResolvers<ContextType>;
+  GraphQLDocument?: GraphQlDocumentResolvers<ContextType>;
   GraphQLErrorPath?: GraphQLScalarType;
   GraphQLErrorSourceLocation?: GraphQlErrorSourceLocationResolvers<ContextType>;
   InMemoryCacheSizes?: InMemoryCacheSizesResolvers<ContextType>;
