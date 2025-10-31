@@ -343,7 +343,6 @@ function RenderItem(props: {
     type === "array" || type === "object" || type === "function";
   const loadGetter = () => {
     if (!descriptor.get) return;
-    console.log(props.top);
     let value;
     try {
       value = descriptor.get.call(props.top);
