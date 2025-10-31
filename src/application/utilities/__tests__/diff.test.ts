@@ -1,4 +1,4 @@
-import { diff, ADDED, DELETED, CHANGED } from "../diff";
+import { diff, Deleted, Changed, Added } from "../diff";
 
 describe("diff", () => {
   test("returns undefined when objects are deeply equal", () => {
@@ -10,25 +10,25 @@ describe("diff", () => {
   test("diffs objects with new keys", () => {
     const result = diff({ a: 1 }, { a: 1, b: 1 });
 
-    expect(result).toEqual({ b: [ADDED, 1] });
+    expect(result).toEqual({ b: new Deleted(1) });
   });
 
   test("diffs objects with removed keys", () => {
     const result = diff({ a: 1, b: 1 }, { a: 1 });
 
-    expect(result).toEqual({ b: [DELETED, 1] });
+    expect(result).toEqual({ b: new Deleted(1) });
   });
 
   test("diffs changes to existing keys", () => {
     const result = diff({ a: 1 }, { a: 2 });
 
-    expect(result).toEqual({ a: [CHANGED, 1, 2] });
+    expect(result).toEqual({ a: new Changed(1, 2) });
   });
 
   test("returns changed if object changes type", () => {
     const result = diff({ a: { b: 1 } }, { a: 2 });
 
-    expect(result).toEqual({ a: [CHANGED, { b: 1 }, 2] });
+    expect(result).toEqual({ a: new Changed({ b: 1 }, 2) });
   });
 
   test("handles changes to values deep in the object", () => {
@@ -43,7 +43,7 @@ describe("diff", () => {
           c: {
             d: {
               e: {
-                f: [CHANGED, true, false],
+                f: new Changed(true, false),
               },
             },
           },
@@ -61,19 +61,19 @@ describe("diff", () => {
   test("diffs arrays with new items", () => {
     const result = diff([0], [0, 1]);
 
-    expect(result).toEqual([undefined, [ADDED, 1]]);
+    expect(result).toEqual([undefined, new Added(1)]);
   });
 
   test("diffs arrays with removed items", () => {
     const result = diff([0, 1], [0]);
 
-    expect(result).toEqual([undefined, [DELETED, 1]]);
+    expect(result).toEqual([undefined, new Deleted(1)]);
   });
 
   test("diffs arrays with changed items", () => {
     const result = diff([0], [1]);
 
-    expect(result).toEqual([[CHANGED, 0, 1]]);
+    expect(result).toEqual([new Changed(0, 1)]);
   });
 
   test("handles changes to values deep in an array", () => {
@@ -89,7 +89,7 @@ describe("diff", () => {
             c: {
               d: {
                 e: {
-                  f: [CHANGED, true, false],
+                  f: new Changed(true, false),
                 },
               },
             },
@@ -118,24 +118,20 @@ describe("diff", () => {
 
     expect(result).toEqual({
       b: {
-        c: [
-          [CHANGED, 0, 1],
-          [CHANGED, 1, 2],
-          [ADDED, 3],
-        ],
+        c: [new Changed(0, 1), new Changed(1, 2), new Added(3)],
         d: {
           e: {
-            f: [CHANGED, true, false],
-            g: [ADDED, true],
+            f: new Changed(true, false),
+            g: new Added(true),
           },
         },
       },
-      foo: [DELETED, true],
-      bar: [undefined, [DELETED, 1]],
+      foo: new Deleted(true),
+      bar: [undefined, new Deleted(1)],
       baz: [
         undefined,
-        { b: [CHANGED, 2, 3], c: [ADDED, 2] },
-        [DELETED, { c: 2 }],
+        { b: new Changed(2, 3), c: new Added(2) },
+        new Deleted({ c: 2 }),
       ],
     });
   });
