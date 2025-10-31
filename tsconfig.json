@@ -16,9 +16,6 @@
     "declaration": true,
     "outDir": "dist",
     "paths": {
-      "@/react-object-viewer": [
-        "./src/application/components/react-object-viewer/src/index.ts"
-      ],
       "@/*": ["./src/*"]
     },
     "plugins": [
