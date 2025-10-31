@@ -27,6 +27,7 @@ const config: CodegenConfig = {
           Cache: "./scalars#Cache",
           DateTime: "./scalars#DateTime",
           Diff: "@/application/utilities/diff#Diff",
+          DocumentNode: "@apollo/client#DocumentNode",
           QueryData: "./scalars#QueryData",
           Variables: "./scalars#Variables",
           QueryOptions: "./scalars#QueryOptions",
@@ -48,6 +49,7 @@ const config: CodegenConfig = {
         scalars: {
           DateTime: "./scalars#DateTime",
           Diff: "@/application/utilities/diff#Diff",
+          DocumentNode: "@apollo/client#DocumentNode",
           QueryData: "./scalars#QueryData",
           Variables: "./scalars#Variables",
           QueryOptions: "./scalars#QueryOptions",
@@ -66,6 +68,7 @@ const config: CodegenConfig = {
           ClientV4Queries: "@/types.ts#ApolloClientInfo",
           ClientV3Mutations: "@/types.ts#ApolloClientInfo",
           ClientV4Mutations: "@/types.ts#ApolloClientInfo",
+          GraphQLDocument: "@apollo/client#DocumentNode",
           SerializedApolloError:
             "@/extension/tab/v3/types#SerializedApolloError as RpcSerializedApolloError",
           SerializedError: "@/types#SerializedError as RpcSerializedError",

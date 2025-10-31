@@ -16,7 +16,10 @@ const CACHE_WRITES_PANEL_FRAGMENT: TypedDocumentNode<CacheWritesPanelFragment> =
   fragment CacheWritesPanelFragment on CacheWrite {
     id
     data
-    documentString
+    document {
+      string
+      ast
+    }
     timestamp
     variables
   }
@@ -65,7 +68,7 @@ export function CacheWritesPanel({ cacheWrites }: Props) {
               >
                 <div className="flex flex-col gap-1">
                   <span className="font-code text-lg">
-                    {getOperationName(gql(cacheWrite.documentString))}
+                    {getOperationName(cacheWrite.document.ast)}
                   </span>
                   <span className="text-xs">
                     {format(new Date(cacheWrite.timestamp), "MMM do, yyyy pp")}
@@ -88,7 +91,7 @@ export function CacheWritesPanel({ cacheWrites }: Props) {
                 </h2>
                 <CodeBlock
                   language="graphql"
-                  code={selectedCacheWrite.documentString}
+                  code={selectedCacheWrite.document.string}
                 />
               </div>
               <div className="flex flex-col gap-2">

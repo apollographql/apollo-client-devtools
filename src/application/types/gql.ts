@@ -1,6 +1,7 @@
 import type { Cache } from "./scalars";
 import type { DateTime } from "./scalars";
 import type { Diff } from "@/application/utilities/diff";
+import type { DocumentNode } from "@apollo/client";
 import type { GraphQLErrorPath } from "./scalars";
 import type { JSON } from "./scalars";
 import type { QueryData } from "./scalars";
@@ -37,6 +38,7 @@ export type Scalars = {
   Cache: { input: Cache; output: Cache };
   DateTime: { input: DateTime; output: DateTime };
   Diff: { input: Diff; output: Diff };
+  DocumentNode: { input: DocumentNode; output: DocumentNode };
   GraphQLErrorPath: { input: GraphQLErrorPath; output: GraphQLErrorPath };
   JSON: { input: JSON; output: JSON };
   /** Represents data for a specific query */
@@ -65,7 +67,7 @@ export type CacheWrite = {
   cacheDiff: Maybe<Scalars["Diff"]["output"]>;
   data: Maybe<Scalars["QueryData"]["output"]>;
   dataId: Maybe<Scalars["String"]["output"]>;
-  documentString: Scalars["String"]["output"];
+  document: GraphQLDocument;
   id: Scalars["ID"]["output"];
   overwrite: Maybe<Scalars["Boolean"]["output"]>;
   timestamp: Scalars["DateTime"]["output"];
@@ -269,6 +271,12 @@ export type FragmentRegistryCacheSizes = {
   transform: CacheSize;
 };
 
+export type GraphQLDocument = {
+  __typename: "GraphQLDocument";
+  ast: Scalars["DocumentNode"]["output"];
+  string: Scalars["String"]["output"];
+};
+
 export type GraphQLErrorSourceLocation = {
   __typename: "GraphQLErrorSourceLocation";
   column: Scalars["Int"]["output"];
@@ -456,9 +464,14 @@ export type CacheWritesSubscription = {
     __typename: "CacheWrite";
     id: string;
     data: QueryData | null;
-    documentString: string;
     timestamp: DateTime;
     variables: Variables | null;
+    cacheDiff: Diff | null;
+    document: {
+      __typename: "GraphQLDocument";
+      string: string;
+      ast: DocumentNode;
+    };
   };
 };
 
@@ -468,9 +481,14 @@ type ClientWriteSubscriptionFragment_ClientV3 = {
     __typename: "CacheWrite";
     id: string;
     data: QueryData | null;
-    documentString: string;
     timestamp: DateTime;
     variables: Variables | null;
+    cacheDiff: Diff | null;
+    document: {
+      __typename: "GraphQLDocument";
+      string: string;
+      ast: DocumentNode;
+    };
   }>;
 };
 
@@ -480,9 +498,14 @@ type ClientWriteSubscriptionFragment_ClientV4 = {
     __typename: "CacheWrite";
     id: string;
     data: QueryData | null;
-    documentString: string;
     timestamp: DateTime;
     variables: Variables | null;
+    cacheDiff: Diff | null;
+    document: {
+      __typename: "GraphQLDocument";
+      string: string;
+      ast: DocumentNode;
+    };
   }>;
 };
 
@@ -522,9 +545,14 @@ export type GetCache = {
           __typename: "CacheWrite";
           id: string;
           data: QueryData | null;
-          documentString: string;
           timestamp: DateTime;
           variables: Variables | null;
+          cacheDiff: Diff | null;
+          document: {
+            __typename: "GraphQLDocument";
+            string: string;
+            ast: DocumentNode;
+          };
         }>;
       }
     | {
@@ -535,9 +563,14 @@ export type GetCache = {
           __typename: "CacheWrite";
           id: string;
           data: QueryData | null;
-          documentString: string;
           timestamp: DateTime;
           variables: Variables | null;
+          cacheDiff: Diff | null;
+          document: {
+            __typename: "GraphQLDocument";
+            string: string;
+            ast: DocumentNode;
+          };
         }>;
       }
     | null;
@@ -547,9 +580,14 @@ export type CacheWritesPanelFragment = {
   __typename: "CacheWrite";
   id: string;
   data: QueryData | null;
-  documentString: string;
   timestamp: DateTime;
   variables: Variables | null;
+  cacheDiff: Diff | null;
+  document: {
+    __typename: "GraphQLDocument";
+    string: string;
+    ast: DocumentNode;
+  };
 };
 
 export type CombinedGraphQLErrorsAlertDisclosurePanel_error = {

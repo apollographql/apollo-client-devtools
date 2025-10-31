@@ -14,6 +14,7 @@ scalar DateTime
 
 scalar JSON
 scalar Diff
+scalar DocumentNode
 scalar GraphQLErrorPath
 
 type Query {
@@ -28,13 +29,18 @@ type Subscription {
 type CacheWrite {
   id: ID!
   data: QueryData
-  documentString: String!
+  document: GraphQLDocument!
   variables: Variables
   dataId: String
   overwrite: Boolean
   broadcast: Boolean
   cacheDiff: Diff
   timestamp: DateTime!
+}
+
+type GraphQLDocument {
+  string: String!
+  ast: DocumentNode!
 }
 
 type BaseCacheSizes {
