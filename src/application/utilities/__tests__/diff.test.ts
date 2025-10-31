@@ -9,7 +9,7 @@ test("returns undefined when objects are deeply equal", () => {
 test("diffs objects with new keys", () => {
   const result = diff({ a: 1 }, { a: 1, b: 1 });
 
-  expect(result).toEqual({ b: ADDED });
+  expect(result).toEqual({ b: [ADDED, 1] });
 });
 
 test("diffs objects with removed keys", () => {
@@ -60,7 +60,7 @@ test("returns undefined when arrays are deeply equal", () => {
 test("diffs arrays with new items", () => {
   const result = diff([0], [0, 1]);
 
-  expect(result).toEqual([undefined, ADDED]);
+  expect(result).toEqual([undefined, [ADDED, 1]]);
 });
 
 test("diffs arrays with removed items", () => {
@@ -117,16 +117,24 @@ test("kitchen sink", () => {
 
   expect(result).toEqual({
     b: {
-      c: [[CHANGED, 0, 1], [CHANGED, 1, 2], ADDED],
+      c: [
+        [CHANGED, 0, 1],
+        [CHANGED, 1, 2],
+        [ADDED, 3],
+      ],
       d: {
         e: {
           f: [CHANGED, true, false],
-          g: ADDED,
+          g: [ADDED, true],
         },
       },
     },
     foo: [DELETED, true],
     bar: [undefined, [DELETED, 1]],
-    baz: [undefined, { b: [CHANGED, 2, 3], c: ADDED }, [DELETED, { c: 2 }]],
+    baz: [
+      undefined,
+      { b: [CHANGED, 2, 3], c: [ADDED, 2] },
+      [DELETED, { c: 2 }],
+    ],
   });
 });

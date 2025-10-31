@@ -3,7 +3,7 @@ export const ADDED = 1;
 export const CHANGED = 0;
 
 export type DiffValue =
-  | typeof ADDED
+  | [typeof ADDED, value: unknown]
   | [typeof DELETED, value: unknown]
   | [typeof CHANGED, oldValue: unknown, newValue: unknown];
 
@@ -32,7 +32,7 @@ export function diff(a: any, b: any): Diff | undefined {
       } else if (Object.hasOwn(a, i)) {
         result[i] = [DELETED, a[i]];
       } else {
-        result[i] = ADDED;
+        result[i] = [ADDED, b[i]];
       }
     }
 
@@ -56,7 +56,7 @@ export function diff(a: any, b: any): Diff | undefined {
       } else if (Object.hasOwn(a, key)) {
         result[key] = [DELETED, a[key]];
       } else {
-        result[key] = ADDED;
+        result[key] = [ADDED, b[key]];
       }
     }
 
