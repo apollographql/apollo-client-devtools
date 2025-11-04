@@ -11,6 +11,7 @@ type ThemeKey =
   | "arrayIndex"
   | "bracket"
   | "constructorName"
+  | "ellipsis"
   | "info"
   | "punctuation"
   | "quote"
@@ -33,6 +34,7 @@ const { code, text } = colors.tokens;
 
 const theme: Theme = {
   constructorName: code.e,
+  ellipsis: text.secondary,
   info: code.g,
   punctuation: code.a,
   objectKey: code.d,
