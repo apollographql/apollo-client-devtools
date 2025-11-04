@@ -9,10 +9,12 @@ import { useRenderer } from "./useRenderer";
 import { CustomNode } from "./CustomNode";
 
 export function IterableItem({
+  className,
   depth,
   itemKey,
   value,
 }: {
+  className?: string;
   depth: number;
   itemKey: string | number;
   value: unknown;
@@ -31,7 +33,7 @@ export function IterableItem({
   const [expanded, setExpanded] = useState(expandable ? depth === 0 : true);
 
   return (
-    <div>
+    <div className={className}>
       <span
         className={clsx("inline-block align-middle relative", {
           "cursor-pointer": expandable,
