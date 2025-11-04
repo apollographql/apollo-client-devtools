@@ -1,10 +1,13 @@
+import clsx from "clsx";
+
 interface Props {
+  className?: string;
   value: symbol;
 }
 
-export function SymbolNode({ value }: Props) {
+export function SymbolNode({ className, value }: Props) {
   return (
-    <span className="text-[var(--ov-typeSymbol-color)]">
+    <span className={clsx("text-[var(--ov-typeSymbol-color)]", className)}>
       {value.toString()}
     </span>
   );

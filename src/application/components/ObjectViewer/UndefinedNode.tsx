@@ -1,5 +1,13 @@
-export function UndefinedNode() {
+import { clsx } from "clsx";
+
+interface Props {
+  className?: string;
+}
+
+export function UndefinedNode({ className }: Props) {
   return (
-    <span className="text-[var(--ov-typeUndefined-color)]">undefined</span>
+    <span className={clsx("text-[var(--ov-typeUndefined-color)]", className)}>
+      undefined
+    </span>
   );
 }

@@ -1,10 +1,13 @@
+import clsx from "clsx";
+
 interface Props {
+  className?: string;
   value: string;
 }
 
-export function StringNode({ value }: Props) {
+export function StringNode({ className, value }: Props) {
   return (
-    <span className="text-[var(--ov-typeString-color)]">
+    <span className={clsx("text-[var(--ov-typeString-color)]", className)}>
       <Quote />
       {value}
       <Quote />

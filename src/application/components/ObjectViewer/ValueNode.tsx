@@ -1,5 +1,4 @@
 /* eslint-disable testing-library/render-result-naming-convention */
-import { useContext } from "react";
 import { ArrayNode } from "./ArrayNode";
 import { BigintNode } from "./BigintNode";
 import { BooleanNode } from "./BooleanNode";
@@ -10,16 +9,16 @@ import { ObjectNode } from "./ObjectNode";
 import { StringNode } from "./StringNode";
 import { SymbolNode } from "./SymbolNode";
 import { UndefinedNode } from "./UndefinedNode";
-import { useObjectViewerContext } from "./context";
 import { CustomNode } from "./CustomNode";
 import { useRenderer } from "./useRenderer";
 
 interface Props {
+  className?: string;
   depth: number;
   value: unknown;
 }
 
-export function ValueNode({ depth, value }: Props) {
+export function ValueNode({ className, depth, value }: Props) {
   const renderer = useRenderer(value);
 
   if (renderer) {
@@ -28,22 +27,22 @@ export function ValueNode({ depth, value }: Props) {
 
   switch (typeof value) {
     case "bigint":
-      return <BigintNode value={value} />;
+      return <BigintNode className={className} value={value} />;
     case "boolean":
-      return <BooleanNode value={value} />;
+      return <BooleanNode className={className} value={value} />;
     case "function":
-      return <FunctionNode value={value} />;
+      return <FunctionNode className={className} value={value} />;
     case "number":
-      return <NumberNode value={value} />;
+      return <NumberNode className={className} value={value} />;
     case "string":
-      return <StringNode value={value} />;
+      return <StringNode className={className} value={value} />;
     case "symbol":
-      return <SymbolNode value={value} />;
+      return <SymbolNode className={className} value={value} />;
     case "undefined":
-      return <UndefinedNode />;
+      return <UndefinedNode className={className} />;
     case "object": {
       if (value === null) {
-        return <NullNode />;
+        return <NullNode className={className} />;
       }
 
       if (Array.isArray(value)) {

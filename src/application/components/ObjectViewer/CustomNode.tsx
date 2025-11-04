@@ -1,6 +1,6 @@
-import type { ReactNode } from "react";
 import { ValueNode } from "./ValueNode";
-import type { Renderer } from "./ObjectViewer";
+import type { CustomRenderProps, Renderer } from "./ObjectViewer";
+import { useCallback } from "react";
 
 interface Props {
   depth: number;
@@ -10,11 +10,10 @@ interface Props {
 
 export function CustomNode({ depth, value, renderer }: Props) {
   const { render: Render } = renderer;
-
-  return (
-    <Render
-      value={value}
-      renderDefault={(value) => <ValueNode depth={depth} value={value} />}
-    />
+  const DefaultRender = useCallback<CustomRenderProps["DefaultRender"]>(
+    (props) => <ValueNode depth={depth} {...props} />,
+    [depth]
   );
+
+  return <Render value={value} DefaultRender={DefaultRender} />;
 }

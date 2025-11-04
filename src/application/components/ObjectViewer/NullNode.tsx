@@ -1,3 +1,13 @@
-export function NullNode() {
-  return <span className="text-[var(--ov-typeNull-color)]">null</span>;
+import { clsx } from "clsx";
+
+interface Props {
+  className?: string;
+}
+
+export function NullNode({ className }: Props) {
+  return (
+    <span className={clsx("text-[var(--ov-typeNull-color)]", className)}>
+      null
+    </span>
+  );
 }
