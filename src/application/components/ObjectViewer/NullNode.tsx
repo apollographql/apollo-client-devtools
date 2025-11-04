@@ -1,13 +1,10 @@
 import { clsx } from "clsx";
+import { customRenderable } from "./CustomRenderable";
 
-interface Props {
-  className?: string;
-}
-
-export function NullNode({ className }: Props) {
+export const NullNode = customRenderable<never>("null", ({ className }) => {
   return (
     <span className={clsx("text-[var(--ov-typeNull-color)]", className)}>
       null
     </span>
   );
-}
+});

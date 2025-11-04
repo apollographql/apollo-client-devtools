@@ -1,14 +1,13 @@
 import clsx from "clsx";
+import { customRenderable } from "./CustomRenderable";
 
-interface Props {
-  className?: string;
-  value: boolean;
-}
-
-export function BooleanNode({ className, value }: Props) {
-  return (
-    <span className={clsx("text-[var(--ov-typeBoolean-color)]", className)}>
-      {String(value)}
-    </span>
-  );
-}
+export const BooleanNode = customRenderable<boolean>(
+  "boolean",
+  ({ className, value }) => {
+    return (
+      <span className={clsx("text-[var(--ov-typeBoolean-color)]", className)}>
+        {String(value)}
+      </span>
+    );
+  }
+);

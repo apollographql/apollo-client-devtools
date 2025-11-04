@@ -1,14 +1,13 @@
 import clsx from "clsx";
+import { customRenderable } from "./CustomRenderable";
 
-interface Props {
-  className?: string;
-  value: symbol;
-}
-
-export function SymbolNode({ className, value }: Props) {
-  return (
-    <span className={clsx("text-[var(--ov-typeSymbol-color)]", className)}>
-      {value.toString()}
-    </span>
-  );
-}
+export const SymbolNode = customRenderable<symbol>(
+  "symbol",
+  ({ className, value }) => {
+    return (
+      <span className={clsx("text-[var(--ov-typeSymbol-color)]", className)}>
+        {value.toString()}
+      </span>
+    );
+  }
+);

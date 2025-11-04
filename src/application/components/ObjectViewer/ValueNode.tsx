@@ -1,55 +1,129 @@
-/* eslint-disable testing-library/render-result-naming-convention */
-import { ArrayNode } from "./ArrayNode";
+/* eslint-disable @typescript-eslint/ban-types */
 import { BigintNode } from "./BigintNode";
 import { BooleanNode } from "./BooleanNode";
 import { FunctionNode } from "./FunctionNode";
-import { NullNode } from "./NullNode";
 import { NumberNode } from "./NumberNode";
-import { ObjectNode } from "./ObjectNode";
 import { StringNode } from "./StringNode";
 import { SymbolNode } from "./SymbolNode";
 import { UndefinedNode } from "./UndefinedNode";
-import { CustomNode } from "./CustomNode";
-import { useRenderer } from "./useRenderer";
+import { ObjectNode } from "./ObjectNode";
+import { NullNode } from "./NullNode";
+import { ArrayNode } from "./ArrayNode";
+import { useObjectViewerContext, useTypeOfValue } from "./context";
+import { useCallback } from "react";
 
 interface Props {
+  context: Record<string, any> | undefined;
   className?: string;
   depth: number;
   value: unknown;
 }
 
-export function ValueNode({ className, depth, value }: Props) {
-  const renderer = useRenderer(value);
+export const ValueNode = ({ context, className, depth, value }: Props) => {
+  const type = useTypeOfValue(value);
+  const ctx = useObjectViewerContext();
+  const DefaultRender = useCallback(
+    (props: {
+      className?: string;
+      context?: Record<string, any>;
+      value: unknown;
+    }) => (
+      <ValueNode
+        {...props}
+        context={{ ...context, ...props.context }}
+        depth={depth}
+      />
+    ),
+    [context, depth]
+  );
 
-  if (renderer) {
-    return <CustomNode depth={depth} value={value} renderer={renderer} />;
-  }
-
-  switch (typeof value) {
+  switch (type) {
+    case "array":
+      return (
+        <ArrayNode
+          depth={depth}
+          className={className}
+          value={value as unknown[]}
+        />
+      );
     case "bigint":
-      return <BigintNode className={className} value={value} />;
+      return (
+        <BigintNode
+          depth={depth}
+          className={className}
+          value={value as bigint}
+        />
+      );
     case "boolean":
-      return <BooleanNode className={className} value={value} />;
+      return (
+        <BooleanNode
+          context={context}
+          depth={depth}
+          className={className}
+          value={value as boolean}
+        />
+      );
     case "function":
-      return <FunctionNode className={className} value={value} />;
+      return (
+        <FunctionNode
+          depth={depth}
+          className={className}
+          value={value as Function}
+        />
+      );
     case "number":
-      return <NumberNode className={className} value={value} />;
+      return (
+        <NumberNode
+          depth={depth}
+          className={className}
+          value={value as number}
+        />
+      );
+    case "null":
+      return <NullNode depth={depth} className={className} />;
     case "string":
-      return <StringNode className={className} value={value} />;
+      return (
+        <StringNode
+          context={context}
+          depth={depth}
+          className={className}
+          value={value as string}
+        />
+      );
     case "symbol":
-      return <SymbolNode className={className} value={value} />;
+      return (
+        <SymbolNode
+          depth={depth}
+          className={className}
+          value={value as symbol}
+        />
+      );
     case "undefined":
-      return <UndefinedNode className={className} />;
+      return <UndefinedNode depth={depth} className={className} />;
     case "object": {
-      if (value === null) {
-        return <NullNode className={className} />;
-      }
+      return (
+        <ObjectNode
+          context={context}
+          className={className}
+          depth={depth}
+          value={value as object}
+        />
+      );
+    }
+    default: {
+      const Render = ctx.renderers[type];
 
-      if (Array.isArray(value)) {
-        return <ArrayNode className={className} depth={depth} value={value} />;
-      }
-
-      return <ObjectNode className={className} depth={depth} value={value} />;
+      return Render ? (
+        <Render
+          depth={depth}
+          className={className}
+          context={context}
+          DefaultRender={DefaultRender}
+          value={value}
+        />
+      ) : (
+        <DefaultRender className={className} value={value} />
+      );
     }
   }
-}
+};
