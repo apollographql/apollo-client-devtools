@@ -2,6 +2,7 @@ import IconChevronRight from "@apollo/icons/default/IconChevronRight.svg";
 import { ValueNode } from "./ValueNode";
 import clsx from "clsx";
 import { Bracket } from "./Bracket";
+import { CollectionLength } from "./CollectionLength";
 
 interface Props {
   depth: number;
@@ -10,7 +11,6 @@ interface Props {
 
 export function ObjectNode({ depth, value }: Props) {
   const constructorName = getConstructorName(value);
-  const entries = Array.from(Object.entries(value));
 
   return (
     <>
@@ -20,11 +20,12 @@ export function ObjectNode({ depth, value }: Props) {
         </span>
       )}{" "}
       <Bracket type="open" value={value} />{" "}
-      <span className="italic inline-block align-middle text-[var(--ov-info-color)]">
-        {entries.length} items
-      </span>
+      <CollectionLength
+        className="inline-block align-middle italic"
+        value={value}
+      />
       <div className="pl-[2ch]">
-        {entries.map(([key, value], idx) => {
+        {Array.from(Object.entries(value)).map(([key, value], idx) => {
           const expandable =
             Array.isArray(value) ||
             (typeof value === "object" && value !== null);

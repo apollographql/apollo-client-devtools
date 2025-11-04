@@ -3,6 +3,7 @@ import { Bracket } from "./Bracket";
 import { ValueNode } from "./ValueNode";
 import { clsx } from "clsx";
 import { useState } from "react";
+import { CollectionLength } from "./CollectionLength";
 
 interface Props {
   depth: number;
@@ -13,9 +14,10 @@ export function ArrayNode({ depth, value }: Props) {
   return (
     <>
       <Bracket value={value} type="open" />{" "}
-      <span className="italic inline-block align-middle text-[var(--ov-info-color)]">
-        {value.length} items
-      </span>
+      <CollectionLength
+        className="inline-block align-middle italic"
+        value={value}
+      />
       <div className="pl-[2ch]">
         {value.map((item, idx) => (
           <ArrayItem key={idx} depth={depth} index={idx} value={item} />
