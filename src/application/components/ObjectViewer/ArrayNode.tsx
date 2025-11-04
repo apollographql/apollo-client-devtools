@@ -3,11 +3,12 @@ import { CollectionLength } from "./CollectionLength";
 import { IterableItem } from "./IterableItem";
 
 interface Props {
+  className?: string;
   depth: number;
   value: unknown[];
 }
 
-export function ArrayNode({ depth, value }: Props) {
+export function ArrayNode({ className, depth, value }: Props) {
   return (
     <>
       <Bracket value={value} type="open" />{" "}
@@ -19,6 +20,7 @@ export function ArrayNode({ depth, value }: Props) {
         {value.map((item, idx) => (
           <IterableItem
             key={idx}
+            className={className}
             depth={depth + 1}
             itemKey={idx}
             value={item}

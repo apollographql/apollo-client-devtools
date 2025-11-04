@@ -3,11 +3,12 @@ import { CollectionLength } from "./CollectionLength";
 import { IterableItem } from "./IterableItem";
 
 interface Props {
+  className?: string;
   depth: number;
   value: object;
 }
 
-export function ObjectNode({ depth, value }: Props) {
+export function ObjectNode({ className, depth, value }: Props) {
   const constructorName = getConstructorName(value);
 
   return (
@@ -26,6 +27,7 @@ export function ObjectNode({ depth, value }: Props) {
         {Array.from(Object.entries(value)).map(([key, value], idx) => (
           <IterableItem
             key={idx}
+            className={className}
             depth={depth + 1}
             itemKey={key}
             value={value}

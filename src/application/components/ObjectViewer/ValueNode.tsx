@@ -46,10 +46,10 @@ export function ValueNode({ className, depth, value }: Props) {
       }
 
       if (Array.isArray(value)) {
-        return <ArrayNode depth={depth} value={value} />;
+        return <ArrayNode className={className} depth={depth} value={value} />;
       }
 
-      return <ObjectNode depth={depth} value={value} />;
+      return <ObjectNode className={className} depth={depth} value={value} />;
     }
   }
 }
