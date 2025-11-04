@@ -466,6 +466,7 @@ export type CacheWritesSubscription = {
     data: QueryData | null;
     timestamp: DateTime;
     variables: Variables | null;
+    cacheDiff: Diff | null;
     document: {
       __typename: "GraphQLDocument";
       string: string;
@@ -482,6 +483,7 @@ type ClientWriteSubscriptionFragment_ClientV3 = {
     data: QueryData | null;
     timestamp: DateTime;
     variables: Variables | null;
+    cacheDiff: Diff | null;
     document: {
       __typename: "GraphQLDocument";
       string: string;
@@ -498,6 +500,7 @@ type ClientWriteSubscriptionFragment_ClientV4 = {
     data: QueryData | null;
     timestamp: DateTime;
     variables: Variables | null;
+    cacheDiff: Diff | null;
     document: {
       __typename: "GraphQLDocument";
       string: string;
@@ -544,6 +547,7 @@ export type GetCache = {
           data: QueryData | null;
           timestamp: DateTime;
           variables: Variables | null;
+          cacheDiff: Diff | null;
           document: {
             __typename: "GraphQLDocument";
             string: string;
@@ -561,6 +565,7 @@ export type GetCache = {
           data: QueryData | null;
           timestamp: DateTime;
           variables: Variables | null;
+          cacheDiff: Diff | null;
           document: {
             __typename: "GraphQLDocument";
             string: string;
@@ -577,6 +582,7 @@ export type CacheWritesPanelFragment = {
   data: QueryData | null;
   timestamp: DateTime;
   variables: Variables | null;
+  cacheDiff: Diff | null;
   document: {
     __typename: "GraphQLDocument";
     string: string;
