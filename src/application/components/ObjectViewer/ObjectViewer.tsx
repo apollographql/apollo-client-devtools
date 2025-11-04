@@ -16,7 +16,6 @@ type ColorValue = {
 
 type ThemeKey =
   | "arrayIndex"
-  | "brace"
   | "bracket"
   | "constructorName"
   | "info"
