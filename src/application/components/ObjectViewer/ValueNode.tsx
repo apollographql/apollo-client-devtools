@@ -1,3 +1,4 @@
+/* eslint-disable testing-library/render-result-naming-convention */
 import { useContext } from "react";
 import { ArrayNode } from "./ArrayNode";
 import { BigintNode } from "./BigintNode";
@@ -11,7 +12,7 @@ import { SymbolNode } from "./SymbolNode";
 import { UndefinedNode } from "./UndefinedNode";
 import { useObjectViewerContext } from "./context";
 import { CustomNode } from "./CustomNode";
-import type { Renderer } from "./ObjectViewer";
+import { useRenderer } from "./useRenderer";
 
 interface Props {
   depth: number;
@@ -19,20 +20,10 @@ interface Props {
 }
 
 export function ValueNode({ depth, value }: Props) {
-  const { renderers } = useObjectViewerContext();
+  const renderer = useRenderer(value);
 
-  const customRenderKey = Object.keys(renderers).find((key) =>
-    renderers[key]?.is(value)
-  );
-
-  if (customRenderKey) {
-    return (
-      <CustomNode
-        depth={depth}
-        value={value}
-        render={renderers[customRenderKey].render}
-      />
-    );
+  if (renderer) {
+    return <CustomNode depth={depth} value={value} renderer={renderer} />;
   }
 
   switch (typeof value) {

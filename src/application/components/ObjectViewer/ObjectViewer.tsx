@@ -7,6 +7,7 @@ import { Provider } from "./context";
 
 export type Renderer<T = unknown> = {
   is: (value: unknown) => value is T;
+  expandable?: boolean | ((value: unknown) => boolean);
   render: React.FC<CustomRenderProps<T>>;
 };
 
