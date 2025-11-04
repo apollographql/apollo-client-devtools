@@ -10,10 +10,11 @@ import { SymbolNode } from "./SymbolNode";
 import { UndefinedNode } from "./UndefinedNode";
 
 interface Props {
+  depth: number;
   value: unknown;
 }
 
-export function ValueNode({ value }: Props) {
+export function ValueNode({ depth, value }: Props) {
   switch (typeof value) {
     case "bigint":
       return <BigintNode value={value} />;
@@ -35,10 +36,10 @@ export function ValueNode({ value }: Props) {
       }
 
       if (Array.isArray(value)) {
-        return <ArrayNode value={value} />;
+        return <ArrayNode depth={depth} value={value} />;
       }
 
-      return <ObjectNode value={value} />;
+      return <ObjectNode depth={depth} value={value} />;
     }
   }
 }
