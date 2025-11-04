@@ -1,10 +1,23 @@
 import { ValueNode } from "./ValueNode";
 import { colors } from "@apollo/brand";
 import { useThemeObject } from "@/application/hooks/useTheme";
+import type { ReactNode } from "react";
 import { useMemo } from "react";
+import { Provider } from "./context";
+
+export type Renderer<T = unknown> = {
+  is: (value: unknown) => value is T;
+  render: React.FC<CustomRenderProps<T>>;
+};
+
+export interface CustomRenderProps<T = unknown> {
+  value: T;
+  renderDefault: (value: unknown) => ReactNode;
+}
 
 interface Props {
   value: unknown;
+  renderers: Record<string, Renderer<any>>;
 }
 
 type ThemeKey =
@@ -47,7 +60,7 @@ const theme: Theme = {
   typeUndefined: text.secondary,
 };
 
-export function ObjectViewer({ value }: Props) {
+export function ObjectViewer({ renderers, value }: Props) {
   const themeObject = useThemeObject(theme);
 
   const themeValues = useMemo(() => {
@@ -61,7 +74,9 @@ export function ObjectViewer({ value }: Props) {
 
   return (
     <div style={themeValues} className="font-code">
-      <ValueNode depth={0} value={value} />
+      <Provider renderers={renderers}>
+        <ValueNode depth={0} value={value} />
+      </Provider>
     </div>
   );
 }
