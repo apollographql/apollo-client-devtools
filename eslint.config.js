@@ -12,6 +12,7 @@ export default tseslint.config(
   reactRecommended,
   jsxRuntime,
   {
+    files: ["**/__tests__/**/*.ts", "**/__tests__/**/*.tsx"],
     plugins: {
       "testing-library": testingLibrary,
     },
