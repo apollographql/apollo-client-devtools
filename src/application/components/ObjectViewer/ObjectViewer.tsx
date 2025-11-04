@@ -1,18 +1,11 @@
-import { useReactiveVar } from "@apollo/client/react";
 import { ValueNode } from "./ValueNode";
 import { colors } from "@apollo/brand";
-import { ColorTheme, colorTheme } from "@/application/theme";
+import { useThemeObject } from "@/application/hooks/useTheme";
+import { useMemo } from "react";
 
 interface Props {
-  theme?: Theme;
   value: unknown;
 }
-
-type ColorTokens = typeof colors.tokens;
-
-type ColorValue = {
-  [Category in keyof ColorTokens]: `${Category}.${keyof ColorTokens[Category] extends string ? keyof ColorTokens[Category] : never}`;
-}[keyof ColorTokens];
 
 type ThemeKey =
   | "arrayIndex"
@@ -34,22 +27,35 @@ type ThemeKey =
   | "typeSymbol"
   | "typeUndefined";
 
-export type Theme = Partial<Record<ThemeKey, ColorValue>>;
+type Theme = Partial<Record<ThemeKey, { base: string; dark: string }>>;
 
-export function ObjectViewer({ value, theme = {} }: Props) {
-  const colorKey =
-    useReactiveVar(colorTheme) === ColorTheme.Dark ? "dark" : "base";
+const { code, text } = colors.tokens;
 
-  const themeValues = Object.fromEntries(
-    Object.entries(theme).map(([key, value]) => {
-      const [category, token] = value.split(".") as [
-        keyof ColorTokens,
-        keyof ColorTokens[keyof ColorTokens],
-      ];
+const theme: Theme = {
+  constructorName: code.e,
+  info: code.g,
+  punctuation: code.a,
+  objectKey: code.d,
+  typeBoolean: code.c,
+  typeFunction: code.f,
+  typeNumber: code.c,
+  typeNull: text.secondary,
+  typeString: code.g,
+  typeSymbol: code.e,
+  typeUndefined: text.secondary,
+};
 
-      return [`--ov-${key}-color`, colors.tokens[category][token][colorKey]];
-    })
-  );
+export function ObjectViewer({ value }: Props) {
+  const themeObject = useThemeObject(theme);
+
+  const themeValues = useMemo(() => {
+    return Object.fromEntries(
+      Object.entries(themeObject).map(([key, value]) => [
+        `--ov-${key}-color`,
+        value,
+      ])
+    );
+  }, [themeObject]);
 
   return (
     <div style={themeValues} className="font-code">
