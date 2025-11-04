@@ -1,34 +1,25 @@
-/* eslint-disable testing-library/render-result-naming-convention */
 import IconChevronRight from "@apollo/icons/default/IconChevronRight.svg";
 import { clsx } from "clsx";
 import { useState } from "react";
 import { ValueNode } from "./ValueNode";
 import { Bracket } from "./Bracket";
 import { CollectionLength } from "./CollectionLength";
-import { useRenderer } from "./useRenderer";
-import { CustomNode } from "./CustomNode";
 
 export function IterableItem({
   className,
+  context,
   depth,
   itemKey,
   value,
 }: {
   className?: string;
+  context: Record<string, any> | undefined;
   depth: number;
   itemKey: string | number;
   value: unknown;
 }) {
-  const renderer = useRenderer(value);
-  let expandable =
+  const expandable =
     Array.isArray(value) || (typeof value === "object" && value !== null);
-
-  if (renderer && "expandable" in renderer) {
-    expandable =
-      typeof renderer.expandable === "function"
-        ? renderer.expandable(value)
-        : renderer.expandable ?? false;
-  }
 
   const [expanded, setExpanded] = useState(expandable ? depth === 0 : true);
 
@@ -61,11 +52,7 @@ export function IterableItem({
       </span>{" "}
       {expanded ? (
         <>
-          {renderer ? (
-            <CustomNode depth={depth} value={value} renderer={renderer} />
-          ) : (
-            <ValueNode depth={depth} value={value} />
-          )}
+          <ValueNode context={context} depth={depth} value={value} />
           <span className="text-[var(--ov-punctuation-color)]">,</span>
         </>
       ) : (

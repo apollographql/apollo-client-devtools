@@ -1,23 +1,54 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import { ValueNode } from "./ValueNode";
 import { colors } from "@apollo/brand";
 import { Provider } from "./context";
 import type { Theme } from "./ThemeDefinition";
 import { ThemeDefinition } from "./ThemeDefinition";
+import type { ReactNode } from "react";
 
-export type Renderer<T = unknown> = {
-  is: (value: unknown) => value is T;
-  expandable?: boolean | ((value: unknown) => boolean);
-  render: React.FC<CustomRenderProps<T>>;
+export type RenderType<Value = unknown, DefaultValue = unknown> = (
+  props: CustomRenderProps<Value, DefaultValue>
+) => ReactNode;
+
+export type BuiltinRenderType<T = unknown> = (
+  props: CustomRenderProps<T, T>
+) => ReactNode;
+
+type ValueProps<T> = [T] extends [never] ? { value?: never } : { value: T };
+
+export type CustomRenderProps<Value = unknown, DefaultValue = unknown> = {
+  className?: string;
+  context?: Record<string, any>;
+  depth: number;
+  DefaultRender: (props: {
+    context?: Record<string, any>;
+    className?: string;
+    value: DefaultValue;
+  }) => ReactNode;
+} & ValueProps<Value>;
+
+type CustomTypeRenderers<CustomTypes extends string> = {
+  [Type in CustomTypes]: RenderType<any>;
 };
 
-export interface CustomRenderProps<T = unknown> {
-  value: T;
-  DefaultRender: React.FC<{ className?: string; value: unknown }>;
+interface BuiltinTypeRenderers {
+  array: BuiltinRenderType<unknown[]>;
+  bigint: BuiltinRenderType<bigint>;
+  boolean: BuiltinRenderType<boolean>;
+  function: BuiltinRenderType<Function>;
+  object: BuiltinRenderType<object>;
+  string: BuiltinRenderType<string>;
+  symbol: BuiltinRenderType<symbol>;
+  number: BuiltinRenderType<number>;
+  undefined: BuiltinRenderType<never>;
+  null: BuiltinRenderType<never>;
 }
 
-interface Props {
+interface Props<CustomTypes extends string> {
   value: unknown;
-  renderers: Record<string, Renderer<any>>;
+  getTypeOf?: (value: unknown) => CustomTypes | undefined;
+  customTypeRenderers: CustomTypeRenderers<CustomTypes>;
+  builtinTypeRenderers: Partial<BuiltinTypeRenderers>;
 }
 
 const { code, text } = colors.tokens;
@@ -37,11 +68,19 @@ const theme: Theme = {
   typeUndefined: text.secondary,
 };
 
-export function ObjectViewer({ renderers, value }: Props) {
+export function ObjectViewer<CustomTypes extends string>({
+  getTypeOf,
+  builtinTypeRenderers,
+  customTypeRenderers,
+  value,
+}: Props<CustomTypes>) {
   return (
     <ThemeDefinition theme={theme} className="font-code">
-      <Provider renderers={renderers}>
-        <ValueNode depth={0} value={value} />
+      <Provider
+        getTypeOf={getTypeOf}
+        renderers={{ ...builtinTypeRenderers, ...customTypeRenderers } as any}
+      >
+        <ValueNode context={{}} depth={0} value={value} />
       </Provider>
     </ThemeDefinition>
   );
