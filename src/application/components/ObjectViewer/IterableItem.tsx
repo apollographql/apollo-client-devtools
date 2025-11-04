@@ -21,18 +21,23 @@ export function IterableItem({
   return (
     <div>
       <span
-        className="inline-block align-middle relative cursor-pointer"
-        onClick={() => setExpanded((expanded) => !expanded)}
+        className={clsx("inline-block align-middle relative", {
+          "cursor-pointer": expandable,
+        })}
+        onClick={
+          expandable ? () => setExpanded((expanded) => !expanded) : undefined
+        }
       >
         <span className="inline-flex items-center">
           {expandable && (
-            <button className="size-4 absolute -left-5 top-1/2 -translate-y-1/2">
-              <IconChevronRight
-                className={clsx("block size-4 transition-transform ease-out", {
+            <IconChevronRight
+              className={clsx(
+                "block size-4 transition-transform ease-out absolute -left-5 top-1/2 -translate-y-1/2",
+                {
                   "rotate-90": expanded,
-                })}
-              />
-            </button>
+                }
+              )}
+            />
           )}
           <span className="text-[var(--ov-arrayIndex-color,var(--ov-objectKey-color))]">
             {itemKey}
