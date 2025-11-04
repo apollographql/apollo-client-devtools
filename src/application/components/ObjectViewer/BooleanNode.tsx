@@ -1,9 +1,14 @@
+import clsx from "clsx";
+
 interface Props {
+  className?: string;
   value: boolean;
 }
 
-export function BooleanNode({ value }: Props) {
+export function BooleanNode({ className, value }: Props) {
   return (
-    <span className="text-[var(--ov-typeBoolean-color)]">{String(value)}</span>
+    <span className={clsx("text-[var(--ov-typeBoolean-color)]", className)}>
+      {String(value)}
+    </span>
   );
 }
