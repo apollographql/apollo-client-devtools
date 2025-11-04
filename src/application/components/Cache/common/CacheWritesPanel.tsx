@@ -6,11 +6,20 @@ import { useFragment } from "@apollo/client/react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { JSONTreeViewer } from "../../JSONTreeViewer";
 import { CodeBlock } from "../../CodeBlock";
-import { useState } from "react";
+import type { ReactNode } from "react";
+import { memo, useState } from "react";
 import { getOperationName } from "@apollo/client/utilities/internal";
 import { List } from "../../List";
 import { ListItem } from "../../ListItem";
 import { format } from "date-fns";
+import { Added } from "@/application/utilities/diff";
+import { Changed, Deleted, type Diff } from "@/application/utilities/diff";
+import { ObjectViewer } from "../../ObjectViewer";
+import { satisfies } from "semver";
+import type { Renderer } from "../../ObjectViewer/ObjectViewer";
+import { ThemeDefinition } from "../../ObjectViewer/ThemeDefinition";
+import { colors } from "@apollo/brand";
+import clsx from "clsx";
 
 const CACHE_WRITES_PANEL_FRAGMENT: TypedDocumentNode<CacheWritesPanelFragment> = gql`
   fragment CacheWritesPanelFragment on CacheWrite {
@@ -22,6 +31,7 @@ const CACHE_WRITES_PANEL_FRAGMENT: TypedDocumentNode<CacheWritesPanelFragment> =
     }
     timestamp
     variables
+    cacheDiff
   }
 `;
 
@@ -115,10 +125,120 @@ export function CacheWritesPanel({ cacheWrites }: Props) {
                   />
                 )}
               </div>
+              <DiffView diff={selectedCacheWrite.cacheDiff} />
             </Panel>
           </>
         )}
       </PanelGroup>
     </Panel>
+  );
+}
+
+const { text } = colors.tokens;
+
+const DiffView = memo(function DiffView({ diff }: { diff: Diff | null }) {
+  return (
+    <div className="flex flex-col gap-2">
+      <h2 className="text-md text-heading dark:text-heading-dark">Diff</h2>
+      {diff === null ? (
+        <span className="text-disabled dark:text-disabled-dark">Unchanged</span>
+      ) : (
+        <ObjectViewer
+          value={{
+            b: {
+              f: Symbol("a"),
+              func: function () {
+                return "test";
+              },
+              c: [
+                null,
+                new Changed(0, 1),
+                new Changed(1, 2),
+                new Deleted("test"),
+                new Added(3),
+              ],
+              d: {
+                e: {
+                  f: new Changed(true, false),
+                  g: new Added(true),
+                },
+              },
+            },
+            foo: new Deleted(true),
+            bar: [undefined, new Deleted(1)],
+            baz: [
+              undefined,
+              { b: new Changed(2, 3), c: new Added(2) },
+              new Deleted({ c: 2 }),
+            ],
+          }}
+          renderers={{
+            Added: {
+              is: (value) => value instanceof Added,
+              expandable: false,
+              render: ({ value: added, DefaultRender }) => (
+                <DiffValue kind="added">
+                  <DefaultRender value={added.value} />
+                </DiffValue>
+              ),
+            } satisfies Renderer<Added>,
+            Changed: {
+              is: (value) => value instanceof Changed,
+              expandable: false,
+              render: ({ value: changed, DefaultRender }) => {
+                return (
+                  <>
+                    <DiffValue kind="deleted">
+                      <DefaultRender value={changed.oldValue} />
+                    </DiffValue>
+                    <span>{" => "}</span>
+                    <DiffValue kind="added">
+                      <DefaultRender value={changed.newValue} />
+                    </DiffValue>
+                  </>
+                );
+              },
+            } satisfies Renderer<Changed>,
+            Deleted: {
+              is: (value) => value instanceof Deleted,
+              expandable: false,
+              render: ({ value: deleted, DefaultRender }) => {
+                return (
+                  <DiffValue kind="deleted">
+                    <DefaultRender value={deleted.value} />
+                  </DiffValue>
+                );
+              },
+            } satisfies Renderer<Deleted>,
+          }}
+        />
+      )}
+    </div>
+  );
+});
+
+function DiffValue({
+  children,
+  kind,
+}: {
+  children: ReactNode;
+  kind: "added" | "deleted";
+}) {
+  return (
+    <ThemeDefinition
+      as="span"
+      theme={{
+        typeBoolean: text.primary,
+        typeNumber: text.primary,
+        typeString: text.primary,
+      }}
+      className={clsx("px-2 rounded-sm", {
+        "bg-errorSelected dark:bg-errorSelected-dark line-through":
+          kind === "deleted",
+        "bg-successSelected dark:bg-successSelected-dark": kind === "added",
+      })}
+    >
+      {children}
+    </ThemeDefinition>
   );
 }
