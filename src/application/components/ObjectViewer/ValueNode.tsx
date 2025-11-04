@@ -1,3 +1,4 @@
+import { useContext } from "react";
 import { ArrayNode } from "./ArrayNode";
 import { BigintNode } from "./BigintNode";
 import { BooleanNode } from "./BooleanNode";
@@ -8,6 +9,9 @@ import { ObjectNode } from "./ObjectNode";
 import { StringNode } from "./StringNode";
 import { SymbolNode } from "./SymbolNode";
 import { UndefinedNode } from "./UndefinedNode";
+import { useObjectViewerContext } from "./context";
+import { CustomNode } from "./CustomNode";
+import type { Renderer } from "./ObjectViewer";
 
 interface Props {
   depth: number;
@@ -15,6 +19,22 @@ interface Props {
 }
 
 export function ValueNode({ depth, value }: Props) {
+  const { renderers } = useObjectViewerContext();
+
+  const customRenderKey = Object.keys(renderers).find((key) =>
+    renderers[key]?.is(value)
+  );
+
+  if (customRenderKey) {
+    return (
+      <CustomNode
+        depth={depth}
+        value={value}
+        render={renderers[customRenderKey].render}
+      />
+    );
+  }
+
   switch (typeof value) {
     case "bigint":
       return <BigintNode value={value} />;
