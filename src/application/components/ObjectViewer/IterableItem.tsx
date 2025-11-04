@@ -46,9 +46,15 @@ export function IterableItem({
           <span className="text-[var(--ov-punctuation-color)]">,</span>
         </>
       ) : (
-        <>
+        <span
+          className="inline-block align-middle"
+          onClick={() => setExpanded(true)}
+        >
           <Bracket type="open" value={value} />
-          <span className="text-[var(--ov-ellipsis-color,var(--ov-punctuation-color))]">
+          <span
+            className="text-[var(--ov-ellipsis-color,var(--ov-punctuation-color))] cursor-pointer"
+            onClick={() => setExpanded(true)}
+          >
             ...
           </span>
           <Bracket type="close" value={value} />
@@ -56,7 +62,7 @@ export function IterableItem({
           {!expanded && typeof value === "object" && value !== null && (
             <CollectionLength className="italic" value={value} />
           )}
-        </>
+        </span>
       )}
     </div>
   );
