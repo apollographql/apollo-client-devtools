@@ -15,11 +15,10 @@ import { format } from "date-fns";
 import { Added } from "@/application/utilities/diff";
 import { Changed, Deleted, type Diff } from "@/application/utilities/diff";
 import { ObjectViewer } from "../../ObjectViewer";
-import { satisfies } from "semver";
-import type { Renderer } from "../../ObjectViewer/ObjectViewer";
 import { ThemeDefinition } from "../../ObjectViewer/ThemeDefinition";
 import { colors } from "@apollo/brand";
 import clsx from "clsx";
+import type { CustomRenderProps } from "../../ObjectViewer/ObjectViewer";
 
 const CACHE_WRITES_PANEL_FRAGMENT: TypedDocumentNode<CacheWritesPanelFragment> = gql`
   fragment CacheWritesPanelFragment on CacheWrite {
@@ -135,6 +134,7 @@ export function CacheWritesPanel({ cacheWrites }: Props) {
 }
 
 const { text } = colors.tokens;
+const TEST = false;
 
 const DiffView = memo(function DiffView({ diff }: { diff: Diff | null }) {
   return (
@@ -144,72 +144,113 @@ const DiffView = memo(function DiffView({ diff }: { diff: Diff | null }) {
         <span className="text-disabled dark:text-disabled-dark">Unchanged</span>
       ) : (
         <ObjectViewer
-          value={{
-            b: {
-              f: Symbol("a"),
-              func: function () {
-                return "test";
-              },
-              c: [
-                null,
-                new Changed(0, 1),
-                new Changed(1, 2),
-                new Deleted("test"),
-                new Added(3),
-              ],
-              d: {
-                e: {
-                  f: new Changed(true, false),
-                  g: new Added(true),
-                },
-              },
-            },
-            foo: new Deleted(true),
-            bar: [undefined, new Deleted(1)],
-            baz: [
-              undefined,
-              { b: new Changed(2, 3), c: new Added(2) },
-              new Deleted({ c: 2 }),
-            ],
+          value={
+            TEST
+              ? {
+                  b: {
+                    f: Symbol("a"),
+                    func: function () {
+                      return "test";
+                    },
+                    c: [
+                      null,
+                      new Changed(0, 1),
+                      new Changed(1, 2),
+                      new Deleted("test"),
+                      new Added(3),
+                    ],
+                    d: {
+                      e: {
+                        f: new Changed(true, false),
+                        g: new Added(true),
+                      },
+                    },
+                  },
+                  foo: new Deleted(true),
+                  bar: [undefined, new Deleted(1)],
+                  baz: [
+                    undefined,
+                    { b: new Changed(2, 3), c: new Added(2) },
+                    new Deleted({ c: 2 }),
+                  ],
+                }
+              : diff
+          }
+          getTypeOf={(value) => {
+            if (value instanceof Added) {
+              return "Added";
+            }
+
+            if (value instanceof Changed) {
+              return "Changed";
+            }
+
+            if (value instanceof Deleted) {
+              return "Deleted";
+            }
           }}
-          renderers={{
-            Added: {
-              is: (value) => value instanceof Added,
-              expandable: false,
-              render: ({ value: added, DefaultRender }) => (
+          customTypeRenderers={{
+            Added: ({
+              value: added,
+              DefaultRender,
+            }: CustomRenderProps<Added>) => {
+              return (
                 <DiffValue kind="added">
-                  <DefaultRender value={added.value} />
+                  <DefaultRender
+                    className="bg-successSelected dark:bg-successSelected-dark"
+                    value={added.value}
+                    context={{ mode: "added" }}
+                  />
                 </DiffValue>
-              ),
-            } satisfies Renderer<Added>,
-            Changed: {
-              is: (value) => value instanceof Changed,
-              expandable: false,
-              render: ({ value: changed, DefaultRender }) => {
-                return (
-                  <>
-                    <DiffValue kind="deleted">
-                      <DefaultRender value={changed.oldValue} />
-                    </DiffValue>
-                    <span>{" => "}</span>
-                    <DiffValue kind="added">
-                      <DefaultRender value={changed.newValue} />
-                    </DiffValue>
-                  </>
-                );
-              },
-            } satisfies Renderer<Changed>,
-            Deleted: {
-              is: (value) => value instanceof Deleted,
-              expandable: false,
-              render: ({ value: deleted, DefaultRender }) => {
-                return (
+              );
+            },
+            Changed: ({
+              value: changed,
+              DefaultRender,
+            }: CustomRenderProps<Changed>) => {
+              return (
+                <>
                   <DiffValue kind="deleted">
-                    <DefaultRender value={deleted.value} />
+                    <DefaultRender
+                      className="bg-errorSelected dark:bg-errorSelected-dark"
+                      value={changed.oldValue}
+                    />
                   </DiffValue>
-                );
-              },
-            } satisfies Renderer<Deleted>,
+                  <span>{" => "}</span>
+                  <DiffValue kind="added">
+                    <DefaultRender
+                      className="bg-successSelected dark:bg-successSelected-dark"
+                      value={changed.newValue}
+                    />
+                  </DiffValue>
+                </>
+              );
+            },
+            Deleted: ({
+              value: deleted,
+              DefaultRender,
+            }: CustomRenderProps<Deleted>) => {
+              return (
+                <DiffValue kind="deleted">
+                  <DefaultRender
+                    className="bg-errorSelected dark:bg-errorSelected-dark"
+                    value={deleted.value}
+                  />
+                </DiffValue>
+              );
+            },
+          }}
+          builtinTypeRenderers={{
+            string: ({ context, value, DefaultRender }) => {
+              return (
+                <DefaultRender
+                  className={
+                    context?.mode === "added" ? "text-blue-400" : "text-red-400"
+                  }
+                  value={value}
+                />
+              );
+            },
           }}
         />
       )}
