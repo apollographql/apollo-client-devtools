@@ -1,7 +1,7 @@
 import IconChevronRight from "@apollo/icons/default/IconChevronRight.svg";
-import { Brace } from "./Brace";
 import { ValueNode } from "./ValueNode";
 import clsx from "clsx";
+import { Bracket } from "./Bracket";
 
 interface Props {
   depth: number;
@@ -19,7 +19,7 @@ export function ObjectNode({ depth, value }: Props) {
           {constructorName}
         </span>
       )}{" "}
-      <Brace text="{" />{" "}
+      <Bracket type="open" value={value} />{" "}
       <span className="italic inline-block align-middle text-[var(--ov-info-color)]">
         {entries.length} items
       </span>
@@ -64,7 +64,7 @@ export function ObjectNode({ depth, value }: Props) {
           );
         })}
       </div>
-      <Brace text="}" />
+      <Bracket type="close" value={value} />
     </>
   );
 }
