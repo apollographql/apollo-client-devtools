@@ -15,6 +15,7 @@ type ColorValue = {
 }[keyof ColorTokens];
 
 type ThemeKey =
+  | "arrayIndex"
   | "brace"
   | "bracket"
   | "constructorName"
@@ -53,7 +54,7 @@ export function ObjectViewer({ value, theme = {} }: Props) {
 
   return (
     <div style={themeValues} className="font-code">
-      <ValueNode value={value} />
+      <ValueNode depth={0} value={value} />
     </div>
   );
 }
