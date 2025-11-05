@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ValueNode } from "./ValueNode";
 import { Bracket } from "./Bracket";
 import { CollectionLength } from "./CollectionLength";
+import type { Path } from "./types";
 
 export function IterableItem({
   expandable,
@@ -12,6 +13,7 @@ export function IterableItem({
   depth,
   itemKey,
   value,
+  path,
 }: {
   expandable: boolean;
   className?: string;
@@ -19,6 +21,7 @@ export function IterableItem({
   depth: number;
   itemKey: string | number;
   value: unknown;
+  path: Path;
 }) {
   const [expanded, setExpanded] = useState(expandable ? depth === 0 : true);
 
@@ -51,7 +54,12 @@ export function IterableItem({
       </span>{" "}
       {expanded ? (
         <>
-          <ValueNode context={context} depth={depth} value={value} />
+          <ValueNode
+            context={context}
+            depth={depth}
+            value={value}
+            path={path}
+          />
           <span className="text-[var(--ov-punctuation-color)]">,</span>
         </>
       ) : (

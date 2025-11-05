@@ -5,7 +5,7 @@ import { ObjectPair } from "./ObjectPair";
 
 export const ObjectNode = customRenderableType<object>(
   "object",
-  ({ context, className, depth, value }) => {
+  ({ context, className, depth, value, path }) => {
     const constructorName = getConstructorName(value);
 
     return (
@@ -29,6 +29,7 @@ export const ObjectNode = customRenderableType<object>(
               depth={depth + 1}
               objectKey={key}
               value={value}
+              path={path.concat(key)}
             />
           ))}
         </div>

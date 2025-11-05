@@ -2,11 +2,10 @@ import { ArrayItem } from "./ArrayItem";
 import { Bracket } from "./Bracket";
 import { CollectionLength } from "./CollectionLength";
 import { customRenderableType } from "./CustomRenderable";
-import { IterableItem } from "./IterableItem";
 
 export const ArrayNode = customRenderableType<unknown[]>(
   "array",
-  ({ className, context, depth, value }) => {
+  ({ className, context, depth, value, path }) => {
     return (
       <>
         <Bracket value={value} type="open" />{" "}
@@ -20,9 +19,10 @@ export const ArrayNode = customRenderableType<unknown[]>(
               key={idx}
               context={context}
               className={className}
-              depth={depth}
+              depth={depth + 1}
               index={idx}
               value={item}
+              path={path.concat(idx)}
             />
           ))}
         </div>

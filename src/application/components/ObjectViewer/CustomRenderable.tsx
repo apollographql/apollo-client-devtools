@@ -64,10 +64,18 @@ export function customRenderableType<T = unknown>(
   type: ReturnType<typeof getTypeOf>,
   BaseComponent: (props: RenderableTypeProps<T>) => ReactNode
 ) {
-  return customRenderable(type, BaseComponent, (parentProps, props) => ({
-    ...parentProps,
-    ...props,
-    depth: parentProps.depth,
-    context: { ...parentProps.context, ...props.context },
-  }));
+  return customRenderable(
+    type,
+    BaseComponent,
+    (
+      parentProps,
+      props: Partial<Omit<RenderableTypeProps<T>, "depth" | "path">>
+    ) => ({
+      ...parentProps,
+      ...props,
+      depth: parentProps.depth,
+      path: parentProps.path,
+      context: { ...parentProps.context, ...props.context },
+    })
+  );
 }
