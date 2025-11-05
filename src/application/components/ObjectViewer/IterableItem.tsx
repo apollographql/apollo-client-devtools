@@ -1,32 +1,34 @@
 import IconChevronRight from "@apollo/icons/default/IconChevronRight.svg";
 import { clsx } from "clsx";
+import type { ComponentPropsWithoutRef } from "react";
 import { useState } from "react";
 import { ValueNode } from "./ValueNode";
 import { Bracket } from "./Bracket";
 import { CollectionLength } from "./CollectionLength";
 import type { Path } from "./types";
 
-export function IterableItem({
-  expandable,
-  className,
-  context,
-  depth,
-  itemKey,
-  value,
-  path,
-}: {
+interface IterableItemProps extends ComponentPropsWithoutRef<"div"> {
   expandable: boolean;
-  className?: string;
   context: Record<string, any> | undefined;
   depth: number;
   itemKey: string | number;
   value: unknown;
   path: Path;
-}) {
+}
+
+export function IterableItem({
+  expandable,
+  context,
+  depth,
+  itemKey,
+  value,
+  path,
+  ...rest
+}: IterableItemProps) {
   const [expanded, setExpanded] = useState(expandable ? depth === 0 : true);
 
   return (
-    <div className={className}>
+    <div {...rest}>
       <span
         className={clsx("inline-block align-middle relative", {
           "cursor-pointer": expandable,

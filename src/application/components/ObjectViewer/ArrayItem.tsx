@@ -1,9 +1,9 @@
+import type { ComponentPropsWithoutRef } from "react";
 import { customRenderable } from "./CustomRenderable";
 import { IterableItem } from "./IterableItem";
 import type { Path } from "./types";
 
-interface ArrayItemProps {
-  className?: string;
+interface ArrayItemProps extends ComponentPropsWithoutRef<"div"> {
   context: Record<string, any> | undefined;
   expandable?: boolean;
   depth: number;
@@ -15,7 +15,6 @@ interface ArrayItemProps {
 export const ArrayItem = customRenderable(
   "arrayItem",
   ({
-    className,
     depth,
     context,
     index,
@@ -23,12 +22,13 @@ export const ArrayItem = customRenderable(
     path,
     expandable = Array.isArray(value) ||
       (typeof value === "object" && value !== null),
+    ...rest
   }: ArrayItemProps) => {
     return (
       <IterableItem
+        {...rest}
         expandable={expandable}
         context={context}
-        className={className}
         depth={depth}
         itemKey={index}
         value={value}
