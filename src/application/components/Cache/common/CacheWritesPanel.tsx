@@ -6,7 +6,7 @@ import { useFragment } from "@apollo/client/react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { JSONTreeViewer } from "../../JSONTreeViewer";
 import { CodeBlock } from "../../CodeBlock";
-import type { FC } from "react";
+import type { CSSProperties, FC } from "react";
 import { memo, useState } from "react";
 import { getOperationName } from "@apollo/client/utilities/internal";
 import { List } from "../../List";
@@ -16,6 +16,10 @@ import { Added } from "@/application/utilities/diff";
 import { Changed, Deleted, type Diff } from "@/application/utilities/diff";
 import { ObjectViewer } from "../../ObjectViewer";
 import type { CustomRenderProps } from "../../ObjectViewer/ObjectViewer";
+import type { ColorValue } from "../../ObjectViewer/useObjectViewerTheme";
+import { useGetObjectViewerThemeOverride } from "../../ObjectViewer/useObjectViewerTheme";
+import { colors } from "@apollo/brand";
+import { clsx } from "clsx";
 
 const CACHE_WRITES_PANEL_FRAGMENT: TypedDocumentNode<CacheWritesPanelFragment> = gql`
   fragment CacheWritesPanelFragment on CacheWrite {
@@ -183,12 +187,38 @@ const DiffView = memo(function DiffView({ diff }: { diff: Diff | null }) {
           builtinRenderers={{
             arrayItem: DiffValue,
             objectPair: DiffValue,
+            string: PrimitiveDiffValue,
+            boolean: PrimitiveDiffValue,
+            number: PrimitiveDiffValue,
+            null: PrimitiveDiffValue,
+            undefined: PrimitiveDiffValue,
           }}
         />
       )}
     </div>
   );
 });
+
+const { text } = colors.tokens;
+
+function PrimitiveDiffValue({
+  className,
+  context,
+  DefaultRender,
+}: {
+  className?: string;
+  context?: Record<string, any>;
+  DefaultRender: FC<{ className?: string }>;
+}) {
+  return (
+    <DefaultRender
+      className={clsx(
+        { "line-through": context?.mode === "deleted" },
+        className
+      )}
+    />
+  );
+}
 
 function DiffValue({
   value,
@@ -199,13 +229,27 @@ function DiffValue({
     expandable?: boolean;
     value?: unknown;
     className?: string;
+    style?: CSSProperties;
+    context?: Record<string, any>;
   }>;
 }) {
+  const getTheme = useGetObjectViewerThemeOverride();
+
+  function getOverrides({ textColor }: { textColor: ColorValue }) {
+    return getTheme({
+      typeNumber: textColor,
+      typeBoolean: textColor,
+      typeString: textColor,
+      objectKey: textColor,
+    });
+  }
+
   if (value instanceof Added) {
     return (
       <DefaultRender
         className="bg-successSelected dark:bg-successSelected-dark"
         value={value.value}
+        style={getOverrides({ textColor: text.success })}
       />
     );
   }
@@ -215,6 +259,8 @@ function DiffValue({
       <DefaultRender
         className="bg-errorSelected dark:bg-errorSelected-dark"
         value={value.value}
+        style={getOverrides({ textColor: text.error })}
+        context={{ mode: "deleted" }}
       />
     );
   }
@@ -235,6 +281,7 @@ function ChangedValue({
       <DefaultRender
         className="bg-errorSelected dark:bg-errorSelected-dark"
         value={changed.oldValue}
+        context={{ mode: "deleted" }}
       />
       <span>{" => "}</span>
       <DefaultRender
