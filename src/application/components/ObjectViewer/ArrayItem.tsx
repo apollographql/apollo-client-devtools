@@ -7,6 +7,7 @@ import { ValueNode } from "./ValueNode";
 import { CollectionLength } from "./CollectionLength";
 import { Collapsed } from "./Collapsed";
 import { Arrow } from "./Arrow";
+import { Punctuation } from "./Punctuation";
 
 interface ArrayItemProps extends ComponentPropsWithoutRef<"div"> {
   context: Record<string, any> | undefined;
@@ -44,7 +45,7 @@ export const ArrayItem = customRenderable(
           <span className="inline-flex items-center">
             {expandable && <Arrow expanded={expanded} />}
             <ArrayIndex context={context} index={index} />
-            <span className="text-[var(--ov-punctuation-color)]">:</span>
+            <Punctuation>:</Punctuation>
           </span>
         </span>{" "}
         {expanded ? (
@@ -56,7 +57,7 @@ export const ArrayItem = customRenderable(
               value={value}
               path={path}
             />
-            <span className="text-[var(--ov-punctuation-color)]">,</span>
+            <Punctuation>,</Punctuation>
           </>
         ) : (
           <span className="inline-block align-middle">
@@ -65,7 +66,7 @@ export const ArrayItem = customRenderable(
               value={value}
               onClick={() => setExpanded(true)}
             />
-            <span className="text-[var(--ov-punctuation-color)]">,</span>{" "}
+            <Punctuation>,</Punctuation>{" "}
             {!expanded && typeof value === "object" && value !== null && (
               <CollectionLength className="italic" value={value} />
             )}
