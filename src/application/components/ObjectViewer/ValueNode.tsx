@@ -10,8 +10,8 @@ import { ObjectNode } from "./ObjectNode";
 import { NullNode } from "./NullNode";
 import { ArrayNode } from "./ArrayNode";
 import { useTypeOfValue } from "./context";
-import type { RenderableTypeProps } from "./CustomRenderable";
 import { CustomNode } from "./CustomNode";
+import type { RenderableTypeProps } from "./ObjectViewer";
 
 export const ValueNode = ({
   context,

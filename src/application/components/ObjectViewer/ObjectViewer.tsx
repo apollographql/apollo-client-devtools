@@ -6,29 +6,29 @@ import type { Theme } from "./ThemeDefinition";
 import { ThemeDefinition } from "./ThemeDefinition";
 import type { ReactNode } from "react";
 
-export type RenderType<Value = unknown, DefaultValue = unknown> = (
-  props: CustomRenderProps<Value, DefaultValue>
-) => ReactNode;
-
 export type BuiltinRenderType<T = unknown> = (
   props: CustomRenderProps<T, T>
 ) => ReactNode;
 
-type ValueProps<T> = [T] extends [never] ? { value?: never } : { value: T };
+type ValueProp<T> = [T] extends [never] ? { value?: never } : { value: T };
 
-export type CustomRenderProps<Value = unknown, DefaultValue = unknown> = {
+export type RenderableTypeProps<T = unknown> = {
   className?: string;
-  context?: Record<string, any>;
   depth: number;
-  DefaultRender: (props: {
-    context?: Record<string, any>;
-    className?: string;
-    value: DefaultValue;
-  }) => ReactNode;
-} & ValueProps<Value>;
+  context: Record<string, any> | undefined;
+} & ValueProp<T>;
+
+export type CustomRenderProps<
+  T = unknown,
+  DefaultValue = unknown,
+> = RenderableTypeProps<T> & {
+  DefaultRender: (
+    props: Partial<RenderableTypeProps<DefaultValue>>
+  ) => ReactNode;
+};
 
 type CustomTypeRenderers<CustomTypes extends string> = {
-  [Type in CustomTypes]: RenderType<any>;
+  [Type in CustomTypes]: (props: CustomRenderProps<any>) => ReactNode;
 };
 
 interface BuiltinTypeRenderers {
