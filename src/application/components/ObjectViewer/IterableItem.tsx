@@ -57,6 +57,7 @@ export function IterableItem({
       {expanded ? (
         <>
           <ValueNode
+            className="align-middle"
             context={context}
             depth={depth}
             value={value}
