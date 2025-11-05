@@ -1,13 +1,25 @@
+import type { ComponentPropsWithoutRef } from "react";
 import { ArrayItem } from "./ArrayItem";
 import { Bracket } from "./Bracket";
 import { CollectionLength } from "./CollectionLength";
-import { customRenderableType } from "./CustomRenderable";
+import {
+  customRenderableType,
+  filterForwardedElementProps,
+} from "./CustomRenderable";
+import type { RenderableTypeProps } from "./ObjectViewer";
+
+interface ArrayNodeProps
+  extends ComponentPropsWithoutRef<"span">,
+    RenderableTypeProps<unknown[]> {}
 
 export const ArrayNode = customRenderableType<unknown[]>(
   "array",
-  ({ className, context, depth, value, path }) => {
+  ({ className, context, depth, value, path, ...rest }: ArrayNodeProps) => {
     return (
-      <span className={className}>
+      <span
+        {...filterForwardedElementProps<"span">(rest)}
+        className={className}
+      >
         <Bracket value={value} type="open" />{" "}
         <CollectionLength
           className="inline-block align-middle italic"

@@ -1,15 +1,27 @@
+import type { ComponentPropsWithoutRef } from "react";
 import { Bracket } from "./Bracket";
 import { CollectionLength } from "./CollectionLength";
-import { customRenderableType } from "./CustomRenderable";
+import {
+  customRenderableType,
+  filterForwardedElementProps,
+} from "./CustomRenderable";
 import { ObjectPair } from "./ObjectPair";
+import type { RenderableTypeProps } from "./ObjectViewer";
 
-export const ObjectNode = customRenderableType<object>(
+interface ObjectNodeProps
+  extends ComponentPropsWithoutRef<"span">,
+    RenderableTypeProps<object> {}
+
+export const ObjectNode = customRenderableType(
   "object",
-  ({ context, className, depth, value, path }) => {
+  ({ context, className, depth, value, path, ...rest }: ObjectNodeProps) => {
     const constructorName = getConstructorName(value);
 
     return (
-      <span className={className}>
+      <span
+        {...filterForwardedElementProps<"span">(rest)}
+        className={className}
+      >
         {constructorName !== "Object" && (
           <span className="italic inline-block align-middle text-[var(--ov-constructorName-color,var(--ov-info-color))]">
             {constructorName}
