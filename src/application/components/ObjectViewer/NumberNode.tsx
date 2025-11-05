@@ -1,5 +1,8 @@
 import { clsx } from "clsx";
-import { customRenderableType } from "./CustomRenderable";
+import {
+  customRenderableType,
+  filterForwardedElementProps,
+} from "./CustomRenderable";
 import type { ComponentPropsWithoutRef } from "react";
 import type { RenderableTypeProps } from "./ObjectViewer";
 
@@ -12,7 +15,7 @@ export const NumberNode = customRenderableType(
   ({ className, value, path, context, ...rest }: NumberNodeProps) => {
     return (
       <span
-        {...rest}
+        {...filterForwardedElementProps<"span">(rest)}
         className={clsx(
           {
             "text-[var(--ov-typeInt-color,var(--ov-typeNumber-color))]":
