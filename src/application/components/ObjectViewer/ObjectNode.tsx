@@ -1,7 +1,7 @@
 import { Bracket } from "./Bracket";
 import { CollectionLength } from "./CollectionLength";
 import { customRenderable } from "./CustomRenderable";
-import { IterableItem } from "./IterableItem";
+import { ObjectPair } from "./ObjectPair";
 
 export const ObjectNode = customRenderable<object>(
   "object",
@@ -22,12 +22,12 @@ export const ObjectNode = customRenderable<object>(
         />
         <div className="pl-[2ch]">
           {Object.entries(value).map(([key, value], idx) => (
-            <IterableItem
+            <ObjectPair
               key={idx}
               context={context}
               className={className}
               depth={depth + 1}
-              itemKey={key}
+              objectKey={key}
               value={value}
             />
           ))}

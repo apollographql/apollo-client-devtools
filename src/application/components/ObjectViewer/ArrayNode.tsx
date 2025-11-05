@@ -1,3 +1,4 @@
+import { ArrayItem } from "./ArrayItem";
 import { Bracket } from "./Bracket";
 import { CollectionLength } from "./CollectionLength";
 import { customRenderable } from "./CustomRenderable";
@@ -15,12 +16,12 @@ export const ArrayNode = customRenderable<unknown[]>(
         />
         <div className="pl-[2ch]">
           {value.map((item, idx) => (
-            <IterableItem
+            <ArrayItem
               key={idx}
               context={context}
               className={className}
-              depth={depth + 1}
-              itemKey={idx}
+              depth={depth}
+              index={idx}
               value={item}
             />
           ))}
