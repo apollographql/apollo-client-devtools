@@ -19,22 +19,19 @@ interface Props {
   value: unknown;
 }
 
-export const ValueNode = ({ context, className, depth, value }: Props) => {
+export const ValueNode = (parentProps: Props) => {
+  const { context, className, depth, value } = parentProps;
   const type = useTypeOfValue(value);
   const ctx = useObjectViewerContext();
   const DefaultRender = useCallback(
-    (props: {
-      className?: string;
-      context?: Record<string, any>;
-      value: unknown;
-    }) => (
+    (props: Partial<Props>) => (
       <ValueNode
-        {...props}
-        context={{ ...context, ...props.context }}
-        depth={depth}
+        {...{ ...parentProps, ...props }}
+        context={{ ...parentProps.context, ...props.context }}
       />
     ),
-    [context, depth]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    Object.values(parentProps)
   );
 
   const sharedProps = {
