@@ -1,9 +1,9 @@
+import type { ComponentPropsWithoutRef } from "react";
 import { customRenderable } from "./CustomRenderable";
 import { IterableItem } from "./IterableItem";
 import type { Path } from "./types";
 
-interface ObjectPairProps {
-  className?: string;
+interface ObjectPairProps extends ComponentPropsWithoutRef<"div"> {
   context: Record<string, any> | undefined;
   depth: number;
   expandable?: boolean;
@@ -15,7 +15,6 @@ interface ObjectPairProps {
 export const ObjectPair = customRenderable(
   "objectPair",
   ({
-    className,
     context,
     depth,
     path,
@@ -23,12 +22,13 @@ export const ObjectPair = customRenderable(
     objectKey,
     expandable = Array.isArray(value) ||
       (typeof value === "object" && value !== null),
+    ...rest
   }: ObjectPairProps) => {
     return (
       <IterableItem
+        {...rest}
         expandable={expandable}
         context={context}
-        className={className}
         depth={depth}
         itemKey={objectKey}
         value={value}
