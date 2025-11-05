@@ -1,5 +1,4 @@
 import type { ComponentPropsWithoutRef } from "react";
-import { Bracket } from "./Bracket";
 import { CollectionLength } from "./CollectionLength";
 import {
   customRenderableType,
@@ -8,6 +7,8 @@ import {
 import { ObjectPair } from "./ObjectPair";
 import type { RenderableTypeProps } from "./ObjectViewer";
 import { clsx } from "clsx";
+import { OpenBrace } from "./OpenBrace";
+import { CloseBrace } from "./CloseBrace";
 
 interface ObjectNodeProps
   extends ComponentPropsWithoutRef<"span">,
@@ -28,7 +29,7 @@ export const ObjectNode = customRenderableType(
             {constructorName}
           </span>
         )}{" "}
-        <Bracket type="open" value={value} />{" "}
+        <OpenBrace />
         <CollectionLength
           className="inline-block align-middle italic"
           value={value}
@@ -45,7 +46,7 @@ export const ObjectNode = customRenderableType(
             />
           ))}
         </div>
-        <Bracket type="close" value={value} />
+        <CloseBrace />
       </span>
     );
   }
