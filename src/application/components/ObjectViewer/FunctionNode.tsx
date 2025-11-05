@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import clsx from "clsx";
-import { customRenderable } from "./CustomRenderable";
+import { customRenderableType } from "./CustomRenderable";
 
-export const FunctionNode = customRenderable<Function>(
+export const FunctionNode = customRenderableType<Function>(
   "function",
   ({ className, value }) => {
     return (

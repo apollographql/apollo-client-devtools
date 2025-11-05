@@ -1,10 +1,10 @@
 import { ArrayItem } from "./ArrayItem";
 import { Bracket } from "./Bracket";
 import { CollectionLength } from "./CollectionLength";
-import { customRenderable } from "./CustomRenderable";
+import { customRenderableType } from "./CustomRenderable";
 import { IterableItem } from "./IterableItem";
 
-export const ArrayNode = customRenderable<unknown[]>(
+export const ArrayNode = customRenderableType<unknown[]>(
   "array",
   ({ className, context, depth, value }) => {
     return (

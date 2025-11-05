@@ -1,7 +1,7 @@
 import clsx from "clsx";
-import { customRenderable } from "./CustomRenderable";
+import { customRenderableType } from "./CustomRenderable";
 
-export const SymbolNode = customRenderable<symbol>(
+export const SymbolNode = customRenderableType<symbol>(
   "symbol",
   ({ className, value }) => {
     return (

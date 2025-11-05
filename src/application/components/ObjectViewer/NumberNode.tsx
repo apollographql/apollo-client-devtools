@@ -1,7 +1,7 @@
 import { clsx } from "clsx";
-import { customRenderable } from "./CustomRenderable";
+import { customRenderableType } from "./CustomRenderable";
 
-export const NumberNode = customRenderable<number>(
+export const NumberNode = customRenderableType<number>(
   "number",
   ({ className, value }) => {
     return (

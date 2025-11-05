@@ -1,10 +1,11 @@
 import { useCallback, type ReactNode } from "react";
 import { useObjectViewerContext, useTypeOfValue } from "./context";
+import type { getTypeOf } from "./getTypeOf";
 
 type ValueProp<T> = [T] extends [never] ? { value?: never } : { value: T };
 
-export function customRenderable<T = unknown>(
-  type: string,
+export function customRenderableType<T = unknown>(
+  type: ReturnType<typeof getTypeOf>,
   BaseComponent: (props: {
     className?: string;
     depth: number;
