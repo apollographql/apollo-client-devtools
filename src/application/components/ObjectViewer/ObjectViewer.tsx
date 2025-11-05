@@ -2,7 +2,6 @@
 import { ValueNode } from "./ValueNode";
 import { colors } from "@apollo/brand";
 import { Provider } from "./context";
-import type { Theme } from "./ThemeDefinition";
 import type { ReactNode } from "react";
 import type { ObjectPair } from "./ObjectPair";
 import type { ArrayItem } from "./ArrayItem";
@@ -18,6 +17,7 @@ import type { NumberNode } from "./NumberNode";
 import type { UndefinedNode } from "./UndefinedNode";
 import type { NullNode } from "./NullNode";
 import type { Path } from "./types";
+import type { Theme } from "./useObjectViewerTheme";
 import { useObjectViewerTheme } from "./useObjectViewerTheme";
 
 type ValueProp<T> = [T] extends [never] ? { value?: never } : { value: T };
