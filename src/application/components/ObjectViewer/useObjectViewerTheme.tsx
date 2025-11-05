@@ -3,6 +3,7 @@ import { useCallback, useMemo } from "react";
 
 type ThemeKey =
   | "arrayIndex"
+  | "brace"
   | "bracket"
   | "constructorName"
   | "ellipsis"
