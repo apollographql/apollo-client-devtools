@@ -1,4 +1,4 @@
-import type { ComponentPropsWithoutRef } from "react";
+import { Fragment, type ComponentPropsWithoutRef } from "react";
 import { ArrayItem } from "./ArrayItem";
 import { CollectionLength } from "./CollectionLength";
 import {
@@ -39,10 +39,10 @@ export const ArrayNode = customRenderableType<unknown[]>(
         <div className="pl-[3ch]">
           {items.map((item, idx) => {
             return holeSizes.has(idx) ? (
-              <>
+              <Fragment key={idx}>
                 <SparseArrayEmptyItem key={idx} length={holeSizes.get(idx)} />
                 <Punctuation>,</Punctuation>
-              </>
+              </Fragment>
             ) : (
               <ArrayItem
                 key={idx}
