@@ -8,10 +8,16 @@ import type { ReactNode } from "react";
 import type { ObjectPair } from "./ObjectPair";
 import type { ArrayItem } from "./ArrayItem";
 import type { WithDefaultRender } from "./CustomRenderable";
-
-export type BuiltinRenderType<T = unknown> = (
-  props: CustomRenderProps<T, T>
-) => ReactNode;
+import type { ArrayNode } from "./ArrayNode";
+import type { BigintNode } from "./BigintNode";
+import type { BooleanNode } from "./BooleanNode";
+import type { FunctionNode } from "./FunctionNode";
+import type { ObjectNode } from "./ObjectNode";
+import type { StringNode } from "./StringNode";
+import type { SymbolNode } from "./SymbolNode";
+import type { NumberNode } from "./NumberNode";
+import type { UndefinedNode } from "./UndefinedNode";
+import type { NullNode } from "./NullNode";
 
 type ValueProp<T> = [T] extends [never] ? { value?: never } : { value: T };
 
@@ -35,16 +41,16 @@ type CustomTypeRenderers<CustomTypes extends string> = {
 };
 
 interface BuiltinTypeRenderers {
-  array: BuiltinRenderType<unknown[]>;
-  bigint: BuiltinRenderType<bigint>;
-  boolean: BuiltinRenderType<boolean>;
-  function: BuiltinRenderType<Function>;
-  object: BuiltinRenderType<object>;
-  string: BuiltinRenderType<string>;
-  symbol: BuiltinRenderType<symbol>;
-  number: BuiltinRenderType<number>;
-  undefined: BuiltinRenderType<never>;
-  null: BuiltinRenderType<never>;
+  array: WithDefaultRender<typeof ArrayNode>;
+  bigint: WithDefaultRender<typeof BigintNode>;
+  boolean: WithDefaultRender<typeof BooleanNode>;
+  function: WithDefaultRender<typeof FunctionNode>;
+  object: WithDefaultRender<typeof ObjectNode>;
+  string: WithDefaultRender<typeof StringNode>;
+  symbol: WithDefaultRender<typeof SymbolNode>;
+  number: WithDefaultRender<typeof NumberNode>;
+  undefined: WithDefaultRender<typeof UndefinedNode>;
+  null: WithDefaultRender<typeof NullNode>;
 }
 
 interface CustomComponents {
