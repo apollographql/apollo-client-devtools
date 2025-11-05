@@ -1,8 +1,9 @@
 import type { ComponentPropsWithoutRef, ElementType } from "react";
-import { useCallback, type ReactNode } from "react";
+import { useCallback, useRef, type ReactNode } from "react";
 import { useObjectViewerContext } from "./context";
 import type { getTypeOf } from "./getTypeOf";
 import type { RenderableTypeProps } from "./ObjectViewer";
+import { equal } from "@wry/equality";
 
 type MergePropsFn<ParentProps, Props> = (
   parentProps: ParentProps,
@@ -43,12 +44,17 @@ export function customRenderable<
 ): CustomRenderableComponent<Props, DefaultRenderProps> {
   return function Component(parentProps: Props) {
     const ctx = useObjectViewerContext();
+    const ref = useRef(parentProps);
+
+    if (!equal(parentProps, ref.current)) {
+      ref.current = parentProps;
+    }
+
     const DefaultRender = useCallback(
       (props: Partial<DefaultRenderProps>) => (
-        <BaseComponent {...mergeProps(parentProps, props)} />
+        <BaseComponent {...mergeProps(ref.current, props)} />
       ),
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      Object.values(parentProps)
+      []
     );
 
     const Render = ctx.renderers[type];
