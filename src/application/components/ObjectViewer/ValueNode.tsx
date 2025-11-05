@@ -19,6 +19,7 @@ export const ValueNode = ({
   depth,
   path,
   value,
+  ...rest
 }: RenderableTypeProps<unknown>) => {
   const type = useTypeOfValue(value);
 
@@ -27,6 +28,7 @@ export const ValueNode = ({
     className,
     context,
     path,
+    ...rest,
   };
 
   switch (type) {
