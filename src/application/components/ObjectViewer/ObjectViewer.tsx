@@ -18,9 +18,11 @@ import type { UndefinedNode } from "./UndefinedNode";
 import type { NullNode } from "./NullNode";
 import type { Path } from "./types";
 import type { Theme } from "./useObjectViewerTheme";
-import { useObjectViewerTheme } from "./useObjectViewerTheme";
 import type { ArrayIndex } from "./ArrayIndex";
 import type { ObjectKey } from "./ObjectKey";
+import type { CollapsedObject } from "./CollapsedObject";
+import type { CollapsedArray } from "./CollapsedArray";
+import { useObjectViewerTheme } from "./useObjectViewerTheme";
 
 type ValueProp<T> = [T] extends [never] ? { value?: never } : { value: T };
 
@@ -46,6 +48,8 @@ interface BuiltinRenderers {
   arrayIndex: WithDefaultRender<typeof ArrayIndex>;
   bigint: WithDefaultRender<typeof BigintNode>;
   boolean: WithDefaultRender<typeof BooleanNode>;
+  collapsedArray: WithDefaultRender<typeof CollapsedArray>;
+  collapsedObject: WithDefaultRender<typeof CollapsedObject>;
   function: WithDefaultRender<typeof FunctionNode>;
   object: WithDefaultRender<typeof ObjectNode>;
   objectPair: WithDefaultRender<typeof ObjectPair>;
