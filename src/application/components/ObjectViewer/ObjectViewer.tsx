@@ -3,7 +3,6 @@ import { ValueNode } from "./ValueNode";
 import { colors } from "@apollo/brand";
 import { Provider } from "./context";
 import type { Theme } from "./ThemeDefinition";
-import { ThemeDefinition } from "./ThemeDefinition";
 import type { ReactNode } from "react";
 import type { ObjectPair } from "./ObjectPair";
 import type { ArrayItem } from "./ArrayItem";
@@ -19,6 +18,7 @@ import type { NumberNode } from "./NumberNode";
 import type { UndefinedNode } from "./UndefinedNode";
 import type { NullNode } from "./NullNode";
 import type { Path } from "./types";
+import { useObjectViewerTheme } from "./useObjectViewerTheme";
 
 type ValueProp<T> = [T] extends [never] ? { value?: never } : { value: T };
 
@@ -84,8 +84,10 @@ export function ObjectViewer<CustomTypes extends string>({
   >;
   builtinRenderers?: Partial<BuiltinRenderers>;
 }) {
+  const style = useObjectViewerTheme(theme);
+
   return (
-    <ThemeDefinition theme={theme} className="font-code">
+    <div style={style} className="font-code">
       <Provider
         getTypeOf={getTypeOf}
         renderers={
@@ -97,6 +99,6 @@ export function ObjectViewer<CustomTypes extends string>({
       >
         <ValueNode context={{}} depth={0} value={value} path={[]} />
       </Provider>
-    </ThemeDefinition>
+    </div>
   );
 }
