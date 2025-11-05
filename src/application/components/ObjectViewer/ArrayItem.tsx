@@ -77,6 +77,7 @@ export const ArrayItem = customRenderable(
   (parentProps, props: Partial<Omit<ArrayItemProps, "depth">>) => ({
     ...parentProps,
     ...props,
+    path: parentProps.path,
     depth: parentProps.depth,
   })
 );
