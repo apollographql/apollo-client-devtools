@@ -3,7 +3,9 @@ import { customRenderable } from "./CustomRenderable";
 import { OpenBracket } from "./OpenBracket";
 import { CloseBracket } from "./CloseBracket";
 
-interface CollapsedArrayProps extends ComponentPropsWithoutRef<"span"> {}
+interface CollapsedArrayProps extends ComponentPropsWithoutRef<"span"> {
+  context?: Record<string, any>;
+}
 
 export const CollapsedArray = customRenderable(
   "collapsedArray",
