@@ -7,6 +7,7 @@ import { ObjectKey } from "./ObjectKey";
 import { ValueNode } from "./ValueNode";
 import { CollapsedObject } from "./CollapsedObject";
 import { CollectionLength } from "./CollectionLength";
+import { Collapsed } from "./Collapsed";
 
 interface ObjectPairProps extends ComponentPropsWithoutRef<"div"> {
   context: Record<string, any> | undefined;
@@ -69,8 +70,9 @@ export const ObjectPair = customRenderable(
           </>
         ) : (
           <span className="inline-block align-middle">
-            <CollapsedObject
+            <Collapsed
               context={context}
+              value={value}
               onClick={() => setExpanded(true)}
             />
             <span className="text-[var(--ov-punctuation-color)]">,</span>{" "}
