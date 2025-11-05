@@ -1,3 +1,4 @@
+import type { ComponentPropsWithoutRef, ElementType } from "react";
 import { useCallback, type ReactNode } from "react";
 import { useObjectViewerContext } from "./context";
 import type { getTypeOf } from "./getTypeOf";
@@ -78,4 +79,12 @@ export function customRenderableType<
       context: { ...parentProps.context, ...props.context },
     })
   );
+}
+
+export function filterForwardedElementProps<Element extends ElementType>(
+  props: ComponentPropsWithoutRef<Element> & Partial<RenderableTypeProps<any>>
+) {
+  const { context, depth, value, path, ...rest } = props;
+
+  return rest;
 }
