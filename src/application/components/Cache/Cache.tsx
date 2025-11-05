@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import { useState, useMemo, useSyncExternalStore } from "react";
+import { useState, useMemo, useSyncExternalStore, memo } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { gql, NetworkStatus } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
@@ -183,10 +183,7 @@ export function Cache({ clientId }: CacheProps) {
             {networkStatus === NetworkStatus.loading ? (
               <PageSpinner />
             ) : cacheItem ? (
-              <ObjectViewer
-                value={cacheItem}
-                builtinRenderers={{ string: RefLink }}
-              />
+              <CacheItem value={cacheItem} />
             ) : dataExists ? (
               <Alert variant="error" className="mt-4">
                 This cache entry was either removed from the cache or does not
@@ -203,6 +200,10 @@ export function Cache({ clientId }: CacheProps) {
     </SidebarLayout>
   );
 }
+
+const CacheItem = memo(({ value }: { value: unknown }) => {
+  return <ObjectViewer value={value} builtinRenderers={{ string: RefLink }} />;
+});
 
 function RefLink({
   path,
