@@ -45,10 +45,9 @@ export function useGetObjectViewerThemeOverride() {
   return useCallback(
     (overrides: Theme) => {
       return Object.fromEntries(
-        Object.entries(overrides).map(([key, value]) => [
-          `--ov-${key}-color`,
-          value[colorKey],
-        ])
+        Object.entries(overrides)
+          .filter(([, value]) => value)
+          .map(([key, value]) => [`--ov-${key}-color`, value[colorKey]])
       );
     },
     [colorKey]
