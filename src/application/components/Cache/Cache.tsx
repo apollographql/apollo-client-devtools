@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { FC } from "react";
 import { useState, useMemo, useSyncExternalStore } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { gql, NetworkStatus } from "@apollo/client";
@@ -10,7 +10,6 @@ import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { SearchField } from "../SearchField";
 import type { GetCache, GetCacheVariables } from "../../types/gql";
 import type { JSONObject } from "../../types/json";
-import { JSONTreeViewer } from "../JSONTreeViewer";
 import clsx from "clsx";
 import { CopyButton } from "../CopyButton";
 import { EmptyMessage } from "../EmptyMessage";
@@ -29,6 +28,8 @@ import { isIgnoredError } from "../../utilities/ignoredErrors";
 import { useIsExtensionInvalidated } from "@/application/machines/devtoolsMachine";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { CacheWritesPanel } from "./common/CacheWritesPanel";
+import type { Path } from "../ObjectViewer";
+import { ObjectViewer } from "../ObjectViewer";
 
 const { Sidebar, Main } = SidebarLayout;
 
@@ -182,26 +183,9 @@ export function Cache({ clientId }: CacheProps) {
             {networkStatus === NetworkStatus.loading ? (
               <PageSpinner />
             ) : cacheItem ? (
-              <JSONTreeViewer
-                data={cacheItem}
-                hideRoot={true}
-                valueRenderer={(valueAsString, value, key) => {
-                  return (
-                    <span
-                      className={clsx({
-                        ["hover:underline hover:cursor-pointer"]:
-                          key === "__ref",
-                      })}
-                      onClick={() => {
-                        if (key === "__ref") {
-                          history.push(value as string);
-                        }
-                      }}
-                    >
-                      {valueAsString as ReactNode}
-                    </span>
-                  );
-                }}
+              <ObjectViewer
+                value={cacheItem}
+                builtinRenderers={{ string: RefLink }}
               />
             ) : dataExists ? (
               <Alert variant="error" className="mt-4">
@@ -217,5 +201,33 @@ export function Cache({ clientId }: CacheProps) {
         </PanelGroup>
       </Main>
     </SidebarLayout>
+  );
+}
+
+function RefLink({
+  path,
+  value,
+  DefaultRender,
+}: {
+  value: string;
+  path: Path;
+  DefaultRender: FC<{
+    className?: string;
+    onClick?: () => void;
+  }>;
+}) {
+  const key = path.at(-1);
+
+  return (
+    <DefaultRender
+      className={clsx({
+        ["hover:underline hover:cursor-pointer"]: key === "__ref",
+      })}
+      onClick={() => {
+        if (key === "__ref") {
+          history.push(value);
+        }
+      }}
+    />
   );
 }
