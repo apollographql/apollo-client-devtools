@@ -29,7 +29,7 @@ export const ObjectNode = customRenderableType(
             {constructorName}
           </span>
         )}{" "}
-        <OpenBrace />
+        <OpenBrace />{" "}
         <CollectionLength
           className="inline-block align-middle italic"
           value={value}
