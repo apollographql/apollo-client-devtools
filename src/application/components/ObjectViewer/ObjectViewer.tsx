@@ -40,12 +40,14 @@ type CustomTypeRenderers<CustomTypes extends string> = {
   [Type in CustomTypes]: (props: CustomRenderProps<any>) => ReactNode;
 };
 
-interface BuiltinTypeRenderers {
+interface BuiltinRenderers {
   array: WithDefaultRender<typeof ArrayNode>;
+  arrayItem: WithDefaultRender<typeof ArrayItem>;
   bigint: WithDefaultRender<typeof BigintNode>;
   boolean: WithDefaultRender<typeof BooleanNode>;
   function: WithDefaultRender<typeof FunctionNode>;
   object: WithDefaultRender<typeof ObjectNode>;
+  objectPair: WithDefaultRender<typeof ObjectPair>;
   string: WithDefaultRender<typeof StringNode>;
   symbol: WithDefaultRender<typeof SymbolNode>;
   number: WithDefaultRender<typeof NumberNode>;
@@ -53,17 +55,11 @@ interface BuiltinTypeRenderers {
   null: WithDefaultRender<typeof NullNode>;
 }
 
-interface CustomComponents {
-  arrayItem: WithDefaultRender<typeof ArrayItem>;
-  objectPair: WithDefaultRender<typeof ObjectPair>;
-}
-
 interface Props<CustomTypes extends string> {
   value: unknown;
   getTypeOf?: (value: unknown) => CustomTypes | undefined;
-  customComponents?: Partial<CustomComponents>;
-  customTypeRenderers?: CustomTypeRenderers<CustomTypes>;
-  builtinTypeRenderers?: Partial<BuiltinTypeRenderers>;
+  customRenderers?: CustomTypeRenderers<CustomTypes>;
+  builtinRenderers?: Partial<BuiltinRenderers>;
 }
 
 const { code, text } = colors.tokens;
@@ -85,9 +81,8 @@ const theme: Theme = {
 
 export function ObjectViewer<CustomTypes extends string>({
   getTypeOf,
-  customComponents,
-  builtinTypeRenderers,
-  customTypeRenderers,
+  builtinRenderers,
+  customRenderers,
   value,
 }: Props<CustomTypes>) {
   return (
@@ -96,9 +91,8 @@ export function ObjectViewer<CustomTypes extends string>({
         getTypeOf={getTypeOf}
         renderers={
           {
-            ...builtinTypeRenderers,
-            ...customTypeRenderers,
-            ...customComponents,
+            ...builtinRenderers,
+            ...customRenderers,
           } as any
         }
       >
