@@ -7,7 +7,7 @@ import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { JSONTreeViewer } from "../../JSONTreeViewer";
 import { CodeBlock } from "../../CodeBlock";
 import type { CSSProperties, FC } from "react";
-import { memo, useState } from "react";
+import { memo, useCallback, useState } from "react";
 import { getOperationName } from "@apollo/client/utilities/internal";
 import { List } from "../../List";
 import { ListItem } from "../../ListItem";
@@ -15,7 +15,6 @@ import { format } from "date-fns";
 import { Added } from "@/application/utilities/diff";
 import { Changed, Deleted, type Diff } from "@/application/utilities/diff";
 import { ObjectViewer } from "../../ObjectViewer";
-import type { CustomRenderProps } from "../../ObjectViewer/ObjectViewer";
 import type { ColorValue } from "../../ObjectViewer/useObjectViewerTheme";
 import { useGetObjectViewerThemeOverride } from "../../ObjectViewer/useObjectViewerTheme";
 import { colors } from "@apollo/brand";
@@ -224,6 +223,22 @@ function StrikethroughWhenDeleted({
   );
 }
 
+function useDiffThemeOverrides() {
+  const getTheme = useGetObjectViewerThemeOverride();
+
+  return useCallback(
+    ({ textColor }: { textColor: ColorValue }) => {
+      return getTheme({
+        typeNumber: textColor,
+        typeBoolean: textColor,
+        typeString: textColor,
+        objectKey: textColor,
+      });
+    },
+    [getTheme]
+  );
+}
+
 function DiffValue({
   value,
   DefaultRender,
@@ -237,16 +252,7 @@ function DiffValue({
     context?: Record<string, any>;
   }>;
 }) {
-  const getTheme = useGetObjectViewerThemeOverride();
-
-  function getOverrides({ textColor }: { textColor: ColorValue }) {
-    return getTheme({
-      typeNumber: textColor,
-      typeBoolean: textColor,
-      typeString: textColor,
-      objectKey: textColor,
-    });
-  }
+  const getOverrides = useDiffThemeOverrides();
 
   if (value instanceof Added) {
     return (
@@ -279,18 +285,30 @@ function DiffValue({
 function ChangedValue({
   value: changed,
   DefaultRender,
-}: CustomRenderProps<Changed>) {
+}: {
+  value: Changed;
+  DefaultRender: FC<{
+    value?: unknown;
+    className?: string;
+    style?: CSSProperties;
+    context?: Record<string, any>;
+  }>;
+}) {
+  const getOverrides = useDiffThemeOverrides();
+
   return (
     <>
       <DefaultRender
         className="bg-errorSelected dark:bg-errorSelected-dark"
         value={changed.oldValue}
         context={{ mode: "deleted" }}
+        style={getOverrides({ textColor: text.error })}
       />
       <span>{" => "}</span>
       <DefaultRender
         className="bg-successSelected dark:bg-successSelected-dark"
         value={changed.newValue}
+        style={getOverrides({ textColor: text.success })}
       />
     </>
   );
