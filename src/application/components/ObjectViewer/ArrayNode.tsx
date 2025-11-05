@@ -7,6 +7,7 @@ import {
   filterForwardedElementProps,
 } from "./CustomRenderable";
 import type { RenderableTypeProps } from "./ObjectViewer";
+import { clsx } from "clsx";
 
 interface ArrayNodeProps
   extends ComponentPropsWithoutRef<"span">,
@@ -18,7 +19,7 @@ export const ArrayNode = customRenderableType<unknown[]>(
     return (
       <span
         {...filterForwardedElementProps<"span">(rest)}
-        className={className}
+        className={clsx("align-middle", className)}
       >
         <Bracket value={value} type="open" />{" "}
         <CollectionLength

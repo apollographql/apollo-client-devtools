@@ -7,6 +7,7 @@ import {
 } from "./CustomRenderable";
 import { ObjectPair } from "./ObjectPair";
 import type { RenderableTypeProps } from "./ObjectViewer";
+import { clsx } from "clsx";
 
 interface ObjectNodeProps
   extends ComponentPropsWithoutRef<"span">,
@@ -20,7 +21,7 @@ export const ObjectNode = customRenderableType(
     return (
       <span
         {...filterForwardedElementProps<"span">(rest)}
-        className={className}
+        className={clsx("align-middle", className)}
       >
         {constructorName !== "Object" && (
           <span className="italic inline-block align-middle text-[var(--ov-constructorName-color,var(--ov-info-color))]">
