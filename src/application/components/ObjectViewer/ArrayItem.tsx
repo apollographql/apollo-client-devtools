@@ -5,8 +5,8 @@ import type { Path } from "./types";
 import { clsx } from "clsx";
 import { ArrayIndex } from "./ArrayIndex";
 import { ValueNode } from "./ValueNode";
-import { CollapsedArray } from "./CollapsedArray";
 import { CollectionLength } from "./CollectionLength";
+import { Collapsed } from "./Collapsed";
 
 interface ArrayItemProps extends ComponentPropsWithoutRef<"div"> {
   context: Record<string, any> | undefined;
@@ -69,8 +69,9 @@ export const ArrayItem = customRenderable(
           </>
         ) : (
           <span className="inline-block align-middle">
-            <CollapsedArray
+            <Collapsed
               context={context}
+              value={value}
               onClick={() => setExpanded(true)}
             />
             <span className="text-[var(--ov-punctuation-color)]">,</span>{" "}
