@@ -33,6 +33,7 @@ export function ObjectDiff({ diff }: Props) {
         null: StrikethroughWhenDeleted,
         undefined: StrikethroughWhenDeleted,
         objectKey: StrikethroughWhenDeleted,
+        sparseArrayEmptyItem: SparseArrayItem,
       }}
     />
   );
@@ -169,4 +170,12 @@ function ChangedValue({
       />
     </>
   );
+}
+
+function SparseArrayItem({
+  DefaultRender,
+}: {
+  DefaultRender: FC<{ label: string }>;
+}) {
+  return <DefaultRender label="unchanged" />;
 }
