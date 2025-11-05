@@ -46,7 +46,7 @@ export const ObjectPair = customRenderable(
             {expandable && (
               <IconChevronRight
                 className={clsx(
-                  "block size-4 transition-transform ease-out absolute -left-5 top-1/2 -translate-y-1/2",
+                  "block size-4 transition-transform ease-out absolute -left-[2ch] top-1/2 -translate-y-1/2",
                   {
                     "rotate-90": expanded,
                   }
