@@ -6,6 +6,7 @@ import type { Theme } from "./ThemeDefinition";
 import { ThemeDefinition } from "./ThemeDefinition";
 import type { ComponentPropsWithoutRef, ElementType, ReactNode } from "react";
 import type { ObjectPair } from "./ObjectPair";
+import type { ArrayItem } from "./ArrayItem";
 
 type CustomComponent<
   ParentComponent extends ElementType,
@@ -55,6 +56,7 @@ interface BuiltinTypeRenderers {
 }
 
 interface CustomComponents {
+  arrayItem: CustomComponent<typeof ArrayItem>;
   objectPair: CustomComponent<typeof ObjectPair>;
 }
 
