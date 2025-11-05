@@ -186,12 +186,16 @@ const DiffView = memo(function DiffView({ diff }: { diff: Diff | null }) {
           }}
           builtinRenderers={{
             arrayItem: DiffValue,
+            arrayIndex: StrikethroughWhenDeleted,
+            collapsedArray: StrikethroughWhenDeleted,
+            collapsedObject: StrikethroughWhenDeleted,
             objectPair: DiffValue,
-            string: PrimitiveDiffValue,
-            boolean: PrimitiveDiffValue,
-            number: PrimitiveDiffValue,
-            null: PrimitiveDiffValue,
-            undefined: PrimitiveDiffValue,
+            string: StrikethroughWhenDeleted,
+            boolean: StrikethroughWhenDeleted,
+            number: StrikethroughWhenDeleted,
+            null: StrikethroughWhenDeleted,
+            undefined: StrikethroughWhenDeleted,
+            objectKey: StrikethroughWhenDeleted,
           }}
         />
       )}
@@ -201,7 +205,7 @@ const DiffView = memo(function DiffView({ diff }: { diff: Diff | null }) {
 
 const { text } = colors.tokens;
 
-function PrimitiveDiffValue({
+function StrikethroughWhenDeleted({
   className,
   context,
   DefaultRender,
