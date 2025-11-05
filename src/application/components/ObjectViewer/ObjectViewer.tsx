@@ -4,18 +4,9 @@ import { colors } from "@apollo/brand";
 import { Provider } from "./context";
 import type { Theme } from "./ThemeDefinition";
 import { ThemeDefinition } from "./ThemeDefinition";
-import type { ComponentPropsWithoutRef, ElementType, ReactNode } from "react";
+import type { ReactNode } from "react";
 import type { ObjectPair } from "./ObjectPair";
 import type { ArrayItem } from "./ArrayItem";
-
-type CustomComponent<
-  ParentComponent extends ElementType,
-  Props = ComponentPropsWithoutRef<ParentComponent>,
-> = (
-  props: Props & {
-    DefaultRender: (props: Partial<Props>) => ReactNode;
-  }
-) => ReactNode;
 
 export type BuiltinRenderType<T = unknown> = (
   props: CustomRenderProps<T, T>
@@ -56,8 +47,8 @@ interface BuiltinTypeRenderers {
 }
 
 interface CustomComponents {
-  arrayItem: CustomComponent<typeof ArrayItem>;
-  objectPair: CustomComponent<typeof ObjectPair>;
+  arrayItem: typeof ArrayItem;
+  objectPair: typeof ObjectPair;
 }
 
 interface Props<CustomTypes extends string> {
