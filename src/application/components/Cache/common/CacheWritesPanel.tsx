@@ -177,33 +177,11 @@ const DiffView = memo(function DiffView({ diff }: { diff: Diff | null }) {
               : diff
           }
           getTypeOf={(value) => {
-            if (value instanceof Added) {
-              return "Added";
-            }
-
             if (value instanceof Changed) {
               return "Changed";
             }
-
-            if (value instanceof Deleted) {
-              return "Deleted";
-            }
           }}
           customTypeRenderers={{
-            Added: ({
-              value: added,
-              DefaultRender,
-            }: CustomRenderProps<Added>) => {
-              return (
-                <DiffValue kind="added">
-                  <DefaultRender
-                    className="bg-successSelected dark:bg-successSelected-dark"
-                    value={added.value}
-                    context={{ mode: "added" }}
-                  />
-                </DiffValue>
-              );
-            },
             Changed: ({
               value: changed,
               DefaultRender,
@@ -226,30 +204,68 @@ const DiffView = memo(function DiffView({ diff }: { diff: Diff | null }) {
                 </>
               );
             },
-            Deleted: ({
-              value: deleted,
-              DefaultRender,
-            }: CustomRenderProps<Deleted>) => {
-              return (
-                <DiffValue kind="deleted">
-                  <DefaultRender
-                    className="bg-errorSelected dark:bg-errorSelected-dark"
-                    value={deleted.value}
-                  />
-                </DiffValue>
-              );
-            },
           }}
           builtinTypeRenderers={{
-            string: ({ context, value, DefaultRender }) => {
+            string: ({ context, DefaultRender }) => {
               return (
                 <DefaultRender
                   className={
                     context?.mode === "added" ? "text-blue-400" : "text-red-400"
                   }
-                  value={value}
                 />
               );
+            },
+          }}
+          customComponents={{
+            arrayItem: ({ value, DefaultRender }) => {
+              if (value instanceof Added) {
+                return (
+                  <DefaultRender
+                    className="bg-successSelected dark:bg-successSelected-dark"
+                    value={value.value}
+                  />
+                );
+              }
+
+              if (value instanceof Deleted) {
+                return (
+                  <DefaultRender
+                    className="bg-errorSelected dark:bg-errorSelected-dark"
+                    value={value.value}
+                  />
+                );
+              }
+
+              if (value instanceof Changed) {
+                return <DefaultRender expandable={false} value={value} />;
+              }
+
+              return <DefaultRender />;
+            },
+            objectPair: ({ value, DefaultRender }) => {
+              if (value instanceof Added) {
+                return (
+                  <DefaultRender
+                    className="bg-successSelected dark:bg-successSelected-dark"
+                    value={value.value}
+                  />
+                );
+              }
+
+              if (value instanceof Deleted) {
+                return (
+                  <DefaultRender
+                    className="bg-errorSelected dark:bg-errorSelected-dark"
+                    value={value.value}
+                  />
+                );
+              }
+
+              if (value instanceof Changed) {
+                return <DefaultRender expandable={false} value={value} />;
+              }
+
+              return <DefaultRender />;
             },
           }}
         />
