@@ -23,6 +23,7 @@ import type { ObjectKey } from "./ObjectKey";
 import type { CollapsedObject } from "./CollapsedObject";
 import type { CollapsedArray } from "./CollapsedArray";
 import { useObjectViewerTheme } from "./useObjectViewerTheme";
+import type { SparseArrayEmptyItem } from "./SparseArrayEmptyItem";
 
 type ValueProp<T> = [T] extends [never] ? { value?: never } : { value: T };
 
@@ -54,6 +55,7 @@ interface BuiltinRenderers {
   object: WithDefaultRender<typeof ObjectNode>;
   objectPair: WithDefaultRender<typeof ObjectPair>;
   objectKey: WithDefaultRender<typeof ObjectKey>;
+  sparseArrayEmptyItem: WithDefaultRender<typeof SparseArrayEmptyItem>;
   string: WithDefaultRender<typeof StringNode>;
   symbol: WithDefaultRender<typeof SymbolNode>;
   number: WithDefaultRender<typeof NumberNode>;

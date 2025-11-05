@@ -22,7 +22,8 @@ type ThemeKey =
   | "typeNull"
   | "typeString"
   | "typeSymbol"
-  | "typeUndefined";
+  | "typeUndefined"
+  | "sparseArrayEmptyItem";
 
 export type ColorValue = { base: string; dark: string };
 export type Theme = Partial<Record<ThemeKey, ColorValue>>;
