@@ -6,21 +6,20 @@ import { Bracket } from "./Bracket";
 import { CollectionLength } from "./CollectionLength";
 
 export function IterableItem({
+  expandable,
   className,
   context,
   depth,
   itemKey,
   value,
 }: {
+  expandable: boolean;
   className?: string;
   context: Record<string, any> | undefined;
   depth: number;
   itemKey: string | number;
   value: unknown;
 }) {
-  const expandable =
-    Array.isArray(value) || (typeof value === "object" && value !== null);
-
   const [expanded, setExpanded] = useState(expandable ? depth === 0 : true);
 
   return (
