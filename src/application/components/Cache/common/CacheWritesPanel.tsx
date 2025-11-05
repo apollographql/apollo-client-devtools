@@ -70,7 +70,7 @@ export function CacheWritesPanel({ cacheWrites }: Props) {
                 selected={cacheWrite.id === selectedId}
               >
                 <div className="flex flex-col gap-1">
-                  <span className="font-code text-lg">
+                  <span className="font-code">
                     {getOperationName(cacheWrite.document.ast)}
                   </span>
                   <span className="text-xs">
