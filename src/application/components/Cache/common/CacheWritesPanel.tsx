@@ -111,7 +111,10 @@ export function CacheWritesPanel({ cacheWrites }: Props) {
                   value={selectedCacheWrite.variables ?? undefined}
                 />
               </div>
-              <DiffView diff={selectedCacheWrite.cacheDiff} />
+              <DiffView
+                key={selectedCacheWrite.id}
+                diff={selectedCacheWrite.cacheDiff}
+              />
             </Panel>
           </>
         )}
