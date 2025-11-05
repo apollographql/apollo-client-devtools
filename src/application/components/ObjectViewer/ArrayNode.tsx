@@ -7,7 +7,7 @@ export const ArrayNode = customRenderableType<unknown[]>(
   "array",
   ({ className, context, depth, value, path }) => {
     return (
-      <>
+      <span className={className}>
         <Bracket value={value} type="open" />{" "}
         <CollectionLength
           className="inline-block align-middle italic"
@@ -18,7 +18,6 @@ export const ArrayNode = customRenderableType<unknown[]>(
             <ArrayItem
               key={idx}
               context={context}
-              className={className}
               depth={depth + 1}
               index={idx}
               value={item}
@@ -27,7 +26,7 @@ export const ArrayNode = customRenderableType<unknown[]>(
           ))}
         </div>
         <Bracket type="close" value={value} />
-      </>
+      </span>
     );
   }
 );

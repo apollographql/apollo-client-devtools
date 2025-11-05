@@ -9,7 +9,7 @@ export const ObjectNode = customRenderableType<object>(
     const constructorName = getConstructorName(value);
 
     return (
-      <>
+      <span className={className}>
         {constructorName !== "Object" && (
           <span className="italic inline-block align-middle text-[var(--ov-constructorName-color,var(--ov-info-color))]">
             {constructorName}
@@ -25,7 +25,6 @@ export const ObjectNode = customRenderableType<object>(
             <ObjectPair
               key={idx}
               context={context}
-              className={className}
               depth={depth + 1}
               objectKey={key}
               value={value}
@@ -34,7 +33,7 @@ export const ObjectNode = customRenderableType<object>(
           ))}
         </div>
         <Bracket type="close" value={value} />
-      </>
+      </span>
     );
   }
 );
