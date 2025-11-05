@@ -8,11 +8,23 @@ type MergePropsFn<ParentProps, Props> = (
   props: Partial<Props>
 ) => ParentProps;
 
-type CustomComponent<Props, DefaultRenderProps = Props> = (
-  parentProps: Props & {
-    DefaultRender: (props: Partial<DefaultRenderProps>) => ReactNode;
-  }
+export type CustomRenderableComponent<Props, _DefaultRenderProps = Props> = (
+  parentProps: Props
 ) => ReactNode;
+
+export type WithDefaultRender<
+  Component extends CustomRenderableComponent<any, any>,
+> =
+  Component extends CustomRenderableComponent<
+    infer Props,
+    infer DefaultRenderProps
+  >
+    ? (
+        props: Props & {
+          DefaultRender: (props: Partial<DefaultRenderProps>) => ReactNode;
+        }
+      ) => ReactNode
+    : never;
 
 export function customRenderable<
   Props extends Record<string, any>,
@@ -27,7 +39,7 @@ export function customRenderable<
     ...parentProps,
     ...props,
   })
-): CustomComponent<Props, DefaultRenderProps> {
+): CustomRenderableComponent<Props, DefaultRenderProps> {
   return function Component(parentProps: Props) {
     const ctx = useObjectViewerContext();
     const DefaultRender = useCallback(

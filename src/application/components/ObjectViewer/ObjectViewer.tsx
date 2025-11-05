@@ -7,6 +7,7 @@ import { ThemeDefinition } from "./ThemeDefinition";
 import type { ReactNode } from "react";
 import type { ObjectPair } from "./ObjectPair";
 import type { ArrayItem } from "./ArrayItem";
+import type { WithDefaultRender } from "./CustomRenderable";
 
 export type BuiltinRenderType<T = unknown> = (
   props: CustomRenderProps<T, T>
@@ -47,8 +48,8 @@ interface BuiltinTypeRenderers {
 }
 
 interface CustomComponents {
-  arrayItem: typeof ArrayItem;
-  objectPair: typeof ObjectPair;
+  arrayItem: WithDefaultRender<typeof ArrayItem>;
+  objectPair: WithDefaultRender<typeof ObjectPair>;
 }
 
 interface Props<CustomTypes extends string> {
