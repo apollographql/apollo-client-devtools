@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { useObjectViewerContext, useTypeOfValue } from "./context";
 import { ValueNode } from "./ValueNode";
-import type { RenderableTypeProps } from "./CustomRenderable";
+import type { RenderableTypeProps } from "./ObjectViewer";
 
 export function CustomNode(parentProps: RenderableTypeProps<unknown>) {
   const { value } = parentProps;

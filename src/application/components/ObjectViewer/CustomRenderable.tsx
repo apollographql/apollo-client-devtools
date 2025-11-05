@@ -1,20 +1,12 @@
 import { useCallback, type ReactNode } from "react";
 import { useObjectViewerContext } from "./context";
 import type { getTypeOf } from "./getTypeOf";
+import type { RenderableTypeProps } from "./ObjectViewer";
 
-type ValueProp<T = unknown> = [T] extends [never]
-  ? { value?: never }
-  : { value: T };
 type MergePropsFn<TProps> = (
   parentProps: TProps,
   props: Partial<TProps>
 ) => TProps;
-
-export type RenderableTypeProps<T = unknown> = {
-  className?: string;
-  depth: number;
-  context: Record<string, any> | undefined;
-} & ValueProp<T>;
 
 export function customRenderable<Props extends Record<string, any>>(
   type: string,
