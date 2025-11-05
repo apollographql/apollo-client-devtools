@@ -36,10 +36,6 @@ export type CustomRenderProps<
   ) => ReactNode;
 };
 
-type CustomTypeRenderers<CustomTypes extends string> = {
-  [Type in CustomTypes]: (props: CustomRenderProps<any>) => ReactNode;
-};
-
 interface BuiltinRenderers {
   array: WithDefaultRender<typeof ArrayNode>;
   arrayItem: WithDefaultRender<typeof ArrayItem>;
@@ -53,13 +49,6 @@ interface BuiltinRenderers {
   number: WithDefaultRender<typeof NumberNode>;
   undefined: WithDefaultRender<typeof UndefinedNode>;
   null: WithDefaultRender<typeof NullNode>;
-}
-
-interface Props<CustomTypes extends string> {
-  value: unknown;
-  getTypeOf?: (value: unknown) => CustomTypes | undefined;
-  customRenderers?: CustomTypeRenderers<CustomTypes>;
-  builtinRenderers?: Partial<BuiltinRenderers>;
 }
 
 const { code, text } = colors.tokens;
@@ -84,7 +73,15 @@ export function ObjectViewer<CustomTypes extends string>({
   builtinRenderers,
   customRenderers,
   value,
-}: Props<CustomTypes>) {
+}: {
+  value: unknown;
+  getTypeOf?: (value: unknown) => CustomTypes | undefined;
+  customRenderers?: Record<
+    NoInfer<CustomTypes>,
+    (props: CustomRenderProps<any>) => ReactNode
+  >;
+  builtinRenderers?: Partial<BuiltinRenderers>;
+}) {
   return (
     <ThemeDefinition theme={theme} className="font-code">
       <Provider
