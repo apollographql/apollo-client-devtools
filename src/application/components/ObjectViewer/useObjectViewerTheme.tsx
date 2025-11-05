@@ -36,3 +36,19 @@ export function useObjectViewerTheme(theme: Theme) {
     );
   }, [themeObject]);
 }
+
+export function useGetObjectViewerThemeOverride() {
+  const colorKey = useThemeKey();
+
+  return useCallback(
+    (overrides: Theme) => {
+      return Object.fromEntries(
+        Object.entries(overrides).map(([key, value]) => [
+          `--ov-${key}-color`,
+          value[colorKey],
+        ])
+      );
+    },
+    [colorKey]
+  );
+}

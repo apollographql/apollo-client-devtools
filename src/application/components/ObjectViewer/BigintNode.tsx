@@ -1,11 +1,21 @@
 import { clsx } from "clsx";
-import { customRenderableType } from "./CustomRenderable";
+import {
+  customRenderableType,
+  filterForwardedElementProps,
+} from "./CustomRenderable";
+import type { ComponentPropsWithoutRef } from "react";
+import type { RenderableTypeProps } from "./ObjectViewer";
 
-export const BigintNode = customRenderableType<bigint>(
+interface BigintNodeProps
+  extends ComponentPropsWithoutRef<"span">,
+    RenderableTypeProps<bigint> {}
+
+export const BigintNode = customRenderableType(
   "bigint",
-  ({ className, value }) => {
+  ({ className, value, ...rest }: BigintNodeProps) => {
     return (
       <span
+        {...filterForwardedElementProps<"span">(rest)}
         className={clsx(
           "text-[var(--ov-typeBigint-color,var(--ov-typeNumber-color))]",
           className

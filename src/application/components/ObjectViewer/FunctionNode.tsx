@@ -1,12 +1,24 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import clsx from "clsx";
-import { customRenderableType } from "./CustomRenderable";
+import {
+  customRenderableType,
+  filterForwardedElementProps,
+} from "./CustomRenderable";
+import type { ComponentPropsWithoutRef } from "react";
+import type { RenderableTypeProps } from "./ObjectViewer";
 
-export const FunctionNode = customRenderableType<Function>(
+interface FunctionNodeProps
+  extends ComponentPropsWithoutRef<"span">,
+    RenderableTypeProps<Function> {}
+
+export const FunctionNode = customRenderableType(
   "function",
-  ({ className, value }) => {
+  ({ className, value, ...rest }: FunctionNodeProps) => {
     return (
-      <span className={clsx("text-[var(--ov-typeFunction-color)]", className)}>
+      <span
+        {...filterForwardedElementProps<"span">(rest)}
+        className={clsx("text-[var(--ov-typeFunction-color)]", className)}
+      >
         {value.toString()}
       </span>
     );

@@ -1,11 +1,23 @@
 import clsx from "clsx";
-import { customRenderableType } from "./CustomRenderable";
+import {
+  customRenderableType,
+  filterForwardedElementProps,
+} from "./CustomRenderable";
+import type { ComponentPropsWithoutRef } from "react";
+import type { RenderableTypeProps } from "./ObjectViewer";
+
+interface BooleanNodeProps
+  extends ComponentPropsWithoutRef<"span">,
+    RenderableTypeProps<boolean> {}
 
 export const BooleanNode = customRenderableType<boolean>(
   "boolean",
-  ({ className, value }) => {
+  ({ className, value, ...rest }: BooleanNodeProps) => {
     return (
-      <span className={clsx("text-[var(--ov-typeBoolean-color)]", className)}>
+      <span
+        {...filterForwardedElementProps<"span">(rest)}
+        className={clsx("text-[var(--ov-typeBoolean-color)]", className)}
+      >
         {String(value)}
       </span>
     );

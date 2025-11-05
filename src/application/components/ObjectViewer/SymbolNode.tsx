@@ -1,11 +1,23 @@
 import clsx from "clsx";
-import { customRenderableType } from "./CustomRenderable";
+import {
+  customRenderableType,
+  filterForwardedElementProps,
+} from "./CustomRenderable";
+import type { ComponentPropsWithoutRef } from "react";
+import type { RenderableTypeProps } from "./ObjectViewer";
 
-export const SymbolNode = customRenderableType<symbol>(
+interface SymbolNodeProps
+  extends ComponentPropsWithoutRef<"span">,
+    RenderableTypeProps<symbol> {}
+
+export const SymbolNode = customRenderableType(
   "symbol",
-  ({ className, value }) => {
+  ({ className, value, ...rest }: SymbolNodeProps) => {
     return (
-      <span className={clsx("text-[var(--ov-typeSymbol-color)]", className)}>
+      <span
+        {...filterForwardedElementProps<"span">(rest)}
+        className={clsx("text-[var(--ov-typeSymbol-color)]", className)}
+      >
         {value.toString()}
       </span>
     );
