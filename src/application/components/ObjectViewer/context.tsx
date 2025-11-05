@@ -1,12 +1,18 @@
 import { equal } from "@wry/equality";
 import type { ReactNode } from "react";
 import { createContext, useContext, useRef } from "react";
-import type { RenderType } from "./ObjectViewer";
 import { getTypeOf } from "./getTypeOf";
 
 interface ContextType {
   getTypeOf?: (value: unknown) => string | undefined;
-  renderers: Record<string, RenderType<unknown>>;
+  renderers: Record<
+    string,
+    (
+      props: Record<string, any> & {
+        DefaultRender: (props: object) => ReactNode;
+      }
+    ) => ReactNode
+  >;
 }
 
 const Context = createContext<ContextType>({

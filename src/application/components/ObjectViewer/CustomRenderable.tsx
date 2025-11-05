@@ -3,6 +3,38 @@ import { useObjectViewerContext, useTypeOfValue } from "./context";
 import type { getTypeOf } from "./getTypeOf";
 
 type ValueProp<T> = [T] extends [never] ? { value?: never } : { value: T };
+type MergePropsFn<TProps> = (
+  parentProps: TProps,
+  props: Partial<TProps>
+) => TProps;
+
+export function customRenderable<Props extends Record<string, any>>(
+  type: string,
+  BaseComponent: (props: Props) => ReactNode,
+  mergeProps: MergePropsFn<Props> = (parentProps, props) => ({
+    ...parentProps,
+    ...props,
+  })
+) {
+  return function Component(parentProps: Props) {
+    const ctx = useObjectViewerContext();
+    const DefaultRender = useCallback(
+      (props: Partial<Props>) => (
+        <BaseComponent {...mergeProps(parentProps, props)} />
+      ),
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      Object.values(parentProps)
+    );
+
+    const Render = ctx.renderers[type];
+
+    return Render ? (
+      <Render {...parentProps} DefaultRender={DefaultRender} />
+    ) : (
+      <BaseComponent {...parentProps} />
+    );
+  };
+}
 
 export function customRenderableType<T = unknown>(
   type: ReturnType<typeof getTypeOf>,
@@ -13,46 +45,9 @@ export function customRenderableType<T = unknown>(
     value: T;
   }) => ReactNode
 ) {
-  return function Component({
-    context,
-    className,
-    value,
-    depth,
-  }: {
-    context?: Record<string, any> | undefined;
-    className?: string;
-    depth: number;
-  } & ValueProp<T>) {
-    const ctx = useObjectViewerContext();
-    const valueType = useTypeOfValue(value);
-
-    const DefaultRender = useCallback(
-      (props: {
-        className?: string;
-        context?: Record<string, any>;
-        value: T;
-      }) => (
-        <BaseComponent
-          {...props}
-          context={{ ...context, ...props.context }}
-          depth={depth}
-        />
-      ),
-      [context, depth]
-    );
-
-    const Render =
-      type === valueType ? ctx.renderers[valueType] : DefaultRender;
-    const Component = Render ?? DefaultRender;
-
-    return (
-      <Component
-        depth={depth}
-        context={context}
-        className={className}
-        value={value as T}
-        DefaultRender={DefaultRender as any}
-      />
-    );
-  };
+  return customRenderable(type, BaseComponent, (parentProps, props) => ({
+    ...parentProps,
+    ...props,
+    context: { ...parentProps.context, ...props.context },
+  }));
 }
