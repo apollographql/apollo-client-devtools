@@ -1,7 +1,7 @@
 import clsx from "clsx";
-import { customRenderable } from "./CustomRenderable";
+import { customRenderableType } from "./CustomRenderable";
 
-export const BooleanNode = customRenderable<boolean>(
+export const BooleanNode = customRenderableType<boolean>(
   "boolean",
   ({ className, value }) => {
     return (

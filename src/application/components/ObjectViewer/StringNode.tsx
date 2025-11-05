@@ -1,9 +1,14 @@
 import clsx from "clsx";
-import { customRenderable } from "./CustomRenderable";
+import { customRenderableType } from "./CustomRenderable";
 
-export const StringNode = customRenderable<string>(
+interface Props {
+  className?: string;
+  value: string;
+}
+
+export const StringNode = customRenderableType(
   "string",
-  ({ className, value }) => {
+  ({ className, value }: Props) => {
     return (
       <span className={clsx("text-[var(--ov-typeString-color)]", className)}>
         <Quote />

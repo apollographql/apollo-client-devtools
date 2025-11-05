@@ -1,9 +1,9 @@
 import { Bracket } from "./Bracket";
 import { CollectionLength } from "./CollectionLength";
-import { customRenderable } from "./CustomRenderable";
+import { customRenderableType } from "./CustomRenderable";
 import { ObjectPair } from "./ObjectPair";
 
-export const ObjectNode = customRenderable<object>(
+export const ObjectNode = customRenderableType<object>(
   "object",
   ({ context, className, depth, value }) => {
     const constructorName = getConstructorName(value);

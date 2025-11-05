@@ -1,7 +1,7 @@
 import { clsx } from "clsx";
-import { customRenderable } from "./CustomRenderable";
+import { customRenderableType } from "./CustomRenderable";
 
-export const BigintNode = customRenderable<bigint>(
+export const BigintNode = customRenderableType<bigint>(
   "bigint",
   ({ className, value }) => {
     return (
