@@ -16,8 +16,6 @@ interface ArrayNodeProps
   extends ComponentPropsWithoutRef<"span">,
     RenderableTypeProps<unknown[]> {}
 
-const SPARSE_ITEM_PLACEHOLDER = {};
-
 export const ArrayNode = customRenderableType<unknown[]>(
   "array",
   ({ className, context, depth, value, path, ...rest }: ArrayNodeProps) => {
@@ -48,7 +46,7 @@ export const ArrayNode = customRenderableType<unknown[]>(
           // count
           const gap = key - previousIndex - 1;
 
-          items[key - 1] = SPARSE_ITEM_PLACEHOLDER;
+          items[key - 1] = undefined;
           counts.set(key - 1, gap);
         }
       });
@@ -56,7 +54,7 @@ export const ArrayNode = customRenderableType<unknown[]>(
       const expectedLastIndex = value.length - 1;
       const lastIndex = indexes.at(-1)!;
       if (lastIndex !== expectedLastIndex) {
-        items[expectedLastIndex] = SPARSE_ITEM_PLACEHOLDER;
+        items[expectedLastIndex] = undefined;
         counts.set(expectedLastIndex, value.length - lastIndex);
       }
     }
@@ -73,7 +71,7 @@ export const ArrayNode = customRenderableType<unknown[]>(
         />
         <div className="pl-[3ch]">
           {items.map((item, idx) => {
-            return item === SPARSE_ITEM_PLACEHOLDER ? (
+            return counts.has(idx) ? (
               <>
                 <SparseArrayEmptyItem key={idx} length={counts.get(idx)} />
                 <Punctuation>,</Punctuation>
