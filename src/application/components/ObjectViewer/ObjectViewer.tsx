@@ -19,6 +19,8 @@ import type { NullNode } from "./NullNode";
 import type { Path } from "./types";
 import type { Theme } from "./useObjectViewerTheme";
 import { useObjectViewerTheme } from "./useObjectViewerTheme";
+import type { ArrayIndex } from "./ArrayIndex";
+import type { ObjectKey } from "./ObjectKey";
 
 type ValueProp<T> = [T] extends [never] ? { value?: never } : { value: T };
 
@@ -41,11 +43,13 @@ export type CustomRenderProps<
 interface BuiltinRenderers {
   array: WithDefaultRender<typeof ArrayNode>;
   arrayItem: WithDefaultRender<typeof ArrayItem>;
+  arrayIndex: WithDefaultRender<typeof ArrayIndex>;
   bigint: WithDefaultRender<typeof BigintNode>;
   boolean: WithDefaultRender<typeof BooleanNode>;
   function: WithDefaultRender<typeof FunctionNode>;
   object: WithDefaultRender<typeof ObjectNode>;
   objectPair: WithDefaultRender<typeof ObjectPair>;
+  objectKey: WithDefaultRender<typeof ObjectKey>;
   string: WithDefaultRender<typeof StringNode>;
   symbol: WithDefaultRender<typeof SymbolNode>;
   number: WithDefaultRender<typeof NumberNode>;
