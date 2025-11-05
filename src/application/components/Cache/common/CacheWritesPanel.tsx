@@ -4,7 +4,6 @@ import type { TypedDocumentNode } from "@apollo/client";
 import { gql } from "@apollo/client";
 import { useFragment } from "@apollo/client/react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
-import { JSONTreeViewer } from "../../JSONTreeViewer";
 import { CodeBlock } from "../../CodeBlock";
 import { memo, useState } from "react";
 import { getOperationName } from "@apollo/client/utilities/internal";
@@ -13,6 +12,7 @@ import { ListItem } from "../../ListItem";
 import { format } from "date-fns";
 import type { Diff } from "@/application/utilities/diff";
 import { ObjectDiff } from "../../ObjectDiff";
+import { ObjectViewer } from "../../ObjectViewer";
 
 const CACHE_WRITES_PANEL_FRAGMENT: TypedDocumentNode<CacheWritesPanelFragment> = gql`
   fragment CacheWritesPanelFragment on CacheWrite {
@@ -101,22 +101,15 @@ export function CacheWritesPanel({ cacheWrites }: Props) {
                 <h2 className="text-md text-heading dark:text-heading-dark">
                   Data
                 </h2>
-                <JSONTreeViewer data={selectedCacheWrite.data} hideRoot />
+                <ObjectViewer value={selectedCacheWrite.data} />
               </div>
               <div className="flex flex-col gap-2">
                 <h2 className="text-md text-heading dark:text-heading-dark">
                   Variables
                 </h2>
-                {selectedCacheWrite.variables === null ? (
-                  <span className="text-disabled dark:text-disabled-dark">
-                    undefined
-                  </span>
-                ) : (
-                  <JSONTreeViewer
-                    data={selectedCacheWrite.variables}
-                    hideRoot
-                  />
-                )}
+                <ObjectViewer
+                  value={selectedCacheWrite.variables ?? undefined}
+                />
               </div>
               <DiffView diff={selectedCacheWrite.cacheDiff} />
             </Panel>
