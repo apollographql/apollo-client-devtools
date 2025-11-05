@@ -9,30 +9,17 @@ import { UndefinedNode } from "./UndefinedNode";
 import { ObjectNode } from "./ObjectNode";
 import { NullNode } from "./NullNode";
 import { ArrayNode } from "./ArrayNode";
-import { useObjectViewerContext, useTypeOfValue } from "./context";
-import { useCallback } from "react";
+import { useTypeOfValue } from "./context";
+import type { RenderableTypeProps } from "./CustomRenderable";
+import { CustomNode } from "./CustomNode";
 
-interface Props {
-  context: Record<string, any> | undefined;
-  className?: string;
-  depth: number;
-  value: unknown;
-}
-
-export const ValueNode = (parentProps: Props) => {
-  const { context, className, depth, value } = parentProps;
+export const ValueNode = ({
+  context,
+  className,
+  depth,
+  value,
+}: RenderableTypeProps<unknown>) => {
   const type = useTypeOfValue(value);
-  const ctx = useObjectViewerContext();
-  const DefaultRender = useCallback(
-    (props: Partial<Props>) => (
-      <ValueNode
-        {...{ ...parentProps, ...props }}
-        context={{ ...parentProps.context, ...props.context }}
-      />
-    ),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    Object.values(parentProps)
-  );
 
   const sharedProps = {
     depth,
@@ -59,17 +46,9 @@ export const ValueNode = (parentProps: Props) => {
       return <SymbolNode {...sharedProps} value={value as symbol} />;
     case "undefined":
       return <UndefinedNode {...sharedProps} />;
-    case "object": {
+    case "object":
       return <ObjectNode {...sharedProps} value={value as object} />;
-    }
-    default: {
-      const Render = ctx.renderers[type];
-
-      return Render ? (
-        <Render {...sharedProps} DefaultRender={DefaultRender} value={value} />
-      ) : (
-        <DefaultRender className={className} value={value} />
-      );
-    }
+    default:
+      return <CustomNode {...sharedProps} value={value} />;
   }
 };
