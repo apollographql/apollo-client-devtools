@@ -1,6 +1,5 @@
 import type { ComponentPropsWithoutRef } from "react";
 import { ArrayItem } from "./ArrayItem";
-import { Bracket } from "./Bracket";
 import { CollectionLength } from "./CollectionLength";
 import {
   customRenderableType,
@@ -8,6 +7,8 @@ import {
 } from "./CustomRenderable";
 import type { RenderableTypeProps } from "./ObjectViewer";
 import { clsx } from "clsx";
+import { OpenBracket } from "./OpenBracket";
+import { CloseBracket } from "./CloseBracket";
 
 interface ArrayNodeProps
   extends ComponentPropsWithoutRef<"span">,
@@ -21,7 +22,7 @@ export const ArrayNode = customRenderableType<unknown[]>(
         {...filterForwardedElementProps<"span">(rest)}
         className={clsx("align-middle", className)}
       >
-        <Bracket value={value} type="open" />{" "}
+        <OpenBracket />
         <CollectionLength
           className="inline-block align-middle italic"
           value={value}
@@ -38,7 +39,7 @@ export const ArrayNode = customRenderableType<unknown[]>(
             />
           ))}
         </div>
-        <Bracket type="close" value={value} />
+        <CloseBracket />
       </span>
     );
   }
