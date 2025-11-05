@@ -21,7 +21,7 @@ export const ObjectNode = customRenderable<object>(
           value={value}
         />
         <div className="pl-[2ch]">
-          {Array.from(Object.entries(value)).map(([key, value], idx) => (
+          {Object.entries(value).map(([key, value], idx) => (
             <IterableItem
               key={idx}
               context={context}
