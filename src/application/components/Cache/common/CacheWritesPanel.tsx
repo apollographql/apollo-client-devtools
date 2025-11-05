@@ -6,19 +6,13 @@ import { useFragment } from "@apollo/client/react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { JSONTreeViewer } from "../../JSONTreeViewer";
 import { CodeBlock } from "../../CodeBlock";
-import type { CSSProperties, FC } from "react";
-import { memo, useCallback, useState } from "react";
+import { memo, useState } from "react";
 import { getOperationName } from "@apollo/client/utilities/internal";
 import { List } from "../../List";
 import { ListItem } from "../../ListItem";
 import { format } from "date-fns";
-import { Added } from "@/application/utilities/diff";
-import { Changed, Deleted, type Diff } from "@/application/utilities/diff";
-import { ObjectViewer } from "../../ObjectViewer";
-import type { ColorValue } from "../../ObjectViewer/useObjectViewerTheme";
-import { useGetObjectViewerThemeOverride } from "../../ObjectViewer/useObjectViewerTheme";
-import { colors } from "@apollo/brand";
-import { clsx } from "clsx";
+import type { Diff } from "@/application/utilities/diff";
+import { ObjectDiff } from "../../ObjectDiff";
 
 const CACHE_WRITES_PANEL_FRAGMENT: TypedDocumentNode<CacheWritesPanelFragment> = gql`
   fragment CacheWritesPanelFragment on CacheWrite {
@@ -133,203 +127,15 @@ export function CacheWritesPanel({ cacheWrites }: Props) {
   );
 }
 
-const TEST = true;
-
-const DiffView = memo(function DiffView({ diff }: { diff: Diff | null }) {
+const DiffView = memo(({ diff }: { diff: Diff | null }) => {
   return (
     <div className="flex flex-col gap-2">
       <h2 className="text-md text-heading dark:text-heading-dark">Diff</h2>
       {diff === null ? (
         <span className="text-disabled dark:text-disabled-dark">Unchanged</span>
       ) : (
-        <ObjectViewer
-          value={
-            TEST
-              ? {
-                  b: {
-                    f: Symbol("a"),
-                    func: function () {
-                      return "test";
-                    },
-                    c: [
-                      null,
-                      new Changed(0, 1),
-                      new Changed(1, 2),
-                      new Deleted("test"),
-                      new Added(3),
-                    ],
-                    d: {
-                      e: {
-                        f: new Changed(true, false),
-                        g: new Added(true),
-                      },
-                    },
-                  },
-                  foo: new Deleted(true),
-                  bar: [undefined, new Deleted(1)],
-                  baz: [
-                    undefined,
-                    { b: new Changed(2, 3), c: new Added(2) },
-                    new Deleted({ c: 2 }),
-                  ],
-                }
-              : diff
-          }
-          getTypeOf={(value) => {
-            if (value instanceof Changed) {
-              return "Changed";
-            }
-          }}
-          customRenderers={{
-            Changed: ChangedValue,
-          }}
-          builtinRenderers={{
-            arrayItem: DiffValue,
-            arrayIndex: StrikethroughWhenDeleted,
-            collapsedArray: StrikethroughWhenDeleted,
-            collapsedObject: StrikethroughWhenDeleted,
-            objectPair: DiffValue,
-            string: StrikethroughWhenDeleted,
-            boolean: StrikethroughWhenDeleted,
-            number: StrikethroughWhenDeleted,
-            null: StrikethroughWhenDeleted,
-            undefined: StrikethroughWhenDeleted,
-            objectKey: StrikethroughWhenDeleted,
-          }}
-        />
+        <ObjectDiff diff={diff} />
       )}
     </div>
   );
 });
-
-const { text } = colors.tokens;
-
-function StrikethroughWhenDeleted({
-  className,
-  context,
-  DefaultRender,
-}: {
-  className?: string;
-  context?: Record<string, any>;
-  DefaultRender: FC<{ className?: string }>;
-}) {
-  return (
-    <DefaultRender
-      className={clsx(
-        { "line-through": context?.mode === "deleted" },
-        className
-      )}
-    />
-  );
-}
-
-function useDiffThemeOverrides() {
-  const getTheme = useGetObjectViewerThemeOverride();
-
-  return useCallback(
-    ({
-      textColor,
-      punctuation,
-    }: {
-      textColor: ColorValue;
-      punctuation?: ColorValue;
-    }) => {
-      return getTheme({
-        typeNumber: textColor,
-        typeBoolean: textColor,
-        typeString: textColor,
-        objectKey: textColor,
-        punctuation,
-        ellipsis: punctuation,
-      });
-    },
-    [getTheme]
-  );
-}
-
-function DiffValue({
-  value,
-  DefaultRender,
-}: {
-  value: unknown;
-  DefaultRender: FC<{
-    expandable?: boolean;
-    value?: unknown;
-    className?: string;
-    style?: CSSProperties;
-    context?: Record<string, any>;
-  }>;
-}) {
-  const getOverrides = useDiffThemeOverrides();
-
-  if (value instanceof Added) {
-    return (
-      <DefaultRender
-        className="bg-successSelected dark:bg-successSelected-dark"
-        value={value.value}
-        style={getOverrides({
-          textColor: text.success,
-          punctuation: text.neutral,
-        })}
-      />
-    );
-  }
-
-  if (value instanceof Deleted) {
-    return (
-      <DefaultRender
-        className="bg-errorSelected dark:bg-errorSelected-dark"
-        value={value.value}
-        style={getOverrides({
-          textColor: text.error,
-          punctuation: text.neutral,
-        })}
-        context={{ mode: "deleted" }}
-      />
-    );
-  }
-
-  if (value instanceof Changed) {
-    return <DefaultRender expandable={false} />;
-  }
-
-  return <DefaultRender />;
-}
-
-function ChangedValue({
-  value: changed,
-  DefaultRender,
-}: {
-  value: Changed;
-  DefaultRender: FC<{
-    value?: unknown;
-    className?: string;
-    style?: CSSProperties;
-    context?: Record<string, any>;
-  }>;
-}) {
-  const getOverrides = useDiffThemeOverrides();
-
-  return (
-    <>
-      <DefaultRender
-        className="bg-errorSelected dark:bg-errorSelected-dark"
-        value={changed.oldValue}
-        context={{ mode: "deleted" }}
-        style={getOverrides({
-          textColor: text.error,
-          punctuation: text.neutral,
-        })}
-      />
-      <span>{" => "}</span>
-      <DefaultRender
-        className="bg-successSelected dark:bg-successSelected-dark"
-        value={changed.newValue}
-        style={getOverrides({
-          textColor: text.success,
-          punctuation: text.neutral,
-        })}
-      />
-    </>
-  );
-}
