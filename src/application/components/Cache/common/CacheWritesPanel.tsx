@@ -6,7 +6,7 @@ import { useFragment } from "@apollo/client/react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { JSONTreeViewer } from "../../JSONTreeViewer";
 import { CodeBlock } from "../../CodeBlock";
-import type { ReactNode } from "react";
+import type { FC } from "react";
 import { memo, useState } from "react";
 import { getOperationName } from "@apollo/client/utilities/internal";
 import { List } from "../../List";
@@ -15,9 +15,6 @@ import { format } from "date-fns";
 import { Added } from "@/application/utilities/diff";
 import { Changed, Deleted, type Diff } from "@/application/utilities/diff";
 import { ObjectViewer } from "../../ObjectViewer";
-import { ThemeDefinition } from "../../ObjectViewer/ThemeDefinition";
-import { colors } from "@apollo/brand";
-import clsx from "clsx";
 import type { CustomRenderProps } from "../../ObjectViewer/ObjectViewer";
 
 const CACHE_WRITES_PANEL_FRAGMENT: TypedDocumentNode<CacheWritesPanelFragment> = gql`
@@ -133,8 +130,7 @@ export function CacheWritesPanel({ cacheWrites }: Props) {
   );
 }
 
-const { text } = colors.tokens;
-const TEST = false;
+const TEST = true;
 
 const DiffView = memo(function DiffView({ diff }: { diff: Diff | null }) {
   return (
@@ -188,85 +184,22 @@ const DiffView = memo(function DiffView({ diff }: { diff: Diff | null }) {
             }: CustomRenderProps<Changed>) => {
               return (
                 <>
-                  <DiffValue kind="deleted">
-                    <DefaultRender
-                      className="bg-errorSelected dark:bg-errorSelected-dark"
-                      value={changed.oldValue}
-                    />
-                  </DiffValue>
+                  <DefaultRender
+                    className="bg-errorSelected dark:bg-errorSelected-dark"
+                    value={changed.oldValue}
+                  />
                   <span>{" => "}</span>
-                  <DiffValue kind="added">
-                    <DefaultRender
-                      className="bg-successSelected dark:bg-successSelected-dark"
-                      value={changed.newValue}
-                    />
-                  </DiffValue>
+                  <DefaultRender
+                    className="bg-successSelected dark:bg-successSelected-dark"
+                    value={changed.newValue}
+                  />
                 </>
               );
             },
           }}
-          builtinTypeRenderers={{
-            string: ({ context, DefaultRender }) => {
-              return (
-                <DefaultRender
-                  className={
-                    context?.mode === "added" ? "text-blue-400" : "text-red-400"
-                  }
-                />
-              );
-            },
-          }}
           customComponents={{
-            arrayItem: ({ value, DefaultRender }) => {
-              if (value instanceof Added) {
-                return (
-                  <DefaultRender
-                    className="bg-successSelected dark:bg-successSelected-dark"
-                    value={value.value}
-                  />
-                );
-              }
-
-              if (value instanceof Deleted) {
-                return (
-                  <DefaultRender
-                    className="bg-errorSelected dark:bg-errorSelected-dark"
-                    value={value.value}
-                  />
-                );
-              }
-
-              if (value instanceof Changed) {
-                return <DefaultRender expandable={false} value={value} />;
-              }
-
-              return <DefaultRender />;
-            },
-            objectPair: ({ value, DefaultRender }) => {
-              if (value instanceof Added) {
-                return (
-                  <DefaultRender
-                    className="bg-successSelected dark:bg-successSelected-dark"
-                    value={value.value}
-                  />
-                );
-              }
-
-              if (value instanceof Deleted) {
-                return (
-                  <DefaultRender
-                    className="bg-errorSelected dark:bg-errorSelected-dark"
-                    value={value.value}
-                  />
-                );
-              }
-
-              if (value instanceof Changed) {
-                return <DefaultRender expandable={false} value={value} />;
-              }
-
-              return <DefaultRender />;
-            },
+            arrayItem: DiffValue,
+            objectPair: DiffValue,
           }}
         />
       )}
@@ -275,27 +208,37 @@ const DiffView = memo(function DiffView({ diff }: { diff: Diff | null }) {
 });
 
 function DiffValue({
-  children,
-  kind,
+  value,
+  DefaultRender,
 }: {
-  children: ReactNode;
-  kind: "added" | "deleted";
+  value: unknown;
+  DefaultRender: FC<{
+    expandable?: boolean;
+    value?: unknown;
+    className?: string;
+  }>;
 }) {
-  return (
-    <ThemeDefinition
-      as="span"
-      theme={{
-        typeBoolean: text.primary,
-        typeNumber: text.primary,
-        typeString: text.primary,
-      }}
-      className={clsx("px-2 rounded-sm", {
-        "bg-errorSelected dark:bg-errorSelected-dark line-through":
-          kind === "deleted",
-        "bg-successSelected dark:bg-successSelected-dark": kind === "added",
-      })}
-    >
-      {children}
-    </ThemeDefinition>
-  );
+  if (value instanceof Added) {
+    return (
+      <DefaultRender
+        className="bg-successSelected dark:bg-successSelected-dark"
+        value={value.value}
+      />
+    );
+  }
+
+  if (value instanceof Deleted) {
+    return (
+      <DefaultRender
+        className="bg-errorSelected dark:bg-errorSelected-dark"
+        value={value.value}
+      />
+    );
+  }
+
+  if (value instanceof Changed) {
+    return <DefaultRender expandable={false} value={value} />;
+  }
+
+  return <DefaultRender />;
 }
