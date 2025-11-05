@@ -178,24 +178,7 @@ const DiffView = memo(function DiffView({ diff }: { diff: Diff | null }) {
             }
           }}
           customTypeRenderers={{
-            Changed: ({
-              value: changed,
-              DefaultRender,
-            }: CustomRenderProps<Changed>) => {
-              return (
-                <>
-                  <DefaultRender
-                    className="bg-errorSelected dark:bg-errorSelected-dark"
-                    value={changed.oldValue}
-                  />
-                  <span>{" => "}</span>
-                  <DefaultRender
-                    className="bg-successSelected dark:bg-successSelected-dark"
-                    value={changed.newValue}
-                  />
-                </>
-              );
-            },
+            Changed: ChangedValue,
           }}
           customComponents={{
             arrayItem: DiffValue,
@@ -241,4 +224,23 @@ function DiffValue({
   }
 
   return <DefaultRender />;
+}
+
+function ChangedValue({
+  value: changed,
+  DefaultRender,
+}: CustomRenderProps<Changed>) {
+  return (
+    <>
+      <DefaultRender
+        className="bg-errorSelected dark:bg-errorSelected-dark"
+        value={changed.oldValue}
+      />
+      <span>{" => "}</span>
+      <DefaultRender
+        className="bg-successSelected dark:bg-successSelected-dark"
+        value={changed.newValue}
+      />
+    </>
+  );
 }
