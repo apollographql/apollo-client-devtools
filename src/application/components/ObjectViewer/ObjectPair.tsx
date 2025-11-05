@@ -1,13 +1,12 @@
-import IconChevronRight from "@apollo/icons/default/IconChevronRight.svg";
 import { useState, type ComponentPropsWithoutRef } from "react";
 import { customRenderable } from "./CustomRenderable";
 import type { Path } from "./types";
 import { clsx } from "clsx";
 import { ObjectKey } from "./ObjectKey";
 import { ValueNode } from "./ValueNode";
-import { CollapsedObject } from "./CollapsedObject";
 import { CollectionLength } from "./CollectionLength";
 import { Collapsed } from "./Collapsed";
+import { Arrow } from "./Arrow";
 
 interface ObjectPairProps extends ComponentPropsWithoutRef<"div"> {
   context: Record<string, any> | undefined;
@@ -43,16 +42,7 @@ export const ObjectPair = customRenderable(
           }
         >
           <span className="inline-flex items-center">
-            {expandable && (
-              <IconChevronRight
-                className={clsx(
-                  "block size-4 transition-transform ease-out absolute -left-[2ch] top-1/2 -translate-y-1/2 text-[var(--ov-arrow-color,var(--ov-punctuation-color))]",
-                  {
-                    "rotate-90": expanded,
-                  }
-                )}
-              />
-            )}
+            {expandable && <Arrow expanded={expanded} />}
             <ObjectKey context={context} value={objectKey} />
             <span className="text-[var(--ov-punctuation-color)]">:</span>
           </span>
