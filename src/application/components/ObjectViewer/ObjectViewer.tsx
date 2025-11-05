@@ -18,12 +18,14 @@ import type { SymbolNode } from "./SymbolNode";
 import type { NumberNode } from "./NumberNode";
 import type { UndefinedNode } from "./UndefinedNode";
 import type { NullNode } from "./NullNode";
+import type { Path } from "./types";
 
 type ValueProp<T> = [T] extends [never] ? { value?: never } : { value: T };
 
 export type RenderableTypeProps<T = unknown> = {
   className?: string;
   depth: number;
+  path: Path;
   context: Record<string, any> | undefined;
 } & ValueProp<T>;
 
@@ -32,7 +34,7 @@ export type CustomRenderProps<
   DefaultValue = unknown,
 > = RenderableTypeProps<T> & {
   DefaultRender: (
-    props: Partial<Omit<RenderableTypeProps<DefaultValue>, "depth">>
+    props: Partial<Omit<RenderableTypeProps<DefaultValue>, "depth" | "path">>
   ) => ReactNode;
 };
 
@@ -93,7 +95,7 @@ export function ObjectViewer<CustomTypes extends string>({
           } as any
         }
       >
-        <ValueNode context={{}} depth={0} value={value} />
+        <ValueNode context={{}} depth={0} value={value} path={[]} />
       </Provider>
     </ThemeDefinition>
   );

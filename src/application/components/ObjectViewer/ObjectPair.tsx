@@ -1,5 +1,6 @@
 import { customRenderable } from "./CustomRenderable";
 import { IterableItem } from "./IterableItem";
+import type { Path } from "./types";
 
 interface ObjectPairProps {
   className?: string;
@@ -8,6 +9,7 @@ interface ObjectPairProps {
   expandable?: boolean;
   objectKey: string;
   value: unknown;
+  path: Path;
 }
 
 export const ObjectPair = customRenderable(
@@ -16,6 +18,7 @@ export const ObjectPair = customRenderable(
     className,
     context,
     depth,
+    path,
     value,
     objectKey,
     expandable = Array.isArray(value) ||
@@ -26,13 +29,14 @@ export const ObjectPair = customRenderable(
         expandable={expandable}
         context={context}
         className={className}
-        depth={depth + 1}
+        depth={depth}
         itemKey={objectKey}
         value={value}
+        path={path}
       />
     );
   },
-  (parentProps, props: Partial<Omit<ObjectPairProps, "depth">>) => ({
+  (parentProps, props: Partial<Omit<ObjectPairProps, "depth" | "path">>) => ({
     ...parentProps,
     ...props,
     depth: parentProps.depth,
