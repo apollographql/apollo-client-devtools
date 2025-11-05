@@ -27,7 +27,7 @@ export const ArrayNode = customRenderableType<unknown[]>(
           className="inline-block align-middle italic"
           value={value}
         />
-        <div className="pl-[2ch]">
+        <div className="pl-[3ch]">
           {value.map((item, idx) => (
             <ArrayItem
               key={idx}
