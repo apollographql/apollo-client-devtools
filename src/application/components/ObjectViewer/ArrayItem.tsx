@@ -7,6 +7,7 @@ import { ArrayIndex } from "./ArrayIndex";
 import { ValueNode } from "./ValueNode";
 import { CollectionLength } from "./CollectionLength";
 import { Collapsed } from "./Collapsed";
+import { Arrow } from "./Arrow";
 
 interface ArrayItemProps extends ComponentPropsWithoutRef<"div"> {
   context: Record<string, any> | undefined;
@@ -42,16 +43,7 @@ export const ArrayItem = customRenderable(
           }
         >
           <span className="inline-flex items-center">
-            {expandable && (
-              <IconChevronRight
-                className={clsx(
-                  "block size-4 transition-transform ease-out absolute -left-5 top-1/2 -translate-y-1/2",
-                  {
-                    "rotate-90": expanded,
-                  }
-                )}
-              />
-            )}
+            {expandable && <Arrow expanded={expanded} />}
             <ArrayIndex context={context} index={index} />
             <span className="text-[var(--ov-punctuation-color)]">:</span>
           </span>

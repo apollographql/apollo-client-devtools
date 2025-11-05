@@ -2,6 +2,7 @@ import { useThemeKey, useThemeObject } from "@/application/hooks/useTheme";
 import { useCallback, useMemo } from "react";
 
 type ThemeKey =
+  | "arrow"
   | "arrayIndex"
   | "brace"
   | "bracket"

@@ -61,9 +61,10 @@ interface BuiltinRenderers {
   null: WithDefaultRender<typeof NullNode>;
 }
 
-const { code, text } = colors.tokens;
+const { code, text, icon } = colors.tokens;
 
 const theme: Theme = {
+  arrow: icon.primary,
   constructorName: code.e,
   ellipsis: text.secondary,
   info: code.g,
