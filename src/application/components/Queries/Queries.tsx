@@ -12,11 +12,9 @@ import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { RunInExplorerButton } from "./RunInExplorerButton";
 import type { GetQueries, GetQueriesVariables } from "../../types/gql";
 import { Tabs } from "../Tabs";
-import { JSONTreeViewer } from "../JSONTreeViewer";
 import { QueryLayout } from "../QueryLayout";
 import { CopyButton } from "../CopyButton";
 import { EmptyMessage } from "../EmptyMessage";
-import { isEmpty } from "../../utilities/isEmpty";
 import { Spinner } from "../Spinner";
 import { StatusBadge } from "../StatusBadge";
 import { AlertDisclosure } from "../AlertDisclosure";
@@ -29,6 +27,7 @@ import { PageSpinner } from "../PageSpinner";
 import { isIgnoredError } from "../../utilities/ignoredErrors";
 import { SerializedErrorAlertDisclosurePanel } from "../SerializedErrorAlertDisclosurePanel";
 import { useIsExtensionInvalidated } from "@/application/machines/devtoolsMachine";
+import { ObjectViewer } from "../ObjectViewer";
 
 enum QueryTabs {
   Variables = "Variables",
@@ -255,25 +254,13 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
               />
             </Tabs.List>
             <QueryLayout.TabContent value={QueryTabs.Variables}>
-              <JSONTreeViewer
-                hideRoot={!isEmpty(selectedQuery?.variables)}
-                className="[&>li]:!pt-0"
-                data={selectedQuery?.variables ?? {}}
-              />
+              <ObjectViewer value={selectedQuery?.variables} />
             </QueryLayout.TabContent>
             <QueryLayout.TabContent value={QueryTabs.CachedData}>
-              <JSONTreeViewer
-                hideRoot={!isEmpty(selectedQuery?.cachedData)}
-                className="[&>li]:!pt-0"
-                data={selectedQuery?.cachedData ?? {}}
-              />
+              <ObjectViewer value={selectedQuery?.cachedData} />
             </QueryLayout.TabContent>
             <QueryLayout.TabContent value={QueryTabs.Options}>
-              <JSONTreeViewer
-                hideRoot={!isEmpty(selectedQuery?.options)}
-                className="[&>li]:!pt-0"
-                data={selectedQuery?.options ?? {}}
-              />
+              <ObjectViewer value={selectedQuery?.options} />
             </QueryLayout.TabContent>
           </QueryLayout.Tabs>
         </QueryLayout>
