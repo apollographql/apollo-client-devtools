@@ -28,8 +28,10 @@ export const ArrayNode = customRenderableType<unknown[]>(
     // array is a sparse array
     if (value.length > indexes.length) {
       // maintain a sparse array unlike [...value]
-      items = structuredClone(value);
+      items = [];
       indexes.forEach((key, keyIdx) => {
+        items[key] = value[key];
+
         if (key === 0) {
           return;
         }
