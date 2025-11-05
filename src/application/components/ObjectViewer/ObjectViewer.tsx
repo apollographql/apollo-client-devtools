@@ -4,7 +4,17 @@ import { colors } from "@apollo/brand";
 import { Provider } from "./context";
 import type { Theme } from "./ThemeDefinition";
 import { ThemeDefinition } from "./ThemeDefinition";
-import type { ReactNode } from "react";
+import type { ComponentPropsWithoutRef, ElementType, ReactNode } from "react";
+import type { ObjectPair } from "./ObjectPair";
+
+type CustomComponent<
+  ParentComponent extends ElementType,
+  Props = ComponentPropsWithoutRef<ParentComponent>,
+> = (
+  props: Props & {
+    DefaultRender: (props: Partial<Props>) => ReactNode;
+  }
+) => ReactNode;
 
 export type BuiltinRenderType<T = unknown> = (
   props: CustomRenderProps<T, T>
@@ -44,11 +54,16 @@ interface BuiltinTypeRenderers {
   null: BuiltinRenderType<never>;
 }
 
+interface CustomComponents {
+  objectPair: CustomComponent<typeof ObjectPair>;
+}
+
 interface Props<CustomTypes extends string> {
   value: unknown;
   getTypeOf?: (value: unknown) => CustomTypes | undefined;
-  customTypeRenderers: CustomTypeRenderers<CustomTypes>;
-  builtinTypeRenderers: Partial<BuiltinTypeRenderers>;
+  customComponents?: Partial<CustomComponents>;
+  customTypeRenderers?: CustomTypeRenderers<CustomTypes>;
+  builtinTypeRenderers?: Partial<BuiltinTypeRenderers>;
 }
 
 const { code, text } = colors.tokens;
@@ -70,6 +85,7 @@ const theme: Theme = {
 
 export function ObjectViewer<CustomTypes extends string>({
   getTypeOf,
+  customComponents,
   builtinTypeRenderers,
   customTypeRenderers,
   value,
@@ -78,7 +94,13 @@ export function ObjectViewer<CustomTypes extends string>({
     <ThemeDefinition theme={theme} className="font-code">
       <Provider
         getTypeOf={getTypeOf}
-        renderers={{ ...builtinTypeRenderers, ...customTypeRenderers } as any}
+        renderers={
+          {
+            ...builtinTypeRenderers,
+            ...customTypeRenderers,
+            ...customComponents,
+          } as any
+        }
       >
         <ValueNode context={{}} depth={0} value={value} />
       </Provider>
