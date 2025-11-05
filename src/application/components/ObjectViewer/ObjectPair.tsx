@@ -1,6 +1,15 @@
 import { customRenderable } from "./CustomRenderable";
 import { IterableItem } from "./IterableItem";
 
+interface ObjectPairProps {
+  className?: string;
+  context: Record<string, any> | undefined;
+  depth: number;
+  expandable?: boolean;
+  objectKey: string;
+  value: unknown;
+}
+
 export const ObjectPair = customRenderable(
   "objectPair",
   ({
@@ -11,14 +20,7 @@ export const ObjectPair = customRenderable(
     objectKey,
     expandable = Array.isArray(value) ||
       (typeof value === "object" && value !== null),
-  }: {
-    className?: string;
-    context: Record<string, any> | undefined;
-    depth: number;
-    expandable?: boolean;
-    objectKey: string;
-    value: unknown;
-  }) => {
+  }: ObjectPairProps) => {
     return (
       <IterableItem
         expandable={expandable}
@@ -29,5 +31,10 @@ export const ObjectPair = customRenderable(
         value={value}
       />
     );
-  }
+  },
+  (parentProps, props: Partial<Omit<ObjectPairProps, "depth">>) => ({
+    ...parentProps,
+    ...props,
+    depth: parentProps.depth,
+  })
 );

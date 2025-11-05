@@ -3,20 +3,35 @@ import { useObjectViewerContext } from "./context";
 import type { getTypeOf } from "./getTypeOf";
 import type { RenderableTypeProps } from "./ObjectViewer";
 
-type MergePropsFn<Props> = (parentProps: Props, props: Partial<Props>) => Props;
+type MergePropsFn<ParentProps, Props> = (
+  parentProps: ParentProps,
+  props: Partial<Props>
+) => ParentProps;
 
-export function customRenderable<Props extends Record<string, any>>(
+type CustomComponent<Props, DefaultRenderProps = Props> = (
+  parentProps: Props & {
+    DefaultRender: (props: Partial<DefaultRenderProps>) => ReactNode;
+  }
+) => ReactNode;
+
+export function customRenderable<
+  Props extends Record<string, any>,
+  DefaultRenderProps = Props,
+>(
   type: string,
   BaseComponent: (props: Props) => ReactNode,
-  mergeProps: MergePropsFn<Props> = (parentProps, props) => ({
+  mergeProps: MergePropsFn<Props, DefaultRenderProps> = (
+    parentProps,
+    props
+  ) => ({
     ...parentProps,
     ...props,
   })
-) {
+): CustomComponent<Props, DefaultRenderProps> {
   return function Component(parentProps: Props) {
     const ctx = useObjectViewerContext();
     const DefaultRender = useCallback(
-      (props: Partial<Props>) => (
+      (props: Partial<DefaultRenderProps>) => (
         <BaseComponent {...mergeProps(parentProps, props)} />
       ),
       // eslint-disable-next-line react-hooks/exhaustive-deps
