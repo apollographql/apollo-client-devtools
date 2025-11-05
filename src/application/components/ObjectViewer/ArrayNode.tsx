@@ -19,45 +19,12 @@ interface ArrayNodeProps
 export const ArrayNode = customRenderableType<unknown[]>(
   "array",
   ({ className, context, depth, value, path, ...rest }: ArrayNodeProps) => {
-    const indexes = Object.keys(value).map(Number);
-    const counts = new Map<number, number>();
-    let items = value;
+    const indexes = Object.keys(value);
 
-    // array is a sparse array
-    if (value.length > indexes.length) {
-      // maintain a sparse array unlike [...value]
-      items = [];
-      indexes.forEach((key, keyIdx) => {
-        items[key] = value[key];
-
-        if (key === 0) {
-          return;
-        }
-
-        // If we don't have a previous index, the hole is at the start of the
-        // array. Initialize the previous index -1 to include index 0 in the
-        // count
-        const previousIndex = indexes[keyIdx - 1] ?? -1;
-        const expectedPreviousIndex = key - 1;
-
-        // If the previous index
-        if (previousIndex !== expectedPreviousIndex) {
-          // Subtract 1 because we don't want to include the current item in the
-          // count
-          const gap = key - previousIndex - 1;
-
-          items[key - 1] = undefined;
-          counts.set(key - 1, gap);
-        }
-      });
-
-      const expectedLastIndex = value.length - 1;
-      const lastIndex = indexes.at(-1)!;
-      if (lastIndex !== expectedLastIndex) {
-        items[expectedLastIndex] = undefined;
-        counts.set(expectedLastIndex, value.length - lastIndex);
-      }
-    }
+    const [items, holeSizes] =
+      value.length > indexes.length
+        ? getSparseArray(value)
+        : [value, new Map<number, number>()];
 
     return (
       <span
@@ -71,9 +38,9 @@ export const ArrayNode = customRenderableType<unknown[]>(
         />
         <div className="pl-[3ch]">
           {items.map((item, idx) => {
-            return counts.has(idx) ? (
+            return holeSizes.has(idx) ? (
               <>
-                <SparseArrayEmptyItem key={idx} length={counts.get(idx)} />
+                <SparseArrayEmptyItem key={idx} length={holeSizes.get(idx)} />
                 <Punctuation>,</Punctuation>
               </>
             ) : (
@@ -93,3 +60,46 @@ export const ArrayNode = customRenderableType<unknown[]>(
     );
   }
 );
+
+function getSparseArray(
+  value: unknown[]
+): [sparseArray: unknown[], holeSizes: Map<number, number>] {
+  const indexes = Object.keys(value).map(Number);
+  const holeSizes = new Map<number, number>();
+  const sparseArray = [];
+
+  indexes.forEach((index, keyIndex) => {
+    sparseArray[index] = value[index];
+
+    // There aren't any values before index 0 so we don't need to do anything
+    if (index === 0) {
+      return;
+    }
+
+    // If we don't have a previous index, the hole is at the start of the
+    // array. Set `previousIndex` so that index 0 is included in the gap count
+    const previousIndex = indexes[keyIndex - 1] ?? -1;
+    const expectedPreviousIndex = index - 1;
+
+    if (previousIndex !== expectedPreviousIndex) {
+      // Add a value at the hole using the previous index so that this item can
+      // be rendered by the array node. We can avoid an actual value here
+      // because the map of hole sizes includes this index.
+      sparseArray[expectedPreviousIndex] = undefined;
+
+      // Subtract 1 so we don't include the current item in the hole size
+      holeSizes.set(index - 1, index - previousIndex - 1);
+    }
+  });
+
+  // There may be a hole at the end of the array that we need to account for
+  const expectedLastIndex = value.length - 1;
+  const lastIndex = indexes.at(-1)!;
+
+  if (lastIndex !== expectedLastIndex) {
+    sparseArray[expectedLastIndex] = undefined;
+    holeSizes.set(expectedLastIndex, value.length - lastIndex);
+  }
+
+  return [sparseArray, holeSizes];
+}
