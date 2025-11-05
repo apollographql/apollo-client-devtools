@@ -22,7 +22,8 @@ type ThemeKey =
   | "typeSymbol"
   | "typeUndefined";
 
-export type Theme = Partial<Record<ThemeKey, { base: string; dark: string }>>;
+export type ColorValue = { base: string; dark: string };
+export type Theme = Partial<Record<ThemeKey, ColorValue>>;
 
 export function useObjectViewerTheme(theme: Theme) {
   const themeObject = useThemeObject(theme);
