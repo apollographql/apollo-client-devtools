@@ -60,17 +60,17 @@ export function customRenderable<
   };
 }
 
-export function customRenderableType<T = unknown>(
+export function customRenderableType<
+  T,
+  Props extends Record<string, any> = RenderableTypeProps<T>,
+>(
   type: ReturnType<typeof getTypeOf>,
-  BaseComponent: (props: RenderableTypeProps<T>) => ReactNode
+  BaseComponent: (props: Props & RenderableTypeProps<T>) => ReactNode
 ) {
   return customRenderable(
     type,
     BaseComponent,
-    (
-      parentProps,
-      props: Partial<Omit<RenderableTypeProps<T>, "depth" | "path">>
-    ) => ({
+    (parentProps, props: Partial<Omit<Props, "depth" | "path">>) => ({
       ...parentProps,
       ...props,
       depth: parentProps.depth,
