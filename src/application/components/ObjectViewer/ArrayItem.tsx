@@ -1,4 +1,3 @@
-import IconChevronRight from "@apollo/icons/default/IconChevronRight.svg";
 import { useState, type ComponentPropsWithoutRef } from "react";
 import { customRenderable } from "./CustomRenderable";
 import type { Path } from "./types";
