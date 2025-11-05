@@ -1,5 +1,5 @@
-import { useThemeObject } from "@/application/hooks/useTheme";
-import { useMemo } from "react";
+import { useThemeKey, useThemeObject } from "@/application/hooks/useTheme";
+import { useCallback, useMemo } from "react";
 
 type ThemeKey =
   | "arrayIndex"
@@ -22,9 +22,9 @@ type ThemeKey =
   | "typeSymbol"
   | "typeUndefined";
 
-export type Theme = Record<ThemeKey, { base: string; dark: string }>;
+export type Theme = Partial<Record<ThemeKey, { base: string; dark: string }>>;
 
-export function useObjectViewerTheme(theme: Partial<Theme>) {
+export function useObjectViewerTheme(theme: Theme) {
   const themeObject = useThemeObject(theme);
 
   return useMemo(() => {
