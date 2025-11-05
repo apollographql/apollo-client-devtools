@@ -34,7 +34,7 @@ export type CustomRenderProps<
   DefaultValue = unknown,
 > = RenderableTypeProps<T> & {
   DefaultRender: (
-    props: Partial<RenderableTypeProps<DefaultValue>>
+    props: Partial<Omit<RenderableTypeProps<DefaultValue>, "depth">>
   ) => ReactNode;
 };
 
