@@ -1,16 +1,20 @@
 import clsx from "clsx";
 import { customRenderableType } from "./CustomRenderable";
+import type { ComponentPropsWithoutRef } from "react";
 
-interface Props {
+interface StringNodeProps extends ComponentPropsWithoutRef<"span"> {
   className?: string;
   value: string;
 }
 
 export const StringNode = customRenderableType(
   "string",
-  ({ className, value }: Props) => {
+  ({ className, value, ...rest }: StringNodeProps) => {
     return (
-      <span className={clsx("text-[var(--ov-typeString-color)]", className)}>
+      <span
+        className={clsx("text-[var(--ov-typeString-color)]", className)}
+        {...rest}
+      >
         <Quote />
         {value}
         <Quote />
