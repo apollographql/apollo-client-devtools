@@ -3,10 +3,7 @@ import { useObjectViewerContext } from "./context";
 import type { getTypeOf } from "./getTypeOf";
 import type { RenderableTypeProps } from "./ObjectViewer";
 
-type MergePropsFn<TProps> = (
-  parentProps: TProps,
-  props: Partial<TProps>
-) => TProps;
+type MergePropsFn<Props> = (parentProps: Props, props: Partial<Props>) => Props;
 
 export function customRenderable<Props extends Record<string, any>>(
   type: string,
