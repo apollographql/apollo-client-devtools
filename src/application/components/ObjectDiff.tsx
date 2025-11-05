@@ -52,6 +52,7 @@ function useDiffThemeOverrides() {
       punctuation?: ColorValue;
     }) => {
       return getTheme({
+        arrow: punctuation,
         typeNumber: textColor,
         typeBoolean: textColor,
         typeString: textColor,
