@@ -43,6 +43,7 @@ export function customRenderableType<T = unknown>(
   return customRenderable(type, BaseComponent, (parentProps, props) => ({
     ...parentProps,
     ...props,
+    depth: parentProps.depth,
     context: { ...parentProps.context, ...props.context },
   }));
 }
