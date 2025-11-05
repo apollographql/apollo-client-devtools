@@ -2,6 +2,7 @@ import clsx from "clsx";
 import { customRenderable } from "./CustomRenderable";
 
 interface ArrayIndexProps {
+  context?: Record<string, any>;
   className?: string;
   index: number;
 }

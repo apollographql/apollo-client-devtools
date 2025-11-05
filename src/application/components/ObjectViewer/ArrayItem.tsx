@@ -52,7 +52,7 @@ export const ArrayItem = customRenderable(
                 )}
               />
             )}
-            <ArrayIndex index={index} />
+            <ArrayIndex context={context} index={index} />
             <span className="text-[var(--ov-punctuation-color)]">:</span>
           </span>
         </span>{" "}
@@ -69,7 +69,10 @@ export const ArrayItem = customRenderable(
           </>
         ) : (
           <span className="inline-block align-middle">
-            <CollapsedArray onClick={() => setExpanded(true)} />
+            <CollapsedArray
+              context={context}
+              onClick={() => setExpanded(true)}
+            />
             <span className="text-[var(--ov-punctuation-color)]">,</span>{" "}
             {!expanded && typeof value === "object" && value !== null && (
               <CollectionLength className="italic" value={value} />
