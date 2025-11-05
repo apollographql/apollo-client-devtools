@@ -3,19 +3,19 @@ import { customRenderable } from "./CustomRenderable";
 
 interface ObjectKeyProps {
   className?: string;
-  objectKey: string;
+  value: string;
 }
 
 export const ObjectKey = customRenderable(
   "objectKey",
-  ({ className, objectKey }: ObjectKeyProps) => (
+  ({ className, value }: ObjectKeyProps) => (
     <span className={clsx("text-[var(--ov-objectKey-color)]", className)}>
-      {objectKey}
+      {value}
     </span>
   ),
-  (parentProps, props: Omit<ObjectKeyProps, "objectKey">) => ({
+  (parentProps, props: Omit<ObjectKeyProps, "value">) => ({
     ...parentProps,
     ...props,
-    objectKey: parentProps.objectKey,
+    value: parentProps.value,
   })
 );
