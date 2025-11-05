@@ -177,10 +177,10 @@ const DiffView = memo(function DiffView({ diff }: { diff: Diff | null }) {
               return "Changed";
             }
           }}
-          customTypeRenderers={{
+          customRenderers={{
             Changed: ChangedValue,
           }}
-          customComponents={{
+          builtinRenderers={{
             arrayItem: DiffValue,
             objectPair: DiffValue,
           }}
@@ -220,7 +220,7 @@ function DiffValue({
   }
 
   if (value instanceof Changed) {
-    return <DefaultRender expandable={false} value={value} />;
+    return <DefaultRender expandable={false} />;
   }
 
   return <DefaultRender />;
