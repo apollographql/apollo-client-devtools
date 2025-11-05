@@ -227,12 +227,20 @@ function useDiffThemeOverrides() {
   const getTheme = useGetObjectViewerThemeOverride();
 
   return useCallback(
-    ({ textColor }: { textColor: ColorValue }) => {
+    ({
+      textColor,
+      punctuation,
+    }: {
+      textColor: ColorValue;
+      punctuation?: ColorValue;
+    }) => {
       return getTheme({
         typeNumber: textColor,
         typeBoolean: textColor,
         typeString: textColor,
         objectKey: textColor,
+        punctuation,
+        ellipsis: punctuation,
       });
     },
     [getTheme]
@@ -259,7 +267,10 @@ function DiffValue({
       <DefaultRender
         className="bg-successSelected dark:bg-successSelected-dark"
         value={value.value}
-        style={getOverrides({ textColor: text.success })}
+        style={getOverrides({
+          textColor: text.success,
+          punctuation: text.neutral,
+        })}
       />
     );
   }
@@ -269,7 +280,10 @@ function DiffValue({
       <DefaultRender
         className="bg-errorSelected dark:bg-errorSelected-dark"
         value={value.value}
-        style={getOverrides({ textColor: text.error })}
+        style={getOverrides({
+          textColor: text.error,
+          punctuation: text.neutral,
+        })}
         context={{ mode: "deleted" }}
       />
     );
@@ -302,13 +316,19 @@ function ChangedValue({
         className="bg-errorSelected dark:bg-errorSelected-dark"
         value={changed.oldValue}
         context={{ mode: "deleted" }}
-        style={getOverrides({ textColor: text.error })}
+        style={getOverrides({
+          textColor: text.error,
+          punctuation: text.neutral,
+        })}
       />
       <span>{" => "}</span>
       <DefaultRender
         className="bg-successSelected dark:bg-successSelected-dark"
         value={changed.newValue}
-        style={getOverrides({ textColor: text.success })}
+        style={getOverrides({
+          textColor: text.success,
+          punctuation: text.neutral,
+        })}
       />
     </>
   );
