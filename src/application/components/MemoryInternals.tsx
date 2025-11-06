@@ -16,13 +16,13 @@ import { useState } from "react";
 import { ButtonGroup } from "./ButtonGroup";
 import { Button } from "./Button";
 import { Tooltip } from "./Tooltip";
-import { JSONTreeViewer } from "./JSONTreeViewer";
 import { CacheSize } from "./CacheSize";
 import { lt } from "semver";
 import { ExternalLink } from "./ExternalLink";
 import { PageError } from "./PageError";
 import { isIgnoredError } from "../utilities/ignoredErrors";
 import { useIsExtensionInvalidated } from "../machines/devtoolsMachine";
+import { ObjectViewer } from "./ObjectViewer";
 
 interface MemoryInternalsProps {
   clientId: string | undefined;
@@ -260,11 +260,7 @@ export function MemoryInternals({ clientId }: MemoryInternalsProps) {
             ))}
           </div>
         ) : selectedView === "raw" ? (
-          <JSONTreeViewer
-            hideRoot
-            data={memoryInternals.raw}
-            shouldExpandNodeInitially={() => true}
-          />
+          <ObjectViewer value={memoryInternals.raw} collapsed={false} />
         ) : null}
       </FullWidthLayout.Main>
     </FullWidthLayout>
