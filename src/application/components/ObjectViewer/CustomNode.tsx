@@ -1,6 +1,7 @@
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 import { useObjectViewerContext } from "./context";
 import { AnyValueNode } from "./AnyValueNode";
+import { equal } from "@wry/equality";
 import type { RenderableTypeProps } from "./ObjectViewer";
 
 export function CustomNode({
@@ -9,16 +10,20 @@ export function CustomNode({
 }: RenderableTypeProps<unknown> & { type: string }) {
   const ctx = useObjectViewerContext();
   const Render = ctx.renderers[type];
+  const ref = useRef(parentProps);
+
+  if (!equal(ref.current, parentProps)) {
+    ref.current = parentProps;
+  }
 
   const DefaultRender = useCallback(
     (props: Partial<RenderableTypeProps<unknown>>) => (
       <AnyValueNode
-        {...{ ...parentProps, ...props }}
-        context={{ ...parentProps.context, ...props.context }}
+        {...{ ...ref.current, ...props }}
+        context={{ ...ref.current.context, ...props.context }}
       />
     ),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    Object.values(parentProps)
+    []
   );
 
   return Render ? (
