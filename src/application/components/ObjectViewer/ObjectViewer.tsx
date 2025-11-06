@@ -72,7 +72,7 @@ const theme: Theme = {
   arrow: icon.primary,
   constructorName: code.e,
   ellipsis: text.secondary,
-  info: code.g,
+  info: code.e,
   punctuation: code.a,
   objectKey: code.d,
   typeBoolean: code.c,
