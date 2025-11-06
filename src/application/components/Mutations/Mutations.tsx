@@ -207,7 +207,10 @@ export const Mutations = ({ clientId, explorerIFrame }: MutationsProps) => {
               />
             </Tabs.List>
             <QueryLayout.TabContent value="variables">
-              <ObjectViewer value={selectedMutation?.variables} />
+              <ObjectViewer
+                value={selectedMutation?.variables}
+                displayObjectSize={false}
+              />
             </QueryLayout.TabContent>
           </QueryLayout.Tabs>
         </QueryLayout>
