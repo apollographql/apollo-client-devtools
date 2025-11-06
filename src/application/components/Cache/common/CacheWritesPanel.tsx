@@ -13,6 +13,7 @@ import { format } from "date-fns";
 import type { Diff } from "@/application/utilities/diff";
 import { ObjectDiff } from "../../ObjectDiff";
 import { ObjectViewer } from "../../ObjectViewer";
+import { VariablesObject } from "../../VariablesObject";
 
 const CACHE_WRITES_PANEL_FRAGMENT: TypedDocumentNode<CacheWritesPanelFragment> = gql`
   fragment CacheWritesPanelFragment on CacheWrite {
@@ -107,8 +108,8 @@ export function CacheWritesPanel({ cacheWrites }: Props) {
                 <h2 className="text-md text-heading dark:text-heading-dark">
                   Variables
                 </h2>
-                <ObjectViewer
-                  value={selectedCacheWrite.variables ?? undefined}
+                <VariablesObject
+                  variables={selectedCacheWrite.variables ?? undefined}
                 />
               </div>
               <DiffView
