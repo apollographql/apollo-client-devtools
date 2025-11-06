@@ -8,6 +8,7 @@ import { ObjectSize } from "./ObjectSize";
 import { AnyValue } from "./AnyValue";
 import { filterForwardedElementProps } from "./CustomRenderable";
 import { EmptyArray } from "./EmptyArray";
+import { useObjectViewerContext } from "./context";
 
 interface ArrayValueProps extends ComponentPropsWithoutRef<"div"> {
   context: Record<string, any> | undefined;
@@ -26,7 +27,10 @@ export function ArrayValue({
   ...props
 }: ArrayValueProps) {
   const { depth, value } = props;
-  const [collapsed, setCollapsed] = useState(value.length === 0 || depth > 0);
+  const ctx = useObjectViewerContext();
+  const [collapsed, setCollapsed] = useState(
+    value.length === 0 || depth >= ctx.collapsed
+  );
 
   function toggle() {
     if (value.length > 0 && collapsible) {

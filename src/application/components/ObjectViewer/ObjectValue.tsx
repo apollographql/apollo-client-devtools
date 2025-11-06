@@ -7,6 +7,7 @@ import { Punctuation } from "./Punctuation";
 import { ObjectSize } from "./ObjectSize";
 import { AnyValue } from "./AnyValue";
 import { EmptyObject } from "./EmptyObject";
+import { useObjectViewerContext } from "./context";
 
 interface ObjectValueProps extends ComponentPropsWithoutRef<"div"> {
   context: Record<string, any> | undefined;
@@ -25,8 +26,11 @@ export function ObjectValue({
   ...props
 }: ObjectValueProps) {
   const { context, depth, value, ...rest } = props;
+  const ctx = useObjectViewerContext();
   const length = Object.keys(value).length;
-  const [collapsed, setCollapsed] = useState(length === 0 || depth > 0);
+  const [collapsed, setCollapsed] = useState(
+    length === 0 || depth >= ctx.collapsed
+  );
 
   function toggle() {
     if (length > 0 && collapsible) {

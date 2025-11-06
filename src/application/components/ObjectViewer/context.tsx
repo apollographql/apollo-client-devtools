@@ -4,6 +4,7 @@ import { createContext, useContext, useRef } from "react";
 
 interface ContextType {
   displayObjectSize: boolean;
+  collapsed: number;
   getTypeOf?: (value: unknown) => string | undefined;
   renderers: Record<
     string,
@@ -16,6 +17,7 @@ interface ContextType {
 }
 
 const Context = createContext<ContextType>({
+  collapsed: 1,
   displayObjectSize: true,
   renderers: {},
 });
@@ -33,12 +35,14 @@ export function useContextValueFallback<TKey extends keyof ContextType>(
 
 export function Provider({
   children,
+  collapsed,
   getTypeOf,
   renderers,
   displayObjectSize,
 }: { children?: ReactNode } & ContextType) {
   const parent = useObjectViewerContext();
   const ctx: ContextType = {
+    collapsed,
     displayObjectSize,
     getTypeOf: getTypeOf ?? parent.getTypeOf,
     renderers: { ...parent.renderers, ...renderers },
