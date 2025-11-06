@@ -53,6 +53,6 @@ export const AnyValueNode = ({
     case "object":
       return <ObjectNode {...sharedProps} value={value as object} />;
     default:
-      return <CustomNode {...sharedProps} value={value} />;
+      return <CustomNode {...sharedProps} type={type} value={value} />;
   }
 };

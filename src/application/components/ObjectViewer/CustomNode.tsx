@@ -1,12 +1,13 @@
 import { useCallback } from "react";
-import { useObjectViewerContext, useTypeOfValue } from "./context";
+import { useObjectViewerContext } from "./context";
 import { AnyValueNode } from "./AnyValueNode";
 import type { RenderableTypeProps } from "./ObjectViewer";
 
-export function CustomNode(parentProps: RenderableTypeProps<unknown>) {
-  const { value } = parentProps;
+export function CustomNode({
+  type,
+  ...parentProps
+}: RenderableTypeProps<unknown> & { type: string }) {
   const ctx = useObjectViewerContext();
-  const type = useTypeOfValue(value);
   const Render = ctx.renderers[type];
 
   const DefaultRender = useCallback(
