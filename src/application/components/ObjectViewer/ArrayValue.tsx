@@ -7,6 +7,7 @@ import { Punctuation } from "./Punctuation";
 import { ObjectSize } from "./ObjectSize";
 import { AnyValue } from "./AnyValue";
 import { filterForwardedElementProps } from "./CustomRenderable";
+import { EmptyArray } from "./EmptyArray";
 
 interface ArrayValueProps extends ComponentPropsWithoutRef<"div"> {
   context: Record<string, any> | undefined;
@@ -44,7 +45,15 @@ export function ArrayValue({
       </ObjectKeyLabel>{" "}
       {collapsible && collapsed ? (
         <span className="inline-block align-middle">
-          <CollapsedArray {...props} length={value.length} onClick={toggle} />
+          {value.length > 0 ? (
+            <CollapsedArray
+              {...props}
+              className="cursor-pointer"
+              onClick={toggle}
+            />
+          ) : (
+            <EmptyArray />
+          )}
           <Punctuation>,</Punctuation>{" "}
           {displayObjectSize && (
             <ObjectSize className="italic" size={value.length} />

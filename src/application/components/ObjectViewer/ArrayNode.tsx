@@ -11,8 +11,8 @@ import { OpenBracket } from "./OpenBracket";
 import { CloseBracket } from "./CloseBracket";
 import { SparseArrayEmptyItem } from "./SparseArrayEmptyItem";
 import { Punctuation } from "./Punctuation";
-import { CollapsedArray } from "./CollapsedArray";
 import { useContextValueFallback } from "./context";
+import { EmptyArray } from "./EmptyArray";
 
 interface ArrayNodeProps
   extends ComponentPropsWithoutRef<"span">,
@@ -80,11 +80,7 @@ export const ArrayNode = customRenderableType<unknown[]>(
           </>
         ) : (
           <>
-            <CollapsedArray
-              className="inline-block align-middle"
-              context={context}
-              length={0}
-            />{" "}
+            <EmptyArray />{" "}
             {displayObjectSizeSetting && (
               <ObjectSize
                 className="inline-block align-middle italic"
