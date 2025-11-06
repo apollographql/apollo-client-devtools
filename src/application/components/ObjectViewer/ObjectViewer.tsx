@@ -25,8 +25,11 @@ import { useObjectViewerTheme } from "./useObjectViewerTheme";
 import type { SparseArrayEmptyItem } from "./SparseArrayEmptyItem";
 import type { AnyValueNode } from "./AnyValueNode";
 import { AnyValue } from "./AnyValue";
+import type { ObjType } from "./getTypeOf";
 
 type ValueProp<T> = [T] extends [never] ? { value?: never } : { value: T };
+
+export type RenderableType = ObjType | (string & {});
 
 export type RenderableTypeProps<T = unknown> = {
   className?: string;
