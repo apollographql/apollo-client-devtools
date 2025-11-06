@@ -27,7 +27,7 @@ export function ObjectValue({
   const length = Object.keys(value).length;
   const [collapsed, setCollapsed] = useState(length === 0 || depth > 0);
 
-  function toggleExpanded() {
+  function toggle() {
     if (length > 0 && collapsible) {
       setCollapsed((c) => !c);
     }
@@ -38,17 +38,13 @@ export function ObjectValue({
       <ObjectKeyLabel
         collapsible={length > 0 && collapsible}
         collapsed={collapsed}
-        onClick={toggleExpanded}
+        onClick={toggle}
       >
         {children}
       </ObjectKeyLabel>{" "}
       {collapsible && collapsed ? (
         <span className="inline-block align-middle">
-          <CollapsedObject
-            {...props}
-            length={length}
-            onClick={toggleExpanded}
-          />
+          <CollapsedObject {...props} length={length} onClick={toggle} />
           <Punctuation>,</Punctuation>{" "}
           {displayObjectSize && <ObjectSize className="italic" size={length} />}
         </span>
