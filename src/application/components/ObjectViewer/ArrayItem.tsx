@@ -7,11 +7,13 @@ import { Punctuation } from "./Punctuation";
 import { ObjectKeyLabel } from "./ObjectKeyLabel";
 import { ArrayValue } from "./ArrayValue";
 import { ObjectValue } from "./ObjectValue";
+import { useContextValueFallback } from "./context";
 
 interface ArrayItemProps extends ComponentPropsWithoutRef<"div"> {
   context: Record<string, any> | undefined;
   collapsible?: boolean;
   depth: number;
+  displayObjectSize?: boolean;
   index: number;
   value: unknown;
   path: Path;
@@ -19,12 +21,21 @@ interface ArrayItemProps extends ComponentPropsWithoutRef<"div"> {
 
 export const ArrayItem = customRenderable(
   "arrayItem",
-  (props: ArrayItemProps) => {
+  ({ displayObjectSize, ...props }: ArrayItemProps) => {
     const { collapsible, value, index, ...rest } = props;
+    const displayObjectSizeSetting = useContextValueFallback(
+      "displayObjectSize",
+      displayObjectSize
+    );
 
     if (Array.isArray(value)) {
       return (
-        <ArrayValue {...rest} collapsible={collapsible} value={value}>
+        <ArrayValue
+          {...rest}
+          collapsible={collapsible}
+          displayObjectSize={displayObjectSizeSetting}
+          value={value}
+        >
           <ArrayIndex context={props.context} index={index} />
         </ArrayValue>
       );
