@@ -9,32 +9,21 @@ import { UndefinedNode } from "./UndefinedNode";
 import { ObjectNode } from "./ObjectNode";
 import { NullNode } from "./NullNode";
 import { ArrayNode } from "./ArrayNode";
-import { useObjectViewerContext } from "./context";
 import { CustomNode } from "./CustomNode";
 import type { RenderableTypeProps } from "./ObjectViewer";
-import { getTypeOf } from "./getTypeOf";
 import { customRenderable } from "./CustomRenderable";
 import type { ComponentPropsWithoutRef } from "react";
+import type { ObjType } from "./getTypeOf";
 
-export const AnyValueNode = (({
-  value,
-  ...props
-}: RenderableTypeProps<unknown>) => {
-  const ctx = useObjectViewerContext();
-  const type = ctx.getTypeOf?.(value) ?? getTypeOf(value);
-
-  return <AnyValue {...props} type={type} value={value} />;
-}) as typeof AnyValue;
-
-interface AnyValueProps
+interface AnyValueNodeProps
   extends ComponentPropsWithoutRef<"div">,
     RenderableTypeProps<unknown> {
-  type: ReturnType<typeof getTypeOf> | (string & {});
+  type: ObjType | (string & {});
 }
 
-const AnyValue = customRenderable(
+export const AnyValueNode = customRenderable(
   "anyValue",
-  ({ value, type, ...props }: AnyValueProps) => {
+  ({ value, type, ...props }: AnyValueNodeProps) => {
     switch (type) {
       case "array":
         return <ArrayNode {...props} value={value as unknown[]} />;

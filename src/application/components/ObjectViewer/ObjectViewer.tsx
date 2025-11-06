@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import { AnyValueNode } from "./AnyValueNode";
 import { colors } from "@apollo/brand";
 import { Provider } from "./context";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
@@ -24,6 +23,8 @@ import type { CollapsedObject } from "./CollapsedObject";
 import type { CollapsedArray } from "./CollapsedArray";
 import { useObjectViewerTheme } from "./useObjectViewerTheme";
 import type { SparseArrayEmptyItem } from "./SparseArrayEmptyItem";
+import type { AnyValueNode } from "./AnyValueNode";
+import { AnyValue } from "./AnyValue";
 
 type ValueProp<T> = [T] extends [never] ? { value?: never } : { value: T };
 
@@ -112,7 +113,7 @@ export function ObjectViewer<CustomTypes extends string>({
           } as any
         }
       >
-        <AnyValueNode context={{}} depth={0} value={value} path={[]} />
+        <AnyValue context={{}} depth={0} value={value} path={[]} />
       </Provider>
     </div>
   );
