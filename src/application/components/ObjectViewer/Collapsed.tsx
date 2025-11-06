@@ -9,11 +9,11 @@ interface CollapsedProps extends ComponentPropsWithoutRef<"span"> {
 
 export function Collapsed({ value, ...props }: CollapsedProps) {
   if (Array.isArray(value)) {
-    return <CollapsedArray {...props} />;
+    return <CollapsedArray {...props} length={value.length} />;
   }
 
   if (typeof value === "object" && value !== null) {
-    return <CollapsedObject {...props} />;
+    return <CollapsedObject {...props} length={Object.keys(value).length} />;
   }
 
   return null;

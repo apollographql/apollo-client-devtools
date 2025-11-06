@@ -69,9 +69,7 @@ export const ArrayItem = customRenderable(
               onClick={() => setExpanded(true)}
             />
             <Punctuation>,</Punctuation>{" "}
-            {!expanded && typeof value === "object" && value !== null && (
-              <CollectionLength className="italic" length={length} />
-            )}
+            <CollectionLength className="italic" length={length} />
           </span>
         )}
       </div>
