@@ -254,13 +254,19 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
               />
             </Tabs.List>
             <QueryLayout.TabContent value={QueryTabs.Variables}>
-              <ObjectViewer value={selectedQuery?.variables} />
+              <ObjectViewer
+                value={selectedQuery?.variables}
+                displayObjectSize={false}
+              />
             </QueryLayout.TabContent>
             <QueryLayout.TabContent value={QueryTabs.CachedData}>
               <ObjectViewer value={selectedQuery?.cachedData} />
             </QueryLayout.TabContent>
             <QueryLayout.TabContent value={QueryTabs.Options}>
-              <ObjectViewer value={selectedQuery?.options} />
+              <ObjectViewer
+                value={selectedQuery?.options}
+                displayObjectSize={false}
+              />
             </QueryLayout.TabContent>
           </QueryLayout.Tabs>
         </QueryLayout>
