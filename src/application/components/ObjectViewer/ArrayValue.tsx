@@ -7,7 +7,6 @@ import { Punctuation } from "./Punctuation";
 import { ObjectSize } from "./ObjectSize";
 import { AnyValue } from "./AnyValue";
 import { filterForwardedElementProps } from "./CustomRenderable";
-import { useContextValueFallback } from "./context";
 
 interface ArrayValueProps extends ComponentPropsWithoutRef<"div"> {
   context: Record<string, any> | undefined;

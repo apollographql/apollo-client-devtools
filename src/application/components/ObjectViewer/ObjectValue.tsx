@@ -12,6 +12,7 @@ interface ObjectValueProps extends ComponentPropsWithoutRef<"div"> {
   children: ReactNode;
   collapsible?: boolean;
   depth: number;
+  displayObjectSize: boolean;
   path: Path;
   value: object;
 }
@@ -19,6 +20,7 @@ interface ObjectValueProps extends ComponentPropsWithoutRef<"div"> {
 export function ObjectValue({
   children,
   collapsible = true,
+  displayObjectSize,
   ...props
 }: ObjectValueProps) {
   const { context, depth, value, ...rest } = props;
@@ -48,7 +50,7 @@ export function ObjectValue({
             onClick={toggleExpanded}
           />
           <Punctuation>,</Punctuation>{" "}
-          <ObjectSize className="italic" size={length} />
+          {displayObjectSize && <ObjectSize className="italic" size={length} />}
         </span>
       ) : (
         <>

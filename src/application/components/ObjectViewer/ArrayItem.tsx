@@ -43,7 +43,12 @@ export const ArrayItem = customRenderable(
 
     if (typeof value === "object" && value !== null) {
       return (
-        <ObjectValue {...rest} collapsible={collapsible} value={value}>
+        <ObjectValue
+          {...rest}
+          collapsible={collapsible}
+          displayObjectSize={displayObjectSizeSetting}
+          value={value}
+        >
           <ArrayIndex context={props.context} index={index} />
         </ObjectValue>
       );
