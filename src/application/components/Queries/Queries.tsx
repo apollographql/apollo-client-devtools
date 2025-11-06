@@ -28,6 +28,7 @@ import { isIgnoredError } from "../../utilities/ignoredErrors";
 import { SerializedErrorAlertDisclosurePanel } from "../SerializedErrorAlertDisclosurePanel";
 import { useIsExtensionInvalidated } from "@/application/machines/devtoolsMachine";
 import { ObjectViewer } from "../ObjectViewer";
+import { VariablesObject } from "../VariablesObject";
 
 enum QueryTabs {
   Variables = "Variables",
@@ -254,10 +255,7 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
               />
             </Tabs.List>
             <QueryLayout.TabContent value={QueryTabs.Variables}>
-              <ObjectViewer
-                value={selectedQuery?.variables}
-                displayObjectSize={false}
-              />
+              <VariablesObject variables={selectedQuery?.variables} />
             </QueryLayout.TabContent>
             <QueryLayout.TabContent value={QueryTabs.CachedData}>
               <ObjectViewer value={selectedQuery?.cachedData} />
