@@ -47,5 +47,10 @@ export const AnyValueNode = customRenderable(
       default:
         return <CustomNode {...props} type={type} value={value} />;
     }
-  }
+  },
+  (parentProps, props: Partial<Omit<AnyValueNodeProps, "type">>) => ({
+    ...parentProps,
+    ...props,
+    type: parentProps.type,
+  })
 );
