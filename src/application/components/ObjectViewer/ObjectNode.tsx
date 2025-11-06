@@ -37,7 +37,7 @@ export const ObjectNode = customRenderableType(
               className="inline-block align-middle italic"
               length={Object.keys(value).length}
             />
-            <div className="pl-[3ch]">
+            <div className="pl-[3ch] border-l border-l-primary dark:border-l-primary-dark border-dashed">
               {Object.entries(value).map(([key, value], idx) => (
                 <ObjectPair
                   key={idx}
