@@ -29,7 +29,10 @@ export function ArrayValue({
   const { depth, value } = props;
   const ctx = useObjectViewerContext();
   const [collapsed, setCollapsed] = useState(
-    value.length === 0 || depth >= ctx.collapsed
+    value.length === 0 ||
+      (typeof ctx.collapsed === "boolean"
+        ? ctx.collapsed
+        : depth >= ctx.collapsed)
   );
 
   function toggle() {

@@ -92,7 +92,7 @@ const theme: Theme = {
 interface ObjectViewerProps<CustomTypes extends string> {
   value: unknown;
   displayObjectSize?: boolean;
-  collapsed?: number;
+  collapsed?: number | boolean;
   getTypeOf?: (value: unknown) => CustomTypes | undefined;
   customRenderers?: Record<
     NoInfer<CustomTypes>,

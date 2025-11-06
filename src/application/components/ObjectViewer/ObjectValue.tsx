@@ -29,7 +29,10 @@ export function ObjectValue({
   const ctx = useObjectViewerContext();
   const length = Object.keys(value).length;
   const [collapsed, setCollapsed] = useState(
-    length === 0 || depth >= ctx.collapsed
+    length === 0 ||
+      (typeof ctx.collapsed === "boolean"
+        ? ctx.collapsed
+        : depth >= ctx.collapsed)
   );
 
   function toggle() {
