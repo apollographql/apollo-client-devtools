@@ -9,6 +9,7 @@ import { Collapsed } from "./Collapsed";
 import { Arrow } from "./Arrow";
 import { Punctuation } from "./Punctuation";
 import { getLengthOf } from "./getLengthOf";
+import { ObjectKeyLabel } from "./ObjectKeyLabel";
 
 interface ObjectPairProps extends ComponentPropsWithoutRef<"div"> {
   context: Record<string, any> | undefined;
@@ -39,20 +40,15 @@ export const ObjectPair = customRenderable(
 
     return (
       <div {...rest}>
-        <span
-          className={clsx("inline-block align-middle relative", {
-            "cursor-pointer": expandable,
-          })}
+        <ObjectKeyLabel
+          expandable={expandable}
+          expanded={expanded}
           onClick={
             expandable ? () => setExpanded((expanded) => !expanded) : undefined
           }
         >
-          <span className="inline-flex items-center">
-            {expandable && <Arrow expanded={expanded} />}
-            <ObjectKey context={context} value={objectKey} />
-            <Punctuation>:</Punctuation>
-          </span>
-        </span>{" "}
+          <ObjectKey context={context} value={objectKey} />
+        </ObjectKeyLabel>{" "}
         {expanded ? (
           <>
             <ValueNode
