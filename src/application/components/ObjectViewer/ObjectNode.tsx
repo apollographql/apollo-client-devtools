@@ -9,8 +9,8 @@ import type { RenderableTypeProps } from "./ObjectViewer";
 import { clsx } from "clsx";
 import { OpenBrace } from "./OpenBrace";
 import { CloseBrace } from "./CloseBrace";
-import { CollapsedObject } from "./CollapsedObject";
 import { useContextValueFallback } from "./context";
+import { EmptyObject } from "./EmptyObject";
 
 interface ObjectNodeProps
   extends ComponentPropsWithoutRef<"span">,
@@ -70,11 +70,7 @@ export const ObjectNode = customRenderableType(
           </>
         ) : (
           <>
-            <CollapsedObject
-              className="inline-block align-middle"
-              context={context}
-              length={0}
-            />{" "}
+            <EmptyObject />{" "}
             {displayObjectSizeSetting && (
               <ObjectSize
                 className="inline-block align-middle italic"
