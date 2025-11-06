@@ -9,6 +9,7 @@ import type { RenderableTypeProps } from "./ObjectViewer";
 import { clsx } from "clsx";
 import { OpenBrace } from "./OpenBrace";
 import { CloseBrace } from "./CloseBrace";
+import { CollapsedObject } from "./CollapsedObject";
 
 interface ObjectNodeProps
   extends ComponentPropsWithoutRef<"span">,
@@ -29,24 +30,40 @@ export const ObjectNode = customRenderableType(
             {constructorName}
           </span>
         )}{" "}
-        <OpenBrace />{" "}
-        <CollectionLength
-          className="inline-block align-middle italic"
-          length={Object.keys(value).length}
-        />
-        <div className="pl-[3ch]">
-          {Object.entries(value).map(([key, value], idx) => (
-            <ObjectPair
-              key={idx}
-              context={context}
-              depth={depth + 1}
-              objectKey={key}
-              value={value}
-              path={path.concat(key)}
+        {Object.keys(value).length > 0 ? (
+          <>
+            <OpenBrace />{" "}
+            <CollectionLength
+              className="inline-block align-middle italic"
+              length={Object.keys(value).length}
             />
-          ))}
-        </div>
-        <CloseBrace />
+            <div className="pl-[3ch]">
+              {Object.entries(value).map(([key, value], idx) => (
+                <ObjectPair
+                  key={idx}
+                  context={context}
+                  depth={depth + 1}
+                  objectKey={key}
+                  value={value}
+                  path={path.concat(key)}
+                />
+              ))}
+            </div>
+            <CloseBrace />
+          </>
+        ) : (
+          <>
+            <CollapsedObject
+              className="inline-block align-middle"
+              context={context}
+              length={0}
+            />{" "}
+            <CollectionLength
+              className="inline-block align-middle italic"
+              length={0}
+            />
+          </>
+        )}
       </span>
     );
   }
