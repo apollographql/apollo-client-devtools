@@ -4,7 +4,7 @@ import type { Path } from "./types";
 import { ObjectKeyLabel } from "./ObjectKeyLabel";
 import { CollapsedObject } from "./CollapsedObject";
 import { Punctuation } from "./Punctuation";
-import { CollectionLength } from "./CollectionLength";
+import { ObjectSize } from "./ObjectSize";
 import { AnyValue } from "./AnyValue";
 
 interface ObjectValueProps extends ComponentPropsWithoutRef<"div"> {
@@ -48,7 +48,7 @@ export function ObjectValue({
             onClick={toggleExpanded}
           />
           <Punctuation>,</Punctuation>{" "}
-          <CollectionLength className="italic" length={length} />
+          <ObjectSize className="italic" size={length} />
         </span>
       ) : (
         <>

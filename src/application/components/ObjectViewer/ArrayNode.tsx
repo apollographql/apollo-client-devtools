@@ -1,6 +1,6 @@
 import { Fragment, type ComponentPropsWithoutRef } from "react";
 import { ArrayItem } from "./ArrayItem";
-import { CollectionLength } from "./CollectionLength";
+import { ObjectSize } from "./ObjectSize";
 import {
   customRenderableType,
   filterForwardedElementProps,
@@ -33,9 +33,9 @@ export const ArrayNode = customRenderableType<unknown[]>(
         {value.length > 0 ? (
           <>
             <OpenBracket />{" "}
-            <CollectionLength
+            <ObjectSize
               className="inline-block align-middle italic"
-              length={value.length}
+              size={value.length}
             />
             <div className="pl-[3ch] border-l border-l-primary dark:border-l-primary-dark border-dashed">
               {items.map((item, idx) => {
@@ -68,10 +68,7 @@ export const ArrayNode = customRenderableType<unknown[]>(
               context={context}
               length={0}
             />{" "}
-            <CollectionLength
-              className="inline-block align-middle italic"
-              length={0}
-            />
+            <ObjectSize className="inline-block align-middle italic" size={0} />
           </>
         )}
       </span>
