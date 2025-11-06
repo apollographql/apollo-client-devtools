@@ -7,10 +7,12 @@ import { Punctuation } from "./Punctuation";
 import { ObjectKeyLabel } from "./ObjectKeyLabel";
 import { ArrayValue } from "./ArrayValue";
 import { ObjectValue } from "./ObjectValue";
+import { useContextValueFallback } from "./context";
 
 interface ObjectPairProps extends ComponentPropsWithoutRef<"div"> {
   context: Record<string, any> | undefined;
   depth: number;
+  displayObjectSize?: boolean;
   collapsible?: boolean;
   objectKey: string;
   value: unknown;
@@ -19,12 +21,21 @@ interface ObjectPairProps extends ComponentPropsWithoutRef<"div"> {
 
 export const ObjectPair = customRenderable(
   "objectPair",
-  (props: ObjectPairProps) => {
+  ({ displayObjectSize, ...props }: ObjectPairProps) => {
     const { collapsible, value, objectKey, ...rest } = props;
+    const displayObjectSizeSetting = useContextValueFallback(
+      "displayObjectSize",
+      displayObjectSize
+    );
 
     if (Array.isArray(value)) {
       return (
-        <ArrayValue {...rest} collapsible={collapsible} value={value}>
+        <ArrayValue
+          {...rest}
+          collapsible={collapsible}
+          displayObjectSize={displayObjectSizeSetting}
+          value={value}
+        >
           <ObjectKey context={props.context} value={objectKey} />
         </ArrayValue>
       );

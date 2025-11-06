@@ -7,11 +7,13 @@ import { Punctuation } from "./Punctuation";
 import { ObjectSize } from "./ObjectSize";
 import { AnyValue } from "./AnyValue";
 import { filterForwardedElementProps } from "./CustomRenderable";
+import { useContextValueFallback } from "./context";
 
 interface ArrayValueProps extends ComponentPropsWithoutRef<"div"> {
   context: Record<string, any> | undefined;
   children: ReactNode;
   collapsible?: boolean;
+  displayObjectSize: boolean;
   depth: number;
   path: Path;
   value: unknown[];
@@ -20,6 +22,7 @@ interface ArrayValueProps extends ComponentPropsWithoutRef<"div"> {
 export function ArrayValue({
   children,
   collapsible = true,
+  displayObjectSize,
   ...props
 }: ArrayValueProps) {
   const { depth, value } = props;
@@ -44,7 +47,9 @@ export function ArrayValue({
         <span className="inline-block align-middle">
           <CollapsedArray {...props} length={value.length} onClick={toggle} />
           <Punctuation>,</Punctuation>{" "}
-          <ObjectSize className="italic" size={value.length} />
+          {displayObjectSize && (
+            <ObjectSize className="italic" size={value.length} />
+          )}
         </span>
       ) : (
         <>

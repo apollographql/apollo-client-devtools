@@ -10,14 +10,29 @@ import { clsx } from "clsx";
 import { OpenBrace } from "./OpenBrace";
 import { CloseBrace } from "./CloseBrace";
 import { CollapsedObject } from "./CollapsedObject";
+import { useContextValueFallback } from "./context";
 
 interface ObjectNodeProps
   extends ComponentPropsWithoutRef<"span">,
-    RenderableTypeProps<object> {}
+    RenderableTypeProps<object> {
+  displayObjectSize?: boolean;
+}
 
 export const ObjectNode = customRenderableType(
   "object",
-  ({ context, className, depth, value, path, ...rest }: ObjectNodeProps) => {
+  ({
+    context,
+    className,
+    depth,
+    value,
+    path,
+    displayObjectSize,
+    ...rest
+  }: ObjectNodeProps) => {
+    const displayObjectSizeSetting = useContextValueFallback(
+      "displayObjectSize",
+      displayObjectSize
+    );
     const constructorName = getConstructorName(value);
 
     return (
@@ -33,10 +48,12 @@ export const ObjectNode = customRenderableType(
         {Object.keys(value).length > 0 ? (
           <>
             <OpenBrace />{" "}
-            <ObjectSize
-              className="inline-block align-middle italic"
-              size={Object.keys(value).length}
-            />
+            {displayObjectSizeSetting && (
+              <ObjectSize
+                className="inline-block align-middle italic"
+                size={Object.keys(value).length}
+              />
+            )}
             <div className="pl-[3ch] border-l border-l-primary dark:border-l-primary-dark border-dashed">
               {Object.entries(value).map(([key, value], idx) => (
                 <ObjectPair
@@ -58,7 +75,12 @@ export const ObjectNode = customRenderableType(
               context={context}
               length={0}
             />{" "}
-            <ObjectSize className="inline-block align-middle italic" size={0} />
+            {displayObjectSizeSetting && (
+              <ObjectSize
+                className="inline-block align-middle italic"
+                size={0}
+              />
+            )}
           </>
         )}
       </span>

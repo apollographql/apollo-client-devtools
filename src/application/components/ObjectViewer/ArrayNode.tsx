@@ -12,14 +12,29 @@ import { CloseBracket } from "./CloseBracket";
 import { SparseArrayEmptyItem } from "./SparseArrayEmptyItem";
 import { Punctuation } from "./Punctuation";
 import { CollapsedArray } from "./CollapsedArray";
+import { useContextValueFallback } from "./context";
 
 interface ArrayNodeProps
   extends ComponentPropsWithoutRef<"span">,
-    RenderableTypeProps<unknown[]> {}
+    RenderableTypeProps<unknown[]> {
+  displayObjectSize?: boolean;
+}
 
 export const ArrayNode = customRenderableType<unknown[]>(
   "array",
-  ({ className, context, depth, value, path, ...rest }: ArrayNodeProps) => {
+  ({
+    className,
+    context,
+    depth,
+    value,
+    path,
+    displayObjectSize,
+    ...rest
+  }: ArrayNodeProps) => {
+    const displayObjectSizeSetting = useContextValueFallback(
+      "displayObjectSize",
+      displayObjectSize
+    );
     const indexes = Object.keys(value);
 
     const [items, holeSizes] =
@@ -33,10 +48,12 @@ export const ArrayNode = customRenderableType<unknown[]>(
         {value.length > 0 ? (
           <>
             <OpenBracket />{" "}
-            <ObjectSize
-              className="inline-block align-middle italic"
-              size={value.length}
-            />
+            {displayObjectSizeSetting && (
+              <ObjectSize
+                className="inline-block align-middle italic"
+                size={value.length}
+              />
+            )}
             <div className="pl-[3ch] border-l border-l-primary dark:border-l-primary-dark border-dashed">
               {items.map((item, idx) => {
                 return holeSizes?.has(idx) ? (
@@ -68,7 +85,12 @@ export const ArrayNode = customRenderableType<unknown[]>(
               context={context}
               length={0}
             />{" "}
-            <ObjectSize className="inline-block align-middle italic" size={0} />
+            {displayObjectSizeSetting && (
+              <ObjectSize
+                className="inline-block align-middle italic"
+                size={0}
+              />
+            )}
           </>
         )}
       </span>
