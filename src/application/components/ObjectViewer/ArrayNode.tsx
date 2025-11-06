@@ -23,9 +23,7 @@ export const ArrayNode = customRenderableType<unknown[]>(
     const indexes = Object.keys(value);
 
     const [items, holeSizes] =
-      value.length > indexes.length
-        ? getSparseArray(value)
-        : [value, new Map<number, number>()];
+      value.length > indexes.length ? getSparseArray(value) : [value];
 
     return (
       <span
@@ -41,7 +39,7 @@ export const ArrayNode = customRenderableType<unknown[]>(
             />
             <div className="pl-[3ch] border-l border-l-primary dark:border-l-primary-dark border-dashed">
               {items.map((item, idx) => {
-                return holeSizes.has(idx) ? (
+                return holeSizes?.has(idx) ? (
                   <Fragment key={idx}>
                     <SparseArrayEmptyItem
                       key={idx}
