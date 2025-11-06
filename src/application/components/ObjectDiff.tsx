@@ -9,32 +9,10 @@ interface Props {
   diff: Diff;
 }
 
-const test = {
-  b: {
-    c: [new Changed(0, 1), new Changed(1, 2), new Added(3)],
-    d: {
-      e: {
-        f: new Changed(true, false),
-        g: new Added(true),
-      },
-    },
-  },
-  foo: new Deleted(true),
-  bar: [undefined, new Deleted(1)],
-  baz: [
-    undefined,
-    { b: new Changed(2, 3), c: new Added(2) },
-    new Deleted({ c: 2 }),
-  ],
-  emptyObj: {},
-  emptyArr: [],
-  arr: [{}, []],
-};
-
 export function ObjectDiff({ diff }: Props) {
   return (
     <ObjectViewer
-      value={test}
+      value={diff}
       getTypeOf={(value) => {
         if (value instanceof Changed) {
           return "Changed";
@@ -94,7 +72,7 @@ function DiffValue({
 }: {
   value: unknown;
   DefaultRender: FC<{
-    expandable?: boolean;
+    collapsible?: boolean;
     value?: unknown;
     className?: string;
     style?: CSSProperties;
@@ -131,7 +109,7 @@ function DiffValue({
   }
 
   if (value instanceof Changed) {
-    return <DefaultRender expandable={false} />;
+    return <DefaultRender collapsible={false} />;
   }
 
   return <DefaultRender />;
