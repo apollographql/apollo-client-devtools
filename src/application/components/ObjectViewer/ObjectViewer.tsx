@@ -47,6 +47,7 @@ export type BuiltinRendererProps<Type extends keyof BuiltinRenderers> =
   ComponentPropsWithoutRef<BuiltinRenderers[Type]>;
 
 interface BuiltinRenderers {
+  anyValue: WithDefaultRender<typeof AnyValueNode>;
   array: WithDefaultRender<typeof ArrayNode>;
   arrayItem: WithDefaultRender<typeof ArrayItem>;
   arrayIndex: WithDefaultRender<typeof ArrayIndex>;

@@ -16,7 +16,7 @@ import { getTypeOf } from "./getTypeOf";
 import { customRenderable } from "./CustomRenderable";
 import type { ComponentPropsWithoutRef } from "react";
 
-export const AnyValueNode = ({
+export const AnyValueNode = (({
   value,
   ...props
 }: RenderableTypeProps<unknown>) => {
@@ -24,7 +24,7 @@ export const AnyValueNode = ({
   const type = ctx.getTypeOf?.(value) ?? getTypeOf(value);
 
   return <AnyValue {...props} type={type} value={value} />;
-};
+}) as typeof AnyValue;
 
 interface AnyValueProps
   extends ComponentPropsWithoutRef<"div">,
