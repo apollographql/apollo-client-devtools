@@ -159,7 +159,7 @@ function ChangedValue({
           punctuation: text.neutral,
         })}
       />
-      <span>{" => "}</span>
+      <span className="text-[var(--ov-punctuation-color)]">{" => "}</span>
       <DefaultRender
         className="bg-successSelected dark:bg-successSelected-dark"
         value={changed.newValue}
