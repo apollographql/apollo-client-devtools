@@ -10,15 +10,14 @@ import { ObjectNode } from "./ObjectNode";
 import { NullNode } from "./NullNode";
 import { ArrayNode } from "./ArrayNode";
 import { CustomNode } from "./CustomNode";
-import type { RenderableTypeProps } from "./ObjectViewer";
+import type { RenderableType, RenderableTypeProps } from "./ObjectViewer";
 import { customRenderable } from "./CustomRenderable";
 import type { ComponentPropsWithoutRef } from "react";
-import type { ObjType } from "./getTypeOf";
 
 interface AnyValueNodeProps
   extends ComponentPropsWithoutRef<"div">,
     RenderableTypeProps<unknown> {
-  type: ObjType | (string & {});
+  type: RenderableType;
 }
 
 export const AnyValueNode = customRenderable(
