@@ -1,7 +1,6 @@
 import { equal } from "@wry/equality";
 import type { ReactNode } from "react";
 import { createContext, useContext, useRef } from "react";
-import { getTypeOf } from "./getTypeOf";
 
 interface ContextType {
   getTypeOf?: (value: unknown) => string | undefined;
@@ -20,11 +19,6 @@ const Context = createContext<ContextType>({
 });
 
 export const useObjectViewerContext = () => useContext(Context);
-export const useTypeOfValue = (value: unknown) => {
-  const ctx = useObjectViewerContext();
-
-  return ctx.getTypeOf?.(value) ?? getTypeOf(value);
-};
 
 export function Provider({
   children,
