@@ -6,6 +6,7 @@ import { CollapsedObject } from "./CollapsedObject";
 import { Punctuation } from "./Punctuation";
 import { ObjectSize } from "./ObjectSize";
 import { AnyValue } from "./AnyValue";
+import { EmptyObject } from "./EmptyObject";
 
 interface ObjectValueProps extends ComponentPropsWithoutRef<"div"> {
   context: Record<string, any> | undefined;
@@ -44,7 +45,15 @@ export function ObjectValue({
       </ObjectKeyLabel>{" "}
       {collapsible && collapsed ? (
         <span className="inline-block align-middle">
-          <CollapsedObject {...props} length={length} onClick={toggle} />
+          {length > 0 ? (
+            <CollapsedObject
+              {...props}
+              className="cursor-pointer"
+              onClick={toggle}
+            />
+          ) : (
+            <EmptyObject />
+          )}
           <Punctuation>,</Punctuation>{" "}
           {displayObjectSize && <ObjectSize className="italic" size={length} />}
         </span>
