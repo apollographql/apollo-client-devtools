@@ -13,48 +13,51 @@ import { useObjectViewerContext } from "./context";
 import { CustomNode } from "./CustomNode";
 import type { RenderableTypeProps } from "./ObjectViewer";
 import { getTypeOf } from "./getTypeOf";
+import { customRenderable } from "./CustomRenderable";
+import type { ComponentPropsWithoutRef } from "react";
 
 export const AnyValueNode = ({
-  context,
-  className,
-  depth,
-  path,
   value,
-  ...rest
+  ...props
 }: RenderableTypeProps<unknown>) => {
   const ctx = useObjectViewerContext();
   const type = ctx.getTypeOf?.(value) ?? getTypeOf(value);
 
-  const sharedProps = {
-    depth,
-    className,
-    context,
-    path,
-    ...rest,
-  };
-
-  switch (type) {
-    case "array":
-      return <ArrayNode {...sharedProps} value={value as unknown[]} />;
-    case "bigint":
-      return <BigintNode {...sharedProps} value={value as bigint} />;
-    case "boolean":
-      return <BooleanNode {...sharedProps} value={value as boolean} />;
-    case "function":
-      return <FunctionNode {...sharedProps} value={value as Function} />;
-    case "number":
-      return <NumberNode {...sharedProps} value={value as number} />;
-    case "null":
-      return <NullNode {...sharedProps} />;
-    case "string":
-      return <StringNode {...sharedProps} value={value as string} />;
-    case "symbol":
-      return <SymbolNode {...sharedProps} value={value as symbol} />;
-    case "undefined":
-      return <UndefinedNode {...sharedProps} />;
-    case "object":
-      return <ObjectNode {...sharedProps} value={value as object} />;
-    default:
-      return <CustomNode {...sharedProps} type={type} value={value} />;
-  }
+  return <AnyValue {...props} type={type} value={value} />;
 };
+
+interface AnyValueProps
+  extends ComponentPropsWithoutRef<"div">,
+    RenderableTypeProps<unknown> {
+  type: ReturnType<typeof getTypeOf> | (string & {});
+}
+
+const AnyValue = customRenderable(
+  "anyValue",
+  ({ value, type, ...props }: AnyValueProps) => {
+    switch (type) {
+      case "array":
+        return <ArrayNode {...props} value={value as unknown[]} />;
+      case "bigint":
+        return <BigintNode {...props} value={value as bigint} />;
+      case "boolean":
+        return <BooleanNode {...props} value={value as boolean} />;
+      case "function":
+        return <FunctionNode {...props} value={value as Function} />;
+      case "number":
+        return <NumberNode {...props} value={value as number} />;
+      case "null":
+        return <NullNode {...props} />;
+      case "string":
+        return <StringNode {...props} value={value as string} />;
+      case "symbol":
+        return <SymbolNode {...props} value={value as symbol} />;
+      case "undefined":
+        return <UndefinedNode {...props} />;
+      case "object":
+        return <ObjectNode {...props} value={value as object} />;
+      default:
+        return <CustomNode {...props} type={type} value={value} />;
+    }
+  }
+);
