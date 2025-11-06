@@ -92,6 +92,7 @@ const theme: Theme = {
 interface ObjectViewerProps<CustomTypes extends string> {
   value: unknown;
   displayObjectSize?: boolean;
+  collapsed?: number;
   getTypeOf?: (value: unknown) => CustomTypes | undefined;
   customRenderers?: Record<
     NoInfer<CustomTypes>,
@@ -102,6 +103,7 @@ interface ObjectViewerProps<CustomTypes extends string> {
 
 export function ObjectViewer<CustomTypes extends string>({
   getTypeOf,
+  collapsed = 1,
   displayObjectSize = true,
   builtinRenderers,
   customRenderers,
@@ -112,6 +114,7 @@ export function ObjectViewer<CustomTypes extends string>({
   return (
     <div style={style} className="font-code">
       <Provider
+        collapsed={collapsed}
         displayObjectSize={displayObjectSize}
         getTypeOf={getTypeOf}
         renderers={
