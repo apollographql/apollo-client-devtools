@@ -2,7 +2,7 @@ import type { ComponentPropsWithoutRef } from "react";
 import { customRenderable } from "./CustomRenderable";
 import type { Path } from "./types";
 import { ArrayIndex } from "./ArrayIndex";
-import { ValueNode } from "./ValueNode";
+import { AnyValueNode } from "./AnyValueNode";
 import { Punctuation } from "./Punctuation";
 import { ObjectKeyLabel } from "./ObjectKeyLabel";
 import { ArrayValue } from "./ArrayValue";
@@ -43,7 +43,7 @@ export const ArrayItem = customRenderable(
         <ObjectKeyLabel collapsible={false}>
           <ArrayIndex context={props.context} index={index} />
         </ObjectKeyLabel>{" "}
-        <ValueNode className="align-middle" {...props} />
+        <AnyValueNode className="align-middle" {...props} />
         <Punctuation>,</Punctuation>
       </div>
     );
