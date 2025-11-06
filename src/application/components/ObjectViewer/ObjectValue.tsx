@@ -5,7 +5,7 @@ import { ObjectKeyLabel } from "./ObjectKeyLabel";
 import { CollapsedObject } from "./CollapsedObject";
 import { Punctuation } from "./Punctuation";
 import { CollectionLength } from "./CollectionLength";
-import { AnyValueNode } from "./AnyValueNode";
+import { AnyValue } from "./AnyValue";
 
 interface ObjectValueProps extends ComponentPropsWithoutRef<"div"> {
   context: Record<string, any> | undefined;
@@ -52,7 +52,7 @@ export function ObjectValue({
         </span>
       ) : (
         <>
-          <AnyValueNode className="align-middle" {...props} />
+          <AnyValue className="align-middle" {...props} />
           <Punctuation>,</Punctuation>
         </>
       )}

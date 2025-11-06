@@ -1,6 +1,6 @@
 import { useCallback, useRef } from "react";
 import { useObjectViewerContext } from "./context";
-import { AnyValueNode } from "./AnyValueNode";
+import { AnyValue } from "./AnyValue";
 import { equal } from "@wry/equality";
 import type { RenderableTypeProps } from "./ObjectViewer";
 
@@ -18,7 +18,7 @@ export function CustomNode({
 
   const DefaultRender = useCallback(
     (props: Partial<RenderableTypeProps<unknown>>) => (
-      <AnyValueNode
+      <AnyValue
         {...{ ...ref.current, ...props }}
         context={{ ...ref.current.context, ...props.context }}
       />
