@@ -8,6 +8,7 @@ import { CollectionLength } from "./CollectionLength";
 import { Collapsed } from "./Collapsed";
 import { Arrow } from "./Arrow";
 import { Punctuation } from "./Punctuation";
+import { getLengthOf } from "./getLengthOf";
 
 interface ArrayItemProps extends ComponentPropsWithoutRef<"div"> {
   context: Record<string, any> | undefined;
@@ -30,6 +31,7 @@ export const ArrayItem = customRenderable(
       (typeof value === "object" && value !== null),
     ...rest
   }: ArrayItemProps) => {
+    const length = getLengthOf(value);
     const [expanded, setExpanded] = useState(expandable ? depth === 0 : true);
 
     return (
@@ -68,7 +70,7 @@ export const ArrayItem = customRenderable(
             />
             <Punctuation>,</Punctuation>{" "}
             {!expanded && typeof value === "object" && value !== null && (
-              <CollectionLength className="italic" value={value} />
+              <CollectionLength className="italic" length={length} />
             )}
           </span>
         )}
