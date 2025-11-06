@@ -262,6 +262,7 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
               <ObjectViewer
                 value={selectedQuery?.options}
                 displayObjectSize={false}
+                collapsed={false}
               />
             </QueryLayout.TabContent>
           </QueryLayout.Tabs>
