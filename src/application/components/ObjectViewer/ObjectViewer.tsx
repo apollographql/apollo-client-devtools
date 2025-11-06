@@ -89,12 +89,7 @@ const theme: Theme = {
   typeUndefined: text.secondary,
 };
 
-export function ObjectViewer<CustomTypes extends string>({
-  getTypeOf,
-  builtinRenderers,
-  customRenderers,
-  value,
-}: {
+interface ObjectViewerProps<CustomTypes extends string> {
   value: unknown;
   getTypeOf?: (value: unknown) => CustomTypes | undefined;
   customRenderers?: Record<
@@ -102,7 +97,14 @@ export function ObjectViewer<CustomTypes extends string>({
     (props: CustomRenderProps<any>) => ReactNode
   >;
   builtinRenderers?: Partial<BuiltinRenderers>;
-}) {
+}
+
+export function ObjectViewer<CustomTypes extends string>({
+  getTypeOf,
+  builtinRenderers,
+  customRenderers,
+  value,
+}: ObjectViewerProps<CustomTypes>) {
   const style = useObjectViewerTheme(theme);
 
   return (
