@@ -24,7 +24,7 @@ import { PageSpinner } from "../PageSpinner";
 import { isIgnoredError } from "../../utilities/ignoredErrors";
 import { SerializedErrorAlertDisclosurePanel } from "../SerializedErrorAlertDisclosurePanel";
 import { useIsExtensionInvalidated } from "@/application/machines/devtoolsMachine";
-import { ObjectViewer } from "../ObjectViewer";
+import { VariablesObject } from "../VariablesObject";
 
 const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
   gql`
@@ -207,10 +207,7 @@ export const Mutations = ({ clientId, explorerIFrame }: MutationsProps) => {
               />
             </Tabs.List>
             <QueryLayout.TabContent value="variables">
-              <ObjectViewer
-                value={selectedMutation?.variables}
-                displayObjectSize={false}
-              />
+              <VariablesObject variables={selectedMutation?.variables} />
             </QueryLayout.TabContent>
           </QueryLayout.Tabs>
         </QueryLayout>
