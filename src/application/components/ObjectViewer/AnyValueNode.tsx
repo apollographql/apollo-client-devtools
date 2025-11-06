@@ -9,9 +9,10 @@ import { UndefinedNode } from "./UndefinedNode";
 import { ObjectNode } from "./ObjectNode";
 import { NullNode } from "./NullNode";
 import { ArrayNode } from "./ArrayNode";
-import { useTypeOfValue } from "./context";
+import { useObjectViewerContext } from "./context";
 import { CustomNode } from "./CustomNode";
 import type { RenderableTypeProps } from "./ObjectViewer";
+import { getTypeOf } from "./getTypeOf";
 
 export const AnyValueNode = ({
   context,
@@ -21,7 +22,8 @@ export const AnyValueNode = ({
   value,
   ...rest
 }: RenderableTypeProps<unknown>) => {
-  const type = useTypeOfValue(value);
+  const ctx = useObjectViewerContext();
+  const type = ctx.getTypeOf?.(value) ?? getTypeOf(value);
 
   const sharedProps = {
     depth,
