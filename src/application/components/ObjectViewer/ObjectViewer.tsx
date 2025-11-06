@@ -2,7 +2,7 @@
 import { ValueNode } from "./ValueNode";
 import { colors } from "@apollo/brand";
 import { Provider } from "./context";
-import type { ReactNode } from "react";
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import type { ObjectPair } from "./ObjectPair";
 import type { ArrayItem } from "./ArrayItem";
 import type { WithDefaultRender } from "./CustomRenderable";
@@ -42,6 +42,9 @@ export type CustomRenderProps<
     props: Partial<Omit<RenderableTypeProps<DefaultValue>, "depth" | "path">>
   ) => ReactNode;
 };
+
+export type BuiltinRendererProps<Type extends keyof BuiltinRenderers> =
+  ComponentPropsWithoutRef<BuiltinRenderers[Type]>;
 
 interface BuiltinRenderers {
   array: WithDefaultRender<typeof ArrayNode>;
