@@ -11,6 +11,7 @@ import { OpenBracket } from "./OpenBracket";
 import { CloseBracket } from "./CloseBracket";
 import { SparseArrayEmptyItem } from "./SparseArrayEmptyItem";
 import { Punctuation } from "./Punctuation";
+import { CollapsedArray } from "./CollapsedArray";
 
 interface ArrayNodeProps
   extends ComponentPropsWithoutRef<"span">,
@@ -31,31 +32,50 @@ export const ArrayNode = customRenderableType<unknown[]>(
         {...filterForwardedElementProps<"span">(rest)}
         className={clsx("align-middle", className)}
       >
-        <OpenBracket />{" "}
-        <CollectionLength
-          className="inline-block align-middle italic"
-          length={value.length}
-        />
-        <div className="pl-[3ch]">
-          {items.map((item, idx) => {
-            return holeSizes.has(idx) ? (
-              <Fragment key={idx}>
-                <SparseArrayEmptyItem key={idx} length={holeSizes.get(idx)} />
-                <Punctuation>,</Punctuation>
-              </Fragment>
-            ) : (
-              <ArrayItem
-                key={idx}
-                context={context}
-                depth={depth + 1}
-                index={idx}
-                value={item}
-                path={path.concat(idx)}
-              />
-            );
-          })}
-        </div>
-        <CloseBracket />
+        {value.length > 0 ? (
+          <>
+            <OpenBracket />{" "}
+            <CollectionLength
+              className="inline-block align-middle italic"
+              length={value.length}
+            />
+            <div className="pl-[3ch]">
+              {items.map((item, idx) => {
+                return holeSizes.has(idx) ? (
+                  <Fragment key={idx}>
+                    <SparseArrayEmptyItem
+                      key={idx}
+                      length={holeSizes.get(idx)}
+                    />
+                    <Punctuation>,</Punctuation>
+                  </Fragment>
+                ) : (
+                  <ArrayItem
+                    key={idx}
+                    context={context}
+                    depth={depth + 1}
+                    index={idx}
+                    value={item}
+                    path={path.concat(idx)}
+                  />
+                );
+              })}
+            </div>
+            <CloseBracket />
+          </>
+        ) : (
+          <>
+            <CollapsedArray
+              className="inline-block align-middle"
+              context={context}
+              length={0}
+            />{" "}
+            <CollectionLength
+              className="inline-block align-middle italic"
+              length={0}
+            />
+          </>
+        )}
       </span>
     );
   }
