@@ -4,7 +4,7 @@ import { createContext, useContext, useRef } from "react";
 
 interface ContextType {
   displayObjectSize: boolean;
-  collapsed: number;
+  collapsed: number | boolean;
   getTypeOf?: (value: unknown) => string | undefined;
   renderers: Record<
     string,
