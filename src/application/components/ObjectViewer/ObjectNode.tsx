@@ -32,7 +32,7 @@ export const ObjectNode = customRenderableType(
         <OpenBrace />{" "}
         <CollectionLength
           className="inline-block align-middle italic"
-          value={value}
+          length={Object.keys(value).length}
         />
         <div className="pl-[3ch]">
           {Object.entries(value).map(([key, value], idx) => (

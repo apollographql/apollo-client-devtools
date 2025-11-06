@@ -34,7 +34,7 @@ export const ArrayNode = customRenderableType<unknown[]>(
         <OpenBracket />{" "}
         <CollectionLength
           className="inline-block align-middle italic"
-          value={value}
+          length={value.length}
         />
         <div className="pl-[3ch]">
           {items.map((item, idx) => {
