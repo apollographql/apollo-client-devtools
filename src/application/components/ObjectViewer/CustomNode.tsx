@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useObjectViewerContext, useTypeOfValue } from "./context";
-import { ValueNode } from "./ValueNode";
+import { AnyValueNode } from "./AnyValueNode";
 import type { RenderableTypeProps } from "./ObjectViewer";
 
 export function CustomNode(parentProps: RenderableTypeProps<unknown>) {
@@ -11,7 +11,7 @@ export function CustomNode(parentProps: RenderableTypeProps<unknown>) {
 
   const DefaultRender = useCallback(
     (props: Partial<RenderableTypeProps<unknown>>) => (
-      <ValueNode
+      <AnyValueNode
         {...{ ...parentProps, ...props }}
         context={{ ...parentProps.context, ...props.context }}
       />

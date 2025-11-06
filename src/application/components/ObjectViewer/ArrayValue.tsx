@@ -5,7 +5,7 @@ import { ObjectKeyLabel } from "./ObjectKeyLabel";
 import { CollapsedArray } from "./CollapsedArray";
 import { Punctuation } from "./Punctuation";
 import { CollectionLength } from "./CollectionLength";
-import { ValueNode } from "./ValueNode";
+import { AnyValueNode } from "./AnyValueNode";
 import { filterForwardedElementProps } from "./CustomRenderable";
 
 interface ArrayValueProps extends ComponentPropsWithoutRef<"div"> {
@@ -48,7 +48,7 @@ export function ArrayValue({
         </span>
       ) : (
         <>
-          <ValueNode className="align-middle" {...props} />
+          <AnyValueNode className="align-middle" {...props} />
           <Punctuation>,</Punctuation>
         </>
       )}

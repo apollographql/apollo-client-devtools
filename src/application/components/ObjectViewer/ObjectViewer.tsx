@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import { ValueNode } from "./ValueNode";
+import { AnyValueNode } from "./AnyValueNode";
 import { colors } from "@apollo/brand";
 import { Provider } from "./context";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
@@ -111,7 +111,7 @@ export function ObjectViewer<CustomTypes extends string>({
           } as any
         }
       >
-        <ValueNode context={{}} depth={0} value={value} path={[]} />
+        <AnyValueNode context={{}} depth={0} value={value} path={[]} />
       </Provider>
     </div>
   );

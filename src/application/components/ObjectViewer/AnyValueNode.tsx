@@ -13,7 +13,7 @@ import { useTypeOfValue } from "./context";
 import { CustomNode } from "./CustomNode";
 import type { RenderableTypeProps } from "./ObjectViewer";
 
-export const ValueNode = ({
+export const AnyValueNode = ({
   context,
   className,
   depth,
