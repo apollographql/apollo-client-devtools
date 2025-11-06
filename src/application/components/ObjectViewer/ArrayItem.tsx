@@ -11,7 +11,7 @@ import { ObjectKeyLabel } from "./ObjectKeyLabel";
 
 interface ArrayItemProps extends ComponentPropsWithoutRef<"div"> {
   context: Record<string, any> | undefined;
-  expandable?: boolean;
+  collapsible?: boolean;
   depth: number;
   index: number;
   value: unknown;
@@ -21,14 +21,14 @@ interface ArrayItemProps extends ComponentPropsWithoutRef<"div"> {
 export const ArrayItem = customRenderable(
   "arrayItem",
   (props: ArrayItemProps) => {
-    const { expandable, value, ...rest } = props;
+    const { collapsible, value, ...rest } = props;
 
     if (Array.isArray(value)) {
-      return <ArrayValue {...rest} expandable={expandable} value={value} />;
+      return <ArrayValue {...rest} collapsible={collapsible} value={value} />;
     }
 
     if (typeof value === "object" && value !== null) {
-      return <ObjectValue {...rest} expandable={expandable} value={value} />;
+      return <ObjectValue {...rest} collapsible={collapsible} value={value} />;
     }
 
     return <OtherValue {...rest} value={value} />;
@@ -45,40 +45,36 @@ interface ArrayValueProps extends ArrayItemProps {
   value: unknown[];
 }
 
-function ArrayValue({ expandable = true, ...props }: ArrayValueProps) {
+function ArrayValue({ collapsible = true, ...props }: ArrayValueProps) {
   const { context, depth, index, value, ...rest } = props;
-  const [expanded, setExpanded] = useState(value.length > 0 && depth === 0);
+  const [collapsed, setCollapsed] = useState(value.length === 0 || depth > 0);
 
-  function toggleExpanded() {
-    if (value.length > 0 && expandable) {
-      setExpanded((expanded) => !expanded);
+  function toggle() {
+    if (value.length > 0 && collapsible) {
+      setCollapsed((c) => !c);
     }
   }
 
   return (
     <div {...rest}>
       <ObjectKeyLabel
-        expandable={value.length > 0 && expandable}
-        expanded={expanded}
-        onClick={toggleExpanded}
+        collapsible={value.length > 0 && collapsible}
+        collapsed={collapsed}
+        onClick={toggle}
       >
         <ArrayIndex context={context} index={index} />
       </ObjectKeyLabel>{" "}
-      {expanded || !expandable ? (
+      {collapsible && collapsed ? (
+        <span className="inline-block align-middle">
+          <CollapsedArray {...props} length={value.length} onClick={toggle} />
+          <Punctuation>,</Punctuation>{" "}
+          <CollectionLength className="italic" length={value.length} />
+        </span>
+      ) : (
         <>
           <ValueNode className="align-middle" {...props} />
           <Punctuation>,</Punctuation>
         </>
-      ) : (
-        <span className="inline-block align-middle">
-          <CollapsedArray
-            {...props}
-            length={value.length}
-            onClick={toggleExpanded}
-          />
-          <Punctuation>,</Punctuation>{" "}
-          <CollectionLength className="italic" length={value.length} />
-        </span>
       )}
     </div>
   );
@@ -88,32 +84,27 @@ interface ObjectValueProps extends ArrayItemProps {
   value: object;
 }
 
-function ObjectValue({ expandable = true, ...props }: ObjectValueProps) {
+function ObjectValue({ collapsible = true, ...props }: ObjectValueProps) {
   const { context, depth, index, value, ...rest } = props;
   const length = Object.keys(value).length;
-  const [expanded, setExpanded] = useState(length > 0 && depth === 0);
+  const [collapsed, setCollapsed] = useState(length === 0 || depth > 0);
 
   function toggleExpanded() {
-    if (expandable) {
-      setExpanded((expanded) => !expanded);
+    if (length > 0 && collapsible) {
+      setCollapsed((c) => !c);
     }
   }
 
   return (
     <div {...rest}>
       <ObjectKeyLabel
-        expandable={length > 0 && expandable}
-        expanded={expanded}
+        collapsible={length > 0 && collapsible}
+        collapsed={collapsed}
         onClick={toggleExpanded}
       >
         <ArrayIndex context={context} index={index} />
       </ObjectKeyLabel>{" "}
-      {expanded || !expandable ? (
-        <>
-          <ValueNode className="align-middle" {...props} />
-          <Punctuation>,</Punctuation>
-        </>
-      ) : (
+      {collapsible && collapsed ? (
         <span className="inline-block align-middle">
           <CollapsedObject
             {...props}
@@ -123,13 +114,18 @@ function ObjectValue({ expandable = true, ...props }: ObjectValueProps) {
           <Punctuation>,</Punctuation>{" "}
           <CollectionLength className="italic" length={length} />
         </span>
+      ) : (
+        <>
+          <ValueNode className="align-middle" {...props} />
+          <Punctuation>,</Punctuation>
+        </>
       )}
     </div>
   );
 }
 
 interface OtherValueProps extends ArrayItemProps {
-  expandable?: never;
+  collapsible?: never;
 }
 
 function OtherValue(props: OtherValueProps) {
@@ -137,7 +133,7 @@ function OtherValue(props: OtherValueProps) {
 
   return (
     <div {...rest}>
-      <ObjectKeyLabel expandable={false}>
+      <ObjectKeyLabel collapsible={false}>
         <ArrayIndex context={context} index={index} />
       </ObjectKeyLabel>{" "}
       <ValueNode className="align-middle" {...props} />

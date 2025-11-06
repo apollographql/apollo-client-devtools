@@ -5,26 +5,26 @@ import { Punctuation } from "./Punctuation";
 
 interface ObjectKeyLabelProps {
   children: ReactNode;
-  expandable: boolean;
-  expanded?: boolean;
+  collapsible: boolean;
+  collapsed?: boolean;
   onClick?: () => void;
 }
 
 export function ObjectKeyLabel({
   children,
-  expandable,
-  expanded,
+  collapsible,
+  collapsed,
   onClick,
 }: ObjectKeyLabelProps) {
   return (
     <span
       className={clsx("inline-block align-middle relative", {
-        "cursor-pointer": expandable,
+        "cursor-pointer": collapsible,
       })}
       onClick={onClick}
     >
       <span className="inline-flex items-center">
-        {expandable && <Arrow expanded={!!expanded} />}
+        {collapsible && <Arrow collapsed={!!collapsed} />}
         {children}
         <Punctuation>:</Punctuation>
       </span>
