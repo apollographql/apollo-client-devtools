@@ -4,7 +4,7 @@ import type { Path } from "./types";
 import { ObjectKeyLabel } from "./ObjectKeyLabel";
 import { CollapsedArray } from "./CollapsedArray";
 import { Punctuation } from "./Punctuation";
-import { CollectionLength } from "./CollectionLength";
+import { ObjectSize } from "./ObjectSize";
 import { AnyValue } from "./AnyValue";
 import { filterForwardedElementProps } from "./CustomRenderable";
 
@@ -44,7 +44,7 @@ export function ArrayValue({
         <span className="inline-block align-middle">
           <CollapsedArray {...props} length={value.length} onClick={toggle} />
           <Punctuation>,</Punctuation>{" "}
-          <CollectionLength className="italic" length={value.length} />
+          <ObjectSize className="italic" size={value.length} />
         </span>
       ) : (
         <>

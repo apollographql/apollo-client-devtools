@@ -1,5 +1,5 @@
 import type { ComponentPropsWithoutRef } from "react";
-import { CollectionLength } from "./CollectionLength";
+import { ObjectSize } from "./ObjectSize";
 import {
   customRenderableType,
   filterForwardedElementProps,
@@ -33,9 +33,9 @@ export const ObjectNode = customRenderableType(
         {Object.keys(value).length > 0 ? (
           <>
             <OpenBrace />{" "}
-            <CollectionLength
+            <ObjectSize
               className="inline-block align-middle italic"
-              length={Object.keys(value).length}
+              size={Object.keys(value).length}
             />
             <div className="pl-[3ch] border-l border-l-primary dark:border-l-primary-dark border-dashed">
               {Object.entries(value).map(([key, value], idx) => (
@@ -58,10 +58,7 @@ export const ObjectNode = customRenderableType(
               context={context}
               length={0}
             />{" "}
-            <CollectionLength
-              className="inline-block align-middle italic"
-              length={0}
-            />
+            <ObjectSize className="inline-block align-middle italic" size={0} />
           </>
         )}
       </span>

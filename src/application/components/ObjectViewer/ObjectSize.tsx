@@ -2,13 +2,13 @@ import clsx from "clsx";
 
 interface Props {
   className?: string;
-  length: number;
+  size: number;
 }
 
-export function CollectionLength({ className, length }: Props) {
+export function ObjectSize({ className, size }: Props) {
   return (
     <span className={clsx("text-[var(--ov-info-color)]", className)}>
-      {length} {length === 1 ? "item" : "items"}
+      {size} {size === 1 ? "item" : "items"}
     </span>
   );
 }
