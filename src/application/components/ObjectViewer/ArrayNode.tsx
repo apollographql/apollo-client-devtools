@@ -39,7 +39,7 @@ export const ArrayNode = customRenderableType<unknown[]>(
               className="inline-block align-middle italic"
               length={value.length}
             />
-            <div className="pl-[3ch]">
+            <div className="pl-[3ch] border-l border-l-primary dark:border-l-primary-dark border-dashed">
               {items.map((item, idx) => {
                 return holeSizes.has(idx) ? (
                   <Fragment key={idx}>
