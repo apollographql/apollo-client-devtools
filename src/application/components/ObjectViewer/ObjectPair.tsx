@@ -32,7 +32,10 @@ export const ObjectPair = customRenderable(
     ...rest
   }: ObjectPairProps) => {
     const length = getLengthOf(value);
-    const [expanded, setExpanded] = useState(expandable ? depth === 0 : true);
+    expandable &&= length > 0;
+    const [expanded, setExpanded] = useState(
+      expandable ? depth === 0 : length === -1
+    );
 
     return (
       <div {...rest}>
