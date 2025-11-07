@@ -163,14 +163,6 @@ function CacheWriteView({
       <div className="flex flex-col gap-4 p-4">
         <CodeBlock language="graphql" code={cacheWrite.document.string} />
         <Section>
-          <SectionTitle>Data</SectionTitle>
-          <ObjectViewer value={cacheWrite.data} />
-        </Section>
-        <Section>
-          <SectionTitle>Variables</SectionTitle>
-          <VariablesObject variables={cacheWrite.variables ?? undefined} />
-        </Section>
-        <Section>
           <SectionTitle>Diff</SectionTitle>
           {cacheWrite.cacheDiff === null ? (
             <span className="text-secondary dark:text-secondary-dark italic">
@@ -179,6 +171,14 @@ function CacheWriteView({
           ) : (
             <ObjectDiff diff={cacheWrite.cacheDiff} />
           )}
+        </Section>
+        <Section>
+          <SectionTitle>Data</SectionTitle>
+          <ObjectViewer value={cacheWrite.data} />
+        </Section>
+        <Section>
+          <SectionTitle>Variables</SectionTitle>
+          <VariablesObject variables={cacheWrite.variables ?? undefined} />
         </Section>
       </div>
     </div>
