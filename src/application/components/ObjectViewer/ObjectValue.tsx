@@ -62,7 +62,9 @@ export function ObjectValue({
             <EmptyObject />
           )}
           <Punctuation>,</Punctuation>{" "}
-          {displayObjectSize && <ObjectSize className="italic" size={length} />}
+          {displayObjectSize && (
+            <ObjectSize className="italic" size={length} label="key" />
+          )}
         </span>
       ) : (
         <>
