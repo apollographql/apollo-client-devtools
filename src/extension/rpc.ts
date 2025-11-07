@@ -17,6 +17,7 @@ import type {
   MemoryInternalsV4,
 } from "./tab/v4/types";
 import type { CacheWrite } from "./tab/shared/types";
+import type { ActorMessage } from "./actor";
 
 export type RPCRequest = {
   getClients(): ApolloClientInfo[];
@@ -352,6 +353,10 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
     if (isRPCTerminateStreamMessage(message)) {
       cleanupFnsByStreamId.get(message.streamId)?.();
     }
+
+    if (isDevtoolsDisconnectedMessage(message)) {
+      cleanupFnsByStreamId.forEach((cleanup) => cleanup());
+    }
   }
 
   function startListening() {
@@ -480,6 +485,16 @@ function isRPCStreamChunkMessage(
 ): message is RPCStreamChunkMessage {
   return (
     isDevtoolsMessage(message) && message.type === MessageType.RPCStreamChunk
+  );
+}
+
+function isDevtoolsDisconnectedMessage(
+  message: unknown
+): message is Extract<ActorMessage, { type: "devtoolsDisconnected" }> {
+  return (
+    isDevtoolsMessage(message) &&
+    message.type === MessageType.Actor &&
+    message.message.type === "devtoolsDisconnected"
   );
 }
 
