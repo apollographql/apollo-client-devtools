@@ -467,6 +467,9 @@ export type CacheWritesSubscription = {
     data: QueryData | null;
     variables: Variables | null;
     cacheDiff: Diff | null;
+    dataId: string | null;
+    broadcast: boolean | null;
+    overwrite: boolean | null;
     document: {
       __typename: "GraphQLDocument";
       ast: DocumentNode;
@@ -484,6 +487,9 @@ type ClientWriteSubscriptionFragment_ClientV3 = {
     data: QueryData | null;
     variables: Variables | null;
     cacheDiff: Diff | null;
+    dataId: string | null;
+    broadcast: boolean | null;
+    overwrite: boolean | null;
     document: {
       __typename: "GraphQLDocument";
       ast: DocumentNode;
@@ -501,6 +507,9 @@ type ClientWriteSubscriptionFragment_ClientV4 = {
     data: QueryData | null;
     variables: Variables | null;
     cacheDiff: Diff | null;
+    dataId: string | null;
+    broadcast: boolean | null;
+    overwrite: boolean | null;
     document: {
       __typename: "GraphQLDocument";
       ast: DocumentNode;
@@ -548,6 +557,9 @@ export type GetCache = {
           data: QueryData | null;
           variables: Variables | null;
           cacheDiff: Diff | null;
+          dataId: string | null;
+          broadcast: boolean | null;
+          overwrite: boolean | null;
           document: {
             __typename: "GraphQLDocument";
             ast: DocumentNode;
@@ -566,6 +578,9 @@ export type GetCache = {
           data: QueryData | null;
           variables: Variables | null;
           cacheDiff: Diff | null;
+          dataId: string | null;
+          broadcast: boolean | null;
+          overwrite: boolean | null;
           document: {
             __typename: "GraphQLDocument";
             ast: DocumentNode;
@@ -583,6 +598,9 @@ export type CacheWritesPanelFragment = {
   data: QueryData | null;
   variables: Variables | null;
   cacheDiff: Diff | null;
+  dataId: string | null;
+  broadcast: boolean | null;
+  overwrite: boolean | null;
   document: {
     __typename: "GraphQLDocument";
     ast: DocumentNode;
@@ -603,6 +621,9 @@ export type CacheWriteView_cacheWrite = {
   data: QueryData | null;
   variables: Variables | null;
   cacheDiff: Diff | null;
+  dataId: string | null;
+  broadcast: boolean | null;
+  overwrite: boolean | null;
   document: {
     __typename: "GraphQLDocument";
     string: string;
