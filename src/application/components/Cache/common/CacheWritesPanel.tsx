@@ -1,7 +1,11 @@
 import IconUnavailable from "@apollo/icons/default/IconUnavailable.svg";
 import IconArrowLeft from "@apollo/icons/default/IconArrowLeft.svg";
 import { fragmentRegistry } from "@/application/fragmentRegistry";
-import type { Client } from "@/application/types/gql";
+import type {
+  CacheWritesListView_cacheWrites,
+  CacheWriteView_cacheWrite,
+  Client,
+} from "@/application/types/gql";
 import { type CacheWritesPanelFragment } from "@/application/types/gql";
 import type { TypedDocumentNode } from "@apollo/client";
 import { gql } from "@apollo/client";
@@ -24,14 +28,8 @@ import { Tooltip } from "../../Tooltip";
 const CACHE_WRITES_PANEL_FRAGMENT: TypedDocumentNode<CacheWritesPanelFragment> = gql`
   fragment CacheWritesPanelFragment on CacheWrite {
     id
-    data
-    document {
-      string
-      ast
-    }
-    timestamp
-    variables
-    cacheDiff
+    ...CacheWritesListView_cacheWrites @nonreactive
+    ...CacheWriteView_cacheWrite @nonreactive
   }
 `;
 
@@ -48,6 +46,7 @@ interface Props {
 export function CacheWritesPanel({ client, cacheWrites }: Props) {
   const { data, complete } = useFragment({
     fragment: CACHE_WRITES_PANEL_FRAGMENT,
+    fragmentName: "CacheWritesPanelFragment",
     from: cacheWrites,
   });
 
@@ -80,6 +79,18 @@ export function CacheWritesPanel({ client, cacheWrites }: Props) {
   );
 }
 
+const LIST_VIEW_FRAGMENT: TypedDocumentNode<CacheWritesListView_cacheWrites> = gql`
+  fragment CacheWritesListView_cacheWrites on CacheWrite {
+    id
+    document {
+      ast
+    }
+    timestamp
+  }
+`;
+
+fragmentRegistry.register(LIST_VIEW_FRAGMENT);
+
 function ListView({
   client,
   cacheWrites,
@@ -89,10 +100,18 @@ function ListView({
     | { __typename: "ClientV3" | "ClientV4"; id: string }
     | null
     | undefined;
-  cacheWrites: CacheWritesPanelFragment[];
+  cacheWrites: CacheWritesListView_cacheWrites[];
   onSelect: (cacheWriteId: string) => void;
 }) {
+  const { data, complete } = useFragment({
+    fragment: LIST_VIEW_FRAGMENT,
+    from: cacheWrites,
+  });
   const apolloClient = useApolloClient();
+
+  if (!complete) {
+    return null;
+  }
 
   return (
     <div className="grow !overflow-auto">
@@ -120,7 +139,7 @@ function ListView({
         </Tooltip>
       </section>
       <List className="p-4">
-        {[...cacheWrites].reverse().map((cacheWrite) => (
+        {[...data].reverse().map((cacheWrite) => (
           <ListItem key={cacheWrite.id} onClick={() => onSelect(cacheWrite.id)}>
             <div className="flex flex-col gap-1">
               <span className="font-code">
@@ -137,13 +156,37 @@ function ListView({
   );
 }
 
+const CACHE_WRITE_VIEW: TypedDocumentNode<CacheWriteView_cacheWrite> = gql`
+  fragment CacheWriteView_cacheWrite on CacheWrite {
+    id
+    data
+    document {
+      string
+      ast
+    }
+    variables
+    cacheDiff
+  }
+`;
+
+fragmentRegistry.register(CACHE_WRITE_VIEW);
+
 function CacheWriteView({
   cacheWrite,
   onNavigateBack,
 }: {
-  cacheWrite: CacheWritesPanelFragment;
+  cacheWrite: CacheWriteView_cacheWrite;
   onNavigateBack: () => void;
 }) {
+  const { data, complete } = useFragment({
+    fragment: CACHE_WRITE_VIEW,
+    from: cacheWrite,
+  });
+
+  if (!complete) {
+    return null;
+  }
+
   return (
     <div className="grow !overflow-auto">
       <section className="flex items-center gap-2 border-b border-b-primary dark:border-b-primary-dark py-2 px-4">
@@ -157,28 +200,36 @@ function CacheWriteView({
           />
         </Tooltip>
         <h2 className="grow font-medium text-lg text-heading dark:text-heading-dark font-code">
-          {getOperationName(cacheWrite.document.ast, "(anonymous)")}
+          {getOperationName(data.document.ast, "(anonymous)")}
         </h2>
       </section>
       <div className="flex flex-col gap-4 p-4">
-        <CodeBlock language="graphql" code={cacheWrite.document.string} />
+        <CodeBlock language="graphql" code={data.document.string} />
         <Section>
           <SectionTitle>Diff</SectionTitle>
-          {cacheWrite.cacheDiff === null ? (
+          {data.cacheDiff === null ? (
             <span className="text-secondary dark:text-secondary-dark italic">
               Unchanged
             </span>
           ) : (
-            <ObjectDiff diff={cacheWrite.cacheDiff} />
+            <ObjectDiff diff={data.cacheDiff} />
           )}
         </Section>
         <Section>
           <SectionTitle>Data</SectionTitle>
-          <ObjectViewer value={cacheWrite.data} />
+          <ObjectViewer value={data.data} />
         </Section>
         <Section>
           <SectionTitle>Variables</SectionTitle>
-          <VariablesObject variables={cacheWrite.variables ?? undefined} />
+          <VariablesObject variables={data.variables ?? undefined} />
+        </Section>
+        <Section>
+          <SectionTitle>Options</SectionTitle>
+          <ObjectViewer
+            value={{}}
+            displayObjectSize={false}
+            collapsed={false}
+          />
         </Section>
       </div>
     </div>
