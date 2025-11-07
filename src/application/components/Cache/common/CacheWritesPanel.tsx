@@ -69,8 +69,8 @@ export function CacheWritesPanel({ client, cacheWrites }: Props) {
     >
       <PanelGroup direction="horizontal" className="flex grow">
         <Panel id="cacheWriteList" className="grow !overflow-auto" minSize={25}>
-          <section className="flex justify-between">
-            <h1 className="grow font-medium text-xl text-heading dark:text-heading-dark p-4 border-b border-b-primary dark:border-b-primary-dark">
+          <section className="flex items-center justify-between border-b border-b-primary dark:border-b-primary-dark p-4">
+            <h1 className="grow font-medium text-xl text-heading dark:text-heading-dark">
               Cache writes ({cacheWrites.length})
             </h1>
             <div>
