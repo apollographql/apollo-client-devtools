@@ -137,7 +137,7 @@ handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
     push({
       dataId: options.dataId,
       document: options.query,
-      variables: options.variables as OperationVariables,
+      variables: options.variables,
       overwrite: options.overwrite,
       broadcast: options.broadcast,
       data: options.result as JSONObject | null,
