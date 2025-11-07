@@ -25,6 +25,7 @@ export type ActorMessage =
   | { type: "pageNavigated" }
   | { type: "panelHidden" }
   | { type: "panelShown" }
+  | { type: "devtoolsDisconnected" }
   | {
       type: "vscode:openExternal";
       uri: string;
