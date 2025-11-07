@@ -18,6 +18,7 @@ import { ObjectViewer } from "../../ObjectViewer";
 import { VariablesObject } from "../../VariablesObject";
 import { Button } from "../../Button";
 import { useApolloClient } from "@apollo/client/react";
+import { Tooltip } from "../../Tooltip";
 
 const CACHE_WRITES_PANEL_FRAGMENT: TypedDocumentNode<CacheWritesPanelFragment> = gql`
   fragment CacheWritesPanelFragment on CacheWrite {
@@ -69,27 +70,29 @@ export function CacheWritesPanel({ client, cacheWrites }: Props) {
     >
       <PanelGroup direction="horizontal" className="flex grow">
         <Panel id="cacheWriteList" className="grow !overflow-auto" minSize={25}>
-          <section className="flex items-center justify-between border-b border-b-primary dark:border-b-primary-dark p-4">
+          <section className="flex items-center justify-between border-b border-b-primary dark:border-b-primary-dark py-2 px-4">
             <h1 className="grow font-medium text-xl text-heading dark:text-heading-dark">
               Cache writes ({cacheWrites.length})
             </h1>
             <div>
-              <Button
-                aria-label="Clear"
-                size="sm"
-                variant="hidden"
-                onClick={() => {
-                  if (client) {
-                    apolloClient.cache.modify<Client>({
-                      id: apolloClient.cache.identify(client),
-                      fields: {
-                        cacheWrites: () => [],
-                      },
-                    });
-                  }
-                }}
-                icon={<IconUnavailable />}
-              />
+              <Tooltip content="Clear">
+                <Button
+                  aria-label="Clear"
+                  size="sm"
+                  variant="hidden"
+                  onClick={() => {
+                    if (client) {
+                      apolloClient.cache.modify<Client>({
+                        id: apolloClient.cache.identify(client),
+                        fields: {
+                          cacheWrites: () => [],
+                        },
+                      });
+                    }
+                  }}
+                  icon={<IconUnavailable />}
+                />
+              </Tooltip>
             </div>
           </section>
           <List className="p-4">
@@ -119,9 +122,6 @@ export function CacheWritesPanel({ client, cacheWrites }: Props) {
               className="flex flex-col gap-4 grow p-4 !overflow-auto"
             >
               <div className="flex flex-col gap-2">
-                <h2 className="text-md text-heading dark:text-heading-dark">
-                  Operation
-                </h2>
                 <CodeBlock
                   language="graphql"
                   code={selectedCacheWrite.document.string}
