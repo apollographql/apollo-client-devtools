@@ -71,9 +71,9 @@ export function CacheWritesPanel({ client, cacheWrites }: Props) {
       <PanelGroup direction="horizontal" className="flex grow">
         <Panel id="cacheWriteList" className="grow !overflow-auto" minSize={25}>
           <section className="flex items-center justify-between border-b border-b-primary dark:border-b-primary-dark py-2 px-4">
-            <h1 className="grow font-medium text-xl text-heading dark:text-heading-dark">
+            <h2 className="grow font-medium text-lg text-heading dark:text-heading-dark">
               Cache writes ({cacheWrites.length})
-            </h1>
+            </h2>
             <div>
               <Tooltip content="Clear">
                 <Button
