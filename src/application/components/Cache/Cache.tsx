@@ -194,7 +194,7 @@ export function Cache({ clientId }: CacheProps) {
             )}
           </Panel>
           <PanelResizeHandle className="border-r border-primary dark:border-primary-dark" />
-          <CacheWritesPanel cacheWrites={cacheWrites} />
+          <CacheWritesPanel client={data?.client} cacheWrites={cacheWrites} />
         </PanelGroup>
       </Main>
     </SidebarLayout>
