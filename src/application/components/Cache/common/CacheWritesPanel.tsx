@@ -8,6 +8,7 @@ import { gql } from "@apollo/client";
 import { useFragment } from "@apollo/client/react";
 import { Panel } from "react-resizable-panels";
 import { CodeBlock } from "../../CodeBlock";
+import type { ReactNode } from "react";
 import { useState } from "react";
 import { getOperationName } from "@apollo/client/utilities/internal";
 import { List } from "../../List";
@@ -161,18 +162,16 @@ function CacheWriteView({
       </section>
       <div className="flex flex-col gap-4 p-4">
         <CodeBlock language="graphql" code={cacheWrite.document.string} />
-        <div className="flex flex-col gap-2">
-          <h3 className="text-md text-heading dark:text-heading-dark">Data</h3>
+        <Section>
+          <SectionTitle>Data</SectionTitle>
           <ObjectViewer value={cacheWrite.data} />
-        </div>
-        <div className="flex flex-col gap-2">
-          <h3 className="text-md text-heading dark:text-heading-dark">
-            Variables
-          </h3>
+        </Section>
+        <Section>
+          <SectionTitle>Variables</SectionTitle>
           <VariablesObject variables={cacheWrite.variables ?? undefined} />
-        </div>
-        <div className="flex flex-col gap-2">
-          <h3 className="text-md text-heading dark:text-heading-dark">Diff</h3>
+        </Section>
+        <Section>
+          <SectionTitle>Diff</SectionTitle>
           {cacheWrite.cacheDiff === null ? (
             <span className="text-secondary dark:text-secondary-dark italic">
               Unchanged
@@ -180,8 +179,18 @@ function CacheWriteView({
           ) : (
             <ObjectDiff diff={cacheWrite.cacheDiff} />
           )}
-        </div>
+        </Section>
       </div>
     </div>
+  );
+}
+
+function Section({ children }: { children?: ReactNode }) {
+  return <div className="flex flex-col gap-2">{children}</div>;
+}
+
+function SectionTitle({ children }: { children?: ReactNode }) {
+  return (
+    <h3 className="text-md text-heading dark:text-heading-dark">{children}</h3>
   );
 }
