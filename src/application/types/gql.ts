@@ -463,14 +463,14 @@ export type CacheWritesSubscription = {
   cacheWritten: {
     __typename: "CacheWrite";
     id: string;
-    data: QueryData | null;
     timestamp: DateTime;
+    data: QueryData | null;
     variables: Variables | null;
     cacheDiff: Diff | null;
     document: {
       __typename: "GraphQLDocument";
-      string: string;
       ast: DocumentNode;
+      string: string;
     };
   };
 };
@@ -480,14 +480,14 @@ type ClientWriteSubscriptionFragment_ClientV3 = {
   cacheWrites: Array<{
     __typename: "CacheWrite";
     id: string;
-    data: QueryData | null;
     timestamp: DateTime;
+    data: QueryData | null;
     variables: Variables | null;
     cacheDiff: Diff | null;
     document: {
       __typename: "GraphQLDocument";
-      string: string;
       ast: DocumentNode;
+      string: string;
     };
   }>;
 };
@@ -497,14 +497,14 @@ type ClientWriteSubscriptionFragment_ClientV4 = {
   cacheWrites: Array<{
     __typename: "CacheWrite";
     id: string;
-    data: QueryData | null;
     timestamp: DateTime;
+    data: QueryData | null;
     variables: Variables | null;
     cacheDiff: Diff | null;
     document: {
       __typename: "GraphQLDocument";
-      string: string;
       ast: DocumentNode;
+      string: string;
     };
   }>;
 };
@@ -544,14 +544,14 @@ export type GetCache = {
         cacheWrites: Array<{
           __typename: "CacheWrite";
           id: string;
-          data: QueryData | null;
           timestamp: DateTime;
+          data: QueryData | null;
           variables: Variables | null;
           cacheDiff: Diff | null;
           document: {
             __typename: "GraphQLDocument";
-            string: string;
             ast: DocumentNode;
+            string: string;
           };
         }>;
       }
@@ -562,14 +562,14 @@ export type GetCache = {
         cacheWrites: Array<{
           __typename: "CacheWrite";
           id: string;
-          data: QueryData | null;
           timestamp: DateTime;
+          data: QueryData | null;
           variables: Variables | null;
           cacheDiff: Diff | null;
           document: {
             __typename: "GraphQLDocument";
-            string: string;
             ast: DocumentNode;
+            string: string;
           };
         }>;
       }
@@ -579,8 +579,28 @@ export type GetCache = {
 export type CacheWritesPanelFragment = {
   __typename: "CacheWrite";
   id: string;
-  data: QueryData | null;
   timestamp: DateTime;
+  data: QueryData | null;
+  variables: Variables | null;
+  cacheDiff: Diff | null;
+  document: {
+    __typename: "GraphQLDocument";
+    ast: DocumentNode;
+    string: string;
+  };
+};
+
+export type CacheWritesListView_cacheWrites = {
+  __typename: "CacheWrite";
+  id: string;
+  timestamp: DateTime;
+  document: { __typename: "GraphQLDocument"; ast: DocumentNode };
+};
+
+export type CacheWriteView_cacheWrite = {
+  __typename: "CacheWrite";
+  id: string;
+  data: QueryData | null;
   variables: Variables | null;
   cacheDiff: Diff | null;
   document: {
