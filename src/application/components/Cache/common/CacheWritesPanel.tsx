@@ -158,7 +158,9 @@ const DiffView = memo(({ diff }: { diff: Diff | null }) => {
     <div className="flex flex-col gap-2">
       <h2 className="text-md text-heading dark:text-heading-dark">Diff</h2>
       {diff === null ? (
-        <span className="text-disabled dark:text-disabled-dark">Unchanged</span>
+        <span className="text-secondary dark:text-secondary-dark italic">
+          Unchanged
+        </span>
       ) : (
         <ObjectDiff diff={diff} />
       )}
