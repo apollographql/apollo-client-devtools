@@ -1,5 +1,7 @@
+import IconUnavailable from "@apollo/icons/default/IconUnavailable.svg";
 import { fragmentRegistry } from "@/application/fragmentRegistry";
-import type { CacheWritesPanelFragment } from "@/application/types/gql";
+import type { Client } from "@/application/types/gql";
+import { type CacheWritesPanelFragment } from "@/application/types/gql";
 import type { TypedDocumentNode } from "@apollo/client";
 import { gql } from "@apollo/client";
 import { useFragment } from "@apollo/client/react";
@@ -14,6 +16,8 @@ import type { Diff } from "@/application/utilities/diff";
 import { ObjectDiff } from "../../ObjectDiff";
 import { ObjectViewer } from "../../ObjectViewer";
 import { VariablesObject } from "../../VariablesObject";
+import { Button } from "../../Button";
+import { useApolloClient } from "@apollo/client/react";
 
 const CACHE_WRITES_PANEL_FRAGMENT: TypedDocumentNode<CacheWritesPanelFragment> = gql`
   fragment CacheWritesPanelFragment on CacheWrite {
@@ -32,10 +36,15 @@ const CACHE_WRITES_PANEL_FRAGMENT: TypedDocumentNode<CacheWritesPanelFragment> =
 fragmentRegistry.register(CACHE_WRITES_PANEL_FRAGMENT);
 
 interface Props {
+  client:
+    | { __typename: "ClientV3" | "ClientV4"; id: string }
+    | null
+    | undefined;
   cacheWrites: Array<{ __typename: "CacheWrite"; id: string }>;
 }
 
-export function CacheWritesPanel({ cacheWrites }: Props) {
+export function CacheWritesPanel({ client, cacheWrites }: Props) {
+  const apolloClient = useApolloClient();
   const { data, complete } = useFragment({
     fragment: CACHE_WRITES_PANEL_FRAGMENT,
     from: cacheWrites,
@@ -58,11 +67,31 @@ export function CacheWritesPanel({ cacheWrites }: Props) {
       minSize={10}
       defaultSize={25}
     >
-      <h1 className="font-medium text-xl text-heading dark:text-heading-dark p-4 border-b border-b-primary dark:border-b-primary-dark">
-        Cache writes
-      </h1>
       <PanelGroup direction="horizontal" className="flex grow">
         <Panel id="cacheWriteList" className="grow !overflow-auto" minSize={25}>
+          <section className="flex justify-between">
+            <h1 className="grow font-medium text-xl text-heading dark:text-heading-dark p-4 border-b border-b-primary dark:border-b-primary-dark">
+              Cache writes ({cacheWrites.length})
+            </h1>
+            <div>
+              <Button
+                aria-label="Clear"
+                size="sm"
+                variant="hidden"
+                onClick={() => {
+                  if (client) {
+                    apolloClient.cache.modify<Client>({
+                      id: apolloClient.cache.identify(client),
+                      fields: {
+                        cacheWrites: () => [],
+                      },
+                    });
+                  }
+                }}
+                icon={<IconUnavailable />}
+              />
+            </div>
+          </section>
           <List className="p-4">
             {[...data].reverse().map((cacheWrite) => (
               <ListItem
