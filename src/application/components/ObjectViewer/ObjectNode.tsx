@@ -50,6 +50,7 @@ export const ObjectNode = customRenderableType(
             <OpenBrace />{" "}
             {displayObjectSizeSetting && (
               <ObjectSize
+                label="key"
                 className="inline-block align-middle italic"
                 size={Object.keys(value).length}
               />
@@ -73,6 +74,7 @@ export const ObjectNode = customRenderableType(
             <EmptyObject />{" "}
             {displayObjectSizeSetting && (
               <ObjectSize
+                label="key"
                 className="inline-block align-middle italic"
                 size={0}
               />
