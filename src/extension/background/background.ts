@@ -3,6 +3,7 @@
 // https://github.com/facebook/react/blob/18a9dd1c60fdb711982f32ce5d91acfe8f158fe1/LICENSE
 import browser from "webextension-polyfill";
 import "./errorcodes";
+import { createDevtoolsMessage, MessageType } from "../messages";
 
 const ports: Record<
   number,
@@ -100,6 +101,16 @@ function connectPorts(tabId: number) {
 
   extensionPort.onMessage.addListener(extensionPortListener);
   extensionPort.onDisconnect.addListener(disconnectPorts);
+  extensionPort.onDisconnect.addListener(() => {
+    if (tabPort) {
+      tabPort.postMessage(
+        createDevtoolsMessage({
+          type: MessageType.Actor,
+          message: { type: "devtoolsDisconnected" },
+        })
+      );
+    }
+  });
 
   tabPort.onMessage.addListener(tabPortListener);
   tabPort.onDisconnect.addListener(disconnectPorts);
