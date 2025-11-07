@@ -166,6 +166,9 @@ const CACHE_WRITE_VIEW: TypedDocumentNode<CacheWriteView_cacheWrite> = gql`
     }
     variables
     cacheDiff
+    dataId
+    broadcast
+    overwrite
   }
 `;
 
@@ -226,7 +229,11 @@ function CacheWriteView({
         <Section>
           <SectionTitle>Options</SectionTitle>
           <ObjectViewer
-            value={{}}
+            value={{
+              dataId: data.dataId,
+              overwrite: data.overwrite,
+              broadcast: data.broadcast,
+            }}
             displayObjectSize={false}
             collapsed={false}
           />
