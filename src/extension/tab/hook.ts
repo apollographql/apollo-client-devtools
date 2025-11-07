@@ -148,16 +148,9 @@ handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
     return result;
   };
 
-  function restore() {
+  return () => {
     client.stop = originalStop;
     cache.write = originalWrite;
-  }
-
-  const removeListener = tab.on("devtoolsDisconnected", restore);
-
-  return () => {
-    restore();
-    removeListener();
   };
 });
 
