@@ -1,10 +1,13 @@
 /* eslint-disable */
 import type { DateTime } from "./scalars";
 import type { Diff } from "@/application/utilities/diff";
+import type { DirectCacheWriteOptions } from "./scalars";
 import type { DocumentNode } from "@apollo/client";
 import type { QueryData } from "./scalars";
 import type { QueryOptions } from "./scalars";
 import type { Variables } from "./scalars";
+import type { WriteFragmentOptions } from "./scalars";
+import type { WriteQueryOptions } from "./scalars";
 import type {
   GraphQLResolveInfo,
   GraphQLScalarType,
@@ -58,6 +61,10 @@ export type Scalars = {
   Cache: { input: unknown; output: unknown };
   DateTime: { input: DateTime; output: DateTime };
   Diff: { input: Diff; output: Diff };
+  DirectCacheWriteOptions: {
+    input: DirectCacheWriteOptions;
+    output: DirectCacheWriteOptions;
+  };
   DocumentNode: { input: DocumentNode; output: DocumentNode };
   GraphQLErrorPath: { input: unknown; output: unknown };
   JSON: { input: unknown; output: unknown };
@@ -67,6 +74,11 @@ export type Scalars = {
   QueryOptions: { input: QueryOptions; output: QueryOptions };
   /** Represents variables for a query */
   Variables: { input: Variables; output: Variables };
+  WriteFragmentOptions: {
+    input: WriteFragmentOptions;
+    output: WriteFragmentOptions;
+  };
+  WriteQueryOptions: { input: WriteQueryOptions; output: WriteQueryOptions };
 };
 
 export type BaseCacheSizes = {
@@ -82,16 +94,9 @@ export type CacheSize = {
 };
 
 export type CacheWrite = {
-  __typename?: "CacheWrite";
-  broadcast: Maybe<Scalars["Boolean"]["output"]>;
-  cacheDiff: Maybe<Scalars["Diff"]["output"]>;
-  data: Maybe<Scalars["QueryData"]["output"]>;
-  dataId: Maybe<Scalars["String"]["output"]>;
-  document: GraphQlDocument;
+  diff: Maybe<Scalars["Diff"]["output"]>;
   id: Scalars["ID"]["output"];
-  overwrite: Maybe<Scalars["Boolean"]["output"]>;
   timestamp: Scalars["DateTime"]["output"];
-  variables: Maybe<Scalars["Variables"]["output"]>;
 };
 
 export type Client = {
@@ -273,6 +278,14 @@ export type ClientWatchedQuery = {
   variables: Maybe<Scalars["Variables"]["output"]>;
 };
 
+export type DirectCacheWrite = CacheWrite & {
+  __typename?: "DirectCacheWrite";
+  diff: Maybe<Scalars["Diff"]["output"]>;
+  id: Scalars["ID"]["output"];
+  options: Scalars["DirectCacheWriteOptions"]["output"];
+  timestamp: Scalars["DateTime"]["output"];
+};
+
 export type DocumentTransformCacheSizes = {
   __typename?: "DocumentTransformCacheSizes";
   cache: CacheSize;
@@ -443,6 +456,22 @@ export type SubscriptionCacheWrittenArgs = {
   clientId: Scalars["ID"]["input"];
 };
 
+export type WriteFragmentCacheWrite = CacheWrite & {
+  __typename?: "WriteFragmentCacheWrite";
+  diff: Maybe<Scalars["Diff"]["output"]>;
+  id: Scalars["ID"]["output"];
+  options: Scalars["WriteFragmentOptions"]["output"];
+  timestamp: Scalars["DateTime"]["output"];
+};
+
+export type WriteQueryCacheWrite = CacheWrite & {
+  __typename?: "WriteQueryCacheWrite";
+  diff: Maybe<Scalars["Diff"]["output"]>;
+  id: Scalars["ID"]["output"];
+  options: Scalars["WriteQueryOptions"]["output"];
+  timestamp: Scalars["DateTime"]["output"];
+};
+
 export type ResolverTypeWrapper<T> = Promise<T> | T;
 
 export type ResolverWithResolve<TResult, TParent, TContext, TArgs> = {
@@ -559,6 +588,7 @@ export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = {
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> =
   {
+    CacheWrite: RemoteCacheWrite | RemoteCacheWrite | RemoteCacheWrite;
     Client: ApolloClientInfo | ApolloClientInfo;
     ClientMutation:
       | (Omit<ClientV3Mutation, "error"> & {
@@ -662,6 +692,10 @@ export type ResolversTypes = {
   >;
   DateTime: ResolverTypeWrapper<Scalars["DateTime"]["output"]>;
   Diff: ResolverTypeWrapper<Scalars["Diff"]["output"]>;
+  DirectCacheWrite: ResolverTypeWrapper<RemoteCacheWrite>;
+  DirectCacheWriteOptions: ResolverTypeWrapper<
+    Scalars["DirectCacheWriteOptions"]["output"]
+  >;
   DocumentNode: ResolverTypeWrapper<Scalars["DocumentNode"]["output"]>;
   DocumentTransformCacheSizes: ResolverTypeWrapper<DocumentTransformCacheSizes>;
   ErrorLike: ResolverTypeWrapper<
@@ -702,6 +736,14 @@ export type ResolversTypes = {
   String: ResolverTypeWrapper<Scalars["String"]["output"]>;
   Subscription: ResolverTypeWrapper<never>;
   Variables: ResolverTypeWrapper<Scalars["Variables"]["output"]>;
+  WriteFragmentCacheWrite: ResolverTypeWrapper<RemoteCacheWrite>;
+  WriteFragmentOptions: ResolverTypeWrapper<
+    Scalars["WriteFragmentOptions"]["output"]
+  >;
+  WriteQueryCacheWrite: ResolverTypeWrapper<RemoteCacheWrite>;
+  WriteQueryOptions: ResolverTypeWrapper<
+    Scalars["WriteQueryOptions"]["output"]
+  >;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -750,6 +792,8 @@ export type ResolversParentTypes = {
   ClientWatchedQuery: ResolversInterfaceTypes<ResolversParentTypes>["ClientWatchedQuery"];
   DateTime: Scalars["DateTime"]["output"];
   Diff: Scalars["Diff"]["output"];
+  DirectCacheWrite: RemoteCacheWrite;
+  DirectCacheWriteOptions: Scalars["DirectCacheWriteOptions"]["output"];
   DocumentNode: Scalars["DocumentNode"]["output"];
   DocumentTransformCacheSizes: DocumentTransformCacheSizes;
   ErrorLike: ResolversInterfaceTypes<ResolversParentTypes>["ErrorLike"];
@@ -782,6 +826,10 @@ export type ResolversParentTypes = {
   String: Scalars["String"]["output"];
   Subscription: never;
   Variables: Scalars["Variables"]["output"];
+  WriteFragmentCacheWrite: RemoteCacheWrite;
+  WriteFragmentOptions: Scalars["WriteFragmentOptions"]["output"];
+  WriteQueryCacheWrite: RemoteCacheWrite;
+  WriteQueryOptions: Scalars["WriteQueryOptions"]["output"];
 };
 
 export type BaseCacheSizesResolvers<
@@ -818,32 +866,11 @@ export type CacheWriteResolvers<
   ParentType extends
     ResolversParentTypes["CacheWrite"] = ResolversParentTypes["CacheWrite"],
 > = {
-  broadcast?: Resolver<
-    Maybe<ResolversTypes["Boolean"]>,
+  __resolveType: TypeResolveFn<
+    "DirectCacheWrite" | "WriteFragmentCacheWrite" | "WriteQueryCacheWrite",
     ParentType,
     ContextType
   >;
-  cacheDiff?: Resolver<Maybe<ResolversTypes["Diff"]>, ParentType, ContextType>;
-  data?: Resolver<Maybe<ResolversTypes["QueryData"]>, ParentType, ContextType>;
-  dataId?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  document?: Resolver<
-    ResolversTypes["GraphQLDocument"],
-    ParentType,
-    ContextType
-  >;
-  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
-  overwrite?: Resolver<
-    Maybe<ResolversTypes["Boolean"]>,
-    ParentType,
-    ContextType
-  >;
-  timestamp?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
-  variables?: Resolver<
-    Maybe<ResolversTypes["Variables"]>,
-    ParentType,
-    ContextType
-  >;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type ClientResolvers<
@@ -1281,6 +1308,30 @@ export interface DiffScalarConfig
   name: "Diff";
 }
 
+export type DirectCacheWriteResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["DirectCacheWrite"] = ResolversParentTypes["DirectCacheWrite"],
+> = {
+  diff?: Resolver<Maybe<ResolversTypes["Diff"]>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  options?: Resolver<
+    ResolversTypes["DirectCacheWriteOptions"],
+    ParentType,
+    ContextType
+  >;
+  timestamp?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export interface DirectCacheWriteOptionsScalarConfig
+  extends GraphQLScalarTypeConfig<
+    ResolversTypes["DirectCacheWriteOptions"],
+    any
+  > {
+  name: "DirectCacheWriteOptions";
+}
+
 export interface DocumentNodeScalarConfig
   extends GraphQLScalarTypeConfig<ResolversTypes["DocumentNode"], any> {
   name: "DocumentNode";
@@ -1659,6 +1710,48 @@ export interface VariablesScalarConfig
   name: "Variables";
 }
 
+export type WriteFragmentCacheWriteResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["WriteFragmentCacheWrite"] = ResolversParentTypes["WriteFragmentCacheWrite"],
+> = {
+  diff?: Resolver<Maybe<ResolversTypes["Diff"]>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  options?: Resolver<
+    ResolversTypes["WriteFragmentOptions"],
+    ParentType,
+    ContextType
+  >;
+  timestamp?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export interface WriteFragmentOptionsScalarConfig
+  extends GraphQLScalarTypeConfig<ResolversTypes["WriteFragmentOptions"], any> {
+  name: "WriteFragmentOptions";
+}
+
+export type WriteQueryCacheWriteResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["WriteQueryCacheWrite"] = ResolversParentTypes["WriteQueryCacheWrite"],
+> = {
+  diff?: Resolver<Maybe<ResolversTypes["Diff"]>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  options?: Resolver<
+    ResolversTypes["WriteQueryOptions"],
+    ParentType,
+    ContextType
+  >;
+  timestamp?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export interface WriteQueryOptionsScalarConfig
+  extends GraphQLScalarTypeConfig<ResolversTypes["WriteQueryOptions"], any> {
+  name: "WriteQueryOptions";
+}
+
 export type Resolvers<ContextType = any> = {
   BaseCacheSizes?: BaseCacheSizesResolvers<ContextType>;
   Cache?: GraphQLScalarType;
@@ -1687,6 +1780,8 @@ export type Resolvers<ContextType = any> = {
   ClientWatchedQuery?: ClientWatchedQueryResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
   Diff?: GraphQLScalarType;
+  DirectCacheWrite?: DirectCacheWriteResolvers<ContextType>;
+  DirectCacheWriteOptions?: GraphQLScalarType;
   DocumentNode?: GraphQLScalarType;
   DocumentTransformCacheSizes?: DocumentTransformCacheSizesResolvers<ContextType>;
   ErrorLike?: ErrorLikeResolvers<ContextType>;
@@ -1716,4 +1811,8 @@ export type Resolvers<ContextType = any> = {
   SerializedUnconventionalError?: SerializedUnconventionalErrorResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   Variables?: GraphQLScalarType;
+  WriteFragmentCacheWrite?: WriteFragmentCacheWriteResolvers<ContextType>;
+  WriteFragmentOptions?: GraphQLScalarType;
+  WriteQueryCacheWrite?: WriteQueryCacheWriteResolvers<ContextType>;
+  WriteQueryOptions?: GraphQLScalarType;
 };

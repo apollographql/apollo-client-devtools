@@ -10,6 +10,10 @@ scalar Variables
 "Represents options for a query"
 scalar QueryOptions
 
+scalar DirectCacheWriteOptions
+scalar WriteQueryOptions
+scalar WriteFragmentOptions
+
 scalar DateTime
 
 scalar JSON
@@ -26,15 +30,30 @@ type Subscription {
   cacheWritten(clientId: ID!): CacheWrite!
 }
 
-type CacheWrite {
+interface CacheWrite {
   id: ID!
-  data: QueryData
-  document: GraphQLDocument!
-  variables: Variables
-  dataId: String
-  overwrite: Boolean
-  broadcast: Boolean
-  cacheDiff: Diff
+  diff: Diff
+  timestamp: DateTime!
+}
+
+type DirectCacheWrite implements CacheWrite {
+  id: ID!
+  diff: Diff
+  options: DirectCacheWriteOptions!
+  timestamp: DateTime!
+}
+
+type WriteQueryCacheWrite implements CacheWrite {
+  id: ID!
+  diff: Diff
+  options: WriteQueryOptions!
+  timestamp: DateTime!
+}
+
+type WriteFragmentCacheWrite implements CacheWrite {
+  id: ID!
+  diff: Diff
+  options: WriteFragmentOptions!
   timestamp: DateTime!
 }
 

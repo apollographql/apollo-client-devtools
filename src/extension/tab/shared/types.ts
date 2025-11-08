@@ -1,17 +1,17 @@
-import type { JSONObject } from "@/application/types/json";
+import type { Cache as ApolloCache } from "@apollo/client";
 import type { Cache } from "@/application/types/scalars";
-import type { DocumentNode, OperationVariables } from "@apollo/client";
 
-export interface CacheWrite {
-  document: DocumentNode;
-  data: JSONObject | null;
-  variables: OperationVariables | undefined;
-  dataId: string | undefined;
-  overwrite: boolean | undefined;
-  broadcast: boolean | undefined;
+export type CacheWrite = {
   timestamp: Date;
   cache: {
     before: Cache;
     after: Cache;
   };
-}
+} & (
+  | { type: "write"; options: ApolloCache.WriteOptions }
+  | { type: "writeQuery"; options: ApolloCache.WriteQueryOptions<any, any> }
+  | {
+      type: "writeFragment";
+      options: ApolloCache.WriteFragmentOptions<any, any>;
+    }
+);

@@ -62,8 +62,26 @@ function createResolvers(client: RpcClient): Resolvers {
       },
     },
     CacheWrite: {
-      document: ({ document }) => document,
-      cacheDiff: ({ cache }) => diff(cache.before, cache.after),
+      __resolveType: (cacheWrite) => {
+        if (cacheWrite.type === "writeQuery") {
+          return "WriteQueryCacheWrite";
+        }
+
+        if (cacheWrite.type === "writeFragment") {
+          return "WriteFragmentCacheWrite";
+        }
+
+        return "DirectCacheWrite";
+      },
+    },
+    DirectCacheWrite: {
+      diff: ({ cache }) => diff(cache.before, cache.after),
+    },
+    WriteFragmentCacheWrite: {
+      diff: ({ cache }) => diff(cache.before, cache.after),
+    },
+    WriteQueryCacheWrite: {
+      diff: ({ cache }) => diff(cache.before, cache.after),
     },
     GraphQLDocument: {
       string: print,

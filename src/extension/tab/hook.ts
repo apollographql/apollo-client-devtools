@@ -1,8 +1,6 @@
-import type {
-  ApolloClient as ApolloClient4,
-  OperationVariables,
-} from "@apollo/client";
+import type { ApolloClient as ApolloClient4 } from "@apollo/client";
 import type { ApolloClient as ApolloClient3 } from "@apollo/client-3";
+import { Slot } from "@wry/context";
 
 // All manifests should contain the same version number so it shouldn't matter
 // which one we import from.
@@ -115,12 +113,15 @@ handleRpc("getV4MemoryInternals", (clientId) => {
 });
 
 handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
+  const slot = new Slot<boolean>();
   // Both v3 and v4 have the same options/return value so we can treat the
   // client the same for both versions
   const client = getClientById(clientId) as ApolloClient4;
 
   const { cache } = client;
   const originalWrite = cache.write;
+  const originalWriteQuery = cache.writeQuery;
+  const originalWriteFragment = cache.writeFragment;
   const originalStop = client.stop;
 
   client.stop = () => {
@@ -128,22 +129,51 @@ handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
     return originalStop.call(client);
   };
 
-  cache.write = (options: Parameters<typeof originalWrite>[0]) => {
+  function run<TReturn>(fn: () => TReturn): {
+    result: TReturn;
+    timestamp: Date;
+    cache: { before: Cache; after: Cache };
+  } {
     const timestamp = new Date();
     const before = cache.extract(true) as Cache;
-    const result = originalWrite.call(cache, options);
+    const result = slot.withValue(true, fn);
     const after = cache.extract(true) as Cache;
 
-    push({
-      dataId: options.dataId,
-      document: options.query,
-      variables: options.variables,
-      overwrite: options.overwrite,
-      broadcast: options.broadcast,
-      data: options.result as JSONObject | null,
-      cache: { before, after },
-      timestamp,
-    });
+    return { result, timestamp, cache: { before, after } };
+  }
+
+  cache.write = function (options: Parameters<typeof originalWrite>[0]) {
+    if (slot.getValue()) {
+      return originalWrite.call(cache, options);
+    }
+
+    const { result, ...rest } = run(() => originalWrite.call(cache, options));
+
+    push({ type: "write", options, ...rest });
+
+    return result;
+  };
+
+  cache.writeQuery = function (
+    options: Parameters<typeof originalWriteQuery>[0]
+  ) {
+    const { result, ...rest } = run(() =>
+      originalWriteQuery.call(cache, options)
+    );
+
+    push({ type: "writeQuery", options, ...rest });
+
+    return result;
+  };
+
+  cache.writeFragment = function (
+    options: Parameters<typeof originalWriteFragment>[0]
+  ) {
+    const { result, ...rest } = run(() =>
+      originalWriteFragment.call(cache, options)
+    );
+
+    push({ type: "writeFragment", options, ...rest });
 
     return result;
   };
@@ -151,6 +181,8 @@ handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
   return () => {
     client.stop = originalStop;
     cache.write = originalWrite;
+    cache.writeFragment = originalWriteFragment;
+    cache.writeQuery = originalWriteQuery;
   };
 });
 

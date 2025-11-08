@@ -1,12 +1,15 @@
 import type { Cache } from "./scalars";
 import type { DateTime } from "./scalars";
 import type { Diff } from "@/application/utilities/diff";
+import type { DirectCacheWriteOptions } from "./scalars";
 import type { DocumentNode } from "@apollo/client";
 import type { GraphQLErrorPath } from "./scalars";
 import type { JSON } from "./scalars";
 import type { QueryData } from "./scalars";
 import type { QueryOptions } from "./scalars";
 import type { Variables } from "./scalars";
+import type { WriteFragmentOptions } from "./scalars";
+import type { WriteQueryOptions } from "./scalars";
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -38,6 +41,10 @@ export type Scalars = {
   Cache: { input: Cache; output: Cache };
   DateTime: { input: DateTime; output: DateTime };
   Diff: { input: Diff; output: Diff };
+  DirectCacheWriteOptions: {
+    input: DirectCacheWriteOptions;
+    output: DirectCacheWriteOptions;
+  };
   DocumentNode: { input: DocumentNode; output: DocumentNode };
   GraphQLErrorPath: { input: GraphQLErrorPath; output: GraphQLErrorPath };
   JSON: { input: JSON; output: JSON };
@@ -47,6 +54,11 @@ export type Scalars = {
   QueryOptions: { input: QueryOptions; output: QueryOptions };
   /** Represents variables for a query */
   Variables: { input: Variables; output: Variables };
+  WriteFragmentOptions: {
+    input: WriteFragmentOptions;
+    output: WriteFragmentOptions;
+  };
+  WriteQueryOptions: { input: WriteQueryOptions; output: WriteQueryOptions };
 };
 
 export type BaseCacheSizes = {
@@ -62,16 +74,9 @@ export type CacheSize = {
 };
 
 export type CacheWrite = {
-  __typename: "CacheWrite";
-  broadcast: Maybe<Scalars["Boolean"]["output"]>;
-  cacheDiff: Maybe<Scalars["Diff"]["output"]>;
-  data: Maybe<Scalars["QueryData"]["output"]>;
-  dataId: Maybe<Scalars["String"]["output"]>;
-  document: GraphQLDocument;
+  diff: Maybe<Scalars["Diff"]["output"]>;
   id: Scalars["ID"]["output"];
-  overwrite: Maybe<Scalars["Boolean"]["output"]>;
   timestamp: Scalars["DateTime"]["output"];
-  variables: Maybe<Scalars["Variables"]["output"]>;
 };
 
 export type Client = {
@@ -253,6 +258,14 @@ export type ClientWatchedQuery = {
   variables: Maybe<Scalars["Variables"]["output"]>;
 };
 
+export type DirectCacheWrite = CacheWrite & {
+  __typename: "DirectCacheWrite";
+  diff: Maybe<Scalars["Diff"]["output"]>;
+  id: Scalars["ID"]["output"];
+  options: Scalars["DirectCacheWriteOptions"]["output"];
+  timestamp: Scalars["DateTime"]["output"];
+};
+
 export type DocumentTransformCacheSizes = {
   __typename: "DocumentTransformCacheSizes";
   cache: CacheSize;
@@ -423,6 +436,22 @@ export type SubscriptioncacheWrittenArgs = {
   clientId: Scalars["ID"]["input"];
 };
 
+export type WriteFragmentCacheWrite = CacheWrite & {
+  __typename: "WriteFragmentCacheWrite";
+  diff: Maybe<Scalars["Diff"]["output"]>;
+  id: Scalars["ID"]["output"];
+  options: Scalars["WriteFragmentOptions"]["output"];
+  timestamp: Scalars["DateTime"]["output"];
+};
+
+export type WriteQueryCacheWrite = CacheWrite & {
+  __typename: "WriteQueryCacheWrite";
+  diff: Maybe<Scalars["Diff"]["output"]>;
+  id: Scalars["ID"]["output"];
+  options: Scalars["WriteQueryOptions"]["output"];
+  timestamp: Scalars["DateTime"]["output"];
+};
+
 export type AppQueryVariables = Exact<{ [key: string]: never }>;
 
 export type AppQuery = {
@@ -460,62 +489,28 @@ export type CacheWritesSubscriptionVariables = Exact<{
 }>;
 
 export type CacheWritesSubscription = {
-  cacheWritten: {
-    __typename: "CacheWrite";
-    id: string;
-    timestamp: DateTime;
-    data: QueryData | null;
-    variables: Variables | null;
-    cacheDiff: Diff | null;
-    dataId: string | null;
-    broadcast: boolean | null;
-    overwrite: boolean | null;
-    document: {
-      __typename: "GraphQLDocument";
-      ast: DocumentNode;
-      string: string;
-    };
-  };
+  cacheWritten:
+    | { __typename: "DirectCacheWrite"; id: string }
+    | { __typename: "WriteFragmentCacheWrite"; id: string }
+    | { __typename: "WriteQueryCacheWrite"; id: string };
 };
 
 type ClientWriteSubscriptionFragment_ClientV3 = {
   __typename: "ClientV3";
-  cacheWrites: Array<{
-    __typename: "CacheWrite";
-    id: string;
-    timestamp: DateTime;
-    data: QueryData | null;
-    variables: Variables | null;
-    cacheDiff: Diff | null;
-    dataId: string | null;
-    broadcast: boolean | null;
-    overwrite: boolean | null;
-    document: {
-      __typename: "GraphQLDocument";
-      ast: DocumentNode;
-      string: string;
-    };
-  }>;
+  cacheWrites: Array<
+    | { __typename: "DirectCacheWrite"; id: string }
+    | { __typename: "WriteFragmentCacheWrite"; id: string }
+    | { __typename: "WriteQueryCacheWrite"; id: string }
+  >;
 };
 
 type ClientWriteSubscriptionFragment_ClientV4 = {
   __typename: "ClientV4";
-  cacheWrites: Array<{
-    __typename: "CacheWrite";
-    id: string;
-    timestamp: DateTime;
-    data: QueryData | null;
-    variables: Variables | null;
-    cacheDiff: Diff | null;
-    dataId: string | null;
-    broadcast: boolean | null;
-    overwrite: boolean | null;
-    document: {
-      __typename: "GraphQLDocument";
-      ast: DocumentNode;
-      string: string;
-    };
-  }>;
+  cacheWrites: Array<
+    | { __typename: "DirectCacheWrite"; id: string }
+    | { __typename: "WriteFragmentCacheWrite"; id: string }
+    | { __typename: "WriteQueryCacheWrite"; id: string }
+  >;
 };
 
 export type ClientWriteSubscriptionFragment =
@@ -550,86 +545,84 @@ export type GetCache = {
         __typename: "ClientV3";
         id: string;
         cache: Cache;
-        cacheWrites: Array<{
-          __typename: "CacheWrite";
-          id: string;
-          timestamp: DateTime;
-          data: QueryData | null;
-          variables: Variables | null;
-          cacheDiff: Diff | null;
-          dataId: string | null;
-          broadcast: boolean | null;
-          overwrite: boolean | null;
-          document: {
-            __typename: "GraphQLDocument";
-            ast: DocumentNode;
-            string: string;
-          };
-        }>;
+        cacheWrites: Array<
+          | { __typename: "DirectCacheWrite"; id: string }
+          | { __typename: "WriteFragmentCacheWrite"; id: string }
+          | { __typename: "WriteQueryCacheWrite"; id: string }
+        >;
       }
     | {
         __typename: "ClientV4";
         id: string;
         cache: Cache;
-        cacheWrites: Array<{
-          __typename: "CacheWrite";
-          id: string;
-          timestamp: DateTime;
-          data: QueryData | null;
-          variables: Variables | null;
-          cacheDiff: Diff | null;
-          dataId: string | null;
-          broadcast: boolean | null;
-          overwrite: boolean | null;
-          document: {
-            __typename: "GraphQLDocument";
-            ast: DocumentNode;
-            string: string;
-          };
-        }>;
+        cacheWrites: Array<
+          | { __typename: "DirectCacheWrite"; id: string }
+          | { __typename: "WriteFragmentCacheWrite"; id: string }
+          | { __typename: "WriteQueryCacheWrite"; id: string }
+        >;
       }
     | null;
 };
 
-export type CacheWritesPanelFragment = {
-  __typename: "CacheWrite";
+type CacheWritesPanelFragment_DirectCacheWrite = {
+  __typename: "DirectCacheWrite";
   id: string;
-  timestamp: DateTime;
-  data: QueryData | null;
-  variables: Variables | null;
-  cacheDiff: Diff | null;
-  dataId: string | null;
-  broadcast: boolean | null;
-  overwrite: boolean | null;
-  document: {
-    __typename: "GraphQLDocument";
-    ast: DocumentNode;
-    string: string;
-  };
 };
 
-export type CacheWritesListView_cacheWrites = {
-  __typename: "CacheWrite";
+type CacheWritesPanelFragment_WriteFragmentCacheWrite = {
+  __typename: "WriteFragmentCacheWrite";
   id: string;
-  timestamp: DateTime;
-  document: { __typename: "GraphQLDocument"; ast: DocumentNode };
 };
 
-export type CacheWriteView_cacheWrite = {
-  __typename: "CacheWrite";
+type CacheWritesPanelFragment_WriteQueryCacheWrite = {
+  __typename: "WriteQueryCacheWrite";
   id: string;
-  data: QueryData | null;
-  variables: Variables | null;
-  cacheDiff: Diff | null;
-  dataId: string | null;
-  broadcast: boolean | null;
-  overwrite: boolean | null;
-  document: {
-    __typename: "GraphQLDocument";
-    string: string;
-    ast: DocumentNode;
-  };
 };
+
+export type CacheWritesPanelFragment =
+  | CacheWritesPanelFragment_DirectCacheWrite
+  | CacheWritesPanelFragment_WriteFragmentCacheWrite
+  | CacheWritesPanelFragment_WriteQueryCacheWrite;
+
+type CacheWritesListView_cacheWrites_DirectCacheWrite = {
+  __typename: "DirectCacheWrite";
+  id: string;
+};
+
+type CacheWritesListView_cacheWrites_WriteFragmentCacheWrite = {
+  __typename: "WriteFragmentCacheWrite";
+  id: string;
+};
+
+type CacheWritesListView_cacheWrites_WriteQueryCacheWrite = {
+  __typename: "WriteQueryCacheWrite";
+  id: string;
+};
+
+export type CacheWritesListView_cacheWrites =
+  | CacheWritesListView_cacheWrites_DirectCacheWrite
+  | CacheWritesListView_cacheWrites_WriteFragmentCacheWrite
+  | CacheWritesListView_cacheWrites_WriteQueryCacheWrite;
+
+type CacheWriteView_cacheWrite_DirectCacheWrite = {
+  __typename: "DirectCacheWrite";
+  id: string;
+};
+
+type CacheWriteView_cacheWrite_WriteFragmentCacheWrite = {
+  __typename: "WriteFragmentCacheWrite";
+  id: string;
+};
+
+type CacheWriteView_cacheWrite_WriteQueryCacheWrite = {
+  __typename: "WriteQueryCacheWrite";
+  id: string;
+};
+
+export type CacheWriteView_cacheWrite =
+  | CacheWriteView_cacheWrite_DirectCacheWrite
+  | CacheWriteView_cacheWrite_WriteFragmentCacheWrite
+  | CacheWriteView_cacheWrite_WriteQueryCacheWrite;
 
 export type CombinedGraphQLErrorsAlertDisclosurePanel_error = {
   __typename: "SerializedCombinedGraphQLErrors";
