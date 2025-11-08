@@ -490,26 +490,80 @@ export type CacheWritesSubscriptionVariables = Exact<{
 
 export type CacheWritesSubscription = {
   cacheWritten:
-    | { __typename: "DirectCacheWrite"; id: string }
-    | { __typename: "WriteFragmentCacheWrite"; id: string }
-    | { __typename: "WriteQueryCacheWrite"; id: string };
+    | {
+        __typename: "DirectCacheWrite";
+        id: string;
+        diff: Diff | null;
+        timestamp: DateTime;
+        writeOptions: DirectCacheWriteOptions;
+      }
+    | {
+        __typename: "WriteFragmentCacheWrite";
+        id: string;
+        diff: Diff | null;
+        timestamp: DateTime;
+        writeFragmentOptions: WriteFragmentOptions;
+      }
+    | {
+        __typename: "WriteQueryCacheWrite";
+        id: string;
+        diff: Diff | null;
+        timestamp: DateTime;
+        writeQueryOptions: WriteQueryOptions;
+      };
 };
 
 type ClientWriteSubscriptionFragment_ClientV3 = {
   __typename: "ClientV3";
   cacheWrites: Array<
-    | { __typename: "DirectCacheWrite"; id: string }
-    | { __typename: "WriteFragmentCacheWrite"; id: string }
-    | { __typename: "WriteQueryCacheWrite"; id: string }
+    | {
+        __typename: "DirectCacheWrite";
+        id: string;
+        diff: Diff | null;
+        timestamp: DateTime;
+        writeOptions: DirectCacheWriteOptions;
+      }
+    | {
+        __typename: "WriteFragmentCacheWrite";
+        id: string;
+        diff: Diff | null;
+        timestamp: DateTime;
+        writeFragmentOptions: WriteFragmentOptions;
+      }
+    | {
+        __typename: "WriteQueryCacheWrite";
+        id: string;
+        diff: Diff | null;
+        timestamp: DateTime;
+        writeQueryOptions: WriteQueryOptions;
+      }
   >;
 };
 
 type ClientWriteSubscriptionFragment_ClientV4 = {
   __typename: "ClientV4";
   cacheWrites: Array<
-    | { __typename: "DirectCacheWrite"; id: string }
-    | { __typename: "WriteFragmentCacheWrite"; id: string }
-    | { __typename: "WriteQueryCacheWrite"; id: string }
+    | {
+        __typename: "DirectCacheWrite";
+        id: string;
+        diff: Diff | null;
+        timestamp: DateTime;
+        writeOptions: DirectCacheWriteOptions;
+      }
+    | {
+        __typename: "WriteFragmentCacheWrite";
+        id: string;
+        diff: Diff | null;
+        timestamp: DateTime;
+        writeFragmentOptions: WriteFragmentOptions;
+      }
+    | {
+        __typename: "WriteQueryCacheWrite";
+        id: string;
+        diff: Diff | null;
+        timestamp: DateTime;
+        writeQueryOptions: WriteQueryOptions;
+      }
   >;
 };
 
@@ -546,9 +600,27 @@ export type GetCache = {
         id: string;
         cache: Cache;
         cacheWrites: Array<
-          | { __typename: "DirectCacheWrite"; id: string }
-          | { __typename: "WriteFragmentCacheWrite"; id: string }
-          | { __typename: "WriteQueryCacheWrite"; id: string }
+          | {
+              __typename: "DirectCacheWrite";
+              id: string;
+              diff: Diff | null;
+              timestamp: DateTime;
+              writeOptions: DirectCacheWriteOptions;
+            }
+          | {
+              __typename: "WriteFragmentCacheWrite";
+              id: string;
+              diff: Diff | null;
+              timestamp: DateTime;
+              writeFragmentOptions: WriteFragmentOptions;
+            }
+          | {
+              __typename: "WriteQueryCacheWrite";
+              id: string;
+              diff: Diff | null;
+              timestamp: DateTime;
+              writeQueryOptions: WriteQueryOptions;
+            }
         >;
       }
     | {
@@ -556,9 +628,27 @@ export type GetCache = {
         id: string;
         cache: Cache;
         cacheWrites: Array<
-          | { __typename: "DirectCacheWrite"; id: string }
-          | { __typename: "WriteFragmentCacheWrite"; id: string }
-          | { __typename: "WriteQueryCacheWrite"; id: string }
+          | {
+              __typename: "DirectCacheWrite";
+              id: string;
+              diff: Diff | null;
+              timestamp: DateTime;
+              writeOptions: DirectCacheWriteOptions;
+            }
+          | {
+              __typename: "WriteFragmentCacheWrite";
+              id: string;
+              diff: Diff | null;
+              timestamp: DateTime;
+              writeFragmentOptions: WriteFragmentOptions;
+            }
+          | {
+              __typename: "WriteQueryCacheWrite";
+              id: string;
+              diff: Diff | null;
+              timestamp: DateTime;
+              writeQueryOptions: WriteQueryOptions;
+            }
         >;
       }
     | null;
@@ -567,16 +657,25 @@ export type GetCache = {
 type CacheWritesPanelFragment_DirectCacheWrite = {
   __typename: "DirectCacheWrite";
   id: string;
+  diff: Diff | null;
+  timestamp: DateTime;
+  writeOptions: DirectCacheWriteOptions;
 };
 
 type CacheWritesPanelFragment_WriteFragmentCacheWrite = {
   __typename: "WriteFragmentCacheWrite";
   id: string;
+  diff: Diff | null;
+  timestamp: DateTime;
+  writeFragmentOptions: WriteFragmentOptions;
 };
 
 type CacheWritesPanelFragment_WriteQueryCacheWrite = {
   __typename: "WriteQueryCacheWrite";
   id: string;
+  diff: Diff | null;
+  timestamp: DateTime;
+  writeQueryOptions: WriteQueryOptions;
 };
 
 export type CacheWritesPanelFragment =
@@ -587,16 +686,22 @@ export type CacheWritesPanelFragment =
 type CacheWritesListView_cacheWrites_DirectCacheWrite = {
   __typename: "DirectCacheWrite";
   id: string;
+  timestamp: DateTime;
+  writeOptions: DirectCacheWriteOptions;
 };
 
 type CacheWritesListView_cacheWrites_WriteFragmentCacheWrite = {
   __typename: "WriteFragmentCacheWrite";
   id: string;
+  timestamp: DateTime;
+  writeFragmentOptions: WriteFragmentOptions;
 };
 
 type CacheWritesListView_cacheWrites_WriteQueryCacheWrite = {
   __typename: "WriteQueryCacheWrite";
   id: string;
+  timestamp: DateTime;
+  writeQueryOptions: WriteQueryOptions;
 };
 
 export type CacheWritesListView_cacheWrites =
@@ -604,25 +709,26 @@ export type CacheWritesListView_cacheWrites =
   | CacheWritesListView_cacheWrites_WriteFragmentCacheWrite
   | CacheWritesListView_cacheWrites_WriteQueryCacheWrite;
 
-type CacheWriteView_cacheWrite_DirectCacheWrite = {
+export type DirectCacheWriteView_cacheWrite = {
   __typename: "DirectCacheWrite";
   id: string;
+  diff: Diff | null;
+  writeOptions: DirectCacheWriteOptions;
 };
 
-type CacheWriteView_cacheWrite_WriteFragmentCacheWrite = {
+export type WriteFragmentView_cacheWrite = {
   __typename: "WriteFragmentCacheWrite";
   id: string;
+  diff: Diff | null;
+  writeFragmentOptions: WriteFragmentOptions;
 };
 
-type CacheWriteView_cacheWrite_WriteQueryCacheWrite = {
+export type WriteQueryView_cacheWrite = {
   __typename: "WriteQueryCacheWrite";
   id: string;
+  diff: Diff | null;
+  writeQueryOptions: WriteQueryOptions;
 };
-
-export type CacheWriteView_cacheWrite =
-  | CacheWriteView_cacheWrite_DirectCacheWrite
-  | CacheWriteView_cacheWrite_WriteFragmentCacheWrite
-  | CacheWriteView_cacheWrite_WriteQueryCacheWrite;
 
 export type CombinedGraphQLErrorsAlertDisclosurePanel_error = {
   __typename: "SerializedCombinedGraphQLErrors";

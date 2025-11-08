@@ -24,6 +24,8 @@ export function createSchemaWithRpcClient(rpcClient: RpcClient) {
   });
 }
 
+const diffResolver = ({ cache }: CacheWrite) => diff(cache.before, cache.after);
+
 function createResolvers(client: RpcClient): Resolvers {
   const rpcClient = client.withTimeout(10_000);
 
@@ -75,13 +77,13 @@ function createResolvers(client: RpcClient): Resolvers {
       },
     },
     DirectCacheWrite: {
-      diff: ({ cache }) => diff(cache.before, cache.after),
+      diff: diffResolver,
     },
     WriteFragmentCacheWrite: {
-      diff: ({ cache }) => diff(cache.before, cache.after),
+      diff: diffResolver,
     },
     WriteQueryCacheWrite: {
-      diff: ({ cache }) => diff(cache.before, cache.after),
+      diff: diffResolver,
     },
     GraphQLDocument: {
       string: print,

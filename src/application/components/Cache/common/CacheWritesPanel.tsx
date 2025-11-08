@@ -3,8 +3,10 @@ import IconArrowLeft from "@apollo/icons/default/IconArrowLeft.svg";
 import { fragmentRegistry } from "@/application/fragmentRegistry";
 import type {
   CacheWritesListView_cacheWrites,
-  CacheWriteView_cacheWrite,
   Client,
+  DirectCacheWriteView_cacheWrite,
+  WriteFragmentView_cacheWrite,
+  WriteQueryView_cacheWrite,
 } from "@/application/types/gql";
 import { type CacheWritesPanelFragment } from "@/application/types/gql";
 import type { TypedDocumentNode } from "@apollo/client";
@@ -14,6 +16,7 @@ import { Panel } from "react-resizable-panels";
 import { CodeBlock } from "../../CodeBlock";
 import type { ReactNode } from "react";
 import { useState } from "react";
+import { print } from "@apollo/client/utilities";
 import { getOperationName } from "@apollo/client/utilities/internal";
 import { List } from "../../List";
 import { ListItem } from "../../ListItem";
@@ -28,8 +31,10 @@ import { Tooltip } from "../../Tooltip";
 const CACHE_WRITES_PANEL_FRAGMENT: TypedDocumentNode<CacheWritesPanelFragment> = gql`
   fragment CacheWritesPanelFragment on CacheWrite {
     id
+    ...DirectCacheWriteView_cacheWrite @nonreactive
+    ...WriteFragmentView_cacheWrite @nonreactive
+    ...WriteQueryView_cacheWrite @nonreactive
     ...CacheWritesListView_cacheWrites @nonreactive
-    ...CacheWriteView_cacheWrite @nonreactive
   }
 `;
 
@@ -60,6 +65,8 @@ export function CacheWritesPanel({ client, cacheWrites }: Props) {
     (cacheWrite) => cacheWrite.id === selectedId
   );
 
+  const navigateBack = () => setSelectedId(null);
+
   return (
     <Panel
       id="cacheWrites"
@@ -67,10 +74,20 @@ export function CacheWritesPanel({ client, cacheWrites }: Props) {
       minSize={10}
       defaultSize={25}
     >
-      {selectedCacheWrite ? (
-        <CacheWriteView
+      {selectedCacheWrite?.__typename === "DirectCacheWrite" ? (
+        <DirectCacheWriteView
           cacheWrite={selectedCacheWrite}
-          onNavigateBack={() => setSelectedId(null)}
+          onNavigateBack={navigateBack}
+        />
+      ) : selectedCacheWrite?.__typename === "WriteFragmentCacheWrite" ? (
+        <WriteFragmentView
+          cacheWrite={selectedCacheWrite}
+          onNavigateBack={navigateBack}
+        />
+      ) : selectedCacheWrite ? (
+        <WriteQueryView
+          cacheWrite={selectedCacheWrite}
+          onNavigateBack={navigateBack}
         />
       ) : (
         <ListView client={client} cacheWrites={data} onSelect={setSelectedId} />
@@ -82,10 +99,16 @@ export function CacheWritesPanel({ client, cacheWrites }: Props) {
 const LIST_VIEW_FRAGMENT: TypedDocumentNode<CacheWritesListView_cacheWrites> = gql`
   fragment CacheWritesListView_cacheWrites on CacheWrite {
     id
-    document {
-      ast
-    }
     timestamp
+    ... on DirectCacheWrite {
+      writeOptions: options
+    }
+    ... on WriteQueryCacheWrite {
+      writeQueryOptions: options
+    }
+    ... on WriteFragmentCacheWrite {
+      writeFragmentOptions: options
+    }
   }
 `;
 
@@ -139,56 +162,60 @@ function ListView({
         </Tooltip>
       </section>
       <List className="p-4">
-        {[...data].reverse().map((cacheWrite) => (
-          <ListItem key={cacheWrite.id} onClick={() => onSelect(cacheWrite.id)}>
-            <div className="flex flex-col gap-1">
-              <span className="font-code">
-                {getOperationName(cacheWrite.document.ast)}
-              </span>
-              <span className="text-xs">
-                {format(new Date(cacheWrite.timestamp), "MMM do, yyyy pp")}
-              </span>
-            </div>
-          </ListItem>
-        ))}
+        {[...data].reverse().map((cacheWrite) => {
+          const document =
+            cacheWrite.__typename === "DirectCacheWrite"
+              ? cacheWrite.writeOptions.query
+              : cacheWrite.__typename === "WriteFragmentCacheWrite"
+                ? cacheWrite.writeFragmentOptions.fragment
+                : cacheWrite.writeQueryOptions.query;
+
+          return (
+            <ListItem
+              key={cacheWrite.id}
+              onClick={() => onSelect(cacheWrite.id)}
+            >
+              <div className="flex flex-col gap-1">
+                <span className="font-code">{getOperationName(document)}</span>
+                <span className="text-xs">
+                  {format(new Date(cacheWrite.timestamp), "MMM do, yyyy pp")}
+                </span>
+              </div>
+            </ListItem>
+          );
+        })}
       </List>
     </div>
   );
 }
 
-const CACHE_WRITE_VIEW: TypedDocumentNode<CacheWriteView_cacheWrite> = gql`
-  fragment CacheWriteView_cacheWrite on CacheWrite {
+const DIRECT_CACHE_WRITE_VIEW: TypedDocumentNode<DirectCacheWriteView_cacheWrite> = gql`
+  fragment DirectCacheWriteView_cacheWrite on DirectCacheWrite {
     id
-    data
-    document {
-      string
-      ast
-    }
-    variables
-    cacheDiff
-    dataId
-    broadcast
-    overwrite
+    diff
+    writeOptions: options
   }
 `;
 
-fragmentRegistry.register(CACHE_WRITE_VIEW);
+fragmentRegistry.register(DIRECT_CACHE_WRITE_VIEW);
 
-function CacheWriteView({
+function DirectCacheWriteView({
   cacheWrite,
   onNavigateBack,
 }: {
-  cacheWrite: CacheWriteView_cacheWrite;
+  cacheWrite: DirectCacheWriteView_cacheWrite;
   onNavigateBack: () => void;
 }) {
   const { data, complete } = useFragment({
-    fragment: CACHE_WRITE_VIEW,
+    fragment: DIRECT_CACHE_WRITE_VIEW,
     from: cacheWrite,
   });
 
   if (!complete) {
     return null;
   }
+
+  const { query, result, variables, ...options } = data.writeOptions;
 
   return (
     <div className="grow !overflow-auto">
@@ -203,37 +230,192 @@ function CacheWriteView({
           />
         </Tooltip>
         <h2 className="grow font-medium text-lg text-heading dark:text-heading-dark font-code">
-          {getOperationName(data.document.ast, "(anonymous)")}
+          {getOperationName(query, "(anonymous)")}
         </h2>
       </section>
       <div className="flex flex-col gap-4 p-4">
-        <CodeBlock language="graphql" code={data.document.string} />
+        <CodeBlock language="graphql" code={print(query)} />
         <Section>
           <SectionTitle>Diff</SectionTitle>
-          {data.cacheDiff === null ? (
+          {data.diff === null ? (
             <span className="text-secondary dark:text-secondary-dark italic">
               Unchanged
             </span>
           ) : (
-            <ObjectDiff diff={data.cacheDiff} />
+            <ObjectDiff diff={data.diff} />
           )}
         </Section>
         <Section>
           <SectionTitle>Data</SectionTitle>
-          <ObjectViewer value={data.data} />
+          <ObjectViewer value={result} />
         </Section>
         <Section>
           <SectionTitle>Variables</SectionTitle>
-          <VariablesObject variables={data.variables ?? undefined} />
+          <VariablesObject variables={variables} />
         </Section>
         <Section>
           <SectionTitle>Options</SectionTitle>
           <ObjectViewer
-            value={{
-              dataId: data.dataId,
-              overwrite: data.overwrite,
-              broadcast: data.broadcast,
-            }}
+            value={options}
+            displayObjectSize={false}
+            collapsed={false}
+          />
+        </Section>
+      </div>
+    </div>
+  );
+}
+
+const WRITE_FRAGMENT_VIEW: TypedDocumentNode<WriteFragmentView_cacheWrite> = gql`
+  fragment WriteFragmentView_cacheWrite on WriteFragmentCacheWrite {
+    id
+    diff
+    writeFragmentOptions: options
+  }
+`;
+
+fragmentRegistry.register(WRITE_FRAGMENT_VIEW);
+
+function WriteFragmentView({
+  cacheWrite,
+  onNavigateBack,
+}: {
+  cacheWrite: WriteFragmentView_cacheWrite;
+  onNavigateBack: () => void;
+}) {
+  const { data, complete } = useFragment({
+    fragment: WRITE_FRAGMENT_VIEW,
+    from: cacheWrite,
+  });
+
+  if (!complete) {
+    return null;
+  }
+
+  const {
+    fragment,
+    data: result,
+    variables,
+    ...options
+  } = data.writeFragmentOptions;
+
+  return (
+    <div className="grow !overflow-auto">
+      <section className="flex items-center gap-2 border-b border-b-primary dark:border-b-primary-dark py-2 px-4">
+        <Tooltip content="Back">
+          <Button
+            aria-label="Back"
+            variant="hidden"
+            size="sm"
+            icon={<IconArrowLeft />}
+            onClick={onNavigateBack}
+          />
+        </Tooltip>
+        <h2 className="grow font-medium text-lg text-heading dark:text-heading-dark font-code">
+          {getOperationName(fragment, "(anonymous)")}
+        </h2>
+      </section>
+      <div className="flex flex-col gap-4 p-4">
+        <CodeBlock language="graphql" code={print(fragment)} />
+        <Section>
+          <SectionTitle>Diff</SectionTitle>
+          {data.diff === null ? (
+            <span className="text-secondary dark:text-secondary-dark italic">
+              Unchanged
+            </span>
+          ) : (
+            <ObjectDiff diff={data.diff} />
+          )}
+        </Section>
+        <Section>
+          <SectionTitle>Data</SectionTitle>
+          <ObjectViewer value={result} />
+        </Section>
+        <Section>
+          <SectionTitle>Variables</SectionTitle>
+          <VariablesObject variables={variables} />
+        </Section>
+        <Section>
+          <SectionTitle>Options</SectionTitle>
+          <ObjectViewer
+            value={options}
+            displayObjectSize={false}
+            collapsed={false}
+          />
+        </Section>
+      </div>
+    </div>
+  );
+}
+
+const WRITE_QUERY_VIEW: TypedDocumentNode<WriteQueryView_cacheWrite> = gql`
+  fragment WriteQueryView_cacheWrite on WriteQueryCacheWrite {
+    id
+    diff
+    writeQueryOptions: options
+  }
+`;
+
+fragmentRegistry.register(WRITE_QUERY_VIEW);
+
+function WriteQueryView({
+  cacheWrite,
+  onNavigateBack,
+}: {
+  cacheWrite: WriteQueryView_cacheWrite;
+  onNavigateBack: () => void;
+}) {
+  const { data, complete } = useFragment({
+    fragment: WRITE_QUERY_VIEW,
+    from: cacheWrite,
+  });
+
+  if (!complete) {
+    return null;
+  }
+
+  const { query, data: result, variables, ...options } = data.writeQueryOptions;
+
+  return (
+    <div className="grow !overflow-auto">
+      <section className="flex items-center gap-2 border-b border-b-primary dark:border-b-primary-dark py-2 px-4">
+        <Tooltip content="Back">
+          <Button
+            aria-label="Back"
+            variant="hidden"
+            size="sm"
+            icon={<IconArrowLeft />}
+            onClick={onNavigateBack}
+          />
+        </Tooltip>
+        <h2 className="grow font-medium text-lg text-heading dark:text-heading-dark font-code">
+          {getOperationName(query, "(anonymous)")}
+        </h2>
+      </section>
+      <div className="flex flex-col gap-4 p-4">
+        <CodeBlock language="graphql" code={print(query)} />
+        <Section>
+          <SectionTitle>Diff</SectionTitle>
+          {data.diff === null ? (
+            <span className="text-secondary dark:text-secondary-dark italic">
+              Unchanged
+            </span>
+          ) : (
+            <ObjectDiff diff={data.diff} />
+          )}
+        </Section>
+        <Section>
+          <SectionTitle>Data</SectionTitle>
+          <ObjectViewer value={result} />
+        </Section>
+        <Section>
+          <SectionTitle>Variables</SectionTitle>
+          <VariablesObject variables={variables} />
+        </Section>
+        <Section>
+          <SectionTitle>Options</SectionTitle>
+          <ObjectViewer
+            value={options}
             displayObjectSize={false}
             collapsed={false}
           />
