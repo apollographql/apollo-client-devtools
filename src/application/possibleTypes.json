@@ -1,5 +1,10 @@
 {
   "possibleTypes": {
+    "CacheWrite": [
+      "DirectCacheWrite",
+      "WriteFragmentCacheWrite",
+      "WriteQueryCacheWrite"
+    ],
     "Client": ["ClientV3", "ClientV4"],
     "ClientMutation": ["ClientV3Mutation", "ClientV4Mutation"],
     "ClientMutations": ["ClientV3Mutations", "ClientV4Mutations"],
