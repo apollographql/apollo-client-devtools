@@ -10,6 +10,7 @@ scalar Variables
 "Represents options for a query"
 scalar QueryOptions
 
+scalar CacheModifyOptions
 scalar DirectCacheWriteOptions
 scalar WriteQueryOptions
 scalar WriteFragmentOptions
@@ -36,6 +37,7 @@ interface CacheWrite {
   timestamp: DateTime!
 }
 
+"Calls to cache.write(...)"
 type DirectCacheWrite implements CacheWrite {
   id: ID!
   diff: Diff
@@ -43,6 +45,7 @@ type DirectCacheWrite implements CacheWrite {
   timestamp: DateTime!
 }
 
+"Calls to cache.writeQuery(...)"
 type WriteQueryCacheWrite implements CacheWrite {
   id: ID!
   diff: Diff
@@ -50,10 +53,19 @@ type WriteQueryCacheWrite implements CacheWrite {
   timestamp: DateTime!
 }
 
+"Calls to cache.writeFragment(...)"
 type WriteFragmentCacheWrite implements CacheWrite {
   id: ID!
   diff: Diff
   options: WriteFragmentOptions!
+  timestamp: DateTime!
+}
+
+"Calls to cache.modify(...)"
+type CacheModifyWrite implements CacheWrite {
+  id: ID!
+  diff: Diff
+  options: CacheModifyOptions!
   timestamp: DateTime!
 }
 

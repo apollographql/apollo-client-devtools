@@ -1,6 +1,7 @@
 {
   "possibleTypes": {
     "CacheWrite": [
+      "CacheModifyWrite",
       "DirectCacheWrite",
       "WriteFragmentCacheWrite",
       "WriteQueryCacheWrite"

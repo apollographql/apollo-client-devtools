@@ -59,6 +59,7 @@ export type Scalars = {
   Float: { input: number; output: number };
   /** Represents JSON cache data */
   Cache: { input: unknown; output: unknown };
+  CacheModifyOptions: { input: unknown; output: unknown };
   DateTime: { input: DateTime; output: DateTime };
   Diff: { input: Diff; output: Diff };
   DirectCacheWriteOptions: {
@@ -84,6 +85,15 @@ export type Scalars = {
 export type BaseCacheSizes = {
   __typename?: "BaseCacheSizes";
   fragmentQueryDocuments: CacheSize;
+};
+
+/** Calls to cache.modify(...) */
+export type CacheModifyWrite = CacheWrite & {
+  __typename?: "CacheModifyWrite";
+  diff: Maybe<Scalars["Diff"]["output"]>;
+  id: Scalars["ID"]["output"];
+  options: Scalars["CacheModifyOptions"]["output"];
+  timestamp: Scalars["DateTime"]["output"];
 };
 
 export type CacheSize = {
@@ -278,6 +288,7 @@ export type ClientWatchedQuery = {
   variables: Maybe<Scalars["Variables"]["output"]>;
 };
 
+/** Calls to cache.write(...) */
 export type DirectCacheWrite = CacheWrite & {
   __typename?: "DirectCacheWrite";
   diff: Maybe<Scalars["Diff"]["output"]>;
@@ -456,6 +467,7 @@ export type SubscriptionCacheWrittenArgs = {
   clientId: Scalars["ID"]["input"];
 };
 
+/** Calls to cache.writeFragment(...) */
 export type WriteFragmentCacheWrite = CacheWrite & {
   __typename?: "WriteFragmentCacheWrite";
   diff: Maybe<Scalars["Diff"]["output"]>;
@@ -464,6 +476,7 @@ export type WriteFragmentCacheWrite = CacheWrite & {
   timestamp: Scalars["DateTime"]["output"];
 };
 
+/** Calls to cache.writeQuery(...) */
 export type WriteQueryCacheWrite = CacheWrite & {
   __typename?: "WriteQueryCacheWrite";
   diff: Maybe<Scalars["Diff"]["output"]>;
@@ -588,7 +601,11 @@ export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = {
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> =
   {
-    CacheWrite: RemoteCacheWrite | RemoteCacheWrite | RemoteCacheWrite;
+    CacheWrite:
+      | CacheModifyWrite
+      | RemoteCacheWrite
+      | RemoteCacheWrite
+      | RemoteCacheWrite;
     Client: ApolloClientInfo | ApolloClientInfo;
     ClientMutation:
       | (Omit<ClientV3Mutation, "error"> & {
@@ -629,6 +646,10 @@ export type ResolversTypes = {
   BaseCacheSizes: ResolverTypeWrapper<BaseCacheSizes>;
   Boolean: ResolverTypeWrapper<Scalars["Boolean"]["output"]>;
   Cache: ResolverTypeWrapper<Scalars["Cache"]["output"]>;
+  CacheModifyOptions: ResolverTypeWrapper<
+    Scalars["CacheModifyOptions"]["output"]
+  >;
+  CacheModifyWrite: ResolverTypeWrapper<CacheModifyWrite>;
   CacheSize: ResolverTypeWrapper<CacheSize>;
   CacheWrite: ResolverTypeWrapper<RemoteCacheWrite>;
   Client: ResolverTypeWrapper<ApolloClientInfo>;
@@ -751,6 +772,8 @@ export type ResolversParentTypes = {
   BaseCacheSizes: BaseCacheSizes;
   Boolean: Scalars["Boolean"]["output"];
   Cache: Scalars["Cache"]["output"];
+  CacheModifyOptions: Scalars["CacheModifyOptions"]["output"];
+  CacheModifyWrite: CacheModifyWrite;
   CacheSize: CacheSize;
   CacheWrite: RemoteCacheWrite;
   Client: ApolloClientInfo;
@@ -850,6 +873,27 @@ export interface CacheScalarConfig
   name: "Cache";
 }
 
+export interface CacheModifyOptionsScalarConfig
+  extends GraphQLScalarTypeConfig<ResolversTypes["CacheModifyOptions"], any> {
+  name: "CacheModifyOptions";
+}
+
+export type CacheModifyWriteResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["CacheModifyWrite"] = ResolversParentTypes["CacheModifyWrite"],
+> = {
+  diff?: Resolver<Maybe<ResolversTypes["Diff"]>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  options?: Resolver<
+    ResolversTypes["CacheModifyOptions"],
+    ParentType,
+    ContextType
+  >;
+  timestamp?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type CacheSizeResolvers<
   ContextType = any,
   ParentType extends
@@ -867,7 +911,10 @@ export type CacheWriteResolvers<
     ResolversParentTypes["CacheWrite"] = ResolversParentTypes["CacheWrite"],
 > = {
   __resolveType: TypeResolveFn<
-    "DirectCacheWrite" | "WriteFragmentCacheWrite" | "WriteQueryCacheWrite",
+    | "CacheModifyWrite"
+    | "DirectCacheWrite"
+    | "WriteFragmentCacheWrite"
+    | "WriteQueryCacheWrite",
     ParentType,
     ContextType
   >;
@@ -1755,6 +1802,8 @@ export interface WriteQueryOptionsScalarConfig
 export type Resolvers<ContextType = any> = {
   BaseCacheSizes?: BaseCacheSizesResolvers<ContextType>;
   Cache?: GraphQLScalarType;
+  CacheModifyOptions?: GraphQLScalarType;
+  CacheModifyWrite?: CacheModifyWriteResolvers<ContextType>;
   CacheSize?: CacheSizeResolvers<ContextType>;
   CacheWrite?: CacheWriteResolvers<ContextType>;
   Client?: ClientResolvers<ContextType>;
