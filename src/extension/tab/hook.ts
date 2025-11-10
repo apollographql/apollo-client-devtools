@@ -201,6 +201,7 @@ handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
     cache.write = originalWrite;
     cache.writeFragment = originalWriteFragment;
     cache.writeQuery = originalWriteQuery;
+    cache.modify = originalModify;
   };
 });
 
