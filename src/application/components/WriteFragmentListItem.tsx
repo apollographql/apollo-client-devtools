@@ -43,7 +43,9 @@ export function WriteFragmentListItem({
     <div className="flex flex-col gap-1">
       <span className="font-code inline-flex items-center gap-2">
         {fragmentName ?? fragments[0].name.value}
-        <Badge variant="info">F</Badge>
+        <Badge variant="info" className="font-code">
+          F
+        </Badge>
       </span>
       <span className="text-xs">
         {format(new Date(timestamp), "MMM do, yyyy pp")}
