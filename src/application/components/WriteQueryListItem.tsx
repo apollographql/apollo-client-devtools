@@ -38,7 +38,7 @@ export function WriteQueryListItem({
         {getOperationName(writeQueryOptions.query, "(anonymous)")}
         <OperationBadge document={writeQueryOptions.query} />
       </span>
-      <span className="text-xs">
+      <span className="text-xs text-secondary dark:text-secondary-dark">
         {format(new Date(timestamp), "MMM do, yyyy pp")}
       </span>
     </div>

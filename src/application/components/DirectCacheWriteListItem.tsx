@@ -38,7 +38,7 @@ export function DirectCacheWriteListItem({
         {getOperationName(writeOptions.query, "(anonymous)")}
         <OperationBadge document={writeOptions.query} />
       </span>
-      <span className="text-xs">
+      <span className="text-xs text-secondary dark:text-secondary-dark">
         {format(new Date(timestamp), "MMM do, yyyy pp")}
       </span>
     </div>
