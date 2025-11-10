@@ -33,6 +33,7 @@ import { Button } from "../../Button";
 import { useApolloClient } from "@apollo/client/react";
 import { Tooltip } from "../../Tooltip";
 import type { Diff } from "@/application/utilities/diff";
+import type { CacheModifyOptions } from "@/application/types/scalars";
 
 const CACHE_WRITES_PANEL_FRAGMENT: TypedDocumentNode<CacheWritesPanelFragment> = gql`
   fragment CacheWritesPanelFragment on CacheWrite {
@@ -269,14 +270,40 @@ function CacheModifyView({
         </Section>
         <Section>
           <SectionTitle>Options</SectionTitle>
-          <ObjectViewer
-            value={modifyOptions}
-            displayObjectSize={false}
-            collapsed={false}
-          />
+          <ModifyOptions options={modifyOptions} />
         </Section>
       </div>
     </div>
+  );
+}
+
+function ModifyOptions({ options }: { options: CacheModifyOptions }) {
+  return (
+    <ObjectViewer
+      value={options}
+      displayObjectSize={false}
+      collapsed={false}
+      builtinRenderers={{
+        string: ({ context, value, DefaultRender }) => {
+          if (context?.option === "fields") {
+            return (
+              <span className="text-[var(--ov-typeFunction-color)]">
+                {value}
+              </span>
+            );
+          }
+
+          return <DefaultRender />;
+        },
+        objectPair: ({ objectKey, DefaultRender }) => {
+          if (objectKey === "fields") {
+            return <DefaultRender context={{ option: objectKey }} />;
+          }
+
+          return <DefaultRender />;
+        },
+      }}
+    />
   );
 }
 
