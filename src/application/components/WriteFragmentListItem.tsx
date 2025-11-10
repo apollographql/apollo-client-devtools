@@ -1,11 +1,12 @@
 import type { TypedDocumentNode } from "@apollo/client";
 import { gql } from "@apollo/client";
 import { useFragment } from "@apollo/client-3";
-import { OperationBadge } from "./OperationBadge";
 import { format } from "date-fns";
 import type { WriteFragmentListItem_cacheWrite } from "../types/gql";
-import { getOperationName } from "@apollo/client/utilities/internal";
 import { fragmentRegistry } from "../fragmentRegistry";
+import type { FragmentDefinitionNode } from "graphql";
+import { Kind } from "graphql";
+import { Badge } from "./Badge";
 
 const FRAGMENT: TypedDocumentNode<WriteFragmentListItem_cacheWrite> = gql`
   fragment WriteFragmentListItem_cacheWrite on WriteFragmentCacheWrite {
@@ -31,12 +32,18 @@ export function WriteFragmentListItem({
   }
 
   const { timestamp, writeFragmentOptions } = data;
+  const { fragmentName } = writeFragmentOptions;
+
+  const fragments = writeFragmentOptions.fragment.definitions.filter(
+    (node): node is FragmentDefinitionNode =>
+      node.kind === Kind.FRAGMENT_DEFINITION
+  );
 
   return (
     <div className="flex flex-col gap-1">
       <span className="font-code inline-flex items-center gap-2">
-        {getOperationName(writeFragmentOptions.fragment, "(anonymous)")}
-        <OperationBadge document={writeFragmentOptions.fragment} />
+        {fragmentName ?? fragments[0].name.value}
+        <Badge variant="info">F</Badge>
       </span>
       <span className="text-xs">
         {format(new Date(timestamp), "MMM do, yyyy pp")}
