@@ -47,7 +47,7 @@ export function WriteFragmentListItem({
           F
         </Badge>
       </span>
-      <span className="text-xs">
+      <span className="text-xs text-secondary dark:text-secondary-dark">
         {format(new Date(timestamp), "MMM do, yyyy pp")}
       </span>
     </div>
