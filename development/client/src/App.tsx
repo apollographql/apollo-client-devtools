@@ -6,6 +6,7 @@ import ColorLookup from "./ColorLookup";
 import "./App.css";
 import { createApolloClient4Provider } from "./createApolloClient4Provider";
 import { createApolloClient3Provider } from "./createApolloClient3Provider";
+import { Playground } from "./Playground";
 
 function App() {
   const [clients, setClients] = useState<
@@ -54,6 +55,7 @@ function App() {
             <nav style={{ flex: 1 }}>
               <Link to="/favorites">Favorites</Link>
               <Link to="/lookup">Lookup</Link>
+              <Link to="/playground">Playground</Link>
             </nav>
             <div style={{ display: "flex", gap: "1rem" }}>
               <select
@@ -135,6 +137,7 @@ function App() {
             <Routes>
               <Route path="/favorites" element={<Favorites />} />
               <Route path="/lookup" element={<ColorLookup />} />
+              <Route path="/playground" element={<Playground />} />
               <Route path="/" element={<ColorSchemeGenerator />} />
             </Routes>
           </main>
