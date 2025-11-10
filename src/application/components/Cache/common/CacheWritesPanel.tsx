@@ -25,7 +25,6 @@ import { print } from "@apollo/client/utilities";
 import { getOperationName } from "@apollo/client/utilities/internal";
 import { List } from "../../List";
 import { ListItem } from "../../ListItem";
-import { format } from "date-fns";
 import { ObjectDiff } from "../../ObjectDiff";
 import { ObjectViewer } from "../../ObjectViewer";
 import { VariablesObject } from "../../VariablesObject";
@@ -34,6 +33,10 @@ import { useApolloClient } from "@apollo/client/react";
 import { Tooltip } from "../../Tooltip";
 import type { Diff } from "@/application/utilities/diff";
 import type { CacheModifyOptions } from "@/application/types/scalars";
+import { DirectCacheWriteListItem } from "../../DirectCacheWriteListItem";
+import { WriteQueryListItem } from "../../WriteQueryListItem";
+import { WriteFragmentListItem } from "../../WriteFragmentListItem";
+import { CacheModifyListItem } from "../../CacheModifyListItem";
 
 const CACHE_WRITES_PANEL_FRAGMENT: TypedDocumentNode<CacheWritesPanelFragment> = gql`
   fragment CacheWritesPanelFragment on CacheWrite {
@@ -112,19 +115,10 @@ export function CacheWritesPanel({ client, cacheWrites }: Props) {
 const LIST_VIEW_FRAGMENT: TypedDocumentNode<CacheWritesListView_cacheWrites> = gql`
   fragment CacheWritesListView_cacheWrites on CacheWrite {
     id
-    timestamp
-    ... on DirectCacheWrite {
-      writeOptions: options
-    }
-    ... on WriteQueryCacheWrite {
-      writeQueryOptions: options
-    }
-    ... on WriteFragmentCacheWrite {
-      writeFragmentOptions: options
-    }
-    ... on CacheModifyWrite {
-      modifyOptions: options
-    }
+    ...CacheModifyListItem_cacheWrite
+    ...DirectCacheWriteListItem_cacheWrite
+    ...WriteQueryListItem_cacheWrite
+    ...WriteFragmentListItem_cacheWrite
   }
 `;
 
@@ -144,6 +138,7 @@ function ListView({
 }) {
   const { data, complete } = useFragment({
     fragment: LIST_VIEW_FRAGMENT,
+    fragmentName: "CacheWritesListView_cacheWrites",
     from: cacheWrites,
   });
   const apolloClient = useApolloClient();
@@ -179,32 +174,20 @@ function ListView({
       </section>
       <List className="p-4">
         {[...data].reverse().map((cacheWrite) => {
-          const title =
-            cacheWrite.__typename === "DirectCacheWrite"
-              ? getOperationName(cacheWrite.writeOptions.query, "(anonymous)")
-              : cacheWrite.__typename === "WriteFragmentCacheWrite"
-                ? getOperationName(
-                    cacheWrite.writeFragmentOptions.fragment,
-                    "(anonymous)"
-                  )
-                : cacheWrite.__typename === "CacheModifyWrite"
-                  ? cacheWrite.modifyOptions.id ?? "(unknown)"
-                  : getOperationName(
-                      cacheWrite.writeQueryOptions.query,
-                      "(anonymous)"
-                    );
-
           return (
             <ListItem
               key={cacheWrite.id}
               onClick={() => onSelect(cacheWrite.id)}
             >
-              <div className="flex flex-col gap-1">
-                <span className="font-code">{title}</span>
-                <span className="text-xs">
-                  {format(new Date(cacheWrite.timestamp), "MMM do, yyyy pp")}
-                </span>
-              </div>
+              {cacheWrite.__typename === "DirectCacheWrite" ? (
+                <DirectCacheWriteListItem cacheWrite={cacheWrite} />
+              ) : cacheWrite.__typename === "WriteQueryCacheWrite" ? (
+                <WriteQueryListItem cacheWrite={cacheWrite} />
+              ) : cacheWrite.__typename === "WriteFragmentCacheWrite" ? (
+                <WriteFragmentListItem cacheWrite={cacheWrite} />
+              ) : (
+                <CacheModifyListItem cacheWrite={cacheWrite} />
+              )}
             </ListItem>
           );
         })}

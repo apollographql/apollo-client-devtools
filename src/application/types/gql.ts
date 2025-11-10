@@ -803,6 +803,12 @@ export type WriteQueryView_cacheWrite = {
   writeQueryOptions: WriteQueryOptions;
 };
 
+export type CacheModifyListItem_cacheWrite = {
+  __typename: "CacheModifyWrite";
+  timestamp: DateTime;
+  modifyOptions: CacheModifyOptions;
+};
+
 export type CombinedGraphQLErrorsAlertDisclosurePanel_error = {
   __typename: "SerializedCombinedGraphQLErrors";
   errors: Array<{
@@ -816,6 +822,12 @@ export type CombinedGraphQLErrorsAlertDisclosurePanel_error = {
 export type CombinedProtocolErrorsAlertDisclosurePanel_error = {
   __typename: "SerializedCombinedProtocolErrors";
   errors: Array<{ __typename: "SerializedGraphQLError"; message: string }>;
+};
+
+export type DirectCacheWriteListItem_cacheWrite = {
+  __typename: "DirectCacheWrite";
+  timestamp: DateTime;
+  writeOptions: DirectCacheWriteOptions;
 };
 
 export type MemoryInternalsQueryVariables = Exact<{
@@ -1446,6 +1458,18 @@ export type SerializedErrorAlertDisclosurePanel_error =
   | SerializedErrorAlertDisclosurePanel_error_SerializedServerError
   | SerializedErrorAlertDisclosurePanel_error_SerializedServerParseError
   | SerializedErrorAlertDisclosurePanel_error_SerializedUnconventionalError;
+
+export type WriteFragmentListItem_cacheWrite = {
+  __typename: "WriteFragmentCacheWrite";
+  timestamp: DateTime;
+  writeFragmentOptions: WriteFragmentOptions;
+};
+
+export type WriteQueryListItem_cacheWrite = {
+  __typename: "WriteQueryCacheWrite";
+  timestamp: DateTime;
+  writeQueryOptions: WriteQueryOptions;
+};
 
 export type ClientCountVariables = Exact<{ [key: string]: never }>;
 
