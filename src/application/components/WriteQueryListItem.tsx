@@ -34,7 +34,7 @@ export function WriteQueryListItem({
 
   return (
     <div className="flex flex-col gap-1">
-      <span className="font-code inline-flex items-center gap-1">
+      <span className="font-code inline-flex items-center gap-2">
         {getOperationName(writeQueryOptions.query, "(anonymous)")}
         <OperationBadge document={writeQueryOptions.query} />
       </span>
