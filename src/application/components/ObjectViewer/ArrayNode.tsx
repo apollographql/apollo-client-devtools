@@ -20,7 +20,7 @@ interface ArrayNodeProps
   displayObjectSize?: boolean;
 }
 
-export const ArrayNode = customRenderableType<unknown[]>(
+export const ArrayNode = customRenderableType(
   "array",
   ({
     className,
