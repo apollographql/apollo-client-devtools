@@ -41,10 +41,12 @@ export const ObjectNode = customRenderableType(
         className={clsx("align-middle", className)}
       >
         {constructorName !== "Object" && (
-          <span className="italic inline-block align-middle text-[var(--ov-constructorName-color,var(--ov-info-color))]">
-            {constructorName}
-          </span>
-        )}{" "}
+          <>
+            <span className="italic inline-block align-middle text-[var(--ov-constructorName-color,var(--ov-info-color))]">
+              {constructorName}
+            </span>{" "}
+          </>
+        )}
         {Object.keys(value).length > 0 ? (
           <>
             <OpenBrace />{" "}
