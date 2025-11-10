@@ -34,7 +34,7 @@ export function DirectCacheWriteListItem({
 
   return (
     <div className="flex flex-col gap-1">
-      <span className="font-code inline-flex items-center gap-1">
+      <span className="font-code inline-flex items-center gap-2">
         {getOperationName(writeOptions.query, "(anonymous)")}
         <OperationBadge document={writeOptions.query} />
       </span>

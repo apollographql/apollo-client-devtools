@@ -34,7 +34,7 @@ export function WriteFragmentListItem({
 
   return (
     <div className="flex flex-col gap-1">
-      <span className="font-code inline-flex items-center gap-1">
+      <span className="font-code inline-flex items-center gap-2">
         {getOperationName(writeFragmentOptions.fragment, "(anonymous)")}
         <OperationBadge document={writeFragmentOptions.fragment} />
       </span>
