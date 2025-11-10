@@ -445,7 +445,7 @@ function CacheWriteView({
       </section>
       <div className="grow overflow-auto flex flex-col gap-4 p-4">
         <CodeBlock
-          className="shrink-0"
+          className="shrink-0 max-h-96"
           language="graphql"
           code={print(document)}
         />
