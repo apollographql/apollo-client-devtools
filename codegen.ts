@@ -36,6 +36,7 @@ const config: CodegenConfig = {
           DirectCacheWriteOptions: "./scalars#DirectCacheWriteOptions",
           WriteQueryOptions: "./scalars#WriteQueryOptions",
           WriteFragmentOptions: "./scalars#WriteFragmentOptions",
+          CacheModifyOptions: "./scalars#CacheModifyOptions",
         },
         skipTypeNameForRoot: true,
       },
@@ -59,6 +60,7 @@ const config: CodegenConfig = {
           DirectCacheWriteOptions: "./scalars#DirectCacheWriteOptions",
           WriteQueryOptions: "./scalars#WriteQueryOptions",
           WriteFragmentOptions: "./scalars#WriteFragmentOptions",
+          CacheModifyOptions: "./scalars#CacheModifyOptions",
         },
         avoidOptionals: {
           field: true,
@@ -79,6 +81,8 @@ const config: CodegenConfig = {
           WriteQueryCacheWrite:
             "@/extension/tab/shared/types.ts#CacheWrite as RemoteCacheWrite",
           WriteFragmentCacheWrite:
+            "@/extension/tab/shared/types.ts#CacheWrite as RemoteCacheWrite",
+          CacheModifyWrite:
             "@/extension/tab/shared/types.ts#CacheWrite as RemoteCacheWrite",
           GraphQLDocument: "@apollo/client#DocumentNode",
           SerializedApolloError:

@@ -1,4 +1,5 @@
 /* eslint-disable */
+import type { CacheModifyOptions } from "./scalars";
 import type { DateTime } from "./scalars";
 import type { Diff } from "@/application/utilities/diff";
 import type { DirectCacheWriteOptions } from "./scalars";
@@ -59,7 +60,7 @@ export type Scalars = {
   Float: { input: number; output: number };
   /** Represents JSON cache data */
   Cache: { input: unknown; output: unknown };
-  CacheModifyOptions: { input: unknown; output: unknown };
+  CacheModifyOptions: { input: CacheModifyOptions; output: CacheModifyOptions };
   DateTime: { input: DateTime; output: DateTime };
   Diff: { input: Diff; output: Diff };
   DirectCacheWriteOptions: {
@@ -602,7 +603,7 @@ export type ResolversUnionTypes<_RefType extends Record<string, unknown>> = {
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> =
   {
     CacheWrite:
-      | CacheModifyWrite
+      | RemoteCacheWrite
       | RemoteCacheWrite
       | RemoteCacheWrite
       | RemoteCacheWrite;
@@ -649,7 +650,7 @@ export type ResolversTypes = {
   CacheModifyOptions: ResolverTypeWrapper<
     Scalars["CacheModifyOptions"]["output"]
   >;
-  CacheModifyWrite: ResolverTypeWrapper<CacheModifyWrite>;
+  CacheModifyWrite: ResolverTypeWrapper<RemoteCacheWrite>;
   CacheSize: ResolverTypeWrapper<CacheSize>;
   CacheWrite: ResolverTypeWrapper<RemoteCacheWrite>;
   Client: ResolverTypeWrapper<ApolloClientInfo>;
@@ -773,7 +774,7 @@ export type ResolversParentTypes = {
   Boolean: Scalars["Boolean"]["output"];
   Cache: Scalars["Cache"]["output"];
   CacheModifyOptions: Scalars["CacheModifyOptions"]["output"];
-  CacheModifyWrite: CacheModifyWrite;
+  CacheModifyWrite: RemoteCacheWrite;
   CacheSize: CacheSize;
   CacheWrite: RemoteCacheWrite;
   Client: ApolloClientInfo;

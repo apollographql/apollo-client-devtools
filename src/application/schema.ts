@@ -73,6 +73,10 @@ function createResolvers(client: RpcClient): Resolvers {
           return "WriteFragmentCacheWrite";
         }
 
+        if (cacheWrite.type === "modify") {
+          return "CacheModifyWrite";
+        }
+
         return "DirectCacheWrite";
       },
     },
@@ -83,6 +87,9 @@ function createResolvers(client: RpcClient): Resolvers {
       diff: diffResolver,
     },
     WriteQueryCacheWrite: {
+      diff: diffResolver,
+    },
+    CacheModifyWrite: {
       diff: diffResolver,
     },
     GraphQLDocument: {

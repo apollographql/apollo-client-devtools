@@ -1,4 +1,5 @@
 import type { Cache } from "./scalars";
+import type { CacheModifyOptions } from "./scalars";
 import type { DateTime } from "./scalars";
 import type { Diff } from "@/application/utilities/diff";
 import type { DirectCacheWriteOptions } from "./scalars";
@@ -39,7 +40,7 @@ export type Scalars = {
   Float: { input: number; output: number };
   /** Represents JSON cache data */
   Cache: { input: Cache; output: Cache };
-  CacheModifyOptions: { input: unknown; output: unknown };
+  CacheModifyOptions: { input: CacheModifyOptions; output: CacheModifyOptions };
   DateTime: { input: DateTime; output: DateTime };
   Diff: { input: Diff; output: Diff };
   DirectCacheWriteOptions: {
