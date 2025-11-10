@@ -247,7 +247,6 @@ function CacheModifyView({
           )}
         </Section>
         <Section>
-          <SectionTitle>Options</SectionTitle>
           <ModifyOptions options={modifyOptions} />
         </Section>
       </div>
@@ -257,31 +256,39 @@ function CacheModifyView({
 
 function ModifyOptions({ options }: { options: CacheModifyOptions }) {
   return (
-    <ObjectViewer
-      value={options}
-      displayObjectSize={false}
-      collapsed={false}
-      builtinRenderers={{
-        string: ({ context, value, DefaultRender }) => {
-          if (context?.option === "fields") {
-            return (
-              <span className="text-[var(--ov-typeFunction-color)]">
-                {value}
-              </span>
-            );
-          }
+    <div>
+      <span className="font-code inline-block align-bottom">
+        cache<span className="text-code-a dark:text-code-a-dark">.</span>
+        <span className="text-code-e dark:text-code-e-dark">modify</span>(
+      </span>
+      <ObjectViewer
+        value={options}
+        displayObjectSize={false}
+        collapsed={false}
+        tagName="span"
+        builtinRenderers={{
+          string: ({ context, value, DefaultRender }) => {
+            if (context?.option === "fields") {
+              return (
+                <span className="text-[var(--ov-typeFunction-color)]">
+                  {value}
+                </span>
+              );
+            }
 
-          return <DefaultRender />;
-        },
-        objectPair: ({ objectKey, DefaultRender }) => {
-          if (objectKey === "fields") {
-            return <DefaultRender context={{ option: objectKey }} />;
-          }
+            return <DefaultRender />;
+          },
+          objectPair: ({ objectKey, DefaultRender }) => {
+            if (objectKey === "fields") {
+              return <DefaultRender context={{ option: objectKey }} />;
+            }
 
-          return <DefaultRender />;
-        },
-      }}
-    />
+            return <DefaultRender />;
+          },
+        }}
+      />
+      <span className="font-code inline-block align-bottom">)</span>
+    </div>
   );
 }
 
