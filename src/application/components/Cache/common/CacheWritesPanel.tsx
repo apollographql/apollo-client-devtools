@@ -20,7 +20,7 @@ import { useFragment } from "@apollo/client/react";
 import { Panel } from "react-resizable-panels";
 import { CodeBlock } from "../../CodeBlock";
 import type { ReactNode } from "react";
-import { useState } from "react";
+import { memo, useState } from "react";
 import { print } from "@apollo/client/utilities";
 import { getOperationName } from "@apollo/client/utilities/internal";
 import { List } from "../../List";
@@ -59,7 +59,7 @@ interface Props {
   cacheWrites: Array<{ __typename: "CacheWrite"; id: string }>;
 }
 
-export function CacheWritesPanel({ client, cacheWrites }: Props) {
+export const CacheWritesPanel = memo(({ client, cacheWrites }: Props) => {
   const { data, complete } = useFragment({
     fragment: CACHE_WRITES_PANEL_FRAGMENT,
     fragmentName: "CacheWritesPanelFragment",
@@ -110,7 +110,7 @@ export function CacheWritesPanel({ client, cacheWrites }: Props) {
       )}
     </Panel>
   );
-}
+});
 
 const LIST_VIEW_FRAGMENT: TypedDocumentNode<CacheWritesListView_cacheWrites> = gql`
   fragment CacheWritesListView_cacheWrites on CacheWrite {
