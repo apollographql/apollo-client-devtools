@@ -39,6 +39,7 @@ export type Scalars = {
   Float: { input: number; output: number };
   /** Represents JSON cache data */
   Cache: { input: Cache; output: Cache };
+  CacheModifyOptions: { input: unknown; output: unknown };
   DateTime: { input: DateTime; output: DateTime };
   Diff: { input: Diff; output: Diff };
   DirectCacheWriteOptions: {
@@ -64,6 +65,15 @@ export type Scalars = {
 export type BaseCacheSizes = {
   __typename: "BaseCacheSizes";
   fragmentQueryDocuments: CacheSize;
+};
+
+/** Calls to cache.modify(...) */
+export type CacheModifyWrite = CacheWrite & {
+  __typename: "CacheModifyWrite";
+  diff: Maybe<Scalars["Diff"]["output"]>;
+  id: Scalars["ID"]["output"];
+  options: Scalars["CacheModifyOptions"]["output"];
+  timestamp: Scalars["DateTime"]["output"];
 };
 
 export type CacheSize = {
@@ -258,6 +268,7 @@ export type ClientWatchedQuery = {
   variables: Maybe<Scalars["Variables"]["output"]>;
 };
 
+/** Calls to cache.write(...) */
 export type DirectCacheWrite = CacheWrite & {
   __typename: "DirectCacheWrite";
   diff: Maybe<Scalars["Diff"]["output"]>;
@@ -436,6 +447,7 @@ export type SubscriptioncacheWrittenArgs = {
   clientId: Scalars["ID"]["input"];
 };
 
+/** Calls to cache.writeFragment(...) */
 export type WriteFragmentCacheWrite = CacheWrite & {
   __typename: "WriteFragmentCacheWrite";
   diff: Maybe<Scalars["Diff"]["output"]>;
@@ -444,6 +456,7 @@ export type WriteFragmentCacheWrite = CacheWrite & {
   timestamp: Scalars["DateTime"]["output"];
 };
 
+/** Calls to cache.writeQuery(...) */
 export type WriteQueryCacheWrite = CacheWrite & {
   __typename: "WriteQueryCacheWrite";
   diff: Maybe<Scalars["Diff"]["output"]>;
@@ -490,6 +503,7 @@ export type CacheWritesSubscriptionVariables = Exact<{
 
 export type CacheWritesSubscription = {
   cacheWritten:
+    | { __typename: "CacheModifyWrite"; id: string; timestamp: DateTime }
     | {
         __typename: "DirectCacheWrite";
         id: string;
@@ -516,6 +530,7 @@ export type CacheWritesSubscription = {
 type ClientWriteSubscriptionFragment_ClientV3 = {
   __typename: "ClientV3";
   cacheWrites: Array<
+    | { __typename: "CacheModifyWrite"; id: string; timestamp: DateTime }
     | {
         __typename: "DirectCacheWrite";
         id: string;
@@ -543,6 +558,7 @@ type ClientWriteSubscriptionFragment_ClientV3 = {
 type ClientWriteSubscriptionFragment_ClientV4 = {
   __typename: "ClientV4";
   cacheWrites: Array<
+    | { __typename: "CacheModifyWrite"; id: string; timestamp: DateTime }
     | {
         __typename: "DirectCacheWrite";
         id: string;
@@ -600,6 +616,7 @@ export type GetCache = {
         id: string;
         cache: Cache;
         cacheWrites: Array<
+          | { __typename: "CacheModifyWrite"; id: string; timestamp: DateTime }
           | {
               __typename: "DirectCacheWrite";
               id: string;
@@ -628,6 +645,7 @@ export type GetCache = {
         id: string;
         cache: Cache;
         cacheWrites: Array<
+          | { __typename: "CacheModifyWrite"; id: string; timestamp: DateTime }
           | {
               __typename: "DirectCacheWrite";
               id: string;
@@ -652,6 +670,12 @@ export type GetCache = {
         >;
       }
     | null;
+};
+
+type CacheWritesPanelFragment_CacheModifyWrite = {
+  __typename: "CacheModifyWrite";
+  id: string;
+  timestamp: DateTime;
 };
 
 type CacheWritesPanelFragment_DirectCacheWrite = {
@@ -679,9 +703,16 @@ type CacheWritesPanelFragment_WriteQueryCacheWrite = {
 };
 
 export type CacheWritesPanelFragment =
+  | CacheWritesPanelFragment_CacheModifyWrite
   | CacheWritesPanelFragment_DirectCacheWrite
   | CacheWritesPanelFragment_WriteFragmentCacheWrite
   | CacheWritesPanelFragment_WriteQueryCacheWrite;
+
+type CacheWritesListView_cacheWrites_CacheModifyWrite = {
+  __typename: "CacheModifyWrite";
+  id: string;
+  timestamp: DateTime;
+};
 
 type CacheWritesListView_cacheWrites_DirectCacheWrite = {
   __typename: "DirectCacheWrite";
@@ -705,6 +736,7 @@ type CacheWritesListView_cacheWrites_WriteQueryCacheWrite = {
 };
 
 export type CacheWritesListView_cacheWrites =
+  | CacheWritesListView_cacheWrites_CacheModifyWrite
   | CacheWritesListView_cacheWrites_DirectCacheWrite
   | CacheWritesListView_cacheWrites_WriteFragmentCacheWrite
   | CacheWritesListView_cacheWrites_WriteQueryCacheWrite;

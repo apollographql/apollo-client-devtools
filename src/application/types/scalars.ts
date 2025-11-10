@@ -12,3 +12,6 @@ export type GraphQLErrorPath = ReadonlyArray<string | number>;
 export type DirectCacheWriteOptions = Cache.WriteOptions;
 export type WriteQueryOptions = Cache.WriteQueryOptions<any, any>;
 export type WriteFragmentOptions = Cache.WriteFragmentOptions<any, any>;
+export type CacheModifyOptions = Omit<Cache.ModifyOptions, "fields"> & {
+  fields: string | Record<string, string>;
+};
