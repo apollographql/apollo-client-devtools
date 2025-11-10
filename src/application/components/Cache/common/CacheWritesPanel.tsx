@@ -323,7 +323,7 @@ function DirectCacheWriteView({
   return (
     <CacheWriteView
       api="cache.write"
-      options={{ ...data.writeOptions, query: print(query) }}
+      options={data.writeOptions}
       document={query}
       onNavigateBack={onNavigateBack}
       diff={data.diff}
@@ -406,7 +406,7 @@ function WriteQueryView({
   return (
     <CacheWriteView
       api="cache.writeQuery"
-      options={{ ...data.writeQueryOptions, query: print(query) }}
+      options={data.writeQueryOptions}
       document={query}
       onNavigateBack={onNavigateBack}
       diff={data.diff}
@@ -484,19 +484,10 @@ function CacheWriteView({
                 array: ({ depth, DefaultRender }) => {
                   return <DefaultRender displayObjectSize={depth > 1} />;
                 },
-                object: ({ depth, DefaultRender }) => {
-                  return <DefaultRender displayObjectSize={depth > 1} />;
-                },
-                arrayItem: ({ depth, DefaultRender }) => {
-                  return <DefaultRender displayObjectSize={depth > 1} />;
-                },
-                objectPair: ({ depth, DefaultRender }) => {
-                  return <DefaultRender displayObjectSize={depth > 1} />;
-                },
-                string: ({ path, value, DefaultRender }) => {
-                  const key = path.at(-1);
+                object: ({ depth, value, DefaultRender }) => {
+                  if (value === document) {
+                    const documentString = print(document);
 
-                  if (key === "query" || key === "fragment") {
                     return (
                       <>
                         <span className="inline-block align-middle">
@@ -507,7 +498,7 @@ function CacheWriteView({
                         </span>
                         <CodeBlock
                           language="graphql"
-                          code={value}
+                          code={documentString}
                           className="![background:none] !border-none !text-md p-0 pl-[3ch]"
                           copyable={false}
                         />
@@ -516,7 +507,13 @@ function CacheWriteView({
                     );
                   }
 
-                  return <DefaultRender />;
+                  return <DefaultRender displayObjectSize={depth > 1} />;
+                },
+                arrayItem: ({ depth, DefaultRender }) => {
+                  return <DefaultRender displayObjectSize={depth > 1} />;
+                },
+                objectPair: ({ depth, DefaultRender }) => {
+                  return <DefaultRender displayObjectSize={depth > 1} />;
                 },
               }}
             />
