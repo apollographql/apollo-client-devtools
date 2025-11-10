@@ -504,7 +504,13 @@ export type CacheWritesSubscriptionVariables = Exact<{
 
 export type CacheWritesSubscription = {
   cacheWritten:
-    | { __typename: "CacheModifyWrite"; id: string; timestamp: DateTime }
+    | {
+        __typename: "CacheModifyWrite";
+        id: string;
+        diff: Diff | null;
+        timestamp: DateTime;
+        modifyOptions: CacheModifyOptions;
+      }
     | {
         __typename: "DirectCacheWrite";
         id: string;
@@ -531,7 +537,13 @@ export type CacheWritesSubscription = {
 type ClientWriteSubscriptionFragment_ClientV3 = {
   __typename: "ClientV3";
   cacheWrites: Array<
-    | { __typename: "CacheModifyWrite"; id: string; timestamp: DateTime }
+    | {
+        __typename: "CacheModifyWrite";
+        id: string;
+        diff: Diff | null;
+        timestamp: DateTime;
+        modifyOptions: CacheModifyOptions;
+      }
     | {
         __typename: "DirectCacheWrite";
         id: string;
@@ -559,7 +571,13 @@ type ClientWriteSubscriptionFragment_ClientV3 = {
 type ClientWriteSubscriptionFragment_ClientV4 = {
   __typename: "ClientV4";
   cacheWrites: Array<
-    | { __typename: "CacheModifyWrite"; id: string; timestamp: DateTime }
+    | {
+        __typename: "CacheModifyWrite";
+        id: string;
+        diff: Diff | null;
+        timestamp: DateTime;
+        modifyOptions: CacheModifyOptions;
+      }
     | {
         __typename: "DirectCacheWrite";
         id: string;
@@ -617,7 +635,13 @@ export type GetCache = {
         id: string;
         cache: Cache;
         cacheWrites: Array<
-          | { __typename: "CacheModifyWrite"; id: string; timestamp: DateTime }
+          | {
+              __typename: "CacheModifyWrite";
+              id: string;
+              diff: Diff | null;
+              timestamp: DateTime;
+              modifyOptions: CacheModifyOptions;
+            }
           | {
               __typename: "DirectCacheWrite";
               id: string;
@@ -646,7 +670,13 @@ export type GetCache = {
         id: string;
         cache: Cache;
         cacheWrites: Array<
-          | { __typename: "CacheModifyWrite"; id: string; timestamp: DateTime }
+          | {
+              __typename: "CacheModifyWrite";
+              id: string;
+              diff: Diff | null;
+              timestamp: DateTime;
+              modifyOptions: CacheModifyOptions;
+            }
           | {
               __typename: "DirectCacheWrite";
               id: string;
@@ -676,7 +706,9 @@ export type GetCache = {
 type CacheWritesPanelFragment_CacheModifyWrite = {
   __typename: "CacheModifyWrite";
   id: string;
+  diff: Diff | null;
   timestamp: DateTime;
+  modifyOptions: CacheModifyOptions;
 };
 
 type CacheWritesPanelFragment_DirectCacheWrite = {
@@ -713,6 +745,7 @@ type CacheWritesListView_cacheWrites_CacheModifyWrite = {
   __typename: "CacheModifyWrite";
   id: string;
   timestamp: DateTime;
+  modifyOptions: CacheModifyOptions;
 };
 
 type CacheWritesListView_cacheWrites_DirectCacheWrite = {
@@ -741,6 +774,13 @@ export type CacheWritesListView_cacheWrites =
   | CacheWritesListView_cacheWrites_DirectCacheWrite
   | CacheWritesListView_cacheWrites_WriteFragmentCacheWrite
   | CacheWritesListView_cacheWrites_WriteQueryCacheWrite;
+
+export type CacheModifyView_cacheWrite = {
+  __typename: "CacheModifyWrite";
+  id: string;
+  diff: Diff | null;
+  modifyOptions: CacheModifyOptions;
+};
 
 export type DirectCacheWriteView_cacheWrite = {
   __typename: "DirectCacheWrite";
