@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import { colors } from "@apollo/brand";
 import { Provider } from "./context";
-import type { ComponentPropsWithoutRef, ReactNode } from "react";
+import type { ComponentPropsWithoutRef, ElementType, ReactNode } from "react";
 import type { ObjectPair } from "./ObjectPair";
 import type { ArrayItem } from "./ArrayItem";
 import type { WithDefaultRender } from "./CustomRenderable";
@@ -99,6 +99,7 @@ interface ObjectViewerProps<CustomTypes extends string> {
     (props: CustomRenderProps<any>) => ReactNode
   >;
   builtinRenderers?: Partial<BuiltinRenderers>;
+  tagName?: ElementType;
 }
 
 export function ObjectViewer<CustomTypes extends string>({
@@ -108,11 +109,12 @@ export function ObjectViewer<CustomTypes extends string>({
   builtinRenderers,
   customRenderers,
   value,
+  tagName: Element = "div",
 }: ObjectViewerProps<CustomTypes>) {
   const style = useObjectViewerTheme(theme);
 
   return (
-    <div style={style} className="font-code">
+    <Element style={style} className="font-code">
       <Provider
         collapsed={collapsed}
         displayObjectSize={displayObjectSize}
@@ -126,6 +128,6 @@ export function ObjectViewer<CustomTypes extends string>({
       >
         <AnyValue context={{}} depth={0} value={value} path={[]} />
       </Provider>
-    </div>
+    </Element>
   );
 }
