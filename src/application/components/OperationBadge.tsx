@@ -9,5 +9,9 @@ interface Props {
 export function OperationBadge({ document }: Props) {
   const { operation } = getOperationDefinition(document)!;
 
-  return <Badge variant="info">{operation.at(0)?.toUpperCase()}</Badge>;
+  return (
+    <Badge variant="info" className="font-code">
+      {operation.at(0)?.toUpperCase()}
+    </Badge>
+  );
 }
