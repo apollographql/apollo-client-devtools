@@ -2,6 +2,7 @@ import IconUnavailable from "@apollo/icons/default/IconUnavailable.svg";
 import IconArrowLeft from "@apollo/icons/default/IconArrowLeft.svg";
 import { fragmentRegistry } from "@/application/fragmentRegistry";
 import type {
+  CacheModifyView_cacheWrite,
   CacheWritesListView_cacheWrites,
   Client,
   DirectCacheWriteView_cacheWrite,
@@ -39,6 +40,7 @@ const CACHE_WRITES_PANEL_FRAGMENT: TypedDocumentNode<CacheWritesPanelFragment> =
     ...DirectCacheWriteView_cacheWrite @nonreactive
     ...WriteFragmentView_cacheWrite @nonreactive
     ...WriteQueryView_cacheWrite @nonreactive
+    ...CacheModifyView_cacheWrite @nonreactive
     ...CacheWritesListView_cacheWrites @nonreactive
   }
 `;
@@ -89,6 +91,11 @@ export function CacheWritesPanel({ client, cacheWrites }: Props) {
           cacheWrite={selectedCacheWrite}
           onNavigateBack={navigateBack}
         />
+      ) : selectedCacheWrite?.__typename === "CacheModifyWrite" ? (
+        <CacheModifyView
+          cacheWrite={selectedCacheWrite}
+          onNavigateBack={navigateBack}
+        />
       ) : selectedCacheWrite ? (
         <WriteQueryView
           cacheWrite={selectedCacheWrite}
@@ -113,6 +120,9 @@ const LIST_VIEW_FRAGMENT: TypedDocumentNode<CacheWritesListView_cacheWrites> = g
     }
     ... on WriteFragmentCacheWrite {
       writeFragmentOptions: options
+    }
+    ... on CacheModifyWrite {
+      modifyOptions: options
     }
   }
 `;
@@ -168,12 +178,20 @@ function ListView({
       </section>
       <List className="p-4">
         {[...data].reverse().map((cacheWrite) => {
-          const document =
+          const title =
             cacheWrite.__typename === "DirectCacheWrite"
-              ? cacheWrite.writeOptions.query
+              ? getOperationName(cacheWrite.writeOptions.query, "(anonymous)")
               : cacheWrite.__typename === "WriteFragmentCacheWrite"
-                ? cacheWrite.writeFragmentOptions.fragment
-                : cacheWrite.writeQueryOptions.query;
+                ? getOperationName(
+                    cacheWrite.writeFragmentOptions.fragment,
+                    "(anonymous)"
+                  )
+                : cacheWrite.__typename === "CacheModifyWrite"
+                  ? cacheWrite.modifyOptions.id ?? "(unknown)"
+                  : getOperationName(
+                      cacheWrite.writeQueryOptions.query,
+                      "(anonymous)"
+                    );
 
           return (
             <ListItem
@@ -181,7 +199,7 @@ function ListView({
               onClick={() => onSelect(cacheWrite.id)}
             >
               <div className="flex flex-col gap-1">
-                <span className="font-code">{getOperationName(document)}</span>
+                <span className="font-code">{title}</span>
                 <span className="text-xs">
                   {format(new Date(cacheWrite.timestamp), "MMM do, yyyy pp")}
                 </span>
@@ -190,6 +208,74 @@ function ListView({
           );
         })}
       </List>
+    </div>
+  );
+}
+
+const CACHE_MODIFY_VIEW: TypedDocumentNode<CacheModifyView_cacheWrite> = gql`
+  fragment CacheModifyView_cacheWrite on CacheModifyWrite {
+    id
+    diff
+    modifyOptions: options
+  }
+`;
+
+fragmentRegistry.register(CACHE_MODIFY_VIEW);
+
+function CacheModifyView({
+  cacheWrite,
+  onNavigateBack,
+}: {
+  cacheWrite: CacheModifyView_cacheWrite;
+  onNavigateBack: () => void;
+}) {
+  const { data, complete } = useFragment({
+    fragment: CACHE_MODIFY_VIEW,
+    from: cacheWrite,
+  });
+
+  if (!complete) {
+    return null;
+  }
+
+  const { diff, modifyOptions } = data;
+
+  return (
+    <div className="grow overflow-hidden flex flex-col">
+      <section className="flex items-center gap-2 border-b border-b-primary dark:border-b-primary-dark py-2 px-4">
+        <Tooltip content="Back">
+          <Button
+            aria-label="Back"
+            variant="hidden"
+            size="sm"
+            icon={<IconArrowLeft />}
+            onClick={onNavigateBack}
+          />
+        </Tooltip>
+        <h2 className="grow font-medium text-lg text-heading dark:text-heading-dark font-code">
+          {modifyOptions.id ?? "(unknown)"}
+        </h2>
+      </section>
+      <div className="grow overflow-auto flex flex-col gap-4 p-4">
+        <Section>
+          <SectionTitle>Diff</SectionTitle>
+          {diff === null ? (
+            <span className="text-secondary dark:text-secondary-dark italic">
+              Unchanged
+            </span>
+          ) : (
+            <ObjectDiff diff={diff} />
+          )}
+        </Section>
+        <Section>
+          <SectionTitle>Options</SectionTitle>
+          <ObjectViewer
+            value={modifyOptions}
+            displayObjectSize={false}
+            collapsed={false}
+          />
+        </Section>
+      </div>
     </div>
   );
 }
