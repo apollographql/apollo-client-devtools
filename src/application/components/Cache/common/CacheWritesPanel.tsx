@@ -10,7 +10,11 @@ import type {
   WriteQueryView_cacheWrite,
 } from "@/application/types/gql";
 import { type CacheWritesPanelFragment } from "@/application/types/gql";
-import type { DocumentNode, TypedDocumentNode } from "@apollo/client";
+import type {
+  DocumentNode,
+  OperationVariables,
+  TypedDocumentNode,
+} from "@apollo/client";
 import { gql } from "@apollo/client";
 import { useFragment } from "@apollo/client/react";
 import { Panel } from "react-resizable-panels";
@@ -32,6 +36,7 @@ import { DirectCacheWriteListItem } from "../../DirectCacheWriteListItem";
 import { WriteQueryListItem } from "../../WriteQueryListItem";
 import { WriteFragmentListItem } from "../../WriteFragmentListItem";
 import { CacheModifyListItem } from "../../CacheModifyListItem";
+import { VariablesObject } from "../../VariablesObject";
 
 const CACHE_WRITES_PANEL_FRAGMENT: TypedDocumentNode<CacheWritesPanelFragment> = gql`
   fragment CacheWritesPanelFragment on CacheWrite {
@@ -247,6 +252,7 @@ function CacheModifyView({
           )}
         </Section>
         <Section>
+          <SectionTitle>Options</SectionTitle>
           <ModifyOptions options={modifyOptions} />
         </Section>
       </div>
@@ -318,11 +324,13 @@ function DirectCacheWriteView({
     return null;
   }
 
-  const { query } = data.writeOptions;
+  const { query, result, variables } = data.writeOptions;
 
   return (
     <CacheWriteView
       api="cache.write"
+      data={result}
+      variables={variables}
       options={data.writeOptions}
       document={query}
       onNavigateBack={onNavigateBack}
@@ -357,17 +365,14 @@ function WriteFragmentView({
     return null;
   }
 
-  const {
-    fragment,
-    data: result,
-    variables,
-    ...options
-  } = data.writeFragmentOptions;
+  const { fragment, data: result, variables } = data.writeFragmentOptions;
 
   return (
     <CacheWriteView
       api="cache.writeFragment"
-      options={options}
+      data={result}
+      variables={variables}
+      options={data.writeFragmentOptions}
       document={fragment}
       onNavigateBack={onNavigateBack}
       diff={data.diff}
@@ -401,11 +406,13 @@ function WriteQueryView({
     return null;
   }
 
-  const { query } = data.writeQueryOptions;
+  const { query, data: result, variables } = data.writeQueryOptions;
 
   return (
     <CacheWriteView
       api="cache.writeQuery"
+      data={result}
+      variables={variables}
       options={data.writeQueryOptions}
       document={query}
       onNavigateBack={onNavigateBack}
@@ -416,12 +423,16 @@ function WriteQueryView({
 
 function CacheWriteView({
   api,
+  data,
+  variables,
   options,
   diff,
   document,
   onNavigateBack,
 }: {
   api: string;
+  data: unknown;
+  variables: OperationVariables | undefined;
   options: Record<string, any>;
   diff: Diff | null;
   document: DocumentNode;
@@ -460,6 +471,15 @@ function CacheWriteView({
           )}
         </Section>
         <Section>
+          <SectionTitle>Data</SectionTitle>
+          <ObjectViewer value={data} />
+        </Section>
+        <Section>
+          <SectionTitle>Variables</SectionTitle>
+          <VariablesObject variables={variables} />
+        </Section>
+        <Section>
+          <SectionTitle>Options</SectionTitle>
           <div>
             <span className="font-code inline-block align-bottom">
               {api?.split(".").map((part, idx, arr) =>
