@@ -9,7 +9,11 @@ import type {
   WriteQueryView_cacheWrite,
 } from "@/application/types/gql";
 import { type CacheWritesPanelFragment } from "@/application/types/gql";
-import type { TypedDocumentNode } from "@apollo/client";
+import type {
+  DocumentNode,
+  OperationVariables,
+  TypedDocumentNode,
+} from "@apollo/client";
 import { gql } from "@apollo/client";
 import { useFragment } from "@apollo/client/react";
 import { Panel } from "react-resizable-panels";
@@ -27,6 +31,7 @@ import { VariablesObject } from "../../VariablesObject";
 import { Button } from "../../Button";
 import { useApolloClient } from "@apollo/client/react";
 import { Tooltip } from "../../Tooltip";
+import type { Diff } from "@/application/utilities/diff";
 
 const CACHE_WRITES_PANEL_FRAGMENT: TypedDocumentNode<CacheWritesPanelFragment> = gql`
   fragment CacheWritesPanelFragment on CacheWrite {
@@ -218,51 +223,14 @@ function DirectCacheWriteView({
   const { query, result, variables, ...options } = data.writeOptions;
 
   return (
-    <div className="grow !overflow-auto">
-      <section className="flex items-center gap-2 border-b border-b-primary dark:border-b-primary-dark py-2 px-4">
-        <Tooltip content="Back">
-          <Button
-            aria-label="Back"
-            variant="hidden"
-            size="sm"
-            icon={<IconArrowLeft />}
-            onClick={onNavigateBack}
-          />
-        </Tooltip>
-        <h2 className="grow font-medium text-lg text-heading dark:text-heading-dark font-code">
-          {getOperationName(query, "(anonymous)")}
-        </h2>
-      </section>
-      <div className="flex flex-col gap-4 p-4">
-        <CodeBlock language="graphql" code={print(query)} />
-        <Section>
-          <SectionTitle>Diff</SectionTitle>
-          {data.diff === null ? (
-            <span className="text-secondary dark:text-secondary-dark italic">
-              Unchanged
-            </span>
-          ) : (
-            <ObjectDiff diff={data.diff} />
-          )}
-        </Section>
-        <Section>
-          <SectionTitle>Data</SectionTitle>
-          <ObjectViewer value={result} />
-        </Section>
-        <Section>
-          <SectionTitle>Variables</SectionTitle>
-          <VariablesObject variables={variables} />
-        </Section>
-        <Section>
-          <SectionTitle>Options</SectionTitle>
-          <ObjectViewer
-            value={options}
-            displayObjectSize={false}
-            collapsed={false}
-          />
-        </Section>
-      </div>
-    </div>
+    <CacheWriteView
+      data={result}
+      variables={variables}
+      options={options}
+      document={query}
+      onNavigateBack={onNavigateBack}
+      diff={data.diff}
+    />
   );
 }
 
@@ -300,51 +268,14 @@ function WriteFragmentView({
   } = data.writeFragmentOptions;
 
   return (
-    <div className="grow !overflow-auto">
-      <section className="flex items-center gap-2 border-b border-b-primary dark:border-b-primary-dark py-2 px-4">
-        <Tooltip content="Back">
-          <Button
-            aria-label="Back"
-            variant="hidden"
-            size="sm"
-            icon={<IconArrowLeft />}
-            onClick={onNavigateBack}
-          />
-        </Tooltip>
-        <h2 className="grow font-medium text-lg text-heading dark:text-heading-dark font-code">
-          {getOperationName(fragment, "(anonymous)")}
-        </h2>
-      </section>
-      <div className="flex flex-col gap-4 p-4">
-        <CodeBlock language="graphql" code={print(fragment)} />
-        <Section>
-          <SectionTitle>Diff</SectionTitle>
-          {data.diff === null ? (
-            <span className="text-secondary dark:text-secondary-dark italic">
-              Unchanged
-            </span>
-          ) : (
-            <ObjectDiff diff={data.diff} />
-          )}
-        </Section>
-        <Section>
-          <SectionTitle>Data</SectionTitle>
-          <ObjectViewer value={result} />
-        </Section>
-        <Section>
-          <SectionTitle>Variables</SectionTitle>
-          <VariablesObject variables={variables} />
-        </Section>
-        <Section>
-          <SectionTitle>Options</SectionTitle>
-          <ObjectViewer
-            value={options}
-            displayObjectSize={false}
-            collapsed={false}
-          />
-        </Section>
-      </div>
-    </div>
+    <CacheWriteView
+      data={result}
+      variables={variables}
+      options={options}
+      document={fragment}
+      onNavigateBack={onNavigateBack}
+      diff={data.diff}
+    />
   );
 }
 
@@ -377,7 +308,34 @@ function WriteQueryView({
   const { query, data: result, variables, ...options } = data.writeQueryOptions;
 
   return (
-    <div className="grow !overflow-auto">
+    <CacheWriteView
+      data={result}
+      variables={variables}
+      options={options}
+      document={query}
+      onNavigateBack={onNavigateBack}
+      diff={data.diff}
+    />
+  );
+}
+
+function CacheWriteView({
+  data,
+  variables,
+  options,
+  diff,
+  document,
+  onNavigateBack,
+}: {
+  data: unknown;
+  variables: OperationVariables | undefined;
+  options: Record<string, any>;
+  diff: Diff | null;
+  document: DocumentNode;
+  onNavigateBack: () => void;
+}) {
+  return (
+    <div className="grow overflow-hidden flex flex-col">
       <section className="flex items-center gap-2 border-b border-b-primary dark:border-b-primary-dark py-2 px-4">
         <Tooltip content="Back">
           <Button
@@ -389,24 +347,28 @@ function WriteQueryView({
           />
         </Tooltip>
         <h2 className="grow font-medium text-lg text-heading dark:text-heading-dark font-code">
-          {getOperationName(query, "(anonymous)")}
+          {getOperationName(document, "(anonymous)")}
         </h2>
       </section>
-      <div className="flex flex-col gap-4 p-4">
-        <CodeBlock language="graphql" code={print(query)} />
+      <div className="grow overflow-auto flex flex-col gap-4 p-4">
+        <CodeBlock
+          className="shrink-0"
+          language="graphql"
+          code={print(document)}
+        />
         <Section>
           <SectionTitle>Diff</SectionTitle>
-          {data.diff === null ? (
+          {diff === null ? (
             <span className="text-secondary dark:text-secondary-dark italic">
               Unchanged
             </span>
           ) : (
-            <ObjectDiff diff={data.diff} />
+            <ObjectDiff diff={diff} />
           )}
         </Section>
         <Section>
           <SectionTitle>Data</SectionTitle>
-          <ObjectViewer value={result} />
+          <ObjectViewer value={data} />
         </Section>
         <Section>
           <SectionTitle>Variables</SectionTitle>
