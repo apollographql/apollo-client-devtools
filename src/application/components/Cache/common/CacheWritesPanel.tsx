@@ -493,6 +493,31 @@ function CacheWriteView({
                 objectPair: ({ depth, DefaultRender }) => {
                   return <DefaultRender displayObjectSize={depth > 1} />;
                 },
+                string: ({ path, value, DefaultRender }) => {
+                  const key = path.at(-1);
+
+                  if (key === "query" || key === "fragment") {
+                    return (
+                      <>
+                        <span className="inline-block align-middle">
+                          <span className="text-code-d dark:text-code-d-dark">
+                            gql
+                          </span>
+                          <span>`</span>
+                        </span>
+                        <CodeBlock
+                          language="graphql"
+                          code={value}
+                          className="![background:none] !border-none !text-md p-0 pl-[3ch]"
+                          copyable={false}
+                        />
+                        <span>`</span>
+                      </>
+                    );
+                  }
+
+                  return <DefaultRender />;
+                },
               }}
             />
             <span className="font-code inline-block align-bottom">)</span>
