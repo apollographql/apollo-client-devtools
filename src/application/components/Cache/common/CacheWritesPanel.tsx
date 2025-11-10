@@ -10,11 +10,7 @@ import type {
   WriteQueryView_cacheWrite,
 } from "@/application/types/gql";
 import { type CacheWritesPanelFragment } from "@/application/types/gql";
-import type {
-  DocumentNode,
-  OperationVariables,
-  TypedDocumentNode,
-} from "@apollo/client";
+import type { DocumentNode, TypedDocumentNode } from "@apollo/client";
 import { gql } from "@apollo/client";
 import { useFragment } from "@apollo/client/react";
 import { Panel } from "react-resizable-panels";
@@ -27,7 +23,6 @@ import { List } from "../../List";
 import { ListItem } from "../../ListItem";
 import { ObjectDiff } from "../../ObjectDiff";
 import { ObjectViewer } from "../../ObjectViewer";
-import { VariablesObject } from "../../VariablesObject";
 import { Button } from "../../Button";
 import { useApolloClient } from "@apollo/client/react";
 import { Tooltip } from "../../Tooltip";
@@ -316,13 +311,12 @@ function DirectCacheWriteView({
     return null;
   }
 
-  const { query, result, variables, ...options } = data.writeOptions;
+  const { query } = data.writeOptions;
 
   return (
     <CacheWriteView
-      data={result}
-      variables={variables}
-      options={options}
+      api="cache.write"
+      options={{ ...data.writeOptions, query: print(query) }}
       document={query}
       onNavigateBack={onNavigateBack}
       diff={data.diff}
@@ -365,8 +359,7 @@ function WriteFragmentView({
 
   return (
     <CacheWriteView
-      data={result}
-      variables={variables}
+      api="cache.writeFragment"
       options={options}
       document={fragment}
       onNavigateBack={onNavigateBack}
@@ -401,13 +394,12 @@ function WriteQueryView({
     return null;
   }
 
-  const { query, data: result, variables, ...options } = data.writeQueryOptions;
+  const { query } = data.writeQueryOptions;
 
   return (
     <CacheWriteView
-      data={result}
-      variables={variables}
-      options={options}
+      api="cache.writeQuery"
+      options={{ ...data.writeQueryOptions, query: print(query) }}
       document={query}
       onNavigateBack={onNavigateBack}
       diff={data.diff}
@@ -416,15 +408,13 @@ function WriteQueryView({
 }
 
 function CacheWriteView({
-  data,
-  variables,
+  api,
   options,
   diff,
   document,
   onNavigateBack,
 }: {
-  data: unknown;
-  variables: OperationVariables | undefined;
+  api: string;
   options: Record<string, any>;
   diff: Diff | null;
   document: DocumentNode;
@@ -463,20 +453,43 @@ function CacheWriteView({
           )}
         </Section>
         <Section>
-          <SectionTitle>Data</SectionTitle>
-          <ObjectViewer value={data} />
-        </Section>
-        <Section>
-          <SectionTitle>Variables</SectionTitle>
-          <VariablesObject variables={variables} />
-        </Section>
-        <Section>
-          <SectionTitle>Options</SectionTitle>
-          <ObjectViewer
-            value={options}
-            displayObjectSize={false}
-            collapsed={false}
-          />
+          <div>
+            <span className="font-code inline-block align-bottom">
+              {api?.split(".").map((part, idx, arr) =>
+                idx === arr.length - 1 ? (
+                  <span key={idx} className="text-code-e dark:text-code-e-dark">
+                    {part}
+                  </span>
+                ) : (
+                  <>
+                    <span key={idx}>{part}</span>
+                    <span>.</span>
+                  </>
+                )
+              )}
+              (
+            </span>
+            <ObjectViewer
+              value={options}
+              displayObjectSize={false}
+              tagName="span"
+              builtinRenderers={{
+                array: ({ depth, DefaultRender }) => {
+                  return <DefaultRender displayObjectSize={depth > 1} />;
+                },
+                object: ({ depth, DefaultRender }) => {
+                  return <DefaultRender displayObjectSize={depth > 1} />;
+                },
+                arrayItem: ({ depth, DefaultRender }) => {
+                  return <DefaultRender displayObjectSize={depth > 1} />;
+                },
+                objectPair: ({ depth, DefaultRender }) => {
+                  return <DefaultRender displayObjectSize={depth > 1} />;
+                },
+              }}
+            />
+            <span className="font-code inline-block align-bottom">)</span>
+          </div>
         </Section>
       </div>
     </div>
