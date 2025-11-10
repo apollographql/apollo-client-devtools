@@ -8,6 +8,12 @@ export type CacheWrite = {
     after: Cache;
   };
 } & (
+  | {
+      type: "modify";
+      options: Omit<ApolloCache.ModifyOptions, "fields"> & {
+        fields: string | Record<string, string | undefined>;
+      };
+    }
   | { type: "write"; options: ApolloCache.WriteOptions }
   | { type: "writeQuery"; options: ApolloCache.WriteQueryOptions<any, any> }
   | {

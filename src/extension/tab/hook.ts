@@ -122,6 +122,7 @@ handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
   const originalWrite = cache.write;
   const originalWriteQuery = cache.writeQuery;
   const originalWriteFragment = cache.writeFragment;
+  const originalModify = cache.modify;
   const originalStop = client.stop;
 
   client.stop = () => {
@@ -141,6 +142,23 @@ handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
 
     return { result, timestamp, cache: { before, after } };
   }
+
+  cache.modify = function (options: Parameters<typeof originalModify>[0]) {
+    const { result, ...rest } = run(() => originalModify.call(cache, options));
+
+    const fields =
+      typeof options.fields === "function"
+        ? options.fields.toString()
+        : Object.fromEntries(
+            Object.entries(options.fields).map(([key, modifier]) => {
+              return [key, modifier?.toString()];
+            })
+          );
+
+    push({ type: "modify", options: { ...options, fields }, ...rest });
+
+    return result;
+  } as typeof originalModify;
 
   cache.write = function (options: Parameters<typeof originalWrite>[0]) {
     if (slot.getValue()) {
