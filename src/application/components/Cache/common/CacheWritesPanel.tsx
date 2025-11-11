@@ -585,7 +585,12 @@ function OptionsSection({
             array: ({ depth, DefaultRender }) => {
               return <DefaultRender displayObjectSize={depth > 1} />;
             },
-            object: ({ depth, value, DefaultRender }) => {
+            objectValue: ({
+              collapsed,
+              value,
+              onToggleCollapsed,
+              DefaultRender,
+            }) => {
               if (value === document) {
                 const documentString = print(document);
 
@@ -597,18 +602,27 @@ function OptionsSection({
                       </span>
                       <span>`</span>
                     </span>
-                    <CodeBlock
-                      language="graphql"
-                      code={documentString}
-                      className="![background:none] !border-none !text-md p-0 pl-[3ch]"
-                      copyable={false}
-                    />
+                    {collapsed ? (
+                      <span
+                        onClick={onToggleCollapsed}
+                        className="text-code-a dark:text-code-a-dark cursor-pointer"
+                      >
+                        ...
+                      </span>
+                    ) : (
+                      <CodeBlock
+                        language="graphql"
+                        code={documentString}
+                        className="![background:none] !border-none !text-md p-0 pl-[3ch]"
+                        copyable={false}
+                      />
+                    )}
                     <span>`</span>
                   </>
                 );
               }
 
-              return <DefaultRender displayObjectSize={depth > 1} />;
+              return <DefaultRender />;
             },
             arrayItem: ({ depth, DefaultRender }) => {
               return <DefaultRender displayObjectSize={depth > 1} />;
