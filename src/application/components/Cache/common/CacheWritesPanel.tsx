@@ -10,11 +10,7 @@ import type {
   WriteQueryView_cacheWrite,
 } from "@/application/types/gql";
 import { type CacheWritesPanelFragment } from "@/application/types/gql";
-import type {
-  DocumentNode,
-  OperationVariables,
-  TypedDocumentNode,
-} from "@apollo/client";
+import type { DocumentNode, TypedDocumentNode } from "@apollo/client";
 import { gql } from "@apollo/client";
 import { useFragment } from "@apollo/client/react";
 import { Panel } from "react-resizable-panels";
@@ -36,7 +32,6 @@ import { DirectCacheWriteListItem } from "../../DirectCacheWriteListItem";
 import { WriteQueryListItem } from "../../WriteQueryListItem";
 import { WriteFragmentListItem } from "../../WriteFragmentListItem";
 import { CacheModifyListItem } from "../../CacheModifyListItem";
-import { VariablesObject } from "../../VariablesObject";
 import { Kind } from "graphql";
 
 const CACHE_WRITES_PANEL_FRAGMENT: TypedDocumentNode<CacheWritesPanelFragment> = gql`
@@ -340,8 +335,6 @@ function DirectCacheWriteView({
           code={print(query)}
         />
         <DiffSection diff={data.diff} />
-        <DataSection data={result} />
-        <VariablesSection variables={variables} />
         <OptionsSection
           api="cache.write"
           document={query}
@@ -405,8 +398,6 @@ function WriteFragmentView({
           code={print(fragment)}
         />
         <DiffSection diff={data.diff} />
-        <DataSection data={result} />
-        <VariablesSection variables={variables} />
         <OptionsSection
           api="cache.writeFragment"
           document={fragment}
@@ -461,8 +452,6 @@ function WriteQueryView({
           code={print(query)}
         />
         <DiffSection diff={data.diff} />
-        <DataSection data={result} />
-        <VariablesSection variables={variables} />
         <OptionsSection
           api="cache.writeQuery"
           document={query}
@@ -532,28 +521,6 @@ function DiffSection({ diff }: { diff: Diff | null }) {
       ) : (
         <ObjectDiff diff={diff} />
       )}
-    </Section>
-  );
-}
-
-function DataSection({ data }: { data: unknown }) {
-  return (
-    <Section>
-      <SectionTitle>Data</SectionTitle>
-      <ObjectViewer value={data} />
-    </Section>
-  );
-}
-
-function VariablesSection({
-  variables,
-}: {
-  variables: OperationVariables | undefined;
-}) {
-  return (
-    <Section>
-      <SectionTitle>Variables</SectionTitle>
-      <VariablesObject variables={variables} />
     </Section>
   );
 }
