@@ -1,6 +1,5 @@
 import type { ComponentPropsWithoutRef } from "react";
 import { customRenderable } from "./CustomRenderable";
-import type { Path } from "./types";
 import { ArrayIndex } from "./ArrayIndex";
 import { AnyValue } from "./AnyValue";
 import { Punctuation } from "./Punctuation";
