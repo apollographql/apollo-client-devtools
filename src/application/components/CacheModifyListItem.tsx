@@ -30,13 +30,14 @@ export function CacheModifyListItem({
   }
 
   const { timestamp, modifyOptions } = data;
+  const id = modifyOptions.id ?? "ROOT_QUERY";
 
   return (
     <div className="flex flex-col gap-1">
-      <span className="font-code inline-flex items-center">
+      <span className="overflow-hidden text-ellipsis">
         cache.<span className="text-code-e dark:text-code-e-dark">modify</span>(
-        <span className="text-code-g dark:text-code-g-dark">
-          {modifyOptions.id ?? "ROOT_QUERY"}
+        <span className="text-code-d dark:text-code-d-dark" title={id}>
+          {id}
         </span>
         )
       </span>
