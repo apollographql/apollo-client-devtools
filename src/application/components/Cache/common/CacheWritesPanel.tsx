@@ -327,15 +327,27 @@ function DirectCacheWriteView({
   const { query, result, variables } = data.writeOptions;
 
   return (
-    <CacheWriteView
-      api="cache.write"
-      data={result}
-      variables={variables}
-      options={data.writeOptions}
-      document={query}
-      onNavigateBack={onNavigateBack}
-      diff={data.diff}
-    />
+    <CacheWriteContainer>
+      <CacheWriteHeader
+        title={getOperationName(query, "(anonymous)")}
+        onNavigateBack={onNavigateBack}
+      />
+      <CacheWriteScrollArea>
+        <CodeBlock
+          className="shrink-0 max-h-96"
+          language="graphql"
+          code={print(query)}
+        />
+        <DiffSection diff={data.diff} />
+        <DataSection data={result} />
+        <VariablesSection variables={variables} />
+        <OptionsSection
+          api="cache.write"
+          document={query}
+          options={data.writeOptions}
+        />
+      </CacheWriteScrollArea>
+    </CacheWriteContainer>
   );
 }
 
@@ -368,15 +380,27 @@ function WriteFragmentView({
   const { fragment, data: result, variables } = data.writeFragmentOptions;
 
   return (
-    <CacheWriteView
-      api="cache.writeFragment"
-      data={result}
-      variables={variables}
-      options={data.writeFragmentOptions}
-      document={fragment}
-      onNavigateBack={onNavigateBack}
-      diff={data.diff}
-    />
+    <CacheWriteContainer>
+      <CacheWriteHeader
+        title={getOperationName(fragment, "(anonymous)")}
+        onNavigateBack={onNavigateBack}
+      />
+      <CacheWriteScrollArea>
+        <CodeBlock
+          className="shrink-0 max-h-96"
+          language="graphql"
+          code={print(fragment)}
+        />
+        <DiffSection diff={data.diff} />
+        <DataSection data={result} />
+        <VariablesSection variables={variables} />
+        <OptionsSection
+          api="cache.writeFragment"
+          document={fragment}
+          options={data.writeFragmentOptions}
+        />
+      </CacheWriteScrollArea>
+    </CacheWriteContainer>
   );
 }
 
@@ -409,139 +433,27 @@ function WriteQueryView({
   const { query, data: result, variables } = data.writeQueryOptions;
 
   return (
-    <CacheWriteView
-      api="cache.writeQuery"
-      data={result}
-      variables={variables}
-      options={data.writeQueryOptions}
-      document={query}
-      onNavigateBack={onNavigateBack}
-      diff={data.diff}
-    />
-  );
-}
-
-function CacheWriteView({
-  api,
-  data,
-  variables,
-  options,
-  diff,
-  document,
-  onNavigateBack,
-}: {
-  api: string;
-  data: unknown;
-  variables: OperationVariables | undefined;
-  options: Record<string, any>;
-  diff: Diff | null;
-  document: DocumentNode;
-  onNavigateBack: () => void;
-}) {
-  return (
-    <div className="grow overflow-hidden flex flex-col">
-      <section className="flex items-center gap-2 border-b border-b-primary dark:border-b-primary-dark py-2 px-4">
-        <Tooltip content="Back">
-          <Button
-            aria-label="Back"
-            variant="hidden"
-            size="sm"
-            icon={<IconArrowLeft />}
-            onClick={onNavigateBack}
-          />
-        </Tooltip>
-        <h2 className="grow font-medium text-lg text-heading dark:text-heading-dark font-code">
-          {getOperationName(document, "(anonymous)")}
-        </h2>
-      </section>
-      <div className="grow overflow-auto flex flex-col gap-4 p-4">
+    <CacheWriteContainer>
+      <CacheWriteHeader
+        title={getOperationName(query, "(anonymous)")}
+        onNavigateBack={onNavigateBack}
+      />
+      <CacheWriteScrollArea>
         <CodeBlock
           className="shrink-0 max-h-96"
           language="graphql"
-          code={print(document)}
+          code={print(query)}
         />
-        <Section>
-          <SectionTitle>Diff</SectionTitle>
-          {diff === null ? (
-            <span className="text-secondary dark:text-secondary-dark italic">
-              Unchanged
-            </span>
-          ) : (
-            <ObjectDiff diff={diff} />
-          )}
-        </Section>
-        <Section>
-          <SectionTitle>Data</SectionTitle>
-          <ObjectViewer value={data} />
-        </Section>
-        <Section>
-          <SectionTitle>Variables</SectionTitle>
-          <VariablesObject variables={variables} />
-        </Section>
-        <Section>
-          <SectionTitle>Options</SectionTitle>
-          <div>
-            <span className="font-code inline-block align-bottom">
-              {api?.split(".").map((part, idx, arr) =>
-                idx === arr.length - 1 ? (
-                  <span key={idx} className="text-code-e dark:text-code-e-dark">
-                    {part}
-                  </span>
-                ) : (
-                  <>
-                    <span key={idx}>{part}</span>
-                    <span>.</span>
-                  </>
-                )
-              )}
-              (
-            </span>
-            <ObjectViewer
-              value={options}
-              displayObjectSize={false}
-              tagName="span"
-              builtinRenderers={{
-                array: ({ depth, DefaultRender }) => {
-                  return <DefaultRender displayObjectSize={depth > 1} />;
-                },
-                object: ({ depth, value, DefaultRender }) => {
-                  if (value === document) {
-                    const documentString = print(document);
-
-                    return (
-                      <>
-                        <span className="inline-block align-middle">
-                          <span className="text-code-d dark:text-code-d-dark">
-                            gql
-                          </span>
-                          <span>`</span>
-                        </span>
-                        <CodeBlock
-                          language="graphql"
-                          code={documentString}
-                          className="![background:none] !border-none !text-md p-0 pl-[3ch]"
-                          copyable={false}
-                        />
-                        <span>`</span>
-                      </>
-                    );
-                  }
-
-                  return <DefaultRender displayObjectSize={depth > 1} />;
-                },
-                arrayItem: ({ depth, DefaultRender }) => {
-                  return <DefaultRender displayObjectSize={depth > 1} />;
-                },
-                objectPair: ({ depth, DefaultRender }) => {
-                  return <DefaultRender displayObjectSize={depth > 1} />;
-                },
-              }}
-            />
-            <span className="font-code inline-block align-bottom">)</span>
-          </div>
-        </Section>
-      </div>
-    </div>
+        <DiffSection diff={data.diff} />
+        <DataSection data={result} />
+        <VariablesSection variables={variables} />
+        <OptionsSection
+          api="cache.writeQuery"
+          document={query}
+          options={data.writeQueryOptions}
+        />
+      </CacheWriteScrollArea>
+    </CacheWriteContainer>
   );
 }
 
@@ -552,5 +464,152 @@ function Section({ children }: { children?: ReactNode }) {
 function SectionTitle({ children }: { children?: ReactNode }) {
   return (
     <h3 className="text-md text-heading dark:text-heading-dark">{children}</h3>
+  );
+}
+
+function CacheWriteContainer({ children }: { children: ReactNode }) {
+  return <div className="grow overflow-hidden flex flex-col">{children}</div>;
+}
+
+function CacheWriteHeader({
+  title,
+  onNavigateBack,
+}: {
+  title: string;
+  onNavigateBack: () => void;
+}) {
+  return (
+    <section className="flex items-center gap-2 border-b border-b-primary dark:border-b-primary-dark py-2 px-4">
+      <Tooltip content="Back">
+        <Button
+          aria-label="Back"
+          variant="hidden"
+          size="sm"
+          icon={<IconArrowLeft />}
+          onClick={onNavigateBack}
+        />
+      </Tooltip>
+      <h2 className="grow font-medium text-lg text-heading dark:text-heading-dark font-code">
+        {title}
+      </h2>
+    </section>
+  );
+}
+
+function CacheWriteScrollArea({ children }: { children: ReactNode }) {
+  return (
+    <div className="grow overflow-auto flex flex-col gap-4 p-4">{children}</div>
+  );
+}
+
+function DiffSection({ diff }: { diff: Diff | null }) {
+  return (
+    <Section>
+      <SectionTitle>Diff</SectionTitle>
+      {diff === null ? (
+        <span className="text-secondary dark:text-secondary-dark italic">
+          Unchanged
+        </span>
+      ) : (
+        <ObjectDiff diff={diff} />
+      )}
+    </Section>
+  );
+}
+
+function DataSection({ data }: { data: unknown }) {
+  return (
+    <Section>
+      <SectionTitle>Data</SectionTitle>
+      <ObjectViewer value={data} />
+    </Section>
+  );
+}
+
+function VariablesSection({
+  variables,
+}: {
+  variables: OperationVariables | undefined;
+}) {
+  return (
+    <Section>
+      <SectionTitle>Variables</SectionTitle>
+      <VariablesObject variables={variables} />
+    </Section>
+  );
+}
+
+function OptionsSection({
+  api,
+  document,
+  options,
+}: {
+  api: string;
+  document: DocumentNode;
+  options: unknown;
+}) {
+  return (
+    <Section>
+      <SectionTitle>Options</SectionTitle>
+      <div>
+        <span className="font-code inline-block align-bottom">
+          {api?.split(".").map((part, idx, arr) =>
+            idx === arr.length - 1 ? (
+              <span key={idx} className="text-code-e dark:text-code-e-dark">
+                {part}
+              </span>
+            ) : (
+              <>
+                <span key={idx}>{part}</span>
+                <span>.</span>
+              </>
+            )
+          )}
+          (
+        </span>
+        <ObjectViewer
+          value={options}
+          displayObjectSize={false}
+          tagName="span"
+          builtinRenderers={{
+            array: ({ depth, DefaultRender }) => {
+              return <DefaultRender displayObjectSize={depth > 1} />;
+            },
+            object: ({ depth, value, DefaultRender }) => {
+              if (value === document) {
+                const documentString = print(document);
+
+                return (
+                  <>
+                    <span className="inline-block align-middle">
+                      <span className="text-code-d dark:text-code-d-dark">
+                        gql
+                      </span>
+                      <span>`</span>
+                    </span>
+                    <CodeBlock
+                      language="graphql"
+                      code={documentString}
+                      className="![background:none] !border-none !text-md p-0 pl-[3ch]"
+                      copyable={false}
+                    />
+                    <span>`</span>
+                  </>
+                );
+              }
+
+              return <DefaultRender displayObjectSize={depth > 1} />;
+            },
+            arrayItem: ({ depth, DefaultRender }) => {
+              return <DefaultRender displayObjectSize={depth > 1} />;
+            },
+            objectPair: ({ depth, DefaultRender }) => {
+              return <DefaultRender displayObjectSize={depth > 1} />;
+            },
+          }}
+        />
+        <span className="font-code inline-block align-bottom">)</span>
+      </div>
+    </Section>
   );
 }
