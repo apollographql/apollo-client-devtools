@@ -26,6 +26,7 @@ import type { SparseArrayEmptyItem } from "./SparseArrayEmptyItem";
 import type { AnyValueNode } from "./AnyValueNode";
 import { AnyValue } from "./AnyValue";
 import type { ObjType } from "./getTypeOf";
+import type { ObjectValueNode } from "./ObjectValueNode";
 
 type ValueProp<T> = [T] extends [never] ? { value?: never } : { value: T };
 
@@ -63,6 +64,7 @@ interface BuiltinRenderers {
   object: WithDefaultRender<typeof ObjectNode>;
   objectPair: WithDefaultRender<typeof ObjectPair>;
   objectKey: WithDefaultRender<typeof ObjectKey>;
+  objectValue: WithDefaultRender<typeof ObjectValueNode>;
   sparseArrayEmptyItem: WithDefaultRender<typeof SparseArrayEmptyItem>;
   string: WithDefaultRender<typeof StringNode>;
   symbol: WithDefaultRender<typeof SymbolNode>;

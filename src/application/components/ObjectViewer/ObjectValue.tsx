@@ -2,19 +2,14 @@ import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { useState } from "react";
 import type { Path } from "./types";
 import { ObjectKeyLabel } from "./ObjectKeyLabel";
-import { CollapsedObject } from "./CollapsedObject";
-import { Punctuation } from "./Punctuation";
-import { ObjectSize } from "./ObjectSize";
-import { AnyValue } from "./AnyValue";
-import { EmptyObject } from "./EmptyObject";
 import { useObjectViewerContext } from "./context";
+import { ObjectValueNode } from "./ObjectValueNode";
 
 interface ObjectValueProps extends ComponentPropsWithoutRef<"div"> {
   context: Record<string, any> | undefined;
   children: ReactNode;
   collapsible?: boolean;
   depth: number;
-  displayObjectSize: boolean;
   path: Path;
   value: object;
 }
@@ -22,7 +17,6 @@ interface ObjectValueProps extends ComponentPropsWithoutRef<"div"> {
 export function ObjectValue({
   children,
   collapsible = true,
-  displayObjectSize,
   ...props
 }: ObjectValueProps) {
   const { context, depth, value, ...rest } = props;
@@ -50,28 +44,11 @@ export function ObjectValue({
       >
         {children}
       </ObjectKeyLabel>{" "}
-      {collapsible && collapsed ? (
-        <span className="inline-block align-middle">
-          {length > 0 ? (
-            <CollapsedObject
-              {...props}
-              className="cursor-pointer"
-              onClick={toggle}
-            />
-          ) : (
-            <EmptyObject />
-          )}
-          <Punctuation>,</Punctuation>{" "}
-          {displayObjectSize && (
-            <ObjectSize className="italic" size={length} label="key" />
-          )}
-        </span>
-      ) : (
-        <>
-          <AnyValue className="align-middle" {...props} />
-          <Punctuation>,</Punctuation>
-        </>
-      )}
+      <ObjectValueNode
+        {...props}
+        collapsed={collapsible && collapsed}
+        onToggleCollapsed={toggle}
+      />
     </div>
   );
 }

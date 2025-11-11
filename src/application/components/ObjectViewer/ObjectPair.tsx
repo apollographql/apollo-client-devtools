@@ -43,12 +43,7 @@ export const ObjectPair = customRenderable(
 
     if (typeof value === "object" && value !== null) {
       return (
-        <ObjectValue
-          {...rest}
-          collapsible={collapsible}
-          displayObjectSize={displayObjectSizeSetting}
-          value={value}
-        >
+        <ObjectValue {...rest} collapsible={collapsible} value={value}>
           <ObjectKey context={props.context} value={objectKey} />
         </ObjectValue>
       );
