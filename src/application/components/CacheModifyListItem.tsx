@@ -33,11 +33,12 @@ export function CacheModifyListItem({
 
   return (
     <div className="flex flex-col gap-1">
-      <span className="font-code inline-flex items-center gap-2">
-        {modifyOptions.id ?? "Root query"}
-        <Badge variant="info" className="font-code">
-          modify
-        </Badge>
+      <span className="font-code inline-flex items-center">
+        cache.<span className="text-code-e dark:text-code-e-dark">modify</span>(
+        <span className="text-code-g dark:text-code-g-dark">
+          {modifyOptions.id ?? "ROOT_QUERY"}
+        </span>
+        )
       </span>
       <span className="text-xs text-secondary dark:text-secondary-dark">
         {format(new Date(timestamp), "MMM do, yyyy pp")}

@@ -35,8 +35,14 @@ export function DirectCacheWriteListItem({
   return (
     <div className="flex flex-col gap-1">
       <span className="font-code inline-flex items-center gap-2">
-        {getOperationName(writeOptions.query, "(anonymous)")}
         <OperationBadge document={writeOptions.query} />
+        <span>
+          cache.<span className="text-code-e dark:text-code-e-dark">write</span>
+          (
+          <span className="text-code-g dark:text-code-g-dark">
+            {getOperationName(writeOptions.query, "(anonymous)")})
+          </span>
+        </span>
       </span>
       <span className="text-xs text-secondary dark:text-secondary-dark">
         {format(new Date(timestamp), "MMM do, yyyy pp")}

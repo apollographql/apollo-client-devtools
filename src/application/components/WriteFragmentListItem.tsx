@@ -43,8 +43,18 @@ export function WriteFragmentListItem({
   return (
     <div className="flex flex-col gap-1">
       <span className="font-code inline-flex items-center gap-2">
-        {fragmentName ?? fragments[0].name.value}
         <OperationBadge document={fragment} />
+        <span>
+          cache.
+          <span className="text-code-e dark:text-code-e-dark">
+            writeFragment
+          </span>
+          (
+          <span className="text-code-g dark:text-code-g-dark">
+            {fragmentName ?? fragments[0].name.value}
+          </span>
+          )
+        </span>
       </span>
       <span className="text-xs text-secondary dark:text-secondary-dark">
         {format(new Date(timestamp), "MMM do, yyyy pp")}
