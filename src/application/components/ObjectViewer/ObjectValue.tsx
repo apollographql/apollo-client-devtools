@@ -19,15 +19,31 @@ export function ObjectValue({
   collapsible = true,
   ...props
 }: ObjectValueProps) {
-  const { context, depth, value, ...rest } = props;
+  const { context, depth, value, path, ...rest } = props;
   const ctx = useObjectViewerContext();
   const length = Object.keys(value).length;
-  const [collapsed, setCollapsed] = useState(
-    length === 0 ||
+  const [collapsed, setCollapsed] = useState(() => {
+    if (typeof ctx.collapsed === "function") {
+      return (
+        length > 0 &&
+        collapsible &&
+        ctx.collapsed({
+          value,
+          context,
+          depth,
+          defaultCollapsed: depth > 0,
+          path,
+        })
+      );
+    }
+
+    return (
+      length === 0 ||
       (typeof ctx.collapsed === "boolean"
         ? ctx.collapsed
         : depth >= ctx.collapsed)
-  );
+    );
+  });
 
   function toggle() {
     if (length > 0 && collapsible) {

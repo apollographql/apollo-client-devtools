@@ -1,10 +1,20 @@
 import { equal } from "@wry/equality";
 import type { ReactNode } from "react";
 import { createContext, useContext, useRef } from "react";
+import type { Path } from "./types";
 
 interface ContextType {
   displayObjectSize: boolean;
-  collapsed: number | boolean;
+  collapsed:
+    | number
+    | boolean
+    | ((options: {
+        value: unknown;
+        depth: number;
+        context: Record<string, any> | undefined;
+        defaultCollapsed: boolean;
+        path: Path;
+      }) => boolean);
   getTypeOf?: (value: unknown) => string | undefined;
   renderers: Record<
     string,
