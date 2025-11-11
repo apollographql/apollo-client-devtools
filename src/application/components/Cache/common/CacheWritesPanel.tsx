@@ -37,6 +37,7 @@ import { WriteQueryListItem } from "../../WriteQueryListItem";
 import { WriteFragmentListItem } from "../../WriteFragmentListItem";
 import { CacheModifyListItem } from "../../CacheModifyListItem";
 import { VariablesObject } from "../../VariablesObject";
+import { Kind } from "graphql";
 
 const CACHE_WRITES_PANEL_FRAGMENT: TypedDocumentNode<CacheWritesPanelFragment> = gql`
   fragment CacheWritesPanelFragment on CacheWrite {
@@ -377,12 +378,21 @@ function WriteFragmentView({
     return null;
   }
 
-  const { fragment, data: result, variables } = data.writeFragmentOptions;
+  const {
+    fragment,
+    fragmentName,
+    data: result,
+    variables,
+  } = data.writeFragmentOptions;
+
+  const fragments = fragment.definitions.filter(
+    (ast) => ast.kind === Kind.FRAGMENT_DEFINITION
+  );
 
   return (
     <CacheWriteContainer>
       <CacheWriteHeader
-        title={getOperationName(fragment, "(anonymous)")}
+        title={fragmentName ?? fragments[0].name.value}
         onNavigateBack={onNavigateBack}
       />
       <CacheWriteScrollArea>
