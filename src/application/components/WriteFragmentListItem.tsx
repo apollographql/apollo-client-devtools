@@ -7,6 +7,7 @@ import { fragmentRegistry } from "../fragmentRegistry";
 import type { FragmentDefinitionNode } from "graphql";
 import { Kind } from "graphql";
 import { Badge } from "./Badge";
+import { OperationBadge } from "./OperationBadge";
 
 const FRAGMENT: TypedDocumentNode<WriteFragmentListItem_cacheWrite> = gql`
   fragment WriteFragmentListItem_cacheWrite on WriteFragmentCacheWrite {
@@ -32,9 +33,9 @@ export function WriteFragmentListItem({
   }
 
   const { timestamp, writeFragmentOptions } = data;
-  const { fragmentName } = writeFragmentOptions;
+  const { fragment, fragmentName } = writeFragmentOptions;
 
-  const fragments = writeFragmentOptions.fragment.definitions.filter(
+  const fragments = fragment.definitions.filter(
     (node): node is FragmentDefinitionNode =>
       node.kind === Kind.FRAGMENT_DEFINITION
   );
@@ -43,9 +44,7 @@ export function WriteFragmentListItem({
     <div className="flex flex-col gap-1">
       <span className="font-code inline-flex items-center gap-2">
         {fragmentName ?? fragments[0].name.value}
-        <Badge variant="info" className="font-code">
-          F
-        </Badge>
+        <OperationBadge document={fragment} />
       </span>
       <span className="text-xs text-secondary dark:text-secondary-dark">
         {format(new Date(timestamp), "MMM do, yyyy pp")}
