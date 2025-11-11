@@ -20,14 +20,30 @@ export function ArrayValue({
   collapsible = true,
   ...props
 }: ArrayValueProps) {
-  const { depth, value } = props;
+  const { depth, context, value, path } = props;
   const ctx = useObjectViewerContext();
-  const [collapsed, setCollapsed] = useState(
-    value.length === 0 ||
+  const [collapsed, setCollapsed] = useState(() => {
+    if (typeof ctx.collapsed === "function") {
+      return (
+        value.length > 0 &&
+        collapsible &&
+        ctx.collapsed({
+          value,
+          context,
+          depth,
+          defaultCollapsed: depth > 0,
+          path,
+        })
+      );
+    }
+
+    return (
+      value.length === 0 ||
       (typeof ctx.collapsed === "boolean"
         ? ctx.collapsed
         : depth >= ctx.collapsed)
-  );
+    );
+  });
 
   function toggle() {
     if (value.length > 0 && collapsible) {

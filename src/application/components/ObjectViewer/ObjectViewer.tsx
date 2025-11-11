@@ -96,7 +96,16 @@ const theme: Theme = {
 interface ObjectViewerProps<CustomTypes extends string> {
   value: unknown;
   displayObjectSize?: boolean;
-  collapsed?: number | boolean;
+  collapsed?:
+    | number
+    | boolean
+    | ((options: {
+        value: unknown;
+        depth: number;
+        context: Record<string, any>;
+        defaultCollapsed: boolean;
+        path: Path;
+      }) => boolean);
   getTypeOf?: (value: unknown) => CustomTypes | undefined;
   customRenderers?: Record<
     NoInfer<CustomTypes>,
