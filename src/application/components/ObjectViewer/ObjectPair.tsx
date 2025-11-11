@@ -1,41 +1,28 @@
 import type { ComponentPropsWithoutRef } from "react";
 import { customRenderable } from "./CustomRenderable";
-import type { Path } from "./types";
 import { ObjectKey } from "./ObjectKey";
 import { AnyValue } from "./AnyValue";
 import { Punctuation } from "./Punctuation";
 import { ObjectKeyLabel } from "./ObjectKeyLabel";
 import { ArrayValue } from "./ArrayValue";
 import { ObjectValue } from "./ObjectValue";
-import { useContextValueFallback } from "./context";
+import type { RenderableTypeProps } from "./ObjectViewer";
 
-interface ObjectPairProps extends ComponentPropsWithoutRef<"div"> {
-  context: Record<string, any> | undefined;
-  depth: number;
-  displayObjectSize?: boolean;
+interface ObjectPairProps
+  extends ComponentPropsWithoutRef<"div">,
+    RenderableTypeProps<unknown> {
   collapsible?: boolean;
   objectKey: string;
-  value: unknown;
-  path: Path;
 }
 
 export const ObjectPair = customRenderable(
   "objectPair",
-  ({ displayObjectSize, ...props }: ObjectPairProps) => {
-    const { collapsible, value, objectKey, ...rest } = props;
-    const displayObjectSizeSetting = useContextValueFallback(
-      "displayObjectSize",
-      displayObjectSize
-    );
+  (props: ObjectPairProps) => {
+    const { value, objectKey, ...rest } = props;
 
     if (Array.isArray(value)) {
       return (
-        <ArrayValue
-          {...rest}
-          collapsible={collapsible}
-          displayObjectSize={displayObjectSizeSetting}
-          value={value}
-        >
+        <ArrayValue {...rest} value={value}>
           <ObjectKey context={props.context} value={objectKey} />
         </ArrayValue>
       );
@@ -43,7 +30,7 @@ export const ObjectPair = customRenderable(
 
     if (typeof value === "object" && value !== null) {
       return (
-        <ObjectValue {...rest} collapsible={collapsible} value={value}>
+        <ObjectValue {...rest} value={value}>
           <ObjectKey context={props.context} value={objectKey} />
         </ObjectValue>
       );

@@ -7,35 +7,23 @@ import { Punctuation } from "./Punctuation";
 import { ObjectKeyLabel } from "./ObjectKeyLabel";
 import { ArrayValue } from "./ArrayValue";
 import { ObjectValue } from "./ObjectValue";
-import { useContextValueFallback } from "./context";
+import type { RenderableTypeProps } from "./ObjectViewer";
 
-interface ArrayItemProps extends ComponentPropsWithoutRef<"div"> {
-  context: Record<string, any> | undefined;
+interface ArrayItemProps
+  extends ComponentPropsWithoutRef<"div">,
+    RenderableTypeProps<unknown> {
   collapsible?: boolean;
-  depth: number;
-  displayObjectSize?: boolean;
   index: number;
-  value: unknown;
-  path: Path;
 }
 
 export const ArrayItem = customRenderable(
   "arrayItem",
-  ({ displayObjectSize, ...props }: ArrayItemProps) => {
-    const { collapsible, value, index, ...rest } = props;
-    const displayObjectSizeSetting = useContextValueFallback(
-      "displayObjectSize",
-      displayObjectSize
-    );
+  (props: ArrayItemProps) => {
+    const { value, index, ...rest } = props;
 
     if (Array.isArray(value)) {
       return (
-        <ArrayValue
-          {...rest}
-          collapsible={collapsible}
-          displayObjectSize={displayObjectSizeSetting}
-          value={value}
-        >
+        <ArrayValue {...rest} value={value}>
           <ArrayIndex context={props.context} index={index} />
         </ArrayValue>
       );
@@ -43,7 +31,7 @@ export const ArrayItem = customRenderable(
 
     if (typeof value === "object" && value !== null) {
       return (
-        <ObjectValue {...rest} collapsible={collapsible} value={value}>
+        <ObjectValue {...rest} value={value}>
           <ArrayIndex context={props.context} index={index} />
         </ObjectValue>
       );

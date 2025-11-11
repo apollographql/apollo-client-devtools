@@ -27,6 +27,7 @@ import type { AnyValueNode } from "./AnyValueNode";
 import { AnyValue } from "./AnyValue";
 import type { ObjType } from "./getTypeOf";
 import type { ObjectValueNode } from "./ObjectValueNode";
+import type { ArrayValueNode } from "./ArrayValueNode";
 
 type ValueProp<T> = [T] extends [never] ? { value?: never } : { value: T };
 
@@ -56,6 +57,7 @@ interface BuiltinRenderers {
   array: WithDefaultRender<typeof ArrayNode>;
   arrayItem: WithDefaultRender<typeof ArrayItem>;
   arrayIndex: WithDefaultRender<typeof ArrayIndex>;
+  arrayValue: WithDefaultRender<typeof ArrayValueNode>;
   bigint: WithDefaultRender<typeof BigintNode>;
   boolean: WithDefaultRender<typeof BooleanNode>;
   collapsedArray: WithDefaultRender<typeof CollapsedArray>;
