@@ -20,7 +20,7 @@ import { useFragment } from "@apollo/client/react";
 import { Panel } from "react-resizable-panels";
 import { CodeBlock } from "../../CodeBlock";
 import type { ReactNode } from "react";
-import { memo, useState } from "react";
+import { Fragment, memo, useState } from "react";
 import { print } from "@apollo/client/utilities";
 import { getOperationName } from "@apollo/client/utilities/internal";
 import { List } from "../../List";
@@ -345,6 +345,9 @@ function DirectCacheWriteView({
         <OptionsSection
           api="cache.write"
           document={query}
+          collapsed={({ value, defaultCollapsed }) =>
+            value === variables || value === result ? false : defaultCollapsed
+          }
           options={data.writeOptions}
         />
       </CacheWriteScrollArea>
@@ -407,6 +410,9 @@ function WriteFragmentView({
         <OptionsSection
           api="cache.writeFragment"
           document={fragment}
+          collapsed={({ value, defaultCollapsed }) =>
+            value === variables || value === result ? false : defaultCollapsed
+          }
           options={data.writeFragmentOptions}
         />
       </CacheWriteScrollArea>
@@ -460,6 +466,9 @@ function WriteQueryView({
         <OptionsSection
           api="cache.writeQuery"
           document={query}
+          collapsed={({ value, defaultCollapsed }) =>
+            value === variables || value === result ? false : defaultCollapsed
+          }
           options={data.writeQueryOptions}
         />
       </CacheWriteScrollArea>
@@ -551,10 +560,15 @@ function VariablesSection({
 
 function OptionsSection({
   api,
+  collapsed,
   document,
   options,
 }: {
   api: string;
+  collapsed?: (options: {
+    value: unknown;
+    defaultCollapsed: boolean;
+  }) => boolean;
   document: DocumentNode;
   options: unknown;
 }) {
@@ -569,10 +583,10 @@ function OptionsSection({
                 {part}
               </span>
             ) : (
-              <>
-                <span key={idx}>{part}</span>
+              <Fragment key={idx}>
+                <span>{part}</span>
                 <span>.</span>
-              </>
+              </Fragment>
             )
           )}
           (
@@ -581,6 +595,7 @@ function OptionsSection({
           value={options}
           displayObjectSize={false}
           tagName="span"
+          collapsed={collapsed}
           builtinRenderers={{
             array: ({ depth, DefaultRender }) => {
               return <DefaultRender displayObjectSize={depth > 1} />;
