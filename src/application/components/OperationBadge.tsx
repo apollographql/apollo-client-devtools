@@ -1,10 +1,8 @@
 import type { DocumentNode } from "@apollo/client";
-import {
-  getMainDefinition,
-  getOperationDefinition,
-} from "@apollo/client/utilities/internal";
+import { getMainDefinition } from "@apollo/client/utilities/internal";
 import { Badge } from "./Badge";
 import { Kind } from "graphql";
+import { Tooltip } from "./Tooltip";
 
 interface Props {
   document: DocumentNode;
@@ -13,14 +11,21 @@ interface Props {
 export function OperationBadge({ document }: Props) {
   const definition = getMainDefinition(document);
   const kind =
-    definition.kind === Kind.OPERATION_DEFINITION ? definition.operation : "F";
+    definition.kind === Kind.OPERATION_DEFINITION
+      ? definition.operation
+      : "fragment";
 
   return (
-    <Badge
-      variant="info"
-      className="font-code shrink-0 size-5 inline-flex items-center justify-center"
+    <Tooltip
+      content={kind.slice(0, 1).toUpperCase() + kind.slice(1)}
+      delayDuration={1000}
     >
-      {kind.at(0)?.toUpperCase()}
-    </Badge>
+      <Badge
+        variant="info"
+        className="font-code shrink-0 size-5 inline-flex items-center justify-center"
+      >
+        {kind.at(0)?.toUpperCase()}
+      </Badge>
+    </Tooltip>
   );
 }
