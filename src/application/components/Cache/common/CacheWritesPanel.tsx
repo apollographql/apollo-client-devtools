@@ -151,7 +151,7 @@ function ListView({
   return (
     <div className="grow !overflow-auto">
       <section className="flex items-center justify-between border-b border-b-primary dark:border-b-primary-dark py-2 px-4">
-        <h2 className="grow font-medium text-lg text-heading dark:text-heading-dark">
+        <h2 className="grow font-medium text-md text-heading dark:text-heading-dark">
           Cache writes ({cacheWrites.length})
         </h2>
         <Tooltip content="Clear">
