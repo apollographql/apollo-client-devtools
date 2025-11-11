@@ -35,8 +35,15 @@ export function WriteQueryListItem({
   return (
     <div className="flex flex-col gap-1">
       <span className="font-code inline-flex items-center gap-2">
-        {getOperationName(writeQueryOptions.query, "(anonymous)")}
         <OperationBadge document={writeQueryOptions.query} />
+        <span>
+          cache.
+          <span className="text-code-e dark:text-code-e-dark">writeQuery</span>(
+          <span className="text-code-g dark:text-code-g-dark">
+            {getOperationName(writeQueryOptions.query, "(anonymous)")}
+          </span>
+          )
+        </span>
       </span>
       <span className="text-xs text-secondary dark:text-secondary-dark">
         {format(new Date(timestamp), "MMM do, yyyy pp")}
