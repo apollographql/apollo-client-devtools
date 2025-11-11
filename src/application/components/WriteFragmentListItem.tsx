@@ -39,19 +39,20 @@ export function WriteFragmentListItem({
     (node): node is FragmentDefinitionNode =>
       node.kind === Kind.FRAGMENT_DEFINITION
   );
+  const name = fragmentName ?? fragments[0].name.value;
 
   return (
     <div className="flex flex-col gap-1">
       <span className="font-code inline-flex items-center gap-2">
         <OperationBadge document={fragment} />
-        <span>
+        <span className="overflow-hidden text-ellipsis">
           cache.
           <span className="text-code-e dark:text-code-e-dark">
             writeFragment
           </span>
           (
-          <span className="text-code-g dark:text-code-g-dark">
-            {fragmentName ?? fragments[0].name.value}
+          <span className="text-code-d dark:text-code-d-dark" title={name}>
+            {name}
           </span>
           )
         </span>

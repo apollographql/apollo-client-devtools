@@ -31,16 +31,20 @@ export function DirectCacheWriteListItem({
   }
 
   const { timestamp, writeOptions } = data;
+  const operationName = getOperationName(writeOptions.query, "(anonymous)");
 
   return (
     <div className="flex flex-col gap-1">
       <span className="font-code inline-flex items-center gap-2">
         <OperationBadge document={writeOptions.query} />
-        <span>
+        <span className="overflow-hidden text-ellipsis">
           cache.<span className="text-code-e dark:text-code-e-dark">write</span>
           (
-          <span className="text-code-g dark:text-code-g-dark">
-            {getOperationName(writeOptions.query, "(anonymous)")})
+          <span
+            className="text-code-d dark:text-code-d-dark"
+            title={operationName}
+          >
+            {operationName})
           </span>
         </span>
       </span>
