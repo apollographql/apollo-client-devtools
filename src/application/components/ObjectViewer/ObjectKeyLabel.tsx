@@ -25,8 +25,10 @@ export function ObjectKeyLabel({
     >
       <span className="inline-flex items-center">
         {collapsible && <Arrow collapsed={!!collapsed} />}
-        {children}
-        <Punctuation>:</Punctuation>
+        <span>
+          {children}
+          <Punctuation>:</Punctuation>
+        </span>
       </span>
     </span>
   );
