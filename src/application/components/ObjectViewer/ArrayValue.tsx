@@ -23,26 +23,23 @@ export function ArrayValue({
   const { depth, context, value, path } = props;
   const ctx = useObjectViewerContext();
   const [collapsed, setCollapsed] = useState(() => {
-    if (typeof ctx.collapsed === "function") {
-      return (
-        value.length > 0 &&
-        collapsible &&
-        ctx.collapsed({
-          value,
-          context,
-          depth,
-          defaultCollapsed: depth > 0,
-          path,
-        })
-      );
+    if (value.length === 0) {
+      return true;
     }
 
-    return (
-      value.length === 0 ||
-      (typeof ctx.collapsed === "boolean"
-        ? ctx.collapsed
-        : depth >= ctx.collapsed)
-    );
+    if (typeof ctx.collapsed === "function") {
+      return ctx.collapsed({
+        value,
+        context,
+        depth,
+        defaultCollapsed: depth > 0,
+        path,
+      });
+    }
+
+    return typeof ctx.collapsed === "boolean"
+      ? ctx.collapsed
+      : depth >= ctx.collapsed;
   });
 
   function toggle() {
