@@ -24,7 +24,6 @@ export const ObjectValueNode = customRenderable(
   "objectValue",
   ({
     collapsed,
-    displayObjectSize,
     onToggleCollapsed,
     getCollapsedElement = ({ value, onToggleCollapsed }) => {
       return Object.keys(value).length > 0 ? (
@@ -39,7 +38,7 @@ export const ObjectValueNode = customRenderable(
     },
     ...props
   }: ObjectValueNodeProps) => {
-    const { value } = props;
+    const { displayObjectSize, value } = props;
     const displayObjectSizeSetting = useContextValueFallback(
       "displayObjectSize",
       displayObjectSize

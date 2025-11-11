@@ -587,6 +587,7 @@ function OptionsSection({
             },
             objectValue: ({
               collapsed,
+              depth,
               value,
               onToggleCollapsed,
               DefaultRender,
@@ -622,12 +623,9 @@ function OptionsSection({
                 );
               }
 
-              return <DefaultRender />;
-            },
-            arrayItem: ({ depth, DefaultRender }) => {
               return <DefaultRender displayObjectSize={depth > 1} />;
             },
-            objectPair: ({ depth, DefaultRender }) => {
+            arrayValue: ({ depth, DefaultRender }) => {
               return <DefaultRender displayObjectSize={depth > 1} />;
             },
           }}
