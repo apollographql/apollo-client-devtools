@@ -99,7 +99,7 @@
     "@types/react": "18.3.24",
     "@types/react-copy-to-clipboard": "5.0.7",
     "@types/react-dom": "18.3.7",
-    "@types/webextension-polyfill": "0.10.7",
+    "@types/webextension-polyfill": "0.12.4",
     "@types/zen-observable": "0.8.7",
     "@typescript-eslint/eslint-plugin": "7.14.1",
     "@typescript-eslint/parser": "7.14.1",
