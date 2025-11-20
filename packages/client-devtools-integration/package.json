@@ -1,0 +1,41 @@
+{
+  "name": "@apollo/client-devtools-integration",
+  "version": "4.21.10",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/apollographql/apollo-client-devtools.git"
+  },
+  "keywords": [
+    "apollo",
+    "apollo-client",
+    "devtools"
+  ],
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./package.json": "./package.json"
+  },
+  "main": "./index.js",
+  "typings": "./index.d.ts",
+  "author": "packages@apollographql.com",
+  "license": "MIT",
+  "files": [
+    "*.js",
+    "*.d.ts",
+    "package.json",
+    "LICENSE.md",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "peerDependencies": {
+    "@apollo/client": "^4.1.0 || ^4.1.0-alpha"
+  },
+  "devDependencies": {
+    "@apollo/client": "4.1.0-alpha.5"
+  },
+  "scripts": {
+    "clean": "git clean -Xf .",
+    "build": "tsc -p tsconfig.build.json",
+    "prepack": "npm run clean && npm run build && cp ../../LICENSE ./LICENSE.md"
+  }
+}
