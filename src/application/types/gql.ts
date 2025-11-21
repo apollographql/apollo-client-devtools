@@ -291,15 +291,10 @@ export type Query = {
   __typename: "Query";
   client: Maybe<Client>;
   clients: Array<Client>;
-  queries: Maybe<ClientQueries>;
 };
 
 export type QueryclientArgs = {
   id: Scalars["ID"]["input"];
-};
-
-export type QueryqueriesArgs = {
-  clientId: Scalars["ID"]["input"];
 };
 
 export type QueryManagerCacheSizes = {
