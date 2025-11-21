@@ -4,6 +4,5 @@ import { getPanelActor } from "./panelActor";
 
 forwardDevToolsActorEvent(getPanelActor(window), [
   "initializePanel",
-  "extensionInvalidated",
   "port.changed",
 ]);
