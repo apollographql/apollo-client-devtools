@@ -7,7 +7,7 @@ const errorConstructors = [
   URIError,
 ].reduce(
   (memo, constructor) => memo.set(constructor.name, constructor),
-  new Map<string, ErrorConstructor>()
+  new Map<string, new (message?: string) => Error>()
 );
 
 export function serializeError(error: unknown) {
