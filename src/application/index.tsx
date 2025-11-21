@@ -146,6 +146,7 @@ const actor = createActor(
     },
   }),
   {
+    input: { client },
     id: "devtools",
     inspect: (inspectionEvent) => {
       // toggle here for debugging

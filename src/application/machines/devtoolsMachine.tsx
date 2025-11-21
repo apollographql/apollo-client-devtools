@@ -6,11 +6,13 @@ import { useSelector } from "@xstate/react";
 import type { ReconnectMachineEvents } from "./reconnectMachine";
 import { reconnectMachine } from "./reconnectMachine";
 import { clientCountActor } from "./clientCountActor";
+import type { ApolloClient } from "@apollo/client";
 
 export interface DevtoolsMachineContext {
   listening?: boolean;
   port?: number;
   registeredClients: number;
+  client: ApolloClient;
 }
 
 type Events =
@@ -35,11 +37,12 @@ export type EmittedEvents =
     : never;
 
 export const devtoolsMachine = setup({
-  types: {} as {
-    context: DevtoolsMachineContext;
-    events: Events;
-    children: { reconnect: "reconnect" };
-    emitted: EmittedEvents;
+  types: {
+    context: {} as DevtoolsMachineContext,
+    events: {} as Events,
+    children: {} as { reconnect: "reconnect" },
+    emitted: {} as EmittedEvents,
+    input: {} as { client: ApolloClient },
   },
   delays: {
     connectTimeout: 10_000,
@@ -85,17 +88,19 @@ export const devtoolsMachine = setup({
   invoke: {
     id: "clientCount",
     src: "clientCount",
+    input: ({ context }) => context.client,
     onSnapshot: {
       actions: assign({
         registeredClients: ({ event }) => event.snapshot.context ?? 0,
       }),
     },
   },
-  context: {
+  context: ({ input }) => ({
     modals: {},
     port: undefined,
     registeredClients: 0,
-  },
+    client: input.client,
+  }),
   on: {
     // forward reconnect events to child actor
     "reconnect.*": {
