@@ -1,5 +1,5 @@
-import type { SerializedErrorLike } from "@/application/errors";
-import { ExtensionInvalidatedError } from "@/application/errors";
+import type { SerializedErrorLike } from "./errors";
+import { ExtensionInvalidatedError } from "./errors";
 
 const errorConstructors = [
   EvalError,

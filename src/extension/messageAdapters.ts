@@ -2,9 +2,9 @@ import type browser from "webextension-polyfill";
 import { isDevtoolsMessage, MessageType } from "./messages";
 import type { ApolloClientDevtoolsMessage } from "./messages";
 import { isExtensionInvalidatedError } from "./errorMessages";
-import { ExtensionInvalidatedError } from "@/application/errors";
+import { ExtensionInvalidatedError } from "./errors";
 import { serializeError } from "./errorSerialization";
-import { createId } from "@/utils/createId";
+import { createId } from "../utils/createId";
 
 export interface MessageAdapter {
   addListener: (listener: (message: unknown) => void) => () => void;

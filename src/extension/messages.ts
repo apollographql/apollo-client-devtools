@@ -1,4 +1,4 @@
-import type { SerializedErrorLike } from "@/application/errors";
+import type { SerializedErrorLike } from "./errors";
 import type { ApolloClientDevtoolsActorMessage } from "./actor";
 import type { RPCRequestMessage, RPCResponseMessage } from "./rpc";
 
