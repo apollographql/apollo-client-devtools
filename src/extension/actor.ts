@@ -36,7 +36,7 @@ export type ActorMessage =
     }
   | Extract<
       DevToolsMachineEvents,
-      { type: "initializePanel" | "port.changed" }
+      { type: "initializePanel" | "port.changed" | "extensionInvalidated" }
     >;
 
 export type ApolloClientDevtoolsActorMessage = {

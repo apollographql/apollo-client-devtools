@@ -14,6 +14,7 @@ export interface DevtoolsMachineContext {
 }
 
 type Events =
+  | { type: "extensionInvalidated" }
   | { type: "initializePanel"; initialContext: Partial<DevtoolsMachineContext> }
   | { type: "port.changed"; port: number; listening: boolean }
   | { type: "client.setCount"; count: number }
@@ -53,6 +54,13 @@ export const devtoolsMachine = setup({
     },
     notifyConnected: () => {
       BannerAlert.show({ type: "success", content: "Connected!" });
+    },
+    notifyRestart: () => {
+      BannerAlert.show({
+        type: "error",
+        content:
+          "Could not communicate with the client. The extension might have been updated in the background. Please close and reopen the devtools and restart the page.",
+      });
     },
 
     renderUI: () => {
@@ -172,6 +180,9 @@ export const devtoolsMachine = setup({
         connected: {
           entry: ["notifyConnected"],
           exit: ["resetStore"],
+          on: {
+            extensionInvalidated: "restart",
+          },
           after: {
             2500: {
               actions: "closeBanner",
@@ -184,6 +195,9 @@ export const devtoolsMachine = setup({
         },
         disconnected: {
           entry: "notifyDisconnected",
+          on: {
+            extensionInvalidated: "restart",
+          },
           invoke: {
             id: "reconnect",
             src: "reconnect",
@@ -192,6 +206,9 @@ export const devtoolsMachine = setup({
             guard: ({ context }) => context.registeredClients > 0,
             target: "connected",
           },
+        },
+        restart: {
+          entry: ["notifyRestart"],
         },
       },
     },

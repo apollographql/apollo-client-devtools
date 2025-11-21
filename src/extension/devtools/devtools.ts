@@ -9,16 +9,21 @@ import {
 
 const inspectedTabId = chrome.devtools.inspectedWindow.tabId;
 
-const portAdapter = createPortMessageAdapter(() =>
-  browser.runtime.connect({ name: inspectedTabId.toString() })
-);
-
 let connectedToPanel = false;
 let panelWindow: Actor;
 
 chrome.devtools.panels.create("Apollo", "", "panel.html", (panel) => {
   panel.onShown.addListener((window) => {
     panelWindow = getPanelActor(window);
+
+    const portAdapter = createPortMessageAdapter(
+      () => browser.runtime.connect({ name: inspectedTabId.toString() }),
+      {
+        onExtensionInvalidated: () => {
+          panelWindow.send({ type: "extensionInvalidated" });
+        },
+      }
+    );
 
     if (connectedToPanel) {
       panelWindow.send({ type: "panelShown" });

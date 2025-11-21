@@ -27,14 +27,13 @@ import type {
   ActorMessage as WindowActorMessage,
 } from "../extension/actor";
 import fragmentTypes from "./possibleTypes.json";
-import { rpcTimeoutLink } from "./apollo/rpcTimeoutLink";
 
 loadDevMessages();
 loadErrorMessages();
 
 const rpcClient = getRpcClient();
 const schema = createSchemaWithRpcClient(rpcClient);
-const link = ApolloLink.from([rpcTimeoutLink, new SchemaLink({ schema })]);
+const link = new SchemaLink({ schema });
 
 const cache = new InMemoryCache({
   fragments: fragmentRegistry,
