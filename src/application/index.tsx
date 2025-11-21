@@ -27,13 +27,28 @@ import type {
   ActorMessage as WindowActorMessage,
 } from "../extension/actor";
 import fragmentTypes from "./possibleTypes.json";
+import { tap } from "rxjs";
+import { hasExtensionInvalidatedError } from "./utilities/errors";
 
 loadDevMessages();
 loadErrorMessages();
 
 const rpcClient = getRpcClient();
 const schema = createSchemaWithRpcClient(rpcClient);
-const link = new SchemaLink({ schema });
+
+const schemaLink = new SchemaLink({ schema });
+
+const extensionInvalidatedLink = new ApolloLink((operation, forward) => {
+  return forward(operation).pipe(
+    tap((result) => {
+      if (hasExtensionInvalidatedError(result.errors)) {
+        actor.send({ type: "extensionInvalidated" });
+      }
+    })
+  );
+});
+
+const link = ApolloLink.from([extensionInvalidatedLink, schemaLink]);
 
 const cache = new InMemoryCache({
   fragments: fragmentRegistry,

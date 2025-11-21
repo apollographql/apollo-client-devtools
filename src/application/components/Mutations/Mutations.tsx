@@ -25,6 +25,7 @@ import HighlightMatch from "../HighlightMatch";
 import { PageSpinner } from "../PageSpinner";
 import { isIgnoredError } from "../../utilities/ignoredErrors";
 import { SerializedErrorAlertDisclosurePanel } from "../SerializedErrorAlertDisclosurePanel";
+import { useIsExtensionInvalidated } from "@/application/machines/devtoolsMachine";
 
 const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
   gql`
@@ -70,13 +71,15 @@ const STABLE_EMPTY_MUTATIONS: Array<
 export const Mutations = ({ clientId, explorerIFrame }: MutationsProps) => {
   const [selected, setSelected] = useState<number>(0);
   const [searchTerm, setSearchTerm] = useState("");
+  const isExtensionInvalidated = useIsExtensionInvalidated();
 
   const { data, error, networkStatus, startPolling, stopPolling } = useQuery(
     GET_MUTATIONS,
     {
       variables: { id: clientId as string },
       skip: clientId == null,
-      pollInterval: 500,
+      pollInterval: isExtensionInvalidated ? 0 : 500,
+      fetchPolicy: isExtensionInvalidated ? "cache-only" : "cache-first",
     }
   );
 
