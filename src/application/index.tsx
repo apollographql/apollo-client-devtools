@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import type { Reference } from "@apollo/client";
 import { loadDevMessages, loadErrorMessages } from "@apollo/client/dev";
-import { ApolloClient, InMemoryCache } from "@apollo/client";
+import { ApolloClient, ApolloLink, InMemoryCache } from "@apollo/client";
 import { ApolloProvider } from "@apollo/client/react";
 import { SchemaLink } from "@apollo/client/link/schema";
 
@@ -27,13 +27,14 @@ import type {
   ActorMessage as WindowActorMessage,
 } from "../extension/actor";
 import fragmentTypes from "./possibleTypes.json";
+import { rpcTimeoutLink } from "./apollo/rpcTimeoutLink";
 
 loadDevMessages();
 loadErrorMessages();
 
 const rpcClient = getRpcClient();
 const schema = createSchemaWithRpcClient(rpcClient);
-const link = new SchemaLink({ schema });
+const link = ApolloLink.from([rpcTimeoutLink, new SchemaLink({ schema })]);
 
 const cache = new InMemoryCache({
   fragments: fragmentRegistry,
