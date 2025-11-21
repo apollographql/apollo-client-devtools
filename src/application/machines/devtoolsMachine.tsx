@@ -241,5 +241,11 @@ export function useDevToolsSelector<T>(
   return useSelector(actor, selector, compare);
 }
 
+export function useIsExtensionInvalidated() {
+  return useDevToolsSelector(
+    (state) => state.value.connection === "invalidated"
+  );
+}
+
 export type DevToolsMachine = typeof devtoolsMachine;
 export type DevToolsActor = Actor<DevToolsMachine>;
