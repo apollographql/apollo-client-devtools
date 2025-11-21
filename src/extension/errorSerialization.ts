@@ -1,3 +1,4 @@
+import type { SerializedErrorLike } from "@/application/errors";
 import { ExtensionInvalidatedError } from "@/application/errors";
 
 const errorConstructors = [
@@ -13,7 +14,7 @@ const errorConstructors = [
   new Map<string, new (message?: string) => Error>()
 );
 
-export function serializeError(error: unknown) {
+export function serializeError(error: unknown): SerializedErrorLike {
   return error instanceof Error
     ? { name: error.name, message: error.message, stack: error.stack }
     : { message: String(error) };
@@ -23,11 +24,7 @@ export function deserializeError({
   name,
   message,
   stack,
-}: {
-  name?: string;
-  message: string;
-  stack?: string;
-}) {
+}: SerializedErrorLike) {
   const ErrorClass = name ? errorConstructors.get(name) ?? Error : Error;
   const error = new ErrorClass(message);
 
