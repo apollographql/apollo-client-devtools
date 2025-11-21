@@ -37,12 +37,12 @@ export type EmittedEvents =
     : never;
 
 export const devtoolsMachine = setup({
-  types: {
-    context: {} as DevtoolsMachineContext,
-    events: {} as Events,
-    children: {} as { reconnect: "reconnect" },
-    emitted: {} as EmittedEvents,
-    input: {} as { client: ApolloClient },
+  types: {} as {
+    context: DevtoolsMachineContext;
+    events: Events;
+    children: { reconnect: "reconnect" };
+    emitted: EmittedEvents;
+    input: { client: ApolloClient };
   },
   delays: {
     connectTimeout: 10_000,
