@@ -44,6 +44,7 @@ function createResolvers(client: RpcClient): Resolvers {
     Query: {
       clients: () => request("getClients"),
       client: (_, { id }) => request("getClient", id),
+      queries: (_, { clientId }) => request("getClient", clientId),
     },
     Client: {
       __resolveType: (client) => {

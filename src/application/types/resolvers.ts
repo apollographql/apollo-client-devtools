@@ -310,10 +310,15 @@ export type Query = {
   __typename?: "Query";
   client: Maybe<Client>;
   clients: Array<Client>;
+  queries: Maybe<ClientQueries>;
 };
 
 export type QueryClientArgs = {
   id: Scalars["ID"]["input"];
+};
+
+export type QueryQueriesArgs = {
+  clientId: Scalars["ID"]["input"];
 };
 
 export type QueryManagerCacheSizes = {
@@ -1325,6 +1330,12 @@ export type QueryResolvers<
     RequireFields<QueryClientArgs, "id">
   >;
   clients?: Resolver<Array<ResolversTypes["Client"]>, ParentType, ContextType>;
+  queries?: Resolver<
+    Maybe<ResolversTypes["ClientQueries"]>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryQueriesArgs, "clientId">
+  >;
 };
 
 export interface QueryDataScalarConfig

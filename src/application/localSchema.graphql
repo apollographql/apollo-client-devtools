@@ -16,6 +16,7 @@ scalar GraphQLErrorPath
 type Query {
   clients: [Client!]!
   client(id: ID!): Client
+  queries(clientId: ID!): ClientQueries
 }
 
 type BaseCacheSizes {
