@@ -12,10 +12,7 @@ export interface MessageAdapter {
 }
 
 export function createPortMessageAdapter(
-  createPort: () => browser.Runtime.Port,
-  options: {
-    onExtensionInvalidated?: (error: Error) => void;
-  } = {}
+  createPort: () => browser.Runtime.Port
 ): MessageAdapter {
   let invalidated = false;
   let port = createPort();
@@ -59,7 +56,6 @@ export function createPortMessageAdapter(
       } catch (error) {
         if (isExtensionInvalidatedError(error)) {
           invalidated = true;
-          options.onExtensionInvalidated?.(error);
           throw new ExtensionInvalidatedError();
         } else {
           throw error;
