@@ -123,12 +123,6 @@ const actor = createActor(
         await client.clearStore().catch(noop);
         self.send({ type: "emit.store.didReset" });
       },
-      renderUI() {
-        // const root = createRoot(
-        //   document.getElementById("devtools") as HTMLElement
-        // );
-        // root.render(<AppProvider actor={actor} />);
-      },
     },
   }),
   {

@@ -56,9 +56,6 @@ export const devtoolsMachine = setup({
       BannerAlert.show({ type: "success", content: "Connected!" });
     },
 
-    renderUI: () => {
-      throw new Error("Provide implementation");
-    },
     resetStore: () => {
       throw new Error("Provide implementation");
     },
@@ -118,7 +115,6 @@ export const devtoolsMachine = setup({
           },
         },
         initializing: {
-          entry: "renderUI",
           always: [
             {
               guard: "contextValid",
