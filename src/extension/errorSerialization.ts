@@ -1,3 +1,5 @@
+import { ExtensionInvalidatedError } from "@/application/errors";
+
 const errorConstructors = [
   EvalError,
   RangeError,
@@ -5,6 +7,7 @@ const errorConstructors = [
   SyntaxError,
   TypeError,
   URIError,
+  ExtensionInvalidatedError,
 ].reduce(
   (memo, constructor) => memo.set(constructor.name, constructor),
   new Map<string, new (message?: string) => Error>()
