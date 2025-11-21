@@ -181,7 +181,7 @@ export const devtoolsMachine = setup({
           entry: ["notifyConnected"],
           exit: ["resetStore"],
           on: {
-            extensionInvalidated: "restart",
+            extensionInvalidated: "invalidated",
           },
           after: {
             2500: {
@@ -196,7 +196,7 @@ export const devtoolsMachine = setup({
         disconnected: {
           entry: "notifyDisconnected",
           on: {
-            extensionInvalidated: "restart",
+            extensionInvalidated: "invalidated",
           },
           invoke: {
             id: "reconnect",
@@ -207,7 +207,7 @@ export const devtoolsMachine = setup({
             target: "connected",
           },
         },
-        restart: {
+        invalidated: {
           entry: ["notifyRestart"],
         },
       },
