@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.21.11
+
+### Patch Changes
+
+- [#1745](https://github.com/apollographql/apollo-client-devtools/pull/1745) [`b0c047e`](https://github.com/apollographql/apollo-client-devtools/commit/b0c047ee812b9e70569a7ce8bee3af6a9c4ebf5e) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Fix an issue where the devtools would sometimes be blank even though it shows as connected to a client.
+
+- [#1743](https://github.com/apollographql/apollo-client-devtools/pull/1743) [`7b93734`](https://github.com/apollographql/apollo-client-devtools/commit/7b937345d9fa67c60e12197a2e49e1aad605e9c4) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Use the `chrome` namespace for `devtools` APIs to prepare for upcoming support for the global `browser` namespace for Chrome extensions which does not include `browser.devtools`.
+
 ## 4.21.10
 
 ### Patch Changes
