@@ -1,8 +1,6 @@
 import type browser from "webextension-polyfill";
 import { isDevtoolsMessage, MessageType } from "./messages";
 import type { ApolloClientDevtoolsMessage } from "./messages";
-import { isExtensionInvalidatedError } from "./errorMessages";
-import { ExtensionInvalidatedError } from "./errors";
 import { serializeError } from "./errorSerialization";
 import { createId } from "../utils/createId";
 
@@ -14,7 +12,6 @@ export interface MessageAdapter {
 export function createPortMessageAdapter(
   createPort: () => browser.Runtime.Port
 ): MessageAdapter {
-  let invalidated = false;
   let port = createPort();
   const listeners = new Set<(message: unknown) => void>();
 
@@ -47,20 +44,7 @@ export function createPortMessageAdapter(
       };
     },
     postMessage(message) {
-      if (invalidated) {
-        throw new ExtensionInvalidatedError();
-      }
-
-      try {
-        return port.postMessage(message);
-      } catch (error) {
-        if (isExtensionInvalidatedError(error)) {
-          invalidated = true;
-          throw new ExtensionInvalidatedError();
-        } else {
-          throw error;
-        }
-      }
+      return port.postMessage(message);
     },
   };
 }
