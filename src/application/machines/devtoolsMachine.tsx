@@ -14,8 +14,7 @@ export interface DevtoolsMachineContext {
 }
 
 type Events =
-  | { type: "initializePanel" }
-  | { type: "watchFragment" }
+  | { type: "initializePanel"; initialContext: Partial<DevtoolsMachineContext> }
   | { type: "port.changed"; port: number; listening: boolean }
   | { type: "client.setCount"; count: number }
   | { type: "emit.store.didReset" }
@@ -56,6 +55,9 @@ export const devtoolsMachine = setup({
       BannerAlert.show({ type: "success", content: "Connected!" });
     },
 
+    renderUI: () => {
+      throw new Error("Provide implementation");
+    },
     resetStore: () => {
       throw new Error("Provide implementation");
     },
@@ -120,11 +122,13 @@ export const devtoolsMachine = setup({
         uninitialized: {
           on: {
             initializePanel: {
+              actions: [assign(({ event }) => event.initialContext)],
               target: "initializing",
             },
           },
         },
         initializing: {
+          entry: "renderUI",
           always: [
             {
               guard: "contextValid",
