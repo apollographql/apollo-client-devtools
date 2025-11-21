@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { ReactNode } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { gql } from "@apollo/client";
