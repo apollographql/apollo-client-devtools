@@ -8,10 +8,11 @@ import type {
   MemoryInternalsCaches,
 } from "./types/resolvers";
 import { getOperationName } from "@apollo/client/utilities/internal";
-import { print } from "graphql";
+import { GraphQLError, print } from "graphql";
 import { gte } from "semver";
 import type { MemoryInternalsV3 } from "@/extension/tab/v3/types";
 import type { MemoryInternalsV4 } from "@/extension/tab/v4/types";
+import { isExtensionInvalidatedError } from "@/extension/errorMessages";
 
 export function createSchemaWithRpcClient(rpcClient: RpcClient) {
   return makeExecutableSchema({
@@ -23,10 +24,26 @@ export function createSchemaWithRpcClient(rpcClient: RpcClient) {
 function createResolvers(client: RpcClient): Resolvers {
   const rpcClient = client.withTimeout(10_000);
 
+  const request = (async (...args) => {
+    try {
+      return await rpcClient.request(...args);
+    } catch (e) {
+      if (isExtensionInvalidatedError(e)) {
+        throw new GraphQLError(e.message, {
+          extensions: {
+            code: "EXTENSION_INVALIDATED",
+          },
+        });
+      } else {
+        throw e;
+      }
+    }
+  }) as typeof rpcClient.request;
+
   return {
     Query: {
-      clients: () => rpcClient.request("getClients"),
-      client: (_, { id }) => rpcClient.request("getClient", id),
+      clients: () => request("getClients"),
+      client: (_, { id }) => request("getClient", id),
     },
     Client: {
       __resolveType: (client) => {
@@ -34,11 +51,11 @@ function createResolvers(client: RpcClient): Resolvers {
       },
     },
     ClientV3: {
-      cache: (client) => rpcClient.request("getCache", client.id),
+      cache: (client) => request("getCache", client.id),
       queries: (client) => client,
       mutations: (client) => client,
       memoryInternals: async (client) => {
-        const memoryInternals = await rpcClient.request(
+        const memoryInternals = await request(
           "getV3MemoryInternals",
           client.id
         );
@@ -59,11 +76,11 @@ function createResolvers(client: RpcClient): Resolvers {
       },
     },
     ClientV4: {
-      cache: (client) => rpcClient.request("getCache", client.id),
+      cache: (client) => request("getCache", client.id),
       queries: (client) => client,
       mutations: (client) => client,
       memoryInternals: async (client) => {
-        const memoryInternals = await rpcClient.request(
+        const memoryInternals = await request(
           "getV4MemoryInternals",
           client.id
         );
@@ -95,7 +112,7 @@ function createResolvers(client: RpcClient): Resolvers {
     ClientV3Queries: {
       total: (client) => client.queryCount,
       items: async (client) => {
-        const queries = await rpcClient.request("getV3Queries", client.id);
+        const queries = await request("getV3Queries", client.id);
 
         return queries.map((query) => {
           return {
@@ -115,7 +132,7 @@ function createResolvers(client: RpcClient): Resolvers {
     ClientV4Queries: {
       total: (client) => client.queryCount,
       items: async (client) => {
-        const queries = await rpcClient.request("getV4Queries", client.id);
+        const queries = await request("getV4Queries", client.id);
 
         return queries.map((query) => {
           return {
@@ -135,7 +152,7 @@ function createResolvers(client: RpcClient): Resolvers {
     ClientV3Mutations: {
       total: (client) => client.mutationCount,
       items: async (client) => {
-        const mutations = await rpcClient.request("getV3Mutations", client.id);
+        const mutations = await request("getV3Mutations", client.id);
 
         return mutations.map((mutation, index) => ({
           id: String(index),
@@ -159,7 +176,7 @@ function createResolvers(client: RpcClient): Resolvers {
     ClientV4Mutations: {
       total: (client) => client.mutationCount,
       items: async (client) => {
-        const mutations = await rpcClient.request("getV4Mutations", client.id);
+        const mutations = await request("getV4Mutations", client.id);
 
         return mutations.map((mutation, index) => ({
           id: String(index),
