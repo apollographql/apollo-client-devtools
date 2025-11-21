@@ -79,8 +79,7 @@ export const devtoolsMachine = setup({
     src: "clientCount",
     onSnapshot: {
       actions: assign({
-        registeredClients: ({ event }) =>
-          (event.snapshot.context as number) ?? 0,
+        registeredClients: ({ event }) => event.snapshot.context ?? 0,
       }),
     },
   },
