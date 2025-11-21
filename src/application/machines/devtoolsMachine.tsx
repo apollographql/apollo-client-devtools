@@ -5,14 +5,12 @@ import { createContext, useContext, useMemo } from "react";
 import { useSelector } from "@xstate/react";
 import type { ReconnectMachineEvents } from "./reconnectMachine";
 import { reconnectMachine } from "./reconnectMachine";
-import type { Subscription } from "rxjs";
 import { clientCountActor } from "./clientCountActor";
 
 export interface DevtoolsMachineContext {
   listening?: boolean;
   port?: number;
   registeredClients: number;
-  subscription?: Subscription;
 }
 
 type Events =
