@@ -25,7 +25,7 @@ chrome.devtools.panels.create("Apollo", "", "panel.html", (panel) => {
     } else {
       createMessageBridge(createWindowMessageAdapter(window), portAdapter);
 
-      panelWindow.send({ type: "initializePanel", initialContext: {} });
+      panelWindow.send({ type: "initializePanel" });
 
       connectedToPanel = true;
     }

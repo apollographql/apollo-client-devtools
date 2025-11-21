@@ -13,7 +13,7 @@ export interface DevtoolsMachineContext {
 }
 
 type Events =
-  | { type: "initializePanel"; initialContext: Partial<DevtoolsMachineContext> }
+  | { type: "initializePanel" }
   | { type: "port.changed"; port: number; listening: boolean }
   | { type: "client.register" }
   | { type: "client.terminated" }
@@ -113,7 +113,6 @@ export const devtoolsMachine = setup({
         uninitialized: {
           on: {
             initializePanel: {
-              actions: [assign(({ event }) => event.initialContext)],
               target: "initializing",
             },
           },
