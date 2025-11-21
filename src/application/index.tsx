@@ -27,6 +27,7 @@ import type {
   ActorMessage as WindowActorMessage,
 } from "../extension/actor";
 import fragmentTypes from "./possibleTypes.json";
+import { getPanelActor } from "@/extension/devtools/panelActor";
 
 loadDevMessages();
 loadErrorMessages();
@@ -162,6 +163,12 @@ const actor = createActor(
   }
 );
 actor.start();
+
+getPanelActor(window).on("initializePanel", () => {
+  const root = createRoot(document.getElementById("devtools") as HTMLElement);
+
+  root.render(<AppProvider actor={actor} />);
+});
 
 export const forwardDevToolsActorEvent = (
   windowActor: WindowActor,
