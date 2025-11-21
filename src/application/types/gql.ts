@@ -858,105 +858,113 @@ export type GetQueriesVariables = Exact<{
 }>;
 
 export type GetQueries = {
-  queries:
+  client:
     | {
-        __typename: "ClientV3Queries";
-        items: Array<{
-          __typename: "ClientV3WatchedQuery";
-          id: string;
-          name: string | null;
-          queryString: string;
-          variables: Variables | null;
-          cachedData: QueryData | null;
-          options: QueryOptions | null;
-          networkStatus: number;
-          pollInterval: number | null;
-          error: {
-            __typename: "SerializedApolloError";
-            clientErrors: Array<string>;
-            protocolErrors: Array<string>;
-            networkError: {
-              __typename: "SerializedError";
-              message: string;
-              name: string;
-              stack: string | null;
-            } | null;
-            graphQLErrors: Array<{
-              __typename: "SerializedGraphQLError";
-              message: string;
-              path: GraphQLErrorPath | null;
-              extensions: JSON | null;
-            }>;
-          } | null;
-        }>;
-      }
-    | {
-        __typename: "ClientV4Queries";
-        items: Array<{
-          __typename: "ClientV4WatchedQuery";
-          id: string;
-          name: string | null;
-          queryString: string;
-          variables: Variables | null;
-          cachedData: QueryData | null;
-          options: QueryOptions | null;
-          networkStatus: number;
-          pollInterval: number | null;
-          error:
-            | {
-                __typename: "SerializedCombinedGraphQLErrors";
-                message: string;
-                name: string;
-                stack: string | null;
-                errors: Array<{
-                  __typename: "SerializedGraphQLError";
-                  message: string;
-                  path: GraphQLErrorPath | null;
-                  extensions: JSON | null;
-                }>;
-              }
-            | {
-                __typename: "SerializedCombinedProtocolErrors";
-                message: string;
-                name: string;
-                stack: string | null;
-                errors: Array<{
-                  __typename: "SerializedGraphQLError";
-                  message: string;
-                }>;
-              }
-            | {
+        __typename: "ClientV3";
+        id: string;
+        queries: {
+          __typename: "ClientV3Queries";
+          items: Array<{
+            __typename: "ClientV3WatchedQuery";
+            id: string;
+            name: string | null;
+            queryString: string;
+            variables: Variables | null;
+            cachedData: QueryData | null;
+            options: QueryOptions | null;
+            networkStatus: number;
+            pollInterval: number | null;
+            error: {
+              __typename: "SerializedApolloError";
+              clientErrors: Array<string>;
+              protocolErrors: Array<string>;
+              networkError: {
                 __typename: "SerializedError";
                 message: string;
                 name: string;
                 stack: string | null;
-              }
-            | {
-                __typename: "SerializedLocalStateError";
+              } | null;
+              graphQLErrors: Array<{
+                __typename: "SerializedGraphQLError";
                 message: string;
-                name: string;
-                stack: string | null;
-              }
-            | {
-                __typename: "SerializedServerError";
-                message: string;
-                name: string;
-                stack: string | null;
-              }
-            | {
-                __typename: "SerializedServerParseError";
-                message: string;
-                name: string;
-                stack: string | null;
-              }
-            | {
-                __typename: "SerializedUnconventionalError";
-                message: string;
-                name: string;
-                stack: string | null;
-              }
-            | null;
-        }>;
+                path: GraphQLErrorPath | null;
+                extensions: JSON | null;
+              }>;
+            } | null;
+          }>;
+        };
+      }
+    | {
+        __typename: "ClientV4";
+        id: string;
+        queries: {
+          __typename: "ClientV4Queries";
+          items: Array<{
+            __typename: "ClientV4WatchedQuery";
+            id: string;
+            name: string | null;
+            queryString: string;
+            variables: Variables | null;
+            cachedData: QueryData | null;
+            options: QueryOptions | null;
+            networkStatus: number;
+            pollInterval: number | null;
+            error:
+              | {
+                  __typename: "SerializedCombinedGraphQLErrors";
+                  message: string;
+                  name: string;
+                  stack: string | null;
+                  errors: Array<{
+                    __typename: "SerializedGraphQLError";
+                    message: string;
+                    path: GraphQLErrorPath | null;
+                    extensions: JSON | null;
+                  }>;
+                }
+              | {
+                  __typename: "SerializedCombinedProtocolErrors";
+                  message: string;
+                  name: string;
+                  stack: string | null;
+                  errors: Array<{
+                    __typename: "SerializedGraphQLError";
+                    message: string;
+                  }>;
+                }
+              | {
+                  __typename: "SerializedError";
+                  message: string;
+                  name: string;
+                  stack: string | null;
+                }
+              | {
+                  __typename: "SerializedLocalStateError";
+                  message: string;
+                  name: string;
+                  stack: string | null;
+                }
+              | {
+                  __typename: "SerializedServerError";
+                  message: string;
+                  name: string;
+                  stack: string | null;
+                }
+              | {
+                  __typename: "SerializedServerParseError";
+                  message: string;
+                  name: string;
+                  stack: string | null;
+                }
+              | {
+                  __typename: "SerializedUnconventionalError";
+                  message: string;
+                  name: string;
+                  stack: string | null;
+                }
+              | null;
+          }>;
+        };
       }
     | null;
 };

@@ -75,7 +75,7 @@ interface QueriesProps {
 }
 
 const STABLE_EMPTY_QUERIES: Array<
-  NonNullable<GetQueries["queries"]>["items"][number]
+  NonNullable<GetQueries["client"]>["queries"]["items"][number]
 > = [];
 
 export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
