@@ -142,6 +142,7 @@ function forward(source: MessageAdapter, target: MessageAdapter) {
           source: "apollo-client-devtools",
           type: MessageType.PostMessageError,
           id: createId(),
+          sourceId: message.id,
           error: serializeError(e),
         });
       }

@@ -6,6 +6,7 @@ export interface PostMessageError {
   source: "apollo-client-devtools";
   type: MessageType.PostMessageError;
   id: string;
+  sourceId: string;
   error: SerializedErrorLike;
 }
 
