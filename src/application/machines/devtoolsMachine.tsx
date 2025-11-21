@@ -179,7 +179,6 @@ export const devtoolsMachine = setup({
       states: {
         connected: {
           entry: ["notifyConnected"],
-          exit: ["resetStore"],
           on: {
             extensionInvalidated: "invalidated",
           },
@@ -194,7 +193,7 @@ export const devtoolsMachine = setup({
           },
         },
         disconnected: {
-          entry: "notifyDisconnected",
+          entry: ["notifyDisconnected", "resetStore"],
           on: {
             extensionInvalidated: "invalidated",
           },
