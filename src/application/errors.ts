@@ -1,3 +1,9 @@
+export interface SerializedErrorLike {
+  name?: string;
+  message: string;
+  stack?: string;
+}
+
 export class ExtensionInvalidatedError extends Error {
   static is(error: unknown): error is ExtensionInvalidatedError {
     return (
