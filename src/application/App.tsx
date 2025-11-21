@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { ReactNode } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { gql } from "@apollo/client";
@@ -82,7 +82,6 @@ export const App = () => {
   const { data, refetch } = useQuery(APP_QUERY, { errorPolicy: "all" });
 
   useActorEvent("registerClient", () => {
-    send({ type: "client.register" });
     // Unfortunately after we clear the store above, the query ends up "stuck"
     // holding onto the old list of clients even if we manually write a cache
     // update to properly resolve the list. Instead we refetch the list again to
@@ -91,7 +90,6 @@ export const App = () => {
   });
 
   useActorEvent("clientTerminated", (message) => {
-    send({ type: "client.terminated" });
     removeClient(message.clientId);
   });
 
@@ -130,12 +128,6 @@ export const App = () => {
   ) {
     setSelectedClientId(clientIds[0]);
   }
-
-  useEffect(() => {
-    if (clients.length) {
-      send({ type: "client.setCount", count: clients.length });
-    }
-  }, [send, clients.length]);
 
   return (
     <>

@@ -1090,3 +1090,12 @@ export type SerializedErrorAlertDisclosurePanel_error =
   | SerializedErrorAlertDisclosurePanel_error_SerializedServerError
   | SerializedErrorAlertDisclosurePanel_error_SerializedServerParseError
   | SerializedErrorAlertDisclosurePanel_error_SerializedUnconventionalError;
+
+export type ClientCountVariables = Exact<{ [key: string]: never }>;
+
+export type ClientCount = {
+  clients: Array<
+    | { __typename: "ClientV3"; id: string }
+    | { __typename: "ClientV4"; id: string }
+  >;
+};
