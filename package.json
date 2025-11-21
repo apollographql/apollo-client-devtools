@@ -38,7 +38,7 @@
     "@apollo/brand": "^0.7.0",
     "@apollo/client": "4.0.9",
     "@apollo/client-3": "npm:@apollo/client@3.14.0",
-    "@apollo/icons": "^0.8.0",
+    "@apollo/icons": "^0.9.0",
     "@apollo/tailwind-preset": "^0.2.0",
     "@headlessui/react": "^2.1.0",
     "@headlessui/tailwindcss": "^0.2.0",
