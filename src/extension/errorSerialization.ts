@@ -1,5 +1,4 @@
 import type { SerializedErrorLike } from "./errors";
-import { ExtensionInvalidatedError } from "./errors";
 
 const errorConstructors = [
   EvalError,
@@ -8,7 +7,6 @@ const errorConstructors = [
   SyntaxError,
   TypeError,
   URIError,
-  ExtensionInvalidatedError,
 ].reduce(
   (memo, constructor) => memo.set(constructor.name, constructor),
   new Map<string, new (message?: string) => Error>()

@@ -1,6 +1,5 @@
 import type { ApolloClientInfo, DistributiveOmit } from "../../types";
 import { RPC_MESSAGE_TIMEOUT } from "../errorMessages";
-import { ExtensionInvalidatedError } from "../errors";
 import { serializeError } from "../errorSerialization";
 import type { MessageAdapter } from "../messageAdapters";
 import { createMessageBridge } from "../messageAdapters";
@@ -566,13 +565,11 @@ test("rejects with post message errors", async () => {
     id: "zef",
     type: MessageType.PostMessageError,
     sourceId: id,
-    error: serializeError(new ExtensionInvalidatedError("Could not send")),
+    error: serializeError(new Error("Could not send")),
     source: "apollo-client-devtools",
   } satisfies PostMessageError);
 
-  await expect(promise).rejects.toThrow(
-    new ExtensionInvalidatedError("Could not send")
-  );
+  await expect(promise).rejects.toThrow(new Error("Could not send"));
 });
 
 test("ignores post message errors for a different rpc request", async () => {
@@ -587,7 +584,7 @@ test("ignores post message errors for a different rpc request", async () => {
     id: "zef",
     type: MessageType.PostMessageError,
     sourceId: id + "zzz",
-    error: serializeError(new ExtensionInvalidatedError("Could not send")),
+    error: serializeError(new Error("Could not send")),
     source: "apollo-client-devtools",
   } satisfies PostMessageError);
 
