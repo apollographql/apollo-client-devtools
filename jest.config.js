@@ -52,5 +52,6 @@ export default {
     "rehype-raw": "<rootDir>/src/__mocks__/noop.js",
     "remark-gfm": "<rootDir>/src/__mocks__/noop.js",
     "remark-github": "<rootDir>/src/__mocks__/noop.js",
+    "^@/(.*)$": "<rootDir>/src/$1",
   },
 };
