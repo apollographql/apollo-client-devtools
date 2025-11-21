@@ -5,18 +5,20 @@ import { createContext, useContext, useMemo } from "react";
 import { useSelector } from "@xstate/react";
 import type { ReconnectMachineEvents } from "./reconnectMachine";
 import { reconnectMachine } from "./reconnectMachine";
+import type { Subscription } from "rxjs";
+import { clientCountActor } from "./clientCountActor";
 
 export interface DevtoolsMachineContext {
   listening?: boolean;
   port?: number;
   registeredClients: number;
+  subscription?: Subscription;
 }
 
 type Events =
   | { type: "initializePanel" }
+  | { type: "watchFragment" }
   | { type: "port.changed"; port: number; listening: boolean }
-  | { type: "client.register" }
-  | { type: "client.terminated" }
   | { type: "client.setCount"; count: number }
   | { type: "emit.store.didReset" }
   | ReconnectMachineEvents;
@@ -67,10 +69,21 @@ export const devtoolsMachine = setup({
   },
   actors: {
     reconnect: reconnectMachine,
+    clientCount: clientCountActor,
   },
 }).createMachine({
   id: "devtools",
   type: "parallel",
+  invoke: {
+    id: "clientCount",
+    src: "clientCount",
+    onSnapshot: {
+      actions: assign({
+        registeredClients: ({ event }) =>
+          (event.snapshot.context as number) ?? 0,
+      }),
+    },
+  },
   context: {
     modals: {},
     port: undefined,
@@ -146,20 +159,6 @@ export const devtoolsMachine = setup({
     connection: {
       initial: "disconnected",
       on: {
-        "client.register": {
-          actions: [
-            assign({
-              registeredClients: ({ context }) => context.registeredClients + 1,
-            }),
-          ],
-        },
-        "client.terminated": {
-          actions: [
-            assign({
-              registeredClients: ({ context }) => context.registeredClients - 1,
-            }),
-          ],
-        },
         "client.setCount": {
           actions: [
             assign({
