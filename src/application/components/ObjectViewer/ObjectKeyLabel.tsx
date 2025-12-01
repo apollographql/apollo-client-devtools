@@ -16,12 +16,14 @@ export function ObjectKeyLabel({
   collapsed,
   onClick,
 }: ObjectKeyLabelProps) {
+  const Element = collapsible ? "button" : "span";
+
   return (
-    <span
+    <Element
       className={clsx("inline-block align-middle relative", {
         "cursor-pointer": collapsible,
       })}
-      onClick={onClick}
+      onClick={collapsible ? onClick : undefined}
     >
       <span className="inline-flex items-center">
         {collapsible && <Arrow collapsed={!!collapsed} />}
@@ -30,6 +32,6 @@ export function ObjectKeyLabel({
           <Punctuation>:</Punctuation>
         </span>
       </span>
-    </span>
+    </Element>
   );
 }
