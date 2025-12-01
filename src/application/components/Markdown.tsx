@@ -5,7 +5,7 @@ import { CodeBlock } from "./CodeBlock";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import remarkGithub from "remark-github";
-import type { ReactNode } from "react";
+import type { ReactNode, JSX } from "react";
 import { ExternalLink } from "./ExternalLink";
 
 interface MarkdownProps {

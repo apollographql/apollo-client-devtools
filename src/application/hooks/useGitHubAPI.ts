@@ -1,4 +1,3 @@
-import type { Reducer } from "react";
 import { useEffect, useReducer } from "react";
 
 interface GitHubError {
@@ -34,11 +33,11 @@ function reducer<T>(state: State<T>, action: Action<T>): State<T> {
 }
 
 export function useGitHubApi<T>(path: string, options?: Options): State<T> {
-  const [state, dispatch] = useReducer<Reducer<State<T>, Action<T>>>(reducer, {
+  const [state, dispatch] = useReducer(reducer, {
     status: "pending",
     data: null,
     error: null,
-  });
+  } as State<T>);
 
   useEffect(() => {
     let ignored = false;

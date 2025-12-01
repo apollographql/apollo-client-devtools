@@ -1,5 +1,5 @@
-import { useMemo } from "react";
-import { useState, useEffect } from "react";
+import type { JSX } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Observable, gql } from "@apollo/client";
 import { useReactiveVar } from "@apollo/client/react";
 import type { IntrospectionQuery } from "graphql";
