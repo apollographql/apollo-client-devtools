@@ -152,7 +152,8 @@ const actor = createActor(
       // toggle here for debugging
       const DEBUG_XSTATE = false;
       if (process.env.NODE_ENV === "development" && DEBUG_XSTATE) {
-        const actorId = inspectionEvent.actorRef.id;
+        const { actorRef } = inspectionEvent;
+        const actorId = "id" in actorRef ? actorRef.id : "unknown";
         switch (inspectionEvent.type) {
           case "@xstate.event": {
             const { type, ...rest } = inspectionEvent.event;
