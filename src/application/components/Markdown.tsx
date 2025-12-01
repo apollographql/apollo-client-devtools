@@ -101,16 +101,17 @@ export function Markdown({
   componentOverrides,
 }: MarkdownProps) {
   return (
-    <ReactMarkdown
-      className={twMerge("flex flex-col", className)}
-      components={{ ...components, ...componentOverrides }}
-      remarkPlugins={[
-        remarkGfm,
-        [remarkGithub, { repository: "apollographql/apollo-client" }],
-      ]}
-      rehypePlugins={[rehypeRaw]}
-    >
-      {children}
-    </ReactMarkdown>
+    <div className={twMerge("flex flex-col", className)}>
+      <ReactMarkdown
+        components={{ ...components, ...componentOverrides }}
+        remarkPlugins={[
+          remarkGfm,
+          [remarkGithub, { repository: "apollographql/apollo-client" }],
+        ]}
+        rehypePlugins={[rehypeRaw]}
+      >
+        {children}
+      </ReactMarkdown>
+    </div>
   );
 }

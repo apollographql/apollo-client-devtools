@@ -60,7 +60,7 @@
     "react-dom": "^18.2.0",
     "react-error-boundary": "^4.0.13",
     "react-json-tree": "^0.20.0",
-    "react-markdown": "^9.0.1",
+    "react-markdown": "^10.1.0",
     "react-resizable-panels": "^1.0.0",
     "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.0",
