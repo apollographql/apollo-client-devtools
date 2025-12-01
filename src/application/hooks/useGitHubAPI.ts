@@ -46,7 +46,7 @@ export function useGitHubApi<T>(path: string, options?: Options): State<T> {
 
     fetchGitHub<T>(path, { cache: options?.cache }).then(
       (data) => !ignored && dispatch({ type: "success", payload: data }),
-      (error) => !ignored && dispatch({ type: "failed", error })
+      (error) => !ignored && dispatch({ type: "failed", error: error as Error })
     );
 
     return () => {
