@@ -1,5 +1,15 @@
 # Changelog
 
+## 4.22.0
+
+### Minor Changes
+
+- [#1746](https://github.com/apollographql/apollo-client-devtools/pull/1746) [`674c17d`](https://github.com/apollographql/apollo-client-devtools/commit/674c17d358077029fadace7b2a76a48fd46a57ea) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Show a banner with a prompt to restart the page and the devtools instead of crashing the page when the extension can't communicate with the content scripts.
+
+### Patch Changes
+
+- [#1738](https://github.com/apollographql/apollo-client-devtools/pull/1738) [`e8bd39f`](https://github.com/apollographql/apollo-client-devtools/commit/e8bd39f52d9aa65ccd7afdf63532853ce527b451) Thanks [@github-actions](https://github.com/apps/github-actions)! - add error codes for new Apollo Client version
+
 ## 4.21.11
 
 ### Patch Changes
