@@ -33,7 +33,6 @@
     "dist",
     "build",
     "./*.js",
-    "src/**/__tests__/**/*",
     "development/**/__tests__/**/*"
   ]
 }
