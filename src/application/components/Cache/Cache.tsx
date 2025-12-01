@@ -136,6 +136,7 @@ export function Cache({ clientId }: CacheProps) {
             id="cacheData"
             minSize={25}
             className="!overflow-auto flex flex-col p-4"
+            data-testid="main-content"
           >
             {dataExists ? (
               <>
