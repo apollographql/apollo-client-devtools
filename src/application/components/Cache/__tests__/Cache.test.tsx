@@ -83,7 +83,7 @@ describe("Cache component tests", () => {
       mockRpcRequests({ cache: {} });
 
       renderWithApolloClient(<Cache clientId="1" />);
-      const main = screen.getByTestId("main");
+      const main = screen.getByTestId("main-content");
       await waitFor(() => {
         expect(within(main).getByRole("heading")).toHaveTextContent(
           "👋 Welcome to Apollo Client Devtools"
