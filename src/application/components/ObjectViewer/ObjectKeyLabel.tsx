@@ -20,6 +20,7 @@ export function ObjectKeyLabel({
 
   return (
     <Element
+      aria-label={collapsible ? (collapsed ? "Expand" : "Collapse") : undefined}
       className={clsx("inline-block align-middle relative", {
         "cursor-pointer": collapsible,
       })}

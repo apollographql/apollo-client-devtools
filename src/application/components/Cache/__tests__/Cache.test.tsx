@@ -133,22 +133,22 @@ describe("Cache component tests", () => {
 
       renderWithApolloClient(<Cache clientId="1" />);
 
-      const main = screen.getByTestId("main");
+      const main = screen.getByTestId("main-content");
 
       await waitFor(() => {
         expect(within(main).getByText("ROOT_QUERY")).toBeInTheDocument();
       });
-      expect(within(main).getByText("__typename:")).toBeInTheDocument();
-      expect(within(main).getByText('"Query"')).toBeInTheDocument();
-      expect(within(main).getByText("search:")).toBeInTheDocument();
+      expect(within(main).getByText("__typename")).toBeInTheDocument();
+      expect(within(main).getByText("Query")).toBeInTheDocument();
+      expect(within(main).getByText("search")).toBeInTheDocument();
 
-      fireEvent.click(within(main).getByText("▶"));
+      fireEvent.click(within(main).getByLabelText("Expand"));
 
-      expect(within(main).getByText("count:")).toBeInTheDocument();
+      expect(within(main).getByText("count")).toBeInTheDocument();
       expect(within(main).getByText("2")).toBeInTheDocument();
-      expect(within(main).getByText("success:")).toBeInTheDocument();
+      expect(within(main).getByText("success")).toBeInTheDocument();
       expect(within(main).getByText("true")).toBeInTheDocument();
-      expect(within(main).getByText("error:")).toBeInTheDocument();
+      expect(within(main).getByText("error")).toBeInTheDocument();
       expect(within(main).getByText("null")).toBeInTheDocument();
     });
   });
