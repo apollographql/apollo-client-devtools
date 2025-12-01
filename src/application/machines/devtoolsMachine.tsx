@@ -1,3 +1,5 @@
+// Fix for TypeScript error. See https://github.com/statelyai/xstate/issues/5090#issuecomment-2493180191
+import "xstate/guards";
 import type { Actor, SnapshotFrom } from "xstate";
 import { setup, assign, not, sendTo, emit } from "xstate";
 import { BannerAlert } from "../components/BannerAlert";

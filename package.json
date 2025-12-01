@@ -47,7 +47,7 @@
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-tabs": "^1.1.0",
     "@radix-ui/react-tooltip": "^1.1.2",
-    "@xstate/react": "^4.1.1",
+    "@xstate/react": "^6.0.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "expect-type": "^0.20.0",
@@ -70,7 +70,7 @@
     "rxjs": "^7.8.2",
     "semver": "^7.7.2",
     "tailwind-merge": "^2.3.0",
-    "xstate": "^5.14.0",
+    "xstate": "^5.24.0",
     "zen-observable": "^0.10.0"
   },
   "devDependencies": {
