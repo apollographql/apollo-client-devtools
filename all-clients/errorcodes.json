@@ -489,10 +489,14 @@
     "4.0.6": "41",
     "4.0.7": "41",
     "4.0.8": "41",
+    "4.0.9": "41",
     "4.1.0-alpha.0": "42",
     "4.1.0-alpha.1": "43",
     "4.1.0-alpha.2": "44",
-    "4.1.0-alpha.3": "44"
+    "4.1.0-alpha.3": "44",
+    "4.1.0-alpha.4": "44",
+    "4.1.0-alpha.5": "44",
+    "4.1.0-alpha.6": "44"
   },
   "errors": {
     "1": "AQEBAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUECwUEDAYEDQYEDgYGDwYEEAcHBwgIBwgIEQkEEgkEEwkJFAkEFQkEFgoEFwoKGAoLGQoMGgoNGwoOHAoPHQoEHgoEHwoEIAsEIQsEIgwEIw0EJA4EJQ8QJg8RJxAEKBEEKRISKhMTKxQULBUVLBYWLRcXLhgYLxkEMBoEMRoEMhoEMxoENBsZNRwaNhwENx0EOB4bOR4cOh4dOx4ePB4fPR8gPiAhPyAiQCAjQSAkQiEEQyElByEIRCImRSIERiInRyIoRCIpSCIqSSIrSiIESyMETCQETSQE",
