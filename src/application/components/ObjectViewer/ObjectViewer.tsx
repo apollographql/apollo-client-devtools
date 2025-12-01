@@ -102,7 +102,7 @@ interface ObjectViewerProps<CustomTypes extends string> {
     | ((options: {
         value: unknown;
         depth: number;
-        context: Record<string, any>;
+        context: Record<string, any> | undefined;
         defaultCollapsed: boolean;
         path: Path;
       }) => boolean);
