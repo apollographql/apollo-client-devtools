@@ -52,7 +52,7 @@ interface Props {
     | { __typename: "ClientV3" | "ClientV4"; id: string }
     | null
     | undefined;
-  cacheWrites: Array<{ __typename: "CacheWrite"; id: string }>;
+  cacheWrites: Array<CacheWritesPanelFragment>;
 }
 
 export const CacheWritesPanel = memo(({ client, cacheWrites }: Props) => {
