@@ -36,6 +36,5 @@ export const renderWithApolloClient = (
     </DevToolsMachineContext.Provider>,
     renderOptions
   );
-  // eslint-disable-next-line testing-library/await-async-events
   return { ...utils, user: userEvent.setup() };
 };
