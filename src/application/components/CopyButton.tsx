@@ -5,7 +5,7 @@ import IconCopy from "@apollo/icons/default/IconCopy.svg";
 
 type CopyButtonProps = Omit<
   Exclude<ButtonProps, { asChild: true }>,
-  "asChild"
+  "asChild" | "variant"
 > & {
   text: string;
   size: ButtonProps["size"];
