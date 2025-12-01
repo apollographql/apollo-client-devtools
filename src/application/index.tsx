@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import type { Reference } from "@apollo/client";
 import { loadDevMessages, loadErrorMessages } from "@apollo/client/dev";
-import { ApolloClient, InMemoryCache } from "@apollo/client";
+import { ApolloClient, ApolloLink, InMemoryCache } from "@apollo/client";
 import { ApolloProvider } from "@apollo/client/react";
 import { SchemaLink } from "@apollo/client/link/schema";
 
@@ -27,13 +27,28 @@ import type {
   ActorMessage as WindowActorMessage,
 } from "../extension/actor";
 import fragmentTypes from "./possibleTypes.json";
+import { tap } from "rxjs";
+import { hasExtensionInvalidatedError } from "./utilities/errors";
 
 loadDevMessages();
 loadErrorMessages();
 
 const rpcClient = getRpcClient();
 const schema = createSchemaWithRpcClient(rpcClient);
-const link = new SchemaLink({ schema });
+
+const schemaLink = new SchemaLink({ schema });
+
+const extensionInvalidatedLink = new ApolloLink((operation, forward) => {
+  return forward(operation).pipe(
+    tap((result) => {
+      if (hasExtensionInvalidatedError(result.errors)) {
+        actor.send({ type: "extensionInvalidated" });
+      }
+    })
+  );
+});
+
+const link = ApolloLink.from([extensionInvalidatedLink, schemaLink]);
 
 const cache = new InMemoryCache({
   fragments: fragmentRegistry,
@@ -131,6 +146,7 @@ const actor = createActor(
     },
   }),
   {
+    input: { client },
     id: "devtools",
     inspect: (inspectionEvent) => {
       // toggle here for debugging

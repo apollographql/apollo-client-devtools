@@ -28,6 +28,7 @@ import HighlightMatch from "../HighlightMatch";
 import { PageSpinner } from "../PageSpinner";
 import { isIgnoredError } from "../../utilities/ignoredErrors";
 import { SerializedErrorAlertDisclosurePanel } from "../SerializedErrorAlertDisclosurePanel";
+import { useIsExtensionInvalidated } from "@/application/machines/devtoolsMachine";
 
 enum QueryTabs {
   Variables = "Variables",
@@ -80,13 +81,15 @@ const STABLE_EMPTY_QUERIES: Array<
 export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
   const [selected, setSelected] = useState("1");
   const [searchTerm, setSearchTerm] = useState("");
+  const isExtensionInvalidated = useIsExtensionInvalidated();
 
   const { error, data, startPolling, stopPolling, networkStatus } = useQuery(
     GET_QUERIES,
     {
       variables: { clientId: clientId as string },
       skip: clientId == null,
-      pollInterval: 500,
+      pollInterval: isExtensionInvalidated ? 0 : 500,
+      fetchPolicy: isExtensionInvalidated ? "cache-only" : "cache-first",
     }
   );
 

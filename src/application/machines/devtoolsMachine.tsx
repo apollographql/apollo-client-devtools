@@ -6,14 +6,17 @@ import { useSelector } from "@xstate/react";
 import type { ReconnectMachineEvents } from "./reconnectMachine";
 import { reconnectMachine } from "./reconnectMachine";
 import { clientCountActor } from "./clientCountActor";
+import type { ApolloClient } from "@apollo/client";
 
 export interface DevtoolsMachineContext {
   listening?: boolean;
   port?: number;
   registeredClients: number;
+  client: ApolloClient;
 }
 
 type Events =
+  | { type: "extensionInvalidated" }
   | { type: "initializePanel"; initialContext: Partial<DevtoolsMachineContext> }
   | { type: "port.changed"; port: number; listening: boolean }
   | { type: "client.setCount"; count: number }
@@ -39,6 +42,7 @@ export const devtoolsMachine = setup({
     events: Events;
     children: { reconnect: "reconnect" };
     emitted: EmittedEvents;
+    input: { client: ApolloClient };
   },
   delays: {
     connectTimeout: 10_000,
@@ -53,6 +57,13 @@ export const devtoolsMachine = setup({
     },
     notifyConnected: () => {
       BannerAlert.show({ type: "success", content: "Connected!" });
+    },
+    notifyRestart: () => {
+      BannerAlert.show({
+        type: "error",
+        content:
+          "Could not communicate with the client. The extension might have been updated in the background. Please close and reopen the devtools and restart the page.",
+      });
     },
 
     renderUI: () => {
@@ -77,17 +88,19 @@ export const devtoolsMachine = setup({
   invoke: {
     id: "clientCount",
     src: "clientCount",
+    input: ({ context }) => context.client,
     onSnapshot: {
       actions: assign({
         registeredClients: ({ event }) => event.snapshot.context ?? 0,
       }),
     },
   },
-  context: {
+  context: ({ input }) => ({
     modals: {},
     port: undefined,
     registeredClients: 0,
-  },
+    client: input.client,
+  }),
   on: {
     // forward reconnect events to child actor
     "reconnect.*": {
@@ -171,7 +184,9 @@ export const devtoolsMachine = setup({
       states: {
         connected: {
           entry: ["notifyConnected"],
-          exit: ["resetStore"],
+          on: {
+            extensionInvalidated: "invalidated",
+          },
           after: {
             2500: {
               actions: "closeBanner",
@@ -183,7 +198,10 @@ export const devtoolsMachine = setup({
           },
         },
         disconnected: {
-          entry: "notifyDisconnected",
+          entry: ["notifyDisconnected", "resetStore"],
+          on: {
+            extensionInvalidated: "invalidated",
+          },
           invoke: {
             id: "reconnect",
             src: "reconnect",
@@ -192,6 +210,9 @@ export const devtoolsMachine = setup({
             guard: ({ context }) => context.registeredClients > 0,
             target: "connected",
           },
+        },
+        invalidated: {
+          entry: ["notifyRestart"],
         },
       },
     },
@@ -222,6 +243,12 @@ export function useDevToolsSelector<T>(
     throw new Error("DevToolsMachineContext not found");
   }
   return useSelector(actor, selector, compare);
+}
+
+export function useIsExtensionInvalidated() {
+  return useDevToolsSelector(
+    (state) => state.value.connection === "invalidated"
+  );
 }
 
 export type DevToolsMachine = typeof devtoolsMachine;

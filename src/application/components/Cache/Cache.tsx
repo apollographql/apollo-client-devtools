@@ -26,6 +26,7 @@ import HighlightMatch from "../HighlightMatch";
 import { useActorEvent } from "../../hooks/useActorEvent";
 import { PageSpinner } from "../PageSpinner";
 import { isIgnoredError } from "../../utilities/ignoredErrors";
+import { useIsExtensionInvalidated } from "@/application/machines/devtoolsMachine";
 
 const { Sidebar, Main } = SidebarLayout;
 
@@ -64,6 +65,7 @@ interface CacheProps {
 export function Cache({ clientId }: CacheProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const cacheId = useSyncExternalStore(history.listen, history.getCurrent);
+  const isExtensionInvalidated = useIsExtensionInvalidated();
 
   const { networkStatus, data, error, startPolling, stopPolling } = useQuery(
     GET_CACHE,
@@ -71,6 +73,7 @@ export function Cache({ clientId }: CacheProps) {
       variables: { id: clientId as string },
       skip: clientId == null,
       pollInterval: 500,
+      fetchPolicy: isExtensionInvalidated ? "cache-only" : "cache-first",
     }
   );
 

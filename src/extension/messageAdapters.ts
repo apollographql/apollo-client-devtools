@@ -1,6 +1,8 @@
 import type browser from "webextension-polyfill";
-import { isDevtoolsMessage } from "./messages";
+import { isDevtoolsMessage, MessageType } from "./messages";
 import type { ApolloClientDevtoolsMessage } from "./messages";
+import { serializeError } from "./errorSerialization";
+import { createId } from "../utils/createId";
 
 export interface MessageAdapter {
   addListener: (listener: (message: unknown) => void) => () => void;
@@ -105,20 +107,29 @@ export function createMessageBridge(
   adapter1: MessageAdapter,
   adapter2: MessageAdapter
 ) {
-  const removeListener1 = adapter1.addListener((message) => {
-    if (isDevtoolsMessage(message)) {
-      adapter2.postMessage(message);
-    }
-  });
-
-  const removeListener2 = adapter2.addListener((message) => {
-    if (isDevtoolsMessage(message)) {
-      adapter1.postMessage(message);
-    }
-  });
+  const removeListener1 = forward(adapter1, adapter2);
+  const removeListener2 = forward(adapter2, adapter1);
 
   return () => {
     removeListener1();
     removeListener2();
   };
+}
+
+function forward(source: MessageAdapter, target: MessageAdapter) {
+  return source.addListener((message) => {
+    if (isDevtoolsMessage(message)) {
+      try {
+        target.postMessage(message);
+      } catch (e) {
+        source.postMessage({
+          source: "apollo-client-devtools",
+          type: MessageType.PostMessageError,
+          id: createId(),
+          sourceId: message.id,
+          error: serializeError(e),
+        });
+      }
+    }
+  });
 }

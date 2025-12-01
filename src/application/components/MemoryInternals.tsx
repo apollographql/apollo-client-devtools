@@ -21,6 +21,8 @@ import { CacheSize } from "./CacheSize";
 import { lt } from "semver";
 import { ExternalLink } from "./ExternalLink";
 import { PageError } from "./PageError";
+import { isIgnoredError } from "../utilities/ignoredErrors";
+import { useIsExtensionInvalidated } from "../machines/devtoolsMachine";
 
 interface MemoryInternalsProps {
   clientId: string | undefined;
@@ -116,14 +118,16 @@ const MEMORY_INTERNALS_QUERY: TypedDocumentNode<
 
 export function MemoryInternals({ clientId }: MemoryInternalsProps) {
   const [selectedView, setSelectedView] = useState<"raw" | "chart">("chart");
+  const isExtensionInvalidated = useIsExtensionInvalidated();
 
   const { data, networkStatus, error } = useQuery(MEMORY_INTERNALS_QUERY, {
     variables: { clientId: clientId as string },
     skip: !clientId,
-    pollInterval: 1000,
+    pollInterval: isExtensionInvalidated ? 0 : 500,
+    fetchPolicy: isExtensionInvalidated ? "cache-only" : "cache-first",
   });
 
-  if (error) {
+  if (error && !isIgnoredError(error)) {
     throw error;
   }
 

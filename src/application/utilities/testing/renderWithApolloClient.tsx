@@ -15,7 +15,17 @@ export const renderWithApolloClient = (
   ui: ReactElement,
   { providerProps, ...renderOptions } = { providerProps: {} }
 ) => {
-  const devtoolsActor = createActor(devtoolsMachine).start();
+  const devtoolsActor = createActor(
+    devtoolsMachine.provide({
+      actions: {
+        resetStore: () => {},
+        renderUI: () => {},
+      },
+    }),
+    {
+      input: { client },
+    }
+  ).start();
   const utils = render(
     <DevToolsMachineContext.Provider value={devtoolsActor}>
       <Tooltip.Provider>

@@ -5,6 +5,7 @@ import { Mode, colorTheme } from "../theme";
 import { AppProvider } from "../index";
 import { devtoolsMachine } from "../machines/devtoolsMachine";
 import { createActor } from "xstate";
+import { ApolloClient, ApolloLink, InMemoryCache } from "@apollo/client";
 
 const matchMedia = matchMediaMock();
 
@@ -14,7 +15,26 @@ jest.mock("../App", () => ({
 
 describe("<AppProvider />", () => {
   test("changes the color theme", async () => {
-    render(<AppProvider actor={createActor(devtoolsMachine).start()} />);
+    render(
+      <AppProvider
+        actor={createActor(
+          devtoolsMachine.provide({
+            actions: {
+              renderUI: () => {},
+              resetStore: () => {},
+            },
+          }),
+          {
+            input: {
+              client: new ApolloClient({
+                cache: new InMemoryCache(),
+                link: ApolloLink.empty(),
+              }),
+            },
+          }
+        ).start()}
+      />
+    );
     expect(screen.getByText("App")).toBeInTheDocument();
 
     expect(colorTheme()).toEqual("light");

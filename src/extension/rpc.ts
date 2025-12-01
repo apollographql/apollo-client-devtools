@@ -4,7 +4,7 @@ import { createId } from "../utils/createId";
 import { RPC_MESSAGE_TIMEOUT } from "./errorMessages";
 import { deserializeError, serializeError } from "./errorSerialization";
 import type { MessageAdapter } from "./messageAdapters";
-import { MessageType, isDevtoolsMessage } from "./messages";
+import { MessageType, isDevtoolsMessage, isPostMessageError } from "./messages";
 import type { IDv3, IDv4 } from "./tab/clientHandler";
 import type {
   MutationV3Details,
@@ -85,6 +85,16 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
         }, this.timeout);
 
         const removeListener = adapter.addListener((message) => {
+          function cleanup() {
+            clearTimeout(timeout);
+            removeListener();
+          }
+
+          if (isPostMessageError(message) && message.sourceId === id) {
+            reject(deserializeError(message.error));
+            return cleanup();
+          }
+
           if (!isRPCResponseMessage(message) || message.sourceId !== id) {
             return;
           }
@@ -95,8 +105,7 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
             resolve(message.result);
           }
 
-          clearTimeout(timeout);
-          removeListener();
+          cleanup();
         });
 
         adapter.postMessage({

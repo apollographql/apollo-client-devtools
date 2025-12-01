@@ -1,3 +1,5 @@
+import type { SerializedErrorLike } from "./errors";
+
 const errorConstructors = [
   EvalError,
   RangeError,
@@ -7,10 +9,10 @@ const errorConstructors = [
   URIError,
 ].reduce(
   (memo, constructor) => memo.set(constructor.name, constructor),
-  new Map<string, ErrorConstructor>()
+  new Map<string, new (message?: string) => Error>()
 );
 
-export function serializeError(error: unknown) {
+export function serializeError(error: unknown): SerializedErrorLike {
   return error instanceof Error
     ? { name: error.name, message: error.message, stack: error.stack }
     : { message: String(error) };
@@ -20,11 +22,7 @@ export function deserializeError({
   name,
   message,
   stack,
-}: {
-  name?: string;
-  message: string;
-  stack?: string;
-}) {
+}: SerializedErrorLike) {
   const ErrorClass = name ? errorConstructors.get(name) ?? Error : Error;
   const error = new ErrorClass(message);
 

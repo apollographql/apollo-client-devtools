@@ -1,7 +1,9 @@
 import type { ApolloClientInfo, DistributiveOmit } from "../../types";
 import { RPC_MESSAGE_TIMEOUT } from "../errorMessages";
+import { serializeError } from "../errorSerialization";
 import type { MessageAdapter } from "../messageAdapters";
 import { createMessageBridge } from "../messageAdapters";
+import type { PostMessageError } from "../messages";
 import { MessageType } from "../messages";
 import type { RPCRequestMessage, RPCResponseMessage } from "../rpc";
 import { createRpcClient, createRpcHandler } from "../rpc";
@@ -549,4 +551,49 @@ test("unsubscribes connection on bridge when calling returned function", () => {
     params: [{ x: 1, y: 2 }],
   });
   expect(adapter1.postMessage).not.toHaveBeenCalled();
+});
+
+test("rejects with post message errors", async () => {
+  const clientAdapter = createTestAdapter();
+  const client = createRpcClient(clientAdapter);
+
+  const promise = client.request("getClient", "1");
+
+  const { id } = clientAdapter.mocks.messages[0] as RPCRequestMessage;
+
+  clientAdapter.simulateMessage({
+    id: "zef",
+    type: MessageType.PostMessageError,
+    sourceId: id,
+    error: serializeError(new Error("Could not send")),
+    source: "apollo-client-devtools",
+  } satisfies PostMessageError);
+
+  await expect(promise).rejects.toThrow(new Error("Could not send"));
+});
+
+test("ignores post message errors for a different rpc request", async () => {
+  const clientAdapter = createTestAdapter();
+  const client = createRpcClient(clientAdapter);
+
+  const promise = client.request("getClient", "1");
+
+  const { id } = clientAdapter.mocks.messages[0] as RPCRequestMessage;
+
+  clientAdapter.simulateMessage({
+    id: "zef",
+    type: MessageType.PostMessageError,
+    sourceId: id + "zzz",
+    error: serializeError(new Error("Could not send")),
+    source: "apollo-client-devtools",
+  } satisfies PostMessageError);
+
+  clientAdapter.simulateRPCMessage({
+    type: MessageType.RPCResponse,
+    id: "abcdefg",
+    sourceId: id,
+    result: defaultGetClient("1"),
+  });
+
+  await expect(promise).resolves.toEqual(defaultGetClient("1"));
 });

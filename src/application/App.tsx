@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { ReactNode } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { gql } from "@apollo/client";
-import { useQuery, useReactiveVar } from "@apollo/client/react";
+import { skipToken, useQuery, useReactiveVar } from "@apollo/client/react";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { currentScreen, Screens } from "./components/Layouts/Navigation";
@@ -23,7 +23,10 @@ import IconGitHubSolid from "@apollo/icons/small/IconGitHubSolid.svg";
 import { SettingsModal } from "./components/Layouts/SettingsModal";
 import Logo from "@apollo/icons/logos/LogoSymbol.svg";
 import { BannerAlert } from "./components/BannerAlert";
-import { useDevToolsActorRef } from "./machines/devtoolsMachine";
+import {
+  useDevToolsActorRef,
+  useIsExtensionInvalidated,
+} from "./machines/devtoolsMachine";
 import { ErrorModals } from "./components/ErrorModals/ErrorModals";
 import { ButtonGroup } from "./components/ButtonGroup";
 import {
@@ -78,8 +81,9 @@ ${SECTIONS.devtoolsVersion}
 const stableEmptyClients: Required<AppQuery["clients"]> = [];
 
 export const App = () => {
+  const isExtensionInvalidated = useIsExtensionInvalidated();
   const { send } = useDevToolsActorRef();
-  const { data, refetch } = useQuery(APP_QUERY, { errorPolicy: "all" });
+  const { data, refetch } = useQuery(APP_QUERY);
 
   useActorEvent("registerClient", () => {
     // Unfortunately after we clear the store above, the query ends up "stuck"
@@ -109,11 +113,17 @@ export const App = () => {
     data: clientData,
     startPolling,
     stopPolling,
-  } = useQuery(CLIENT_QUERY, {
-    variables: { id: selectedClientId as string },
-    skip: !selectedClientId,
-    pollInterval: 500,
-  });
+  } = useQuery(
+    CLIENT_QUERY,
+    selectedClientId
+      ? {
+          errorPolicy: "none",
+          variables: { id: selectedClientId },
+          pollInterval: isExtensionInvalidated ? 0 : 500,
+          fetchPolicy: isExtensionInvalidated ? "cache-only" : "cache-first",
+        }
+      : skipToken
+  );
 
   const client = clientData?.client;
   const clients = data?.clients ?? stableEmptyClients;
