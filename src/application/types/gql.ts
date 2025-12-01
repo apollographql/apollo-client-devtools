@@ -1,9 +1,16 @@
 import type { Cache } from "./scalars";
+import type { CacheModifyOptions } from "./scalars";
+import type { DateTime } from "./scalars";
+import type { Diff } from "@/application/utilities/diff";
+import type { DirectCacheWriteOptions } from "./scalars";
+import type { DocumentNode } from "@apollo/client";
 import type { GraphQLErrorPath } from "./scalars";
 import type { JSON } from "./scalars";
 import type { QueryData } from "./scalars";
 import type { QueryOptions } from "./scalars";
 import type { Variables } from "./scalars";
+import type { WriteFragmentOptions } from "./scalars";
+import type { WriteQueryOptions } from "./scalars";
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -33,6 +40,14 @@ export type Scalars = {
   Float: { input: number; output: number };
   /** Represents JSON cache data */
   Cache: { input: Cache; output: Cache };
+  CacheModifyOptions: { input: CacheModifyOptions; output: CacheModifyOptions };
+  DateTime: { input: DateTime; output: DateTime };
+  Diff: { input: Diff; output: Diff };
+  DirectCacheWriteOptions: {
+    input: DirectCacheWriteOptions;
+    output: DirectCacheWriteOptions;
+  };
+  DocumentNode: { input: DocumentNode; output: DocumentNode };
   GraphQLErrorPath: { input: GraphQLErrorPath; output: GraphQLErrorPath };
   JSON: { input: JSON; output: JSON };
   /** Represents data for a specific query */
@@ -41,11 +56,25 @@ export type Scalars = {
   QueryOptions: { input: QueryOptions; output: QueryOptions };
   /** Represents variables for a query */
   Variables: { input: Variables; output: Variables };
+  WriteFragmentOptions: {
+    input: WriteFragmentOptions;
+    output: WriteFragmentOptions;
+  };
+  WriteQueryOptions: { input: WriteQueryOptions; output: WriteQueryOptions };
 };
 
 export type BaseCacheSizes = {
   __typename: "BaseCacheSizes";
   fragmentQueryDocuments: CacheSize;
+};
+
+/** Calls to cache.modify(...) */
+export type CacheModifyWrite = CacheWrite & {
+  __typename: "CacheModifyWrite";
+  diff: Maybe<Scalars["Diff"]["output"]>;
+  id: Scalars["ID"]["output"];
+  options: Scalars["CacheModifyOptions"]["output"];
+  timestamp: Scalars["DateTime"]["output"];
 };
 
 export type CacheSize = {
@@ -55,8 +84,15 @@ export type CacheSize = {
   size: Maybe<Scalars["Int"]["output"]>;
 };
 
+export type CacheWrite = {
+  diff: Maybe<Scalars["Diff"]["output"]>;
+  id: Scalars["ID"]["output"];
+  timestamp: Scalars["DateTime"]["output"];
+};
+
 export type Client = {
   cache: Scalars["Cache"]["output"];
+  cacheWrites: Array<CacheWrite>;
   id: Scalars["String"]["output"];
   memoryInternals: Maybe<MemoryInternals>;
   mutations: ClientMutations;
@@ -86,6 +122,7 @@ export type ClientQueries = {
 export type ClientV3 = Client & {
   __typename: "ClientV3";
   cache: Scalars["Cache"]["output"];
+  cacheWrites: Array<CacheWrite>;
   id: Scalars["String"]["output"];
   memoryInternals: Maybe<ClientV3MemoryInternals>;
   mutations: ClientV3Mutations;
@@ -159,6 +196,7 @@ export type ClientV3WatchedQuery = ClientWatchedQuery & {
 export type ClientV4 = Client & {
   __typename: "ClientV4";
   cache: Scalars["Cache"]["output"];
+  cacheWrites: Array<CacheWrite>;
   id: Scalars["String"]["output"];
   memoryInternals: Maybe<ClientV4MemoryInternals>;
   mutations: ClientV4Mutations;
@@ -231,6 +269,15 @@ export type ClientWatchedQuery = {
   variables: Maybe<Scalars["Variables"]["output"]>;
 };
 
+/** Calls to cache.write(...) */
+export type DirectCacheWrite = CacheWrite & {
+  __typename: "DirectCacheWrite";
+  diff: Maybe<Scalars["Diff"]["output"]>;
+  id: Scalars["ID"]["output"];
+  options: Scalars["DirectCacheWriteOptions"]["output"];
+  timestamp: Scalars["DateTime"]["output"];
+};
+
 export type DocumentTransformCacheSizes = {
   __typename: "DocumentTransformCacheSizes";
   cache: CacheSize;
@@ -247,6 +294,12 @@ export type FragmentRegistryCacheSizes = {
   findFragmentSpreads: CacheSize;
   lookup: CacheSize;
   transform: CacheSize;
+};
+
+export type GraphQLDocument = {
+  __typename: "GraphQLDocument";
+  ast: Scalars["DocumentNode"]["output"];
+  string: Scalars["String"]["output"];
 };
 
 export type GraphQLErrorSourceLocation = {
@@ -386,6 +439,33 @@ export type SerializedUnconventionalError = ErrorLike & {
   stack: Maybe<Scalars["String"]["output"]>;
 };
 
+export type Subscription = {
+  __typename: "Subscription";
+  cacheWritten: CacheWrite;
+};
+
+export type SubscriptioncacheWrittenArgs = {
+  clientId: Scalars["ID"]["input"];
+};
+
+/** Calls to cache.writeFragment(...) */
+export type WriteFragmentCacheWrite = CacheWrite & {
+  __typename: "WriteFragmentCacheWrite";
+  diff: Maybe<Scalars["Diff"]["output"]>;
+  id: Scalars["ID"]["output"];
+  options: Scalars["WriteFragmentOptions"]["output"];
+  timestamp: Scalars["DateTime"]["output"];
+};
+
+/** Calls to cache.writeQuery(...) */
+export type WriteQueryCacheWrite = CacheWrite & {
+  __typename: "WriteQueryCacheWrite";
+  diff: Maybe<Scalars["Diff"]["output"]>;
+  id: Scalars["ID"]["output"];
+  options: Scalars["WriteQueryOptions"]["output"];
+  timestamp: Scalars["DateTime"]["output"];
+};
+
 export type AppQueryVariables = Exact<{ [key: string]: never }>;
 
 export type AppQuery = {
@@ -418,6 +498,114 @@ export type ClientQuery = {
     | null;
 };
 
+export type CacheWritesSubscriptionVariables = Exact<{
+  clientId: Scalars["ID"]["input"];
+}>;
+
+export type CacheWritesSubscription = {
+  cacheWritten:
+    | {
+        __typename: "CacheModifyWrite";
+        id: string;
+        diff: Diff | null;
+        timestamp: DateTime;
+        modifyOptions: CacheModifyOptions;
+      }
+    | {
+        __typename: "DirectCacheWrite";
+        id: string;
+        diff: Diff | null;
+        timestamp: DateTime;
+        writeOptions: DirectCacheWriteOptions;
+      }
+    | {
+        __typename: "WriteFragmentCacheWrite";
+        id: string;
+        diff: Diff | null;
+        timestamp: DateTime;
+        writeFragmentOptions: WriteFragmentOptions;
+      }
+    | {
+        __typename: "WriteQueryCacheWrite";
+        id: string;
+        diff: Diff | null;
+        timestamp: DateTime;
+        writeQueryOptions: WriteQueryOptions;
+      };
+};
+
+type ClientWriteSubscriptionFragment_ClientV3 = {
+  __typename: "ClientV3";
+  cacheWrites: Array<
+    | {
+        __typename: "CacheModifyWrite";
+        id: string;
+        diff: Diff | null;
+        timestamp: DateTime;
+        modifyOptions: CacheModifyOptions;
+      }
+    | {
+        __typename: "DirectCacheWrite";
+        id: string;
+        diff: Diff | null;
+        timestamp: DateTime;
+        writeOptions: DirectCacheWriteOptions;
+      }
+    | {
+        __typename: "WriteFragmentCacheWrite";
+        id: string;
+        diff: Diff | null;
+        timestamp: DateTime;
+        writeFragmentOptions: WriteFragmentOptions;
+      }
+    | {
+        __typename: "WriteQueryCacheWrite";
+        id: string;
+        diff: Diff | null;
+        timestamp: DateTime;
+        writeQueryOptions: WriteQueryOptions;
+      }
+  >;
+};
+
+type ClientWriteSubscriptionFragment_ClientV4 = {
+  __typename: "ClientV4";
+  cacheWrites: Array<
+    | {
+        __typename: "CacheModifyWrite";
+        id: string;
+        diff: Diff | null;
+        timestamp: DateTime;
+        modifyOptions: CacheModifyOptions;
+      }
+    | {
+        __typename: "DirectCacheWrite";
+        id: string;
+        diff: Diff | null;
+        timestamp: DateTime;
+        writeOptions: DirectCacheWriteOptions;
+      }
+    | {
+        __typename: "WriteFragmentCacheWrite";
+        id: string;
+        diff: Diff | null;
+        timestamp: DateTime;
+        writeFragmentOptions: WriteFragmentOptions;
+      }
+    | {
+        __typename: "WriteQueryCacheWrite";
+        id: string;
+        diff: Diff | null;
+        timestamp: DateTime;
+        writeQueryOptions: WriteQueryOptions;
+      }
+  >;
+};
+
+export type ClientWriteSubscriptionFragment =
+  | ClientWriteSubscriptionFragment_ClientV3
+  | ClientWriteSubscriptionFragment_ClientV4;
+
 export type ApolloErrorAlertDisclosurePanel_error = {
   __typename: "SerializedApolloError";
   clientErrors: Array<string>;
@@ -442,9 +630,183 @@ export type GetCacheVariables = Exact<{
 
 export type GetCache = {
   client:
-    | { __typename: "ClientV3"; id: string; cache: Cache }
-    | { __typename: "ClientV4"; id: string; cache: Cache }
+    | {
+        __typename: "ClientV3";
+        id: string;
+        cache: Cache;
+        cacheWrites: Array<
+          | {
+              __typename: "CacheModifyWrite";
+              id: string;
+              diff: Diff | null;
+              timestamp: DateTime;
+              modifyOptions: CacheModifyOptions;
+            }
+          | {
+              __typename: "DirectCacheWrite";
+              id: string;
+              diff: Diff | null;
+              timestamp: DateTime;
+              writeOptions: DirectCacheWriteOptions;
+            }
+          | {
+              __typename: "WriteFragmentCacheWrite";
+              id: string;
+              diff: Diff | null;
+              timestamp: DateTime;
+              writeFragmentOptions: WriteFragmentOptions;
+            }
+          | {
+              __typename: "WriteQueryCacheWrite";
+              id: string;
+              diff: Diff | null;
+              timestamp: DateTime;
+              writeQueryOptions: WriteQueryOptions;
+            }
+        >;
+      }
+    | {
+        __typename: "ClientV4";
+        id: string;
+        cache: Cache;
+        cacheWrites: Array<
+          | {
+              __typename: "CacheModifyWrite";
+              id: string;
+              diff: Diff | null;
+              timestamp: DateTime;
+              modifyOptions: CacheModifyOptions;
+            }
+          | {
+              __typename: "DirectCacheWrite";
+              id: string;
+              diff: Diff | null;
+              timestamp: DateTime;
+              writeOptions: DirectCacheWriteOptions;
+            }
+          | {
+              __typename: "WriteFragmentCacheWrite";
+              id: string;
+              diff: Diff | null;
+              timestamp: DateTime;
+              writeFragmentOptions: WriteFragmentOptions;
+            }
+          | {
+              __typename: "WriteQueryCacheWrite";
+              id: string;
+              diff: Diff | null;
+              timestamp: DateTime;
+              writeQueryOptions: WriteQueryOptions;
+            }
+        >;
+      }
     | null;
+};
+
+type CacheWritesPanelFragment_CacheModifyWrite = {
+  __typename: "CacheModifyWrite";
+  id: string;
+  diff: Diff | null;
+  timestamp: DateTime;
+  modifyOptions: CacheModifyOptions;
+};
+
+type CacheWritesPanelFragment_DirectCacheWrite = {
+  __typename: "DirectCacheWrite";
+  id: string;
+  diff: Diff | null;
+  timestamp: DateTime;
+  writeOptions: DirectCacheWriteOptions;
+};
+
+type CacheWritesPanelFragment_WriteFragmentCacheWrite = {
+  __typename: "WriteFragmentCacheWrite";
+  id: string;
+  diff: Diff | null;
+  timestamp: DateTime;
+  writeFragmentOptions: WriteFragmentOptions;
+};
+
+type CacheWritesPanelFragment_WriteQueryCacheWrite = {
+  __typename: "WriteQueryCacheWrite";
+  id: string;
+  diff: Diff | null;
+  timestamp: DateTime;
+  writeQueryOptions: WriteQueryOptions;
+};
+
+export type CacheWritesPanelFragment =
+  | CacheWritesPanelFragment_CacheModifyWrite
+  | CacheWritesPanelFragment_DirectCacheWrite
+  | CacheWritesPanelFragment_WriteFragmentCacheWrite
+  | CacheWritesPanelFragment_WriteQueryCacheWrite;
+
+type CacheWritesListView_cacheWrites_CacheModifyWrite = {
+  __typename: "CacheModifyWrite";
+  id: string;
+  timestamp: DateTime;
+  modifyOptions: CacheModifyOptions;
+};
+
+type CacheWritesListView_cacheWrites_DirectCacheWrite = {
+  __typename: "DirectCacheWrite";
+  id: string;
+  timestamp: DateTime;
+  writeOptions: DirectCacheWriteOptions;
+};
+
+type CacheWritesListView_cacheWrites_WriteFragmentCacheWrite = {
+  __typename: "WriteFragmentCacheWrite";
+  id: string;
+  timestamp: DateTime;
+  writeFragmentOptions: WriteFragmentOptions;
+};
+
+type CacheWritesListView_cacheWrites_WriteQueryCacheWrite = {
+  __typename: "WriteQueryCacheWrite";
+  id: string;
+  timestamp: DateTime;
+  writeQueryOptions: WriteQueryOptions;
+};
+
+export type CacheWritesListView_cacheWrites =
+  | CacheWritesListView_cacheWrites_CacheModifyWrite
+  | CacheWritesListView_cacheWrites_DirectCacheWrite
+  | CacheWritesListView_cacheWrites_WriteFragmentCacheWrite
+  | CacheWritesListView_cacheWrites_WriteQueryCacheWrite;
+
+export type CacheModifyView_cacheWrite = {
+  __typename: "CacheModifyWrite";
+  id: string;
+  diff: Diff | null;
+  modifyOptions: CacheModifyOptions;
+};
+
+export type DirectCacheWriteView_cacheWrite = {
+  __typename: "DirectCacheWrite";
+  id: string;
+  diff: Diff | null;
+  writeOptions: DirectCacheWriteOptions;
+};
+
+export type WriteFragmentView_cacheWrite = {
+  __typename: "WriteFragmentCacheWrite";
+  id: string;
+  diff: Diff | null;
+  writeFragmentOptions: WriteFragmentOptions;
+};
+
+export type WriteQueryView_cacheWrite = {
+  __typename: "WriteQueryCacheWrite";
+  id: string;
+  diff: Diff | null;
+  writeQueryOptions: WriteQueryOptions;
+};
+
+export type CacheModifyListItem_cacheWrite = {
+  __typename: "CacheModifyWrite";
+  timestamp: DateTime;
+  modifyOptions: CacheModifyOptions;
 };
 
 export type CombinedGraphQLErrorsAlertDisclosurePanel_error = {
@@ -460,6 +822,12 @@ export type CombinedGraphQLErrorsAlertDisclosurePanel_error = {
 export type CombinedProtocolErrorsAlertDisclosurePanel_error = {
   __typename: "SerializedCombinedProtocolErrors";
   errors: Array<{ __typename: "SerializedGraphQLError"; message: string }>;
+};
+
+export type DirectCacheWriteListItem_cacheWrite = {
+  __typename: "DirectCacheWrite";
+  timestamp: DateTime;
+  writeOptions: DirectCacheWriteOptions;
 };
 
 export type MemoryInternalsQueryVariables = Exact<{
@@ -1090,6 +1458,18 @@ export type SerializedErrorAlertDisclosurePanel_error =
   | SerializedErrorAlertDisclosurePanel_error_SerializedServerError
   | SerializedErrorAlertDisclosurePanel_error_SerializedServerParseError
   | SerializedErrorAlertDisclosurePanel_error_SerializedUnconventionalError;
+
+export type WriteFragmentListItem_cacheWrite = {
+  __typename: "WriteFragmentCacheWrite";
+  timestamp: DateTime;
+  writeFragmentOptions: WriteFragmentOptions;
+};
+
+export type WriteQueryListItem_cacheWrite = {
+  __typename: "WriteQueryCacheWrite";
+  timestamp: DateTime;
+  writeQueryOptions: WriteQueryOptions;
+};
 
 export type ClientCountVariables = Exact<{ [key: string]: never }>;
 

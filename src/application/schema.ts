@@ -13,6 +13,9 @@ import { gte } from "semver";
 import type { MemoryInternalsV3 } from "@/extension/tab/v3/types";
 import type { MemoryInternalsV4 } from "@/extension/tab/v4/types";
 import { isExtensionInvalidatedError } from "@/extension/errorMessages";
+import type { CacheWrite } from "@/extension/tab/shared/types";
+import { diff } from "./utilities/diff";
+import { createId } from "@/utils/createId";
 
 export function createSchemaWithRpcClient(rpcClient: RpcClient) {
   return makeExecutableSchema({
@@ -20,6 +23,8 @@ export function createSchemaWithRpcClient(rpcClient: RpcClient) {
     resolvers: createResolvers(rpcClient),
   });
 }
+
+const diffResolver = ({ cache }: CacheWrite) => diff(cache.before, cache.after);
 
 function createResolvers(client: RpcClient): Resolvers {
   const rpcClient = client.withTimeout(10_000);
@@ -45,6 +50,52 @@ function createResolvers(client: RpcClient): Resolvers {
       clients: () => request("getClients"),
       client: (_, { id }) => request("getClient", id),
     },
+    Subscription: {
+      cacheWritten: {
+        resolve: (cacheWrite: CacheWrite) => ({
+          ...cacheWrite,
+          id: createId(),
+        }),
+        subscribe: (_, args, context: { abortSignal?: AbortSignal }) => {
+          return rpcClient
+            .withSignal(context.abortSignal)
+            .stream("cacheWrite", args.clientId);
+        },
+      },
+    },
+    CacheWrite: {
+      __resolveType: (cacheWrite) => {
+        if (cacheWrite.type === "writeQuery") {
+          return "WriteQueryCacheWrite";
+        }
+
+        if (cacheWrite.type === "writeFragment") {
+          return "WriteFragmentCacheWrite";
+        }
+
+        if (cacheWrite.type === "modify") {
+          return "CacheModifyWrite";
+        }
+
+        return "DirectCacheWrite";
+      },
+    },
+    DirectCacheWrite: {
+      diff: diffResolver,
+    },
+    WriteFragmentCacheWrite: {
+      diff: diffResolver,
+    },
+    WriteQueryCacheWrite: {
+      diff: diffResolver,
+    },
+    CacheModifyWrite: {
+      diff: diffResolver,
+    },
+    GraphQLDocument: {
+      string: print,
+      ast: (document) => document,
+    },
     Client: {
       __resolveType: (client) => {
         return gte(client.version, "4.0.0") ? "ClientV4" : "ClientV3";
@@ -52,6 +103,7 @@ function createResolvers(client: RpcClient): Resolvers {
     },
     ClientV3: {
       cache: (client) => request("getCache", client.id),
+      cacheWrites: () => [],
       queries: (client) => client,
       mutations: (client) => client,
       memoryInternals: async (client) => {
@@ -77,6 +129,7 @@ function createResolvers(client: RpcClient): Resolvers {
     },
     ClientV4: {
       cache: (client) => request("getCache", client.id),
+      cacheWrites: () => [],
       queries: (client) => client,
       mutations: (client) => client,
       memoryInternals: async (client) => {

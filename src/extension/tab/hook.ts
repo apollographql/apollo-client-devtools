@@ -1,5 +1,6 @@
 import type { ApolloClient as ApolloClient4 } from "@apollo/client";
 import type { ApolloClient as ApolloClient3 } from "@apollo/client-3";
+import { Slot } from "@wry/context";
 
 // All manifests should contain the same version number so it shouldn't matter
 // which one we import from.
@@ -9,12 +10,17 @@ import type { ApolloClient, ApolloClientInfo } from "@/types";
 import type { JSONObject } from "../../application/types/json";
 import { createWindowActor } from "../actor";
 import { createWindowMessageAdapter } from "../messageAdapters";
-import { createRpcClient, createRpcHandler } from "../rpc";
+import {
+  createRpcClient,
+  createRpcHandler,
+  createRpcStreamHandler,
+} from "../rpc";
 import { loadErrorCodes } from "./loadErrorCodes";
 import { handleExplorerRequests } from "./handleExplorerRequests";
 import type { ClientHandler, IDv3, IDv4 } from "./clientHandler";
 import type { ClientV3Handler } from "./v3/handler";
 import type { ClientV4Handler } from "./v4/handler";
+import type { Cache } from "@/application/types/scalars";
 import { createHandler } from "./helpers";
 
 declare global {
@@ -39,6 +45,7 @@ const messageAdapter = createWindowMessageAdapter(window, {
   jsonSerialize: true,
 });
 const handleRpc = createRpcHandler(messageAdapter);
+const handleRpcStream = createRpcStreamHandler(messageAdapter);
 const rpcClient = createRpcClient(messageAdapter);
 
 const knownClients = new Set<ApolloClient>();
@@ -105,8 +112,104 @@ handleRpc("getV4MemoryInternals", (clientId) => {
   return getClientById(clientId)?.getMemoryInternals?.();
 });
 
+handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
+  const slot = new Slot<boolean>();
+  // Both v3 and v4 have the same options/return value so we can treat the
+  // client the same for both versions
+  const client = getClientById(clientId) as ApolloClient4;
+
+  const { cache } = client;
+  const originalWrite = cache.write;
+  const originalWriteQuery = cache.writeQuery;
+  const originalWriteFragment = cache.writeFragment;
+  const originalModify = cache.modify;
+  const originalStop = client.stop;
+
+  client.stop = () => {
+    close();
+    return originalStop.call(client);
+  };
+
+  function run<TReturn>(fn: () => TReturn): {
+    result: TReturn;
+    timestamp: Date;
+    cache: { before: Cache; after: Cache };
+  } {
+    const timestamp = new Date();
+    const before = cache.extract(true) as Cache;
+    const result = slot.withValue(true, fn);
+    const after = cache.extract(true) as Cache;
+
+    return { result, timestamp, cache: { before, after } };
+  }
+
+  cache.modify = function (options: Parameters<typeof originalModify>[0]) {
+    const { result, ...rest } = run(() => originalModify.call(cache, options));
+
+    const fields =
+      typeof options.fields === "function"
+        ? options.fields.toString()
+        : Object.fromEntries(
+            Object.entries(options.fields).map(([key, modifier]) => {
+              return [key, modifier?.toString()];
+            })
+          );
+
+    push({ type: "modify", options: { ...options, fields }, ...rest });
+
+    return result;
+  } as typeof originalModify;
+
+  cache.write = function (options: Parameters<typeof originalWrite>[0]) {
+    if (slot.getValue()) {
+      return originalWrite.call(cache, options);
+    }
+
+    const { result, ...rest } = run(() => originalWrite.call(cache, options));
+
+    push({ type: "write", options, ...rest });
+
+    return result;
+  };
+
+  cache.writeQuery = function (
+    options: Parameters<typeof originalWriteQuery>[0]
+  ) {
+    const { result, ...rest } = run(() =>
+      originalWriteQuery.call(cache, options)
+    );
+
+    push({ type: "writeQuery", options, ...rest });
+
+    return result;
+  };
+
+  cache.writeFragment = function (
+    options: Parameters<typeof originalWriteFragment>[0]
+  ) {
+    const { result, ...rest } = run(() =>
+      originalWriteFragment.call(cache, options)
+    );
+
+    push({ type: "writeFragment", options, ...rest });
+
+    return result;
+  };
+
+  return () => {
+    client.stop = originalStop;
+    cache.write = originalWrite;
+    cache.writeFragment = originalWriteFragment;
+    cache.writeQuery = originalWriteQuery;
+    cache.modify = originalModify;
+  };
+});
+
 function getClientById(clientId: IDv3): ApolloClient3<any>;
 function getClientById(clientId: IDv4): ApolloClient4;
+function getClientById(
+  clientId: IDv3 | IDv4
+): ApolloClient3<any> | ApolloClient4;
 
 function getClientById(clientId: IDv3 | IDv4): ApolloClient | undefined {
   return getHandlerByClientId(clientId as any)?.getClient();

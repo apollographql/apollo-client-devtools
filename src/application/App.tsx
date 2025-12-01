@@ -2,7 +2,12 @@ import { useState } from "react";
 import type { ReactNode } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { gql } from "@apollo/client";
-import { skipToken, useQuery, useReactiveVar } from "@apollo/client/react";
+import {
+  skipToken,
+  useQuery,
+  useReactiveVar,
+  useSubscription,
+} from "@apollo/client/react";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { currentScreen, Screens } from "./components/Layouts/Navigation";
@@ -13,8 +18,11 @@ import { Cache } from "./components/Cache/Cache";
 import type {
   AppQuery,
   AppQueryVariables,
+  CacheWritesSubscription,
+  CacheWritesSubscriptionVariables,
   ClientQuery,
   ClientQueryVariables,
+  ClientWriteSubscriptionFragment,
 } from "./types/gql";
 import { Tabs } from "./components/Tabs";
 import { Button } from "./components/Button";
@@ -67,6 +75,18 @@ const CLIENT_QUERY: TypedDocumentNode<ClientQuery, ClientQueryVariables> = gql`
       mutations {
         total
       }
+    }
+  }
+`;
+
+const CACHE_WRITES_SUBSCRIPTION: TypedDocumentNode<
+  CacheWritesSubscription,
+  CacheWritesSubscriptionVariables
+> = gql`
+  subscription CacheWritesSubscription($clientId: ID!) {
+    cacheWritten(clientId: $clientId) {
+      id
+      ...CacheWritesPanelFragment
     }
   }
 `;
@@ -138,6 +158,34 @@ export const App = () => {
   ) {
     setSelectedClientId(clientIds[0]);
   }
+
+  useSubscription(CACHE_WRITES_SUBSCRIPTION, {
+    variables: { clientId: client?.id as string },
+    skip: !client,
+    ignoreResults: true,
+    onData: ({ client: { cache }, data: { data } }) => {
+      if (!data || !client) {
+        return;
+      }
+
+      // the merge function handles concatenating this cache write with the
+      // existing values
+      cache.writeFragment({
+        id: cache.identify(client),
+        fragment: gql`
+          fragment ClientWriteSubscriptionFragment on Client {
+            cacheWrites {
+              ...CacheWritesPanelFragment
+            }
+          }
+        ` as TypedDocumentNode<ClientWriteSubscriptionFragment>,
+        data: {
+          __typename: client.__typename,
+          cacheWrites: [data.cacheWritten],
+        },
+      });
+    },
+  });
 
   return (
     <>

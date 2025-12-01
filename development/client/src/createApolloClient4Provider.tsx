@@ -6,6 +6,7 @@ import {
   useLazyQuery,
   useMutation,
   ApolloProvider,
+  useApolloClient,
 } from "@apollo/client/react";
 
 import { LocalState } from "@apollo/client/local-state";
@@ -57,6 +58,7 @@ export const createApolloClient4Provider = (
       return (
         <ClientContextProvider
           value={{
+            useApolloClient,
             useQuery: useQuery,
             useLazyQuery: useLazyQuery,
             useMutation: useMutation,
