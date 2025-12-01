@@ -4,7 +4,7 @@ import { useReactiveVar } from "@apollo/client/react";
 import type { ReactNode } from "react";
 import IconCheck from "@apollo/icons/default/IconCheck.svg";
 import IconError from "@apollo/icons/default/IconError.svg";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { Spinner } from "./Spinner";
 
 const bannerVar = makeVar<BannerAlertConfig | null>(null);
