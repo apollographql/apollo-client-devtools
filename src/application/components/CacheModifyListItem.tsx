@@ -3,7 +3,6 @@ import { gql } from "@apollo/client";
 import { useFragment } from "@apollo/client-3";
 import { format } from "date-fns";
 import type { CacheModifyListItem_cacheWrite } from "../types/gql";
-import { Badge } from "./Badge";
 import { fragmentRegistry } from "../fragmentRegistry";
 
 const FRAGMENT: TypedDocumentNode<CacheModifyListItem_cacheWrite> = gql`

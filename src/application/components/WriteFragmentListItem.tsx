@@ -6,7 +6,6 @@ import type { WriteFragmentListItem_cacheWrite } from "../types/gql";
 import { fragmentRegistry } from "../fragmentRegistry";
 import type { FragmentDefinitionNode } from "graphql";
 import { Kind } from "graphql";
-import { Badge } from "./Badge";
 import { OperationBadge } from "./OperationBadge";
 
 const FRAGMENT: TypedDocumentNode<WriteFragmentListItem_cacheWrite> = gql`
