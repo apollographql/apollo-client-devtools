@@ -1,4 +1,4 @@
-import { act, screen, within, waitFor } from "@testing-library/react";
+import { screen, within, waitFor } from "@testing-library/react";
 
 import { renderWithApolloClient } from "../../../utilities/testing/renderWithApolloClient";
 import { client } from "../../../index";
@@ -86,9 +86,7 @@ describe("<Mutations />", () => {
     });
 
     const sidebar = screen.getByRole("complementary");
-    await act(() =>
-      user.click(within(sidebar).getByText("AddColorToFavorites"))
-    );
+    await user.click(within(sidebar).getByText("AddColorToFavorites"));
     await waitFor(() => {
       expect(screen.getByTestId("main")).toHaveTextContent(
         "AddColorToFavorites"
@@ -127,7 +125,7 @@ describe("<Mutations />", () => {
     );
 
     const query = await screen.findByTestId("query");
-    await user.click(within(query).getByText("Copy"));
+    await user.click(within(query).getByLabelText("Copy"));
     expect(window.prompt).toHaveBeenCalledWith(
       "Copy to clipboard: Ctrl+C, Enter",
       print(defaultMutations[0].document)
