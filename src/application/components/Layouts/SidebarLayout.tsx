@@ -36,7 +36,13 @@ const Sidebar = ({ className, children }: SidebarProps) => {
       >
         {children}
       </Panel>
-      <PanelResizeHandle className="border-r border-primary dark:border-primary-dark" />
+      <PanelResizeHandle
+        className="border-r border-primary dark:border-primary-dark"
+        // Fix issue in tests between jsdom and the changes made in
+        // react-resizable-panels@2.0.17 which prevent the click from
+        // registering.
+        disabled={process.env.NODE_ENV === "test"}
+      />
     </>
   );
 };
