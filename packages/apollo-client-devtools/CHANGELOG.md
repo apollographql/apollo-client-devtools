@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.22.1
+
+### Patch Changes
+
+- [#1753](https://github.com/apollographql/apollo-client-devtools/pull/1753) [`3203112`](https://github.com/apollographql/apollo-client-devtools/commit/3203112697e7c7fb2f79d621a123656f9465f6fa) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Upgrade depedencies
+
 ## 4.22.0
 
 ### Minor Changes
