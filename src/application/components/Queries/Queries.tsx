@@ -103,7 +103,9 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
   const copyButtonText = JSON.stringify(
     currentTab === QueryTabs.Variables
       ? selectedQuery?.variables ?? {}
-      : selectedQuery?.cachedData ?? {}
+      : currentTab === QueryTabs.Options
+        ? selectedQuery?.options ?? {}
+        : selectedQuery?.cachedData ?? {}
   );
 
   const pollInterval = selectedQuery?.pollInterval;
