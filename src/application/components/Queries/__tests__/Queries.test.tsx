@@ -1,4 +1,4 @@
-import { screen, within, waitFor, act } from "@testing-library/react";
+import { screen, within, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { renderWithApolloClient } from "../../../utilities/testing/renderWithApolloClient";
@@ -83,7 +83,7 @@ describe("<Queries />", () => {
     });
 
     const sidebar = screen.getByRole("complementary");
-    await act(() => user.click(within(sidebar).getByText("GetColors")));
+    await user.click(within(sidebar).getByText("GetColors"));
     await waitFor(() => {
       expect(screen.getByTestId("title")).toHaveTextContent("GetColors");
     });
@@ -126,8 +126,8 @@ describe("<Queries />", () => {
       ).toHaveTextContent("(anonymous)");
     });
 
-    await act(() =>
-      user.click(within(screen.getByTestId("query")).getByLabelText("Copy"))
+    await user.click(
+      within(screen.getByTestId("query")).getByLabelText("Copy")
     );
 
     expect(window.prompt).toHaveBeenCalledWith(
@@ -174,9 +174,8 @@ describe("<Queries />", () => {
 
     const cachedDataTab = screen.getByText("Cached Data");
     expect(cachedDataTab).toBeInTheDocument();
-    // TODO: Determine why this needs to be wrapped in act since user.click
-    // should already be wrapped in act
-    await act(() => user.click(cachedDataTab));
+
+    await user.click(cachedDataTab);
     const cachedDataPanel = screen.getByRole("tabpanel");
     expect(
       within(cachedDataPanel).getByText((content) => content.includes("color"))
@@ -216,7 +215,7 @@ describe("<Queries />", () => {
 
     const copyButton = within(screen.getByRole("tablist")).getByRole("button");
 
-    await act(() => user.click(copyButton));
+    await user.click(copyButton);
 
     expect(window.prompt).toHaveBeenCalledWith(
       "Copy to clipboard: Ctrl+C, Enter",
@@ -225,8 +224,8 @@ describe("<Queries />", () => {
 
     const cachedDataTab = screen.getByText("Cached Data");
 
-    await act(() => user.click(cachedDataTab));
-    await act(() => user.click(copyButton));
+    await user.click(cachedDataTab);
+    await user.click(copyButton);
     expect(window.prompt).toHaveBeenCalledWith(
       "Copy to clipboard: Ctrl+C, Enter",
       JSON.stringify(query.cachedData)
