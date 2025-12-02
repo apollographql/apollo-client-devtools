@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { act, screen } from "@testing-library/react";
+import { useState } from "react";
+import { screen } from "@testing-library/react";
 import * as ResizeObserverModule from "resize-observer-polyfill";
 
 import { renderWithApolloClient } from "../../../utilities/testing/renderWithApolloClient";
@@ -31,11 +31,11 @@ describe("<SettingsModal />", () => {
 
     expect(screen.queryByText("0.0.0")).toBeNull();
 
-    await act(() => user.click(screen.getByText("Toggle modal")));
+    await user.click(screen.getByText("Toggle modal"));
     expect(setOpenMock).toHaveBeenCalledTimes(1);
 
     expect(screen.getByText("0.0.0")).toBeInTheDocument();
 
-    await act(() => user.click(screen.getByText("Toggle modal")));
+    await user.click(screen.getByText("Toggle modal"));
   });
 });
