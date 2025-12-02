@@ -1,5 +1,4 @@
-import { useMemo } from "react";
-import { useState, useEffect } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Observable, gql } from "@apollo/client";
 import { useReactiveVar } from "@apollo/client/react";
 import type { IntrospectionQuery } from "graphql";
@@ -117,7 +116,7 @@ export const Explorer = ({
     embeddedExplorerIFrame: HTMLIFrameElement | null;
     setEmbeddedExplorerIFrame: (iframe: HTMLIFrameElement) => void;
   };
-}): JSX.Element => {
+}) => {
   const [graphRef, setGraphRef] = useState<string>();
   const [showGraphRefModal, setShowGraphRefModal] = useState<
     false | "triggeredByIntrospectionFailure" | "triggeredManually"

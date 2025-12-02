@@ -1,10 +1,4 @@
-import {
-  screen,
-  within,
-  waitFor,
-  fireEvent,
-  act,
-} from "@testing-library/react";
+import { screen, within, waitFor, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { Cache } from "../Cache";
@@ -168,7 +162,7 @@ describe("Cache component tests", () => {
 
       const searchInput =
         await screen.findByPlaceholderText<HTMLInputElement>("Search cache");
-      await act(() => user.type(searchInput, "Result"));
+      await user.type(searchInput, "Result");
 
       const sidebar = screen.getByRole("complementary");
 
@@ -198,7 +192,7 @@ describe("Cache component tests", () => {
       renderWithApolloClient(<Cache clientId="1" />);
 
       const searchInput = await screen.findByPlaceholderText("Search cache");
-      await act(() => user.type(searchInput, "Res"));
+      await user.type(searchInput, "Res");
 
       const sidebar = screen.getByRole("complementary");
 

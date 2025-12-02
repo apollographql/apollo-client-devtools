@@ -1,32 +1,28 @@
-import type { ComponentPropsWithoutRef } from "react";
-import CopyToClipboard from "react-copy-to-clipboard";
+import copy from "copy-to-clipboard";
+import type { ButtonProps } from "./Button";
 import { Button } from "./Button";
 import IconCopy from "@apollo/icons/default/IconCopy.svg";
 
-type ButtonProps = ComponentPropsWithoutRef<typeof Button>;
-
-interface CopyButtonProps {
-  className?: string;
+type CopyButtonProps = Omit<
+  Exclude<ButtonProps, { asChild: true }>,
+  "asChild" | "variant"
+> & {
   text: string;
   size: ButtonProps["size"];
-}
+};
 
-export function CopyButton({
-  className,
-  text,
-  size,
-  ...rest
-}: CopyButtonProps) {
+export function CopyButton({ text, ...props }: CopyButtonProps) {
   return (
-    <CopyToClipboard text={text}>
-      <Button
-        {...rest}
-        aria-label="Copy"
-        className={className}
-        size={size}
-        variant="hidden"
-        icon={<IconCopy />}
-      />
-    </CopyToClipboard>
+    <Button
+      {...props}
+      asChild={false}
+      onClick={(event) => {
+        copy(text);
+        props.onClick?.(event);
+      }}
+      aria-label="Copy"
+      variant="hidden"
+      icon={<IconCopy />}
+    />
   );
 }

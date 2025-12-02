@@ -69,7 +69,7 @@ const components: NonNullable<Options["components"]> = {
       className="font-semibold underline-offset-4 underline"
     />
   ),
-  pre: ({ children }) => children as JSX.Element,
+  pre: ({ children }) => children,
   details: ({ children }) => (
     <details className="mt-2 first:mt-0 cursor-pointer">{children}</details>
   ),
@@ -101,16 +101,17 @@ export function Markdown({
   componentOverrides,
 }: MarkdownProps) {
   return (
-    <ReactMarkdown
-      className={twMerge("flex flex-col", className)}
-      components={{ ...components, ...componentOverrides }}
-      remarkPlugins={[
-        remarkGfm,
-        [remarkGithub, { repository: "apollographql/apollo-client" }],
-      ]}
-      rehypePlugins={[rehypeRaw]}
-    >
-      {children}
-    </ReactMarkdown>
+    <div className={twMerge("flex flex-col", className)}>
+      <ReactMarkdown
+        components={{ ...components, ...componentOverrides }}
+        remarkPlugins={[
+          remarkGfm,
+          [remarkGithub, { repository: "apollographql/apollo-client" }],
+        ]}
+        rehypePlugins={[rehypeRaw]}
+      >
+        {children}
+      </ReactMarkdown>
+    </div>
   );
 }

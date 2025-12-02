@@ -17,7 +17,7 @@ export const RunInExplorerButton = ({
   operation,
   variables,
   embeddedExplorerIFrame,
-}: RunInExplorerButtonProps): JSX.Element | null => {
+}: RunInExplorerButtonProps) => {
   return (
     <Button
       variant="secondary"

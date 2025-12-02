@@ -3,11 +3,9 @@ import { Highlight } from "prism-react-renderer";
 import { useReactiveVar } from "@apollo/client/react";
 import { colors } from "@apollo/brand";
 import { clsx } from "clsx";
-import { CopyToClipboard } from "react-copy-to-clipboard";
 import { ColorTheme, colorTheme } from "../theme";
-import IconCopy from "@apollo/icons/default/IconCopy.svg";
-import { Button } from "./Button";
 import { useMemo } from "react";
+import { CopyButton } from "./CopyButton";
 
 interface SyntaxHighlighterProps {
   className?: string;
@@ -157,10 +155,10 @@ export const CodeBlock = ({
               <code className="block">
                 {tokens.map((line, index) => {
                   return (
-                    <div key={index} {...getLineProps({ line, key: index })}>
+                    <div {...getLineProps({ line, key: index })} key={index}>
                       {line.map((token, key) => {
                         return (
-                          <span key={key} {...getTokenProps({ token, key })} />
+                          <span {...getTokenProps({ token, key })} key={key} />
                         );
                       })}
                     </div>
@@ -172,12 +170,7 @@ export const CodeBlock = ({
         }}
       </Highlight>
       {copyable && (
-        <CopyToClipboard text={code}>
-          <Button size="sm" variant="hidden" className="sticky top-0">
-            <IconCopy className="w-4" />
-            Copy
-          </Button>
-        </CopyToClipboard>
+        <CopyButton text={code} size="sm" className="sticky top-0" />
       )}
     </div>
   );
