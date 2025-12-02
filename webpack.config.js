@@ -154,6 +154,9 @@ export default /** @returns {import("webpack").Configuration} */ (env) => {
         {
           test: /\.(ts)x?$/,
           loader: "ts-loader",
+          options: {
+            configFile: "tsconfig.build.json",
+          },
         },
         {
           test: /\.svg$/i,
