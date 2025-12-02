@@ -127,7 +127,7 @@ describe("<Queries />", () => {
     });
 
     await act(() =>
-      user.click(within(screen.getByTestId("query")).getByText("Copy"))
+      user.click(within(screen.getByTestId("query")).getByLabelText("Copy"))
     );
 
     expect(window.prompt).toHaveBeenCalledWith(
