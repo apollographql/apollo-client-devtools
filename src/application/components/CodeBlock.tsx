@@ -155,10 +155,10 @@ export const CodeBlock = ({
               <code className="block">
                 {tokens.map((line, index) => {
                   return (
-                    <div key={index} {...getLineProps({ line, key: index })}>
+                    <div {...getLineProps({ line, key: index })} key={index}>
                       {line.map((token, key) => {
                         return (
-                          <span key={key} {...getTokenProps({ token, key })} />
+                          <span {...getTokenProps({ token, key })} key={key} />
                         );
                       })}
                     </div>
