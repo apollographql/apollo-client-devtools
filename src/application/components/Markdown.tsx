@@ -5,7 +5,7 @@ import { CodeBlock } from "./CodeBlock";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import remarkGithub from "remark-github";
-import type { ReactNode, JSX } from "react";
+import type { ReactNode } from "react";
 import { ExternalLink } from "./ExternalLink";
 
 interface MarkdownProps {
@@ -69,7 +69,7 @@ const components: NonNullable<Options["components"]> = {
       className="font-semibold underline-offset-4 underline"
     />
   ),
-  pre: ({ children }) => children as JSX.Element,
+  pre: ({ children }) => children,
   details: ({ children }) => (
     <details className="mt-2 first:mt-0 cursor-pointer">{children}</details>
   ),
