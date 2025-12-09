@@ -119,6 +119,7 @@ handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
   // client the same for both versions
   const client = getClientById(clientId) as ApolloClient4;
   const { cache } = client;
+  const revertPatches = new Set<() => void>();
 
   function run<TReturn>(fn: () => TReturn): {
     result: TReturn;
@@ -133,15 +134,15 @@ handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
     return { result, timestamp, cache: { before, after } };
   }
 
-  const revertStop = patch(client, "stop", function (original, ...args) {
-    close();
-    return original.apply(this, args);
-  });
+  revertPatches.add(
+    patch(client, "stop", function (original, ...args) {
+      close();
+      return original.apply(this, args);
+    })
+  );
 
-  const revertModify = patch(
-    cache,
-    "modify",
-    function (originalModify, ...args) {
+  revertPatches.add(
+    patch(cache, "modify", function (originalModify, ...args) {
       const [options] = args;
       const { result, ...rest } = run(() => originalModify.apply(this, args));
 
@@ -157,25 +158,25 @@ handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
       push({ type: "modify", options: { ...options, fields }, ...rest });
 
       return result;
-    }
+    })
   );
 
-  const revertWrite = patch(cache, "write", function (originalWrite, ...args) {
-    if (slot.getValue()) {
-      return originalWrite.apply(this, args);
-    }
+  revertPatches.add(
+    patch(cache, "write", function (originalWrite, ...args) {
+      if (slot.getValue()) {
+        return originalWrite.apply(this, args);
+      }
 
-    const { result, ...rest } = run(() => originalWrite.apply(this, args));
+      const { result, ...rest } = run(() => originalWrite.apply(this, args));
 
-    push({ type: "write", options: args[0], ...rest });
+      push({ type: "write", options: args[0], ...rest });
 
-    return result;
-  });
+      return result;
+    })
+  );
 
-  const revertWriteQuery = patch(
-    cache,
-    "writeQuery",
-    function (originalWriteQuery, ...args) {
+  revertPatches.add(
+    patch(cache, "writeQuery", function (originalWriteQuery, ...args) {
       const { result, ...rest } = run(() =>
         originalWriteQuery.apply(this, args)
       );
@@ -183,13 +184,11 @@ handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
       push({ type: "writeQuery", options: args[0], ...rest });
 
       return result;
-    }
+    })
   );
 
-  const revertWriteFragment = patch(
-    cache,
-    "writeFragment",
-    function (originalWriteFragment, ...args) {
+  revertPatches.add(
+    patch(cache, "writeFragment", function (originalWriteFragment, ...args) {
       const { result, ...rest } = run(() =>
         originalWriteFragment.apply(this, args)
       );
@@ -197,15 +196,11 @@ handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
       push({ type: "writeFragment", options: args[0], ...rest });
 
       return result;
-    }
+    })
   );
 
   return () => {
-    revertStop();
-    revertModify();
-    revertWrite();
-    revertWriteFragment();
-    revertWriteQuery();
+    revertPatches.forEach((revert) => revert());
   };
 });
 
