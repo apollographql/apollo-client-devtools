@@ -125,9 +125,20 @@ handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
   const originalModify = cache.modify;
   const originalStop = client.stop;
 
-  client.stop = () => {
+  // Track when we revert the monkey patch back to the original function in case
+  // other extensions/code adds additional monkey patches on top of this which
+  // might accidentally restore these monkey patched funtions. If the patch is
+  // reverted but the monkey patched functions run, we can short circuit and
+  // just call the original.
+  let reverted = false;
+
+  client.stop = function (...args: Parameters<typeof originalStop>) {
+    if (reverted) {
+      return originalStop.apply(this, args);
+    }
+
     close();
-    return originalStop.call(client);
+    return originalStop.apply(this, args);
   };
 
   function run<TReturn>(fn: () => TReturn): {
@@ -143,8 +154,16 @@ handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
     return { result, timestamp, cache: { before, after } };
   }
 
-  cache.modify = function (options: Parameters<typeof originalModify>[0]) {
-    const { result, ...rest } = run(() => originalModify.call(cache, options));
+  cache.modify = function (
+    this: ThisType<typeof originalModify>,
+    ...args: Parameters<typeof originalModify>
+  ) {
+    if (reverted) {
+      return originalModify.apply(this, args);
+    }
+
+    const [options] = args;
+    const { result, ...rest } = run(() => originalModify.apply(this, args));
 
     const fields =
       typeof options.fields === "function"
@@ -160,38 +179,42 @@ handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
     return result;
   } as typeof originalModify;
 
-  cache.write = function (options: Parameters<typeof originalWrite>[0]) {
-    if (slot.getValue()) {
-      return originalWrite.call(cache, options);
+  cache.write = function (...args: Parameters<typeof originalWrite>) {
+    if (reverted || slot.getValue()) {
+      return originalWrite.apply(this, args);
     }
 
-    const { result, ...rest } = run(() => originalWrite.call(cache, options));
+    const { result, ...rest } = run(() => originalWrite.apply(this, args));
 
-    push({ type: "write", options, ...rest });
+    push({ type: "write", options: args[0], ...rest });
 
     return result;
   };
 
-  cache.writeQuery = function (
-    options: Parameters<typeof originalWriteQuery>[0]
-  ) {
-    const { result, ...rest } = run(() =>
-      originalWriteQuery.call(cache, options)
-    );
+  cache.writeQuery = function (...args: Parameters<typeof originalWriteQuery>) {
+    if (reverted) {
+      return originalWriteQuery.apply(this, args);
+    }
 
-    push({ type: "writeQuery", options, ...rest });
+    const { result, ...rest } = run(() => originalWriteQuery.apply(this, args));
+
+    push({ type: "writeQuery", options: args[0], ...rest });
 
     return result;
   };
 
   cache.writeFragment = function (
-    options: Parameters<typeof originalWriteFragment>[0]
+    ...args: Parameters<typeof originalWriteFragment>
   ) {
+    if (reverted) {
+      return originalWriteFragment.apply(this, args);
+    }
+
     const { result, ...rest } = run(() =>
-      originalWriteFragment.call(cache, options)
+      originalWriteFragment.apply(this, args)
     );
 
-    push({ type: "writeFragment", options, ...rest });
+    push({ type: "writeFragment", options: args[0], ...rest });
 
     return result;
   };
@@ -202,6 +225,7 @@ handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
     cache.writeFragment = originalWriteFragment;
     cache.writeQuery = originalWriteQuery;
     cache.modify = originalModify;
+    reverted = true;
   };
 });
 
