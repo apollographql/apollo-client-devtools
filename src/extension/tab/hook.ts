@@ -22,6 +22,7 @@ import type { ClientV3Handler } from "./v3/handler";
 import type { ClientV4Handler } from "./v4/handler";
 import type { Cache } from "@/application/types/scalars";
 import { createHandler } from "./helpers";
+import { patch } from "@/application/utilities/patch";
 
 declare global {
   type TCache = any;
@@ -117,29 +118,7 @@ handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
   // Both v3 and v4 have the same options/return value so we can treat the
   // client the same for both versions
   const client = getClientById(clientId) as ApolloClient4;
-
   const { cache } = client;
-  const originalWrite = cache.write;
-  const originalWriteQuery = cache.writeQuery;
-  const originalWriteFragment = cache.writeFragment;
-  const originalModify = cache.modify;
-  const originalStop = client.stop;
-
-  // Track when we revert the monkey patch back to the original function in case
-  // other extensions/code adds additional monkey patches on top of this which
-  // might accidentally restore these monkey patched funtions. If the patch is
-  // reverted but the monkey patched functions run, we can short circuit and
-  // just call the original.
-  let reverted = false;
-
-  client.stop = function (...args: Parameters<typeof originalStop>) {
-    if (reverted) {
-      return originalStop.apply(this, args);
-    }
-
-    close();
-    return originalStop.apply(this, args);
-  };
 
   function run<TReturn>(fn: () => TReturn): {
     result: TReturn;
@@ -154,33 +133,35 @@ handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
     return { result, timestamp, cache: { before, after } };
   }
 
-  cache.modify = function (
-    this: ThisType<typeof originalModify>,
-    ...args: Parameters<typeof originalModify>
-  ) {
-    if (reverted) {
-      return originalModify.apply(this, args);
+  const revertStop = patch(client, "stop", function (original, ...args) {
+    close();
+    return original.apply(this, args);
+  });
+
+  const revertModify = patch(
+    cache,
+    "modify",
+    function (originalModify, ...args) {
+      const [options] = args;
+      const { result, ...rest } = run(() => originalModify.apply(this, args));
+
+      const fields =
+        typeof options.fields === "function"
+          ? options.fields.toString()
+          : Object.fromEntries(
+              Object.entries(options.fields).map(([key, modifier]) => {
+                return [key, modifier?.toString()];
+              })
+            );
+
+      push({ type: "modify", options: { ...options, fields }, ...rest });
+
+      return result;
     }
+  );
 
-    const [options] = args;
-    const { result, ...rest } = run(() => originalModify.apply(this, args));
-
-    const fields =
-      typeof options.fields === "function"
-        ? options.fields.toString()
-        : Object.fromEntries(
-            Object.entries(options.fields).map(([key, modifier]) => {
-              return [key, modifier?.toString()];
-            })
-          );
-
-    push({ type: "modify", options: { ...options, fields }, ...rest });
-
-    return result;
-  } as typeof originalModify;
-
-  cache.write = function (...args: Parameters<typeof originalWrite>) {
-    if (reverted || slot.getValue()) {
+  const revertWrite = patch(cache, "write", function (originalWrite, ...args) {
+    if (slot.getValue()) {
       return originalWrite.apply(this, args);
     }
 
@@ -189,43 +170,42 @@ handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
     push({ type: "write", options: args[0], ...rest });
 
     return result;
-  };
+  });
 
-  cache.writeQuery = function (...args: Parameters<typeof originalWriteQuery>) {
-    if (reverted) {
-      return originalWriteQuery.apply(this, args);
+  const revertWriteQuery = patch(
+    cache,
+    "writeQuery",
+    function (originalWriteQuery, ...args) {
+      const { result, ...rest } = run(() =>
+        originalWriteQuery.apply(this, args)
+      );
+
+      push({ type: "writeQuery", options: args[0], ...rest });
+
+      return result;
     }
+  );
 
-    const { result, ...rest } = run(() => originalWriteQuery.apply(this, args));
+  const revertWriteFragment = patch(
+    cache,
+    "writeFragment",
+    function (originalWriteFragment, ...args) {
+      const { result, ...rest } = run(() =>
+        originalWriteFragment.apply(this, args)
+      );
 
-    push({ type: "writeQuery", options: args[0], ...rest });
+      push({ type: "writeFragment", options: args[0], ...rest });
 
-    return result;
-  };
-
-  cache.writeFragment = function (
-    ...args: Parameters<typeof originalWriteFragment>
-  ) {
-    if (reverted) {
-      return originalWriteFragment.apply(this, args);
+      return result;
     }
-
-    const { result, ...rest } = run(() =>
-      originalWriteFragment.apply(this, args)
-    );
-
-    push({ type: "writeFragment", options: args[0], ...rest });
-
-    return result;
-  };
+  );
 
   return () => {
-    client.stop = originalStop;
-    cache.write = originalWrite;
-    cache.writeFragment = originalWriteFragment;
-    cache.writeQuery = originalWriteQuery;
-    cache.modify = originalModify;
-    reverted = true;
+    revertStop();
+    revertModify();
+    revertWrite();
+    revertWriteFragment();
+    revertWriteQuery();
   };
 });
 
