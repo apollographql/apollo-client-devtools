@@ -10,6 +10,7 @@
   },
   "devtools_page": "devtools.html",
   "background": { "service_worker": "service_worker.js" },
+  "permissions": ["storage"],
   "web_accessible_resources": [
     {
       "resources": ["panel.html", "devtools.html", "hook.js"],
