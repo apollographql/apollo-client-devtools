@@ -194,7 +194,12 @@ export function Cache({ clientId }: CacheProps) {
               <EmptyMessage className="m-auto mt-20" />
             )}
           </Panel>
-          <PanelResizeHandle className="border-r border-primary dark:border-primary-dark" />
+          <PanelResizeHandle
+            className="border-r border-primary dark:border-primary-dark"
+            // Fix issue in tests which prevent the search input onChange
+            // handler from firing
+            disabled={process.env.NODE_ENV === "test"}
+          />
           <CacheWritesPanel client={data?.client} cacheWrites={cacheWrites} />
         </PanelGroup>
       </Main>
