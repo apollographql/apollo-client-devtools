@@ -155,9 +155,11 @@ function ListView({
             size="sm"
             variant="hidden"
             onClick={() => {
+              const { cache } = apolloClient;
+
               if (client) {
-                apolloClient.cache.modify<Client>({
-                  id: apolloClient.cache.identify(client),
+                cache.modify<Client>({
+                  id: cache.identify(client),
                   fields: {
                     cacheWrites: () => [],
                   },
