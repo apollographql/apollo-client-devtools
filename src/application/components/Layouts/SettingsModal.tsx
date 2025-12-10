@@ -5,6 +5,7 @@ import { Modal } from "../Modal";
 import { TextField } from "../TextField";
 import { Suspense } from "react";
 import { Spinner } from "../Spinner";
+import { DEFAULTS } from "@/application/utilities/storage";
 
 declare const VERSION: string;
 
@@ -62,14 +63,12 @@ function ModalBody() {
         defaultValue={cacheLimit}
         min={0}
         step={10}
-        onChange={(e) => {
-          const { value } = e.target;
-
-          if (value === "") {
-            return;
-          }
-
-          setCacheLimit(Number(value));
+        onBlur={(e) => {
+          setCacheLimit(
+            e.target.value === ""
+              ? DEFAULTS.cacheWriteLimit
+              : Number(e.target.value)
+          );
         }}
       />
     </>
