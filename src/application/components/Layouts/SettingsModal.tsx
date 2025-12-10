@@ -64,11 +64,14 @@ function ModalBody() {
         min={0}
         step={10}
         onBlur={(e) => {
-          setCacheLimit(
-            e.target.value === ""
-              ? DEFAULTS.cacheWriteLimit
-              : Number(e.target.value)
-          );
+          const { value } = e.target;
+
+          if (value === "") {
+            e.target.value = String(DEFAULTS.cacheWriteLimit);
+            setCacheLimit(DEFAULTS.cacheWriteLimit);
+          } else {
+            setCacheLimit(Number(value));
+          }
         }}
       />
     </>
