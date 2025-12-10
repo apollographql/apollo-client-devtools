@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import { colors } from "@apollo/brand";
 import { Provider } from "./context";
 import type { ComponentPropsWithoutRef, ElementType, ReactNode } from "react";
 import type { ObjectPair } from "./ObjectPair";
@@ -30,6 +29,7 @@ import type { ObjectValueNode } from "./ObjectValueNode";
 import type { ArrayValueNode } from "./ArrayValueNode";
 import { twMerge } from "tailwind-merge";
 import { cva } from "class-variance-authority";
+import { defaultTheme } from "./themes";
 
 type ValueProp<T> = [T] extends [never] ? { value?: never } : { value: T };
 
@@ -76,25 +76,6 @@ interface BuiltinRenderers {
   undefined: WithDefaultRender<typeof UndefinedNode>;
   null: WithDefaultRender<typeof NullNode>;
 }
-
-const { border, code, text, icon } = colors.tokens;
-
-export const defaultTheme: Theme = {
-  arrow: icon.primary,
-  constructorName: code.e,
-  ellipsis: text.secondary,
-  indentGuide: border.primary,
-  info: code.e,
-  punctuation: code.a,
-  objectKey: code.d,
-  typeBoolean: code.c,
-  typeFunction: code.f,
-  typeNumber: code.c,
-  typeNull: text.secondary,
-  typeString: code.g,
-  typeSymbol: code.e,
-  typeUndefined: text.secondary,
-};
 
 interface ObjectViewerProps<CustomTypes extends string> {
   value: unknown;
@@ -148,7 +129,7 @@ export function ObjectViewer<CustomTypes extends string>({
   customRenderers,
   value,
   tagName: Element = "div",
-  theme = defaultTheme,
+  theme,
   size = "base",
 }: ObjectViewerProps<CustomTypes>) {
   const style = useObjectViewerTheme({ ...defaultTheme, ...theme });
