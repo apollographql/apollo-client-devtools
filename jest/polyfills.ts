@@ -1,4 +1,5 @@
 import { ReadableStream } from "node:stream/web";
+import type { DeepPartial } from "@apollo/client/utilities";
 
 Object.defineProperties(globalThis, {
   ReadableStream: { value: ReadableStream },
@@ -12,5 +13,12 @@ Object.defineProperties(globalThis, {
   },
   cancelIdleCallback: {
     value: (id: number) => clearTimeout(id),
+  },
+  chrome: {
+    value: {
+      runtime: {
+        id: "mock",
+      },
+    } satisfies DeepPartial<typeof globalThis.chrome>,
   },
 });
