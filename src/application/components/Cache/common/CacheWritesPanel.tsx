@@ -596,7 +596,7 @@ function OptionsSection({
                       <CodeBlock
                         language="graphql"
                         code={documentString}
-                        className="![background:none] !border-none !text-md p-0 pl-[3ch]"
+                        className="![background:none] !border-none !text-md !p-0 !pl-[3ch]"
                         copyable={false}
                       />
                     )}
