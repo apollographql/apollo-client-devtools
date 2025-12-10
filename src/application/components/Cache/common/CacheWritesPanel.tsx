@@ -223,22 +223,12 @@ function CacheModifyView({
   const { diff, modifyOptions } = data;
 
   return (
-    <div className="grow overflow-hidden flex flex-col">
-      <section className="flex items-center gap-2 border-b border-b-primary dark:border-b-primary-dark py-2 px-4">
-        <Tooltip content="Back">
-          <Button
-            aria-label="Back"
-            variant="hidden"
-            size="sm"
-            icon={<IconArrowLeft />}
-            onClick={onNavigateBack}
-          />
-        </Tooltip>
-        <h2 className="grow font-medium text-lg text-heading dark:text-heading-dark font-code">
-          {modifyOptions.id ?? "(unknown)"}
-        </h2>
-      </section>
-      <div className="grow overflow-auto flex flex-col gap-4 p-4">
+    <CacheWriteContainer>
+      <CacheWriteHeader
+        title={modifyOptions.id ?? "(unknown)"}
+        onNavigateBack={onNavigateBack}
+      />
+      <CacheWriteScrollArea>
         <Section>
           <SectionTitle>Diff</SectionTitle>
           {diff === null ? (
@@ -253,8 +243,8 @@ function CacheModifyView({
           <SectionTitle>Options</SectionTitle>
           <ModifyOptions options={modifyOptions} />
         </Section>
-      </div>
-    </div>
+      </CacheWriteScrollArea>
+    </CacheWriteContainer>
   );
 }
 
