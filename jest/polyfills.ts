@@ -19,6 +19,13 @@ Object.defineProperties(globalThis, {
       runtime: {
         id: "mock",
       },
+      storage: {
+        local: {
+          get() {
+            return Promise.resolve({});
+          },
+        },
+      },
     } satisfies DeepPartial<typeof globalThis.chrome>,
   },
 });
