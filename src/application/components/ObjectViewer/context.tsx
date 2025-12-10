@@ -4,7 +4,16 @@ import { createContext, useContext, useRef } from "react";
 import type { Path } from "./types";
 
 interface ContextType {
-  displayObjectSize: boolean;
+  displayObjectSize:
+    | number
+    | boolean
+    | ((options: {
+        value: unknown;
+        depth: number;
+        context: Record<string, any> | undefined;
+        defaultDisplayObjectSize: boolean;
+        path: Path;
+      }) => boolean);
   collapsed:
     | number
     | boolean

@@ -7,7 +7,7 @@ import { AnyValue } from "./AnyValue";
 import { customRenderable } from "./CustomRenderable";
 import { EmptyArray } from "./EmptyArray";
 import type { RenderableTypeProps } from "./ObjectViewer";
-import { useContextValueFallback } from "./context";
+import { useDisplayObjectSize } from "./useDisplayObjectSize";
 
 interface ArrayValueNodeProps
   extends ComponentPropsWithoutRef<"div">,
@@ -39,11 +39,14 @@ export const ArrayValueNode = customRenderable(
     },
     ...props
   }: ArrayValueNodeProps) => {
-    const { displayObjectSize, value } = props;
-    const displayObjectSizeSetting = useContextValueFallback(
-      "displayObjectSize",
-      displayObjectSize
-    );
+    const { displayObjectSize, value, depth, context, path } = props;
+    const displayObjectSizeSetting = useDisplayObjectSize({
+      displayObjectSize,
+      depth,
+      value,
+      context,
+      path,
+    });
 
     return collapsed ? (
       <span className="inline-block align-middle">

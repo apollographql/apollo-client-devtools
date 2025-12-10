@@ -11,6 +11,7 @@ import { OpenBrace } from "./OpenBrace";
 import { CloseBrace } from "./CloseBrace";
 import { useContextValueFallback } from "./context";
 import { EmptyObject } from "./EmptyObject";
+import { useDisplayObjectSize } from "./useDisplayObjectSize";
 
 interface ObjectNodeProps
   extends ComponentPropsWithoutRef<"span">,
@@ -29,10 +30,13 @@ export const ObjectNode = customRenderableType(
     displayObjectSize,
     ...rest
   }: ObjectNodeProps) => {
-    const displayObjectSizeSetting = useContextValueFallback(
-      "displayObjectSize",
-      displayObjectSize
-    );
+    const displayObjectSizeSetting = useDisplayObjectSize({
+      displayObjectSize,
+      depth,
+      value,
+      context,
+      path,
+    });
     const constructorName = getConstructorName(value);
 
     return (

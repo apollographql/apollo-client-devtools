@@ -6,7 +6,7 @@ import { Punctuation } from "./Punctuation";
 import { ObjectSize } from "./ObjectSize";
 import { AnyValue } from "./AnyValue";
 import type { RenderableTypeProps } from "./ObjectViewer";
-import { useContextValueFallback } from "./context";
+import { useDisplayObjectSize } from "./useDisplayObjectSize";
 
 interface ObjectValueNodeProps
   extends ComponentPropsWithoutRef<"div">,
@@ -38,11 +38,14 @@ export const ObjectValueNode = customRenderable(
     },
     ...props
   }: ObjectValueNodeProps) => {
-    const { displayObjectSize, value } = props;
-    const displayObjectSizeSetting = useContextValueFallback(
-      "displayObjectSize",
-      displayObjectSize
-    );
+    const { displayObjectSize, value, depth, context, path } = props;
+    const displayObjectSizeSetting = useDisplayObjectSize({
+      displayObjectSize,
+      depth,
+      value,
+      context,
+      path,
+    });
 
     return collapsed ? (
       <span className="inline-block align-middle">

@@ -11,8 +11,8 @@ import { OpenBracket } from "./OpenBracket";
 import { CloseBracket } from "./CloseBracket";
 import { SparseArrayEmptyItem } from "./SparseArrayEmptyItem";
 import { Punctuation } from "./Punctuation";
-import { useContextValueFallback } from "./context";
 import { EmptyArray } from "./EmptyArray";
+import { useDisplayObjectSize } from "./useDisplayObjectSize";
 
 interface ArrayNodeProps
   extends ComponentPropsWithoutRef<"span">,
@@ -31,10 +31,13 @@ export const ArrayNode = customRenderableType(
     displayObjectSize,
     ...rest
   }: ArrayNodeProps) => {
-    const displayObjectSizeSetting = useContextValueFallback(
-      "displayObjectSize",
-      displayObjectSize
-    );
+    const displayObjectSizeSetting = useDisplayObjectSize({
+      displayObjectSize,
+      depth,
+      value,
+      context,
+      path,
+    });
     const indexes = Object.keys(value);
 
     const [items, holeSizes] =

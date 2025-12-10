@@ -97,7 +97,16 @@ export const defaultTheme: Theme = {
 interface ObjectViewerProps<CustomTypes extends string> {
   value: unknown;
   className?: string;
-  displayObjectSize?: boolean;
+  displayObjectSize?:
+    | number
+    | boolean
+    | ((options: {
+        value: unknown;
+        depth: number;
+        context: Record<string, any> | undefined;
+        defaultDisplayObjectSize: boolean;
+        path: Path;
+      }) => boolean);
   collapsed?:
     | number
     | boolean
