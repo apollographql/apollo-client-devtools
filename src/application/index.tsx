@@ -31,6 +31,7 @@ import { tap } from "rxjs";
 import { hasExtensionInvalidatedError } from "./utilities/errors";
 import { LocalSubscriptionLink } from "./apollo/LocalSubscriptionLink";
 import { OperationTypeNode } from "graphql";
+import { getItemSync } from "./utilities/storage";
 
 loadDevMessages();
 loadErrorMessages();
@@ -85,7 +86,9 @@ const cache = new InMemoryCache({
         cacheWrites: {
           read: (existing) => existing ?? [],
           merge: (existing = [], incoming: unknown[]) => {
-            return existing.concat(incoming);
+            const limit = getItemSync("cacheWriteLimit");
+
+            return existing.concat(incoming).slice(-limit);
           },
         },
       },
