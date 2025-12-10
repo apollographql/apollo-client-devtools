@@ -10,7 +10,7 @@ export function Arrow({ className, collapsed }: Props) {
   return (
     <IconChevronDown
       className={clsx(
-        "block size-4 transition-transform ease-out absolute -left-[2ch] top-1/2 -translate-y-1/2 text-[var(--ov-arrow-color,var(--ov-punctuation-color))]",
+        "block size-[--ov-arrow-size] transition-transform ease-out absolute -left-[2ch] top-1/2 -translate-y-1/2 text-[var(--ov-arrow-color,var(--ov-punctuation-color))]",
         { "-rotate-90": collapsed },
         className
       )}

@@ -29,6 +29,7 @@ import type { ObjType } from "./getTypeOf";
 import type { ObjectValueNode } from "./ObjectValueNode";
 import type { ArrayValueNode } from "./ArrayValueNode";
 import { twMerge } from "tailwind-merge";
+import { cva } from "class-variance-authority";
 
 type ValueProp<T> = [T] extends [never] ? { value?: never } : { value: T };
 
@@ -126,7 +127,17 @@ interface ObjectViewerProps<CustomTypes extends string> {
   builtinRenderers?: Partial<BuiltinRenderers>;
   tagName?: ElementType;
   theme?: Theme;
+  size?: "base" | "sm";
 }
+
+const objectViewer = cva(["font-code"], {
+  variants: {
+    size: {
+      base: ["[--ov-arrow-size:1rem]"],
+      sm: ["text-xs", "[--ov-arrow-size:0.75rem]"],
+    },
+  },
+});
 
 export function ObjectViewer<CustomTypes extends string>({
   className,
@@ -138,11 +149,15 @@ export function ObjectViewer<CustomTypes extends string>({
   value,
   tagName: Element = "div",
   theme = defaultTheme,
+  size = "base",
 }: ObjectViewerProps<CustomTypes>) {
   const style = useObjectViewerTheme({ ...defaultTheme, ...theme });
 
   return (
-    <Element style={style} className={twMerge("font-code", className)}>
+    <Element
+      style={style}
+      className={twMerge(objectViewer({ size }), className)}
+    >
       <Provider
         collapsed={collapsed}
         displayObjectSize={displayObjectSize}
