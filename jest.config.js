@@ -11,8 +11,6 @@ const esModules = [
   "mdast-util-.+",
   "micromark",
   "property-information",
-  "react-base16-styling",
-  "react-json-tree",
   "react-markdown",
   "remark-.+",
   "space-separated-tokens",
