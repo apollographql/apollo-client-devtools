@@ -77,7 +77,7 @@ interface BuiltinRenderers {
 
 const { code, text, icon } = colors.tokens;
 
-const theme: Theme = {
+export const defaultTheme: Theme = {
   arrow: icon.primary,
   constructorName: code.e,
   ellipsis: text.secondary,
@@ -113,6 +113,7 @@ interface ObjectViewerProps<CustomTypes extends string> {
   >;
   builtinRenderers?: Partial<BuiltinRenderers>;
   tagName?: ElementType;
+  theme?: Theme;
 }
 
 export function ObjectViewer<CustomTypes extends string>({
@@ -123,8 +124,9 @@ export function ObjectViewer<CustomTypes extends string>({
   customRenderers,
   value,
   tagName: Element = "div",
+  theme = defaultTheme,
 }: ObjectViewerProps<CustomTypes>) {
-  const style = useObjectViewerTheme(theme);
+  const style = useObjectViewerTheme({ ...defaultTheme, ...theme });
 
   return (
     <Element style={style} className="font-code">
