@@ -28,6 +28,7 @@ import { AnyValue } from "./AnyValue";
 import type { ObjType } from "./getTypeOf";
 import type { ObjectValueNode } from "./ObjectValueNode";
 import type { ArrayValueNode } from "./ArrayValueNode";
+import { twMerge } from "tailwind-merge";
 
 type ValueProp<T> = [T] extends [never] ? { value?: never } : { value: T };
 
@@ -95,6 +96,7 @@ export const defaultTheme: Theme = {
 
 interface ObjectViewerProps<CustomTypes extends string> {
   value: unknown;
+  className?: string;
   displayObjectSize?: boolean;
   collapsed?:
     | number
@@ -117,6 +119,7 @@ interface ObjectViewerProps<CustomTypes extends string> {
 }
 
 export function ObjectViewer<CustomTypes extends string>({
+  className,
   getTypeOf,
   collapsed = 1,
   displayObjectSize = true,
@@ -129,7 +132,7 @@ export function ObjectViewer<CustomTypes extends string>({
   const style = useObjectViewerTheme({ ...defaultTheme, ...theme });
 
   return (
-    <Element style={style} className="font-code">
+    <Element style={style} className={twMerge("font-code", className)}>
       <Provider
         collapsed={collapsed}
         displayObjectSize={displayObjectSize}
