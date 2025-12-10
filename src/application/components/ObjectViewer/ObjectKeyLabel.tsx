@@ -26,7 +26,7 @@ export function ObjectKeyLabel({
       })}
       onClick={collapsible ? onClick : undefined}
     >
-      <span className="inline-flex items-center">
+      <span className="inline-flex items-center text-left">
         {collapsible && <Arrow collapsed={!!collapsed} />}
         <span>
           {children}
