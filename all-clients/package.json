@@ -159,6 +159,7 @@
     "@apollo-client/4.0.7": "npm:@apollo/client@4.0.7",
     "@apollo-client/4.0.8": "npm:@apollo/client@4.0.8",
     "@apollo-client/4.0.9": "npm:@apollo/client@4.0.9",
+    "@apollo-client/4.0.10": "npm:@apollo/client@4.0.10",
     "@apollo-client/4.1.0-alpha.0": "npm:@apollo/client@4.1.0-alpha.0",
     "@apollo-client/4.1.0-alpha.1": "npm:@apollo/client@4.1.0-alpha.1",
     "@apollo-client/4.1.0-alpha.2": "npm:@apollo/client@4.1.0-alpha.2",
