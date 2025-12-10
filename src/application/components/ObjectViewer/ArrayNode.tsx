@@ -57,7 +57,7 @@ export const ArrayNode = customRenderableType(
                 size={value.length}
               />
             )}
-            <div className="pl-[3ch] border-l border-l-primary dark:border-l-primary-dark border-dashed">
+            <div className="pl-[3ch] border-l border-l-[var(--ov-indentGuide-color)] border-dashed">
               {items.map((item, idx) => {
                 return holeSizes?.has(idx) ? (
                   <Fragment key={idx}>

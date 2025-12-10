@@ -76,12 +76,13 @@ interface BuiltinRenderers {
   null: WithDefaultRender<typeof NullNode>;
 }
 
-const { code, text, icon } = colors.tokens;
+const { border, code, text, icon } = colors.tokens;
 
 export const defaultTheme: Theme = {
   arrow: icon.primary,
   constructorName: code.e,
   ellipsis: text.secondary,
+  indentGuide: border.primary,
   info: code.e,
   punctuation: code.a,
   objectKey: code.d,

@@ -61,7 +61,7 @@ export const ObjectNode = customRenderableType(
                 size={Object.keys(value).length}
               />
             )}
-            <div className="pl-[3ch] border-l border-l-primary dark:border-l-primary-dark border-dashed">
+            <div className="pl-[3ch] border-l border-l-[var(--ov-indentGuide-color)] border-dashed">
               {Object.entries(value).map(([key, value], idx) => (
                 <ObjectPair
                   key={idx}

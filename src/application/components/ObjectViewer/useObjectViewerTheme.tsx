@@ -8,6 +8,7 @@ type ThemeKey =
   | "bracket"
   | "constructorName"
   | "ellipsis"
+  | "indentGuide"
   | "info"
   | "punctuation"
   | "quote"
