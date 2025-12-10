@@ -489,7 +489,7 @@ function CacheWriteHeader({
           onClick={onNavigateBack}
         />
       </Tooltip>
-      <h2 className="grow font-medium text-lg text-heading dark:text-heading-dark font-code">
+      <h2 className="grow font-medium text-md text-heading dark:text-heading-dark font-code">
         {title}
       </h2>
     </section>
