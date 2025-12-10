@@ -1,7 +1,10 @@
+import { useLocalStorage } from "@/application/hooks/useLocalStorage";
 import { Button } from "../Button";
 import { ExternalLink } from "../ExternalLink";
 import { Modal } from "../Modal";
 import { TextField } from "../TextField";
+import { Suspense } from "react";
+import { Spinner } from "../Spinner";
 
 declare const VERSION: string;
 
@@ -27,13 +30,15 @@ export function SettingsModal({
         </Modal.Description>
       </Modal.Header>
       <Modal.Body>
-        <TextField
-          label="Cache write limit"
-          size="sm"
-          placeholder="Enter a max limit"
-          type="number"
-          defaultValue={500}
-        />
+        <Suspense
+          fallback={
+            <div className="flex flex-1 items-center justify-center">
+              <Spinner />
+            </div>
+          }
+        >
+          <ModalBody />
+        </Suspense>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="primary" size="md" onClick={() => onOpen(false)}>
@@ -41,5 +46,32 @@ export function SettingsModal({
         </Button>
       </Modal.Footer>
     </Modal>
+  );
+}
+
+function ModalBody() {
+  const [cacheLimit, setCacheLimit] = useLocalStorage("cacheWriteLimit");
+
+  return (
+    <>
+      <TextField
+        label="Cache write limit"
+        size="sm"
+        placeholder="Enter a max limit"
+        type="number"
+        defaultValue={cacheLimit}
+        min={0}
+        step={10}
+        onChange={(e) => {
+          const { value } = e.target;
+
+          if (value === "") {
+            return;
+          }
+
+          setCacheLimit(Number(value));
+        }}
+      />
+    </>
   );
 }
