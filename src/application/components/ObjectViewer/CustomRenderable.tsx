@@ -90,7 +90,7 @@ export function customRenderableType<
 export function filterForwardedElementProps<Element extends ElementType>(
   props: ComponentPropsWithoutRef<Element> & Partial<RenderableTypeProps<any>>
 ) {
-  const { context, depth, value, path, ...rest } = props;
+  const { context, depth, value, path, objectKey, ...rest } = props;
 
   return rest;
 }
