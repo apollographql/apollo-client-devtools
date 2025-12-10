@@ -9,7 +9,6 @@ import type { RenderableTypeProps } from "./ObjectViewer";
 import { clsx } from "clsx";
 import { OpenBrace } from "./OpenBrace";
 import { CloseBrace } from "./CloseBrace";
-import { useContextValueFallback } from "./context";
 import { EmptyObject } from "./EmptyObject";
 import { useDisplayObjectSize } from "./useDisplayObjectSize";
 
