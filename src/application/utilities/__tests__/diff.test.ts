@@ -10,7 +10,7 @@ describe("diff", () => {
   test("diffs objects with new keys", () => {
     const result = diff({ a: 1 }, { a: 1, b: 1 });
 
-    expect(result).toEqual({ b: new Deleted(1) });
+    expect(result).toEqual({ b: new Added(1) });
   });
 
   test("diffs objects with removed keys", () => {
