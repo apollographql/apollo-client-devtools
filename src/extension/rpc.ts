@@ -219,13 +219,7 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
             signal.addEventListener(
               "abort",
               () => {
-                removeListener();
-                adapter.postMessage({
-                  source: "apollo-client-devtools",
-                  type: MessageType.RPCTerminateStream,
-                  id: createId(),
-                  streamId,
-                });
+                cleanup();
                 controller.close();
               },
               { once: true }
