@@ -24,6 +24,10 @@ export function getItemSync<TKey extends keyof LocalStorage>(key: TKey) {
 
   if (promise && promise.status === "fulfilled") {
     return promise.value;
+  } else if (!promise) {
+    // prime the cache for the next time we call `getItemSync` in case
+    // `getItemSync` is called before `getItem`
+    void getItem(key);
   }
 
   return DEFAULTS[key];
