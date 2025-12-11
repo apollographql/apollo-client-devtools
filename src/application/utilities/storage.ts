@@ -9,12 +9,14 @@ import {
 const cache = new Trie<{ promise?: DecoratedPromise<any> }>(true);
 
 export interface LocalStorage {
+  autoRecordCacheWrites: boolean;
   cacheWriteLimit: number;
 }
 
 export const DEFAULTS = {
+  autoRecordCacheWrites: false,
   cacheWriteLimit: 500,
-} as const;
+} as const satisfies Partial<LocalStorage>;
 
 export function getItemSync<TKey extends keyof LocalStorage>(key: TKey) {
   const item = cache.lookup(key);

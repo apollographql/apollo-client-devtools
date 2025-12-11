@@ -6,6 +6,7 @@ import { TextField } from "../TextField";
 import { Suspense } from "react";
 import { Spinner } from "../Spinner";
 import { DEFAULTS } from "@/application/utilities/storage";
+import { Checkbox } from "../Checkbox";
 
 declare const VERSION: string;
 
@@ -52,9 +53,12 @@ export function SettingsModal({
 
 function ModalBody() {
   const [cacheLimit, setCacheLimit] = useLocalStorage("cacheWriteLimit");
+  const [autoRecordCacheWrites, setAutoRecordCacheWrites] = useLocalStorage(
+    "autoRecordCacheWrites"
+  );
 
   return (
-    <>
+    <section className="flex flex-col gap-4">
       <TextField
         label="Cache write history size"
         size="sm"
@@ -74,6 +78,12 @@ function ModalBody() {
           }
         }}
       />
-    </>
+
+      <Checkbox
+        label="Auto-record cache writes"
+        checked={autoRecordCacheWrites}
+        onChange={(e) => setAutoRecordCacheWrites(e.target.checked)}
+      />
+    </section>
   );
 }

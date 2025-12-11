@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import type { Reference } from "@apollo/client";
 import { loadDevMessages, loadErrorMessages } from "@apollo/client/dev";
@@ -137,7 +137,9 @@ export const AppProvider = ({ actor }: { actor: DevToolsActor }) => {
     <Tooltip.Provider delayDuration={0}>
       <ApolloProvider client={client}>
         <DevToolsMachineContext.Provider value={actor}>
-          <App />
+          <Suspense>
+            <App />
+          </Suspense>
         </DevToolsMachineContext.Provider>
       </ApolloProvider>
     </Tooltip.Provider>

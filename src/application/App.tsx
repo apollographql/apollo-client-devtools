@@ -47,6 +47,7 @@ import { SidebarLayout } from "./components/Layouts/SidebarLayout";
 import { ExternalLink } from "./components/ExternalLink";
 import { MemoryInternals } from "./components/MemoryInternals";
 import { CacheWritesSubscription } from "./components/CacheWritesSubscription";
+import { useLocalStorage } from "./hooks/useLocalStorage";
 
 const APP_QUERY: TypedDocumentNode<AppQuery, AppQueryVariables> = gql`
   query AppQuery {
@@ -83,6 +84,7 @@ const stableEmptyClients: Required<AppQuery["clients"]> = [];
 
 export const App = () => {
   const isExtensionInvalidated = useIsExtensionInvalidated();
+  const [autoRecordCacheWrites] = useLocalStorage("autoRecordCacheWrites");
   const { send } = useDevToolsActorRef();
   const { data, refetch } = useQuery(APP_QUERY);
 
@@ -102,7 +104,9 @@ export const App = () => {
     send({ type: "client.setCount", count: 0 });
   });
 
-  const [isRecordingCacheWrites, setIsRecordingCacheWrites] = useState(false);
+  const [isRecordingCacheWrites, setIsRecordingCacheWrites] = useState(
+    autoRecordCacheWrites
+  );
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [selectedClientId, setSelectedClientId] = useState<string | undefined>(
     data?.clients[0]?.id
