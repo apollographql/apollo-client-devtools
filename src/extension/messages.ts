@@ -21,7 +21,7 @@ export interface PostMessageError {
 export const enum MessageType {
   RPCRequest = "rpcRequest",
   RPCResponse = "rpcResponse",
-  RPCStartStream = "rcpStartStream",
+  RPCStartStream = "rpcStartStream",
   RPCTerminateStream = "rpcTerminateStream",
   RPCStreamChunk = "rpcStreamChunk",
   Actor = "actor",
