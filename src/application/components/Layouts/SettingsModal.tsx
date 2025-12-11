@@ -31,7 +31,7 @@ export function SettingsModal({
           </ExternalLink>
         </Modal.Description>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body className="flex flex-col gap-4">
         <Suspense
           fallback={
             <div className="flex flex-1 items-center justify-center">
@@ -39,7 +39,8 @@ export function SettingsModal({
             </div>
           }
         >
-          <ModalBody />
+          <CacheWriteLimitTextField />
+          <AutoRecordCacheWriteCheckbox />
         </Suspense>
       </Modal.Body>
       <Modal.Footer>
@@ -48,15 +49,6 @@ export function SettingsModal({
         </Button>
       </Modal.Footer>
     </Modal>
-  );
-}
-
-function ModalBody() {
-  return (
-    <section className="flex flex-col gap-4">
-      <CacheWriteLimitTextField />
-      <AutoRecordCacheWriteCheckbox />
-    </section>
   );
 }
 
