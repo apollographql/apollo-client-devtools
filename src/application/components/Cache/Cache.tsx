@@ -2,19 +2,13 @@ import type { FC } from "react";
 import { useState, useMemo, useSyncExternalStore, memo } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { gql, NetworkStatus } from "@apollo/client";
-import { useQuery, useSubscription } from "@apollo/client/react";
+import { useQuery } from "@apollo/client/react";
 import IconArrowLeft from "@apollo/icons/small/IconArrowLeft.svg";
 import IconArrowRight from "@apollo/icons/small/IconArrowRight.svg";
 
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { SearchField } from "../SearchField";
-import type {
-  CacheWritesSubscription,
-  CacheWritesSubscriptionVariables,
-  ClientWriteSubscriptionFragment,
-  GetCache,
-  GetCacheVariables,
-} from "../../types/gql";
+import type { GetCache, GetCacheVariables } from "../../types/gql";
 import type { JSONObject } from "../../types/json";
 import clsx from "clsx";
 import { CopyButton } from "../CopyButton";
@@ -51,18 +45,6 @@ const GET_CACHE: TypedDocumentNode<GetCache, GetCacheVariables> = gql`
   }
 `;
 
-const CACHE_WRITES_SUBSCRIPTION: TypedDocumentNode<
-  CacheWritesSubscription,
-  CacheWritesSubscriptionVariables
-> = gql`
-  subscription CacheWritesSubscription($clientId: ID!) {
-    cacheWritten(clientId: $clientId) {
-      id
-      ...CacheWritesPanelFragment
-    }
-  }
-`;
-
 function filterCache(cache: JSONObject, searchTerm: string) {
   const regex = new RegExp(searchTerm, "i");
 
@@ -84,11 +66,16 @@ const STABLE_EMPTY_OBJ: JSONObject = {};
 
 interface CacheProps {
   clientId: string | undefined;
+  isRecordingCacheWrites: boolean;
+  onToggleRecordCacheWrites: () => void;
 }
 
-export function Cache({ clientId }: CacheProps) {
+export function Cache({
+  clientId,
+  isRecordingCacheWrites,
+  onToggleRecordCacheWrites,
+}: CacheProps) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [isRecording, setIsRecording] = useState(false);
   const cacheId = useSyncExternalStore(history.listen, history.getCurrent);
   const isExtensionInvalidated = useIsExtensionInvalidated();
 
@@ -121,34 +108,6 @@ export function Cache({ clientId }: CacheProps) {
   const cacheItem = cache[cacheId];
   const cacheIds = getRootCacheIds(filteredCache);
   const cacheWrites = client?.cacheWrites ?? [];
-
-  useSubscription(CACHE_WRITES_SUBSCRIPTION, {
-    variables: { clientId: client?.id as string },
-    skip: !client || !isRecording,
-    ignoreResults: true,
-    onData: ({ client: { cache }, data: { data } }) => {
-      if (!data || !client) {
-        return;
-      }
-
-      cache.writeFragment({
-        id: cache.identify(client),
-        fragment: gql`
-          fragment ClientWriteSubscriptionFragment on Client {
-            cacheWrites {
-              ...CacheWritesPanelFragment
-            }
-          }
-        ` as TypedDocumentNode<ClientWriteSubscriptionFragment>,
-        data: {
-          __typename: client.__typename,
-          // the merge function handles concatenating this cache write with the
-          // existing values
-          cacheWrites: [data.cacheWritten],
-        },
-      });
-    },
-  });
 
   return (
     <SidebarLayout>
@@ -251,8 +210,8 @@ export function Cache({ clientId }: CacheProps) {
           <CacheWritesPanel
             client={data?.client}
             cacheWrites={cacheWrites}
-            isRecording={isRecording}
-            onToggleRecord={() => setIsRecording((isRecording) => !isRecording)}
+            isRecording={isRecordingCacheWrites}
+            onToggleRecord={onToggleRecordCacheWrites}
           />
         </PanelGroup>
       </Main>
