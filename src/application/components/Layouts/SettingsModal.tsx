@@ -56,9 +56,9 @@ function ModalBody() {
   return (
     <>
       <TextField
-        label="Cache write limit"
+        label="Cache write history size"
         size="sm"
-        placeholder="Enter a max limit"
+        placeholder="Enter a max"
         type="number"
         defaultValue={cacheLimit}
         min={0}
