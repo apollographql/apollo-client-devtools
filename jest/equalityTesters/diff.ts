@@ -35,10 +35,7 @@ export const areDeletedInstancesEqual: Tester = function (a, b, customTesters) {
   const isBDeleted = b instanceof Deleted;
 
   if (isADeleted && isBDeleted) {
-    return (
-      this.equals(a.value, b.value, customTesters) &&
-      this.equals(a.value, b.value, customTesters)
-    );
+    return this.equals(a.value, b.value, customTesters);
   } else if (isBDeleted === isBDeleted) {
     return undefined;
   } else {
