@@ -34,6 +34,7 @@ import { WriteFragmentListItem } from "../../WriteFragmentListItem";
 import { CacheModifyListItem } from "../../CacheModifyListItem";
 import { Kind } from "graphql";
 import { RecordButton } from "../../RecordButton";
+import { RecordIcon } from "../../RecordIcon";
 
 const CACHE_WRITES_PANEL_FRAGMENT: TypedDocumentNode<CacheWritesPanelFragment> = gql`
   fragment CacheWritesPanelFragment on CacheWrite {
@@ -158,8 +159,10 @@ function ListView({
     return null;
   }
 
+  const sortedCacheWrites = [...data].reverse();
+
   return (
-    <div className="grow !overflow-auto">
+    <div className="flex flex-col grow !overflow-auto">
       <section className="flex items-center justify-between border-b border-b-primary dark:border-b-primary-dark py-2 px-4">
         <h2 className="grow font-medium text-md text-heading dark:text-heading-dark">
           Cache writes ({cacheWrites.length})
@@ -193,25 +196,45 @@ function ListView({
         </div>
       </section>
       <List className="p-4">
-        {[...data].reverse().map((cacheWrite) => {
-          return (
-            <ListItem
-              key={cacheWrite.id}
-              onClick={() => onSelect(cacheWrite.id)}
-            >
-              {cacheWrite.__typename === "DirectCacheWrite" ? (
-                <DirectCacheWriteListItem cacheWrite={cacheWrite} />
-              ) : cacheWrite.__typename === "WriteQueryCacheWrite" ? (
-                <WriteQueryListItem cacheWrite={cacheWrite} />
-              ) : cacheWrite.__typename === "WriteFragmentCacheWrite" ? (
-                <WriteFragmentListItem cacheWrite={cacheWrite} />
-              ) : (
-                <CacheModifyListItem cacheWrite={cacheWrite} />
-              )}
-            </ListItem>
-          );
-        })}
+        {sortedCacheWrites.length > 0 ? (
+          sortedCacheWrites.map((cacheWrite) => {
+            return (
+              <ListItem
+                key={cacheWrite.id}
+                onClick={() => onSelect(cacheWrite.id)}
+              >
+                {cacheWrite.__typename === "DirectCacheWrite" ? (
+                  <DirectCacheWriteListItem cacheWrite={cacheWrite} />
+                ) : cacheWrite.__typename === "WriteQueryCacheWrite" ? (
+                  <WriteQueryListItem cacheWrite={cacheWrite} />
+                ) : cacheWrite.__typename === "WriteFragmentCacheWrite" ? (
+                  <WriteFragmentListItem cacheWrite={cacheWrite} />
+                ) : (
+                  <CacheModifyListItem cacheWrite={cacheWrite} />
+                )}
+              </ListItem>
+            );
+          })
+        ) : (
+          <EmptyList isRecording={isRecording} />
+        )}
       </List>
+    </div>
+  );
+}
+
+function EmptyList({ isRecording }: { isRecording: boolean }) {
+  return (
+    <div className="flex justify-center items-center mt-20">
+      <div className="text-left">
+        {!isRecording && (
+          <>
+            Press record{" "}
+            <RecordIcon className="inline-block size-4 relative -top-0.5" /> to
+            start listening for cache writes.
+          </>
+        )}
+      </div>
     </div>
   );
 }
