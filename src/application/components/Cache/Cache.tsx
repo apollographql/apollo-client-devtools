@@ -8,7 +8,12 @@ import IconArrowRight from "@apollo/icons/small/IconArrowRight.svg";
 
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { SearchField } from "../SearchField";
-import type { GetCache, GetCacheVariables } from "../../types/gql";
+import type {
+  CacheWritesSubscription,
+  CacheWritesSubscriptionVariables,
+  GetCache,
+  GetCacheVariables,
+} from "../../types/gql";
 import type { JSONObject } from "../../types/json";
 import clsx from "clsx";
 import { CopyButton } from "../CopyButton";
@@ -45,6 +50,18 @@ const GET_CACHE: TypedDocumentNode<GetCache, GetCacheVariables> = gql`
   }
 `;
 
+const CACHE_WRITES_SUBSCRIPTION: TypedDocumentNode<
+  CacheWritesSubscription,
+  CacheWritesSubscriptionVariables
+> = gql`
+  subscription CacheWritesSubscription($clientId: ID!) {
+    cacheWritten(clientId: $clientId) {
+      id
+      ...CacheWritesPanelFragment
+    }
+  }
+`;
+
 function filterCache(cache: JSONObject, searchTerm: string) {
   const regex = new RegExp(searchTerm, "i");
 
@@ -70,18 +87,23 @@ interface CacheProps {
 
 export function Cache({ clientId }: CacheProps) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [cancelSubscription, setCancelSubscription] = useState<() => void>();
   const cacheId = useSyncExternalStore(history.listen, history.getCurrent);
   const isExtensionInvalidated = useIsExtensionInvalidated();
 
-  const { networkStatus, data, error, startPolling, stopPolling } = useQuery(
-    GET_CACHE,
-    {
-      variables: { id: clientId as string },
-      skip: clientId == null,
-      pollInterval: 500,
-      fetchPolicy: isExtensionInvalidated ? "cache-only" : "cache-first",
-    }
-  );
+  const {
+    networkStatus,
+    data,
+    error,
+    startPolling,
+    stopPolling,
+    subscribeToMore,
+  } = useQuery(GET_CACHE, {
+    variables: { id: clientId as string },
+    skip: clientId == null,
+    pollInterval: 500,
+    fetchPolicy: isExtensionInvalidated ? "cache-only" : "cache-first",
+  });
 
   if (error && !isIgnoredError(error)) {
     throw error;
@@ -200,7 +222,43 @@ export function Cache({ clientId }: CacheProps) {
             // handler from firing
             disabled={process.env.NODE_ENV === "test"}
           />
-          <CacheWritesPanel client={data?.client} cacheWrites={cacheWrites} />
+          <CacheWritesPanel
+            client={data?.client}
+            cacheWrites={cacheWrites}
+            isRecording={!!cancelSubscription}
+            onToggleRecord={() => {
+              setCancelSubscription((cancelSubscription) => {
+                if (cancelSubscription) {
+                  cancelSubscription();
+                  // Clear the cancelSubscription function
+                  return;
+                }
+
+                if (data?.client) {
+                  return subscribeToMore({
+                    document: CACHE_WRITES_SUBSCRIPTION,
+                    variables: { clientId: data.client.id },
+                    updateQuery: (
+                      _,
+                      { complete, subscriptionData, previousData }
+                    ) => {
+                      if (complete && previousData.client) {
+                        return {
+                          ...previousData,
+                          client: {
+                            ...previousData.client,
+                            // the merge function handles concatenating this
+                            // cache write with the existing values
+                            cacheWrites: [subscriptionData.data.cacheWritten],
+                          },
+                        };
+                      }
+                    },
+                  });
+                }
+              });
+            }}
+          />
         </PanelGroup>
       </Main>
     </SidebarLayout>

@@ -33,6 +33,7 @@ import { WriteQueryListItem } from "../../WriteQueryListItem";
 import { WriteFragmentListItem } from "../../WriteFragmentListItem";
 import { CacheModifyListItem } from "../../CacheModifyListItem";
 import { Kind } from "graphql";
+import { RecordButton } from "../../RecordButton";
 
 const CACHE_WRITES_PANEL_FRAGMENT: TypedDocumentNode<CacheWritesPanelFragment> = gql`
   fragment CacheWritesPanelFragment on CacheWrite {
@@ -53,60 +54,70 @@ interface Props {
     | null
     | undefined;
   cacheWrites: Array<CacheWritesPanelFragment>;
+  isRecording: boolean;
+  onToggleRecord: () => void;
 }
 
-export const CacheWritesPanel = memo(({ client, cacheWrites }: Props) => {
-  const { data, complete } = useFragment({
-    fragment: CACHE_WRITES_PANEL_FRAGMENT,
-    fragmentName: "CacheWritesPanelFragment",
-    from: cacheWrites,
-  });
+export const CacheWritesPanel = memo(
+  ({ client, cacheWrites, isRecording, onToggleRecord }: Props) => {
+    const { data, complete } = useFragment({
+      fragment: CACHE_WRITES_PANEL_FRAGMENT,
+      fragmentName: "CacheWritesPanelFragment",
+      from: cacheWrites,
+    });
 
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+    const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  if (!complete) {
-    return null;
+    if (!complete) {
+      return null;
+    }
+
+    const selectedCacheWrite = data.find(
+      (cacheWrite) => cacheWrite.id === selectedId
+    );
+
+    const navigateBack = () => setSelectedId(null);
+
+    return (
+      <Panel
+        id="cacheWrites"
+        className="flex flex-col grow basis-1/2"
+        minSize={10}
+        defaultSize={25}
+      >
+        {selectedCacheWrite?.__typename === "DirectCacheWrite" ? (
+          <DirectCacheWriteView
+            cacheWrite={selectedCacheWrite}
+            onNavigateBack={navigateBack}
+          />
+        ) : selectedCacheWrite?.__typename === "WriteFragmentCacheWrite" ? (
+          <WriteFragmentView
+            cacheWrite={selectedCacheWrite}
+            onNavigateBack={navigateBack}
+          />
+        ) : selectedCacheWrite?.__typename === "CacheModifyWrite" ? (
+          <CacheModifyView
+            cacheWrite={selectedCacheWrite}
+            onNavigateBack={navigateBack}
+          />
+        ) : selectedCacheWrite ? (
+          <WriteQueryView
+            cacheWrite={selectedCacheWrite}
+            onNavigateBack={navigateBack}
+          />
+        ) : (
+          <ListView
+            client={client}
+            cacheWrites={data}
+            onSelect={setSelectedId}
+            isRecording={isRecording}
+            onToggleRecord={onToggleRecord}
+          />
+        )}
+      </Panel>
+    );
   }
-
-  const selectedCacheWrite = data.find(
-    (cacheWrite) => cacheWrite.id === selectedId
-  );
-
-  const navigateBack = () => setSelectedId(null);
-
-  return (
-    <Panel
-      id="cacheWrites"
-      className="flex flex-col grow basis-1/2"
-      minSize={10}
-      defaultSize={25}
-    >
-      {selectedCacheWrite?.__typename === "DirectCacheWrite" ? (
-        <DirectCacheWriteView
-          cacheWrite={selectedCacheWrite}
-          onNavigateBack={navigateBack}
-        />
-      ) : selectedCacheWrite?.__typename === "WriteFragmentCacheWrite" ? (
-        <WriteFragmentView
-          cacheWrite={selectedCacheWrite}
-          onNavigateBack={navigateBack}
-        />
-      ) : selectedCacheWrite?.__typename === "CacheModifyWrite" ? (
-        <CacheModifyView
-          cacheWrite={selectedCacheWrite}
-          onNavigateBack={navigateBack}
-        />
-      ) : selectedCacheWrite ? (
-        <WriteQueryView
-          cacheWrite={selectedCacheWrite}
-          onNavigateBack={navigateBack}
-        />
-      ) : (
-        <ListView client={client} cacheWrites={data} onSelect={setSelectedId} />
-      )}
-    </Panel>
-  );
-});
+);
 
 const LIST_VIEW_FRAGMENT: TypedDocumentNode<CacheWritesListView_cacheWrites> = gql`
   fragment CacheWritesListView_cacheWrites on CacheWrite {
@@ -123,7 +134,9 @@ fragmentRegistry.register(LIST_VIEW_FRAGMENT);
 function ListView({
   client,
   cacheWrites,
+  isRecording,
   onSelect,
+  onToggleRecord,
 }: {
   client:
     | { __typename: "ClientV3" | "ClientV4"; id: string }
@@ -131,6 +144,8 @@ function ListView({
     | undefined;
   cacheWrites: CacheWritesListView_cacheWrites[];
   onSelect: (cacheWriteId: string) => void;
+  isRecording: boolean;
+  onToggleRecord: () => void;
 }) {
   const { data, complete } = useFragment({
     fragment: LIST_VIEW_FRAGMENT,
@@ -149,26 +164,33 @@ function ListView({
         <h2 className="grow font-medium text-md text-heading dark:text-heading-dark">
           Cache writes ({cacheWrites.length})
         </h2>
-        <Tooltip content="Clear">
-          <Button
-            aria-label="Clear"
+        <div className="flex items-center gap-2">
+          <RecordButton
+            isRecording={isRecording}
+            onClick={onToggleRecord}
             size="sm"
-            variant="hidden"
-            onClick={() => {
-              const { cache } = apolloClient;
-
-              if (client) {
-                cache.modify<Client>({
-                  id: cache.identify(client),
-                  fields: {
-                    cacheWrites: () => [],
-                  },
-                });
-              }
-            }}
-            icon={<IconUnavailable />}
           />
-        </Tooltip>
+          <Tooltip content="Clear">
+            <Button
+              aria-label="Clear"
+              size="sm"
+              variant="hidden"
+              onClick={() => {
+                const { cache } = apolloClient;
+
+                if (client) {
+                  cache.modify<Client>({
+                    id: cache.identify(client),
+                    fields: {
+                      cacheWrites: () => [],
+                    },
+                  });
+                }
+              }}
+              icon={<IconUnavailable />}
+            />
+          </Tooltip>
+        </div>
       </section>
       <List className="p-4">
         {[...data].reverse().map((cacheWrite) => {
