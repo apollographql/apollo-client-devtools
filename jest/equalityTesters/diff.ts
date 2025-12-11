@@ -23,7 +23,7 @@ export const areChangedInstancesEqual: Tester = function (a, b, customTesters) {
       this.equals(a.oldValue, b.oldValue, customTesters) &&
       this.equals(a.newValue, b.newValue, customTesters)
     );
-  } else if (isBChanged === isBChanged) {
+  } else if (isAChanged === isBChanged) {
     return undefined;
   } else {
     return false;
@@ -36,7 +36,7 @@ export const areDeletedInstancesEqual: Tester = function (a, b, customTesters) {
 
   if (isADeleted && isBDeleted) {
     return this.equals(a.value, b.value, customTesters);
-  } else if (isBDeleted === isBDeleted) {
+  } else if (isADeleted === isBDeleted) {
     return undefined;
   } else {
     return false;
