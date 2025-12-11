@@ -1,7 +1,6 @@
 import IconCheck2 from "@apollo/icons/small/IconCheck2.svg";
-import { keyboard } from "@testing-library/user-event/dist/cjs/keyboard/index.js";
 import type { ComponentPropsWithoutRef } from "react";
-import { twJoin, twMerge } from "tailwind-merge";
+import { twJoin } from "tailwind-merge";
 
 interface Props extends ComponentPropsWithoutRef<"input"> {
   label?: string;
