@@ -2,7 +2,7 @@ import type { FC } from "react";
 import { useState, useMemo, useSyncExternalStore, memo } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { gql, NetworkStatus } from "@apollo/client";
-import { useQuery } from "@apollo/client/react";
+import { useQuery, useSubscription } from "@apollo/client/react";
 import IconArrowLeft from "@apollo/icons/small/IconArrowLeft.svg";
 import IconArrowRight from "@apollo/icons/small/IconArrowRight.svg";
 
@@ -11,6 +11,7 @@ import { SearchField } from "../SearchField";
 import type {
   CacheWritesSubscription,
   CacheWritesSubscriptionVariables,
+  ClientWriteSubscriptionFragment,
   GetCache,
   GetCacheVariables,
 } from "../../types/gql";
@@ -87,23 +88,19 @@ interface CacheProps {
 
 export function Cache({ clientId }: CacheProps) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [cancelSubscription, setCancelSubscription] = useState<() => void>();
+  const [isRecording, setIsRecording] = useState(false);
   const cacheId = useSyncExternalStore(history.listen, history.getCurrent);
   const isExtensionInvalidated = useIsExtensionInvalidated();
 
-  const {
-    networkStatus,
-    data,
-    error,
-    startPolling,
-    stopPolling,
-    subscribeToMore,
-  } = useQuery(GET_CACHE, {
-    variables: { id: clientId as string },
-    skip: clientId == null,
-    pollInterval: 500,
-    fetchPolicy: isExtensionInvalidated ? "cache-only" : "cache-first",
-  });
+  const { networkStatus, data, error, startPolling, stopPolling } = useQuery(
+    GET_CACHE,
+    {
+      variables: { id: clientId as string },
+      skip: clientId == null,
+      pollInterval: 500,
+      fetchPolicy: isExtensionInvalidated ? "cache-only" : "cache-first",
+    }
+  );
 
   if (error && !isIgnoredError(error)) {
     throw error;
@@ -119,10 +116,39 @@ export function Cache({ clientId }: CacheProps) {
     [cache, searchTerm]
   );
 
+  const client = data?.client;
   const dataExists = Object.keys(cache).length > 0;
   const cacheItem = cache[cacheId];
   const cacheIds = getRootCacheIds(filteredCache);
-  const cacheWrites = data?.client?.cacheWrites ?? [];
+  const cacheWrites = client?.cacheWrites ?? [];
+
+  useSubscription(CACHE_WRITES_SUBSCRIPTION, {
+    variables: { clientId: client?.id as string },
+    skip: !client || !isRecording,
+    ignoreResults: true,
+    onData: ({ client: { cache }, data: { data } }) => {
+      if (!data || !client) {
+        return;
+      }
+
+      cache.writeFragment({
+        id: cache.identify(client),
+        fragment: gql`
+          fragment ClientWriteSubscriptionFragment on Client {
+            cacheWrites {
+              ...CacheWritesPanelFragment
+            }
+          }
+        ` as TypedDocumentNode<ClientWriteSubscriptionFragment>,
+        data: {
+          __typename: client.__typename,
+          // the merge function handles concatenating this cache write with the
+          // existing values
+          cacheWrites: [data.cacheWritten],
+        },
+      });
+    },
+  });
 
   return (
     <SidebarLayout>
@@ -225,39 +251,8 @@ export function Cache({ clientId }: CacheProps) {
           <CacheWritesPanel
             client={data?.client}
             cacheWrites={cacheWrites}
-            isRecording={!!cancelSubscription}
-            onToggleRecord={() => {
-              setCancelSubscription((cancelSubscription) => {
-                if (cancelSubscription) {
-                  cancelSubscription();
-                  // Clear the cancelSubscription function
-                  return;
-                }
-
-                if (data?.client) {
-                  return subscribeToMore({
-                    document: CACHE_WRITES_SUBSCRIPTION,
-                    variables: { clientId: data.client.id },
-                    updateQuery: (
-                      _,
-                      { complete, subscriptionData, previousData }
-                    ) => {
-                      if (complete && previousData.client) {
-                        return {
-                          ...previousData,
-                          client: {
-                            ...previousData.client,
-                            // the merge function handles concatenating this
-                            // cache write with the existing values
-                            cacheWrites: [subscriptionData.data.cacheWritten],
-                          },
-                        };
-                      }
-                    },
-                  });
-                }
-              });
-            }}
+            isRecording={isRecording}
+            onToggleRecord={() => setIsRecording((isRecording) => !isRecording)}
           />
         </PanelGroup>
       </Main>
