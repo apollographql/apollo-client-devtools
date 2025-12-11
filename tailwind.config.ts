@@ -33,6 +33,9 @@ export default {
       },
       borderColor: {
         transparent: "transparent",
+        bg: {
+          selected: toColorValue(rawColors.tokens.bg.selected),
+        },
         arrow: {
           primary: toColorValue(rawColors.tokens.bg.primary),
         },
