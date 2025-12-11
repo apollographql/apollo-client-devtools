@@ -52,38 +52,53 @@ export function SettingsModal({
 }
 
 function ModalBody() {
+  return (
+    <section className="flex flex-col gap-4">
+      <CacheWriteLimitTextField />
+      <AutoRecordCacheWriteCheckbox />
+    </section>
+  );
+}
+
+// Keep each control in its own component to allow the local storage settings
+// to load and suspend in parallel
+
+function CacheWriteLimitTextField() {
   const [cacheLimit, setCacheLimit] = useLocalStorage("cacheWriteLimit");
+
+  return (
+    <TextField
+      label="Cache write history size"
+      size="sm"
+      placeholder="Enter a max"
+      type="number"
+      defaultValue={cacheLimit}
+      min={0}
+      step={10}
+      onBlur={(e) => {
+        const { value } = e.target;
+
+        if (value === "") {
+          e.target.value = String(DEFAULTS.cacheWriteLimit);
+          setCacheLimit(DEFAULTS.cacheWriteLimit);
+        } else {
+          setCacheLimit(Number(value));
+        }
+      }}
+    />
+  );
+}
+
+function AutoRecordCacheWriteCheckbox() {
   const [autoRecordCacheWrites, setAutoRecordCacheWrites] = useLocalStorage(
     "autoRecordCacheWrites"
   );
 
   return (
-    <section className="flex flex-col gap-4">
-      <TextField
-        label="Cache write history size"
-        size="sm"
-        placeholder="Enter a max"
-        type="number"
-        defaultValue={cacheLimit}
-        min={0}
-        step={10}
-        onBlur={(e) => {
-          const { value } = e.target;
-
-          if (value === "") {
-            e.target.value = String(DEFAULTS.cacheWriteLimit);
-            setCacheLimit(DEFAULTS.cacheWriteLimit);
-          } else {
-            setCacheLimit(Number(value));
-          }
-        }}
-      />
-
-      <Checkbox
-        label="Auto-record cache writes"
-        checked={autoRecordCacheWrites}
-        onChange={(e) => setAutoRecordCacheWrites(e.target.checked)}
-      />
-    </section>
+    <Checkbox
+      label="Auto-record cache writes"
+      checked={autoRecordCacheWrites}
+      onChange={(e) => setAutoRecordCacheWrites(e.target.checked)}
+    />
   );
 }
