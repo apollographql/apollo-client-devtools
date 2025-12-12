@@ -39,21 +39,24 @@ export function ObjectDiff({ diff }: Props) {
   );
 }
 
-const { text } = colors.tokens;
+const { border, text } = colors.tokens;
 
 function useDiffThemeOverrides() {
   const getTheme = useGetObjectViewerThemeOverride();
 
   return useCallback(
     ({
+      indentGuide,
       textColor,
       punctuation,
     }: {
       textColor: ColorValue;
+      indentGuide?: ColorValue;
       punctuation?: ColorValue;
     }) => {
       return getTheme({
         arrow: punctuation,
+        indentGuide,
         typeNumber: textColor,
         typeBoolean: textColor,
         typeString: textColor,
@@ -87,6 +90,10 @@ function DiffValue({
         className="bg-successSelected dark:bg-successSelected-dark"
         value={value.value}
         style={getOverrides({
+          indentGuide: {
+            base: border.success.base,
+            dark: colors.primitives.green[200],
+          },
           textColor: text.success,
           punctuation: text.neutral,
         })}
@@ -100,6 +107,7 @@ function DiffValue({
         className="bg-errorSelected dark:bg-errorSelected-dark"
         value={value.value}
         style={getOverrides({
+          indentGuide: border.error,
           textColor: text.error,
           punctuation: text.neutral,
         })}
