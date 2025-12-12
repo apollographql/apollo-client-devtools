@@ -1,6 +1,7 @@
-import { useCallback, type CSSProperties, type FC } from "react";
+import type { ComponentPropsWithoutRef } from "react";
+import { useCallback, useMemo, type CSSProperties, type FC } from "react";
 import { Added, Changed, Deleted, type Diff } from "../utilities/diff";
-import type { ColorValue } from "./ObjectViewer";
+import type { BuiltinRendererProps, ColorValue } from "./ObjectViewer";
 import { ObjectViewer, useGetObjectViewerThemeOverride } from "./ObjectViewer";
 import { colors } from "@apollo/brand";
 import { clsx } from "clsx";
@@ -32,7 +33,7 @@ export function ObjectDiff({ diff }: Props) {
         number: StrikethroughWhenDeleted,
         null: StrikethroughWhenDeleted,
         undefined: StrikethroughWhenDeleted,
-        objectKey: StrikethroughWhenDeleted,
+        objectKey: ObjectKey,
         sparseArrayEmptyItem: SparseArrayItem,
       }}
     />
@@ -66,6 +67,27 @@ function useDiffThemeOverrides() {
       });
     },
     [getTheme]
+  );
+}
+
+function ObjectKey({
+  DefaultRender,
+  ...props
+}: BuiltinRendererProps<"objectKey">) {
+  const StrikethroughDefaultRender = useCallback(
+    (
+      props: ComponentPropsWithoutRef<
+        BuiltinRendererProps<"objectKey">["DefaultRender"]
+      >
+    ) => <DefaultRender {...props} softWrapCharacters={["{", ":", ","]} />,
+    [DefaultRender]
+  );
+
+  return (
+    <StrikethroughWhenDeleted
+      {...props}
+      DefaultRender={StrikethroughDefaultRender}
+    />
   );
 }
 
@@ -123,15 +145,17 @@ function DiffValue({
   return <DefaultRender />;
 }
 
+interface StrikethroughWhenDeletedProps {
+  className?: string;
+  context?: Record<string, any>;
+  DefaultRender: FC<{ className?: string }>;
+}
+
 function StrikethroughWhenDeleted({
   className,
   context,
   DefaultRender,
-}: {
-  className?: string;
-  context?: Record<string, any>;
-  DefaultRender: FC<{ className?: string }>;
-}) {
+}: StrikethroughWhenDeletedProps) {
   return (
     <DefaultRender
       className={clsx(
