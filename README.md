@@ -136,10 +136,7 @@ Check out the [Odyssey](https://odyssey.apollographql.com/) learning platform, t
 
 | Name               | Username                                       |
 | ------------------ | ---------------------------------------------- |
-| Ben Newman         | [@benjamn](https://github.com/benjamn)         |
-| Alessia Bellisario | [@alessbell](https://github.com/alessbell)     |
 | Jeff Auriemma      | [@bignimbus](https://github.com/bignimbus)     |
-| Hugh Willson       | [@hwillson](https://github.com/hwillson)       |
 | Jerel Miller       | [@jerelmiller](https://github.com/jerelmiller) |
 | Lenz Weber-Tronic  | [@phryneas](https://github.com/phryneas)       |
 
