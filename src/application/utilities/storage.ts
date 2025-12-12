@@ -4,7 +4,6 @@ import {
   createResolvedPromise,
   decoratePromise,
   type DecoratedPromise,
-  type FulfilledPromise,
 } from "./promises";
 
 const cache = new Trie<{ promise?: DecoratedPromise<any> }>(true);
