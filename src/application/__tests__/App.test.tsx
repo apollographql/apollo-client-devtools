@@ -24,6 +24,7 @@ describe("<App />", () => {
     testAdapter.handleRpcRequest("getClients", () => []);
 
     // Suspense boundary won't resolve without this `act` call
+    // https://github.com/testing-library/react-testing-library/issues/1385
     // eslint-disable-next-line testing-library/no-unnecessary-act
     await act(() => {
       return renderWithApolloClient(
