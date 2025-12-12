@@ -40,7 +40,7 @@ jobs:
             //registry.npmjs.org/:_authToken=$NPM_TOKEN
           EOF
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN_TMP }}
 
       - name: Setup Node.js 20.x
         uses: actions/setup-node@v4
