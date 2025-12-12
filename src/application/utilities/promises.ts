@@ -47,3 +47,12 @@ export function decoratePromise<T>(promise: Promise<T>): DecoratedPromise<T> {
 
   return promise as DecoratedPromise<T>;
 }
+
+export function createResolvedPromise<T>(value: T): FulfilledPromise<T> {
+  const promise = Promise.resolve(value) as FulfilledPromise<T>;
+
+  promise.status = "fulfilled";
+  promise.value = value;
+
+  return promise;
+}

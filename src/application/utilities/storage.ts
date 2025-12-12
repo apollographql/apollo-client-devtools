@@ -1,6 +1,7 @@
 import { Trie } from "@wry/trie";
 import browser from "webextension-polyfill";
 import {
+  createResolvedPromise,
   decoratePromise,
   type DecoratedPromise,
   type FulfilledPromise,
@@ -57,13 +58,4 @@ export async function setItem<TKey extends keyof LocalStorage>(
   const item = cache.lookup(key);
 
   item.promise = createResolvedPromise(value);
-}
-
-function createResolvedPromise<T>(value: T): FulfilledPromise<T> {
-  const promise = Promise.resolve(value) as FulfilledPromise<T>;
-
-  promise.status = "fulfilled";
-  promise.value = value;
-
-  return promise;
 }
