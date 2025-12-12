@@ -21,9 +21,13 @@ Object.defineProperties(globalThis, {
       },
       storage: {
         local: {
-          get() {
-            return Promise.resolve({});
-          },
+          get: ((_keys, cb) => {
+            const value = {} as Record<string, any>;
+            if (cb !== undefined) {
+              cb(value as any);
+            }
+            return Promise.resolve(value);
+          }) as typeof globalThis.chrome.storage.local.get,
         },
       },
     } satisfies DeepPartial<typeof globalThis.chrome>,
