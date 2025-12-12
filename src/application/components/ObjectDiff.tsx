@@ -1,5 +1,5 @@
 import type { ComponentPropsWithoutRef } from "react";
-import { useCallback, useMemo, type CSSProperties, type FC } from "react";
+import { useCallback, type CSSProperties, type FC } from "react";
 import { Added, Changed, Deleted, type Diff } from "../utilities/diff";
 import type { BuiltinRendererProps, ColorValue } from "./ObjectViewer";
 import { ObjectViewer, useGetObjectViewerThemeOverride } from "./ObjectViewer";
