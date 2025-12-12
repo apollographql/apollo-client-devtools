@@ -10,12 +10,68 @@ scalar Variables
 "Represents options for a query"
 scalar QueryOptions
 
+scalar CacheModifyOptions
+scalar DirectCacheWriteOptions
+scalar WriteQueryOptions
+scalar WriteFragmentOptions
+
+scalar DateTime
+
 scalar JSON
+scalar Diff
+scalar DocumentNode
 scalar GraphQLErrorPath
 
 type Query {
   clients: [Client!]!
   client(id: ID!): Client
+}
+
+type Subscription {
+  cacheWritten(clientId: ID!): CacheWrite!
+}
+
+interface CacheWrite {
+  id: ID!
+  diff: Diff
+  timestamp: DateTime!
+}
+
+"Calls to cache.write(...)"
+type DirectCacheWrite implements CacheWrite {
+  id: ID!
+  diff: Diff
+  options: DirectCacheWriteOptions!
+  timestamp: DateTime!
+}
+
+"Calls to cache.writeQuery(...)"
+type WriteQueryCacheWrite implements CacheWrite {
+  id: ID!
+  diff: Diff
+  options: WriteQueryOptions!
+  timestamp: DateTime!
+}
+
+"Calls to cache.writeFragment(...)"
+type WriteFragmentCacheWrite implements CacheWrite {
+  id: ID!
+  diff: Diff
+  options: WriteFragmentOptions!
+  timestamp: DateTime!
+}
+
+"Calls to cache.modify(...)"
+type CacheModifyWrite implements CacheWrite {
+  id: ID!
+  diff: Diff
+  options: CacheModifyOptions!
+  timestamp: DateTime!
+}
+
+type GraphQLDocument {
+  string: String!
+  ast: DocumentNode!
 }
 
 type BaseCacheSizes {
@@ -36,6 +92,7 @@ interface Client {
   queries: ClientQueries!
   mutations: ClientMutations!
   memoryInternals: MemoryInternals
+  cacheWrites: [CacheWrite!]!
 }
 
 interface ClientQueries {
@@ -56,6 +113,7 @@ type ClientV3 implements Client {
   mutations: ClientV3Mutations!
   cache: Cache!
   memoryInternals: ClientV3MemoryInternals
+  cacheWrites: [CacheWrite!]!
 }
 
 type ClientV4 implements Client {
@@ -66,6 +124,7 @@ type ClientV4 implements Client {
   mutations: ClientV4Mutations!
   queries: ClientV4Queries!
   memoryInternals: ClientV4MemoryInternals
+  cacheWrites: [CacheWrite!]!
 }
 
 type ClientV3Queries implements ClientQueries {

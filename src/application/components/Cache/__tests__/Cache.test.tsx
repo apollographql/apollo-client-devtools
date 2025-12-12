@@ -82,8 +82,14 @@ describe("Cache component tests", () => {
     it("should show no cache data message in sidebar", async () => {
       mockRpcRequests({ cache: {} });
 
-      renderWithApolloClient(<Cache clientId="1" />);
-      const main = screen.getByTestId("main");
+      renderWithApolloClient(
+        <Cache
+          clientId="1"
+          isRecordingCacheWrites={false}
+          onToggleRecordCacheWrites={() => {}}
+        />
+      );
+      const main = screen.getByTestId("main-content");
       await waitFor(() => {
         expect(within(main).getByRole("heading")).toHaveTextContent(
           "👋 Welcome to Apollo Client Devtools"
@@ -94,7 +100,13 @@ describe("Cache component tests", () => {
     it("should leave the header blank instead of trying to show a cache ID", async () => {
       mockRpcRequests({ cache: {} });
 
-      renderWithApolloClient(<Cache clientId="1" />);
+      renderWithApolloClient(
+        <Cache
+          clientId="1"
+          isRecordingCacheWrites={false}
+          onToggleRecordCacheWrites={() => {}}
+        />
+      );
       const cacheId = screen.queryByTestId("cache-id");
 
       await waitFor(() => {
@@ -107,7 +119,13 @@ describe("Cache component tests", () => {
     it("should show list of root cache ids in the sidebar", async () => {
       mockRpcRequests();
 
-      renderWithApolloClient(<Cache clientId="1" />);
+      renderWithApolloClient(
+        <Cache
+          clientId="1"
+          isRecordingCacheWrites={false}
+          onToggleRecordCacheWrites={() => {}}
+        />
+      );
       const sidebar = screen.getByRole("complementary");
       await waitFor(() => {
         expect(within(sidebar).getByText("ROOT_QUERY")).toBeInTheDocument();
@@ -119,7 +137,13 @@ describe("Cache component tests", () => {
     it("should show sidebar selected/active cache ID in the header", async () => {
       mockRpcRequests();
 
-      renderWithApolloClient(<Cache clientId="1" />);
+      renderWithApolloClient(
+        <Cache
+          clientId="1"
+          isRecordingCacheWrites={false}
+          onToggleRecordCacheWrites={() => {}}
+        />
+      );
 
       const main = screen.getByTestId("main");
 
@@ -131,24 +155,30 @@ describe("Cache component tests", () => {
     it("should show data for the sidebar selected/active cache ID in main ", async () => {
       mockRpcRequests();
 
-      renderWithApolloClient(<Cache clientId="1" />);
+      renderWithApolloClient(
+        <Cache
+          clientId="1"
+          isRecordingCacheWrites={false}
+          onToggleRecordCacheWrites={() => {}}
+        />
+      );
 
-      const main = screen.getByTestId("main");
+      const main = screen.getByTestId("main-content");
 
       await waitFor(() => {
         expect(within(main).getByText("ROOT_QUERY")).toBeInTheDocument();
       });
-      expect(within(main).getByText("__typename:")).toBeInTheDocument();
-      expect(within(main).getByText('"Query"')).toBeInTheDocument();
-      expect(within(main).getByText("search:")).toBeInTheDocument();
+      expect(within(main).getByText("__typename")).toBeInTheDocument();
+      expect(within(main).getByText("Query")).toBeInTheDocument();
+      expect(within(main).getByText("search")).toBeInTheDocument();
 
-      fireEvent.click(within(main).getByText("▶"));
+      fireEvent.click(within(main).getByLabelText("Expand"));
 
-      expect(within(main).getByText("count:")).toBeInTheDocument();
+      expect(within(main).getByText("count")).toBeInTheDocument();
       expect(within(main).getByText("2")).toBeInTheDocument();
-      expect(within(main).getByText("success:")).toBeInTheDocument();
+      expect(within(main).getByText("success")).toBeInTheDocument();
       expect(within(main).getByText("true")).toBeInTheDocument();
-      expect(within(main).getByText("error:")).toBeInTheDocument();
+      expect(within(main).getByText("error")).toBeInTheDocument();
       expect(within(main).getByText("null")).toBeInTheDocument();
     });
   });
@@ -158,7 +188,13 @@ describe("Cache component tests", () => {
       mockRpcRequests();
 
       const user = userEvent.setup();
-      renderWithApolloClient(<Cache clientId="1" />);
+      renderWithApolloClient(
+        <Cache
+          clientId="1"
+          isRecordingCacheWrites={false}
+          onToggleRecordCacheWrites={() => {}}
+        />
+      );
 
       const searchInput =
         await screen.findByPlaceholderText<HTMLInputElement>("Search cache");
@@ -189,7 +225,13 @@ describe("Cache component tests", () => {
         "bg-searchHighlight dark:bg-searchHighlight-dark";
       const user = userEvent.setup();
 
-      renderWithApolloClient(<Cache clientId="1" />);
+      renderWithApolloClient(
+        <Cache
+          clientId="1"
+          isRecordingCacheWrites={false}
+          onToggleRecordCacheWrites={() => {}}
+        />
+      );
 
       const searchInput = await screen.findByPlaceholderText("Search cache");
       await user.type(searchInput, "Res");

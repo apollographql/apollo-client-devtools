@@ -9,12 +9,10 @@ import IconErrorSolid from "@apollo/icons/default/IconErrorSolid.svg";
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { RunInExplorerButton } from "../Queries/RunInExplorerButton";
 import type { GetMutations, GetMutationsVariables } from "../../types/gql";
-import { JSONTreeViewer } from "../JSONTreeViewer";
 import { Tabs } from "../Tabs";
 import { QueryLayout } from "../QueryLayout";
 import { CopyButton } from "../CopyButton";
 import { EmptyMessage } from "../EmptyMessage";
-import { isEmpty } from "../../utilities/isEmpty";
 import { Spinner } from "../Spinner";
 import { StatusBadge } from "../StatusBadge";
 import { AlertDisclosure } from "../AlertDisclosure";
@@ -26,6 +24,7 @@ import { PageSpinner } from "../PageSpinner";
 import { isIgnoredError } from "../../utilities/ignoredErrors";
 import { SerializedErrorAlertDisclosurePanel } from "../SerializedErrorAlertDisclosurePanel";
 import { useIsExtensionInvalidated } from "@/application/machines/devtoolsMachine";
+import { VariablesObject } from "../VariablesObject";
 
 const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
   gql`
@@ -208,11 +207,7 @@ export const Mutations = ({ clientId, explorerIFrame }: MutationsProps) => {
               />
             </Tabs.List>
             <QueryLayout.TabContent value="variables">
-              <JSONTreeViewer
-                hideRoot={!isEmpty(selectedMutation?.variables)}
-                className="[&>li]:!pt-0"
-                data={selectedMutation?.variables ?? {}}
-              />
+              <VariablesObject variables={selectedMutation?.variables} />
             </QueryLayout.TabContent>
           </QueryLayout.Tabs>
         </QueryLayout>

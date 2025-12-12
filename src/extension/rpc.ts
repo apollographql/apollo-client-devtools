@@ -16,6 +16,8 @@ import type {
   QueryV4Details,
   MemoryInternalsV4,
 } from "./tab/v4/types";
+import type { CacheWrite } from "./tab/shared/types";
+import type { ActorMessage } from "./actor";
 
 export type RPCRequest = {
   getClients(): ApolloClientInfo[];
@@ -30,13 +32,23 @@ export type RPCRequest = {
   getV4MemoryInternals(clientId: IDv4): MemoryInternalsV4 | undefined;
 };
 
+export interface RPCStream {
+  cacheWrite(clientId: IDv3 | IDv4): CacheWrite;
+}
+
 export interface RpcClient {
   readonly timeout: number;
+  readonly signal?: AbortSignal;
   withTimeout: (timeoutMs: number) => RpcClient;
+  withSignal: (abortSignal?: AbortSignal) => RpcClient;
   request: <TName extends keyof RPCRequest & string>(
     name: TName,
     ...params: Parameters<RPCRequest[TName]>
   ) => Promise<Awaited<ReturnType<RPCRequest[TName]>>>;
+  stream: <TName extends keyof RPCStream & string>(
+    name: TName,
+    ...params: Parameters<RPCStream[TName]>
+  ) => ReadableStream<ReturnType<RPCStream[TName]>>;
 }
 
 type RPCErrorResponseMessage = {
@@ -63,6 +75,29 @@ export type RPCRequestMessage<Params extends SafeAny[] = unknown[]> = {
   params: Params;
 };
 
+export type RPCStreamStartMessage<Params extends any[] = unknown[]> = {
+  source: "apollo-client-devtools";
+  type: MessageType.RPCStartStream;
+  id: string;
+  name: string;
+  params: Params;
+};
+
+export type RPCTerminateStreamMessage = {
+  source: "apollo-client-devtools";
+  type: MessageType.RPCTerminateStream;
+  id: string;
+  streamId: string;
+};
+
+export type RPCStreamChunkMessage<Value = unknown> = {
+  source: "apollo-client-devtools";
+  type: MessageType.RPCStreamChunk;
+  id: string;
+  streamId: string;
+  value: Value;
+};
+
 export type RPCResponseMessage<Result = unknown> =
   | RPCSuccessResponseMessage<Result>
   | RPCErrorResponseMessage;
@@ -75,7 +110,16 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
     withTimeout(timeoutMs) {
       return { ...this, timeout: timeoutMs };
     },
+    withSignal(signal?: AbortSignal) {
+      return { ...this, signal };
+    },
     request(name, ...params) {
+      const { signal } = this;
+
+      if (signal?.aborted) {
+        return Promise.reject(getAbortError(signal));
+      }
+
       return new Promise<SafeAny>((resolve, reject) => {
         const id = createId();
 
@@ -108,6 +152,14 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
           cleanup();
         });
 
+        if (signal) {
+          signal.addEventListener("abort", () => {
+            clearTimeout(timeout);
+            removeListener();
+            reject(getAbortError(signal));
+          });
+        }
+
         adapter.postMessage({
           source: "apollo-client-devtools",
           type: MessageType.RPCRequest,
@@ -115,6 +167,66 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
           name,
           params,
         });
+      });
+    },
+    stream(name, ...params) {
+      const streamId = createId();
+      const { signal } = this;
+      let removeListener!: () => void;
+
+      function cleanup() {
+        removeListener();
+        adapter.postMessage({
+          source: "apollo-client-devtools",
+          type: MessageType.RPCTerminateStream,
+          id: createId(),
+          streamId,
+        });
+      }
+
+      return new ReadableStream({
+        start: (controller) => {
+          if (signal?.aborted) {
+            return controller.close();
+          }
+
+          removeListener = adapter.addListener((message) => {
+            if (
+              isRPCTerminateStreamMessage(message) &&
+              message.streamId === streamId
+            ) {
+              removeListener();
+              return controller.close();
+            }
+
+            if (
+              isRPCStreamChunkMessage(message) &&
+              message.streamId === streamId
+            ) {
+              controller.enqueue(message.value as any);
+            }
+          });
+
+          adapter.postMessage({
+            source: "apollo-client-devtools",
+            type: MessageType.RPCStartStream,
+            id: streamId,
+            name,
+            params,
+          });
+
+          if (signal) {
+            signal.addEventListener(
+              "abort",
+              () => {
+                cleanup();
+                controller.close();
+              },
+              { once: true }
+            );
+          }
+        },
+        cancel: cleanup,
       });
     },
   };
@@ -196,6 +308,145 @@ export function createRpcHandler(adapter: MessageAdapter) {
   };
 }
 
+export function createRpcStreamHandler(adapter: MessageAdapter) {
+  const listeners = new Map<string, (message: RPCStreamStartMessage) => void>();
+  const cleanupFnsByStreamId = new Map<string, () => void>();
+  const streamIdsByName = new Map<string, Set<string>>();
+  let removeListener: (() => void) | null = null;
+
+  // In case messages in the stream get pushed very fast, we want to keep the
+  // source app fast so we process the messages async
+  const messageQueue: RPCStreamChunkMessage[] = [];
+
+  function processQueue() {
+    if (!messageQueue.length) {
+      return;
+    }
+
+    requestIdleCallback(() => {
+      const message = messageQueue.shift();
+
+      if (message) {
+        adapter.postMessage(message);
+      }
+
+      processQueue();
+    });
+  }
+
+  function postMessage(message: RPCStreamChunkMessage) {
+    messageQueue.push(message);
+    processQueue();
+  }
+
+  function handleMessage(message: unknown) {
+    if (isRPCStartStreamMessage(message)) {
+      listeners.get(message.name)?.(message);
+    }
+
+    if (isRPCTerminateStreamMessage(message)) {
+      cleanupFnsByStreamId.get(message.streamId)?.();
+    }
+
+    if (isDevtoolsDisconnectedMessage(message)) {
+      cleanupFnsByStreamId.forEach((cleanup) => cleanup());
+    }
+  }
+
+  function startListening() {
+    if (!removeListener) {
+      removeListener = adapter.addListener(handleMessage);
+    }
+  }
+
+  function stopListening() {
+    if (removeListener) {
+      removeListener();
+      removeListener = null;
+    }
+  }
+
+  return function <TName extends keyof RPCStream & string>(
+    name: TName,
+    handler: (
+      controller: {
+        push: (value: ReturnType<RPCStream[TName]>) => void;
+        close: () => void;
+      },
+      ...params: Parameters<RPCStream[TName]>
+    ) => (() => void) | void,
+    options: { signal?: AbortSignal } = {}
+  ) {
+    if (listeners.has(name)) {
+      throw new Error("Only one rpc handler can be registered per type");
+    }
+
+    streamIdsByName.set(name, new Set());
+
+    listeners.set(name, async ({ id: streamId, params }) => {
+      let closed = false;
+      streamIdsByName.get(name)!.add(streamId);
+
+      function push(value: ReturnType<RPCStream[TName]>) {
+        if (closed) {
+          return;
+        }
+
+        postMessage({
+          source: "apollo-client-devtools",
+          type: MessageType.RPCStreamChunk,
+          id: createId(),
+          streamId: streamId,
+          value,
+        });
+      }
+
+      function close() {
+        if (closed) {
+          return;
+        }
+
+        cleanupFnsByStreamId.get(streamId)?.();
+        adapter.postMessage({
+          source: "apollo-client-devtools",
+          type: MessageType.RPCTerminateStream,
+          id: createId(),
+          streamId,
+        });
+      }
+
+      const cleanup = handler(
+        { push, close },
+        ...(params as Parameters<RPCStream[TName]>)
+      );
+
+      cleanupFnsByStreamId.set(streamId, () => {
+        closed = true;
+        cleanup?.();
+        streamIdsByName.get(name)!.delete(streamId);
+        cleanupFnsByStreamId.delete(streamId);
+      });
+    });
+
+    startListening();
+
+    const cleanup = () => {
+      streamIdsByName.get(name)?.forEach((streamId) => {
+        cleanupFnsByStreamId.get(streamId)?.();
+      });
+      listeners.delete(name);
+
+      if (listeners.size === 0) {
+        stopListening();
+      }
+    };
+    if (options.signal) {
+      options.signal.addEventListener("abort", cleanup, { once: true });
+    }
+    return cleanup;
+  };
+}
+
 export function isRPCRequestMessage(
   message: unknown
 ): message is RPCRequestMessage {
@@ -204,4 +455,47 @@ export function isRPCRequestMessage(
 
 function isRPCResponseMessage(message: unknown): message is RPCResponseMessage {
   return isDevtoolsMessage(message) && message.type === MessageType.RPCResponse;
+}
+
+export function isRPCStartStreamMessage(
+  message: unknown
+): message is RPCStreamStartMessage {
+  return (
+    isDevtoolsMessage(message) && message.type === MessageType.RPCStartStream
+  );
+}
+
+export function isRPCTerminateStreamMessage(
+  message: unknown
+): message is RPCTerminateStreamMessage {
+  return (
+    isDevtoolsMessage(message) &&
+    message.type === MessageType.RPCTerminateStream
+  );
+}
+
+function isRPCStreamChunkMessage(
+  message: unknown
+): message is RPCStreamChunkMessage {
+  return (
+    isDevtoolsMessage(message) && message.type === MessageType.RPCStreamChunk
+  );
+}
+
+function isDevtoolsDisconnectedMessage(
+  message: unknown
+): message is Extract<ActorMessage, { type: "devtoolsDisconnected" }> {
+  return (
+    isDevtoolsMessage(message) &&
+    message.type === MessageType.Actor &&
+    message.message.type === "devtoolsDisconnected"
+  );
+}
+
+function getAbortError(signal: AbortSignal) {
+  const { reason } = signal;
+
+  return reason instanceof DOMException
+    ? reason
+    : new DOMException(reason, "AbortError");
 }

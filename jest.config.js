@@ -11,8 +11,6 @@ const esModules = [
   "mdast-util-.+",
   "micromark",
   "property-information",
-  "react-base16-styling",
-  "react-json-tree",
   "react-markdown",
   "remark-.+",
   "space-separated-tokens",
@@ -26,7 +24,7 @@ const esModules = [
 
 export default {
   preset: "ts-jest/presets/js-with-babel",
-  setupFilesAfterEnv: ["./test.setup.ts"],
+  setupFilesAfterEnv: ["./test.setup.ts", "./jest/polyfills.ts"],
   testEnvironment: "jsdom",
   globals: {
     VERSION: "0.0.0",

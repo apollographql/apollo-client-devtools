@@ -1,5 +1,6 @@
 import type { ApolloClient as ApolloClient4 } from "@apollo/client";
 import type { ApolloClient as ApolloClient3 } from "@apollo/client-3";
+import { Slot } from "@wry/context";
 
 // All manifests should contain the same version number so it shouldn't matter
 // which one we import from.
@@ -9,13 +10,19 @@ import type { ApolloClient, ApolloClientInfo } from "@/types";
 import type { JSONObject } from "../../application/types/json";
 import { createWindowActor } from "../actor";
 import { createWindowMessageAdapter } from "../messageAdapters";
-import { createRpcClient, createRpcHandler } from "../rpc";
+import {
+  createRpcClient,
+  createRpcHandler,
+  createRpcStreamHandler,
+} from "../rpc";
 import { loadErrorCodes } from "./loadErrorCodes";
 import { handleExplorerRequests } from "./handleExplorerRequests";
 import type { ClientHandler, IDv3, IDv4 } from "./clientHandler";
 import type { ClientV3Handler } from "./v3/handler";
 import type { ClientV4Handler } from "./v4/handler";
+import type { Cache } from "@/application/types/scalars";
 import { createHandler } from "./helpers";
+import { patch } from "@/application/utilities/patch";
 
 declare global {
   type TCache = any;
@@ -39,6 +46,7 @@ const messageAdapter = createWindowMessageAdapter(window, {
   jsonSerialize: true,
 });
 const handleRpc = createRpcHandler(messageAdapter);
+const handleRpcStream = createRpcStreamHandler(messageAdapter);
 const rpcClient = createRpcClient(messageAdapter);
 
 const knownClients = new Set<ApolloClient>();
@@ -105,8 +113,102 @@ handleRpc("getV4MemoryInternals", (clientId) => {
   return getClientById(clientId)?.getMemoryInternals?.();
 });
 
+handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
+  const slot = new Slot<boolean>();
+  // Both v3 and v4 have the same options/return value so we can treat the
+  // client the same for both versions
+  const client = getClientById(clientId) as ApolloClient4;
+  const { cache } = client;
+  const revertPatches = new Set<() => void>();
+
+  function run<TReturn>(fn: () => TReturn): {
+    result: TReturn;
+    timestamp: Date;
+    cache: { before: Cache; after: Cache };
+  } {
+    const timestamp = new Date();
+    const before = cache.extract(true) as Cache;
+    const result = slot.withValue(true, fn);
+    const after = cache.extract(true) as Cache;
+
+    return { result, timestamp, cache: { before, after } };
+  }
+
+  revertPatches.add(
+    patch(client, "stop", function (original, ...args) {
+      close();
+      return original.apply(this, args);
+    })
+  );
+
+  revertPatches.add(
+    patch(cache, "modify", function (originalModify, ...args) {
+      const [options] = args;
+      const { result, ...rest } = run(() => originalModify.apply(this, args));
+
+      const fields =
+        typeof options.fields === "function"
+          ? options.fields.toString()
+          : Object.fromEntries(
+              Object.entries(options.fields).map(([key, modifier]) => {
+                return [key, modifier?.toString()];
+              })
+            );
+
+      push({ type: "modify", options: { ...options, fields }, ...rest });
+
+      return result;
+    })
+  );
+
+  revertPatches.add(
+    patch(cache, "write", function (originalWrite, ...args) {
+      if (slot.getValue()) {
+        return originalWrite.apply(this, args);
+      }
+
+      const { result, ...rest } = run(() => originalWrite.apply(this, args));
+
+      push({ type: "write", options: args[0], ...rest });
+
+      return result;
+    })
+  );
+
+  revertPatches.add(
+    patch(cache, "writeQuery", function (originalWriteQuery, ...args) {
+      const { result, ...rest } = run(() =>
+        originalWriteQuery.apply(this, args)
+      );
+
+      push({ type: "writeQuery", options: args[0], ...rest });
+
+      return result;
+    })
+  );
+
+  revertPatches.add(
+    patch(cache, "writeFragment", function (originalWriteFragment, ...args) {
+      const { result, ...rest } = run(() =>
+        originalWriteFragment.apply(this, args)
+      );
+
+      push({ type: "writeFragment", options: args[0], ...rest });
+
+      return result;
+    })
+  );
+
+  return () => {
+    revertPatches.forEach((revert) => revert());
+  };
+});
+
 function getClientById(clientId: IDv3): ApolloClient3<any>;
 function getClientById(clientId: IDv4): ApolloClient4;
+function getClientById(
+  clientId: IDv3 | IDv4
+): ApolloClient3<any> | ApolloClient4;
 
 function getClientById(clientId: IDv3 | IDv4): ApolloClient | undefined {
   return getHandlerByClientId(clientId as any)?.getClient();

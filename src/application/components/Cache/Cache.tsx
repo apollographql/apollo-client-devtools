@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
-import { useState, useMemo, useSyncExternalStore } from "react";
+import type { FC } from "react";
+import { useState, useMemo, useSyncExternalStore, memo } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { gql, NetworkStatus } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
@@ -10,7 +10,6 @@ import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { SearchField } from "../SearchField";
 import type { GetCache, GetCacheVariables } from "../../types/gql";
 import type { JSONObject } from "../../types/json";
-import { JSONTreeViewer } from "../JSONTreeViewer";
 import clsx from "clsx";
 import { CopyButton } from "../CopyButton";
 import { EmptyMessage } from "../EmptyMessage";
@@ -27,6 +26,10 @@ import { useActorEvent } from "../../hooks/useActorEvent";
 import { PageSpinner } from "../PageSpinner";
 import { isIgnoredError } from "../../utilities/ignoredErrors";
 import { useIsExtensionInvalidated } from "@/application/machines/devtoolsMachine";
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import { CacheWritesPanel } from "./common/CacheWritesPanel";
+import type { Path } from "../ObjectViewer";
+import { ObjectViewer } from "../ObjectViewer";
 
 const { Sidebar, Main } = SidebarLayout;
 
@@ -35,6 +38,9 @@ const GET_CACHE: TypedDocumentNode<GetCache, GetCacheVariables> = gql`
     client(id: $id) {
       id
       cache
+      cacheWrites @nonreactive {
+        ...CacheWritesPanelFragment
+      }
     }
   }
 `;
@@ -60,9 +66,15 @@ const STABLE_EMPTY_OBJ: JSONObject = {};
 
 interface CacheProps {
   clientId: string | undefined;
+  isRecordingCacheWrites: boolean;
+  onToggleRecordCacheWrites: () => void;
 }
 
-export function Cache({ clientId }: CacheProps) {
+export function Cache({
+  clientId,
+  isRecordingCacheWrites,
+  onToggleRecordCacheWrites,
+}: CacheProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const cacheId = useSyncExternalStore(history.listen, history.getCurrent);
   const isExtensionInvalidated = useIsExtensionInvalidated();
@@ -91,9 +103,11 @@ export function Cache({ clientId }: CacheProps) {
     [cache, searchTerm]
   );
 
+  const client = data?.client;
   const dataExists = Object.keys(cache).length > 0;
   const cacheItem = cache[cacheId];
   const cacheIds = getRootCacheIds(filteredCache);
+  const cacheWrites = client?.cacheWrites ?? [];
 
   return (
     <SidebarLayout>
@@ -123,82 +137,116 @@ export function Cache({ clientId }: CacheProps) {
           })}
         </List>
       </Sidebar>
-      <Main className="!overflow-auto flex flex-col">
-        {dataExists ? (
-          <>
-            <div className="flex items-start justify-between">
-              <ButtonGroup>
-                <Tooltip content="Go back" delayDuration={500}>
-                  <Button
-                    aria-label="Go back"
-                    icon={<IconArrowLeft />}
-                    size="xs"
-                    variant="secondary"
-                    disabled={!history.canGoBack()}
-                    onClick={() => history.back()}
+      <Main className="!p-0">
+        <PanelGroup direction="horizontal" autoSaveId="cacheLayout">
+          <Panel
+            id="cacheData"
+            minSize={25}
+            className="!overflow-auto flex flex-col p-4"
+            data-testid="main-content"
+          >
+            {dataExists ? (
+              <>
+                <div className="flex items-start justify-between">
+                  <ButtonGroup>
+                    <Tooltip content="Go back" delayDuration={500}>
+                      <Button
+                        aria-label="Go back"
+                        icon={<IconArrowLeft />}
+                        size="xs"
+                        variant="secondary"
+                        disabled={!history.canGoBack()}
+                        onClick={() => history.back()}
+                      />
+                    </Tooltip>
+                    <Tooltip content="Go forward" delayDuration={500}>
+                      <Button
+                        aria-label="Go forward"
+                        icon={<IconArrowRight />}
+                        size="xs"
+                        variant="secondary"
+                        disabled={!history.canGoForward()}
+                        onClick={() => history.forward()}
+                      />
+                    </Tooltip>
+                  </ButtonGroup>
+                  <CopyButton
+                    size="sm"
+                    text={JSON.stringify(cacheItem)}
+                    className={clsx({ invisible: !cacheItem })}
                   />
-                </Tooltip>
-                <Tooltip content="Go forward" delayDuration={500}>
-                  <Button
-                    aria-label="Go forward"
-                    icon={<IconArrowRight />}
-                    size="xs"
-                    variant="secondary"
-                    disabled={!history.canGoForward()}
-                    onClick={() => history.forward()}
-                  />
-                </Tooltip>
-              </ButtonGroup>
-              <CopyButton
-                size="sm"
-                text={JSON.stringify(cacheItem)}
-                className={clsx({ invisible: !cacheItem })}
-              />
-            </div>
-            <div className="my-2">
-              <div className="text-xs font-bold uppercase">Cache ID</div>
-              <h1
-                className="font-code font-medium text-xl text-heading dark:text-heading-dark break-all"
-                data-testid="cache-id"
-              >
-                {cacheId}
-              </h1>
-            </div>
-          </>
-        ) : null}
+                </div>
+                <div className="my-2">
+                  <div className="text-xs font-bold uppercase">Cache ID</div>
+                  <h1
+                    className="font-code font-medium text-xl text-heading dark:text-heading-dark break-all"
+                    data-testid="cache-id"
+                  >
+                    {cacheId}
+                  </h1>
+                </div>
+              </>
+            ) : null}
 
-        {networkStatus === NetworkStatus.loading ? (
-          <PageSpinner />
-        ) : cacheItem ? (
-          <JSONTreeViewer
-            data={cacheItem}
-            hideRoot={true}
-            valueRenderer={(valueAsString, value, key) => {
-              return (
-                <span
-                  className={clsx({
-                    ["hover:underline hover:cursor-pointer"]: key === "__ref",
-                  })}
-                  onClick={() => {
-                    if (key === "__ref") {
-                      history.push(value as string);
-                    }
-                  }}
-                >
-                  {valueAsString as ReactNode}
-                </span>
-              );
-            }}
+            {networkStatus === NetworkStatus.loading ? (
+              <PageSpinner />
+            ) : cacheItem ? (
+              <CacheItem value={cacheItem} />
+            ) : dataExists ? (
+              <Alert variant="error" className="mt-4">
+                This cache entry was either removed from the cache or does not
+                exist.
+              </Alert>
+            ) : (
+              <EmptyMessage className="m-auto mt-20" />
+            )}
+          </Panel>
+          <PanelResizeHandle
+            className="border-r border-primary dark:border-primary-dark"
+            // Fix issue in tests which prevent the search input onChange
+            // handler from firing
+            disabled={process.env.NODE_ENV === "test"}
           />
-        ) : dataExists ? (
-          <Alert variant="error" className="mt-4">
-            This cache entry was either removed from the cache or does not
-            exist.
-          </Alert>
-        ) : (
-          <EmptyMessage className="m-auto mt-20" />
-        )}
+          <CacheWritesPanel
+            client={data?.client}
+            cacheWrites={cacheWrites}
+            isRecording={isRecordingCacheWrites}
+            onToggleRecord={onToggleRecordCacheWrites}
+          />
+        </PanelGroup>
       </Main>
     </SidebarLayout>
+  );
+}
+
+const CacheItem = memo(({ value }: { value: unknown }) => {
+  return <ObjectViewer value={value} builtinRenderers={{ string: RefLink }} />;
+});
+
+function RefLink({
+  path,
+  value,
+  DefaultRender,
+}: {
+  value: string;
+  path: Path;
+  DefaultRender: FC<{
+    className?: string;
+    onClick?: () => void;
+  }>;
+}) {
+  const key = path.at(-1);
+
+  return (
+    <DefaultRender
+      className={clsx({
+        ["hover:underline hover:cursor-pointer"]: key === "__ref",
+      })}
+      onClick={() => {
+        if (key === "__ref") {
+          history.push(value);
+        }
+      }}
+    />
   );
 }

@@ -1,19 +1,44 @@
 import type { ApolloClientInfo, DistributiveOmit } from "../../types";
+import { createId } from "../../utils/createId";
 import { RPC_MESSAGE_TIMEOUT } from "../errorMessages";
 import { serializeError } from "../errorSerialization";
 import type { MessageAdapter } from "../messageAdapters";
 import { createMessageBridge } from "../messageAdapters";
 import type { PostMessageError } from "../messages";
 import { MessageType } from "../messages";
-import type { RPCRequestMessage, RPCResponseMessage } from "../rpc";
-import { createRpcClient, createRpcHandler } from "../rpc";
+import type {
+  RPCRequestMessage,
+  RPCResponseMessage,
+  RPCStreamStartMessage,
+} from "../rpc";
+import {
+  createRpcClient,
+  createRpcHandler,
+  createRpcStreamHandler,
+} from "../rpc";
 
 type RPCMessage = RPCRequestMessage | RPCResponseMessage;
+
+type TestStreamValue = { id: string; value: any };
+
+declare module "../rpc" {
+  export interface RPCStream {
+    testStream(id: string): TestStreamValue;
+  }
+}
+
+function wait(ms: number) {
+  return new Promise<void>((resolve) => setTimeout(resolve, ms));
+}
 
 interface TestAdapter extends MessageAdapter {
   mocks: { listeners: Set<(message: unknown) => void>; messages: unknown[] };
   simulateMessage: (message: unknown) => void;
   simulateRPCMessage: (message: DistributiveOmit<RPCMessage, "source">) => void;
+  simulateRPCStreamChunk: <TValue = unknown>(
+    streamId: string,
+    value: TValue
+  ) => void;
   postMessage: jest.Mock<void, [message: unknown]>;
   connect: (adapter: TestAdapter) => void;
 }
@@ -33,6 +58,17 @@ function createTestAdapter(): TestAdapter {
         fn({
           ...message,
           source: "apollo-client-devtools",
+        })
+      );
+    },
+    simulateRPCStreamChunk: (streamId, value) => {
+      listeners.forEach((fn) =>
+        fn({
+          source: "apollo-client-devtools",
+          type: MessageType.RPCStreamChunk,
+          id: createId(),
+          streamId,
+          value,
         })
       );
     },
@@ -471,6 +507,55 @@ test("resets timeout to default timeout after sending request", async () => {
   jest.useRealTimers();
 });
 
+test("rejects with abort error when provided signal aborts", async () => {
+  const adapter = createTestAdapter();
+  const client = createRpcClient(adapter);
+  const controller = new AbortController();
+
+  const promise = client
+    .withSignal(controller.signal)
+    .request("getClient", "1");
+
+  await wait(10);
+  controller.abort();
+
+  await expect(promise).rejects.toEqual(
+    new DOMException("The operation was aborted.", "AbortError")
+  );
+});
+
+test("rejects when provided signal is already aborted", async () => {
+  const adapter = createTestAdapter();
+  const client = createRpcClient(adapter);
+  const controller = new AbortController();
+  controller.abort();
+
+  const promise = client
+    .withSignal(controller.signal)
+    .request("getClient", "1");
+
+  await expect(promise).rejects.toEqual(
+    new DOMException("The operation was aborted.", "AbortError")
+  );
+});
+
+test("forwards abort reason if provided", async () => {
+  const adapter = createTestAdapter();
+  const client = createRpcClient(adapter);
+  const controller = new AbortController();
+
+  const promise = client
+    .withSignal(controller.signal)
+    .request("getClient", "1");
+
+  await wait(10);
+  controller.abort("Manually aborted");
+
+  await expect(promise).rejects.toEqual(
+    new DOMException("Manually aborted", "AbortError")
+  );
+});
+
 test("forwards rpc messages from one adapter to another with bridge", () => {
   const adapter1 = createTestAdapter();
   const adapter2 = createTestAdapter();
@@ -596,4 +681,245 @@ test("ignores post message errors for a different rpc request", async () => {
   });
 
   await expect(promise).resolves.toEqual(defaultGetClient("1"));
+});
+
+test("can stream messages from adapter", async () => {
+  const adapter = createTestAdapter();
+  const client = createRpcClient(adapter);
+
+  const stream = client.stream("testStream", "1");
+  const reader = stream.getReader();
+  const { id } = adapter.mocks.messages[0] as RPCStreamStartMessage;
+
+  adapter.simulateRPCStreamChunk<TestStreamValue>(id, {
+    id: "1",
+    value: true,
+  });
+  adapter.simulateRPCStreamChunk<TestStreamValue>(id, {
+    id: "1",
+    value: false,
+  });
+
+  await expect(reader.read()).resolves.toEqual({
+    value: {
+      id: "1",
+      value: true,
+    },
+    done: false,
+  });
+  await expect(reader.read()).resolves.toEqual({
+    value: {
+      id: "1",
+      value: false,
+    },
+    done: false,
+  });
+});
+
+test("closes stream when abort controller aborts", async () => {
+  const adapter = createTestAdapter();
+  const client = createRpcClient(adapter);
+  const controller = new AbortController();
+
+  const stream = client.withSignal(controller.signal).stream("testStream", "1");
+  const reader = stream.getReader();
+  const { id } = adapter.mocks.messages[0] as RPCStreamStartMessage;
+
+  adapter.simulateRPCStreamChunk<TestStreamValue>(id, {
+    id: "1",
+    value: true,
+  });
+
+  await expect(reader.read()).resolves.toEqual({
+    value: {
+      id: "1",
+      value: true,
+    },
+    done: false,
+  });
+
+  controller.abort();
+
+  await expect(reader.read()).resolves.toEqual({
+    value: undefined,
+    done: true,
+  });
+});
+
+test("does not mistakenly handle messages from different rpc streams", async () => {
+  const adapter = createTestAdapter();
+  const client = createRpcClient(adapter);
+
+  const stream = client.stream("testStream", "1");
+  const reader = stream.getReader();
+
+  adapter.simulateRPCStreamChunk<TestStreamValue>("xyz", {
+    id: "xyz",
+    value: true,
+  });
+
+  const promise = Promise.race([
+    reader.read(),
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Timeout")), 10)
+    ),
+  ]);
+
+  await expect(promise).rejects.toThrow(new Error("Timeout"));
+});
+
+test("can handle rpc streams and send messages back", async () => {
+  const handlerAdapter = createTestAdapter();
+  const clientAdapter = createTestAdapter();
+  createBridge(clientAdapter, handlerAdapter);
+
+  const client = createRpcClient(clientAdapter);
+  const handleRpcStream = createRpcStreamHandler(handlerAdapter);
+
+  handleRpcStream("testStream", ({ push }, id) => {
+    push({ id, value: true });
+    push({ id, value: false });
+  });
+
+  const stream = client.stream("testStream", "1");
+  const reader = stream.getReader();
+
+  await expect(reader.read()).resolves.toEqual({
+    value: { id: "1", value: true },
+    done: false,
+  });
+  await expect(reader.read()).resolves.toEqual({
+    value: { id: "1", value: false },
+    done: false,
+  });
+});
+
+test("can create multiple streams with same handler", async () => {
+  const handlerAdapter = createTestAdapter();
+  const clientAdapter = createTestAdapter();
+  createBridge(clientAdapter, handlerAdapter);
+
+  const client = createRpcClient(clientAdapter);
+  const handleRpcStream = createRpcStreamHandler(handlerAdapter);
+
+  handleRpcStream("testStream", ({ push }, id) => {
+    push({ id, value: id === "1" });
+  });
+
+  const stream1 = client.stream("testStream", "1");
+  const stream2 = client.stream("testStream", "2");
+  const reader1 = stream1.getReader();
+  const reader2 = stream2.getReader();
+
+  await expect(reader1.read()).resolves.toEqual({
+    value: { id: "1", value: true },
+    done: false,
+  });
+
+  await expect(reader2.read()).resolves.toEqual({
+    value: { id: "2", value: false },
+    done: false,
+  });
+});
+
+test("cleanup function is called when the stream terminates", async () => {
+  const handlerAdapter = createTestAdapter();
+  const clientAdapter = createTestAdapter();
+  const controller = new AbortController();
+  createBridge(clientAdapter, handlerAdapter);
+
+  const client = createRpcClient(clientAdapter).withSignal(controller.signal);
+  const handleRpcStream = createRpcStreamHandler(handlerAdapter);
+
+  const cleanup = jest.fn();
+  handleRpcStream("testStream", () => cleanup);
+
+  client.stream("testStream", "1");
+  controller.abort();
+
+  expect(cleanup).toHaveBeenCalledTimes(1);
+});
+
+test("calls cleanup function when unsubscribing stream handler", async () => {
+  const handlerAdapter = createTestAdapter();
+  const clientAdapter = createTestAdapter();
+  createBridge(clientAdapter, handlerAdapter);
+
+  const client = createRpcClient(clientAdapter);
+  const handleRpcStream = createRpcStreamHandler(handlerAdapter);
+
+  const cleanup = jest.fn();
+  const unsubscribe = handleRpcStream("testStream", () => cleanup);
+  client.stream("testStream", "1");
+
+  unsubscribe();
+  expect(cleanup).toHaveBeenCalledTimes(1);
+});
+
+test("runs cleanup only on terminated handler", async () => {
+  const handlerAdapter = createTestAdapter();
+  const clientAdapter = createTestAdapter();
+  const controller = new AbortController();
+  createBridge(clientAdapter, handlerAdapter);
+
+  const client = createRpcClient(clientAdapter);
+  const handleRpcStream = createRpcStreamHandler(handlerAdapter);
+
+  const cleanup = jest.fn();
+  handleRpcStream("testStream", ({ push }, id) => {
+    wait(50).then(() => {
+      push({ id, value: true });
+    });
+
+    return () => cleanup(id);
+  });
+
+  const stream = client.stream("testStream", "1");
+  const reader = stream.getReader();
+  client.withSignal(controller.signal).stream("testStream", "2");
+
+  controller.abort();
+
+  expect(cleanup).toHaveBeenCalledTimes(1);
+  expect(cleanup).toHaveBeenCalledWith("2");
+
+  await expect(reader.read()).resolves.toEqual({
+    value: { id: "1", value: true },
+    done: false,
+  });
+});
+
+test("runs cleanup and closes stream when calling close", async () => {
+  const handlerAdapter = createTestAdapter();
+  const clientAdapter = createTestAdapter();
+  createBridge(clientAdapter, handlerAdapter);
+
+  const client = createRpcClient(clientAdapter);
+  const handleRpcStream = createRpcStreamHandler(handlerAdapter);
+
+  const cleanup = jest.fn();
+  handleRpcStream("testStream", ({ push, close }, id) => {
+    push({ id, value: true });
+    requestAnimationFrame(close);
+
+    return () => cleanup(id);
+  });
+
+  const stream = client.stream("testStream", "1");
+  const reader = stream.getReader();
+
+  await expect(reader.read()).resolves.toEqual({
+    value: { id: "1", value: true },
+    done: false,
+  });
+
+  await wait(20);
+
+  expect(cleanup).toHaveBeenCalledTimes(1);
+  expect(cleanup).toHaveBeenCalledWith("1");
+
+  await expect(reader.read()).resolves.toEqual({
+    value: undefined,
+    done: true,
+  });
 });

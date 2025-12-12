@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import type { Reference } from "@apollo/client";
 import { loadDevMessages, loadErrorMessages } from "@apollo/client/dev";
@@ -29,6 +29,9 @@ import type {
 import fragmentTypes from "./possibleTypes.json";
 import { tap } from "rxjs";
 import { hasExtensionInvalidatedError } from "./utilities/errors";
+import { LocalSubscriptionLink } from "./apollo/LocalSubscriptionLink";
+import { OperationTypeNode } from "graphql";
+import { getItemSync } from "./utilities/storage";
 
 loadDevMessages();
 loadErrorMessages();
@@ -48,7 +51,11 @@ const extensionInvalidatedLink = new ApolloLink((operation, forward) => {
   );
 });
 
-const link = ApolloLink.from([extensionInvalidatedLink, schemaLink]);
+const link = ApolloLink.split(
+  (operation) => operation.operationType === OperationTypeNode.SUBSCRIPTION,
+  new LocalSubscriptionLink({ schema }),
+  ApolloLink.from([extensionInvalidatedLink, schemaLink])
+);
 
 const cache = new InMemoryCache({
   fragments: fragmentRegistry,
@@ -75,6 +82,14 @@ const cache = new InMemoryCache({
         },
         memoryInternals: {
           merge: false,
+        },
+        cacheWrites: {
+          read: (existing) => existing ?? [],
+          merge: (existing = [], incoming: unknown[]) => {
+            const limit = getItemSync("cacheWriteLimit");
+
+            return existing.concat(incoming).slice(-limit);
+          },
         },
       },
     },
@@ -122,7 +137,9 @@ export const AppProvider = ({ actor }: { actor: DevToolsActor }) => {
     <Tooltip.Provider delayDuration={0}>
       <ApolloProvider client={client}>
         <DevToolsMachineContext.Provider value={actor}>
-          <App />
+          <Suspense>
+            <App />
+          </Suspense>
         </DevToolsMachineContext.Provider>
       </ApolloProvider>
     </Tooltip.Provider>

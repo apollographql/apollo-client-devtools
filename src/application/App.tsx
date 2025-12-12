@@ -46,6 +46,8 @@ import { PageError } from "./components/PageError";
 import { SidebarLayout } from "./components/Layouts/SidebarLayout";
 import { ExternalLink } from "./components/ExternalLink";
 import { MemoryInternals } from "./components/MemoryInternals";
+import { CacheWritesSubscription } from "./components/CacheWritesSubscription";
+import { useLocalStorage } from "./hooks/useLocalStorage";
 
 const APP_QUERY: TypedDocumentNode<AppQuery, AppQueryVariables> = gql`
   query AppQuery {
@@ -82,6 +84,7 @@ const stableEmptyClients: Required<AppQuery["clients"]> = [];
 
 export const App = () => {
   const isExtensionInvalidated = useIsExtensionInvalidated();
+  const [autoRecordCacheWrites] = useLocalStorage("autoRecordCacheWrites");
   const { send } = useDevToolsActorRef();
   const { data, refetch } = useQuery(APP_QUERY);
 
@@ -101,6 +104,9 @@ export const App = () => {
     send({ type: "client.setCount", count: 0 });
   });
 
+  const [isRecordingCacheWrites, setIsRecordingCacheWrites] = useState(
+    autoRecordCacheWrites
+  );
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [selectedClientId, setSelectedClientId] = useState<string | undefined>(
     data?.clients[0]?.id
@@ -144,6 +150,9 @@ export const App = () => {
       <SettingsModal open={settingsOpen} onOpen={setSettingsOpen} />
       <ErrorModals />
       <BannerAlert />
+      {client && isRecordingCacheWrites && (
+        <CacheWritesSubscription client={client} />
+      )}
       <Tabs
         value={selected}
         onChange={(screen) => currentScreen(screen)}
@@ -273,7 +282,13 @@ export const App = () => {
         </Tabs.Content>
         <Tabs.Content className="flex-1 overflow-hidden" value={Screens.Cache}>
           <TabErrorBoundary remarks="Error on Cache tab:">
-            <Cache clientId={selectedClientId} />
+            <Cache
+              clientId={selectedClientId}
+              isRecordingCacheWrites={isRecordingCacheWrites}
+              onToggleRecordCacheWrites={() =>
+                setIsRecordingCacheWrites((value) => !value)
+              }
+            />
           </TabErrorBoundary>
         </Tabs.Content>
         <Tabs.Content

@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 import type { SerializedErrorAlertDisclosureItem_error } from "../types/gql";
 import { ErrorAlertDisclosureItem } from "./ErrorAlertDisclosureItem";
-import { JSONTreeViewer } from "./JSONTreeViewer";
+import { alertErrorTheme, ObjectViewer } from "./ObjectViewer";
 
 interface SerializedErrorAlertDisclosureItemProps {
   error: SerializedErrorAlertDisclosureItem_error;
@@ -19,12 +19,12 @@ export function SerializedErrorAlertDisclosureItem({
       </div>
       {error.stack && (
         <div className="mt-3">
-          <JSONTreeViewer
-            className="text-xs"
-            data={error.stack.split("\n").slice(1)}
-            keyPath={["Stack trace"]}
-            theme="alertError"
-            shouldExpandNodeInitially={() => false}
+          <ObjectViewer
+            className="mt-4"
+            value={error.stack.split("\n").slice(1)}
+            displayObjectSize={false}
+            size="sm"
+            theme={alertErrorTheme}
           />
         </div>
       )}

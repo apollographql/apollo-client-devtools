@@ -25,11 +25,18 @@ const config: CodegenConfig = {
         useTypeImports: true,
         scalars: {
           Cache: "./scalars#Cache",
+          DateTime: "./scalars#DateTime",
+          Diff: "@/application/utilities/diff#Diff",
+          DocumentNode: "@apollo/client#DocumentNode",
           QueryData: "./scalars#QueryData",
           Variables: "./scalars#Variables",
           QueryOptions: "./scalars#QueryOptions",
           JSON: "./scalars#JSON",
           GraphQLErrorPath: "./scalars#GraphQLErrorPath",
+          DirectCacheWriteOptions: "./scalars#DirectCacheWriteOptions",
+          WriteQueryOptions: "./scalars#WriteQueryOptions",
+          WriteFragmentOptions: "./scalars#WriteFragmentOptions",
+          CacheModifyOptions: "./scalars#CacheModifyOptions",
         },
         skipTypeNameForRoot: true,
       },
@@ -44,15 +51,24 @@ const config: CodegenConfig = {
         rootValueType: "never",
         useTypeImports: true,
         scalars: {
+          DateTime: "./scalars#DateTime",
+          Diff: "@/application/utilities/diff#Diff",
+          DocumentNode: "@apollo/client#DocumentNode",
           QueryData: "./scalars#QueryData",
           Variables: "./scalars#Variables",
           QueryOptions: "./scalars#QueryOptions",
+          DirectCacheWriteOptions: "./scalars#DirectCacheWriteOptions",
+          WriteQueryOptions: "./scalars#WriteQueryOptions",
+          WriteFragmentOptions: "./scalars#WriteFragmentOptions",
+          CacheModifyOptions: "./scalars#CacheModifyOptions",
         },
         avoidOptionals: {
           field: true,
         },
         onlyResolveTypeForInterfaces: true,
         mappers: {
+          CacheWrite:
+            "@/extension/tab/shared/types.ts#CacheWrite as RemoteCacheWrite",
           Client: "@/types.ts#ApolloClientInfo",
           ClientV3: "@/types.ts#ApolloClientInfo",
           ClientV4: "@/types.ts#ApolloClientInfo",
@@ -60,6 +76,15 @@ const config: CodegenConfig = {
           ClientV4Queries: "@/types.ts#ApolloClientInfo",
           ClientV3Mutations: "@/types.ts#ApolloClientInfo",
           ClientV4Mutations: "@/types.ts#ApolloClientInfo",
+          DirectCacheWrite:
+            "@/extension/tab/shared/types.ts#CacheWrite as RemoteCacheWrite",
+          WriteQueryCacheWrite:
+            "@/extension/tab/shared/types.ts#CacheWrite as RemoteCacheWrite",
+          WriteFragmentCacheWrite:
+            "@/extension/tab/shared/types.ts#CacheWrite as RemoteCacheWrite",
+          CacheModifyWrite:
+            "@/extension/tab/shared/types.ts#CacheWrite as RemoteCacheWrite",
+          GraphQLDocument: "@apollo/client#DocumentNode",
           SerializedApolloError:
             "@/extension/tab/v3/types#SerializedApolloError as RpcSerializedApolloError",
           SerializedError: "@/types#SerializedError as RpcSerializedError",

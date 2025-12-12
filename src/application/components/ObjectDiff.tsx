@@ -1,0 +1,213 @@
+import type { ComponentPropsWithoutRef } from "react";
+import { useCallback, type CSSProperties, type FC } from "react";
+import { Added, Changed, Deleted, type Diff } from "../utilities/diff";
+import type { BuiltinRendererProps, ColorValue } from "./ObjectViewer";
+import { ObjectViewer, useGetObjectViewerThemeOverride } from "./ObjectViewer";
+import { colors } from "@apollo/brand";
+import { clsx } from "clsx";
+
+interface Props {
+  diff: Diff;
+}
+
+export function ObjectDiff({ diff }: Props) {
+  return (
+    <ObjectViewer
+      value={diff}
+      getTypeOf={(value) => {
+        if (value instanceof Changed) {
+          return "Changed";
+        }
+      }}
+      customRenderers={{
+        Changed: ChangedValue,
+      }}
+      builtinRenderers={{
+        arrayItem: DiffValue,
+        arrayIndex: StrikethroughWhenDeleted,
+        collapsedArray: StrikethroughWhenDeleted,
+        collapsedObject: StrikethroughWhenDeleted,
+        objectPair: DiffValue,
+        string: StrikethroughWhenDeleted,
+        boolean: StrikethroughWhenDeleted,
+        number: StrikethroughWhenDeleted,
+        null: StrikethroughWhenDeleted,
+        undefined: StrikethroughWhenDeleted,
+        objectKey: ObjectKey,
+        sparseArrayEmptyItem: SparseArrayItem,
+      }}
+    />
+  );
+}
+
+const { border, text } = colors.tokens;
+
+function useDiffThemeOverrides() {
+  const getTheme = useGetObjectViewerThemeOverride();
+
+  return useCallback(
+    ({
+      indentGuide,
+      textColor,
+      punctuation,
+    }: {
+      textColor: ColorValue;
+      indentGuide?: ColorValue;
+      punctuation?: ColorValue;
+    }) => {
+      return getTheme({
+        arrow: punctuation,
+        indentGuide,
+        typeNumber: textColor,
+        typeBoolean: textColor,
+        typeString: textColor,
+        objectKey: textColor,
+        punctuation,
+        ellipsis: punctuation,
+      });
+    },
+    [getTheme]
+  );
+}
+
+function ObjectKey({
+  DefaultRender,
+  ...props
+}: BuiltinRendererProps<"objectKey">) {
+  const StrikethroughDefaultRender = useCallback(
+    (
+      props: ComponentPropsWithoutRef<
+        BuiltinRendererProps<"objectKey">["DefaultRender"]
+      >
+    ) => <DefaultRender {...props} softWrapCharacters={["{", ":", ","]} />,
+    [DefaultRender]
+  );
+
+  return (
+    <StrikethroughWhenDeleted
+      {...props}
+      DefaultRender={StrikethroughDefaultRender}
+    />
+  );
+}
+
+function DiffValue({
+  value,
+  DefaultRender,
+}: {
+  value: unknown;
+  DefaultRender: FC<{
+    collapsible?: boolean;
+    value?: unknown;
+    className?: string;
+    style?: CSSProperties;
+    context?: Record<string, any>;
+  }>;
+}) {
+  const getOverrides = useDiffThemeOverrides();
+
+  if (value instanceof Added) {
+    return (
+      <DefaultRender
+        className="bg-successSelected dark:bg-successSelected-dark"
+        value={value.value}
+        style={getOverrides({
+          indentGuide: {
+            base: border.success.base,
+            dark: colors.primitives.green[200],
+          },
+          textColor: text.success,
+          punctuation: text.neutral,
+        })}
+      />
+    );
+  }
+
+  if (value instanceof Deleted) {
+    return (
+      <DefaultRender
+        className="bg-errorSelected dark:bg-errorSelected-dark"
+        value={value.value}
+        style={getOverrides({
+          indentGuide: border.error,
+          textColor: text.error,
+          punctuation: text.neutral,
+        })}
+        context={{ mode: "deleted" }}
+      />
+    );
+  }
+
+  if (value instanceof Changed) {
+    return <DefaultRender collapsible={false} />;
+  }
+
+  return <DefaultRender />;
+}
+
+interface StrikethroughWhenDeletedProps {
+  className?: string;
+  context?: Record<string, any>;
+  DefaultRender: FC<{ className?: string }>;
+}
+
+function StrikethroughWhenDeleted({
+  className,
+  context,
+  DefaultRender,
+}: StrikethroughWhenDeletedProps) {
+  return (
+    <DefaultRender
+      className={clsx(
+        { "line-through": context?.mode === "deleted" },
+        className
+      )}
+    />
+  );
+}
+
+function ChangedValue({
+  value: changed,
+  DefaultRender,
+}: {
+  value: Changed;
+  DefaultRender: FC<{
+    value?: unknown;
+    className?: string;
+    style?: CSSProperties;
+    context?: Record<string, any>;
+  }>;
+}) {
+  const getOverrides = useDiffThemeOverrides();
+
+  return (
+    <>
+      <DefaultRender
+        className="bg-errorSelected dark:bg-errorSelected-dark"
+        value={changed.oldValue}
+        context={{ mode: "deleted" }}
+        style={getOverrides({
+          textColor: text.error,
+          punctuation: text.neutral,
+        })}
+      />
+      <span className="text-[var(--ov-punctuation-color)]">{" => "}</span>
+      <DefaultRender
+        className="bg-successSelected dark:bg-successSelected-dark"
+        value={changed.newValue}
+        style={getOverrides({
+          textColor: text.success,
+          punctuation: text.neutral,
+        })}
+      />
+    </>
+  );
+}
+
+function SparseArrayItem({
+  DefaultRender,
+}: {
+  DefaultRender: FC<{ label: string }>;
+}) {
+  return <DefaultRender label="unchanged" />;
+}
