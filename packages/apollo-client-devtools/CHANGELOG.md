@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.23.0
+
+### Minor Changes
+
+- [#1739](https://github.com/apollographql/apollo-client-devtools/pull/1739) [`ae9c13c`](https://github.com/apollographql/apollo-client-devtools/commit/ae9c13c71a6a0dcc34636fe3887e4c5a80cfd5f9) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Add a new cache writes panel that tracks writes to the cache. The cache writes panel allows you to inspect the provided options and the a diff of how the cache write operation changed the cache.
+
 ## 4.22.4
 
 ### Patch Changes
