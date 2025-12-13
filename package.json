@@ -67,7 +67,7 @@
     "remark-github": "^12.0.0",
     "rxjs": "^7.8.2",
     "semver": "^7.7.3",
-    "tailwind-merge": "^2.6.0",
+    "tailwind-merge": "^3.0.0",
     "xstate": "^5.24.0",
     "zen-observable": "^0.10.0"
   },
