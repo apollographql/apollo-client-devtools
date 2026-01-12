@@ -26,5 +26,10 @@
       "world": "MAIN"
     }
   ],
-  "manifest_version": 3
+  "manifest_version": 3,
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "apolloclientdevtoolsextension@apollographql.com"
+    }
+  }
 }
