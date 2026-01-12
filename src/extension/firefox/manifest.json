@@ -8,13 +8,23 @@
     "128": "images/logo128.png",
     "400": "images/logo400.png"
   },
-  "page_action": {},
   "devtools_page": "devtools.html",
-  "background": { "scripts": ["background.js"], "persistent": true },
+  "background": { "scripts": ["background.js"] },
   "permissions": ["storage"],
-  "web_accessible_resources": ["panel.html", "devtools.html", "hook.js"],
-  "content_scripts": [
-    { "matches": ["<all_urls>"], "js": ["tab.js"], "run_at": "document_start" }
+  "web_accessible_resources": [
+    {
+      "resources": ["panel.html", "devtools.html", "hook.js"],
+      "matches": ["*://*/*"]
+    }
   ],
-  "manifest_version": 2
+  "content_scripts": [
+    { "matches": ["<all_urls>"], "js": ["tab.js"], "run_at": "document_start" },
+    {
+      "matches": ["<all_urls>"],
+      "js": ["hook.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    }
+  ],
+  "manifest_version": 3
 }
