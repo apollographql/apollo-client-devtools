@@ -29,7 +29,7 @@
   "manifest_version": 3,
   "browser_specific_settings": {
     "gecko": {
-      "id": "apolloclientdevtoolsextension@apollographql.com",
+      "id": "{a5260852-8d08-4979-8116-38f1129dfd22}",
       "data_collection_permissions": {
         "required": ["none"]
       }
