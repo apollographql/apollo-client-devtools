@@ -1,5 +1,15 @@
 # Changelog
 
+## 4.24.0
+
+### Minor Changes
+
+- [#1781](https://github.com/apollographql/apollo-client-devtools/pull/1781) [`9397223`](https://github.com/apollographql/apollo-client-devtools/commit/9397223b72b4aa439083ad2a42c04d8165e89e44) Thanks [@d--j](https://github.com/d--j)! - Upgrade Firefox manifest to V3, fix CSP errors
+
+### Patch Changes
+
+- [#1784](https://github.com/apollographql/apollo-client-devtools/pull/1784) [`091f212`](https://github.com/apollographql/apollo-client-devtools/commit/091f212b08364503b105c627d3d478b991e5a815) Thanks [@github-actions](https://github.com/apps/github-actions)! - add error codes for new Apollo Client version
+
 ## 4.23.2
 
 ### Patch Changes
