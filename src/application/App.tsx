@@ -74,7 +74,6 @@ const CLIENT_QUERY: TypedDocumentNode<ClientQuery, ClientQueryVariables> = gql`
 `;
 
 const ISSUE_BODY = `
-${SECTIONS.defaultDescription}
 ${SECTIONS.reproduction}
 ${SECTIONS.apolloClientVersion}
 ${SECTIONS.devtoolsVersion}
