@@ -30,7 +30,6 @@ export function UnknownErrorModal({ open }: ErrorModalProps) {
             className="no-underline"
             labels={[LABELS.bug]}
             body={`
-${SECTIONS.defaultDescription}
 ${SECTIONS.apolloClientVersion}
 ${SECTIONS.devtoolsVersion}
 `}
