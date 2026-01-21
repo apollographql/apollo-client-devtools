@@ -270,7 +270,6 @@ globalThis.WebSocket = WebSocket;
                 repository="vscode-graphql"
                 labels={[LABELS.bug, LABELS.clientDiscovery]}
                 body={`
-${SECTIONS.defaultDescription}
 ${SECTIONS.apolloClientVersion}
 ${SECTIONS.devtoolsVersion}
 `}

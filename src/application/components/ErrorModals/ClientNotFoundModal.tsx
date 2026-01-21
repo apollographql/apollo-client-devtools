@@ -43,7 +43,6 @@ export function ClientNotFoundModal({
           <GitHubIssueLink
             labels={[LABELS.bug]}
             body={`
-${SECTIONS.defaultDescription}
 ${SECTIONS.apolloClientVersion}
 ${SECTIONS.devtoolsVersion}
 `}
@@ -151,7 +150,6 @@ ${SECTIONS.devtoolsVersion}
                   labels={[LABELS.bug]}
                   repository="apollo-client"
                   body={`
-${SECTIONS.defaultDescription}
 ${SECTIONS.reproduction}
 ${SECTIONS.apolloClientVersion}
 ${SECTIONS.devtoolsVersion}
@@ -206,7 +204,6 @@ ${SECTIONS.devtoolsVersion}
               <GitHubIssueLink
                 labels={[LABELS.bug, LABELS.clientDiscovery]}
                 body={`
-${SECTIONS.defaultDescription}
 ${SECTIONS.apolloClientVersion}
 ${SECTIONS.devtoolsVersion}
 `}
@@ -229,7 +226,6 @@ ${SECTIONS.devtoolsVersion}
             className="no-underline"
             labels={[LABELS.bug]}
             body={`
-${SECTIONS.defaultDescription}
 ${SECTIONS.apolloClientVersion}
 ${SECTIONS.devtoolsVersion}
 `}
