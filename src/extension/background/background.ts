@@ -8,7 +8,7 @@ import { createDevtoolsMessage, MessageType } from "../messages";
 const ports: Record<
   number,
   {
-    tab: browser.Runtime.Port | null;
+    tabPorts: Set<browser.Runtime.Port>;
     extension: browser.Runtime.Port | null;
     disconnectPorts: (() => void) | null;
   }
@@ -17,7 +17,7 @@ const ports: Record<
 function registerTab(tabId: number) {
   if (!ports[tabId]) {
     ports[tabId] = {
-      tab: null,
+      tabPorts: new Set(),
       extension: null,
       disconnectPorts: null,
     };
@@ -25,11 +25,13 @@ function registerTab(tabId: number) {
 }
 
 function registerTabPort(tabId: number, port: browser.Runtime.Port) {
-  ports[tabId].tab = port;
+  ports[tabId].tabPorts.add(port);
 
   port.onDisconnect.addListener(() => {
-    ports[tabId].disconnectPorts?.();
-    ports[tabId].tab = null;
+    ports[tabId].tabPorts.delete(port);
+    if (ports[tabId].tabPorts.size === 0) {
+      ports[tabId].disconnectPorts?.();
+    }
   });
 }
 
@@ -50,50 +52,60 @@ function connectPorts(tabId: number) {
   }
 
   const extensionPort = ports[tabId].extension;
-  const tabPort = ports[tabId].tab;
+  const tabPorts = ports[tabId].tabPorts;
 
   if (!extensionPort) {
     throw new Error("Attempted to connect extension port which does not exist");
   }
 
-  if (!tabPort) {
-    throw new Error("Attempted to connect tab port which does not exist");
+  if (tabPorts.size === 0) {
+    throw new Error("Attempted to connect with no tab ports");
   }
 
   if (ports[tabId].disconnectPorts) {
-    throw new Error(
-      `Attempted to connect already connected ports for tab ${tabId}`
-    );
+    // Already connected, but we may have new tab ports to add listeners to
+    // We need to add listeners for any new ports
+    return;
   }
+
+  const tabPortListeners = new Map<
+    browser.Runtime.Port,
+    (message: unknown) => void
+  >();
 
   function extensionPortListener(message: unknown) {
-    try {
-      tabPort!.postMessage(message);
-    } catch (e) {
-      if (process.env.NODE_ENV === "development") {
-        console.error(`Broken connection ${tabId}`);
+    // Broadcast to ALL tab ports (main window + iframes)
+    for (const tabPort of tabPorts) {
+      try {
+        tabPort.postMessage(message);
+      } catch (e) {
+        if (process.env.NODE_ENV === "development") {
+          console.error(`Broken connection to frame in tab ${tabId}`);
+        }
+        tabPorts.delete(tabPort);
       }
-
-      disconnectPorts();
     }
   }
 
-  function tabPortListener(message: unknown) {
-    try {
-      extensionPort!.postMessage(message);
-    } catch (e) {
-      if (process.env.NODE_ENV === "development") {
-        console.error(`Broken connection ${tabId}`);
+  function createTabPortListener() {
+    return function tabPortListener(message: unknown) {
+      try {
+        extensionPort!.postMessage(message);
+      } catch (e) {
+        if (process.env.NODE_ENV === "development") {
+          console.error(`Broken connection ${tabId}`);
+        }
+        disconnectPorts();
       }
-
-      disconnectPorts();
-    }
+    };
   }
 
   function disconnectPorts() {
     extensionPort!.onMessage.removeListener(extensionPortListener);
-    tabPort!.onMessage.removeListener(tabPortListener);
-
+    for (const [tabPort, listener] of tabPortListeners) {
+      tabPort.onMessage.removeListener(listener);
+    }
+    tabPortListeners.clear();
     ports[tabId].disconnectPorts = null;
   }
 
@@ -102,7 +114,7 @@ function connectPorts(tabId: number) {
   extensionPort.onMessage.addListener(extensionPortListener);
   extensionPort.onDisconnect.addListener(disconnectPorts);
   extensionPort.onDisconnect.addListener(() => {
-    if (tabPort) {
+    for (const tabPort of tabPorts) {
       tabPort.postMessage(
         createDevtoolsMessage({
           type: MessageType.Actor,
@@ -112,8 +124,19 @@ function connectPorts(tabId: number) {
     }
   });
 
-  tabPort.onMessage.addListener(tabPortListener);
-  tabPort.onDisconnect.addListener(disconnectPorts);
+  // Add listeners for all current tab ports
+  for (const tabPort of tabPorts) {
+    const listener = createTabPortListener();
+    tabPortListeners.set(tabPort, listener);
+    tabPort.onMessage.addListener(listener);
+    tabPort.onDisconnect.addListener(() => {
+      const l = tabPortListeners.get(tabPort);
+      if (l) {
+        tabPort.onMessage.removeListener(l);
+        tabPortListeners.delete(tabPort);
+      }
+    });
+  }
 }
 
 function connectTabPort(port: browser.Runtime.Port) {
@@ -123,16 +146,29 @@ function connectTabPort(port: browser.Runtime.Port) {
 
   const tabId = port.sender.tab.id;
 
-  if (ports[tabId]?.tab) {
-    ports[tabId].disconnectPorts?.();
-    ports[tabId].tab?.disconnect();
-  }
-
   registerTab(tabId);
   registerTabPort(tabId, port);
 
   if (ports[tabId].extension) {
     connectPorts(tabId);
+    // If already connected, add listener for this new port
+    if (ports[tabId].disconnectPorts) {
+      // Need to add message listener for this new tab port
+      const extensionPort = ports[tabId].extension!;
+      const listener = (message: unknown) => {
+        try {
+          extensionPort.postMessage(message);
+        } catch (e) {
+          if (process.env.NODE_ENV === "development") {
+            console.error(`Broken connection ${tabId}`);
+          }
+        }
+      };
+      port.onMessage.addListener(listener);
+      port.onDisconnect.addListener(() => {
+        port.onMessage.removeListener(listener);
+      });
+    }
   }
 }
 
@@ -142,7 +178,7 @@ function connectExtensionPort(port: browser.Runtime.Port) {
   registerTab(tabId);
   registerExtensionPort(tabId, port);
 
-  if (ports[tabId].tab) {
+  if (ports[tabId].tabPorts.size > 0) {
     connectPorts(tabId);
   }
 }

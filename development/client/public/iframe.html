@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Color App in an IFrame</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1a1a2e;
+      color: #eee;
+    }
+    h1 {
+      margin-top: 0;
+      color: #9d4edd;
+    }
+    p {
+      color: #aaa;
+      margin-bottom: 20px;
+    }
+    .iframe-container {
+      border: 2px solid #9d4edd;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+    }
+    iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>🔍 Iframe Apollo Client Test Page</h1>
+  <p>
+    This page embeds the Color App in an iframe. With <code>all_frames: true</code> in the manifest,
+    Apollo Client DevTools should detect the Apollo Client instance running inside this iframe.
+  </p>
+  <div class="iframe-container">
+    <iframe src="/" title="Color App in IFrame"></iframe>
+  </div>
+</body>
+
+</html>

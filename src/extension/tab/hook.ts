@@ -14,6 +14,7 @@ import {
   createRpcClient,
   createRpcHandler,
   createRpcStreamHandler,
+  SKIP_RESPONSE,
 } from "../rpc";
 import { loadErrorCodes } from "./loadErrorCodes";
 import { handleExplorerRequests } from "./handleExplorerRequests";
@@ -72,45 +73,72 @@ function getClientInfo(client: ApolloClient): ApolloClientInfo {
 }
 
 handleRpc("getClients", () => {
+  if (knownClients.size === 0) {
+    return SKIP_RESPONSE as any;
+  }
   return Array.from(knownClients).map(getClientInfo);
 });
 
 handleRpc("getClient", (clientId) => {
-  const client = getClientById(clientId);
-
-  return client ? getClientInfo(client) : null;
+  const handler = getHandlerByClientId(clientId as any);
+  if (!handler) {
+    return SKIP_RESPONSE as any;
+  }
+  return getClientInfo(handler.getClient());
 });
 
 handleRpc(
   "getV3Queries",
-  (clientId) => getHandlerByClientId(clientId)?.getQueries() ?? []
+  (clientId) => {
+    const handler = getHandlerByClientId(clientId);
+    if (!handler) return SKIP_RESPONSE as any;
+    return handler.getQueries();
+  }
 );
 
 handleRpc(
   "getV4Queries",
-  (clientId) => getHandlerByClientId(clientId)?.getQueries() ?? []
+  (clientId) => {
+    const handler = getHandlerByClientId(clientId);
+    if (!handler) return SKIP_RESPONSE as any;
+    return handler.getQueries();
+  }
 );
 
 handleRpc(
   "getV3Mutations",
-  (clientId) => getHandlerByClientId(clientId)?.getMutations() ?? []
+  (clientId) => {
+    const handler = getHandlerByClientId(clientId);
+    if (!handler) return SKIP_RESPONSE as any;
+    return handler.getMutations();
+  }
 );
 
 handleRpc(
   "getV4Mutations",
-  (clientId) => getHandlerByClientId(clientId)?.getMutations() ?? []
+  (clientId) => {
+    const handler = getHandlerByClientId(clientId);
+    if (!handler) return SKIP_RESPONSE as any;
+    return handler.getMutations();
+  }
 );
 
 handleRpc("getCache", (clientId) => {
-  return (getClientById(clientId)?.cache.extract(true) as JSONObject) ?? {};
+  const client = getClientById(clientId as any);
+  if (!client) return SKIP_RESPONSE as any;
+  return client.cache.extract(true) as JSONObject;
 });
 
 handleRpc("getV3MemoryInternals", (clientId) => {
-  return getClientById(clientId)?.getMemoryInternals?.();
+  const client = getClientById(clientId);
+  if (!client) return SKIP_RESPONSE as any;
+  return client.getMemoryInternals?.();
 });
 
 handleRpc("getV4MemoryInternals", (clientId) => {
-  return getClientById(clientId)?.getMemoryInternals?.();
+  const client = getClientById(clientId);
+  if (!client) return SKIP_RESPONSE as any;
+  return client.getMemoryInternals?.();
 });
 
 handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
