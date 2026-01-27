@@ -56,7 +56,9 @@ function App() {
               <Link to="/favorites">Favorites</Link>
               <Link to="/lookup">Lookup</Link>
               <Link to="/playground">Playground</Link>
-              <a href="/iframe.html" style={{ marginLeft: '1rem' }}>Iframe Test</a>
+              <a href="/iframe.html" style={{ marginLeft: "1rem" }}>
+                Iframe Test
+              </a>
             </nav>
             <div style={{ display: "flex", gap: "1rem" }}>
               <select

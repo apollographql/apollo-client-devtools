@@ -87,41 +87,29 @@ handleRpc("getClient", (clientId) => {
   return getClientInfo(handler.getClient());
 });
 
-handleRpc(
-  "getV3Queries",
-  (clientId) => {
-    const handler = getHandlerByClientId(clientId);
-    if (!handler) return SKIP_RESPONSE as any;
-    return handler.getQueries();
-  }
-);
+handleRpc("getV3Queries", (clientId) => {
+  const handler = getHandlerByClientId(clientId);
+  if (!handler) return SKIP_RESPONSE as any;
+  return handler.getQueries();
+});
 
-handleRpc(
-  "getV4Queries",
-  (clientId) => {
-    const handler = getHandlerByClientId(clientId);
-    if (!handler) return SKIP_RESPONSE as any;
-    return handler.getQueries();
-  }
-);
+handleRpc("getV4Queries", (clientId) => {
+  const handler = getHandlerByClientId(clientId);
+  if (!handler) return SKIP_RESPONSE as any;
+  return handler.getQueries();
+});
 
-handleRpc(
-  "getV3Mutations",
-  (clientId) => {
-    const handler = getHandlerByClientId(clientId);
-    if (!handler) return SKIP_RESPONSE as any;
-    return handler.getMutations();
-  }
-);
+handleRpc("getV3Mutations", (clientId) => {
+  const handler = getHandlerByClientId(clientId);
+  if (!handler) return SKIP_RESPONSE as any;
+  return handler.getMutations();
+});
 
-handleRpc(
-  "getV4Mutations",
-  (clientId) => {
-    const handler = getHandlerByClientId(clientId);
-    if (!handler) return SKIP_RESPONSE as any;
-    return handler.getMutations();
-  }
-);
+handleRpc("getV4Mutations", (clientId) => {
+  const handler = getHandlerByClientId(clientId);
+  if (!handler) return SKIP_RESPONSE as any;
+  return handler.getMutations();
+});
 
 handleRpc("getCache", (clientId) => {
   const client = getClientById(clientId as any);
