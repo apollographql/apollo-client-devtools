@@ -82,50 +82,50 @@ handleRpc("getClients", () => {
 handleRpc("getClient", (clientId) => {
   const handler = getHandlerByClientId(clientId as any);
   if (!handler) {
-    return SKIP_RESPONSE as any;
+    return null;
   }
   return getClientInfo(handler.getClient());
 });
 
 handleRpc("getV3Queries", (clientId) => {
   const handler = getHandlerByClientId(clientId);
-  if (!handler) return SKIP_RESPONSE as any;
+  if (!handler) return [];
   return handler.getQueries();
 });
 
 handleRpc("getV4Queries", (clientId) => {
   const handler = getHandlerByClientId(clientId);
-  if (!handler) return SKIP_RESPONSE as any;
+  if (!handler) return [];
   return handler.getQueries();
 });
 
 handleRpc("getV3Mutations", (clientId) => {
   const handler = getHandlerByClientId(clientId);
-  if (!handler) return SKIP_RESPONSE as any;
+  if (!handler) return [];
   return handler.getMutations();
 });
 
 handleRpc("getV4Mutations", (clientId) => {
   const handler = getHandlerByClientId(clientId);
-  if (!handler) return SKIP_RESPONSE as any;
+  if (!handler) return [];
   return handler.getMutations();
 });
 
 handleRpc("getCache", (clientId) => {
   const client = getClientById(clientId as any);
-  if (!client) return SKIP_RESPONSE as any;
+  if (!client) return {};
   return client.cache.extract(true) as JSONObject;
 });
 
 handleRpc("getV3MemoryInternals", (clientId) => {
   const client = getClientById(clientId);
-  if (!client) return SKIP_RESPONSE as any;
+  if (!client) return undefined;
   return client.getMemoryInternals?.();
 });
 
 handleRpc("getV4MemoryInternals", (clientId) => {
   const client = getClientById(clientId);
-  if (!client) return SKIP_RESPONSE as any;
+  if (!client) return undefined;
   return client.getMemoryInternals?.();
 });
 
