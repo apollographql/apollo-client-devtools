@@ -3,12 +3,33 @@
 // https://github.com/facebook/react/blob/18a9dd1c60fdb711982f32ce5d91acfe8f158fe1/LICENSE
 import browser from "webextension-polyfill";
 import "./errorcodes";
-import { createDevtoolsMessage, MessageType } from "../messages";
+import {
+  createDevtoolsMessage,
+  isDevtoolsMessage,
+  MessageType,
+} from "../messages";
+
+// Type guards for message routing
+function isActorMessage(
+  message: unknown
+): message is {
+  type: MessageType.Actor;
+  message: { type: string; payload?: { id?: string }; clientId?: string };
+} {
+  return isDevtoolsMessage(message) && message.type === MessageType.Actor;
+}
+
+function isRPCRequestMessage(
+  message: unknown
+): message is { type: MessageType.RPCRequest; params: unknown[] } {
+  return isDevtoolsMessage(message) && message.type === MessageType.RPCRequest;
+}
 
 const ports: Record<
   number,
   {
-    tabPorts: Set<browser.Runtime.Port>;
+    tabPorts: Map<browser.Runtime.Port, number>;
+    clientFrames: Map<string, number>;
     extension: browser.Runtime.Port | null;
     disconnectPorts: (() => void) | null;
   }
@@ -17,18 +38,28 @@ const ports: Record<
 function registerTab(tabId: number) {
   if (!ports[tabId]) {
     ports[tabId] = {
-      tabPorts: new Set(),
+      tabPorts: new Map(),
+      clientFrames: new Map(),
       extension: null,
       disconnectPorts: null,
     };
   }
 }
 
-function registerTabPort(tabId: number, port: browser.Runtime.Port) {
-  ports[tabId].tabPorts.add(port);
+function registerTabPort(
+  tabId: number,
+  port: browser.Runtime.Port,
+  frameId: number
+) {
+  ports[tabId].tabPorts.set(port, frameId);
 
   port.onDisconnect.addListener(() => {
     ports[tabId].tabPorts.delete(port);
+    for (const [clientId, fId] of ports[tabId].clientFrames) {
+      if (fId === frameId) {
+        ports[tabId].clientFrames.delete(clientId);
+      }
+    }
     if (ports[tabId].tabPorts.size === 0) {
       ports[tabId].disconnectPorts?.();
     }
@@ -53,6 +84,7 @@ function connectPorts(tabId: number) {
 
   const extensionPort = ports[tabId].extension;
   const tabPorts = ports[tabId].tabPorts;
+  const clientFrames = ports[tabId].clientFrames;
 
   if (!extensionPort) {
     throw new Error("Attempted to connect extension port which does not exist");
@@ -74,8 +106,18 @@ function connectPorts(tabId: number) {
   >();
 
   function extensionPortListener(message: unknown) {
-    // Broadcast to ALL tab ports (main window + iframes)
-    for (const tabPort of tabPorts) {
+    let targetFrameId: number | undefined;
+    if (isRPCRequestMessage(message)) {
+      const clientId = message.params[0];
+      if (typeof clientId === "string") {
+        targetFrameId = clientFrames.get(clientId);
+      }
+    }
+
+    for (const [tabPort, frameId] of tabPorts) {
+      if (targetFrameId !== undefined && frameId !== targetFrameId) {
+        continue;
+      }
       try {
         tabPort.postMessage(message);
       } catch (e) {
@@ -87,8 +129,21 @@ function connectPorts(tabId: number) {
     }
   }
 
-  function createTabPortListener() {
+  function createTabPortListener(frameId: number) {
     return function tabPortListener(message: unknown) {
+      if (isActorMessage(message)) {
+        if (
+          message.message.type === "registerClient" &&
+          message.message.payload?.id
+        ) {
+          clientFrames.set(message.message.payload.id, frameId);
+        } else if (
+          message.message.type === "clientTerminated" &&
+          message.message.clientId
+        ) {
+          clientFrames.delete(message.message.clientId);
+        }
+      }
       try {
         extensionPort!.postMessage(message);
       } catch (e) {
@@ -114,7 +169,7 @@ function connectPorts(tabId: number) {
   extensionPort.onMessage.addListener(extensionPortListener);
   extensionPort.onDisconnect.addListener(disconnectPorts);
   extensionPort.onDisconnect.addListener(() => {
-    for (const tabPort of tabPorts) {
+    for (const [tabPort] of tabPorts) {
       tabPort.postMessage(
         createDevtoolsMessage({
           type: MessageType.Actor,
@@ -125,8 +180,8 @@ function connectPorts(tabId: number) {
   });
 
   // Add listeners for all current tab ports
-  for (const tabPort of tabPorts) {
-    const listener = createTabPortListener();
+  for (const [tabPort, frameId] of tabPorts) {
+    const listener = createTabPortListener(frameId);
     tabPortListeners.set(tabPort, listener);
     tabPort.onMessage.addListener(listener);
     tabPort.onDisconnect.addListener(() => {
@@ -145,9 +200,10 @@ function connectTabPort(port: browser.Runtime.Port) {
   }
 
   const tabId = port.sender.tab.id;
+  const frameId = port.sender.frameId ?? 0;
 
   registerTab(tabId);
-  registerTabPort(tabId, port);
+  registerTabPort(tabId, port, frameId);
 
   if (ports[tabId].extension) {
     connectPorts(tabId);
@@ -155,7 +211,21 @@ function connectTabPort(port: browser.Runtime.Port) {
     if (ports[tabId].disconnectPorts) {
       // Need to add message listener for this new tab port
       const extensionPort = ports[tabId].extension!;
+      const clientFrames = ports[tabId].clientFrames;
       const listener = (message: unknown) => {
+        if (isActorMessage(message)) {
+          if (
+            message.message.type === "registerClient" &&
+            message.message.payload?.id
+          ) {
+            clientFrames.set(message.message.payload.id, frameId);
+          } else if (
+            message.message.type === "clientTerminated" &&
+            message.message.clientId
+          ) {
+            clientFrames.delete(message.message.clientId);
+          }
+        }
         try {
           extensionPort.postMessage(message);
         } catch (e) {
