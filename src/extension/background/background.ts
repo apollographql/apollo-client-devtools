@@ -10,9 +10,7 @@ import {
 } from "../messages";
 
 // Type guards for message routing
-function isActorMessage(
-  message: unknown
-): message is {
+function isActorMessage(message: unknown): message is {
   type: MessageType.Actor;
   message: { type: string; payload?: { id?: string }; clientId?: string };
 } {
