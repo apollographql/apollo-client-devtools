@@ -166,7 +166,7 @@ export const Explorer = ({
   const iframeRef = useRef(Promise.withResolvers<HTMLIFrameElement>());
 
   function iframeRefFn(iframe: HTMLIFrameElement) {
-    const onPostMessageReceived = (event: IncomingMessageEvent) => {
+    function onPostMessageReceived(event: IncomingMessageEvent) {
       if (event.data.name === EXPLORER_LISTENING_FOR_HANDSHAKE) {
         iframeRef.current.resolve(iframe);
         sendHandshakeToEmbed({
@@ -186,9 +186,9 @@ export const Explorer = ({
         closeGraphRefModal: () => setShowGraphRefModal(false),
         onAuthHandshakeReceived,
       });
-    };
-    window.addEventListener("message", onPostMessageReceived);
+    }
 
+    window.addEventListener("message", onPostMessageReceived);
     return () => window.removeEventListener("message", onPostMessageReceived);
   }
 
@@ -230,7 +230,12 @@ export const Explorer = ({
           if (graphRefFromLocalStorage) {
             setGraphRef(graphRefFromLocalStorage);
           } else {
-            setShowGraphRefModal("triggeredByIntrospectionFailure");
+            // Delay opening the modal for a moment. If the "Run in Explorer" button
+            // navigates here, this might cause the HeadlessUI Dialog to call `onClose`
+            // immediately because of the tab change
+            setTimeout(() => {
+              setShowGraphRefModal("triggeredByIntrospectionFailure");
+            }, 100);
           }
 
           postMessage({
