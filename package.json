@@ -127,7 +127,7 @@
     "ts-jest": "29.4.6",
     "ts-loader": "9.5.4",
     "tsx": "4.11.0",
-    "typescript": "5.5.4",
+    "typescript": "5.9.3",
     "typescript-eslint": "7.14.1",
     "web-ext-plugin": "2.11.0",
     "webextension-polyfill": "0.12.0",

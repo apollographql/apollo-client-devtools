@@ -8,6 +8,12 @@
     "skipLibCheck": true,
     "module": "ES2022",
     "target": "ES2022",
+    "lib": [
+      "ES2022",
+      "ES2024.Promise",
+      "DOM",
+      "DOM.AsyncIterable"
+    ],
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
     "resolveJsonModule": true,
@@ -16,7 +22,9 @@
     "declaration": true,
     "outDir": "dist",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     },
     "plugins": [
       {
@@ -27,7 +35,12 @@
   },
   "$schema": "https://json.schemastore.org/tsconfig",
   "compileOnSave": true,
-  "include": ["src/**/*", "all-clients/**/*", "test.setup.ts", "build.ts"],
+  "include": [
+    "src/**/*",
+    "all-clients/**/*",
+    "test.setup.ts",
+    "build.ts"
+  ],
   "exclude": [
     "node_modules",
     "dist",
