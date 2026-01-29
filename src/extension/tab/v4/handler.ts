@@ -88,7 +88,10 @@ export class ClientV4Handler extends ClientHandler<ApolloClient> {
     variables?: JSONObject | undefined;
     fetchPolicy?: FetchPolicy;
   }): Promise<EmbeddedExplorerResponse> {
-    const { data, error } = await this.client.query<JSONObject>(options);
+    const { data, error } = await this.client.query<JSONObject>({
+      errorPolicy: "all",
+      ...options,
+    });
 
     return { data, ...getErrorProperties(error) };
   }

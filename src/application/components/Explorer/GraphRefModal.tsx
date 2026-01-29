@@ -7,7 +7,7 @@ import { LoadingSpinner } from "./LoadingSpinner";
 import { hasGraphRefBeenAuthenticated } from "./postMessageAuthHelpers";
 import {
   DEV_TOOLS_AUTHENTICATE_WITH_GRAPHREF,
-  postMessageToEmbed,
+  OutgoingMessageEvent,
 } from "./postMessageHelpers";
 import { Telescope } from "./Telescope";
 import { Modal } from "../Modal";
@@ -21,7 +21,7 @@ export const GraphRefModal = ({
   setGraphRef,
   setNewGraphRefLoading,
   newGraphRefLoading,
-  embeddedExplorerIFrame,
+  postMessage,
   wasTriggeredByIntrospectionFailure,
 }: {
   onClose: () => void;
@@ -29,7 +29,7 @@ export const GraphRefModal = ({
   setGraphRef: (graphRef: string) => void;
   setNewGraphRefLoading: (newValue: boolean) => void;
   newGraphRefLoading: boolean;
-  embeddedExplorerIFrame: HTMLIFrameElement;
+  postMessage: (message: OutgoingMessageEvent) => void;
   wasTriggeredByIntrospectionFailure: boolean;
 }): React.ReactElement => {
   const [graphId, setGraphId] = useState<string>();
@@ -103,12 +103,9 @@ export const GraphRefModal = ({
                 if (hasGraphRefBeenAuthenticated(newGraphRef)) {
                   setGraphRef(newGraphRef);
                 } else {
-                  postMessageToEmbed({
-                    embeddedExplorerIFrame,
-                    message: {
-                      name: DEV_TOOLS_AUTHENTICATE_WITH_GRAPHREF,
-                      graphRef: newGraphRef,
-                    },
+                  postMessage({
+                    name: DEV_TOOLS_AUTHENTICATE_WITH_GRAPHREF,
+                    graphRef: newGraphRef,
                   });
                 }
               }

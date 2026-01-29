@@ -1,16 +1,12 @@
 import eslint from "@eslint/js";
 import tseslint from "typescript-eslint";
 import testingLibrary from "eslint-plugin-testing-library";
-import reactRecommended from "eslint-plugin-react/configs/recommended.js";
-import jsxRuntime from "eslint-plugin-react/configs/jsx-runtime.js";
 import hooksPlugin from "eslint-plugin-react-hooks";
 import globals from "globals";
 
 export default tseslint.config(
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
-  reactRecommended,
-  jsxRuntime,
   {
     files: ["**/__tests__/**/*.ts", "**/__tests__/**/*.tsx"],
     plugins: {
@@ -18,13 +14,7 @@ export default tseslint.config(
     },
     rules: testingLibrary.configs.react.rules,
   },
-  {
-    plugins: {
-      "react-hooks": hooksPlugin,
-    },
-    // @ts-expect-error waiting for https://github.com/facebook/react/issues/28313
-    rules: hooksPlugin.configs.recommended.rules,
-  },
+  hooksPlugin.configs.flat["recommended-latest"],
   // original config contained a reference to jest-dom, but didn't configure any rules - skipping
   {
     languageOptions: {
@@ -37,9 +27,7 @@ export default tseslint.config(
       },
     },
     rules: {
-      "react/prop-types": 0,
-      "react/no-unknown-property": "error",
-      "react/display-name": "off",
+      "react-hooks/refs": "warn",
       "testing-library/no-node-access": "off",
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-unused-vars": [

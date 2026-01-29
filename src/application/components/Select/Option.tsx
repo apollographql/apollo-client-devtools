@@ -3,7 +3,7 @@ import { forwardRef } from "react";
 import * as SelectBase from "@radix-ui/react-select";
 import clsx from "clsx";
 
-interface OptionProps {
+export interface OptionProps {
   children?: ReactNode;
   disabled?: boolean;
   value: string;

@@ -1,4 +1,12 @@
-import { useMemo, useState, useEffect } from "react";
+import {
+  useMemo,
+  useState,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useEffectEvent,
+  useCallback,
+} from "react";
 import { Observable, gql } from "@apollo/client";
 import { useReactiveVar } from "@apollo/client/react";
 import type { IntrospectionQuery } from "graphql";
@@ -8,6 +16,7 @@ import { FullWidthLayout } from "../Layouts/FullWidthLayout";
 import type {
   ExplorerResponse,
   IncomingMessageEvent,
+  OutgoingMessageEvent,
 } from "./postMessageHelpers";
 import {
   postMessageToEmbed,
@@ -105,17 +114,21 @@ const setGraphRefFromLocalStorage = (graphRef: string) => {
   window.localStorage.setItem("explorerGraphRef", graphRef);
 };
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
+export declare namespace Explorer {
+  export interface Ref {
+    postMessage: (message: OutgoingMessageEvent) => void;
+  }
+}
+
 export const Explorer = ({
   clientId,
   isVisible,
-  embeddedExplorerProps,
+  explorerRef,
 }: {
   clientId: string | undefined;
   isVisible: boolean | undefined;
-  embeddedExplorerProps: {
-    embeddedExplorerIFrame: HTMLIFrameElement | null;
-    setEmbeddedExplorerIFrame: (iframe: HTMLIFrameElement) => void;
-  };
+  explorerRef: React.RefObject<Explorer.Ref | null>;
 }) => {
   const [graphRef, setGraphRef] = useState<string>();
   const [showGraphRefModal, setShowGraphRefModal] = useState<
@@ -129,34 +142,34 @@ export const Explorer = ({
     if (graphRef) setGraphRefFromLocalStorage(graphRef);
   }, [graphRef]);
 
-  const [previousClientId, setPreviousClientId] = useState<string | undefined>(
-    clientId
-  );
-  const [schema, setSchema] = useState<IntrospectionQuery | null>(null);
   const [queryCache, setQueryCache] = useState<FetchPolicy>(
     FetchPolicy.NoCache
   );
 
-  const { embeddedExplorerIFrame, setEmbeddedExplorerIFrame } =
-    embeddedExplorerProps;
+  const postMessage = useCallback((message: OutgoingMessageEvent) => {
+    iframeRef.current.promise.then((embeddedExplorerIFrame) => {
+      postMessageToEmbed({
+        embeddedExplorerIFrame,
+        message,
+      });
+    });
+  }, []);
+  useImperativeHandle(
+    explorerRef,
+    () => ({
+      postMessage,
+    }),
+    [postMessage]
+  );
 
   const color = useReactiveVar(colorTheme);
 
-  // If the selected client has changed, make sure we re-run the introspection
-  // query in case the client points to a different GraphQL schema.
-  if (previousClientId !== clientId) {
-    setPreviousClientId(clientId);
-    setSchema(null);
-  }
+  const iframeRef = useRef(Promise.withResolvers<HTMLIFrameElement>());
 
-  // Set embedded explorer iframe if loaded
-  useEffect(() => {
-    const iframe = document.getElementById(
-      "embedded-explorer"
-    ) as HTMLIFrameElement;
-    const onPostMessageReceived = (event: IncomingMessageEvent) => {
+  function iframeRefFn(iframe: HTMLIFrameElement) {
+    function onPostMessageReceived(event: IncomingMessageEvent) {
       if (event.data.name === EXPLORER_LISTENING_FOR_HANDSHAKE) {
-        setEmbeddedExplorerIFrame(iframe);
+        iframeRef.current.resolve(iframe);
         sendHandshakeToEmbed({
           embeddedExplorerIFrame: iframe,
           graphRef,
@@ -174,24 +187,40 @@ export const Explorer = ({
         closeGraphRefModal: () => setShowGraphRefModal(false),
         onAuthHandshakeReceived,
       });
-    };
+    }
+
     window.addEventListener("message", onPostMessageReceived);
-
     return () => window.removeEventListener("message", onPostMessageReceived);
-  }, [graphRef, setEmbeddedExplorerIFrame]);
+  }
 
-  useEffect(() => {
-    if (clientId && !schema && embeddedExplorerIFrame) {
-      const observer = executeOperation({
-        clientId,
-        operation: getIntrospectionQuery(),
-        operationName: "IntrospectionQuery",
-        variables: undefined,
-        isSubscription: false,
-        fetchPolicy: FetchPolicy.NoCache,
-      });
+  const lastIntrospection = useRef<{
+    clientId: null | string;
+  }>({
+    clientId: null,
+  });
 
-      observer.subscribe((response) => {
+  const runIntrospectionQuery = useEffectEvent(() => {
+    if (!clientId) {
+      return;
+    }
+    const last = lastIntrospection.current;
+    if (last && last.clientId === clientId) {
+      return;
+    }
+    lastIntrospection.current = {
+      clientId: clientId,
+    };
+    const observer = executeOperation({
+      clientId,
+      operation: getIntrospectionQuery(),
+      operationName: "IntrospectionQuery",
+      variables: undefined,
+      isSubscription: false,
+      fetchPolicy: FetchPolicy.NoCache,
+    });
+
+    observer.subscribe({
+      next: (response) => {
         // This means this was a graphql response which means we did hit a
         // graphql endpoint but introspection was specifically disabled
         if (response.error || response.errors) {
@@ -202,34 +231,40 @@ export const Explorer = ({
           if (graphRefFromLocalStorage) {
             setGraphRef(graphRefFromLocalStorage);
           } else {
-            setShowGraphRefModal("triggeredByIntrospectionFailure");
+            // Delay opening the modal for a moment. If the "Run in Explorer" button
+            // navigates here, this might cause the HeadlessUI Dialog to call `onClose`
+            // immediately because of the tab change
+            setTimeout(() => {
+              setShowGraphRefModal("triggeredByIntrospectionFailure");
+            }, 100);
           }
 
-          postMessageToEmbed({
-            embeddedExplorerIFrame,
-            message: {
-              name: SCHEMA_ERROR,
-              errors: response.errors,
-              error: response.error?.message,
-            },
+          postMessage({
+            name: SCHEMA_ERROR,
+            errors: response.errors,
+            error: response.error?.message,
           });
         } else {
-          setSchema(response.data as unknown as IntrospectionQuery);
           // send introspected schema to embedded explorer
-          postMessageToEmbed({
-            embeddedExplorerIFrame,
-            message: {
-              name: SCHEMA_RESPONSE,
-              schema: response.data as unknown as IntrospectionQuery,
-            },
+          postMessage({
+            name: SCHEMA_RESPONSE,
+            schema: response.data as unknown as IntrospectionQuery,
           });
         }
-      });
+      },
+    });
+  });
+
+  // If the selected client has changed, make sure we re-run the introspection
+  // query in case the client points to a different GraphQL schema.
+  useEffect(() => {
+    if (clientId && isVisible) {
+      runIntrospectionQuery();
     }
-  }, [clientId, schema, embeddedExplorerIFrame]);
+  }, [clientId, isVisible]);
 
   useEffect(() => {
-    if (clientId && embeddedExplorerIFrame) {
+    if (clientId) {
       const onPostMessageReceived = (event: IncomingMessageEvent) => {
         const isQueryOrMutation = event.data.name === EXPLORER_REQUEST;
         const isSubscription =
@@ -246,15 +281,12 @@ export const Explorer = ({
           const currentOperationId = event.data.operationId;
 
           observer.subscribe((response) => {
-            postMessageToEmbed({
-              embeddedExplorerIFrame,
-              message: {
-                name: isQueryOrMutation
-                  ? EXPLORER_RESPONSE
-                  : EXPLORER_SUBSCRIPTION_RESPONSE,
-                operationId: currentOperationId,
-                response,
-              },
+            postMessage({
+              name: isQueryOrMutation
+                ? EXPLORER_RESPONSE
+                : EXPLORER_SUBSCRIPTION_RESPONSE,
+              operationId: currentOperationId,
+              response,
             });
           });
         }
@@ -263,7 +295,7 @@ export const Explorer = ({
 
       return () => window.removeEventListener("message", onPostMessageReceived);
     }
-  }, [clientId, embeddedExplorerIFrame, graphRef, queryCache]);
+  }, [clientId, queryCache, postMessage]);
 
   const embedIframeSrcString = useMemo(
     () =>
@@ -296,7 +328,7 @@ export const Explorer = ({
           />
           Load from cache
         </label>
-        {embeddedExplorerIFrame && graphRef && (
+        {graphRef && (
           <Button
             onClick={() => {
               setShowGraphRefModal("triggeredManually");
@@ -313,12 +345,13 @@ export const Explorer = ({
           id="embedded-explorer"
           className="w-dvw h-full border-none"
           src={embedIframeSrcString}
+          ref={iframeRefFn}
         />
-        {showGraphRefModalAndIsVisible && embeddedExplorerIFrame && (
+        {showGraphRefModalAndIsVisible && (
           <GraphRefModal
             graphRef={graphRef}
             setGraphRef={setGraphRef}
-            embeddedExplorerIFrame={embeddedExplorerIFrame}
+            postMessage={postMessage}
             onClose={() => setShowGraphRefModal(false)}
             setNewGraphRefLoading={setNewGraphRefLoading}
             newGraphRefLoading={newGraphRefLoading}

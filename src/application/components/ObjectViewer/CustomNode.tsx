@@ -12,7 +12,9 @@ export function CustomNode({
   const Render = ctx.renderers[type];
   const ref = useRef(parentProps);
 
+  // eslint-disable-next-line react-hooks/refs
   if (!equal(ref.current, parentProps)) {
+    // eslint-disable-next-line react-hooks/refs
     ref.current = parentProps;
   }
 

@@ -105,6 +105,8 @@ const resolvers = {
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  // enable to test introspection failure handling
+  // introspection: false,
 });
 
 startStandaloneServer(server, {

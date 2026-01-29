@@ -1,3 +1,4 @@
+import type { RefObject } from "react";
 import { useMemo, useState } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { gql, NetworkStatus } from "@apollo/client";
@@ -25,6 +26,7 @@ import { isIgnoredError } from "../../utilities/ignoredErrors";
 import { SerializedErrorAlertDisclosurePanel } from "../SerializedErrorAlertDisclosurePanel";
 import { useIsExtensionInvalidated } from "@/application/machines/devtoolsMachine";
 import { VariablesObject } from "../VariablesObject";
+import type { Explorer } from "../Explorer/Explorer";
 
 const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
   gql`
@@ -60,14 +62,14 @@ const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
 
 interface MutationsProps {
   clientId: string | undefined;
-  explorerIFrame: HTMLIFrameElement | null;
+  explorerRef: RefObject<Explorer.Ref | null>;
 }
 
 const STABLE_EMPTY_MUTATIONS: Array<
   NonNullable<GetMutations["client"]>["mutations"]["items"][number]
 > = [];
 
-export const Mutations = ({ clientId, explorerIFrame }: MutationsProps) => {
+export const Mutations = ({ clientId, explorerRef }: MutationsProps) => {
   const [selected, setSelected] = useState<number>(0);
   const [searchTerm, setSearchTerm] = useState("");
   const isExtensionInvalidated = useIsExtensionInvalidated();
@@ -168,7 +170,7 @@ export const Mutations = ({ clientId, explorerIFrame }: MutationsProps) => {
                 <RunInExplorerButton
                   operation={selectedMutation.mutationString}
                   variables={selectedMutation.variables ?? undefined}
-                  embeddedExplorerIFrame={explorerIFrame}
+                  explorerRef={explorerRef}
                 />
               </QueryLayout.Header>
               <QueryLayout.Content>
