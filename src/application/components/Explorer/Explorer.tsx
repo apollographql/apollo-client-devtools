@@ -5,6 +5,7 @@ import {
   useImperativeHandle,
   useRef,
   useEffectEvent,
+  useCallback,
 } from "react";
 import { Observable, gql } from "@apollo/client";
 import { useReactiveVar } from "@apollo/client/react";
@@ -145,20 +146,20 @@ export const Explorer = ({
     FetchPolicy.NoCache
   );
 
-  const postMessage = (message: OutgoingMessageEvent) => {
+  const postMessage = useCallback((message: OutgoingMessageEvent) => {
     iframeRef.current.promise.then((embeddedExplorerIFrame) => {
       postMessageToEmbed({
         embeddedExplorerIFrame,
         message,
       });
     });
-  };
+  }, []);
   useImperativeHandle(
     explorerRef,
     () => ({
       postMessage,
     }),
-    []
+    [postMessage]
   );
 
   const color = useReactiveVar(colorTheme);
@@ -260,7 +261,7 @@ export const Explorer = ({
     if (clientId && isVisible) {
       runIntrospectionQuery();
     }
-  }, [clientId, isVisible, runIntrospectionQuery]);
+  }, [clientId, isVisible]);
 
   useEffect(() => {
     if (clientId) {
@@ -294,7 +295,7 @@ export const Explorer = ({
 
       return () => window.removeEventListener("message", onPostMessageReceived);
     }
-  }, [clientId, queryCache]);
+  }, [clientId, queryCache, postMessage]);
 
   const embedIframeSrcString = useMemo(
     () =>

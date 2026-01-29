@@ -35,8 +35,8 @@ export const LoadingSpinner = React.forwardRef<SVGSVGElement, Props>(
     };
 
     const pixelSize = SIZE_MAP[size];
-    const mountTime = React.useRef(Date.now());
-    const mountDelay = -(mountTime.current % DURATION);
+    const [mountTime] = React.useState(() => Date.now());
+    const mountDelay = -(mountTime % DURATION);
 
     return (
       <svg
