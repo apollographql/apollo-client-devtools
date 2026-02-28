@@ -18,12 +18,18 @@
     }
   ],
   "content_scripts": [
-    { "matches": ["<all_urls>"], "js": ["tab.js"], "run_at": "document_start" },
+    {
+      "matches": ["<all_urls>"],
+      "js": ["tab.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    },
     {
       "matches": ["<all_urls>"],
       "js": ["hook.js"],
       "run_at": "document_start",
-      "world": "MAIN"
+      "world": "MAIN",
+      "all_frames": true
     }
   ],
   "manifest_version": 3,
