@@ -6,7 +6,7 @@ orbs:
 jobs:
   lint:
     docker:
-      - image: cimg/node:23.11.1
+      - image: cimg/node:25.7.0
     steps:
       - checkout
       - run: npm ci
@@ -17,7 +17,7 @@ jobs:
 
   formatting:
     docker:
-      - image: cimg/node:23.11.1
+      - image: cimg/node:25.7.0
     steps:
       - checkout
       - run: npm ci
@@ -25,7 +25,7 @@ jobs:
 
   test:
     docker:
-      - image: cimg/node:23.11.1
+      - image: cimg/node:25.7.0
     steps:
       - checkout
       - run: npm ci
