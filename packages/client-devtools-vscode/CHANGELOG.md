@@ -1,5 +1,7 @@
 # @apollo/client-devtools-vscode
 
+## 4.25.0
+
 ## 4.24.9
 
 ### Patch Changes

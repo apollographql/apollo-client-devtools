@@ -1,5 +1,15 @@
 # Changelog
 
+## 4.25.0
+
+### Minor Changes
+
+- [#1800](https://github.com/apollographql/apollo-client-devtools/pull/1800) [`bd29a22`](https://github.com/apollographql/apollo-client-devtools/commit/bd29a2256758c3d42dcc144a855e6805fb9f7660) Thanks [@phryneas](https://github.com/phryneas)! - Wait to execute the introspection query for the "Explorer" tab until navigating to the "Explorer" tab for the first time.
+
+### Patch Changes
+
+- [#1800](https://github.com/apollographql/apollo-client-devtools/pull/1800) [`bd29a22`](https://github.com/apollographql/apollo-client-devtools/commit/bd29a2256758c3d42dcc144a855e6805fb9f7660) Thanks [@phryneas](https://github.com/phryneas)! - Execute queries initiated by the "Explorer" tab with an `errorPolicy` of `all` to prevent unhandled rejection errors when the query returned an error.
+
 ## 4.24.9
 
 ### Patch Changes
