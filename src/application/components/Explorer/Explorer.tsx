@@ -203,12 +203,11 @@ export const Explorer = ({
     if (!clientId) {
       return;
     }
-    const last = lastIntrospection.current;
-    if (last && last.clientId === clientId) {
+    if (lastIntrospection.current.clientId === clientId) {
       return;
     }
     lastIntrospection.current = {
-      clientId: clientId,
+      clientId,
     };
     const observer = executeOperation({
       clientId,
