@@ -1,6 +1,12 @@
 import React from "react";
 import type { Reference } from "@apollo/client";
-import { ApolloClient, InMemoryCache, HttpLink } from "@apollo/client";
+import {
+  ApolloClient,
+  InMemoryCache,
+  HttpLink,
+  ApolloLink,
+} from "@apollo/client";
+import { ErrorLink } from "@apollo/client/link/error";
 import {
   useQuery,
   useLazyQuery,
@@ -42,7 +48,12 @@ export const createApolloClient4Provider = (
       },
     }),
 
-    link: new HttpLink({ uri: "http://localhost:4000" }),
+    link: ApolloLink.from([
+      new ErrorLink((arg) => {
+        console.log(name, "onError", arg);
+      }),
+      new HttpLink({ uri: "http://localhost:4000" }),
+    ]),
     localState: new LocalState(),
 
     devtools: {

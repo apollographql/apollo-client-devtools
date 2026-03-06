@@ -1,6 +1,13 @@
 import React from "react";
 import type { Reference } from "@apollo/client-3";
-import { ApolloClient, InMemoryCache, makeReference } from "@apollo/client-3";
+import {
+  ApolloClient,
+  InMemoryCache,
+  makeReference,
+  HttpLink,
+  ApolloLink,
+} from "@apollo/client-3";
+import { onError } from "@apollo/client-3/link/error";
 import {
   useQuery,
   useLazyQuery,
@@ -38,7 +45,13 @@ export const createApolloClient3Provider = (
         },
       },
     }),
-    uri: "http://localhost:4000",
+    link: ApolloLink.from([
+      onError((arg) => {
+        console.log(name, "onError", arg);
+      }),
+      new HttpLink({ uri: "http://localhost:4000" }),
+    ]),
+
     devtools: {
       enabled: true,
       name,

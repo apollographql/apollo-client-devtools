@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { ReactNode } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { gql } from "@apollo/client";
@@ -111,8 +111,7 @@ export const App = () => {
     data?.clients[0]?.id
   );
   const selected = useReactiveVar<Screens>(currentScreen);
-  const [embeddedExplorerIFrame, setEmbeddedExplorerIFrame] =
-    useState<HTMLIFrameElement | null>(null);
+  const explorerRef = useRef<Explorer.Ref>(null);
 
   const {
     data: clientData,
@@ -251,10 +250,7 @@ export const App = () => {
           <Explorer
             clientId={selectedClientId}
             isVisible={selected === Screens.Explorer}
-            embeddedExplorerProps={{
-              embeddedExplorerIFrame,
-              setEmbeddedExplorerIFrame,
-            }}
+            explorerRef={explorerRef}
           />
         </Tabs.Content>
         <Tabs.Content
@@ -262,10 +258,7 @@ export const App = () => {
           value={Screens.Queries}
         >
           <TabErrorBoundary remarks="Error on Queries tab:">
-            <Queries
-              clientId={selectedClientId}
-              explorerIFrame={embeddedExplorerIFrame}
-            />
+            <Queries clientId={selectedClientId} explorerRef={explorerRef} />
           </TabErrorBoundary>
         </Tabs.Content>
         <Tabs.Content
@@ -273,10 +266,7 @@ export const App = () => {
           value={Screens.Mutations}
         >
           <TabErrorBoundary remarks="Error on Mutations tab:">
-            <Mutations
-              clientId={selectedClientId}
-              explorerIFrame={embeddedExplorerIFrame}
-            />
+            <Mutations clientId={selectedClientId} explorerRef={explorerRef} />
           </TabErrorBoundary>
         </Tabs.Content>
         <Tabs.Content className="flex-1 overflow-hidden" value={Screens.Cache}>

@@ -8,6 +8,7 @@
     "skipLibCheck": true,
     "module": "ES2022",
     "target": "ES2022",
+    "lib": ["ES2022", "ES2024.Promise", "DOM", "DOM.AsyncIterable"],
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
     "resolveJsonModule": true,

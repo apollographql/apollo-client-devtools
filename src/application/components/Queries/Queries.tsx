@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { type RefObject, useMemo, useState } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { NetworkStatus, gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
@@ -29,6 +29,7 @@ import { SerializedErrorAlertDisclosurePanel } from "../SerializedErrorAlertDisc
 import { useIsExtensionInvalidated } from "@/application/machines/devtoolsMachine";
 import { ObjectViewer } from "../ObjectViewer";
 import { VariablesObject } from "../VariablesObject";
+import { type Explorer } from "../Explorer/Explorer";
 
 enum QueryTabs {
   Variables = "Variables",
@@ -71,14 +72,14 @@ export const GET_QUERIES: TypedDocumentNode<GetQueries, GetQueriesVariables> =
 
 interface QueriesProps {
   clientId: string | undefined;
-  explorerIFrame: HTMLIFrameElement | null;
+  explorerRef: RefObject<Explorer.Ref | null>;
 }
 
 const STABLE_EMPTY_QUERIES: Array<
   NonNullable<GetQueries["client"]>["queries"]["items"][number]
 > = [];
 
-export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
+export const Queries = ({ clientId, explorerRef }: QueriesProps) => {
   const [selected, setSelected] = useState("1");
   const [searchTerm, setSearchTerm] = useState("");
   const isExtensionInvalidated = useIsExtensionInvalidated();
@@ -211,7 +212,7 @@ export const Queries = ({ clientId, explorerIFrame }: QueriesProps) => {
                 <RunInExplorerButton
                   operation={selectedQuery.queryString}
                   variables={selectedQuery.variables ?? undefined}
-                  embeddedExplorerIFrame={explorerIFrame}
+                  explorerRef={explorerRef}
                 />
               </QueryLayout.Header>
               <QueryLayout.Content>

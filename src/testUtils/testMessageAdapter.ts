@@ -5,7 +5,7 @@ import { isRPCRequestMessage, type RPCRequest } from "../extension/rpc";
 import type { SafeAny } from "../types";
 import { createId } from "../utils/createId";
 
-interface TestAdapter extends MessageAdapter {
+export interface TestAdapter extends MessageAdapter {
   mocks: { messages: unknown[] };
   postMessage: jest.Mock<void, [message: unknown]>;
   mockClear: () => void;

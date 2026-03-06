@@ -8,6 +8,7 @@ import type { GetRpcClientMock } from "../../../../extension/devtools/__mocks__/
 import type { MutationV3Details } from "../../../../extension/tab/v3/types";
 import { gql } from "@apollo/client";
 import { print } from "graphql";
+import React from "react";
 
 jest.mock("../../../../extension/devtools/panelRpcClient.ts");
 
@@ -59,7 +60,9 @@ describe("<Mutations />", () => {
   test("queries render in the sidebar", async () => {
     mockRpcRequests();
 
-    renderWithApolloClient(<Mutations clientId="1" explorerIFrame={null} />);
+    renderWithApolloClient(
+      <Mutations clientId="1" explorerRef={React.createRef()} />
+    );
 
     const sidebar = screen.getByRole("complementary");
 
@@ -76,7 +79,7 @@ describe("<Mutations />", () => {
     mockRpcRequests();
 
     const { user } = renderWithApolloClient(
-      <Mutations clientId="1" explorerIFrame={null} />
+      <Mutations clientId="1" explorerRef={React.createRef()} />
     );
 
     await waitFor(() => {
@@ -97,7 +100,9 @@ describe("<Mutations />", () => {
   test("it renders an empty state", async () => {
     mockRpcRequests({ mutations: [] });
 
-    renderWithApolloClient(<Mutations clientId="1" explorerIFrame={null} />);
+    renderWithApolloClient(
+      <Mutations clientId="1" explorerRef={React.createRef()} />
+    );
 
     await waitFor(() => {
       expect(
@@ -109,7 +114,9 @@ describe("<Mutations />", () => {
   test("renders the mutation string", async () => {
     mockRpcRequests();
 
-    renderWithApolloClient(<Mutations clientId="1" explorerIFrame={null} />);
+    renderWithApolloClient(
+      <Mutations clientId="1" explorerRef={React.createRef()} />
+    );
 
     await waitFor(() => {
       expect(screen.getByTestId("query")).toHaveTextContent(/performTest/);
@@ -121,7 +128,7 @@ describe("<Mutations />", () => {
     mockRpcRequests();
 
     const { user } = renderWithApolloClient(
-      <Mutations clientId="1" explorerIFrame={null} />
+      <Mutations clientId="1" explorerRef={React.createRef()} />
     );
 
     const query = await screen.findByTestId("query");
@@ -150,7 +157,9 @@ describe("<Mutations />", () => {
       ],
     });
 
-    renderWithApolloClient(<Mutations clientId="1" explorerIFrame={null} />);
+    renderWithApolloClient(
+      <Mutations clientId="1" explorerRef={React.createRef()} />
+    );
 
     await waitFor(() => {
       expect(screen.getByText("Variables")).toBeInTheDocument();
@@ -183,7 +192,7 @@ describe("<Mutations />", () => {
     });
 
     const { user } = renderWithApolloClient(
-      <Mutations clientId="1" explorerIFrame={null} />
+      <Mutations clientId="1" explorerRef={React.createRef()} />
     );
 
     await waitFor(() => {

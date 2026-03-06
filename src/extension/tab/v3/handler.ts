@@ -60,7 +60,10 @@ export class ClientV3Handler extends ClientHandler<ApolloClient<any>> {
     variables?: JSONObject | undefined;
     fetchPolicy?: FetchPolicy;
   }): Promise<EmbeddedExplorerResponse> {
-    const result = await this.client.query(options);
+    const result = await this.client.query({
+      errorPolicy: "all",
+      ...options,
+    });
 
     return toExplorerResponse(result);
   }
