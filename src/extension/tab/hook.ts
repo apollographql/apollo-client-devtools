@@ -80,53 +80,41 @@ handleRpc("getClients", () => {
 });
 
 handleRpc("getClient", (clientId) => {
-  const handler = getHandlerByClientId(clientId as any);
-  if (!handler) {
-    return null;
-  }
-  return getClientInfo(handler.getClient());
+  const client = getClientById(clientId);
+
+  return client ? getClientInfo(client) : null;
 });
 
-handleRpc("getV3Queries", (clientId) => {
-  const handler = getHandlerByClientId(clientId);
-  if (!handler) return [];
-  return handler.getQueries();
-});
+handleRpc(
+  "getV3Queries",
+  (clientId) => getHandlerByClientId(clientId)?.getQueries() ?? []
+);
 
-handleRpc("getV4Queries", (clientId) => {
-  const handler = getHandlerByClientId(clientId);
-  if (!handler) return [];
-  return handler.getQueries();
-});
+handleRpc(
+  "getV4Queries",
+  (clientId) => getHandlerByClientId(clientId)?.getQueries() ?? []
+);
 
-handleRpc("getV3Mutations", (clientId) => {
-  const handler = getHandlerByClientId(clientId);
-  if (!handler) return [];
-  return handler.getMutations();
-});
+handleRpc(
+  "getV3Mutations",
+  (clientId) => getHandlerByClientId(clientId)?.getMutations() ?? []
+);
 
-handleRpc("getV4Mutations", (clientId) => {
-  const handler = getHandlerByClientId(clientId);
-  if (!handler) return [];
-  return handler.getMutations();
-});
+handleRpc(
+  "getV4Mutations",
+  (clientId) => getHandlerByClientId(clientId)?.getMutations() ?? []
+);
 
 handleRpc("getCache", (clientId) => {
-  const client = getClientById(clientId as any);
-  if (!client) return {};
-  return client.cache.extract(true) as JSONObject;
+  return (getClientById(clientId)?.cache.extract(true) as JSONObject) ?? {};
 });
 
 handleRpc("getV3MemoryInternals", (clientId) => {
-  const client = getClientById(clientId);
-  if (!client) return undefined;
-  return client.getMemoryInternals?.();
+  return getClientById(clientId)?.getMemoryInternals?.();
 });
 
 handleRpc("getV4MemoryInternals", (clientId) => {
-  const client = getClientById(clientId);
-  if (!client) return undefined;
-  return client.getMemoryInternals?.();
+  return getClientById(clientId)?.getMemoryInternals?.();
 });
 
 handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
