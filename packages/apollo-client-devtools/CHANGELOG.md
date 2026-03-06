@@ -1,5 +1,35 @@
 # Changelog
 
+## 4.24.9
+
+### Patch Changes
+
+- [#1814](https://github.com/apollographql/apollo-client-devtools/pull/1814) [`ab5df3a`](https://github.com/apollographql/apollo-client-devtools/commit/ab5df3ab54a1fab3ab8ec00c5ddf818b82cd88b6) Thanks [@github-actions](https://github.com/apps/github-actions)! - add error codes for new Apollo Client version
+
+## 4.24.8
+
+### Patch Changes
+
+- [#1809](https://github.com/apollographql/apollo-client-devtools/pull/1809) [`b5f7e92`](https://github.com/apollographql/apollo-client-devtools/commit/b5f7e92f4e86f93159a135e4534c9a34b529d1e9) Thanks [@github-actions](https://github.com/apps/github-actions)! - add error codes for new Apollo Client version
+
+## 4.24.7
+
+### Patch Changes
+
+- [#1807](https://github.com/apollographql/apollo-client-devtools/pull/1807) [`35507c4`](https://github.com/apollographql/apollo-client-devtools/commit/35507c45fc2fe3c85c5c874b8735a4ec1edff2b9) Thanks [@github-actions](https://github.com/apps/github-actions)! - add error codes for new Apollo Client version
+
+## 4.24.6
+
+### Patch Changes
+
+- [#1805](https://github.com/apollographql/apollo-client-devtools/pull/1805) [`4797de5`](https://github.com/apollographql/apollo-client-devtools/commit/4797de5080c4ed147e4e45010da0dfd3304e8f7c) Thanks [@github-actions](https://github.com/apps/github-actions)! - add error codes for new Apollo Client version
+
+## 4.24.5
+
+### Patch Changes
+
+- [#1802](https://github.com/apollographql/apollo-client-devtools/pull/1802) [`ad7dd40`](https://github.com/apollographql/apollo-client-devtools/commit/ad7dd40fffaf4398500ec82a9fb55f627631f1ec) Thanks [@github-actions](https://github.com/apps/github-actions)! - add error codes for new Apollo Client version
+
 ## 4.24.4
 
 ### Patch Changes
