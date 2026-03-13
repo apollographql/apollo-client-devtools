@@ -14,6 +14,7 @@ import {
   createRpcClient,
   createRpcHandler,
   createRpcStreamHandler,
+  SKIP_RESPONSE,
 } from "../rpc";
 import { loadErrorCodes } from "./loadErrorCodes";
 import { handleExplorerRequests } from "./handleExplorerRequests";
@@ -72,6 +73,9 @@ function getClientInfo(client: ApolloClient): ApolloClientInfo {
 }
 
 handleRpc("getClients", () => {
+  if (knownClients.size === 0) {
+    return SKIP_RESPONSE as any;
+  }
   return Array.from(knownClients).map(getClientInfo);
 });
 

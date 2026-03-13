@@ -14,8 +14,10 @@ export function handleExplorerRequests(
     ({ payload }) => {
       const handler = getHandlerByClientId(payload.clientId);
 
+      // In multi-frame scenarios (iframes), another frame may have this client
+      // so we silently return instead of throwing
       if (!handler) {
-        throw new Error("Could not find selected client");
+        return;
       }
 
       const observable = handler.executeOperation(payload);
