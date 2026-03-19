@@ -3,7 +3,7 @@ import type {
   CombinedProtocolErrors,
   LocalStateError,
 } from "@apollo/client";
-import { isNetworkRequestSettled } from "@apollo/client/utilities";
+import { isNetworkRequestSettled } from "@/utils/isNetworkRequestSettled";
 import type {
   ApolloClient,
   DocumentNode,
