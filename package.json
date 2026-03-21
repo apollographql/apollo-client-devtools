@@ -133,7 +133,7 @@
     "webpack": "5.105.4",
     "webpack-cli": "5.1.4",
     "webpack-stats-plugin": "1.1.3",
-    "ws": "8.19.0"
+    "ws": "8.20.0"
   },
   "workspaces": [
     "packages/*"
