@@ -91,7 +91,7 @@
     "@testing-library/user-event": "14.6.1",
     "@total-typescript/ts-reset": "0.6.1",
     "@types/archiver": "6.0.4",
-    "@types/chrome": "0.1.37",
+    "@types/chrome": "0.1.38",
     "@types/eslint__js": "8.42.3",
     "@types/jest": "29.5.14",
     "@types/react": "19.2.14",
