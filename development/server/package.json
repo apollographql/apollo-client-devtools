@@ -9,7 +9,7 @@
   "devDependencies": {
     "@apollo/datasource-rest": "6.4.1",
     "@apollo/server": "4.13.0",
-    "graphql": "16.13.1",
+    "graphql": "16.13.2",
     "lowdb": "1.0.0",
     "nodemon": "3.1.14"
   }
