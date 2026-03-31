@@ -3,7 +3,6 @@ import type {
   CombinedProtocolErrors,
   LocalStateError,
 } from "@apollo/client";
-import { isNetworkRequestSettled } from "@apollo/client/utilities";
 import type {
   ApolloClient,
   DocumentNode,
@@ -43,6 +42,10 @@ type BrandedErrors = {
   CombinedProtocolErrors: CombinedProtocolErrors;
   LocalStateError: LocalStateError;
 };
+
+function isNetworkRequestSettled(networkStatus: number): boolean {
+  return networkStatus === 7 || networkStatus === 8;
+}
 
 function isBranded<T extends keyof BrandedErrors>(
   error: unknown,
