@@ -2,6 +2,7 @@ import type {
   CombinedGraphQLErrors,
   CombinedProtocolErrors,
   LocalStateError,
+  NetworkStatus,
 } from "@apollo/client";
 import type {
   ApolloClient,
@@ -43,7 +44,7 @@ type BrandedErrors = {
   LocalStateError: LocalStateError;
 };
 
-function isNetworkRequestSettled(networkStatus: number): boolean {
+function isNetworkRequestSettled(networkStatus: NetworkStatus): boolean {
   return networkStatus === 7 || networkStatus === 8;
 }
 
