@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.25.1
+
+### Patch Changes
+
+- [#1840](https://github.com/apollographql/apollo-client-devtools/pull/1840) [`62f69b8`](https://github.com/apollographql/apollo-client-devtools/commit/62f69b8cede4d1f28c5947fcb47ef096d5d874bb) Thanks [@aramikuto](https://github.com/aramikuto)! - Fix bundling issue causing missing `@apollo/client/utilities` module error with Apollo Client v4.
+
 ## 4.25.0
 
 ### Minor Changes
