@@ -1,7 +1,6 @@
 import { twMerge } from "tailwind-merge";
 
 import ErrorPlanet from "../assets/error-planet.svg";
-import { GitHubIssueLink, LABELS, SECTIONS } from "./GitHubIssueLink";
 import type { ReactNode } from "react";
 import { CodeBlock } from "./CodeBlock";
 
@@ -65,39 +64,7 @@ function PageErrorDetails({ error }: PageErrorDetailsProps) {
   );
 }
 
-interface PageErrorLinkProps {
-  error: Error;
-  children: ReactNode;
-  remarks?: string;
-}
-
-function PageErrorGitHubLink({ remarks, error, children }: PageErrorLinkProps) {
-  return (
-    <GitHubIssueLink
-      labels={[LABELS.bug]}
-      body={`
-${remarks}
-
-\`\`\`
-${error.name}: ${error.message}
-
-${error.stack}
-\`\`\`
-
-### Additional details
-<!-- Please provide any additional details of the issue here, otherwise feel free to delete this section. -->
-
-${SECTIONS.apolloClientVersion}
-${SECTIONS.devtoolsVersion}
-`}
-    >
-      {children}
-    </GitHubIssueLink>
-  );
-}
-
 PageError.Content = PageErrorContent;
-PageError.GitHubLink = PageErrorGitHubLink;
 PageError.Details = PageErrorDetails;
 PageError.Body = PageErrorBody;
 PageError.Title = PageErrorTitle;
