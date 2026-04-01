@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.25.2
+
+### Patch Changes
+
+- [#1836](https://github.com/apollographql/apollo-client-devtools/pull/1836) [`806b89c`](https://github.com/apollographql/apollo-client-devtools/commit/806b89c2cb9ce083af3f2476a4caab9a824c930a) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Due to the number of blank or low-quality issue submissions, GitHub issue links are no longer prefilled and link to the issues page.
+
 ## 4.25.1
 
 ### Patch Changes
