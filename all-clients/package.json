@@ -111,6 +111,7 @@
     "@apollo-client/3.14.0-alpha.1": "npm:@apollo/client@3.14.0-alpha.1",
     "@apollo-client/3.14.0-rc.0": "npm:@apollo/client@3.14.0-rc.0",
     "@apollo-client/3.14.0": "npm:@apollo/client@3.14.0",
+    "@apollo-client/3.14.1": "npm:@apollo/client@3.14.1",
     "@apollo-client/4.0.0-alpha.0": "npm:@apollo/client@4.0.0-alpha.0",
     "@apollo-client/4.0.0-alpha.1": "npm:@apollo/client@4.0.0-alpha.1",
     "@apollo-client/4.0.0-alpha.2": "npm:@apollo/client@4.0.0-alpha.2",
@@ -183,6 +184,7 @@
     "@apollo-client/4.1.4": "npm:@apollo/client@4.1.4",
     "@apollo-client/4.1.5": "npm:@apollo/client@4.1.5",
     "@apollo-client/4.1.6": "npm:@apollo/client@4.1.6",
+    "@apollo-client/4.1.7": "npm:@apollo/client@4.1.7",
     "@apollo-client/4.2.0-alpha.0": "npm:@apollo/client@4.2.0-alpha.0",
     "@apollo-client/4.2.0-alpha.1": "npm:@apollo/client@4.2.0-alpha.1"
   },
