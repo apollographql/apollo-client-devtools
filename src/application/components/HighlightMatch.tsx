@@ -4,7 +4,20 @@ interface HighlightMatchProps {
 }
 
 const HighlightMatch = ({ searchTerm, value }: HighlightMatchProps) => {
-  const regex = new RegExp(searchTerm, "i");
+  if (!searchTerm) {
+    return <>{value}</>;
+  }
+
+  const escapedSearchTerm = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+  let regex: RegExp;
+
+  try {
+    regex = new RegExp(escapedSearchTerm, "i");
+  } catch {
+    return <>{value}</>;
+  }
+
   const match = regex.exec(value);
 
   if (!match) {
@@ -17,7 +30,7 @@ const HighlightMatch = ({ searchTerm, value }: HighlightMatchProps) => {
       <span className="bg-searchHighlight dark:bg-searchHighlight-dark text-inverted dark:text-inverted-dark">
         {match[0]}
       </span>
-      {value.slice(match.index + searchTerm.length)}
+      {value.slice(match.index + match[0].length)}
     </span>
   );
 };
