@@ -122,7 +122,7 @@
     "rimraf": "5.0.10",
     "style-loader": "3.3.4",
     "tailwindcss": "3.4.19",
-    "terser-webpack-plugin": "5.4.0",
+    "terser-webpack-plugin": "5.5.0",
     "ts-jest": "29.4.9",
     "ts-loader": "9.5.7",
     "tsx": "4.21.0",
