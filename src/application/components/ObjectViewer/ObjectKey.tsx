@@ -15,11 +15,7 @@ export const ObjectKey = customRenderable(
     const uniqueChars = new Set(softWrapCharacters);
     const regex = softWrapCharacters
       ? new RegExp(
-          `(${softWrapCharacters
-            .map((character) =>
-              character.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-            )
-            .join("|")})`
+          `(${softWrapCharacters.map((character) => RegExp.escape(character)).join("|")})`
         )
       : null;
 
