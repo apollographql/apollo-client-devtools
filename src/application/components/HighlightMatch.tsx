@@ -8,7 +8,7 @@ const HighlightMatch = ({ searchTerm, value }: HighlightMatchProps) => {
     return <>{value}</>;
   }
 
-  const escapedSearchTerm = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const escapedSearchTerm = RegExp.escape(searchTerm);
 
   let regex: RegExp;
 
