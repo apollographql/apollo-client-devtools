@@ -518,9 +518,12 @@
     "4.1.5": "44",
     "4.1.6": "44",
     "4.1.7": "44",
+    "4.1.8": "44",
+    "4.1.9": "44",
     "4.2.0-alpha.0": "44",
     "4.2.0-alpha.1": "44",
-    "4.2.0-alpha.2": "44"
+    "4.2.0-alpha.2": "44",
+    "4.2.0-alpha.3": "44"
   },
   "errors": {
     "1": "AQEBAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUECwUEDAYEDQYEDgYGDwYEEAcHBwgIBwgIEQkEEgkEEwkJFAkEFQkEFgoEFwoKGAoLGQoMGgoNGwoOHAoPHQoEHgoEHwoEIAsEIQsEIgwEIw0EJA4EJQ8QJg8RJxAEKBEEKRISKhMTKxQULBUVLBYWLRcXLhgYLxkEMBoEMRoEMhoEMxoENBsZNRwaNhwENx0EOB4bOR4cOh4dOx4ePB4fPR8gPiAhPyAiQCAjQSAkQiEEQyElByEIRCImRSIERiInRyIoRCIpSCIqSSIrSiIESyMETCQETSQE",
