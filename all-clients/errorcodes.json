@@ -167,7 +167,12 @@
     "The '%s' field resolves the value from the cache, for example from a 'read' function, but a 'no-cache' fetch policy was used. The field value has been set to `null`. Either define a local resolver or use a fetch policy that uses the cache to ensure the field is resolved correctly.",
     "Could not find a resolver for the '%s' field nor does the cache resolve the field. The field value has been set to `null`. Either define a resolver for the field or ensure the cache can resolve the value, for example, by adding a 'read' function to a field policy in 'InMemoryCache'.",
     "Could not find pending chunk for incremental value. Please file an issue for the Apollo Client team to investigate.",
-    "`@defer` and `@stream` are not supported without specifying an incremental handler. Please pass a handler as the `incrementalHandler` option to the `ApolloClient` constructor."
+    "`@defer` and `@stream` are not supported without specifying an incremental handler. Please pass a handler as the `incrementalHandler` option to the `ApolloClient` constructor.",
+    "`refetchOn` was set on query '%s' but no `RefetchEventManager` is configured on this `ApolloClient` instance. This option has no effect. Pass a `RefetchEventManager` instance to the `refetchEventManager` option on the `ApolloClient` constructor.",
+    "`refetchOn` references the '%s' event on query '%s' but no source is configured for it on the `RefetchEventManager`. This event will never fire. Add a source for the event to the `sources` option or call `setEventSource` on the refetch event manager.",
+    "Connected an `ApolloClient` instance to a `RefetchEventManager` that was already connected to a different `ApolloClient`. The previous client has been disconnected and will no longer receive refetch events from this manager.",
+    "Received '%s' event but an `ApolloClient` instance is not connected to the `RefetchEventManager`. No queries will refetch. Pass the manager to the `refetchEventManager` option on the `ApolloClient` constructor.",
+    "Received '%s' event but no source is configured for it on the `RefetchEventManager`. No queries will refetch. Add the event to the `sources` option or call `setEventSource`."
   ],
   "allConditions": [
     null,
@@ -337,7 +342,8 @@
     "@apollo/client/local-state/LocalState.js",
     "@apollo/client/incremental/handlers/notImplemented.js",
     "@apollo/client/link/ws/index.js",
-    "@apollo/client/incremental/handlers/graphql17Alpha9.js"
+    "@apollo/client/incremental/handlers/graphql17Alpha9.js",
+    "@apollo/client/core/RefetchEventManager.js"
   ],
   "byVersion": {
     "3.8.0-beta.0": "1",
@@ -523,7 +529,8 @@
     "4.2.0-alpha.0": "44",
     "4.2.0-alpha.1": "44",
     "4.2.0-alpha.2": "44",
-    "4.2.0-alpha.3": "44"
+    "4.2.0-alpha.3": "44",
+    "4.2.0-alpha.4": "48"
   },
   "errors": {
     "1": "AQEBAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUECwUEDAYEDQYEDgYGDwYEEAcHBwgIBwgIEQkEEgkEEwkJFAkEFQkEFgoEFwoKGAoLGQoMGgoNGwoOHAoPHQoEHgoEHwoEIAsEIQsEIgwEIw0EJA4EJQ8QJg8RJxAEKBEEKRISKhMTKxQULBUVLBYWLRcXLhgYLxkEMBoEMRoEMhoEMxoENBsZNRwaNhwENx0EOB4bOR4cOh4dOx4ePB4fPR8gPiAhPyAiQCAjQSAkQiEEQyElByEIRCImRSIERiInRyIoRCIpSCIqSSIrSiIESyMETCQETSQE",
@@ -572,6 +579,7 @@
     "44": "RD01RT0ERj0nPD1ImT0ERD43SD4qST44Bz8IQkAEQ0AlSkEER0I2TEMEPkQhP0QiQEQzQUQ0S0UEECUHhx9JPR88iB9KiR9LhDtFhTtGVSg7LRcXgTdCgjc6Uyc6Vic9Vxo+Nx0ENTwaNjwEKhMtKxQUXSsIXisEQywlXCxBWy1AYC4EYS4EYi4EjUZQjUZQB0YIpEYEpUYEj0YEkEYEkUYEkkYEB0YIk0ZRokgEJQ8yJg8RIgxDgzpEoAsEoQsEIQsEpklap0dbDAZOjAZPDgYvigZMGQYMGgYxGwYOHAYPiwZNmgZUmwZVDwYEowlZEQkEnQlXWAk/EgkEngkEFQkEFgoElApSHQoEHgoEYwoElQpTlgpSnwpYlwpSWgoEmApShgpHAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEWSkE",
     "45": "RD01RT0ERj0nPD1ImT0ERD43SD4qST44Bz8IQkAEQ0AlSkEER0I2TEMEPkQhP0QiQEQzQUQ0S0UEECUHhx9JPR88iB9KiR9LhDtFhTtGVSg7LRcXgTdCgjc6Uyc6Vic9Vxo+Nx0ENTwaNjwEKhMtKxQUXSsIXisEQywlXCxBWy1AYC4EYS4EYi4EjUZQjUZQB0YIj0YEkEYEkUYEkkYEB0YIk0ZRokgEJQ8yJg8RIgxDgzpEoAsEoQsEIQsEpklanEdWDAZOjAZPDgYvigZMGQYMGgYxGwYOHAYPiwZNmgZUmwZVDwYEEQkEnQlXWAk/EgkEngkEFQkEFgoElApSHQoEHgoEYwoElQpTlgpSnwpYlwpSWgoEmApShgpHAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEWSkE",
     "46": "RD01RT0ERj0nPD1ImT0ERD43SD4qST44Bz8IQkAEQ0AlSkEER0I2TEMEPkQhP0QiQEQzQUQ0S0UEECUHhx9JPR88iB9KiR9LhDtFhTtGVSg7LRcXgTdCgjc6Uyc6Vic9Vxo+Nx0ENTwaNjwEKhMtKxQUXSsIXisEQywlXCxBWy1AYC4EYS4EYi4EjUZQjUZQB0YIpEYEpUYEj0YEkEYEkUYEkkYEB0YIk0ZRokgEJQ8yJg8RIgxDgzpEoAsEoQsEIQsEpklanEdWDAZOjAZPDgYvigZMGQYMGgYxGwYOHAYPiwZNmgZUmwZVDwYEEQkEnQlXWAk/EgkEngkEFQkEFgoElApSHQoEHgoEYwoElQpTlgpSnwpYlwpSWgoEmApShgpHAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEWSkE",
-    "47": "RD01RT0ERj0nPD1ImT0ERD43SD4qST44Bz8IQkAEQ0AlSkEER0I2TEMEPkQhP0QiQEQzQUQ0S0UEECUHhx9JPR88iB9KiR9LhDtFhTtGVSg7LRcXgTdCgjc6Uyc6Vic9Vxo+Nx0ENTwaNjwEKhMtKxQUXSsIXisEQywlXCxBWy1AYC4EYS4EYi4EjUZQjUZQB0YIpEYEpUYEj0YEkEYEkUYEkkYEB0YIk0ZRokgEJQ8yJg8RIgxDgzpEoAsEoQsEIQsEpklap0dbDAZOjAZPDgYvigZMGQYMGgYxGwYOHAYPiwZNmgZUmwZVDwYEEQkEnQlXWAk/EgkEngkEFQkEFgoElApSHQoEHgoEYwoElQpTlgpSnwpYlwpSWgoEmApShgpHAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEWSkE"
+    "47": "RD01RT0ERj0nPD1ImT0ERD43SD4qST44Bz8IQkAEQ0AlSkEER0I2TEMEPkQhP0QiQEQzQUQ0S0UEECUHhx9JPR88iB9KiR9LhDtFhTtGVSg7LRcXgTdCgjc6Uyc6Vic9Vxo+Nx0ENTwaNjwEKhMtKxQUXSsIXisEQywlXCxBWy1AYC4EYS4EYi4EjUZQjUZQB0YIpEYEpUYEj0YEkEYEkUYEkkYEB0YIk0ZRokgEJQ8yJg8RIgxDgzpEoAsEoQsEIQsEpklap0dbDAZOjAZPDgYvigZMGQYMGgYxGwYOHAYPiwZNmgZUmwZVDwYEEQkEnQlXWAk/EgkEngkEFQkEFgoElApSHQoEHgoEYwoElQpTlgpSnwpYlwpSWgoEmApShgpHAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEWSkE",
+    "48": "RD01RT0ERj0nPD1ImT0ERD43SD4qST44Bz8IQkAEQ0AlSkEER0I2TEMEPkQhP0QiQEQzQUQ0S0UEECUHhx9JPR88iB9KiR9LhDtFhTtGVSg7LRcXgTdCgjc6Uyc6Vic9Vxo+Nx0ENTwaNjwEKhMtKxQUXSsIXisEQywlXCxBWy1AYC4EYS4EYi4EjUZQjUZQB0YIpEYEpUYEj0YEkEYEkUYEkkYEB0YIk0ZRokgEJQ8yJg8RIgxDgzpEoAsEoQsEIQsEpklap0dbDAZOjAZPqAYEqQYEDgYvigZMGQYMGgYxGwYOHAYPiwZNmgZUmwZVDwYEowlZEQkEnQlXWAk/EgkEngkEFQkEFgoElApSHQoEHgoEYwoElQpTlgpSnwpYlwpSWgoEmApShgpHqkoEq0oErEoEAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEWSkE"
   }
 }
