@@ -172,7 +172,8 @@
     "`refetchOn` references the '%s' event on query '%s' but no source is configured for it on the `RefetchEventManager`. This event will never fire. Add a source for the event to the `sources` option or call `setEventSource` on the refetch event manager.",
     "Connected an `ApolloClient` instance to a `RefetchEventManager` that was already connected to a different `ApolloClient`. The previous client has been disconnected and will no longer receive refetch events from this manager.",
     "Received '%s' event but an `ApolloClient` instance is not connected to the `RefetchEventManager`. No queries will refetch. Pass the manager to the `refetchEventManager` option on the `ApolloClient` constructor.",
-    "Received '%s' event but no source is configured for it on the `RefetchEventManager`. No queries will refetch. Add the event to the `sources` option or call `setEventSource`."
+    "Received '%s' event but no source is configured for it on the `RefetchEventManager`. No queries will refetch. Add the event to the `sources` option or call `setEventSource`.",
+    "`refetchOn` was set on query '%s' but no `RefetchEventManager` is configured on this `ApolloClient` instance. This option has no effect until a RefetchEventManager is connected to this client. Pass a `RefetchEventManager` instance to the `refetchEventManager` option on the `ApolloClient` constructor."
   ],
   "allConditions": [
     null,
@@ -530,7 +531,12 @@
     "4.2.0-alpha.1": "44",
     "4.2.0-alpha.2": "44",
     "4.2.0-alpha.3": "44",
-    "4.2.0-alpha.4": "48"
+    "4.2.0-alpha.4": "48",
+    "4.2.0-alpha.5": "48",
+    "4.2.0-alpha.6": "48",
+    "4.2.0-alpha.7": "48",
+    "4.2.0-alpha.8": "49",
+    "4.2.0-rc.0": "49"
   },
   "errors": {
     "1": "AQEBAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUECwUEDAYEDQYEDgYGDwYEEAcHBwgIBwgIEQkEEgkEEwkJFAkEFQkEFgoEFwoKGAoLGQoMGgoNGwoOHAoPHQoEHgoEHwoEIAsEIQsEIgwEIw0EJA4EJQ8QJg8RJxAEKBEEKRISKhMTKxQULBUVLBYWLRcXLhgYLxkEMBoEMRoEMhoEMxoENBsZNRwaNhwENx0EOB4bOR4cOh4dOx4ePB4fPR8gPiAhPyAiQCAjQSAkQiEEQyElByEIRCImRSIERiInRyIoRCIpSCIqSSIrSiIESyMETCQETSQE",
@@ -580,6 +586,7 @@
     "45": "RD01RT0ERj0nPD1ImT0ERD43SD4qST44Bz8IQkAEQ0AlSkEER0I2TEMEPkQhP0QiQEQzQUQ0S0UEECUHhx9JPR88iB9KiR9LhDtFhTtGVSg7LRcXgTdCgjc6Uyc6Vic9Vxo+Nx0ENTwaNjwEKhMtKxQUXSsIXisEQywlXCxBWy1AYC4EYS4EYi4EjUZQjUZQB0YIj0YEkEYEkUYEkkYEB0YIk0ZRokgEJQ8yJg8RIgxDgzpEoAsEoQsEIQsEpklanEdWDAZOjAZPDgYvigZMGQYMGgYxGwYOHAYPiwZNmgZUmwZVDwYEEQkEnQlXWAk/EgkEngkEFQkEFgoElApSHQoEHgoEYwoElQpTlgpSnwpYlwpSWgoEmApShgpHAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEWSkE",
     "46": "RD01RT0ERj0nPD1ImT0ERD43SD4qST44Bz8IQkAEQ0AlSkEER0I2TEMEPkQhP0QiQEQzQUQ0S0UEECUHhx9JPR88iB9KiR9LhDtFhTtGVSg7LRcXgTdCgjc6Uyc6Vic9Vxo+Nx0ENTwaNjwEKhMtKxQUXSsIXisEQywlXCxBWy1AYC4EYS4EYi4EjUZQjUZQB0YIpEYEpUYEj0YEkEYEkUYEkkYEB0YIk0ZRokgEJQ8yJg8RIgxDgzpEoAsEoQsEIQsEpklanEdWDAZOjAZPDgYvigZMGQYMGgYxGwYOHAYPiwZNmgZUmwZVDwYEEQkEnQlXWAk/EgkEngkEFQkEFgoElApSHQoEHgoEYwoElQpTlgpSnwpYlwpSWgoEmApShgpHAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEWSkE",
     "47": "RD01RT0ERj0nPD1ImT0ERD43SD4qST44Bz8IQkAEQ0AlSkEER0I2TEMEPkQhP0QiQEQzQUQ0S0UEECUHhx9JPR88iB9KiR9LhDtFhTtGVSg7LRcXgTdCgjc6Uyc6Vic9Vxo+Nx0ENTwaNjwEKhMtKxQUXSsIXisEQywlXCxBWy1AYC4EYS4EYi4EjUZQjUZQB0YIpEYEpUYEj0YEkEYEkUYEkkYEB0YIk0ZRokgEJQ8yJg8RIgxDgzpEoAsEoQsEIQsEpklap0dbDAZOjAZPDgYvigZMGQYMGgYxGwYOHAYPiwZNmgZUmwZVDwYEEQkEnQlXWAk/EgkEngkEFQkEFgoElApSHQoEHgoEYwoElQpTlgpSnwpYlwpSWgoEmApShgpHAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEWSkE",
-    "48": "RD01RT0ERj0nPD1ImT0ERD43SD4qST44Bz8IQkAEQ0AlSkEER0I2TEMEPkQhP0QiQEQzQUQ0S0UEECUHhx9JPR88iB9KiR9LhDtFhTtGVSg7LRcXgTdCgjc6Uyc6Vic9Vxo+Nx0ENTwaNjwEKhMtKxQUXSsIXisEQywlXCxBWy1AYC4EYS4EYi4EjUZQjUZQB0YIpEYEpUYEj0YEkEYEkUYEkkYEB0YIk0ZRokgEJQ8yJg8RIgxDgzpEoAsEoQsEIQsEpklap0dbDAZOjAZPqAYEqQYEDgYvigZMGQYMGgYxGwYOHAYPiwZNmgZUmwZVDwYEowlZEQkEnQlXWAk/EgkEngkEFQkEFgoElApSHQoEHgoEYwoElQpTlgpSnwpYlwpSWgoEmApShgpHqkoEq0oErEoEAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEWSkE"
+    "48": "RD01RT0ERj0nPD1ImT0ERD43SD4qST44Bz8IQkAEQ0AlSkEER0I2TEMEPkQhP0QiQEQzQUQ0S0UEECUHhx9JPR88iB9KiR9LhDtFhTtGVSg7LRcXgTdCgjc6Uyc6Vic9Vxo+Nx0ENTwaNjwEKhMtKxQUXSsIXisEQywlXCxBWy1AYC4EYS4EYi4EjUZQjUZQB0YIpEYEpUYEj0YEkEYEkUYEkkYEB0YIk0ZRokgEJQ8yJg8RIgxDgzpEoAsEoQsEIQsEpklap0dbDAZOjAZPqAYEqQYEDgYvigZMGQYMGgYxGwYOHAYPiwZNmgZUmwZVDwYEowlZEQkEnQlXWAk/EgkEngkEFQkEFgoElApSHQoEHgoEYwoElQpTlgpSnwpYlwpSWgoEmApShgpHqkoEq0oErEoEAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEWSkE",
+    "49": "RD01RT0ERj0nPD1ImT0ERD43SD4qST44Bz8IQkAEQ0AlSkEER0I2TEMEPkQhP0QiQEQzQUQ0S0UEECUHhx9JPR88iB9KiR9LhDtFhTtGVSg7LRcXgTdCgjc6Uyc6Vic9Vxo+Nx0ENTwaNjwEKhMtKxQUXSsIXisEQywlXCxBWy1AYC4EYS4EYi4EjUZQjUZQB0YIpEYEpUYEj0YEkEYEkUYEkkYEB0YIk0ZRokgEJQ8yJg8RIgxDgzpEoAsEoQsEIQsEpklap0dbDAZOjAZPrQYEqQYEDgYvigZMGQYMGgYxGwYOHAYPiwZNmgZUmwZVDwYEowlZEQkEnQlXWAk/EgkEngkEFQkEFgoElApSHQoEHgoEYwoElQpTlgpSnwpYlwpSWgoEmApShgpHqkoEq0oErEoEAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUEUQUEWSkE"
   }
 }
