@@ -4,7 +4,7 @@
 
 ### Minor Changes
 
-- [#1873](https://github.com/apollographql/apollo-client-devtools/pull/1873) [`6cda278`](https://github.com/apollographql/apollo-client-devtools/commit/6cda278ba2d3792dfd6c8a56b6c92daaa6bff41d) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Add support for inspecting clients in iframes.
+- [#1797](https://github.com/apollographql/apollo-client-devtools/pull/1797) [`433e16c`](https://github.com/apollographql/apollo-client-devtools/commit/433e16c58ad9b7df78ab366690db49504b2f1cdc) Thanks [@gocamille](https://github.com/gocamille)! - Add support for inspecting clients in iframes.
 
 ### Patch Changes
 
