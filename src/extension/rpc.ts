@@ -19,6 +19,9 @@ import type {
 import type { CacheWrite } from "./tab/shared/types";
 import type { ActorMessage } from "./actor";
 
+// Symbol to indicate a handler should not send a response (for multi-frame support)
+export const SKIP_RESPONSE = Symbol("SKIP_RESPONSE");
+
 export type RPCRequest = {
   getClients(): ApolloClientInfo[];
   getClient(id: string): ApolloClientInfo | null;
@@ -273,6 +276,12 @@ export function createRpcHandler(adapter: MessageAdapter) {
         const result = await Promise.resolve(
           handler(...(params as Parameters<RPCRequest[TName]>))
         );
+
+        // If handler returns SKIP_RESPONSE, don't send a response
+        // This is used for multi-frame support where only frames with clients should respond
+        if (result === SKIP_RESPONSE) {
+          return;
+        }
 
         adapter.postMessage({
           source: "apollo-client-devtools",
