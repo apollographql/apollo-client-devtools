@@ -1,5 +1,5 @@
 import { Button } from "../Button";
-import { GitHubIssueLink, SECTIONS, LABELS } from "../GitHubIssueLink";
+import { GitHubIssueLink } from "../GitHubIssueLink";
 import { Modal } from "../Modal";
 import IconGitHubSolid from "@apollo/icons/small/IconGitHubSolid.svg";
 
@@ -26,14 +26,7 @@ export function UnknownErrorModal({ open }: ErrorModalProps) {
           variant="secondary"
           icon={<IconGitHubSolid />}
         >
-          <GitHubIssueLink
-            className="no-underline"
-            labels={[LABELS.bug]}
-            body={`
-${SECTIONS.apolloClientVersion}
-${SECTIONS.devtoolsVersion}
-`}
-          >
+          <GitHubIssueLink className="no-underline">
             <span>Create an issue</span>
           </GitHubIssueLink>
         </Button>

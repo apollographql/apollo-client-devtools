@@ -1,7 +1,7 @@
 import IconWarningSolid from "@apollo/icons/default/IconWarningSolid.svg";
 import { CodeBlock } from "../CodeBlock";
 import { Disclosure } from "../Disclosure";
-import { GitHubIssueLink, SECTIONS, LABELS } from "../GitHubIssueLink";
+import { GitHubIssueLink } from "../GitHubIssueLink";
 import { Modal } from "../Modal";
 import { expectTypeOf } from "expect-type";
 import { Admonition } from "../Admonition";
@@ -266,14 +266,7 @@ globalThis.WebSocket = WebSocket;
             <Disclosure.Panel>
               This could be a bug with Apollo Client Devtools or the VSCode
               Extension. Please create a{" "}
-              <GitHubIssueLink
-                repository="vscode-graphql"
-                labels={[LABELS.bug, LABELS.clientDiscovery]}
-                body={`
-${SECTIONS.apolloClientVersion}
-${SECTIONS.devtoolsVersion}
-`}
-              >
+              <GitHubIssueLink repository="vscode-graphql">
                 GitHub issue
               </GitHubIssueLink>{" "}
               to get help from the Apollo Client maintainers.

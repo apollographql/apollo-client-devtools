@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef } from "react";
 import { screen } from "@testing-library/react";
 
 import { renderWithApolloClient } from "../../../utilities/testing/renderWithApolloClient";
@@ -22,18 +22,8 @@ document.createRange = () => {
 };
 
 const EmbeddedExplorerWrapper = () => {
-  const [embeddedExplorerIFrame, setEmbeddedExplorerIFrame] =
-    useState<HTMLIFrameElement | null>(null);
-  return (
-    <Explorer
-      clientId="1"
-      isVisible={true}
-      embeddedExplorerProps={{
-        embeddedExplorerIFrame,
-        setEmbeddedExplorerIFrame,
-      }}
-    />
-  );
+  const explorerRef = useRef<Explorer.Ref>(null);
+  return <Explorer clientId="1" isVisible={true} explorerRef={explorerRef} />;
 };
 
 describe("<Explorer />", () => {

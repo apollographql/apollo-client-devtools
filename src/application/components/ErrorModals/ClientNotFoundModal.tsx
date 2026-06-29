@@ -1,9 +1,8 @@
 import { Button } from "../Button";
 import { Disclosure } from "../Disclosure";
 import { ExternalLink } from "../ExternalLink";
-import { GitHubIssueLink, SECTIONS, LABELS } from "../GitHubIssueLink";
+import { GitHubIssueLink } from "../GitHubIssueLink";
 import { Modal } from "../Modal";
-import IconGitHubSolid from "@apollo/icons/small/IconGitHubSolid.svg";
 
 interface ClientNotFoundModalProps {
   open: boolean;
@@ -39,18 +38,9 @@ export function ClientNotFoundModal({
           button to look for the client again.
         </Modal.Description>
         <Modal.Description>
-          Please{" "}
-          <GitHubIssueLink
-            labels={[LABELS.bug]}
-            body={`
-${SECTIONS.apolloClientVersion}
-${SECTIONS.devtoolsVersion}
-`}
-          >
-            create an issue
-          </GitHubIssueLink>{" "}
-          if you have followed the suggestions and continue to see this message.
-          This could be a bug with Apollo Client Devtools.
+          Please <GitHubIssueLink>create an issue</GitHubIssueLink> if you have
+          followed the suggestions and continue to see this message. This could
+          be a bug with Apollo Client Devtools.
         </Modal.Description>
       </Modal.Header>
       <Modal.Body>
@@ -146,15 +136,7 @@ ${SECTIONS.devtoolsVersion}
               <p className="mt-4">
                 If the value is <code>undefined</code>, this is most likely a
                 bug with Apollo Client. Please open a{" "}
-                <GitHubIssueLink
-                  labels={[LABELS.bug]}
-                  repository="apollo-client"
-                  body={`
-${SECTIONS.reproduction}
-${SECTIONS.apolloClientVersion}
-${SECTIONS.devtoolsVersion}
-`}
-                >
+                <GitHubIssueLink repository="apollo-client">
                   GitHub issue
                 </GitHubIssueLink>{" "}
                 in the Apollo Client repository to get help from the Apollo
@@ -201,38 +183,13 @@ ${SECTIONS.devtoolsVersion}
             </Disclosure.Button>
             <Disclosure.Panel>
               This could be a bug with Apollo Client Devtools. Please create a{" "}
-              <GitHubIssueLink
-                labels={[LABELS.bug, LABELS.clientDiscovery]}
-                body={`
-${SECTIONS.apolloClientVersion}
-${SECTIONS.devtoolsVersion}
-`}
-              >
-                GitHub issue
-              </GitHubIssueLink>{" "}
-              to get help from the Apollo Client maintainers.
+              <GitHubIssueLink>GitHub issue</GitHubIssueLink> to get help from
+              the Apollo Client maintainers.
             </Disclosure.Panel>
           </Disclosure>
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <Button
-          asChild
-          size="md"
-          variant="secondary"
-          icon={<IconGitHubSolid />}
-        >
-          <GitHubIssueLink
-            className="no-underline"
-            labels={[LABELS.bug]}
-            body={`
-${SECTIONS.apolloClientVersion}
-${SECTIONS.devtoolsVersion}
-`}
-          >
-            <span>Create an issue</span>
-          </GitHubIssueLink>
-        </Button>
         <Button size="md" variant="primary" onClick={onRetry}>
           Retry
         </Button>

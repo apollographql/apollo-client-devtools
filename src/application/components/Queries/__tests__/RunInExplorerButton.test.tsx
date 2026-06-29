@@ -1,9 +1,9 @@
-import React from "react";
 import { screen, render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { currentScreen } from "../../Layouts/Navigation";
 import { RunInExplorerButton } from "../RunInExplorerButton";
+import { type Explorer } from "../../Explorer/Explorer";
 
 jest.mock("../../Layouts/Navigation", () => ({
   currentScreen: jest.fn(),
@@ -28,10 +28,16 @@ describe("<RunInExplorerButton />", () => {
     variables: {
       filter: "red",
     },
-    embeddedExplorerIFrame: (
-      <iframe src="https://embed.apollographql.com" />
-    ) as unknown as HTMLIFrameElement,
+    explorerRef: {
+      current: {
+        postMessage: jest.fn(),
+      } satisfies Explorer.Ref,
+    },
   };
+
+  afterEach(() => {
+    props.explorerRef.current!.postMessage.mockReset();
+  });
 
   it("should navigate to the Explorer panel", async () => {
     const user = userEvent.setup();
@@ -40,5 +46,10 @@ describe("<RunInExplorerButton />", () => {
     expect(button).toBeInTheDocument();
     await user.click(button);
     expect(currentScreen).toHaveBeenCalledWith("explorer");
+    expect(props.explorerRef.current.postMessage).toHaveBeenCalledWith({
+      name: "SetOperation",
+      operation: props.operation,
+      variables: JSON.stringify(props.variables),
+    });
   });
 });

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { ReactNode } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { gql } from "@apollo/client";
@@ -29,11 +29,7 @@ import {
 } from "./machines/devtoolsMachine";
 import { ErrorModals } from "./components/ErrorModals/ErrorModals";
 import { ButtonGroup } from "./components/ButtonGroup";
-import {
-  GitHubIssueLink,
-  LABELS,
-  SECTIONS,
-} from "./components/GitHubIssueLink";
+import { GitHubIssueLink } from "./components/GitHubIssueLink";
 import { Tooltip } from "./components/Tooltip";
 import { Badge } from "./components/Badge";
 import { GitHubReleaseHoverCard } from "./components/GitHubReleaseHoverCard";
@@ -73,12 +69,6 @@ const CLIENT_QUERY: TypedDocumentNode<ClientQuery, ClientQueryVariables> = gql`
   }
 `;
 
-const ISSUE_BODY = `
-${SECTIONS.reproduction}
-${SECTIONS.apolloClientVersion}
-${SECTIONS.devtoolsVersion}
-`;
-
 const stableEmptyClients: Required<AppQuery["clients"]> = [];
 
 export const App = () => {
@@ -111,8 +101,7 @@ export const App = () => {
     data?.clients[0]?.id
   );
   const selected = useReactiveVar<Screens>(currentScreen);
-  const [embeddedExplorerIFrame, setEmbeddedExplorerIFrame] =
-    useState<HTMLIFrameElement | null>(null);
+  const explorerRef = useRef<Explorer.Ref>(null);
 
   const {
     data: clientData,
@@ -223,7 +212,7 @@ export const App = () => {
                   icon={<IconGitHubSolid />}
                   asChild
                 >
-                  <GitHubIssueLink labels={[LABELS.bug]} body={ISSUE_BODY} />
+                  <GitHubIssueLink />
                 </Button>
               </Tooltip>
 
@@ -251,36 +240,27 @@ export const App = () => {
           <Explorer
             clientId={selectedClientId}
             isVisible={selected === Screens.Explorer}
-            embeddedExplorerProps={{
-              embeddedExplorerIFrame,
-              setEmbeddedExplorerIFrame,
-            }}
+            explorerRef={explorerRef}
           />
         </Tabs.Content>
         <Tabs.Content
           className="flex-1 overflow-hidden"
           value={Screens.Queries}
         >
-          <TabErrorBoundary remarks="Error on Queries tab:">
-            <Queries
-              clientId={selectedClientId}
-              explorerIFrame={embeddedExplorerIFrame}
-            />
+          <TabErrorBoundary>
+            <Queries clientId={selectedClientId} explorerRef={explorerRef} />
           </TabErrorBoundary>
         </Tabs.Content>
         <Tabs.Content
           className="flex-1 overflow-hidden"
           value={Screens.Mutations}
         >
-          <TabErrorBoundary remarks="Error on Mutations tab:">
-            <Mutations
-              clientId={selectedClientId}
-              explorerIFrame={embeddedExplorerIFrame}
-            />
+          <TabErrorBoundary>
+            <Mutations clientId={selectedClientId} explorerRef={explorerRef} />
           </TabErrorBoundary>
         </Tabs.Content>
         <Tabs.Content className="flex-1 overflow-hidden" value={Screens.Cache}>
-          <TabErrorBoundary remarks="Error on Cache tab:">
+          <TabErrorBoundary>
             <Cache
               clientId={selectedClientId}
               isRecordingCacheWrites={isRecordingCacheWrites}
@@ -294,7 +274,7 @@ export const App = () => {
           className="flex flex-1 overflow-hidden"
           value={Screens.Memory}
         >
-          <TabErrorBoundary remarks="Error on Memory tab:">
+          <TabErrorBoundary>
             <MemoryInternals clientId={selectedClientId} />
           </TabErrorBoundary>
         </Tabs.Content>
@@ -305,10 +285,9 @@ export const App = () => {
 
 interface TabErrorBoundaryProps {
   children?: ReactNode;
-  remarks?: string;
 }
 
-function TabErrorBoundary({ children, remarks }: TabErrorBoundaryProps) {
+function TabErrorBoundary({ children }: TabErrorBoundaryProps) {
   return (
     <ErrorBoundary
       fallbackRender={({ error }) => {
@@ -323,10 +302,8 @@ function TabErrorBoundary({ children, remarks }: TabErrorBoundaryProps) {
                   <PageError.Body>
                     Please try closing and reopening the browser devtools and
                     refreshing the page. If the issue persists, please{" "}
-                    <PageError.GitHubLink error={error} remarks={remarks}>
-                      open an issue
-                    </PageError.GitHubLink>{" "}
-                    to help us diagnose the error.
+                    <GitHubIssueLink>open an issue</GitHubIssueLink> to help us
+                    diagnose the error.
                   </PageError.Body>
                 </PageError.Content>
                 <PageError.Details error={error} />

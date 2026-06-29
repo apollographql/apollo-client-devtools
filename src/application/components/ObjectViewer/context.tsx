@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/refs */
 import { equal } from "@wry/equality";
 import type { ReactNode } from "react";
 import { createContext, useContext, useRef } from "react";

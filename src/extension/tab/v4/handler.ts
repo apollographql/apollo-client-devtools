@@ -2,8 +2,8 @@ import type {
   CombinedGraphQLErrors,
   CombinedProtocolErrors,
   LocalStateError,
+  NetworkStatus,
 } from "@apollo/client";
-import { isNetworkRequestSettled } from "@apollo/client/utilities";
 import type {
   ApolloClient,
   DocumentNode,
@@ -43,6 +43,10 @@ type BrandedErrors = {
   CombinedProtocolErrors: CombinedProtocolErrors;
   LocalStateError: LocalStateError;
 };
+
+function isNetworkRequestSettled(networkStatus: NetworkStatus): boolean {
+  return networkStatus === 7 || networkStatus === 8;
+}
 
 function isBranded<T extends keyof BrandedErrors>(
   error: unknown,
@@ -88,7 +92,10 @@ export class ClientV4Handler extends ClientHandler<ApolloClient> {
     variables?: JSONObject | undefined;
     fetchPolicy?: FetchPolicy;
   }): Promise<EmbeddedExplorerResponse> {
-    const { data, error } = await this.client.query<JSONObject>(options);
+    const { data, error } = await this.client.query<JSONObject>({
+      errorPolicy: "all",
+      ...options,
+    });
 
     return { data, ...getErrorProperties(error) };
   }

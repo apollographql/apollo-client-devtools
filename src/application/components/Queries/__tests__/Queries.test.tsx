@@ -9,6 +9,7 @@ import { print } from "graphql";
 import type { QueryV3Details } from "../../../../extension/tab/v3/types";
 import { getRpcClient } from "../../../../extension/devtools/panelRpcClient";
 import type { GetRpcClientMock } from "../../../../extension/devtools/__mocks__/panelRpcClient";
+import React from "react";
 
 jest.mock("../../../../extension/devtools/panelRpcClient");
 
@@ -60,7 +61,9 @@ describe("<Queries />", () => {
   test("queries render in the sidebar", async () => {
     mockRpcRequests();
 
-    renderWithApolloClient(<Queries clientId="1" explorerIFrame={null} />);
+    renderWithApolloClient(
+      <Queries clientId="1" explorerRef={React.createRef()} />
+    );
 
     const sidebar = screen.getByRole("complementary");
 
@@ -76,7 +79,9 @@ describe("<Queries />", () => {
 
     const user = userEvent.setup();
 
-    renderWithApolloClient(<Queries clientId="1" explorerIFrame={null} />);
+    renderWithApolloClient(
+      <Queries clientId="1" explorerRef={React.createRef()} />
+    );
 
     await waitFor(() => {
       expect(screen.getByTestId("title")).toHaveTextContent("(anonymous)");
@@ -91,7 +96,9 @@ describe("<Queries />", () => {
 
   test("it renders an empty state", async () => {
     mockRpcRequests([]);
-    renderWithApolloClient(<Queries clientId="1" explorerIFrame={null} />);
+    renderWithApolloClient(
+      <Queries clientId="1" explorerRef={React.createRef()} />
+    );
 
     await waitFor(() => {
       expect(
@@ -103,7 +110,9 @@ describe("<Queries />", () => {
   test("renders the query string", async () => {
     mockRpcRequests();
 
-    renderWithApolloClient(<Queries clientId="1" explorerIFrame={null} />);
+    renderWithApolloClient(
+      <Queries clientId="1" explorerRef={React.createRef()} />
+    );
 
     await waitFor(() => {
       expect(
@@ -117,7 +126,7 @@ describe("<Queries />", () => {
     mockRpcRequests();
 
     const { user } = renderWithApolloClient(
-      <Queries clientId="1" explorerIFrame={null} />
+      <Queries clientId="1" explorerRef={React.createRef()} />
     );
 
     await waitFor(() => {
@@ -155,7 +164,7 @@ describe("<Queries />", () => {
     ]);
 
     const { user } = renderWithApolloClient(
-      <Queries clientId="1" explorerIFrame={null} />
+      <Queries clientId="1" explorerRef={React.createRef()} />
     );
 
     await waitFor(() => {
@@ -202,7 +211,7 @@ describe("<Queries />", () => {
     mockRpcRequests([query]);
 
     const { user } = renderWithApolloClient(
-      <Queries clientId="1" explorerIFrame={null} />
+      <Queries clientId="1" explorerRef={React.createRef()} />
     );
 
     await waitFor(() => {
