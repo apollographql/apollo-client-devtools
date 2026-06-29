@@ -1,5 +1,15 @@
 # Changelog
 
+## 4.26.0
+
+### Minor Changes
+
+- [#1873](https://github.com/apollographql/apollo-client-devtools/pull/1873) [`6cda278`](https://github.com/apollographql/apollo-client-devtools/commit/6cda278ba2d3792dfd6c8a56b6c92daaa6bff41d) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Add support for inspecting clients in iframes.
+
+### Patch Changes
+
+- [#1865](https://github.com/apollographql/apollo-client-devtools/pull/1865) [`9faeb7c`](https://github.com/apollographql/apollo-client-devtools/commit/9faeb7cc523fcf81797f65911e599c5dc0a6726d) Thanks [@github-actions](https://github.com/apps/github-actions)! - add error codes for new Apollo Client version
+
 ## 4.25.6
 
 ### Patch Changes
