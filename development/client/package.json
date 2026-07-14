@@ -12,17 +12,17 @@
     "@types/classnames": "2.3.4",
     "@types/jest": "29.5.14",
     "@types/node": "22.19.19",
-    "@types/react": "18.3.29",
+    "@types/react": "18.3.31",
     "@types/react-dom": "18.3.7",
     "@vitejs/plugin-react": "4.7.0",
     "classnames": "2.5.1",
     "graphql": "16.13.2",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "react-router-dom": "6.30.3",
+    "react-router-dom": "6.30.4",
     "rxjs": "7.8.2",
     "typescript": "5.9.3",
-    "vite": "6.4.2"
+    "vite": "6.4.3"
   },
   "scripts": {
     "start": "vite",
