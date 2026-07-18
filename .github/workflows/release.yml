@@ -43,7 +43,7 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Setup Node.js 26.x
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: ">=26.3.0"
 
