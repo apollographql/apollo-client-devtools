@@ -201,8 +201,22 @@
     "@apollo-client/4.2.1": "npm:@apollo/client@4.2.1",
     "@apollo-client/4.2.2": "npm:@apollo/client@4.2.2",
     "@apollo-client/4.2.3": "npm:@apollo/client@4.2.3",
+    "@apollo-client/4.2.4": "npm:@apollo/client@4.2.4",
+    "@apollo-client/4.2.5": "npm:@apollo/client@4.2.5",
+    "@apollo-client/4.2.6": "npm:@apollo/client@4.2.6",
+    "@apollo-client/4.2.7": "npm:@apollo/client@4.2.7",
+    "@apollo-client/4.2.8": "npm:@apollo/client@4.2.8",
+    "@apollo-client/4.2.9": "npm:@apollo/client@4.2.9",
+    "@apollo-client/4.2.10": "npm:@apollo/client@4.2.10",
+    "@apollo-client/4.2.11": "npm:@apollo/client@4.2.11",
     "@apollo-client/4.3.0-alpha.0": "npm:@apollo/client@4.3.0-alpha.0",
-    "@apollo-client/4.3.0-alpha.1": "npm:@apollo/client@4.3.0-alpha.1"
+    "@apollo-client/4.3.0-alpha.1": "npm:@apollo/client@4.3.0-alpha.1",
+    "@apollo-client/4.3.0-alpha.2": "npm:@apollo/client@4.3.0-alpha.2",
+    "@apollo-client/4.3.0-alpha.3": "npm:@apollo/client@4.3.0-alpha.3",
+    "@apollo-client/4.3.0-alpha.4": "npm:@apollo/client@4.3.0-alpha.4",
+    "@apollo-client/4.3.0-alpha.5": "npm:@apollo/client@4.3.0-alpha.5",
+    "@apollo-client/4.3.0-alpha.6": "npm:@apollo/client@4.3.0-alpha.6",
+    "@apollo-client/4.3.0-alpha.7": "npm:@apollo/client@4.3.0-alpha.7"
   },
   "devDependencies": {
     "semver": "7.6.0"
