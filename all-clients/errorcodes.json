@@ -179,7 +179,10 @@
     "The network result for query %s was written to the cache, but reading it back returned a partial result.\n\nA `read` or `merge` function left missing fields after this write. Because the cache result is incomplete, Apollo Client cannot apply it to the network result. The raw network result was returned instead, and doesn't include any transformed values returned from `read` functions or custom scalars.\n\nTo address this problem (which is not a bug in Apollo Client), check the `read` and `merge` functions for the fields in this query. A `read` or `merge` function that leaves missing fields leaves the cache unable to fulfill the query's data requirements.\n\n  missing fields: %o\n  network result: %o\n  cache result: %o\n\nFor more information, please refer to the documentation:\n\n  * Customizing cache field behavior: https://go.apollo.dev/c/cache-field-behavior\n",
     "The field policy for '%s' is configured with the '%s' scalar, so its '%s' function is ignored. Scalar configuration cannot be used with custom read or merge functions.",
     "The field policy for '%s' is configured with the '%s' scalar, but the field is not a scalar field because it contains a selection set. The field value remains unchanged.",
-    "Apollo Client stopped refetching '%s' because the same incomplete cache result was already refetched. Automatic refetching was halted to prevent an endless cycle of network requests.\n\nThis often means another query is overwriting non-normalized data selected by this query. Common fixes:\n\n  * Select an `id` or `_id` field in each query that writes the object\n  * Set custom `keyFields` if the object uses a different identity\n  * Add a field `merge` function so partial writes combine instead of replace\n\n  missing fields: %o\n\nFor more information about these options, please refer to the documentation:\n\n  * Ensuring entity objects have IDs: https://go.apollo.dev/c/generating-unique-identifiers\n  * Defining custom merge functions: https://go.apollo.dev/c/merging-non-normalized-objects\n"
+    "Apollo Client stopped refetching '%s' because the same incomplete cache result was already refetched. Automatic refetching was halted to prevent an endless cycle of network requests.\n\nThis often means another query is overwriting non-normalized data selected by this query. Common fixes:\n\n  * Select an `id` or `_id` field in each query that writes the object\n  * Set custom `keyFields` if the object uses a different identity\n  * Add a field `merge` function so partial writes combine instead of replace\n\n  missing fields: %o\n\nFor more information about these options, please refer to the documentation:\n\n  * Ensuring entity objects have IDs: https://go.apollo.dev/c/generating-unique-identifiers\n  * Defining custom merge functions: https://go.apollo.dev/c/merging-non-normalized-objects\n",
+    "Document node must be a query, mutation, or subscription",
+    "The custom scalar configuration for '%s' uses list type '%s', but the value is not an array. The value was coerced as '%s' anyway.",
+    "The variable '%s' has list type '%s', but the value is not an array. The value was coerced as '%s' anyway."
   ],
   "allConditions": [
     null,
@@ -273,7 +276,8 @@
     "!hasIncrementalDirective",
     "fetchPolicy === \"standby\"",
     "pending",
-    "!hasDirectives([\"defer\", \"stream\"], request.query)"
+    "!hasDirectives([\"defer\", \"stream\"], request.query)",
+    "operationType"
   ],
   "allFiles": [
     null,
@@ -351,7 +355,9 @@
     "@apollo/client/link/ws/index.js",
     "@apollo/client/incremental/handlers/graphql17Alpha9.js",
     "@apollo/client/core/RefetchEventManager.js",
-    "@apollo/client/core/QueryInfo.js"
+    "@apollo/client/core/QueryInfo.js",
+    "@apollo/client/utilities/internal/coerceScalarFieldsToParsed.js",
+    "@apollo/client/cache/inmemory/inMemoryCache.js"
   ],
   "byVersion": {
     "3.8.0-beta.0": "1",
@@ -556,6 +562,7 @@
     "4.2.9": "49",
     "4.2.10": "49",
     "4.2.11": "50",
+    "4.2.12": "50",
     "4.3.0-alpha.0": "49",
     "4.3.0-alpha.1": "49",
     "4.3.0-alpha.2": "51",
@@ -563,7 +570,13 @@
     "4.3.0-alpha.4": "51",
     "4.3.0-alpha.5": "52",
     "4.3.0-alpha.6": "53",
-    "4.3.0-alpha.7": "54"
+    "4.3.0-alpha.7": "54",
+    "4.3.0-alpha.8": "55",
+    "4.3.0-alpha.9": "55",
+    "4.3.0-alpha.10": "55",
+    "4.3.0-alpha.11": "55",
+    "4.3.0-rc.0": "55",
+    "4.3.0-rc.1": "56"
   },
   "errors": {
     "1": "AQEBAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUECwUEDAYEDQYEDgYGDwYEEAcHBwgIBwgIEQkEEgkEEwkJFAkEFQkEFgoEFwoKGAoLGQoMGgoNGwoOHAoPHQoEHgoEHwoEIAsEIQsEIgwEIw0EJA4EJQ8QJg8RJxAEKBEEKRISKhMTKxQULBUVLBYWLRcXLhgYLxkEMBoEMRoEMhoEMxoENBsZNRwaNhwENx0EOB4bOR4cOh4dOx4ePB4fPR8gPiAhPyAiQCAjQSAkQiEEQyElByEIRCImRSIERiInRyIoRCIpSCIqSSIrSiIESyMETCQETSQE",
@@ -619,6 +632,8 @@
     "51": "RD01RT0ERj0nPD1ImT0ERD43SD4qST44Bz8IQkAEQ0AlSkEER0I2TEMEPkQhP0QiQEQzQUQ0S0UEECUHhx9JPR88iB9KiR9LhDtFhTtGVSg7LRcXgTdCgjc6Uyc6Vic9Vxo+Nx0ENTwaNjwEKhMtKxQUXSsIXisEQywlXCxBWy1AYC4EYS4EYi4EjUZQjUZQB0YIpEYEpUYEj0YEkEYEkUYEkkYEB0YIk0ZRokgEJQ8yJg8RIgxDgzpEoAsEoQsEIQsEpklap0dbDAZOjAZPrQYEqQYEDgYvigZMGQYMGgYxGwYOHAYPiwZNmgZUmwZVDwYEowlZEQkEnQlXWAk/EgkEngkEFQkEFgoElApSHQoEHgoEYwoElQpTlgpSnwpYlwpSWgoEmApShgpHqkoEq0oErEoEAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMErwQEBwQECAQFCQUECgUEBwUEUQUEWSkE",
     "52": "RD01RT0ERj0nPD1ImT0ERD43SD4qST44Bz8IQkAEQ0AlSkEER0I2TEMEPkQhP0QiQEQzQUQ0S0UEECUHhx9JPR88iB9KiR9LhDtFhTtGVSg7LRcXgTdCgjc6Uyc6Vic9Vxo+Nx0ENTwaNjwEKhMtKxQUXSsIXisEQywlXCxBWy1AYC4EYS4EYi4EjUZQjUZQB0YIpEYEpUYEj0YEkEYEkUYEkkYEB0YIk0ZRokgEJQ8yJg8RIgxDgzpEoAsEoQsEIQsEpklap0dbDAZOjAZPrQYEqQYEDgYvigZMGQYMGgYxGwYOHAYPiwZNmgZUmwZVDwYEowlZEQkEnQlXWAk/EgkEngkEFQkEsEsEFgoElApSHQoEHgoEYwoElQpTlgpSnwpYlwpSWgoEmApShgpHqkoEq0oErEoEAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMErwQEBwQECAQFCQUECgUEBwUEUQUEWSkE",
     "53": "RD01RT0ERj0nPD1ImT0ERD43SD4qST44Bz8IQkAEQ0AlSkEER0I2TEMEPkQhP0QiQEQzQUQ0S0UEECUHhx9JPR88iB9KiR9LhDtFhTtGVSg7LRcXgTdCgjc6Uyc6Vic9Vxo+Nx0ENTwaNjwEKhMtKxQUXSsIXisEQywlXCxBWy1AYC4EYS4EYi4EjUZQjUZQB0YIpEYEpUYEj0YEkEYEkUYEkkYEB0YIk0ZRokgEJQ8yJg8RIgxDgzpEoAsEoQsEIQsEpklap0dbDAZOjAZPrQYEqQYEDgYvigZMGQYMGgYxGwYOHAYPiwZNmgZUmwZVDwYEowlZEQkEnQlXWAk/EgkEngkEFQkEsEsEFgoElApSHQoEHgoEYwoElQpTlgpSnwpYlwpSWgoEmApShgpHqkoEq0oErEoEAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEsQMEsgQEBwQECAQFCQUECgUEBwUEUQUEWSkE",
-    "54": "RD01RT0ERj0nPD1ImT0ERD43SD4qST44Bz8IQkAEQ0AlSkEER0I2TEMEPkQhP0QiQEQzQUQ0S0UEECUHhx9JPR88iB9KiR9LhDtFhTtGVSg7LRcXgTdCgjc6Uyc6Vic9Vxo+Nx0ENTwaNjwEKhMtKxQUXSsIXisEQywlXCxBWy1AYC4EYS4EYi4EjUZQjUZQB0YIpEYEpUYEj0YEkEYEkUYEkkYEB0YIk0ZRokgEJQ8yJg8RIgxDgzpEoAsEoQsEIQsEpklap0dbDAZOjAZPrQYEqQYEDgYvigZMGQYMGgYxGwYOHAYPiwZNmgZUmwZVDwYEowlZEQkEnQlXWAk/EgkEngkEFQkEswkEsEsEFgoElApSHQoEHgoEYwoElQpTlgpSnwpYlwpSWgoEmApShgpHqkoEq0oErEoEAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEsQMEsgQEBwQECAQFCQUECgUEBwUEUQUEWSkE"
+    "54": "RD01RT0ERj0nPD1ImT0ERD43SD4qST44Bz8IQkAEQ0AlSkEER0I2TEMEPkQhP0QiQEQzQUQ0S0UEECUHhx9JPR88iB9KiR9LhDtFhTtGVSg7LRcXgTdCgjc6Uyc6Vic9Vxo+Nx0ENTwaNjwEKhMtKxQUXSsIXisEQywlXCxBWy1AYC4EYS4EYi4EjUZQjUZQB0YIpEYEpUYEj0YEkEYEkUYEkkYEB0YIk0ZRokgEJQ8yJg8RIgxDgzpEoAsEoQsEIQsEpklap0dbDAZOjAZPrQYEqQYEDgYvigZMGQYMGgYxGwYOHAYPiwZNmgZUmwZVDwYEowlZEQkEnQlXWAk/EgkEngkEFQkEswkEsEsEFgoElApSHQoEHgoEYwoElQpTlgpSnwpYlwpSWgoEmApShgpHqkoEq0oErEoEAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEsQMEsgQEBwQECAQFCQUECgUEBwUEUQUEWSkE",
+    "55": "RD01RT0ERj0nPD1ImT0EtExcRD43SD4qST44Bz8IQkAEQ0AlSkEER0I2TEMEPkQhP0QiQEQzQUQ0S0UEECUHhx9JPR88iB9KiR9LhDtFhTtGVSg7LRcXgTdCgjc6Uyc6Vic9Vxo+Nx0ENTwaNjwEKhMtKxQUXSsIXisEQywlXCxBWy1AYC4EYS4EYi4EjUZQjUZQB0YIpEYEpUYEj0YEkEYEkUYEkkYEB0YIk0ZRokgEJQ8yJg8RIgxDgzpEoAsEoQsEIQsEpklap0dbDAZOjAZPrQYEqQYEDgYvigZMGQYMGgYxGwYOHAYPiwZNmgZUmwZVDwYEowlZEQkEnQlXWAk/EgkEngkEFQkEswkEsEsEFgoElApSHQoEHgoEYwoElQpTlgpSnwpYlwpSWgoEmApShgpHqkoEq0oErEoEAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEsQMEsgQEBwQECAQFCQUECgUEBwUEUQUEWSkE",
+    "56": "RD01RT0ERj0nPD1ImT0EtExctUwERD43SD4qST44Bz8IQkAEQ0AlSkEER0I2TEMEPkQhP0QiQEQzQUQ0S0UEECUHhx9JPR88iB9KiR9LhDtFhTtGVSg7LRcXgTdCgjc6Uyc6Vic9Vxo+Nx0ENTwaNjwEKhMtKxQUXSsIXisEQywlXCxBWy1AYC4EYS4EYi4EjUZQjUZQB0YIpEYEpUYEj0YEkEYEkUYEkkYEB0YIk0ZRokgEJQ8yJg8RIgxDgzpEoAsEoQsEIQsEpklap0dbDAZOjAZPrQYEqQYEDgYvigZMGQYMGgYxGwYOHAYPiwZNmgZUmwZVDwYEowlZEQkEnQlXWAk/EgkEngkEFQkEswkEsEsEFgoElApSHQoEHgoEYwoElQpTlgpSnwpYlwpSWgoEmApShgpHqkoEq0oErEoEAQEBTwEEUAEEtQEEtk0EAgICAwMDBAMEBQMEBgMEsQMEsgQEBwQECAQFCQUECgUEBwUEUQUEWSkE"
   }
 }
