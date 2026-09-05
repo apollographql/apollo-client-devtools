@@ -14,7 +14,7 @@
     "graphql-ws": "5.16.2",
     "rxjs": "7.8.2",
     "tslib": "2.8.1",
-    "zone.js": "0.16.2",
+    "zone.js": "0.16.3",
     "@angular-devkit/build-angular": "17.3.17",
     "@angular/cli": "17.3.17",
     "@angular/compiler-cli": "17.3.12",
