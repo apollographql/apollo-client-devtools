@@ -57,7 +57,7 @@ jobs:
       - name: Create release PR or publish to npm + GitHub
         id: changesets
         if: steps.check_files.outputs.files_exists == 'false'
-        uses: changesets/action@v1
+        uses: changesets/action@v2.1.1
         with:
           publish: npx changeset publish
         env:
