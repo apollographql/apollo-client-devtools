@@ -55,7 +55,7 @@
     "expect-type": "^1.0.0",
     "graphql": "^16.12.0",
     "graphql-tag": "^2.11.0",
-    "motion": "^12.23.25",
+    "motion": "^13.0.0",
     "prism-react-renderer": "^2.4.1",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
