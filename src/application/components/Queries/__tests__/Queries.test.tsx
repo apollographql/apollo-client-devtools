@@ -51,6 +51,7 @@ describe("<Queries />", () => {
       version: "3.10.0",
       queryCount: queries.length,
       mutationCount: 0,
+      fragmentWatchCount: 0,
     }));
   }
 

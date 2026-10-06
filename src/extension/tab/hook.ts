@@ -23,6 +23,11 @@ import type { ClientV3Handler } from "./v3/handler";
 import type { ClientV4Handler } from "./v4/handler";
 import type { Cache } from "@/application/types/scalars";
 import { createHandler } from "./helpers";
+import {
+  getFragmentWatchCount,
+  getFragmentWatchData,
+  getFragmentWatches,
+} from "./fragmentWatches";
 import { patch } from "@/application/utilities/patch";
 
 declare global {
@@ -69,6 +74,7 @@ function getClientInfo(client: ApolloClient): ApolloClientInfo {
     version: client.version,
     queryCount: handler.getQueryCount(),
     mutationCount: handler.getMutations().length,
+    fragmentWatchCount: getFragmentWatchCount(client),
   };
 }
 
@@ -115,6 +121,18 @@ handleRpc("getV3MemoryInternals", (clientId) => {
 
 handleRpc("getV4MemoryInternals", (clientId) => {
   return getClientById(clientId)?.getMemoryInternals?.();
+});
+
+handleRpc("getFragmentWatches", (clientId) => {
+  const client = getClientById(clientId as IDv3 | IDv4);
+
+  return client ? getFragmentWatches(client) : [];
+});
+
+handleRpc("getFragmentWatchData", (clientId, options) => {
+  const client = getClientById(clientId as IDv3 | IDv4);
+
+  return client ? getFragmentWatchData(client, options) : null;
 });
 
 handleRpcStream("cacheWrite", ({ push, close }, clientId) => {

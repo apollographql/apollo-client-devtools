@@ -93,6 +93,12 @@ interface Client {
   mutations: ClientMutations!
   memoryInternals: MemoryInternals
   cacheWrites: [CacheWrite!]!
+  fragmentWatches: ClientFragmentWatches!
+  fragmentWatchData(
+    fragmentName: String!
+    entityId: String
+    variables: Variables
+  ): FragmentWatchData
 }
 
 interface ClientQueries {
@@ -114,6 +120,12 @@ type ClientV3 implements Client {
   cache: Cache!
   memoryInternals: ClientV3MemoryInternals
   cacheWrites: [CacheWrite!]!
+  fragmentWatches: ClientFragmentWatches!
+  fragmentWatchData(
+    fragmentName: String!
+    entityId: String
+    variables: Variables
+  ): FragmentWatchData
 }
 
 type ClientV4 implements Client {
@@ -125,6 +137,34 @@ type ClientV4 implements Client {
   queries: ClientV4Queries!
   memoryInternals: ClientV4MemoryInternals
   cacheWrites: [CacheWrite!]!
+  fragmentWatches: ClientFragmentWatches!
+  fragmentWatchData(
+    fragmentName: String!
+    entityId: String
+    variables: Variables
+  ): FragmentWatchData
+}
+
+type ClientFragmentWatches {
+  total: Int!
+  items: [FragmentWatch!]!
+}
+
+type FragmentWatch {
+  name: String!
+  fragmentString: String!
+  count: Int!
+  entities: [FragmentWatchEntity!]!
+}
+
+type FragmentWatchEntity {
+  id: String
+  variables: Variables
+}
+
+type FragmentWatchData {
+  cachedData: QueryData
+  complete: Boolean!
 }
 
 type ClientV3Queries implements ClientQueries {

@@ -113,12 +113,26 @@ export type CacheWrite = {
 export type Client = {
   cache: Scalars["Cache"]["output"];
   cacheWrites: Array<CacheWrite>;
+  fragmentWatchData: Maybe<FragmentWatchData>;
+  fragmentWatches: ClientFragmentWatches;
   id: Scalars["String"]["output"];
   memoryInternals: Maybe<MemoryInternals>;
   mutations: ClientMutations;
   name: Maybe<Scalars["String"]["output"]>;
   queries: ClientQueries;
   version: Scalars["String"]["output"];
+};
+
+export type ClientFragmentWatchDataArgs = {
+  entityId?: InputMaybe<Scalars["String"]["input"]>;
+  fragmentName: Scalars["String"]["input"];
+  variables?: InputMaybe<Scalars["Variables"]["input"]>;
+};
+
+export type ClientFragmentWatches = {
+  __typename?: "ClientFragmentWatches";
+  items: Array<FragmentWatch>;
+  total: Scalars["Int"]["output"];
 };
 
 export type ClientMutation = {
@@ -143,12 +157,20 @@ export type ClientV3 = Client & {
   __typename?: "ClientV3";
   cache: Scalars["Cache"]["output"];
   cacheWrites: Array<CacheWrite>;
+  fragmentWatchData: Maybe<FragmentWatchData>;
+  fragmentWatches: ClientFragmentWatches;
   id: Scalars["String"]["output"];
   memoryInternals: Maybe<ClientV3MemoryInternals>;
   mutations: ClientV3Mutations;
   name: Maybe<Scalars["String"]["output"]>;
   queries: ClientV3Queries;
   version: Scalars["String"]["output"];
+};
+
+export type ClientV3FragmentWatchDataArgs = {
+  entityId?: InputMaybe<Scalars["String"]["input"]>;
+  fragmentName: Scalars["String"]["input"];
+  variables?: InputMaybe<Scalars["Variables"]["input"]>;
 };
 
 export type ClientV3MemoryInternals = MemoryInternals & {
@@ -217,12 +239,20 @@ export type ClientV4 = Client & {
   __typename?: "ClientV4";
   cache: Scalars["Cache"]["output"];
   cacheWrites: Array<CacheWrite>;
+  fragmentWatchData: Maybe<FragmentWatchData>;
+  fragmentWatches: ClientFragmentWatches;
   id: Scalars["String"]["output"];
   memoryInternals: Maybe<ClientV4MemoryInternals>;
   mutations: ClientV4Mutations;
   name: Maybe<Scalars["String"]["output"]>;
   queries: ClientV4Queries;
   version: Scalars["String"]["output"];
+};
+
+export type ClientV4FragmentWatchDataArgs = {
+  entityId?: InputMaybe<Scalars["String"]["input"]>;
+  fragmentName: Scalars["String"]["input"];
+  variables?: InputMaybe<Scalars["Variables"]["input"]>;
 };
 
 export type ClientV4MemoryInternals = MemoryInternals & {
@@ -314,6 +344,26 @@ export type FragmentRegistryCacheSizes = {
   findFragmentSpreads: CacheSize;
   lookup: CacheSize;
   transform: CacheSize;
+};
+
+export type FragmentWatch = {
+  __typename?: "FragmentWatch";
+  count: Scalars["Int"]["output"];
+  entities: Array<FragmentWatchEntity>;
+  fragmentString: Scalars["String"]["output"];
+  name: Scalars["String"]["output"];
+};
+
+export type FragmentWatchData = {
+  __typename?: "FragmentWatchData";
+  cachedData: Maybe<Scalars["QueryData"]["output"]>;
+  complete: Scalars["Boolean"]["output"];
+};
+
+export type FragmentWatchEntity = {
+  __typename?: "FragmentWatchEntity";
+  id: Maybe<Scalars["String"]["output"]>;
+  variables: Maybe<Scalars["Variables"]["output"]>;
 };
 
 export type GraphQlDocument = {
@@ -610,19 +660,19 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> =
     Client: ApolloClientInfo | ApolloClientInfo;
     ClientMutation:
       | (Omit<ClientV3Mutation, "error"> & {
-          error: Maybe<_RefType["ClientV3MutationError"]>;
+          error?: Maybe<_RefType["ClientV3MutationError"]>;
         })
       | (Omit<ClientV4Mutation, "error"> & {
-          error: Maybe<_RefType["ErrorLike"]>;
+          error?: Maybe<_RefType["ErrorLike"]>;
         });
     ClientMutations: ApolloClientInfo | ApolloClientInfo;
     ClientQueries: ApolloClientInfo | ApolloClientInfo;
     ClientWatchedQuery:
       | (Omit<ClientV3WatchedQuery, "error"> & {
-          error: Maybe<_RefType["SerializedApolloError"]>;
+          error?: Maybe<_RefType["SerializedApolloError"]>;
         })
       | (Omit<ClientV4WatchedQuery, "error"> & {
-          error: Maybe<_RefType["ErrorLike"]>;
+          error?: Maybe<_RefType["ErrorLike"]>;
         });
     ErrorLike:
       | RpcSerializedCombinedGraphQLErrors
@@ -632,13 +682,33 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> =
       | RpcSerializedServerError
       | RpcSerializedServerParseError
       | RpcSerializedUnconventionalError;
-    MemoryInternals: ClientV3MemoryInternals | ClientV4MemoryInternals;
-    MemoryInternalsCaches:
-      | (Omit<ClientV3MemoryInternalsCaches, "links"> & {
-          links: Array<_RefType["LinkCacheSize"]>;
+    MemoryInternals:
+      | (Omit<ClientV3MemoryInternals, "caches"> & {
+          caches: _RefType["ClientV3MemoryInternalsCaches"];
         })
-      | (Omit<ClientV4MemoryInternalsCaches, "links"> & {
+      | (Omit<ClientV4MemoryInternals, "caches"> & {
+          caches: _RefType["ClientV4MemoryInternalsCaches"];
+        });
+    MemoryInternalsCaches:
+      | (Omit<
+          ClientV3MemoryInternalsCaches,
+          "addTypenameDocumentTransform" | "links" | "queryManager"
+        > & {
+          addTypenameDocumentTransform?: Maybe<
+            Array<_RefType["DocumentTransformCacheSizes"]>
+          >;
           links: Array<_RefType["LinkCacheSize"]>;
+          queryManager: _RefType["QueryManagerCacheSizes"];
+        })
+      | (Omit<
+          ClientV4MemoryInternalsCaches,
+          "addTypenameDocumentTransform" | "links" | "queryManager"
+        > & {
+          addTypenameDocumentTransform?: Maybe<
+            Array<_RefType["DocumentTransformCacheSizes"]>
+          >;
+          links: Array<_RefType["LinkCacheSize"]>;
+          queryManager: _RefType["QueryManagerCacheSizes"];
         });
   };
 
@@ -654,6 +724,7 @@ export type ResolversTypes = {
   CacheSize: ResolverTypeWrapper<CacheSize>;
   CacheWrite: ResolverTypeWrapper<RemoteCacheWrite>;
   Client: ResolverTypeWrapper<ApolloClientInfo>;
+  ClientFragmentWatches: ResolverTypeWrapper<ApolloClientInfo>;
   ClientMutation: ResolverTypeWrapper<
     ResolversInterfaceTypes<ResolversTypes>["ClientMutation"]
   >;
@@ -664,15 +735,26 @@ export type ResolversTypes = {
     ResolversInterfaceTypes<ResolversTypes>["ClientQueries"]
   >;
   ClientV3: ResolverTypeWrapper<ApolloClientInfo>;
-  ClientV3MemoryInternals: ResolverTypeWrapper<ClientV3MemoryInternals>;
+  ClientV3MemoryInternals: ResolverTypeWrapper<
+    Omit<ClientV3MemoryInternals, "caches"> & {
+      caches: ResolversTypes["ClientV3MemoryInternalsCaches"];
+    }
+  >;
   ClientV3MemoryInternalsCaches: ResolverTypeWrapper<
-    Omit<ClientV3MemoryInternalsCaches, "links"> & {
+    Omit<
+      ClientV3MemoryInternalsCaches,
+      "addTypenameDocumentTransform" | "links" | "queryManager"
+    > & {
+      addTypenameDocumentTransform?: Maybe<
+        Array<ResolversTypes["DocumentTransformCacheSizes"]>
+      >;
       links: Array<ResolversTypes["LinkCacheSize"]>;
+      queryManager: ResolversTypes["QueryManagerCacheSizes"];
     }
   >;
   ClientV3Mutation: ResolverTypeWrapper<
     Omit<ClientV3Mutation, "error"> & {
-      error: Maybe<ResolversTypes["ClientV3MutationError"]>;
+      error?: Maybe<ResolversTypes["ClientV3MutationError"]>;
     }
   >;
   ClientV3MutationError: ResolverTypeWrapper<
@@ -687,26 +769,37 @@ export type ResolversTypes = {
   >;
   ClientV3WatchedQuery: ResolverTypeWrapper<
     Omit<ClientV3WatchedQuery, "error"> & {
-      error: Maybe<ResolversTypes["SerializedApolloError"]>;
+      error?: Maybe<ResolversTypes["SerializedApolloError"]>;
     }
   >;
   ClientV4: ResolverTypeWrapper<ApolloClientInfo>;
-  ClientV4MemoryInternals: ResolverTypeWrapper<ClientV4MemoryInternals>;
+  ClientV4MemoryInternals: ResolverTypeWrapper<
+    Omit<ClientV4MemoryInternals, "caches"> & {
+      caches: ResolversTypes["ClientV4MemoryInternalsCaches"];
+    }
+  >;
   ClientV4MemoryInternalsCaches: ResolverTypeWrapper<
-    Omit<ClientV4MemoryInternalsCaches, "links"> & {
+    Omit<
+      ClientV4MemoryInternalsCaches,
+      "addTypenameDocumentTransform" | "links" | "queryManager"
+    > & {
+      addTypenameDocumentTransform?: Maybe<
+        Array<ResolversTypes["DocumentTransformCacheSizes"]>
+      >;
       links: Array<ResolversTypes["LinkCacheSize"]>;
+      queryManager: ResolversTypes["QueryManagerCacheSizes"];
     }
   >;
   ClientV4Mutation: ResolverTypeWrapper<
     Omit<ClientV4Mutation, "error"> & {
-      error: Maybe<ResolversTypes["ErrorLike"]>;
+      error?: Maybe<ResolversTypes["ErrorLike"]>;
     }
   >;
   ClientV4Mutations: ResolverTypeWrapper<ApolloClientInfo>;
   ClientV4Queries: ResolverTypeWrapper<ApolloClientInfo>;
   ClientV4WatchedQuery: ResolverTypeWrapper<
     Omit<ClientV4WatchedQuery, "error"> & {
-      error: Maybe<ResolversTypes["ErrorLike"]>;
+      error?: Maybe<ResolversTypes["ErrorLike"]>;
     }
   >;
   ClientWatchedQuery: ResolverTypeWrapper<
@@ -724,6 +817,9 @@ export type ResolversTypes = {
     ResolversInterfaceTypes<ResolversTypes>["ErrorLike"]
   >;
   FragmentRegistryCacheSizes: ResolverTypeWrapper<FragmentRegistryCacheSizes>;
+  FragmentWatch: ResolverTypeWrapper<FragmentWatch>;
+  FragmentWatchData: ResolverTypeWrapper<FragmentWatchData>;
+  FragmentWatchEntity: ResolverTypeWrapper<FragmentWatchEntity>;
   GraphQLDocument: ResolverTypeWrapper<DocumentNode>;
   GraphQLErrorPath: ResolverTypeWrapper<Scalars["GraphQLErrorPath"]["output"]>;
   GraphQLErrorSourceLocation: ResolverTypeWrapper<GraphQlErrorSourceLocation>;
@@ -743,7 +839,13 @@ export type ResolversTypes = {
   PersistedQueryLinkCacheSizes: ResolverTypeWrapper<PersistedQueryLinkCacheSizes>;
   Query: ResolverTypeWrapper<never>;
   QueryData: ResolverTypeWrapper<Scalars["QueryData"]["output"]>;
-  QueryManagerCacheSizes: ResolverTypeWrapper<QueryManagerCacheSizes>;
+  QueryManagerCacheSizes: ResolverTypeWrapper<
+    Omit<QueryManagerCacheSizes, "documentTransforms"> & {
+      documentTransforms?: Maybe<
+        Array<ResolversTypes["DocumentTransformCacheSizes"]>
+      >;
+    }
+  >;
   QueryOptions: ResolverTypeWrapper<Scalars["QueryOptions"]["output"]>;
   RemoveTypenameFromVariablesLinkCacheSizes: ResolverTypeWrapper<RemoveTypenameFromVariablesLinkCacheSizes>;
   SerializedApolloError: ResolverTypeWrapper<RpcSerializedApolloError>;
@@ -778,17 +880,26 @@ export type ResolversParentTypes = {
   CacheSize: CacheSize;
   CacheWrite: RemoteCacheWrite;
   Client: ApolloClientInfo;
+  ClientFragmentWatches: ApolloClientInfo;
   ClientMutation: ResolversInterfaceTypes<ResolversParentTypes>["ClientMutation"];
   ClientMutations: ResolversInterfaceTypes<ResolversParentTypes>["ClientMutations"];
   ClientQueries: ResolversInterfaceTypes<ResolversParentTypes>["ClientQueries"];
   ClientV3: ApolloClientInfo;
-  ClientV3MemoryInternals: ClientV3MemoryInternals;
+  ClientV3MemoryInternals: Omit<ClientV3MemoryInternals, "caches"> & {
+    caches: ResolversParentTypes["ClientV3MemoryInternalsCaches"];
+  };
   ClientV3MemoryInternalsCaches: Omit<
     ClientV3MemoryInternalsCaches,
-    "links"
-  > & { links: Array<ResolversParentTypes["LinkCacheSize"]> };
+    "addTypenameDocumentTransform" | "links" | "queryManager"
+  > & {
+    addTypenameDocumentTransform?: Maybe<
+      Array<ResolversParentTypes["DocumentTransformCacheSizes"]>
+    >;
+    links: Array<ResolversParentTypes["LinkCacheSize"]>;
+    queryManager: ResolversParentTypes["QueryManagerCacheSizes"];
+  };
   ClientV3Mutation: Omit<ClientV3Mutation, "error"> & {
-    error: Maybe<ResolversParentTypes["ClientV3MutationError"]>;
+    error?: Maybe<ResolversParentTypes["ClientV3MutationError"]>;
   };
   ClientV3MutationError: ResolversUnionTypes<ResolversParentTypes>["ClientV3MutationError"];
   ClientV3Mutations: ApolloClientInfo;
@@ -797,21 +908,29 @@ export type ResolversParentTypes = {
     queries: Array<ResolversParentTypes["ClientV3WatchedQuery"]>;
   };
   ClientV3WatchedQuery: Omit<ClientV3WatchedQuery, "error"> & {
-    error: Maybe<ResolversParentTypes["SerializedApolloError"]>;
+    error?: Maybe<ResolversParentTypes["SerializedApolloError"]>;
   };
   ClientV4: ApolloClientInfo;
-  ClientV4MemoryInternals: ClientV4MemoryInternals;
+  ClientV4MemoryInternals: Omit<ClientV4MemoryInternals, "caches"> & {
+    caches: ResolversParentTypes["ClientV4MemoryInternalsCaches"];
+  };
   ClientV4MemoryInternalsCaches: Omit<
     ClientV4MemoryInternalsCaches,
-    "links"
-  > & { links: Array<ResolversParentTypes["LinkCacheSize"]> };
+    "addTypenameDocumentTransform" | "links" | "queryManager"
+  > & {
+    addTypenameDocumentTransform?: Maybe<
+      Array<ResolversParentTypes["DocumentTransformCacheSizes"]>
+    >;
+    links: Array<ResolversParentTypes["LinkCacheSize"]>;
+    queryManager: ResolversParentTypes["QueryManagerCacheSizes"];
+  };
   ClientV4Mutation: Omit<ClientV4Mutation, "error"> & {
-    error: Maybe<ResolversParentTypes["ErrorLike"]>;
+    error?: Maybe<ResolversParentTypes["ErrorLike"]>;
   };
   ClientV4Mutations: ApolloClientInfo;
   ClientV4Queries: ApolloClientInfo;
   ClientV4WatchedQuery: Omit<ClientV4WatchedQuery, "error"> & {
-    error: Maybe<ResolversParentTypes["ErrorLike"]>;
+    error?: Maybe<ResolversParentTypes["ErrorLike"]>;
   };
   ClientWatchedQuery: ResolversInterfaceTypes<ResolversParentTypes>["ClientWatchedQuery"];
   DateTime: Scalars["DateTime"]["output"];
@@ -822,6 +941,9 @@ export type ResolversParentTypes = {
   DocumentTransformCacheSizes: DocumentTransformCacheSizes;
   ErrorLike: ResolversInterfaceTypes<ResolversParentTypes>["ErrorLike"];
   FragmentRegistryCacheSizes: FragmentRegistryCacheSizes;
+  FragmentWatch: FragmentWatch;
+  FragmentWatchData: FragmentWatchData;
+  FragmentWatchEntity: FragmentWatchEntity;
   GraphQLDocument: DocumentNode;
   GraphQLErrorPath: Scalars["GraphQLErrorPath"]["output"];
   GraphQLErrorSourceLocation: GraphQlErrorSourceLocation;
@@ -835,7 +957,11 @@ export type ResolversParentTypes = {
   PersistedQueryLinkCacheSizes: PersistedQueryLinkCacheSizes;
   Query: never;
   QueryData: Scalars["QueryData"]["output"];
-  QueryManagerCacheSizes: QueryManagerCacheSizes;
+  QueryManagerCacheSizes: Omit<QueryManagerCacheSizes, "documentTransforms"> & {
+    documentTransforms?: Maybe<
+      Array<ResolversParentTypes["DocumentTransformCacheSizes"]>
+    >;
+  };
   QueryOptions: Scalars["QueryOptions"]["output"];
   RemoveTypenameFromVariablesLinkCacheSizes: RemoveTypenameFromVariablesLinkCacheSizes;
   SerializedApolloError: RpcSerializedApolloError;
@@ -933,6 +1059,20 @@ export type ClientResolvers<
   >;
 };
 
+export type ClientFragmentWatchesResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["ClientFragmentWatches"] = ResolversParentTypes["ClientFragmentWatches"],
+> = {
+  items?: Resolver<
+    Array<ResolversTypes["FragmentWatch"]>,
+    ParentType,
+    ContextType
+  >;
+  total?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type ClientMutationResolvers<
   ContextType = any,
   ParentType extends
@@ -977,6 +1117,17 @@ export type ClientV3Resolvers<
   cache?: Resolver<ResolversTypes["Cache"], ParentType, ContextType>;
   cacheWrites?: Resolver<
     Array<ResolversTypes["CacheWrite"]>,
+    ParentType,
+    ContextType
+  >;
+  fragmentWatchData?: Resolver<
+    Maybe<ResolversTypes["FragmentWatchData"]>,
+    ParentType,
+    ContextType,
+    RequireFields<ClientV3FragmentWatchDataArgs, "fragmentName">
+  >;
+  fragmentWatches?: Resolver<
+    ResolversTypes["ClientFragmentWatches"],
     ParentType,
     ContextType
   >;
@@ -1177,6 +1328,17 @@ export type ClientV4Resolvers<
   cache?: Resolver<ResolversTypes["Cache"], ParentType, ContextType>;
   cacheWrites?: Resolver<
     Array<ResolversTypes["CacheWrite"]>,
+    ParentType,
+    ContextType
+  >;
+  fragmentWatchData?: Resolver<
+    Maybe<ResolversTypes["FragmentWatchData"]>,
+    ParentType,
+    ContextType,
+    RequireFields<ClientV4FragmentWatchDataArgs, "fragmentName">
+  >;
+  fragmentWatches?: Resolver<
+    ResolversTypes["ClientFragmentWatches"],
     ParentType,
     ContextType
   >;
@@ -1424,6 +1586,50 @@ export type FragmentRegistryCacheSizesResolvers<
   >;
   lookup?: Resolver<ResolversTypes["CacheSize"], ParentType, ContextType>;
   transform?: Resolver<ResolversTypes["CacheSize"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type FragmentWatchResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["FragmentWatch"] = ResolversParentTypes["FragmentWatch"],
+> = {
+  count?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
+  entities?: Resolver<
+    Array<ResolversTypes["FragmentWatchEntity"]>,
+    ParentType,
+    ContextType
+  >;
+  fragmentString?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type FragmentWatchDataResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["FragmentWatchData"] = ResolversParentTypes["FragmentWatchData"],
+> = {
+  cachedData?: Resolver<
+    Maybe<ResolversTypes["QueryData"]>,
+    ParentType,
+    ContextType
+  >;
+  complete?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type FragmentWatchEntityResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["FragmentWatchEntity"] = ResolversParentTypes["FragmentWatchEntity"],
+> = {
+  id?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  variables?: Resolver<
+    Maybe<ResolversTypes["Variables"]>,
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1808,6 +2014,7 @@ export type Resolvers<ContextType = any> = {
   CacheSize?: CacheSizeResolvers<ContextType>;
   CacheWrite?: CacheWriteResolvers<ContextType>;
   Client?: ClientResolvers<ContextType>;
+  ClientFragmentWatches?: ClientFragmentWatchesResolvers<ContextType>;
   ClientMutation?: ClientMutationResolvers<ContextType>;
   ClientMutations?: ClientMutationsResolvers<ContextType>;
   ClientQueries?: ClientQueriesResolvers<ContextType>;
@@ -1836,6 +2043,9 @@ export type Resolvers<ContextType = any> = {
   DocumentTransformCacheSizes?: DocumentTransformCacheSizesResolvers<ContextType>;
   ErrorLike?: ErrorLikeResolvers<ContextType>;
   FragmentRegistryCacheSizes?: FragmentRegistryCacheSizesResolvers<ContextType>;
+  FragmentWatch?: FragmentWatchResolvers<ContextType>;
+  FragmentWatchData?: FragmentWatchDataResolvers<ContextType>;
+  FragmentWatchEntity?: FragmentWatchEntityResolvers<ContextType>;
   GraphQLDocument?: GraphQlDocumentResolvers<ContextType>;
   GraphQLErrorPath?: GraphQLScalarType;
   GraphQLErrorSourceLocation?: GraphQlErrorSourceLocationResolvers<ContextType>;

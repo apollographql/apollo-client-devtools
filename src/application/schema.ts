@@ -104,6 +104,16 @@ function createResolvers(client: RpcClient): Resolvers {
     ClientV3: {
       cache: (client) => request("getCache", client.id),
       cacheWrites: () => [],
+      fragmentWatches: (client) => client,
+      fragmentWatchData: async (client, args) => {
+        const result = await request("getFragmentWatchData", client.id, {
+          fragmentName: args.fragmentName,
+          id: args.entityId ?? null,
+          variables: args.variables ?? null,
+        });
+
+        return result && { cachedData: result.data, complete: result.complete };
+      },
       queries: (client) => client,
       mutations: (client) => client,
       memoryInternals: async (client) => {
@@ -130,6 +140,16 @@ function createResolvers(client: RpcClient): Resolvers {
     ClientV4: {
       cache: (client) => request("getCache", client.id),
       cacheWrites: () => [],
+      fragmentWatches: (client) => client,
+      fragmentWatchData: async (client, args) => {
+        const result = await request("getFragmentWatchData", client.id, {
+          fragmentName: args.fragmentName,
+          id: args.entityId ?? null,
+          variables: args.variables ?? null,
+        });
+
+        return result && { cachedData: result.data, complete: result.complete };
+      },
       queries: (client) => client,
       mutations: (client) => client,
       memoryInternals: async (client) => {
@@ -146,6 +166,17 @@ function createResolvers(client: RpcClient): Resolvers {
           raw: memoryInternals,
           caches: formatMemoryInternalsCaches(memoryInternals),
         };
+      },
+    },
+    ClientFragmentWatches: {
+      total: (client) => client.fragmentWatchCount,
+      items: async (client) => {
+        const fragmentWatches = await request("getFragmentWatches", client.id);
+
+        return fragmentWatches.map(({ document, ...fragmentWatch }) => ({
+          ...fragmentWatch,
+          fragmentString: print(document),
+        }));
       },
     },
     ClientQueries: {

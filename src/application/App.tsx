@@ -8,6 +8,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import { currentScreen, Screens } from "./components/Layouts/Navigation";
 import { Queries } from "./components/Queries/Queries";
 import { Mutations } from "./components/Mutations/Mutations";
+import { Fragments } from "./components/Fragments/Fragments";
 import { Explorer } from "./components/Explorer/Explorer";
 import { Cache } from "./components/Cache/Cache";
 import type {
@@ -63,6 +64,9 @@ const CLIENT_QUERY: TypedDocumentNode<ClientQuery, ClientQueryVariables> = gql`
         total
       }
       mutations {
+        total
+      }
+      fragmentWatches {
         total
       }
     }
@@ -168,6 +172,9 @@ export const App = () => {
             <Tabs.Trigger value={Screens.Mutations}>
               Mutations ({client?.mutations.total ?? 0})
             </Tabs.Trigger>
+            <Tabs.Trigger value={Screens.Fragments}>
+              Fragments ({client?.fragmentWatches.total ?? 0})
+            </Tabs.Trigger>
             <Tabs.Trigger value={Screens.Cache}>Cache</Tabs.Trigger>
             <Tabs.Trigger value={Screens.Memory}>
               Memoization cache
@@ -257,6 +264,14 @@ export const App = () => {
         >
           <TabErrorBoundary>
             <Mutations clientId={selectedClientId} explorerRef={explorerRef} />
+          </TabErrorBoundary>
+        </Tabs.Content>
+        <Tabs.Content
+          className="flex-1 overflow-hidden"
+          value={Screens.Fragments}
+        >
+          <TabErrorBoundary>
+            <Fragments clientId={selectedClientId} />
           </TabErrorBoundary>
         </Tabs.Content>
         <Tabs.Content className="flex-1 overflow-hidden" value={Screens.Cache}>
