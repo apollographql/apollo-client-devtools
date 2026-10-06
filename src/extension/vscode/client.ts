@@ -180,7 +180,7 @@ function registerClient(
           name:
             "devtoolsConfig" in client ? client.devtoolsConfig.name : undefined,
           version: client.version,
-          queryCount: getQueries().length,
+          queryCount: getClientHandler()?.getQueryCount() ?? 0,
           mutationCount: getMutations().length,
         },
       });

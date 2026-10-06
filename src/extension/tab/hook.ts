@@ -67,7 +67,7 @@ function getClientInfo(client: ApolloClient): ApolloClientInfo {
     id: handler.id,
     name: "devtoolsConfig" in client ? client.devtoolsConfig.name : undefined,
     version: client.version,
-    queryCount: handler.getQueries().length,
+    queryCount: handler.getQueryCount(),
     mutationCount: handler.getMutations().length,
   };
 }
