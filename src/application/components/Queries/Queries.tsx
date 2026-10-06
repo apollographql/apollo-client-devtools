@@ -2,11 +2,16 @@ import { type RefObject, useMemo, useState } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { NetworkStatus, gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
-import { isNetworkRequestInFlight } from "@apollo/client/utilities";
+import {
+  canonicalStringify,
+  isNetworkRequestInFlight,
+} from "@apollo/client/utilities";
 import { List } from "../List";
 import { ListItem } from "../ListItem";
 import IconErrorSolid from "@apollo/icons/default/IconErrorSolid.svg";
 import IconTime from "@apollo/icons/default/IconTime.svg";
+import IconChevronLeft from "@apollo/icons/default/IconChevronLeft.svg";
+import IconChevronRight from "@apollo/icons/default/IconChevronRight.svg";
 
 import { SidebarLayout } from "../Layouts/SidebarLayout";
 import { RunInExplorerButton } from "./RunInExplorerButton";
@@ -30,6 +35,8 @@ import { useIsExtensionInvalidated } from "@/application/machines/devtoolsMachin
 import { ObjectViewer } from "../ObjectViewer";
 import { VariablesObject } from "../VariablesObject";
 import { type Explorer } from "../Explorer/Explorer";
+import { Badge } from "../Badge";
+import { Button } from "../Button";
 
 enum QueryTabs {
   Variables = "Variables",
@@ -75,9 +82,40 @@ interface QueriesProps {
   explorerRef: RefObject<Explorer.Ref | null>;
 }
 
-const STABLE_EMPTY_QUERIES: Array<
-  NonNullable<GetQueries["client"]>["queries"]["items"][number]
-> = [];
+type Query = NonNullable<GetQueries["client"]>["queries"]["items"][number];
+
+const STABLE_EMPTY_QUERIES: Query[] = [];
+
+// Queries with the same name and variables are grouped so that repeat watches
+// (e.g. the same `useQuery` hook used by many components) stand out with a
+// count. Groups with the most watches come first.
+function groupRepeatWatches(queries: Query[]) {
+  const groups = new Map<string, Query[]>();
+
+  queries.forEach((query) => {
+    const key = `${query.name ?? ""}:${canonicalStringify(query.variables ?? {})}`;
+    const group = groups.get(key);
+
+    if (group) {
+      group.push(query);
+    } else {
+      groups.set(key, [query]);
+    }
+  });
+
+  // `sort` is stable so groups with the same count keep their original order
+  return Array.from(groups.values()).sort((a, b) => b.length - a.length);
+}
+
+// Show the most relevant status for a group: in flight, then error, then the
+// first query (e.g. polling)
+function getGroupStatusQuery(group: Query[]) {
+  return (
+    group.find((query) => isNetworkRequestInFlight(query.networkStatus)) ??
+    group.find((query) => query.networkStatus === NetworkStatus.error) ??
+    group[0]
+  );
+}
 
 export const Queries = ({ clientId, explorerRef }: QueriesProps) => {
   const [selected, setSelected] = useState("1");
@@ -115,7 +153,8 @@ export const Queries = ({ clientId, explorerRef }: QueriesProps) => {
   useActorEvent("panelShown", () => startPolling(500));
 
   if (!selectedQuery && queries.length > 0) {
-    setSelected(queries[0].id);
+    // Select the first query in the sidebar (the group with the most watches)
+    setSelected(groupRepeatWatches(queries)[0][0].id);
   }
 
   const filteredQueries = useMemo(() => {
@@ -128,6 +167,21 @@ export const Queries = ({ clientId, explorerRef }: QueriesProps) => {
     return queries.filter((query) => query.name && regex.test(query.name));
   }, [searchTerm, queries]);
 
+  const groups = useMemo(
+    () => groupRepeatWatches(filteredQueries),
+    [filteredQueries]
+  );
+  const selectedGroup = useMemo(
+    () =>
+      groupRepeatWatches(queries).find((group) =>
+        group.some((query) => query.id === selected)
+      ) ?? [],
+    [queries, selected]
+  );
+  const selectedIndex = selectedGroup.findIndex(
+    (query) => query.id === selected
+  );
+
   return (
     <SidebarLayout>
       <SidebarLayout.Sidebar>
@@ -138,12 +192,20 @@ export const Queries = ({ clientId, explorerRef }: QueriesProps) => {
           value={searchTerm}
         />
         <List className="h-full">
-          {filteredQueries.map(({ name, id, networkStatus, pollInterval }) => {
+          {groups.map((group) => {
+            const { name, id } = group[0];
+            const { networkStatus, pollInterval } = getGroupStatusQuery(group);
+            const isSelected = group.some((query) => query.id === selected);
+
             return (
               <ListItem
                 key={`${name}-${id}`}
-                onClick={() => setSelected(id)}
-                selected={selected === id}
+                onClick={() => {
+                  if (!isSelected) {
+                    setSelected(id);
+                  }
+                }}
+                selected={isSelected}
                 className="font-code"
               >
                 <div className="w-full flex items-center justify-between gap-2">
@@ -154,6 +216,15 @@ export const Queries = ({ clientId, explorerRef }: QueriesProps) => {
                       name
                     )}
                   </span>
+                  {group.length > 1 && (
+                    <Tooltip
+                      content={`${group.length} active watches of this query`}
+                    >
+                      <Badge variant="warning" className="shrink-0">
+                        {group.length}
+                      </Badge>
+                    </Tooltip>
+                  )}
                   <QueryStatusIcon
                     networkStatus={networkStatus}
                     pollInterval={pollInterval}
@@ -208,6 +279,33 @@ export const Queries = ({ clientId, explorerRef }: QueriesProps) => {
                       )}
                     </StatusBadge>
                   ) : null}
+                  {selectedGroup.length > 1 && (
+                    <div className="flex items-center gap-1 text-sm font-body font-normal">
+                      <Button
+                        aria-label="Previous watch"
+                        size="xs"
+                        variant="hidden"
+                        icon={<IconChevronLeft />}
+                        disabled={selectedIndex <= 0}
+                        onClick={() =>
+                          setSelected(selectedGroup[selectedIndex - 1].id)
+                        }
+                      />
+                      <span>
+                        Watch {selectedIndex + 1} of {selectedGroup.length}
+                      </span>
+                      <Button
+                        aria-label="Next watch"
+                        size="xs"
+                        variant="hidden"
+                        icon={<IconChevronRight />}
+                        disabled={selectedIndex >= selectedGroup.length - 1}
+                        onClick={() =>
+                          setSelected(selectedGroup[selectedIndex + 1].id)
+                        }
+                      />
+                    </div>
+                  )}
                 </QueryLayout.Title>
                 <RunInExplorerButton
                   operation={selectedQuery.queryString}
