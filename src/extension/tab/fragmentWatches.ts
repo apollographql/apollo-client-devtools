@@ -4,6 +4,7 @@ import type { ApolloClient } from "@/types";
 import type { JSONObject } from "@/application/types/json";
 import type { FragmentWatch, FragmentWatchData } from "./shared/types";
 import { identifyDocument } from "./identifyDocument";
+import { untimed } from "./cacheTimings";
 
 interface CacheWatch {
   query: DocumentNode;
@@ -130,13 +131,16 @@ export function getFragmentWatchData(
   }
 
   const { query, id, variables, optimistic = true } = match;
-  const diff = (client.cache as any).diff({
-    query,
-    id,
-    variables,
-    optimistic,
-    returnPartialData: true,
-  });
+  // This read is made by the devtools, so exclude it from cache timings
+  const diff = untimed(() =>
+    (client.cache as any).diff({
+      query,
+      id,
+      variables,
+      optimistic,
+      returnPartialData: true,
+    })
+  );
 
   return { data: diff.result ?? null, complete: diff.complete };
 }

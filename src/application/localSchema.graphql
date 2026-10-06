@@ -29,6 +29,7 @@ type Query {
 
 type Subscription {
   cacheWritten(clientId: ID!): CacheWrite!
+  cacheTimingsUpdated(clientId: ID!): CacheTimings!
 }
 
 interface CacheWrite {
@@ -415,4 +416,24 @@ type SerializedGraphQLError {
 type GraphQLErrorSourceLocation {
   line: Int!
   column: Int!
+}
+
+type CacheTimings {
+  id: String!
+  broadcastWatches: TimingStat!
+  operations: [OperationTimings!]!
+}
+
+type TimingStat {
+  count: Int!
+  selfMs: Float!
+  totalMs: Float!
+}
+
+type OperationTimings {
+  key: String!
+  kind: String!
+  name: String!
+  write: TimingStat!
+  diff: TimingStat!
 }

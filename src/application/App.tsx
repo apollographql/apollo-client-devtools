@@ -9,6 +9,7 @@ import { currentScreen, Screens } from "./components/Layouts/Navigation";
 import { Queries } from "./components/Queries/Queries";
 import { Mutations } from "./components/Mutations/Mutations";
 import { Fragments } from "./components/Fragments/Fragments";
+import { Performance } from "./components/Performance/Performance";
 import { Explorer } from "./components/Explorer/Explorer";
 import { Cache } from "./components/Cache/Cache";
 import type {
@@ -106,6 +107,13 @@ export const App = () => {
   );
   const selected = useReactiveVar<Screens>(currentScreen);
   const explorerRef = useRef<Explorer.Ref>(null);
+  // Cache timings start recording the first time the Performance tab is
+  // opened. Keep it mounted afterwards so results survive switching tabs.
+  const [hasOpenedPerformance, setHasOpenedPerformance] = useState(false);
+
+  if (selected === Screens.Performance && !hasOpenedPerformance) {
+    setHasOpenedPerformance(true);
+  }
 
   const {
     data: clientData,
@@ -175,6 +183,7 @@ export const App = () => {
             <Tabs.Trigger value={Screens.Fragments}>
               Fragments ({client?.fragmentWatches.total ?? 0})
             </Tabs.Trigger>
+            <Tabs.Trigger value={Screens.Performance}>Performance</Tabs.Trigger>
             <Tabs.Trigger value={Screens.Cache}>Cache</Tabs.Trigger>
             <Tabs.Trigger value={Screens.Memory}>
               Memoization cache
@@ -272,6 +281,15 @@ export const App = () => {
         >
           <TabErrorBoundary>
             <Fragments clientId={selectedClientId} />
+          </TabErrorBoundary>
+        </Tabs.Content>
+        <Tabs.Content
+          className="flex-1 overflow-hidden"
+          value={Screens.Performance}
+          forceMount={hasOpenedPerformance || undefined}
+        >
+          <TabErrorBoundary>
+            <Performance clientId={selectedClientId} />
           </TabErrorBoundary>
         </Tabs.Content>
         <Tabs.Content className="flex-1 overflow-hidden" value={Screens.Cache}>

@@ -11,6 +11,7 @@ import {
   getFragmentWatchData,
   getFragmentWatches,
 } from "../fragmentWatches";
+import { createCacheTimings } from "../cacheTimings";
 
 const FRAGMENT = gql`
   fragment ColorFields on Color {
@@ -90,7 +91,7 @@ describe.each([
     subscriptions.forEach((subscription) => subscription.unsubscribe());
   });
 
-  test("reads cached data for a watched entity", () => {
+  test("reads cached data for a watched entity without timing it", () => {
     const client = createClient() as ApolloClient;
 
     client.writeFragment({
@@ -105,6 +106,8 @@ describe.each([
       })
       .subscribe(() => {});
 
+    const timings = createCacheTimings(client);
+
     expect(
       getFragmentWatchData(client, {
         fragmentName: "ColorFields",
@@ -115,6 +118,7 @@ describe.each([
       data: expect.objectContaining({ id: "1", name: "red" }),
       complete: true,
     });
+    expect(timings.snapshot().operations).toHaveLength(0);
 
     expect(
       getFragmentWatchData(client, {
@@ -124,6 +128,7 @@ describe.each([
       })
     ).toBeNull();
 
+    timings.dispose();
     subscription.unsubscribe();
   });
 });

@@ -84,6 +84,13 @@ export type CacheSize = {
   size: Maybe<Scalars["Int"]["output"]>;
 };
 
+export type CacheTimings = {
+  __typename: "CacheTimings";
+  broadcastWatches: TimingStat;
+  id: Scalars["String"]["output"];
+  operations: Array<OperationTimings>;
+};
+
 export type CacheWrite = {
   diff: Maybe<Scalars["Diff"]["output"]>;
   id: Scalars["ID"]["output"];
@@ -385,6 +392,15 @@ export type MemoryInternalsCaches = {
   queryManager: QueryManagerCacheSizes;
 };
 
+export type OperationTimings = {
+  __typename: "OperationTimings";
+  diff: TimingStat;
+  key: Scalars["String"]["output"];
+  kind: Scalars["String"]["output"];
+  name: Scalars["String"]["output"];
+  write: TimingStat;
+};
+
 export type PersistedQueryLinkCacheSizes = {
   __typename: "PersistedQueryLinkCacheSizes";
   persistedQueryHashes: CacheSize;
@@ -491,11 +507,23 @@ export type SerializedUnconventionalError = ErrorLike & {
 
 export type Subscription = {
   __typename: "Subscription";
+  cacheTimingsUpdated: CacheTimings;
   cacheWritten: CacheWrite;
+};
+
+export type SubscriptioncacheTimingsUpdatedArgs = {
+  clientId: Scalars["ID"]["input"];
 };
 
 export type SubscriptioncacheWrittenArgs = {
   clientId: Scalars["ID"]["input"];
+};
+
+export type TimingStat = {
+  __typename: "TimingStat";
+  count: Scalars["Int"]["output"];
+  selfMs: Scalars["Float"]["output"];
+  totalMs: Scalars["Float"]["output"];
 };
 
 /** Calls to cache.writeFragment(...) */
@@ -1341,6 +1369,48 @@ export type GetMutations = {
         };
       }
     | null;
+};
+
+export type CacheTimingsSubscriptionVariables = Exact<{
+  clientId: Scalars["ID"]["input"];
+}>;
+
+export type CacheTimingsSubscription = {
+  cacheTimingsUpdated: {
+    __typename: "CacheTimings";
+    id: string;
+    broadcastWatches: {
+      __typename: "TimingStat";
+      count: number;
+      selfMs: number;
+      totalMs: number;
+    };
+    operations: Array<{
+      __typename: "OperationTimings";
+      key: string;
+      kind: string;
+      name: string;
+      write: {
+        __typename: "TimingStat";
+        count: number;
+        selfMs: number;
+        totalMs: number;
+      };
+      diff: {
+        __typename: "TimingStat";
+        count: number;
+        selfMs: number;
+        totalMs: number;
+      };
+    }>;
+  };
+};
+
+export type TimingStatFields = {
+  __typename: "TimingStat";
+  count: number;
+  selfMs: number;
+  totalMs: number;
 };
 
 export type GetQueriesVariables = Exact<{

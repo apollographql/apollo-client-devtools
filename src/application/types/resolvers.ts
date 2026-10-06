@@ -104,6 +104,13 @@ export type CacheSize = {
   size: Maybe<Scalars["Int"]["output"]>;
 };
 
+export type CacheTimings = {
+  __typename?: "CacheTimings";
+  broadcastWatches: TimingStat;
+  id: Scalars["String"]["output"];
+  operations: Array<OperationTimings>;
+};
+
 export type CacheWrite = {
   diff: Maybe<Scalars["Diff"]["output"]>;
   id: Scalars["ID"]["output"];
@@ -405,6 +412,15 @@ export type MemoryInternalsCaches = {
   queryManager: QueryManagerCacheSizes;
 };
 
+export type OperationTimings = {
+  __typename?: "OperationTimings";
+  diff: TimingStat;
+  key: Scalars["String"]["output"];
+  kind: Scalars["String"]["output"];
+  name: Scalars["String"]["output"];
+  write: TimingStat;
+};
+
 export type PersistedQueryLinkCacheSizes = {
   __typename?: "PersistedQueryLinkCacheSizes";
   persistedQueryHashes: CacheSize;
@@ -511,11 +527,23 @@ export type SerializedUnconventionalError = ErrorLike & {
 
 export type Subscription = {
   __typename?: "Subscription";
+  cacheTimingsUpdated: CacheTimings;
   cacheWritten: CacheWrite;
+};
+
+export type SubscriptionCacheTimingsUpdatedArgs = {
+  clientId: Scalars["ID"]["input"];
 };
 
 export type SubscriptionCacheWrittenArgs = {
   clientId: Scalars["ID"]["input"];
+};
+
+export type TimingStat = {
+  __typename?: "TimingStat";
+  count: Scalars["Int"]["output"];
+  selfMs: Scalars["Float"]["output"];
+  totalMs: Scalars["Float"]["output"];
 };
 
 /** Calls to cache.writeFragment(...) */
@@ -722,6 +750,7 @@ export type ResolversTypes = {
   >;
   CacheModifyWrite: ResolverTypeWrapper<RemoteCacheWrite>;
   CacheSize: ResolverTypeWrapper<CacheSize>;
+  CacheTimings: ResolverTypeWrapper<CacheTimings>;
   CacheWrite: ResolverTypeWrapper<RemoteCacheWrite>;
   Client: ResolverTypeWrapper<ApolloClientInfo>;
   ClientFragmentWatches: ResolverTypeWrapper<ApolloClientInfo>;
@@ -816,6 +845,7 @@ export type ResolversTypes = {
   ErrorLike: ResolverTypeWrapper<
     ResolversInterfaceTypes<ResolversTypes>["ErrorLike"]
   >;
+  Float: ResolverTypeWrapper<Scalars["Float"]["output"]>;
   FragmentRegistryCacheSizes: ResolverTypeWrapper<FragmentRegistryCacheSizes>;
   FragmentWatch: ResolverTypeWrapper<FragmentWatch>;
   FragmentWatchData: ResolverTypeWrapper<FragmentWatchData>;
@@ -836,6 +866,7 @@ export type ResolversTypes = {
   MemoryInternalsCaches: ResolverTypeWrapper<
     ResolversInterfaceTypes<ResolversTypes>["MemoryInternalsCaches"]
   >;
+  OperationTimings: ResolverTypeWrapper<OperationTimings>;
   PersistedQueryLinkCacheSizes: ResolverTypeWrapper<PersistedQueryLinkCacheSizes>;
   Query: ResolverTypeWrapper<never>;
   QueryData: ResolverTypeWrapper<Scalars["QueryData"]["output"]>;
@@ -859,6 +890,7 @@ export type ResolversTypes = {
   SerializedUnconventionalError: ResolverTypeWrapper<RpcSerializedUnconventionalError>;
   String: ResolverTypeWrapper<Scalars["String"]["output"]>;
   Subscription: ResolverTypeWrapper<never>;
+  TimingStat: ResolverTypeWrapper<TimingStat>;
   Variables: ResolverTypeWrapper<Scalars["Variables"]["output"]>;
   WriteFragmentCacheWrite: ResolverTypeWrapper<RemoteCacheWrite>;
   WriteFragmentOptions: ResolverTypeWrapper<
@@ -878,6 +910,7 @@ export type ResolversParentTypes = {
   CacheModifyOptions: Scalars["CacheModifyOptions"]["output"];
   CacheModifyWrite: RemoteCacheWrite;
   CacheSize: CacheSize;
+  CacheTimings: CacheTimings;
   CacheWrite: RemoteCacheWrite;
   Client: ApolloClientInfo;
   ClientFragmentWatches: ApolloClientInfo;
@@ -940,6 +973,7 @@ export type ResolversParentTypes = {
   DocumentNode: Scalars["DocumentNode"]["output"];
   DocumentTransformCacheSizes: DocumentTransformCacheSizes;
   ErrorLike: ResolversInterfaceTypes<ResolversParentTypes>["ErrorLike"];
+  Float: Scalars["Float"]["output"];
   FragmentRegistryCacheSizes: FragmentRegistryCacheSizes;
   FragmentWatch: FragmentWatch;
   FragmentWatchData: FragmentWatchData;
@@ -954,6 +988,7 @@ export type ResolversParentTypes = {
   LinkCacheSize: ResolversUnionTypes<ResolversParentTypes>["LinkCacheSize"];
   MemoryInternals: ResolversInterfaceTypes<ResolversParentTypes>["MemoryInternals"];
   MemoryInternalsCaches: ResolversInterfaceTypes<ResolversParentTypes>["MemoryInternalsCaches"];
+  OperationTimings: OperationTimings;
   PersistedQueryLinkCacheSizes: PersistedQueryLinkCacheSizes;
   Query: never;
   QueryData: Scalars["QueryData"]["output"];
@@ -975,6 +1010,7 @@ export type ResolversParentTypes = {
   SerializedUnconventionalError: RpcSerializedUnconventionalError;
   String: Scalars["String"]["output"];
   Subscription: never;
+  TimingStat: TimingStat;
   Variables: Scalars["Variables"]["output"];
   WriteFragmentCacheWrite: RemoteCacheWrite;
   WriteFragmentOptions: Scalars["WriteFragmentOptions"]["output"];
@@ -1029,6 +1065,25 @@ export type CacheSizeResolvers<
   key?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   limit?: Resolver<Maybe<ResolversTypes["Int"]>, ParentType, ContextType>;
   size?: Resolver<Maybe<ResolversTypes["Int"]>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CacheTimingsResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["CacheTimings"] = ResolversParentTypes["CacheTimings"],
+> = {
+  broadcastWatches?: Resolver<
+    ResolversTypes["TimingStat"],
+    ParentType,
+    ContextType
+  >;
+  id?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  operations?: Resolver<
+    Array<ResolversTypes["OperationTimings"]>,
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1723,6 +1778,19 @@ export type MemoryInternalsCachesResolvers<
   >;
 };
 
+export type OperationTimingsResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["OperationTimings"] = ResolversParentTypes["OperationTimings"],
+> = {
+  diff?: Resolver<ResolversTypes["TimingStat"], ParentType, ContextType>;
+  key?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  kind?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  write?: Resolver<ResolversTypes["TimingStat"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type PersistedQueryLinkCacheSizesResolvers<
   ContextType = any,
   ParentType extends
@@ -1950,6 +2018,13 @@ export type SubscriptionResolvers<
   ParentType extends
     ResolversParentTypes["Subscription"] = ResolversParentTypes["Subscription"],
 > = {
+  cacheTimingsUpdated?: SubscriptionResolver<
+    ResolversTypes["CacheTimings"],
+    "cacheTimingsUpdated",
+    ParentType,
+    ContextType,
+    RequireFields<SubscriptionCacheTimingsUpdatedArgs, "clientId">
+  >;
   cacheWritten?: SubscriptionResolver<
     ResolversTypes["CacheWrite"],
     "cacheWritten",
@@ -1957,6 +2032,17 @@ export type SubscriptionResolvers<
     ContextType,
     RequireFields<SubscriptionCacheWrittenArgs, "clientId">
   >;
+};
+
+export type TimingStatResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["TimingStat"] = ResolversParentTypes["TimingStat"],
+> = {
+  count?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
+  selfMs?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
+  totalMs?: Resolver<ResolversTypes["Float"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export interface VariablesScalarConfig
@@ -2012,6 +2098,7 @@ export type Resolvers<ContextType = any> = {
   CacheModifyOptions?: GraphQLScalarType;
   CacheModifyWrite?: CacheModifyWriteResolvers<ContextType>;
   CacheSize?: CacheSizeResolvers<ContextType>;
+  CacheTimings?: CacheTimingsResolvers<ContextType>;
   CacheWrite?: CacheWriteResolvers<ContextType>;
   Client?: ClientResolvers<ContextType>;
   ClientFragmentWatches?: ClientFragmentWatchesResolvers<ContextType>;
@@ -2054,6 +2141,7 @@ export type Resolvers<ContextType = any> = {
   LinkCacheSize?: LinkCacheSizeResolvers<ContextType>;
   MemoryInternals?: MemoryInternalsResolvers<ContextType>;
   MemoryInternalsCaches?: MemoryInternalsCachesResolvers<ContextType>;
+  OperationTimings?: OperationTimingsResolvers<ContextType>;
   PersistedQueryLinkCacheSizes?: PersistedQueryLinkCacheSizesResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   QueryData?: GraphQLScalarType;
@@ -2070,6 +2158,7 @@ export type Resolvers<ContextType = any> = {
   SerializedServerParseError?: SerializedServerParseErrorResolvers<ContextType>;
   SerializedUnconventionalError?: SerializedUnconventionalErrorResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
+  TimingStat?: TimingStatResolvers<ContextType>;
   Variables?: GraphQLScalarType;
   WriteFragmentCacheWrite?: WriteFragmentCacheWriteResolvers<ContextType>;
   WriteFragmentOptions?: GraphQLScalarType;

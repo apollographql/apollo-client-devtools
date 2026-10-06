@@ -17,6 +17,7 @@ import type {
   MemoryInternalsV4,
 } from "./tab/v4/types";
 import type {
+  CacheTimings,
   CacheWrite,
   FragmentWatch,
   FragmentWatchData,
@@ -50,6 +51,7 @@ export type RPCRequest = {
 
 export interface RPCStream {
   cacheWrite(clientId: IDv3 | IDv4): CacheWrite;
+  cacheTimings(clientId: IDv3 | IDv4): CacheTimings;
 }
 
 export interface RpcClient {

@@ -5,6 +5,7 @@ export enum Screens {
   Queries = "queries",
   Mutations = "mutations",
   Fragments = "fragments",
+  Performance = "performance",
   Explorer = "explorer",
   Memory = "memory",
 }

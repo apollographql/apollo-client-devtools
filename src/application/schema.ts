@@ -13,7 +13,7 @@ import { gte } from "semver";
 import type { MemoryInternalsV3 } from "@/extension/tab/v3/types";
 import type { MemoryInternalsV4 } from "@/extension/tab/v4/types";
 import { isExtensionInvalidatedError } from "@/extension/errorMessages";
-import type { CacheWrite } from "@/extension/tab/shared/types";
+import type { CacheTimings, CacheWrite } from "@/extension/tab/shared/types";
 import { diff } from "./utilities/diff";
 import { createId } from "@/utils/createId";
 
@@ -60,6 +60,14 @@ function createResolvers(client: RpcClient): Resolvers {
           return rpcClient
             .withSignal(context.abortSignal)
             .stream("cacheWrite", args.clientId);
+        },
+      },
+      cacheTimingsUpdated: {
+        resolve: (cacheTimings: CacheTimings) => cacheTimings,
+        subscribe: (_, args, context: { abortSignal?: AbortSignal }) => {
+          return rpcClient
+            .withSignal(context.abortSignal)
+            .stream("cacheTimings", args.clientId);
         },
       },
     },

@@ -40,3 +40,26 @@ export type FragmentWatchData = {
   data: JSONObject | null;
   complete: boolean;
 };
+
+export type TimingStat = {
+  count: number;
+  // Time spent in the method excluding time spent in nested timed methods
+  // (e.g. `diff` calls made while broadcasting watches)
+  selfMs: number;
+  totalMs: number;
+};
+
+export type OperationTimings = {
+  key: string;
+  kind: "query" | "mutation" | "subscription" | "fragment";
+  name: string;
+  write: TimingStat;
+  diff: TimingStat;
+};
+
+export type CacheTimings = {
+  // Identifies the recording. Counters restart when a new recording starts.
+  id: string;
+  broadcastWatches: TimingStat;
+  operations: OperationTimings[];
+};
