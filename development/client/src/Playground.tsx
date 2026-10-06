@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
-import { useApolloClient } from "@apollo/client/react";
-import React from "react";
+import { useApolloClient, useFragment } from "./ClientContext";
+import React, { useState } from "react";
 
 const FRAGMENT = gql`
   fragment SingleColorFragment on Color {
@@ -20,8 +20,15 @@ const NESTED_FRAGMENT = gql`
   }
 `;
 
+function WatchedColor({ hex }: { hex: string }) {
+  useFragment({ fragment: FRAGMENT, from: { __typename: "Color", hex } });
+
+  return <div>Watching Color:{hex}</div>;
+}
+
 export function Playground() {
   const client = useApolloClient();
+  const [watchFragments, setWatchFragments] = useState(false);
 
   return (
     <div>
@@ -49,6 +56,24 @@ export function Playground() {
         >
           Write nested fragment
         </button>
+      </div>
+      <div>
+        <label>
+          <input
+            type="checkbox"
+            checked={watchFragments}
+            onChange={(e) => setWatchFragments(e.target.checked)}
+          />
+          Watch fragments
+        </label>
+        {watchFragments && (
+          <>
+            <WatchedColor hex="FF0000" />
+            <WatchedColor hex="FF0000" />
+            <WatchedColor hex="FF0000" />
+            <WatchedColor hex="00FF00" />
+          </>
+        )}
       </div>
     </div>
   );

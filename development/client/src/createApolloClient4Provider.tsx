@@ -13,6 +13,7 @@ import {
   useMutation,
   ApolloProvider,
   useApolloClient,
+  useFragment,
 } from "@apollo/client/react";
 
 import { LocalState } from "@apollo/client/local-state";
@@ -73,6 +74,7 @@ export const createApolloClient4Provider = (
             useQuery: useQuery,
             useLazyQuery: useLazyQuery,
             useMutation: useMutation,
+            useFragment,
           }}
         >
           <ApolloProvider client={client}>{children}</ApolloProvider>

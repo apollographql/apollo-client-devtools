@@ -14,6 +14,7 @@ import {
   useMutation,
   ApolloProvider,
   useApolloClient,
+  useFragment,
 } from "@apollo/client-3/react";
 
 import type { ClientProvider } from "./ClientContext";
@@ -67,6 +68,7 @@ export const createApolloClient3Provider = (
             useQuery: useQuery as any,
             useLazyQuery: useLazyQuery as any,
             useMutation: useMutation as any,
+            useFragment: useFragment as any,
           }}
         >
           <ApolloProvider client={client}>{children}</ApolloProvider>
