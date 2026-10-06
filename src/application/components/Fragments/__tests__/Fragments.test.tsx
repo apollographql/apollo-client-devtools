@@ -9,6 +9,7 @@ import { Fragments } from "../Fragments";
 import { getRpcClient } from "../../../../extension/devtools/panelRpcClient";
 import type { GetRpcClientMock } from "../../../../extension/devtools/__mocks__/panelRpcClient";
 import type { FragmentWatch } from "../../../../extension/tab/shared/types";
+import { Screens, navigationTarget } from "../../Layouts/Navigation";
 
 jest.mock("../../../../extension/devtools/panelRpcClient");
 
@@ -27,6 +28,16 @@ const fragmentWatches: FragmentWatch[] = [
       { id: "Color:1", variables: { size: 1 } },
       { id: "Color:2", variables: null },
     ],
+  },
+  {
+    name: "SizeFields",
+    document: gql`
+      fragment SizeFields on Color {
+        size
+      }
+    `,
+    count: 1,
+    entities: [{ id: "Color:1", variables: null }],
   },
 ];
 
@@ -76,5 +87,18 @@ test("lists watched fragments and shows cached data for an entity", async () => 
     expect(
       within(main).getByText((content) => content.includes("name of Color:2"))
     ).toBeInTheDocument();
+  });
+});
+
+test("selects the fragment from a navigation target", async () => {
+  navigationTarget({ screen: Screens.Fragments, name: "SizeFields" });
+
+  renderWithApolloClient(<Fragments clientId="1" />);
+
+  await waitFor(() => {
+    expect(screen.getByTestId("title")).toHaveTextContent("SizeFields");
+  });
+  await waitFor(() => {
+    expect(navigationTarget()).toBeNull();
   });
 });

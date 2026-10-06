@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
@@ -26,6 +26,11 @@ import { CopyButton } from "../CopyButton";
 import { EmptyMessage } from "../EmptyMessage";
 import { PageSpinner } from "../PageSpinner";
 import { ObjectViewer } from "../ObjectViewer";
+import {
+  Screens,
+  clearNavigationTarget,
+  useNavigationTarget,
+} from "../Layouts/Navigation";
 
 enum FragmentTabs {
   Entities = "Entities",
@@ -157,6 +162,24 @@ export function Fragments({ clientId }: FragmentsProps) {
     startPolling(500);
     startPollingWatchData(500);
   });
+
+  // Opened from another tab (e.g. Performance) with a fragment to select
+  const targetName = useNavigationTarget(Screens.Fragments);
+
+  if (
+    targetName &&
+    targetName !== selected &&
+    fragmentWatches.some(({ name }) => name === targetName)
+  ) {
+    setSelected(targetName);
+    setSelectedEntityKey(null);
+  }
+
+  useEffect(() => {
+    if (targetName && data) {
+      clearNavigationTarget();
+    }
+  }, [targetName, data]);
 
   const filteredFragmentWatches = useMemo(() => {
     if (!searchTerm) {

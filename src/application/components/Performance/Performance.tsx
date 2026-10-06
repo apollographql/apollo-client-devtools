@@ -9,8 +9,15 @@ import type {
 } from "../../types/gql";
 import { Button } from "../Button";
 import { PageSpinner } from "../PageSpinner";
+import { Screens, navigateTo } from "../Layouts/Navigation";
 import { Badge } from "../Badge";
 import { Tooltip } from "../Tooltip";
+
+const SCREEN_LABELS: Partial<Record<Screens, string>> = {
+  [Screens.Queries]: "Queries",
+  [Screens.Mutations]: "Mutations",
+  [Screens.Fragments]: "Fragments",
+};
 
 const CACHE_TIMINGS_SUBSCRIPTION: TypedDocumentNode<
   CacheTimingsSubscription,
@@ -50,6 +57,9 @@ interface Row {
   key: string;
   kind: string;
   label: string;
+  // Tab to open when the row is clicked
+  screen?: Screens;
+  name?: string;
   total: number;
   writeCount: number;
   writeMs: number;
@@ -57,7 +67,13 @@ interface Row {
   diffMs: number;
 }
 
-type Column = Exclude<keyof Row, "key" | "kind">;
+type Column = Exclude<keyof Row, "key" | "kind" | "screen" | "name">;
+
+const SCREENS_BY_KIND: Partial<Record<string, Screens>> = {
+  query: Screens.Queries,
+  mutation: Screens.Mutations,
+  fragment: Screens.Fragments,
+};
 
 const EMPTY_STAT: Stat = {
   __typename: "TimingStat",
@@ -141,6 +157,8 @@ export function Performance({ clientId }: PerformanceProps) {
           key: operation.key,
           kind: operation.kind,
           label: operation.name,
+          screen: SCREENS_BY_KIND[operation.kind],
+          name: operation.name,
           total: write.selfMs + diff.selfMs,
           writeCount: write.count,
           writeMs: write.selfMs,
@@ -394,8 +412,19 @@ function NumberCell({ value, format }: { value: number; format: string }) {
 }
 
 function TableRow({ row }: { row: Row }) {
+  const { screen, name } = row;
+  const isClickable = screen !== undefined && name !== undefined;
+
   return (
-    <tr className="border-t border-primary dark:border-primary-dark">
+    <tr
+      className={`border-t border-primary dark:border-primary-dark ${
+        isClickable
+          ? "cursor-pointer hover:bg-button-secondaryHover hover:dark:bg-button-secondaryHover-dark"
+          : ""
+      }`}
+      title={isClickable ? `Open in ${SCREEN_LABELS[screen]} tab` : undefined}
+      onClick={isClickable ? () => navigateTo(screen, name) : undefined}
+    >
       <td className="py-1.5 pr-3 max-w-0 w-full">
         <div className="flex items-center gap-2">
           <KindBadge kind={row.kind} />

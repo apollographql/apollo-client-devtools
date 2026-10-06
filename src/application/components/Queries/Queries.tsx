@@ -1,4 +1,4 @@
-import { type RefObject, useMemo, useState } from "react";
+import { type RefObject, useEffect, useMemo, useState } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { NetworkStatus, gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
@@ -37,6 +37,11 @@ import { VariablesObject } from "../VariablesObject";
 import { type Explorer } from "../Explorer/Explorer";
 import { Badge } from "../Badge";
 import { Button } from "../Button";
+import {
+  Screens,
+  clearNavigationTarget,
+  useNavigationTarget,
+} from "../Layouts/Navigation";
 
 enum QueryTabs {
   Variables = "Variables",
@@ -151,6 +156,27 @@ export const Queries = ({ clientId, explorerRef }: QueriesProps) => {
 
   useActorEvent("panelHidden", () => stopPolling());
   useActorEvent("panelShown", () => startPolling(500));
+
+  // Opened from another tab (e.g. Performance) with a query to select. Select
+  // the group with the most watches for that name.
+  const targetName = useNavigationTarget(Screens.Queries);
+
+  const targetGroup =
+    targetName && data
+      ? groupRepeatWatches(queries).find(
+          (group) => group[0].name === targetName
+        )
+      : undefined;
+
+  if (targetGroup && targetGroup[0].id !== selected) {
+    setSelected(targetGroup[0].id);
+  }
+
+  useEffect(() => {
+    if (targetName && data) {
+      clearNavigationTarget();
+    }
+  }, [targetName, data]);
 
   if (!selectedQuery && queries.length > 0) {
     // Select the first query in the sidebar (the group with the most watches)

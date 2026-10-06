@@ -10,6 +10,7 @@ import type { QueryV3Details } from "../../../../extension/tab/v3/types";
 import { getRpcClient } from "../../../../extension/devtools/panelRpcClient";
 import type { GetRpcClientMock } from "../../../../extension/devtools/__mocks__/panelRpcClient";
 import React from "react";
+import { Screens, navigationTarget } from "../../Layouts/Navigation";
 
 jest.mock("../../../../extension/devtools/panelRpcClient");
 
@@ -157,6 +158,22 @@ describe("<Queries />", () => {
     });
 
     expect(within(sidebar).getByText("2")).toBeInTheDocument();
+  });
+
+  test("selects the query from a navigation target", async () => {
+    mockRpcRequests();
+    navigationTarget({ screen: Screens.Queries, name: "GetColors" });
+
+    renderWithApolloClient(
+      <Queries clientId="1" explorerRef={React.createRef()} />
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId("title")).toHaveTextContent("GetColors");
+    });
+    await waitFor(() => {
+      expect(navigationTarget()).toBeNull();
+    });
   });
 
   test("renders query name", async () => {
