@@ -6,8 +6,13 @@ import {
   makeReference,
   HttpLink,
   ApolloLink,
+  Observable,
 } from "@apollo/client-3";
 import { onError } from "@apollo/client-3/link/error";
+import {
+  SHARED_HOOK_OPERATION_NAME,
+  respondWithSharedHookColors,
+} from "./sharedHookColors";
 import {
   useQuery,
   useLazyQuery,
@@ -50,6 +55,11 @@ export const createApolloClient3Provider = (
       onError((arg) => {
         console.log(name, "onError", arg);
       }),
+      new ApolloLink((operation, forward) =>
+        operation.operationName === SHARED_HOOK_OPERATION_NAME
+          ? new Observable(respondWithSharedHookColors)
+          : forward(operation)
+      ),
       new HttpLink({ uri: "http://localhost:4000" }),
     ]),
 
