@@ -84,6 +84,13 @@ export type CacheSize = {
   size: Maybe<Scalars["Int"]["output"]>;
 };
 
+export type CacheTimings = {
+  __typename: "CacheTimings";
+  broadcastWatches: TimingStat;
+  id: Scalars["String"]["output"];
+  operations: Array<OperationTimings>;
+};
+
 export type CacheWrite = {
   diff: Maybe<Scalars["Diff"]["output"]>;
   id: Scalars["ID"]["output"];
@@ -93,12 +100,26 @@ export type CacheWrite = {
 export type Client = {
   cache: Scalars["Cache"]["output"];
   cacheWrites: Array<CacheWrite>;
+  fragmentWatchData: Maybe<FragmentWatchData>;
+  fragmentWatches: ClientFragmentWatches;
   id: Scalars["String"]["output"];
   memoryInternals: Maybe<MemoryInternals>;
   mutations: ClientMutations;
   name: Maybe<Scalars["String"]["output"]>;
   queries: ClientQueries;
   version: Scalars["String"]["output"];
+};
+
+export type ClientfragmentWatchDataArgs = {
+  entityId?: InputMaybe<Scalars["String"]["input"]>;
+  fragmentName: Scalars["String"]["input"];
+  variables?: InputMaybe<Scalars["Variables"]["input"]>;
+};
+
+export type ClientFragmentWatches = {
+  __typename: "ClientFragmentWatches";
+  items: Array<FragmentWatch>;
+  total: Scalars["Int"]["output"];
 };
 
 export type ClientMutation = {
@@ -123,12 +144,20 @@ export type ClientV3 = Client & {
   __typename: "ClientV3";
   cache: Scalars["Cache"]["output"];
   cacheWrites: Array<CacheWrite>;
+  fragmentWatchData: Maybe<FragmentWatchData>;
+  fragmentWatches: ClientFragmentWatches;
   id: Scalars["String"]["output"];
   memoryInternals: Maybe<ClientV3MemoryInternals>;
   mutations: ClientV3Mutations;
   name: Maybe<Scalars["String"]["output"]>;
   queries: ClientV3Queries;
   version: Scalars["String"]["output"];
+};
+
+export type ClientV3fragmentWatchDataArgs = {
+  entityId?: InputMaybe<Scalars["String"]["input"]>;
+  fragmentName: Scalars["String"]["input"];
+  variables?: InputMaybe<Scalars["Variables"]["input"]>;
 };
 
 export type ClientV3MemoryInternals = MemoryInternals & {
@@ -197,12 +226,20 @@ export type ClientV4 = Client & {
   __typename: "ClientV4";
   cache: Scalars["Cache"]["output"];
   cacheWrites: Array<CacheWrite>;
+  fragmentWatchData: Maybe<FragmentWatchData>;
+  fragmentWatches: ClientFragmentWatches;
   id: Scalars["String"]["output"];
   memoryInternals: Maybe<ClientV4MemoryInternals>;
   mutations: ClientV4Mutations;
   name: Maybe<Scalars["String"]["output"]>;
   queries: ClientV4Queries;
   version: Scalars["String"]["output"];
+};
+
+export type ClientV4fragmentWatchDataArgs = {
+  entityId?: InputMaybe<Scalars["String"]["input"]>;
+  fragmentName: Scalars["String"]["input"];
+  variables?: InputMaybe<Scalars["Variables"]["input"]>;
 };
 
 export type ClientV4MemoryInternals = MemoryInternals & {
@@ -296,6 +333,26 @@ export type FragmentRegistryCacheSizes = {
   transform: CacheSize;
 };
 
+export type FragmentWatch = {
+  __typename: "FragmentWatch";
+  count: Scalars["Int"]["output"];
+  entities: Array<FragmentWatchEntity>;
+  fragmentString: Scalars["String"]["output"];
+  name: Scalars["String"]["output"];
+};
+
+export type FragmentWatchData = {
+  __typename: "FragmentWatchData";
+  cachedData: Maybe<Scalars["QueryData"]["output"]>;
+  complete: Scalars["Boolean"]["output"];
+};
+
+export type FragmentWatchEntity = {
+  __typename: "FragmentWatchEntity";
+  id: Maybe<Scalars["String"]["output"]>;
+  variables: Maybe<Scalars["Variables"]["output"]>;
+};
+
 export type GraphQLDocument = {
   __typename: "GraphQLDocument";
   ast: Scalars["DocumentNode"]["output"];
@@ -333,6 +390,15 @@ export type MemoryInternalsCaches = {
   links: Array<LinkCacheSize>;
   print: CacheSize;
   queryManager: QueryManagerCacheSizes;
+};
+
+export type OperationTimings = {
+  __typename: "OperationTimings";
+  diff: TimingStat;
+  key: Scalars["String"]["output"];
+  kind: Scalars["String"]["output"];
+  name: Scalars["String"]["output"];
+  write: TimingStat;
 };
 
 export type PersistedQueryLinkCacheSizes = {
@@ -441,11 +507,23 @@ export type SerializedUnconventionalError = ErrorLike & {
 
 export type Subscription = {
   __typename: "Subscription";
+  cacheTimingsUpdated: CacheTimings;
   cacheWritten: CacheWrite;
+};
+
+export type SubscriptioncacheTimingsUpdatedArgs = {
+  clientId: Scalars["ID"]["input"];
 };
 
 export type SubscriptioncacheWrittenArgs = {
   clientId: Scalars["ID"]["input"];
+};
+
+export type TimingStat = {
+  __typename: "TimingStat";
+  count: Scalars["Int"]["output"];
+  selfMs: Scalars["Float"]["output"];
+  totalMs: Scalars["Float"]["output"];
 };
 
 /** Calls to cache.writeFragment(...) */
@@ -487,6 +565,7 @@ export type ClientQuery = {
         version: string;
         queries: { __typename: "ClientV3Queries"; total: number };
         mutations: { __typename: "ClientV3Mutations"; total: number };
+        fragmentWatches: { __typename: "ClientFragmentWatches"; total: number };
       }
     | {
         __typename: "ClientV4";
@@ -494,117 +573,10 @@ export type ClientQuery = {
         version: string;
         queries: { __typename: "ClientV4Queries"; total: number };
         mutations: { __typename: "ClientV4Mutations"; total: number };
+        fragmentWatches: { __typename: "ClientFragmentWatches"; total: number };
       }
     | null;
 };
-
-export type CacheWritesSubscriptionVariables = Exact<{
-  clientId: Scalars["ID"]["input"];
-}>;
-
-export type CacheWritesSubscription = {
-  cacheWritten:
-    | {
-        __typename: "CacheModifyWrite";
-        id: string;
-        diff: Diff | null;
-        timestamp: DateTime;
-        modifyOptions: CacheModifyOptions;
-      }
-    | {
-        __typename: "DirectCacheWrite";
-        id: string;
-        diff: Diff | null;
-        timestamp: DateTime;
-        writeOptions: DirectCacheWriteOptions;
-      }
-    | {
-        __typename: "WriteFragmentCacheWrite";
-        id: string;
-        diff: Diff | null;
-        timestamp: DateTime;
-        writeFragmentOptions: WriteFragmentOptions;
-      }
-    | {
-        __typename: "WriteQueryCacheWrite";
-        id: string;
-        diff: Diff | null;
-        timestamp: DateTime;
-        writeQueryOptions: WriteQueryOptions;
-      };
-};
-
-type ClientWriteSubscriptionFragment_ClientV3 = {
-  __typename: "ClientV3";
-  cacheWrites: Array<
-    | {
-        __typename: "CacheModifyWrite";
-        id: string;
-        diff: Diff | null;
-        timestamp: DateTime;
-        modifyOptions: CacheModifyOptions;
-      }
-    | {
-        __typename: "DirectCacheWrite";
-        id: string;
-        diff: Diff | null;
-        timestamp: DateTime;
-        writeOptions: DirectCacheWriteOptions;
-      }
-    | {
-        __typename: "WriteFragmentCacheWrite";
-        id: string;
-        diff: Diff | null;
-        timestamp: DateTime;
-        writeFragmentOptions: WriteFragmentOptions;
-      }
-    | {
-        __typename: "WriteQueryCacheWrite";
-        id: string;
-        diff: Diff | null;
-        timestamp: DateTime;
-        writeQueryOptions: WriteQueryOptions;
-      }
-  >;
-};
-
-type ClientWriteSubscriptionFragment_ClientV4 = {
-  __typename: "ClientV4";
-  cacheWrites: Array<
-    | {
-        __typename: "CacheModifyWrite";
-        id: string;
-        diff: Diff | null;
-        timestamp: DateTime;
-        modifyOptions: CacheModifyOptions;
-      }
-    | {
-        __typename: "DirectCacheWrite";
-        id: string;
-        diff: Diff | null;
-        timestamp: DateTime;
-        writeOptions: DirectCacheWriteOptions;
-      }
-    | {
-        __typename: "WriteFragmentCacheWrite";
-        id: string;
-        diff: Diff | null;
-        timestamp: DateTime;
-        writeFragmentOptions: WriteFragmentOptions;
-      }
-    | {
-        __typename: "WriteQueryCacheWrite";
-        id: string;
-        diff: Diff | null;
-        timestamp: DateTime;
-        writeQueryOptions: WriteQueryOptions;
-      }
-  >;
-};
-
-export type ClientWriteSubscriptionFragment =
-  | ClientWriteSubscriptionFragment_ClientV3
-  | ClientWriteSubscriptionFragment_ClientV4;
 
 export type ApolloErrorAlertDisclosurePanel_error = {
   __typename: "SerializedApolloError";
@@ -809,6 +781,114 @@ export type CacheModifyListItem_cacheWrite = {
   modifyOptions: CacheModifyOptions;
 };
 
+export type CacheWritesSubscriptionVariables = Exact<{
+  clientId: Scalars["ID"]["input"];
+}>;
+
+export type CacheWritesSubscription = {
+  cacheWritten:
+    | {
+        __typename: "CacheModifyWrite";
+        id: string;
+        diff: Diff | null;
+        timestamp: DateTime;
+        modifyOptions: CacheModifyOptions;
+      }
+    | {
+        __typename: "DirectCacheWrite";
+        id: string;
+        diff: Diff | null;
+        timestamp: DateTime;
+        writeOptions: DirectCacheWriteOptions;
+      }
+    | {
+        __typename: "WriteFragmentCacheWrite";
+        id: string;
+        diff: Diff | null;
+        timestamp: DateTime;
+        writeFragmentOptions: WriteFragmentOptions;
+      }
+    | {
+        __typename: "WriteQueryCacheWrite";
+        id: string;
+        diff: Diff | null;
+        timestamp: DateTime;
+        writeQueryOptions: WriteQueryOptions;
+      };
+};
+
+type ClientWriteSubscriptionFragment_ClientV3 = {
+  __typename: "ClientV3";
+  cacheWrites: Array<
+    | {
+        __typename: "CacheModifyWrite";
+        id: string;
+        diff: Diff | null;
+        timestamp: DateTime;
+        modifyOptions: CacheModifyOptions;
+      }
+    | {
+        __typename: "DirectCacheWrite";
+        id: string;
+        diff: Diff | null;
+        timestamp: DateTime;
+        writeOptions: DirectCacheWriteOptions;
+      }
+    | {
+        __typename: "WriteFragmentCacheWrite";
+        id: string;
+        diff: Diff | null;
+        timestamp: DateTime;
+        writeFragmentOptions: WriteFragmentOptions;
+      }
+    | {
+        __typename: "WriteQueryCacheWrite";
+        id: string;
+        diff: Diff | null;
+        timestamp: DateTime;
+        writeQueryOptions: WriteQueryOptions;
+      }
+  >;
+};
+
+type ClientWriteSubscriptionFragment_ClientV4 = {
+  __typename: "ClientV4";
+  cacheWrites: Array<
+    | {
+        __typename: "CacheModifyWrite";
+        id: string;
+        diff: Diff | null;
+        timestamp: DateTime;
+        modifyOptions: CacheModifyOptions;
+      }
+    | {
+        __typename: "DirectCacheWrite";
+        id: string;
+        diff: Diff | null;
+        timestamp: DateTime;
+        writeOptions: DirectCacheWriteOptions;
+      }
+    | {
+        __typename: "WriteFragmentCacheWrite";
+        id: string;
+        diff: Diff | null;
+        timestamp: DateTime;
+        writeFragmentOptions: WriteFragmentOptions;
+      }
+    | {
+        __typename: "WriteQueryCacheWrite";
+        id: string;
+        diff: Diff | null;
+        timestamp: DateTime;
+        writeQueryOptions: WriteQueryOptions;
+      }
+  >;
+};
+
+export type ClientWriteSubscriptionFragment =
+  | ClientWriteSubscriptionFragment_ClientV3
+  | ClientWriteSubscriptionFragment_ClientV4;
+
 export type CombinedGraphQLErrorsAlertDisclosurePanel_error = {
   __typename: "SerializedCombinedGraphQLErrors";
   errors: Array<{
@@ -828,6 +908,81 @@ export type DirectCacheWriteListItem_cacheWrite = {
   __typename: "DirectCacheWrite";
   timestamp: DateTime;
   writeOptions: DirectCacheWriteOptions;
+};
+
+export type GetFragmentWatchesVariables = Exact<{
+  id: Scalars["ID"]["input"];
+}>;
+
+export type GetFragmentWatches = {
+  client:
+    | {
+        __typename: "ClientV3";
+        id: string;
+        fragmentWatches: {
+          __typename: "ClientFragmentWatches";
+          items: Array<{
+            __typename: "FragmentWatch";
+            name: string;
+            fragmentString: string;
+            count: number;
+            entities: Array<{
+              __typename: "FragmentWatchEntity";
+              id: string | null;
+              variables: Variables | null;
+            }>;
+          }>;
+        };
+      }
+    | {
+        __typename: "ClientV4";
+        id: string;
+        fragmentWatches: {
+          __typename: "ClientFragmentWatches";
+          items: Array<{
+            __typename: "FragmentWatch";
+            name: string;
+            fragmentString: string;
+            count: number;
+            entities: Array<{
+              __typename: "FragmentWatchEntity";
+              id: string | null;
+              variables: Variables | null;
+            }>;
+          }>;
+        };
+      }
+    | null;
+};
+
+export type GetFragmentWatchDataVariables = Exact<{
+  id: Scalars["ID"]["input"];
+  fragmentName: Scalars["String"]["input"];
+  entityId?: InputMaybe<Scalars["String"]["input"]>;
+  variables?: InputMaybe<Scalars["Variables"]["input"]>;
+}>;
+
+export type GetFragmentWatchData = {
+  client:
+    | {
+        __typename: "ClientV3";
+        id: string;
+        fragmentWatchData: {
+          __typename: "FragmentWatchData";
+          cachedData: QueryData | null;
+          complete: boolean;
+        } | null;
+      }
+    | {
+        __typename: "ClientV4";
+        id: string;
+        fragmentWatchData: {
+          __typename: "FragmentWatchData";
+          cachedData: QueryData | null;
+          complete: boolean;
+        } | null;
+      }
+    | null;
 };
 
 export type MemoryInternalsQueryVariables = Exact<{
@@ -1214,6 +1369,48 @@ export type GetMutations = {
         };
       }
     | null;
+};
+
+export type CacheTimingsSubscriptionVariables = Exact<{
+  clientId: Scalars["ID"]["input"];
+}>;
+
+export type CacheTimingsSubscription = {
+  cacheTimingsUpdated: {
+    __typename: "CacheTimings";
+    id: string;
+    broadcastWatches: {
+      __typename: "TimingStat";
+      count: number;
+      selfMs: number;
+      totalMs: number;
+    };
+    operations: Array<{
+      __typename: "OperationTimings";
+      key: string;
+      kind: string;
+      name: string;
+      write: {
+        __typename: "TimingStat";
+        count: number;
+        selfMs: number;
+        totalMs: number;
+      };
+      diff: {
+        __typename: "TimingStat";
+        count: number;
+        selfMs: number;
+        totalMs: number;
+      };
+    }>;
+  };
+};
+
+export type TimingStatFields = {
+  __typename: "TimingStat";
+  count: number;
+  selfMs: number;
+  totalMs: number;
 };
 
 export type GetQueriesVariables = Exact<{

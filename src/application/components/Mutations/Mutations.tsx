@@ -1,5 +1,5 @@
 import type { RefObject } from "react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { gql, NetworkStatus } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
@@ -27,6 +27,11 @@ import { SerializedErrorAlertDisclosurePanel } from "../SerializedErrorAlertDisc
 import { useIsExtensionInvalidated } from "@/application/machines/devtoolsMachine";
 import { VariablesObject } from "../VariablesObject";
 import type { Explorer } from "../Explorer/Explorer";
+import {
+  Screens,
+  clearNavigationTarget,
+  useNavigationTarget,
+} from "../Layouts/Navigation";
 
 const GET_MUTATIONS: TypedDocumentNode<GetMutations, GetMutationsVariables> =
   gql`
@@ -99,6 +104,25 @@ export const Mutations = ({ clientId, explorerRef }: MutationsProps) => {
   if (!selectedMutation && mutations.length > 0) {
     setSelected(0);
   }
+
+  // Opened from another tab (e.g. Performance) with a mutation to select.
+  // Select the most recent mutation with that name.
+  const targetName = useNavigationTarget(Screens.Mutations);
+
+  const targetMutation =
+    targetName && data
+      ? [...mutations].reverse().find(({ name }) => name === targetName)
+      : undefined;
+
+  if (targetMutation && Number(targetMutation.id) !== selected) {
+    setSelected(Number(targetMutation.id));
+  }
+
+  useEffect(() => {
+    if (targetName && data) {
+      clearNavigationTarget();
+    }
+  }, [targetName, data]);
 
   const filteredMutations = useMemo(() => {
     if (!searchTerm) {
