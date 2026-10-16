@@ -182,7 +182,8 @@
     "Apollo Client stopped refetching '%s' because the same incomplete cache result was already refetched. Automatic refetching was halted to prevent an endless cycle of network requests.\n\nThis often means another query is overwriting non-normalized data selected by this query. Common fixes:\n\n  * Select an `id` or `_id` field in each query that writes the object\n  * Set custom `keyFields` if the object uses a different identity\n  * Add a field `merge` function so partial writes combine instead of replace\n\n  missing fields: %o\n\nFor more information about these options, please refer to the documentation:\n\n  * Ensuring entity objects have IDs: https://go.apollo.dev/c/generating-unique-identifiers\n  * Defining custom merge functions: https://go.apollo.dev/c/merging-non-normalized-objects\n",
     "Document node must be a query, mutation, or subscription",
     "The custom scalar configuration for '%s' uses list type '%s', but the value is not an array. The value was coerced as '%s' anyway.",
-    "The variable '%s' has list type '%s', but the value is not an array. The value was coerced as '%s' anyway."
+    "The variable '%s' has list type '%s', but the value is not an array. The value was coerced as '%s' anyway.",
+    "Expected a label for @defer directive"
   ],
   "allConditions": [
     null,
@@ -277,7 +278,8 @@
     "fetchPolicy === \"standby\"",
     "pending",
     "!hasDirectives([\"defer\", \"stream\"], request.query)",
-    "operationType"
+    "operationType",
+    "labelNode && labelNode.value.kind === \"StringValue\""
   ],
   "allFiles": [
     null,
@@ -580,7 +582,9 @@
     "4.3.0-rc.2": "56",
     "4.3.0": "56",
     "4.3.1": "56",
-    "4.3.2": "56"
+    "4.3.2": "56",
+    "4.3.3": "56",
+    "4.3.4": "57"
   },
   "errors": {
     "1": "AQEBAgICAwMDBAMEBQMEBgMEBwQECAQFCQUECgUEBwUECwUEDAYEDQYEDgYGDwYEEAcHBwgIBwgIEQkEEgkEEwkJFAkEFQkEFgoEFwoKGAoLGQoMGgoNGwoOHAoPHQoEHgoEHwoEIAsEIQsEIgwEIw0EJA4EJQ8QJg8RJxAEKBEEKRISKhMTKxQULBUVLBYWLRcXLhgYLxkEMBoEMRoEMhoEMxoENBsZNRwaNhwENx0EOB4bOR4cOh4dOx4ePB4fPR8gPiAhPyAiQCAjQSAkQiEEQyElByEIRCImRSIERiInRyIoRCIpSCIqSSIrSiIESyMETCQETSQE",
@@ -638,6 +642,7 @@
     "53": "RD01RT0ERj0nPD1ImT0ERD43SD4qST44Bz8IQkAEQ0AlSkEER0I2TEMEPkQhP0QiQEQzQUQ0S0UEECUHhx9JPR88iB9KiR9LhDtFhTtGVSg7LRcXgTdCgjc6Uyc6Vic9Vxo+Nx0ENTwaNjwEKhMtKxQUXSsIXisEQywlXCxBWy1AYC4EYS4EYi4EjUZQjUZQB0YIpEYEpUYEj0YEkEYEkUYEkkYEB0YIk0ZRokgEJQ8yJg8RIgxDgzpEoAsEoQsEIQsEpklap0dbDAZOjAZPrQYEqQYEDgYvigZMGQYMGgYxGwYOHAYPiwZNmgZUmwZVDwYEowlZEQkEnQlXWAk/EgkEngkEFQkEsEsEFgoElApSHQoEHgoEYwoElQpTlgpSnwpYlwpSWgoEmApShgpHqkoEq0oErEoEAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEsQMEsgQEBwQECAQFCQUECgUEBwUEUQUEWSkE",
     "54": "RD01RT0ERj0nPD1ImT0ERD43SD4qST44Bz8IQkAEQ0AlSkEER0I2TEMEPkQhP0QiQEQzQUQ0S0UEECUHhx9JPR88iB9KiR9LhDtFhTtGVSg7LRcXgTdCgjc6Uyc6Vic9Vxo+Nx0ENTwaNjwEKhMtKxQUXSsIXisEQywlXCxBWy1AYC4EYS4EYi4EjUZQjUZQB0YIpEYEpUYEj0YEkEYEkUYEkkYEB0YIk0ZRokgEJQ8yJg8RIgxDgzpEoAsEoQsEIQsEpklap0dbDAZOjAZPrQYEqQYEDgYvigZMGQYMGgYxGwYOHAYPiwZNmgZUmwZVDwYEowlZEQkEnQlXWAk/EgkEngkEFQkEswkEsEsEFgoElApSHQoEHgoEYwoElQpTlgpSnwpYlwpSWgoEmApShgpHqkoEq0oErEoEAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEsQMEsgQEBwQECAQFCQUECgUEBwUEUQUEWSkE",
     "55": "RD01RT0ERj0nPD1ImT0EtExcRD43SD4qST44Bz8IQkAEQ0AlSkEER0I2TEMEPkQhP0QiQEQzQUQ0S0UEECUHhx9JPR88iB9KiR9LhDtFhTtGVSg7LRcXgTdCgjc6Uyc6Vic9Vxo+Nx0ENTwaNjwEKhMtKxQUXSsIXisEQywlXCxBWy1AYC4EYS4EYi4EjUZQjUZQB0YIpEYEpUYEj0YEkEYEkUYEkkYEB0YIk0ZRokgEJQ8yJg8RIgxDgzpEoAsEoQsEIQsEpklap0dbDAZOjAZPrQYEqQYEDgYvigZMGQYMGgYxGwYOHAYPiwZNmgZUmwZVDwYEowlZEQkEnQlXWAk/EgkEngkEFQkEswkEsEsEFgoElApSHQoEHgoEYwoElQpTlgpSnwpYlwpSWgoEmApShgpHqkoEq0oErEoEAQEBTwEEUAEEAgICAwMDBAMEBQMEBgMEsQMEsgQEBwQECAQFCQUECgUEBwUEUQUEWSkE",
-    "56": "RD01RT0ERj0nPD1ImT0EtExctUwERD43SD4qST44Bz8IQkAEQ0AlSkEER0I2TEMEPkQhP0QiQEQzQUQ0S0UEECUHhx9JPR88iB9KiR9LhDtFhTtGVSg7LRcXgTdCgjc6Uyc6Vic9Vxo+Nx0ENTwaNjwEKhMtKxQUXSsIXisEQywlXCxBWy1AYC4EYS4EYi4EjUZQjUZQB0YIpEYEpUYEj0YEkEYEkUYEkkYEB0YIk0ZRokgEJQ8yJg8RIgxDgzpEoAsEoQsEIQsEpklap0dbDAZOjAZPrQYEqQYEDgYvigZMGQYMGgYxGwYOHAYPiwZNmgZUmwZVDwYEowlZEQkEnQlXWAk/EgkEngkEFQkEswkEsEsEFgoElApSHQoEHgoEYwoElQpTlgpSnwpYlwpSWgoEmApShgpHqkoEq0oErEoEAQEBTwEEUAEEtQEEtk0EAgICAwMDBAMEBQMEBgMEsQMEsgQEBwQECAQFCQUECgUEBwUEUQUEWSkE"
+    "56": "RD01RT0ERj0nPD1ImT0EtExctUwERD43SD4qST44Bz8IQkAEQ0AlSkEER0I2TEMEPkQhP0QiQEQzQUQ0S0UEECUHhx9JPR88iB9KiR9LhDtFhTtGVSg7LRcXgTdCgjc6Uyc6Vic9Vxo+Nx0ENTwaNjwEKhMtKxQUXSsIXisEQywlXCxBWy1AYC4EYS4EYi4EjUZQjUZQB0YIpEYEpUYEj0YEkEYEkUYEkkYEB0YIk0ZRokgEJQ8yJg8RIgxDgzpEoAsEoQsEIQsEpklap0dbDAZOjAZPrQYEqQYEDgYvigZMGQYMGgYxGwYOHAYPiwZNmgZUmwZVDwYEowlZEQkEnQlXWAk/EgkEngkEFQkEswkEsEsEFgoElApSHQoEHgoEYwoElQpTlgpSnwpYlwpSWgoEmApShgpHqkoEq0oErEoEAQEBTwEEUAEEtQEEtk0EAgICAwMDBAMEBQMEBgMEsQMEsgQEBwQECAQFCQUECgUEBwUEUQUEWSkE",
+    "57": "RD01RT0ERj0nPD1ImT0EtExctUwERD43SD4qST44Bz8IQkAEQ0AlSkEER0I2TEMEPkQhP0QiQEQzQUQ0S0UEECUHhx9JPR88iB9KiR9LhDtFhTtGVSg7LRcXgTdCgjc6Uyc6Vic9Vxo+Nx0ENTwaNjwEKhMtKxQUXSsIXisEQywlXCxBWy1AYC4EYS4EYi4EjUZQjUZQB0YIpEYEpUYEj0YEkEYEkUYEkkYEB0YIk0ZRokgEJQ8yJg8RIgxDgzpEoAsEoQsEIQsEt0ldpklap0dbDAZOjAZPrQYEqQYEDgYvigZMGQYMGgYxGwYOHAYPiwZNmgZUmwZVDwYEowlZEQkEnQlXWAk/EgkEngkEFQkEswkEsEsEFgoElApSHQoEHgoEYwoElQpTlgpSnwpYlwpSWgoEmApShgpHqkoEq0oErEoEAQEBTwEEUAEEtQEEtk0EAgICAwMDBAMEBQMEBgMEsQMEsgQEBwQECAQFCQUECgUEBwUEUQUEWSkE"
   }
 }
