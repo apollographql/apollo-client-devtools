@@ -52,6 +52,7 @@ describe("<Mutations />", () => {
       name: undefined,
       queryCount: 0,
       mutationCount: 1,
+      fragmentWatchCount: 0,
     }));
 
     testAdapter.handleRpcRequest("getV3Mutations", () => mutations);

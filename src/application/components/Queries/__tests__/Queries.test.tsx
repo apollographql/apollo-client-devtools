@@ -10,6 +10,7 @@ import type { QueryV3Details } from "../../../../extension/tab/v3/types";
 import { getRpcClient } from "../../../../extension/devtools/panelRpcClient";
 import type { GetRpcClientMock } from "../../../../extension/devtools/__mocks__/panelRpcClient";
 import React from "react";
+import { Screens, navigationTarget } from "../../Layouts/Navigation";
 
 jest.mock("../../../../extension/devtools/panelRpcClient");
 
@@ -51,6 +52,7 @@ describe("<Queries />", () => {
       version: "3.10.0",
       queryCount: queries.length,
       mutationCount: 0,
+      fragmentWatchCount: 0,
     }));
   }
 
@@ -72,6 +74,106 @@ describe("<Queries />", () => {
     });
 
     expect(within(sidebar).getByText("GetColors")).toBeInTheDocument();
+  });
+
+  test("groups repeat watches of the same query and variables", async () => {
+    const document = gql`
+      query SharedHook {
+        hello
+      }
+    `;
+
+    mockRpcRequests([
+      ...defaultQueries,
+      ...["3", "4", "5"].map((id) => ({
+        id,
+        document,
+        variables: { a: 1, b: 2 },
+        options: { fetchPolicy: "cache-first" as const },
+        networkStatus: NetworkStatus.ready,
+      })),
+    ]);
+
+    const user = userEvent.setup();
+
+    renderWithApolloClient(
+      <Queries clientId="1" explorerRef={React.createRef()} />
+    );
+
+    const sidebar = screen.getByRole("complementary");
+
+    await waitFor(() => {
+      expect(within(sidebar).getByText("SharedHook")).toBeInTheDocument();
+    });
+
+    const item = within(sidebar).getByText("SharedHook").closest("li")!;
+    expect(within(sidebar).getAllByText("SharedHook")).toHaveLength(1);
+    expect(within(item).getByText("3")).toBeInTheDocument();
+
+    // Sorted by number of watches
+    expect(within(sidebar).getAllByRole("listitem")[0]).toBe(item);
+
+    await user.click(item);
+
+    const main = screen.getByTestId("main");
+    await waitFor(() => {
+      expect(within(main).getByText("Watch 1 of 3")).toBeInTheDocument();
+    });
+
+    await user.click(within(main).getByRole("button", { name: "Next watch" }));
+    expect(within(main).getByText("Watch 2 of 3")).toBeInTheDocument();
+  });
+
+  test("does not group the same query with different variables", async () => {
+    const document = gql`
+      query SharedHook {
+        hello
+      }
+    `;
+
+    mockRpcRequests(
+      [
+        { id: "1", variables: { id: 1 } },
+        { id: "2", variables: { id: 2 } },
+        // Same variables in a different key order are still grouped
+        { id: "3", variables: { a: 1, b: 2 } },
+        { id: "4", variables: { b: 2, a: 1 } },
+      ].map(({ id, variables }) => ({
+        id,
+        document,
+        variables,
+        options: { fetchPolicy: "cache-first" as const },
+        networkStatus: NetworkStatus.ready,
+      }))
+    );
+
+    renderWithApolloClient(
+      <Queries clientId="1" explorerRef={React.createRef()} />
+    );
+
+    const sidebar = screen.getByRole("complementary");
+
+    await waitFor(() => {
+      expect(within(sidebar).getAllByText("SharedHook")).toHaveLength(3);
+    });
+
+    expect(within(sidebar).getByText("2")).toBeInTheDocument();
+  });
+
+  test("selects the query from a navigation target", async () => {
+    mockRpcRequests();
+    navigationTarget({ screen: Screens.Queries, name: "GetColors" });
+
+    renderWithApolloClient(
+      <Queries clientId="1" explorerRef={React.createRef()} />
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId("title")).toHaveTextContent("GetColors");
+    });
+    await waitFor(() => {
+      expect(navigationTarget()).toBeNull();
+    });
   });
 
   test("renders query name", async () => {

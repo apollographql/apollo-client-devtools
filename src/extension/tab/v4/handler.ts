@@ -151,6 +151,10 @@ export class ClientV4Handler extends ClientHandler<ApolloClient> {
     );
   }
 
+  getQueryCount() {
+    return this.client.getObservableQueries("active").size;
+  }
+
   getQueries(): QueryV4Details[] {
     return Array.from(this.client.getObservableQueries("active")).map(
       (oq, idx) => {

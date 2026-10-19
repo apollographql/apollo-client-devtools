@@ -104,6 +104,7 @@ function defaultGetClient(id: string) {
     version: "3.11.0",
     queryCount: 0,
     mutationCount: 0,
+    fragmentWatchCount: 0,
   } satisfies ApolloClientInfo;
 }
 
@@ -165,6 +166,7 @@ test("does not mistakenly handle messages from different rpc calls", async () =>
       version: "3.7.0",
       queryCount: 10,
       mutationCount: 20,
+      fragmentWatchCount: 0,
     },
   });
 
