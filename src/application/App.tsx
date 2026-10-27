@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { gql } from "@apollo/client";
@@ -74,8 +74,13 @@ const stableEmptyClients: Required<AppQuery["clients"]> = [];
 export const App = () => {
   const isExtensionInvalidated = useIsExtensionInvalidated();
   const [autoRecordCacheWrites] = useLocalStorage("autoRecordCacheWrites");
-  const { send } = useDevToolsActorRef();
+  const { send, on } = useDevToolsActorRef();
   const { data, refetch } = useQuery(APP_QUERY);
+
+  useEffect(() => {
+    const subscription = on("store.didReset", () => void refetch());
+    return () => subscription.unsubscribe();
+  }, [on, refetch]);
 
   useActorEvent("registerClient", () => {
     // Unfortunately after we clear the store above, the query ends up "stuck"
