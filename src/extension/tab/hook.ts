@@ -23,6 +23,12 @@ import type { ClientV3Handler } from "./v3/handler";
 import type { ClientV4Handler } from "./v4/handler";
 import type { Cache } from "@/application/types/scalars";
 import { createHandler } from "./helpers";
+import {
+  getFragmentWatchCount,
+  getFragmentWatchData,
+  getFragmentWatches,
+} from "./fragmentWatches";
+import { createCacheTimings, untimed } from "./cacheTimings";
 import { patch } from "@/application/utilities/patch";
 
 declare global {
@@ -67,8 +73,9 @@ function getClientInfo(client: ApolloClient): ApolloClientInfo {
     id: handler.id,
     name: "devtoolsConfig" in client ? client.devtoolsConfig.name : undefined,
     version: client.version,
-    queryCount: handler.getQueries().length,
+    queryCount: handler.getQueryCount(),
     mutationCount: handler.getMutations().length,
+    fragmentWatchCount: getFragmentWatchCount(client),
   };
 }
 
@@ -85,14 +92,14 @@ handleRpc("getClient", (clientId) => {
   return client ? getClientInfo(client) : null;
 });
 
-handleRpc(
-  "getV3Queries",
-  (clientId) => getHandlerByClientId(clientId)?.getQueries() ?? []
+// Reading query details diffs each query against the cache. Exclude these
+// reads from cache timings since they're made by the devtools, not the app.
+handleRpc("getV3Queries", (clientId) =>
+  untimed(() => getHandlerByClientId(clientId)?.getQueries() ?? [])
 );
 
-handleRpc(
-  "getV4Queries",
-  (clientId) => getHandlerByClientId(clientId)?.getQueries() ?? []
+handleRpc("getV4Queries", (clientId) =>
+  untimed(() => getHandlerByClientId(clientId)?.getQueries() ?? [])
 );
 
 handleRpc(
@@ -115,6 +122,18 @@ handleRpc("getV3MemoryInternals", (clientId) => {
 
 handleRpc("getV4MemoryInternals", (clientId) => {
   return getClientById(clientId)?.getMemoryInternals?.();
+});
+
+handleRpc("getFragmentWatches", (clientId) => {
+  const client = getClientById(clientId as IDv3 | IDv4);
+
+  return client ? getFragmentWatches(client) : [];
+});
+
+handleRpc("getFragmentWatchData", (clientId, options) => {
+  const client = getClientById(clientId as IDv3 | IDv4);
+
+  return client ? getFragmentWatchData(client, options) : null;
 });
 
 handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
@@ -205,6 +224,28 @@ handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
 
   return () => {
     revertPatches.forEach((revert) => revert());
+  };
+});
+
+handleRpcStream("cacheTimings", ({ push, close }, clientId) => {
+  const client = getClientById(clientId);
+  const timings = createCacheTimings(client);
+  const revertStop = patch(
+    client as ApolloClient4,
+    "stop",
+    function (original, ...args) {
+      close();
+      return original.apply(this, args);
+    }
+  );
+
+  push(timings.snapshot());
+  const interval = setInterval(() => push(timings.snapshot()), 1000);
+
+  return () => {
+    clearInterval(interval);
+    revertStop();
+    timings.dispose();
   };
 });
 

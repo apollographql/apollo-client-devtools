@@ -113,4 +113,6 @@ export abstract class ClientHandler<
   abstract getQueries(): TClient extends ApolloClient3<any>
     ? QueryV3Details[]
     : QueryV4Details[];
+
+  abstract getQueryCount(): number;
 }

@@ -7,6 +7,7 @@ export interface ClientContext {
   useQuery: typeof v4.useQuery;
   useLazyQuery: typeof v4.useLazyQuery;
   useMutation: typeof v4.useMutation;
+  useFragment: typeof v4.useFragment;
 }
 
 const Context = createContext<ClientContext | undefined>(undefined);
@@ -26,3 +27,6 @@ export const useLazyQuery = ((query, options: any) =>
 
 export const useMutation = ((query, options: any) =>
   useContext(Context)!.useMutation(query, options)) as typeof v4.useMutation;
+
+export const useFragment = ((options: any) =>
+  useContext(Context)!.useFragment(options)) as typeof v4.useFragment;

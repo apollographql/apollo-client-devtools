@@ -7,12 +7,18 @@ import {
   ApolloLink,
 } from "@apollo/client";
 import { ErrorLink } from "@apollo/client/link/error";
+import { Observable } from "rxjs";
+import {
+  SHARED_HOOK_OPERATION_NAME,
+  respondWithSharedHookColors,
+} from "./sharedHookColors";
 import {
   useQuery,
   useLazyQuery,
   useMutation,
   ApolloProvider,
   useApolloClient,
+  useFragment,
 } from "@apollo/client/react";
 
 import { LocalState } from "@apollo/client/local-state";
@@ -52,6 +58,11 @@ export const createApolloClient4Provider = (
       new ErrorLink((arg) => {
         console.log(name, "onError", arg);
       }),
+      new ApolloLink((operation, forward) =>
+        operation.operationName === SHARED_HOOK_OPERATION_NAME
+          ? new Observable(respondWithSharedHookColors)
+          : forward(operation)
+      ),
       new HttpLink({ uri: "http://localhost:4000" }),
     ]),
     localState: new LocalState(),
@@ -73,6 +84,7 @@ export const createApolloClient4Provider = (
             useQuery: useQuery,
             useLazyQuery: useLazyQuery,
             useMutation: useMutation,
+            useFragment,
           }}
         >
           <ApolloProvider client={client}>{children}</ApolloProvider>

@@ -124,6 +124,24 @@ export class ClientV3Handler extends ClientHandler<ApolloClient<any>> {
     });
   }
 
+  getQueryCount() {
+    if (!this.client.queryManager.getObservableQueries) {
+      return getQueriesLegacy(this.client.queryManager["queries"]).length;
+    }
+
+    let count = 0;
+
+    this.client.queryManager
+      .getObservableQueries("active")
+      .forEach((observableQuery) => {
+        if (getPrivateAccess(observableQuery).queryInfo.document) {
+          count++;
+        }
+      });
+
+    return count;
+  }
+
   getQueries(): QueryV3Details[] {
     if (this.client.queryManager.getObservableQueries) {
       return getQueries(

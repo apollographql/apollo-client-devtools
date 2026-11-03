@@ -19,6 +19,7 @@ const CLIENT_DATA = {
   version: "3.10.0",
   queryCount: 0,
   mutationCount: 0,
+  fragmentWatchCount: 0,
 };
 
 const CACHE_DATA = {

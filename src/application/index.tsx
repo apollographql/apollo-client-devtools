@@ -83,6 +83,9 @@ const cache = new InMemoryCache({
         memoryInternals: {
           merge: false,
         },
+        fragmentWatchData: {
+          merge: false,
+        },
         cacheWrites: {
           read: (existing) => existing ?? [],
           merge: (existing = [], incoming: unknown[]) => {
@@ -98,6 +101,10 @@ const cache = new InMemoryCache({
       merge: true,
     },
     ClientMutations: {
+      keyFields: false,
+      merge: true,
+    },
+    ClientFragmentWatches: {
       keyFields: false,
       merge: true,
     },

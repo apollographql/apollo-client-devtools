@@ -76,6 +76,7 @@ const config: CodegenConfig = {
           ClientV4Queries: "@/types.ts#ApolloClientInfo",
           ClientV3Mutations: "@/types.ts#ApolloClientInfo",
           ClientV4Mutations: "@/types.ts#ApolloClientInfo",
+          ClientFragmentWatches: "@/types.ts#ApolloClientInfo",
           DirectCacheWrite:
             "@/extension/tab/shared/types.ts#CacheWrite as RemoteCacheWrite",
           WriteQueryCacheWrite:
