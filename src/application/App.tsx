@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import type { TypedDocumentNode } from "@apollo/client";
 import { gql } from "@apollo/client";
@@ -25,6 +25,7 @@ import Logo from "@apollo/icons/logos/LogoSymbol.svg";
 import { BannerAlert } from "./components/BannerAlert";
 import {
   useDevToolsActorRef,
+  useDevToolsSelector,
   useIsExtensionInvalidated,
 } from "./machines/devtoolsMachine";
 import { ErrorModals } from "./components/ErrorModals/ErrorModals";
@@ -74,8 +75,36 @@ const stableEmptyClients: Required<AppQuery["clients"]> = [];
 export const App = () => {
   const isExtensionInvalidated = useIsExtensionInvalidated();
   const [autoRecordCacheWrites] = useLocalStorage("autoRecordCacheWrites");
-  const { send } = useDevToolsActorRef();
+  const { send, on } = useDevToolsActorRef();
   const { data, refetch } = useQuery(APP_QUERY);
+
+  useEffect(() => {
+    // After a navigation without a page reload (e.g. pushState in an SPA) the
+    // client still exists, so the hook never sends `registerClient` again.
+    // Ask for the existing clients instead of only waiting for a registration.
+    const subscription = on("store.didReset", () => {
+      refetch().catch(() => {});
+    });
+    return () => subscription.unsubscribe();
+  }, [on, refetch]);
+
+  const isDisconnected = useDevToolsSelector(
+    (state) => state.value.connection === "disconnected"
+  );
+  const [isPanelVisible, setIsPanelVisible] = useState(true);
+
+  useActorEvent("panelHidden", () => setIsPanelVisible(false));
+  useActorEvent("panelShown", () => setIsPanelVisible(true));
+
+  useEffect(() => {
+    if (!isDisconnected || !isPanelVisible) {
+      return;
+    }
+    // When the devtools are opened after the page loaded, no `registerClient`
+    // arrives and a lost initial request would never be retried.
+    const interval = setInterval(() => refetch().catch(() => {}), 2000);
+    return () => clearInterval(interval);
+  }, [isDisconnected, isPanelVisible, refetch]);
 
   useActorEvent("registerClient", () => {
     // Unfortunately after we clear the store above, the query ends up "stuck"
