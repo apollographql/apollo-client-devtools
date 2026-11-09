@@ -1,5 +1,5 @@
 import type { DocumentNode, FieldNode, SelectionSetNode } from "graphql";
-import { Kind } from "graphql";
+import { Kind, visit } from "graphql";
 
 type Writable<T> = { -readonly [P in keyof T]: T[P] };
 
@@ -52,4 +52,18 @@ export function filterDocumentForOperation(
   });
 
   return cloned;
+}
+
+export function unmaskFragmentSpreads(document: DocumentNode): DocumentNode {
+  return visit(document, {
+    FragmentSpread(node) {
+      return {
+        ...node,
+        directives: [
+          ...(node.directives ?? []),
+          { kind: Kind.DIRECTIVE, name: { kind: Kind.NAME, value: "unmask" } },
+        ],
+      };
+    },
+  });
 }
