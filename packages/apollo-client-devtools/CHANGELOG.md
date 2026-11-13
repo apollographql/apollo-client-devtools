@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.26.6
+
+### Patch Changes
+
+- [#1908](https://github.com/apollographql/apollo-client-devtools/pull/1908) [`7391c0d`](https://github.com/apollographql/apollo-client-devtools/commit/7391c0d1374fa9fe41d44c14645e693a67692de9) Thanks [@github-actions](https://github.com/apps/github-actions)! - add error codes for new Apollo Client version
+
+- [#1909](https://github.com/apollographql/apollo-client-devtools/pull/1909) [`b2f4abe`](https://github.com/apollographql/apollo-client-devtools/commit/b2f4abed08227150b53b1e3a587fbeee193c5b89) Thanks [@theluckystrike](https://github.com/theluckystrike)! - Fix schema introspection in the Explorer tab for clients created with `dataMasking: true`.
+
 ## 4.26.5
 
 ### Patch Changes

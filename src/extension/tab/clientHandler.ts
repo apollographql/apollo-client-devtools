@@ -12,7 +12,10 @@ import type { ActorMessage } from "../actor";
 import type { EmbeddedExplorerResponse, ExplorerResponse } from "@/types";
 import type { Observable } from "rxjs";
 import { EMPTY, from, map } from "rxjs";
-import { filterDocumentForOperation } from "@/utils/graphql";
+import {
+  filterDocumentForOperation,
+  unmaskFragmentSpreads,
+} from "@/utils/graphql";
 import { OperationTypeNode } from "graphql";
 import type { JSONObject } from "@/application/types/json";
 import { getOperationDefinition } from "@/utils/getOperationDefinition";
@@ -56,9 +59,16 @@ export abstract class ClientHandler<
 
     if (operationName === "IntrospectionQuery") {
       return from(
-        this.executeQuery({ query: document, fetchPolicy: "no-cache" }).then(
-          (response) => ({ operationName, response })
-        )
+        this.executeQuery({
+          // The introspection query selects most of its fields in named
+          // fragments, which data masking would remove from the result. Only
+          // clients that support data masking also strip @unmask before
+          // sending the query to the server.
+          query: this.client.queryManager.dataMasking
+            ? unmaskFragmentSpreads(document)
+            : document,
+          fetchPolicy: "no-cache",
+        }).then((response) => ({ operationName, response }))
       );
     }
 

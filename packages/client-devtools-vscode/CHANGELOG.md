@@ -1,5 +1,11 @@
 # @apollo/client-devtools-vscode
 
+## 4.26.6
+
+### Patch Changes
+
+- [#1908](https://github.com/apollographql/apollo-client-devtools/pull/1908) [`7391c0d`](https://github.com/apollographql/apollo-client-devtools/commit/7391c0d1374fa9fe41d44c14645e693a67692de9) Thanks [@github-actions](https://github.com/apps/github-actions)! - add error codes for new Apollo Client version
+
 ## 4.26.5
 
 ### Patch Changes
