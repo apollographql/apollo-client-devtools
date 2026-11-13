@@ -79,49 +79,63 @@ handleRpc("getClients", () => {
   return Array.from(knownClients).map(getClientInfo);
 });
 
-handleRpc("getClient", (clientId) => {
-  const client = getClientById(clientId);
+// With `all_frames`, every frame answers RPC requests and the first response
+// wins. Frames that don't own the client must not answer, otherwise e.g. a
+// payment iframe responds with empty data before the frame owning the client.
+function skipIfUnknown<TResult>(
+  clientId: IDv3 | IDv4,
+  getResult: () => TResult
+): TResult {
+  if (!getHandlerByClientId(clientId as any)) {
+    return SKIP_RESPONSE as any;
+  }
+  return getResult();
+}
 
-  return client ? getClientInfo(client) : null;
-});
-
-handleRpc(
-  "getV3Queries",
-  (clientId) => getHandlerByClientId(clientId)?.getQueries() ?? []
+handleRpc("getClient", (clientId) =>
+  skipIfUnknown(clientId, () => getClientInfo(getClientById(clientId)))
 );
 
-handleRpc(
-  "getV4Queries",
-  (clientId) => getHandlerByClientId(clientId)?.getQueries() ?? []
+handleRpc("getV3Queries", (clientId) =>
+  skipIfUnknown(clientId, () => getHandlerByClientId(clientId)!.getQueries())
 );
 
-handleRpc(
-  "getV3Mutations",
-  (clientId) => getHandlerByClientId(clientId)?.getMutations() ?? []
+handleRpc("getV4Queries", (clientId) =>
+  skipIfUnknown(clientId, () => getHandlerByClientId(clientId)!.getQueries())
 );
 
-handleRpc(
-  "getV4Mutations",
-  (clientId) => getHandlerByClientId(clientId)?.getMutations() ?? []
+handleRpc("getV3Mutations", (clientId) =>
+  skipIfUnknown(clientId, () => getHandlerByClientId(clientId)!.getMutations())
 );
 
-handleRpc("getCache", (clientId) => {
-  return (getClientById(clientId)?.cache.extract(true) as JSONObject) ?? {};
-});
+handleRpc("getV4Mutations", (clientId) =>
+  skipIfUnknown(clientId, () => getHandlerByClientId(clientId)!.getMutations())
+);
 
-handleRpc("getV3MemoryInternals", (clientId) => {
-  return getClientById(clientId)?.getMemoryInternals?.();
-});
+handleRpc("getCache", (clientId) =>
+  skipIfUnknown(
+    clientId,
+    () => getClientById(clientId).cache.extract(true) as JSONObject
+  )
+);
 
-handleRpc("getV4MemoryInternals", (clientId) => {
-  return getClientById(clientId)?.getMemoryInternals?.();
-});
+handleRpc("getV3MemoryInternals", (clientId) =>
+  skipIfUnknown(clientId, () => getClientById(clientId).getMemoryInternals?.())
+);
+
+handleRpc("getV4MemoryInternals", (clientId) =>
+  skipIfUnknown(clientId, () => getClientById(clientId).getMemoryInternals?.())
+);
 
 handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
   const slot = new Slot<boolean>();
   // Both v3 and v4 have the same options/return value so we can treat the
   // client the same for both versions
-  const client = getClientById(clientId) as ApolloClient4;
+  const client = getClientById(clientId) as ApolloClient4 | undefined;
+  if (!client) {
+    // another frame owns this client
+    return;
+  }
   const { cache } = client;
   const revertPatches = new Set<() => void>();
 

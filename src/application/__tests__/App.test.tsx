@@ -51,4 +51,43 @@ describe("<App />", () => {
     });
     await screen.findByText("Build");
   });
+
+  test("keeps asking for clients until one is found without a registerClient event", async () => {
+    // Simulates opening the devtools after the page loaded: the client already
+    // exists, so no `registerClient` event arrives, and the first request comes
+    // back empty.
+    let clients: { id: string; version: string }[] = [];
+    testAdapter.handleRpcRequest("getClients", () =>
+      clients.map((client) => ({
+        ...client,
+        name: undefined,
+        queryCount: 0,
+        mutationCount: 0,
+      }))
+    );
+    testAdapter.handleRpcRequest("getClient", (id) => ({
+      id,
+      name: undefined,
+      version: "3.10.0",
+      queryCount: 0,
+      mutationCount: 0,
+    }));
+    testAdapter.handleRpcRequest("getV3Queries", () => []);
+    testAdapter.handleRpcRequest("getV3Mutations", () => []);
+
+    // eslint-disable-next-line testing-library/no-unnecessary-act
+    await act(() => {
+      return renderWithApolloClient(
+        <Suspense fallback="Loading...">
+          <App />
+        </Suspense>
+      );
+    });
+
+    clients = [{ id: "1", version: "3.10.0" }];
+
+    expect(
+      await screen.findByText("3.10.0", { exact: false }, { timeout: 5000 })
+    ).toBeInTheDocument();
+  });
 });

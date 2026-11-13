@@ -1,4 +1,5 @@
 import { useSelector } from "@xstate/react";
+import { useApolloClient } from "@apollo/client/react";
 import {
   useDevToolsActorRef,
   useDevToolsSelector,
@@ -10,6 +11,7 @@ import { cloneElement } from "react";
 
 export function ErrorModals() {
   const { send } = useDevToolsActorRef();
+  const client = useApolloClient();
 
   const openPortNotOpenModal = useDevToolsSelector(
     (state) => state.context.listening === false
@@ -31,7 +33,10 @@ export function ErrorModals() {
     <ClientNotFoundModal
       key="clientNotFound"
       open={openClientNotFoundModal}
-      onRetry={() => send({ type: "reconnect.retry" })}
+      onRetry={() => {
+        send({ type: "reconnect.retry" });
+        client.refetchQueries({ include: ["AppQuery"] }).catch(() => {});
+      }}
     />,
     <UnknownErrorModal key="unknownError" open={isErrorState} />,
   ];
