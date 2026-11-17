@@ -21,6 +21,7 @@ import type {
   QueryV4Details,
   MemoryInternalsV4,
 } from "../tab/v4/types";
+import { getFragmentWatchCount } from "../tab/fragmentWatches";
 
 type Reason =
   | "WS_DISCONNECTED"
@@ -180,8 +181,9 @@ function registerClient(
           name:
             "devtoolsConfig" in client ? client.devtoolsConfig.name : undefined,
           version: client.version,
-          queryCount: getQueries().length,
+          queryCount: getClientHandler()?.getQueryCount() ?? 0,
           mutationCount: getMutations().length,
+          fragmentWatchCount: getFragmentWatchCount(client),
         },
       });
       loadErrorCodes(wsRpcClient, client.version);

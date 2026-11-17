@@ -16,7 +16,12 @@ import type {
   QueryV4Details,
   MemoryInternalsV4,
 } from "./tab/v4/types";
-import type { CacheWrite } from "./tab/shared/types";
+import type {
+  CacheTimings,
+  CacheWrite,
+  FragmentWatch,
+  FragmentWatchData,
+} from "./tab/shared/types";
 import type { ActorMessage } from "./actor";
 
 // Symbol to indicate a handler should not send a response (for multi-frame support)
@@ -33,10 +38,20 @@ export type RPCRequest = {
   getErrorCodes(version: string): Promise<ErrorCodes | undefined>;
   getV3MemoryInternals(clientId: IDv3): MemoryInternalsV3 | undefined;
   getV4MemoryInternals(clientId: IDv4): MemoryInternalsV4 | undefined;
+  getFragmentWatches(clientId: string): FragmentWatch[];
+  getFragmentWatchData(
+    clientId: string,
+    options: {
+      fragmentName: string;
+      id: string | null;
+      variables: JSONObject | null;
+    }
+  ): FragmentWatchData | null;
 };
 
 export interface RPCStream {
   cacheWrite(clientId: IDv3 | IDv4): CacheWrite;
+  cacheTimings(clientId: IDv3 | IDv4): CacheTimings;
 }
 
 export interface RpcClient {

@@ -29,6 +29,7 @@ export interface ApolloClientInfo {
   version: string;
   queryCount: number;
   mutationCount: number;
+  fragmentWatchCount: number;
 }
 
 // This is copied from `@apollo/client` since it is not exported
