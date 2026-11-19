@@ -35,6 +35,13 @@ export type ApolloClientDevtoolsMessage =
   | RPCTerminateStreamMessage
   | RPCStreamChunkMessage;
 
+export type DevtoolsPostMessage = DistributiveOmit<
+  ApolloClientDevtoolsMessage,
+  "id" | "source"
+> & {
+  id?: string;
+};
+
 export function isDevtoolsMessage(
   message: unknown
 ): message is ApolloClientDevtoolsMessage {
@@ -55,7 +62,11 @@ export function isPostMessageError(
 }
 
 export function createDevtoolsMessage(
-  message: DistributiveOmit<ApolloClientDevtoolsMessage, "id" | "source">
+  message: DevtoolsPostMessage
 ): ApolloClientDevtoolsMessage {
-  return { ...message, id: createId(), source: "apollo-client-devtools" };
+  return {
+    ...message,
+    id: message.id ?? createId(),
+    source: "apollo-client-devtools",
+  };
 }
