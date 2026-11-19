@@ -123,7 +123,7 @@ export function createPortMessageAdapter(
 
   initializePort();
 
-  return {
+  return new MessageAdapter({
     addListener(listener) {
       listeners.add(listener);
       port.onMessage.addListener(listener);
@@ -136,7 +136,7 @@ export function createPortMessageAdapter(
     postMessage(message) {
       return port.postMessage(message);
     },
-  };
+  });
 }
 
 interface MessagePortMessageAdapterOptions {
@@ -153,10 +153,10 @@ export function createMessagePortMessageAdapter(
   port: MessagePort,
   options: MessagePortMessageAdapterOptions = {}
 ): MessageAdapter {
-  const { jsonSerialize } = options;
   port.start();
 
-  return {
+  return new MessageAdapter({
+    jsonSerialize: options.jsonSerialize,
     addListener(listener) {
       const handleMessage = (event: MessageEvent) =>
         listener(getMessageEventData(event));
@@ -167,12 +167,9 @@ export function createMessagePortMessageAdapter(
       };
     },
     postMessage(message) {
-      portPostMessage(
-        port,
-        jsonSerialize ? JSON.parse(JSON.stringify(message)) : message
-      );
+      portPostMessage(port, message);
     },
-  };
+  });
 }
 
 interface WindowMessageAdapterOptions {
@@ -183,10 +180,10 @@ export function createWindowMessageAdapter(
   window: Window,
   options: WindowMessageAdapterOptions = {}
 ): MessageAdapter {
-  const { jsonSerialize } = options;
   const sentMessageIds = new Set<string>();
 
-  return {
+  return new MessageAdapter({
+    jsonSerialize: options.jsonSerialize,
     addListener(listener) {
       function handleEvent({ data }: MessageEvent) {
         // We don't want to trigger listeners for a message sent from this
@@ -211,22 +208,9 @@ export function createWindowMessageAdapter(
       // Avoid memory leaks by always cleaning up this ID in case this message
       // adapter doesn't have a listener attached to it.
       setTimeout(() => sentMessageIds.delete(message.id), 10);
-
-      // In some cases, we need to JSON stringify the data transferred in case
-      // the payload contains references to irregular data, such as `URL`
-      // instances which are not cloneable via `structuredClone` (which
-      // `window.postMessage` uses to send messages). `JSON.stringify` tends
-      // to serialize these irregular values into something that is cloneable to
-      // avoid errors for non-cloneable data.
-      //
-      // https://github.com/apollographql/apollo-client-devtools/issues/1258
-      // https://github.com/apollographql/apollo-client-devtools/issues/1479
-      window.postMessage(
-        jsonSerialize ? JSON.parse(JSON.stringify(message)) : message,
-        "*"
-      );
+      window.postMessage(message, "*");
     },
-  };
+  });
 }
 
 export function createMessageBridge(
