@@ -8,12 +8,10 @@ import type {
   RPCStreamStartMessage,
   RPCTerminateStreamMessage,
 } from "./rpc";
-import type { DistributiveOmit } from "@/types";
+import type { DevtoolsMessage, DistributiveOmit } from "@/types";
 
-export interface PostMessageError {
-  source: "apollo-client-devtools";
+export interface PostMessageError extends DevtoolsMessage {
   type: MessageType.PostMessageError;
-  id: string;
   sourceId: string;
   error: SerializedErrorLike;
 }

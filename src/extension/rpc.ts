@@ -1,5 +1,11 @@
 import type { JSONObject } from "../application/types/json";
-import type { ApolloClientInfo, ErrorCodes, NoInfer, SafeAny } from "@/types";
+import type {
+  ApolloClientInfo,
+  DevtoolsMessage,
+  ErrorCodes,
+  NoInfer,
+  SafeAny,
+} from "@/types";
 import { createId } from "../utils/createId";
 import { RPC_MESSAGE_TIMEOUT } from "./errorMessages";
 import { deserializeError, serializeError } from "./errorSerialization";
@@ -54,52 +60,43 @@ export interface RpcClient {
   ) => ReadableStream<ReturnType<RPCStream[TName]>>;
 }
 
-type RPCErrorResponseMessage = {
-  source: "apollo-client-devtools";
+interface RPCErrorResponseMessage extends DevtoolsMessage {
   type: MessageType.RPCResponse;
-  id: string;
   sourceId: string;
   error: { name?: string; message: string; stack?: string };
-};
+}
 
-type RPCSuccessResponseMessage<Result = unknown> = {
-  source: "apollo-client-devtools";
+interface RPCSuccessResponseMessage<Result = unknown> extends DevtoolsMessage {
   type: MessageType.RPCResponse;
-  id: string;
   sourceId: string;
   result: Result;
-};
+}
 
-export type RPCRequestMessage<Params extends SafeAny[] = unknown[]> = {
-  source: "apollo-client-devtools";
+export interface RPCRequestMessage<Params extends SafeAny[] = unknown[]>
+  extends DevtoolsMessage {
   type: MessageType.RPCRequest;
-  id: string;
   name: string;
   params: Params;
-};
+}
 
-export type RPCStreamStartMessage<Params extends any[] = unknown[]> = {
-  source: "apollo-client-devtools";
+export interface RPCStreamStartMessage<Params extends any[] = unknown[]>
+  extends DevtoolsMessage {
   type: MessageType.RPCStartStream;
-  id: string;
   name: string;
   params: Params;
-};
+}
 
-export type RPCTerminateStreamMessage = {
-  source: "apollo-client-devtools";
+export interface RPCTerminateStreamMessage extends DevtoolsMessage {
   type: MessageType.RPCTerminateStream;
-  id: string;
   streamId: string;
-};
+}
 
-export type RPCStreamChunkMessage<Value = unknown> = {
-  source: "apollo-client-devtools";
+export interface RPCStreamChunkMessage<Value = unknown>
+  extends DevtoolsMessage {
   type: MessageType.RPCStreamChunk;
-  id: string;
   streamId: string;
   value: Value;
-};
+}
 
 export type RPCResponseMessage<Result = unknown> =
   | RPCSuccessResponseMessage<Result>
