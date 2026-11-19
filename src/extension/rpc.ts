@@ -117,16 +117,22 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
         const id = createId();
 
         const timeout = setTimeout(() => {
-          removeListener();
+          cleanup();
           reject(new Error(RPC_MESSAGE_TIMEOUT));
         }, this.timeout);
 
-        const removeListener = adapter.addListener((message) => {
-          function cleanup() {
-            clearTimeout(timeout);
-            removeListener();
-          }
+        function handleAbort() {
+          cleanup();
+          reject(getAbortError(signal!));
+        }
 
+        function cleanup() {
+          clearTimeout(timeout);
+          removeListener();
+          signal?.removeEventListener("abort", handleAbort);
+        }
+
+        const removeListener = adapter.addListener((message) => {
           if (
             message.type === MessageType.PostMessageError &&
             message.sourceId === id
@@ -151,13 +157,7 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
           cleanup();
         });
 
-        if (signal) {
-          signal.addEventListener("abort", () => {
-            clearTimeout(timeout);
-            removeListener();
-            reject(getAbortError(signal));
-          });
-        }
+        signal?.addEventListener("abort", handleAbort, { once: true });
 
         adapter.postMessage({
           type: MessageType.RPCRequest,
