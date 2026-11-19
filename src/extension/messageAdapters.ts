@@ -85,6 +85,15 @@ export class MessageAdapter {
     // doesn't capture it
     setTimeout(() => this.sentMessageIds.delete(message.id), 10);
 
+    // In some cases, we need to JSON stringify the data transferred in case
+    // the payload contains references to irregular data, such as `URL`
+    // instances which are not cloneable via `structuredClone` (which
+    // `window.postMessage` uses to send messages). `JSON.stringify` tends
+    // to serialize these irregular values into something that is cloneable to
+    // avoid errors for non-cloneable data.
+    //
+    // https://github.com/apollographql/apollo-client-devtools/issues/1258
+    // https://github.com/apollographql/apollo-client-devtools/issues/1479
     this.source.postMessage(
       this.jsonSerialize
         ? (JSON.parse(JSON.stringify(message)) as typeof message)
