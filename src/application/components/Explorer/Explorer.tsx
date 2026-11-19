@@ -39,7 +39,7 @@ import { Button } from "../Button";
 import { getPanelActor } from "../../../extension/devtools/panelActor";
 import type { JSONObject } from "../../types/json";
 
-const panelWindow = getPanelActor(window);
+const panelWindow = getPanelActor();
 
 export enum FetchPolicy {
   NoCache = "no-cache",

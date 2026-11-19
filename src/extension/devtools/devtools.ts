@@ -1,10 +1,11 @@
 import browser from "webextension-polyfill";
 import type { Actor } from "../actor";
-import { getPanelActor } from "./panelActor";
+import { createActor } from "../actor";
+import type { PanelWindow } from "./panelTransport";
 import {
   createMessageBridge,
   createPortMessageAdapter,
-  createWindowMessageAdapter,
+  createMessagePortMessageAdapter,
 } from "../messageAdapters";
 
 const inspectedTabId = chrome.devtools.inspectedWindow.tabId;
@@ -18,12 +19,14 @@ let panelWindow: Actor;
 
 chrome.devtools.panels.create("Apollo", "", "panel.html", (panel) => {
   panel.onShown.addListener((window) => {
-    panelWindow = getPanelActor(window);
-
     if (connectedToPanel) {
       panelWindow.send({ type: "panelShown" });
     } else {
-      createMessageBridge(createWindowMessageAdapter(window), portAdapter);
+      const panelAdapter = createMessagePortMessageAdapter(
+        (window as PanelWindow).connectApolloPanel()
+      );
+      panelWindow = createActor(panelAdapter);
+      createMessageBridge(panelAdapter, portAdapter);
 
       panelWindow.send({ type: "initializePanel", initialContext: {} });
 

@@ -49,6 +49,42 @@ export function createPortMessageAdapter(
   };
 }
 
+interface MessagePortMessageAdapterOptions {
+  jsonSerialize?: boolean;
+}
+
+const call = Function.prototype.call;
+const portPostMessage = call.bind(MessagePort.prototype.postMessage);
+const getMessageEventData = call.bind(
+  Object.getOwnPropertyDescriptor(MessageEvent.prototype, "data")!.get!
+);
+
+export function createMessagePortMessageAdapter(
+  port: MessagePort,
+  options: MessagePortMessageAdapterOptions = {}
+): MessageAdapter {
+  const { jsonSerialize } = options;
+  port.start();
+
+  return {
+    addListener(listener) {
+      const handleMessage = (event: MessageEvent) =>
+        listener(getMessageEventData(event));
+      port.addEventListener("message", handleMessage);
+
+      return () => {
+        port.removeEventListener("message", handleMessage);
+      };
+    },
+    postMessage(message) {
+      portPostMessage(
+        port,
+        jsonSerialize ? JSON.parse(JSON.stringify(message)) : message
+      );
+    },
+  };
+}
+
 interface WindowMessageAdapterOptions {
   jsonSerialize?: boolean;
 }
