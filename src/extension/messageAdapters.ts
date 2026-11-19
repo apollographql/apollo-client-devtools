@@ -23,7 +23,7 @@ interface MessageAdapterOptions {
 }
 
 export class MessageAdapter {
-  private listeners = new Set<(message: unknown) => void>();
+  private listeners = new Set<(message: ApolloClientDevtoolsMessage) => void>();
   private source: MessageSource;
   private sentMessageIds = new Set<string>();
 
@@ -41,7 +41,7 @@ export class MessageAdapter {
     this.jsonSerialize = jsonSerialize;
   }
 
-  addListener(listener: MessageListener) {
+  addListener(listener: (message: ApolloClientDevtoolsMessage) => void) {
     let disconnect: () => void;
     const handleMessage: MessageListener = (message) => {
       if (!isDevtoolsMessage(message)) return;
