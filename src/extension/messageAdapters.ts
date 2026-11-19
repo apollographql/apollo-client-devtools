@@ -1,12 +1,70 @@
 import type browser from "webextension-polyfill";
-import { isDevtoolsMessage, MessageType } from "./messages";
+import {
+  createDevtoolsMessage,
+  isDevtoolsMessage,
+  MessageType,
+} from "./messages";
 import type { ApolloClientDevtoolsMessage } from "./messages";
 import { serializeError } from "./errorSerialization";
 import { createId } from "../utils/createId";
+import type { DistributiveOmit } from "@/types";
 
-export interface MessageAdapter {
-  addListener: (listener: (message: unknown) => void) => () => void;
+type MessageListener = (message: unknown) => void;
+
+interface MessageSource {
+  addListener: (listener: MessageListener) => () => void;
   postMessage: (message: ApolloClientDevtoolsMessage) => void;
+}
+
+interface MessageAdapterOptions {
+  jsonSerialize?: boolean;
+}
+
+export class MessageAdapter {
+  private listeners = new Set<(message: unknown) => void>();
+  private source: MessageSource;
+  private jsonSerialize: boolean;
+
+  constructor(
+    source: MessageSource,
+    { jsonSerialize = false }: MessageAdapterOptions = {}
+  ) {
+    this.source = source;
+    this.jsonSerialize = jsonSerialize;
+  }
+
+  addListener(listener: MessageListener) {
+    let disconnect: () => void;
+    const handleMessage: MessageListener = (message) => {
+      this.listeners.forEach((listener) => listener(message));
+    };
+
+    if (!this.listeners.size) {
+      disconnect = this.source.addListener(handleMessage);
+    }
+
+    this.listeners.add(listener);
+
+    return () => {
+      this.listeners.delete(listener);
+
+      if (this.listeners.size === 0) {
+        disconnect?.();
+      }
+    };
+  }
+
+  postMessage(
+    message: DistributiveOmit<ApolloClientDevtoolsMessage, "id" | "source">
+  ) {
+    this.source.postMessage(
+      createDevtoolsMessage(
+        this.jsonSerialize
+          ? (JSON.parse(JSON.stringify(message)) as typeof message)
+          : message
+      )
+    );
+  }
 }
 
 export function createPortMessageAdapter(
