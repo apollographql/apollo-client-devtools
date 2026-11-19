@@ -26,6 +26,7 @@ export class MessageAdapter {
   private listeners = new Set<(message: ApolloClientDevtoolsMessage) => void>();
   private source: MessageSource;
   private sentMessageIds = new Set<string>();
+  private disconnect: (() => void) | undefined;
 
   private jsonSerialize: boolean;
 
@@ -42,7 +43,6 @@ export class MessageAdapter {
   }
 
   addListener(listener: (message: ApolloClientDevtoolsMessage) => void) {
-    let disconnect: () => void;
     const handleMessage: MessageListener = (message) => {
       if (!isDevtoolsMessage(message)) return;
 
@@ -58,7 +58,7 @@ export class MessageAdapter {
     };
 
     if (!this.listeners.size) {
-      disconnect = this.source.addListener(handleMessage);
+      this.disconnect = this.source.addListener(handleMessage);
     }
 
     this.listeners.add(listener);
@@ -67,7 +67,7 @@ export class MessageAdapter {
       this.listeners.delete(listener);
 
       if (this.listeners.size === 0) {
-        disconnect?.();
+        this.disconnect?.();
       }
     };
   }
