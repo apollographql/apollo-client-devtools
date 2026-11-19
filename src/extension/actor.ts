@@ -1,7 +1,7 @@
-import { MessageType, isDevtoolsMessage } from "./messages";
+import type { ApolloClientDevtoolsMessage } from "./messages";
+import { MessageType } from "./messages";
 import type { MessageAdapter } from "./messageAdapters";
 import { createWindowMessageAdapter } from "./messageAdapters";
-import { createId } from "../utils/createId";
 import type {
   ApolloClientInfo,
   DevtoolsMessage,
@@ -67,8 +67,8 @@ export function createActor(adapter: MessageAdapter): Actor {
     Set<(message: ActorMessage) => void>
   >();
 
-  function handleMessage(message: unknown) {
-    if (!isActorMessage(message)) {
+  function handleMessage(message: ApolloClientDevtoolsMessage) {
+    if (message.type !== MessageType.Actor) {
       return;
     }
 
@@ -125,24 +125,13 @@ export function createActor(adapter: MessageAdapter): Actor {
   return {
     on,
     send: (message) => {
-      adapter.postMessage({
-        id: createId(),
-        source: "apollo-client-devtools",
-        type: MessageType.Actor,
-        message,
-      });
+      adapter.postMessage({ type: MessageType.Actor, message });
     },
   };
 }
 
 export function createWindowActor(window: Window) {
   return createActor(createWindowMessageAdapter(window));
-}
-
-function isActorMessage(
-  message: unknown
-): message is ApolloClientDevtoolsActorMessage {
-  return isDevtoolsMessage(message) && message.type === MessageType.Actor;
 }
 
 export interface OptionsWithAbortSignal {
