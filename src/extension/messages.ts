@@ -53,14 +53,6 @@ export function isDevtoolsMessage(
   );
 }
 
-export function isPostMessageError(
-  message: unknown
-): message is PostMessageError {
-  return (
-    isDevtoolsMessage(message) && message.type === MessageType.PostMessageError
-  );
-}
-
 export function createDevtoolsMessage(
   message: DevtoolsPostMessage
 ): ApolloClientDevtoolsMessage {

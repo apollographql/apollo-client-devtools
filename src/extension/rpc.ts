@@ -10,7 +10,8 @@ import { createId } from "../utils/createId";
 import { RPC_MESSAGE_TIMEOUT } from "./errorMessages";
 import { deserializeError, serializeError } from "./errorSerialization";
 import type { MessageAdapter } from "./messageAdapters";
-import { MessageType, isDevtoolsMessage, isPostMessageError } from "./messages";
+import type { ApolloClientDevtoolsMessage } from "./messages";
+import { MessageType } from "./messages";
 import type { IDv3, IDv4 } from "./tab/clientHandler";
 import type {
   MutationV3Details,
@@ -23,7 +24,6 @@ import type {
   MemoryInternalsV4,
 } from "./tab/v4/types";
 import type { CacheWrite } from "./tab/shared/types";
-import type { ActorMessage } from "./actor";
 
 // Symbol to indicate a handler should not send a response (for multi-frame support)
 export const SKIP_RESPONSE = Symbol("SKIP_RESPONSE");
@@ -134,12 +134,18 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
             removeListener();
           }
 
-          if (isPostMessageError(message) && message.sourceId === id) {
+          if (
+            message.type === MessageType.PostMessageError &&
+            message.sourceId === id
+          ) {
             reject(deserializeError(message.error));
             return cleanup();
           }
 
-          if (!isRPCResponseMessage(message) || message.sourceId !== id) {
+          if (
+            message.type !== MessageType.RPCResponse ||
+            message.sourceId !== id
+          ) {
             return;
           }
 
@@ -161,7 +167,6 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
         }
 
         adapter.postMessage({
-          source: "apollo-client-devtools",
           type: MessageType.RPCRequest,
           id,
           name,
@@ -177,9 +182,7 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
       function cleanup() {
         removeListener();
         adapter.postMessage({
-          source: "apollo-client-devtools",
           type: MessageType.RPCTerminateStream,
-          id: createId(),
           streamId,
         });
       }
@@ -192,7 +195,7 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
 
           removeListener = adapter.addListener((message) => {
             if (
-              isRPCTerminateStreamMessage(message) &&
+              message.type === MessageType.RPCTerminateStream &&
               message.streamId === streamId
             ) {
               removeListener();
@@ -200,7 +203,7 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
             }
 
             if (
-              isRPCStreamChunkMessage(message) &&
+              message.type === MessageType.RPCStreamChunk &&
               message.streamId === streamId
             ) {
               controller.enqueue(message.value as any);
@@ -208,7 +211,6 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
           });
 
           adapter.postMessage({
-            source: "apollo-client-devtools",
             type: MessageType.RPCStartStream,
             id: streamId,
             name,
@@ -236,8 +238,8 @@ export function createRpcHandler(adapter: MessageAdapter) {
   const listeners = new Map<string, (message: RPCRequestMessage) => void>();
   let removeListener: (() => void) | null = null;
 
-  function handleMessage(message: unknown) {
-    if (isRPCRequestMessage(message)) {
+  function handleMessage(message: ApolloClientDevtoolsMessage) {
+    if (message.type === MessageType.RPCRequest) {
       listeners.get(message.name)?.(message);
     }
   }
@@ -281,17 +283,13 @@ export function createRpcHandler(adapter: MessageAdapter) {
         }
 
         adapter.postMessage({
-          source: "apollo-client-devtools",
           type: MessageType.RPCResponse,
-          id: createId(),
           sourceId: id,
           result,
         });
       } catch (e) {
         adapter.postMessage({
-          source: "apollo-client-devtools",
           type: MessageType.RPCResponse,
-          id: createId(),
           sourceId: id,
           error: serializeError(e),
         });
@@ -345,16 +343,19 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
     processQueue();
   }
 
-  function handleMessage(message: unknown) {
-    if (isRPCStartStreamMessage(message)) {
+  function handleMessage(message: ApolloClientDevtoolsMessage) {
+    if (message.type === MessageType.RPCStartStream) {
       listeners.get(message.name)?.(message);
     }
 
-    if (isRPCTerminateStreamMessage(message)) {
+    if (message.type === MessageType.RPCTerminateStream) {
       cleanupFnsByStreamId.get(message.streamId)?.();
     }
 
-    if (isDevtoolsDisconnectedMessage(message)) {
+    if (
+      message.type === MessageType.Actor &&
+      message.message.type === "devtoolsDisconnected"
+    ) {
       cleanupFnsByStreamId.forEach((cleanup) => cleanup());
     }
   }
@@ -413,12 +414,7 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
         }
 
         cleanupFnsByStreamId.get(streamId)?.();
-        adapter.postMessage({
-          source: "apollo-client-devtools",
-          type: MessageType.RPCTerminateStream,
-          id: createId(),
-          streamId,
-        });
+        adapter.postMessage({ type: MessageType.RPCTerminateStream, streamId });
       }
 
       const cleanup = handler(
@@ -451,51 +447,6 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
     }
     return cleanup;
   };
-}
-
-export function isRPCRequestMessage(
-  message: unknown
-): message is RPCRequestMessage {
-  return isDevtoolsMessage(message) && message.type === MessageType.RPCRequest;
-}
-
-function isRPCResponseMessage(message: unknown): message is RPCResponseMessage {
-  return isDevtoolsMessage(message) && message.type === MessageType.RPCResponse;
-}
-
-export function isRPCStartStreamMessage(
-  message: unknown
-): message is RPCStreamStartMessage {
-  return (
-    isDevtoolsMessage(message) && message.type === MessageType.RPCStartStream
-  );
-}
-
-export function isRPCTerminateStreamMessage(
-  message: unknown
-): message is RPCTerminateStreamMessage {
-  return (
-    isDevtoolsMessage(message) &&
-    message.type === MessageType.RPCTerminateStream
-  );
-}
-
-function isRPCStreamChunkMessage(
-  message: unknown
-): message is RPCStreamChunkMessage {
-  return (
-    isDevtoolsMessage(message) && message.type === MessageType.RPCStreamChunk
-  );
-}
-
-function isDevtoolsDisconnectedMessage(
-  message: unknown
-): message is Extract<ActorMessage, { type: "devtoolsDisconnected" }> {
-  return (
-    isDevtoolsMessage(message) &&
-    message.type === MessageType.Actor &&
-    message.message.type === "devtoolsDisconnected"
-  );
 }
 
 function getAbortError(signal: AbortSignal) {
