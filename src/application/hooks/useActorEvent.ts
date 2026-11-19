@@ -16,7 +16,7 @@ export function useActorEvent<TName extends ActorMessage["type"]>(
   });
 
   useEffect(() => {
-    return getPanelActor(window).on(name, ((message: unknown) => {
+    return getPanelActor().on(name, ((message: unknown) => {
       callbackRef.current(message);
     }) as any);
   }, [name]);

@@ -16,7 +16,7 @@ export const VSCodeCommandButton = forwardRef<
       icon={<IconRun />}
       onClick={(e) => {
         e.preventDefault();
-        getPanelActor(window).send({
+        getPanelActor().send({
           type: "vscode:executeCommand",
           command,
         });

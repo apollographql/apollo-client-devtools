@@ -2,12 +2,15 @@
 import browser from "webextension-polyfill";
 import {
   createMessageBridge,
+  createMessagePortMessageAdapter,
   createPortMessageAdapter,
-  createWindowMessageAdapter,
 } from "../messageAdapters";
+import { connectTab } from "./controlChannel";
 
 const portAdapter = createPortMessageAdapter(() =>
   browser.runtime.connect({ name: "tab" })
 );
 
-createMessageBridge(portAdapter, createWindowMessageAdapter(window));
+connectTab(window, (port) => {
+  createMessageBridge(portAdapter, createMessagePortMessageAdapter(port));
+});
