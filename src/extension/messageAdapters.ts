@@ -8,6 +8,7 @@ import type { ApolloClientDevtoolsMessage } from "./messages";
 import { serializeError } from "./errorSerialization";
 import { createId } from "../utils/createId";
 import type { DistributiveOmit } from "@/types";
+import { getPropertyFromUnknown } from "@/utils/getPropertyFromUnknown";
 
 type MessageListener = (message: unknown) => void;
 
@@ -23,6 +24,8 @@ interface MessageAdapterOptions {
 export class MessageAdapter {
   private listeners = new Set<(message: unknown) => void>();
   private source: MessageSource;
+  private sentMessageIds = new Set<string>();
+
   private jsonSerialize: boolean;
 
   constructor(
@@ -36,6 +39,18 @@ export class MessageAdapter {
   addListener(listener: MessageListener) {
     let disconnect: () => void;
     const handleMessage: MessageListener = (message) => {
+      const messageId = getPropertyFromUnknown<string>(
+        getPropertyFromUnknown(message, "data"),
+        "id"
+      );
+      // We don't want to trigger listeners for a message sent from this
+      // adapter. This prevents situations where e.g. rpc messages were
+      // accidentally echoing the rpc request back to the sender rather
+      // than just the rpc response.
+      if (messageId && this.sentMessageIds.has(messageId)) {
+        return this.sentMessageIds.delete(messageId);
+      }
+
       this.listeners.forEach((listener) => listener(message));
     };
 
@@ -55,14 +70,19 @@ export class MessageAdapter {
   }
 
   postMessage(
-    message: DistributiveOmit<ApolloClientDevtoolsMessage, "id" | "source">
+    rawMessage: DistributiveOmit<ApolloClientDevtoolsMessage, "id" | "source">
   ) {
+    const message = createDevtoolsMessage(rawMessage);
+
+    this.sentMessageIds.add(message.id);
+    // Avoid memory leaks by always cleaning up this ID in case the listener
+    // doesn't capture it
+    setTimeout(() => this.sentMessageIds.delete(message.id), 10);
+
     this.source.postMessage(
-      createDevtoolsMessage(
-        this.jsonSerialize
-          ? (JSON.parse(JSON.stringify(message)) as typeof message)
-          : message
-      )
+      this.jsonSerialize
+        ? (JSON.parse(JSON.stringify(message)) as typeof message)
+        : message
     );
   }
 }
