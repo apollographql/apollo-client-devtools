@@ -1,5 +1,5 @@
 import { ReadableStream } from "node:stream/web";
-import { MessageChannel } from "node:worker_threads";
+import { MessageChannel, MessagePort } from "node:worker_threads";
 import type { DeepPartial } from "@apollo/client/utilities";
 
 const channels: MessageChannel[] = [];
@@ -19,6 +19,10 @@ Object.defineProperties(globalThis, {
         channels.push(this);
       }
     },
+  },
+  MessagePort: {
+    configurable: true,
+    value: MessagePort,
   },
   ReadableStream: { value: ReadableStream },
   requestIdleCallback: {
