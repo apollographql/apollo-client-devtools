@@ -6,7 +6,6 @@ import {
 } from "./messages";
 import type { ApolloClientDevtoolsMessage } from "./messages";
 import { serializeError } from "./errorSerialization";
-import { createId } from "../utils/createId";
 import type { DistributiveOmit } from "@/types";
 
 type MessageListener = (message: unknown) => void;
@@ -214,18 +213,14 @@ export function createMessageBridge(
 
 function forward(source: MessageAdapter, target: MessageAdapter) {
   return source.addListener((message) => {
-    if (isDevtoolsMessage(message)) {
-      try {
-        target.postMessage(message);
-      } catch (e) {
-        source.postMessage({
-          source: "apollo-client-devtools",
-          type: MessageType.PostMessageError,
-          id: createId(),
-          sourceId: message.id,
-          error: serializeError(e),
-        });
-      }
+    try {
+      target.postMessage(message);
+    } catch (e) {
+      source.postMessage({
+        type: MessageType.PostMessageError,
+        sourceId: message.id,
+        error: serializeError(e),
+      });
     }
   });
 }
