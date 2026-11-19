@@ -18,6 +18,8 @@ interface MessageSource {
 }
 
 interface MessageAdapterOptions {
+  addListener: (listener: MessageListener) => () => void;
+  postMessage: (message: ApolloClientDevtoolsMessage) => void;
   jsonSerialize?: boolean;
 }
 
@@ -28,11 +30,15 @@ export class MessageAdapter {
 
   private jsonSerialize: boolean;
 
-  constructor(
-    source: MessageSource,
-    { jsonSerialize = false }: MessageAdapterOptions = {}
-  ) {
-    this.source = source;
+  constructor({
+    addListener,
+    postMessage,
+    jsonSerialize = false,
+  }: MessageAdapterOptions) {
+    this.source = {
+      addListener,
+      postMessage,
+    };
     this.jsonSerialize = jsonSerialize;
   }
 
