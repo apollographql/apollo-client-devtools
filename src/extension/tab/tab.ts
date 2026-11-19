@@ -7,10 +7,10 @@ import {
 } from "../messageAdapters";
 import { connectTab } from "./controlChannel";
 
-const portAdapter = createPortMessageAdapter(() =>
-  browser.runtime.connect({ name: "tab" })
-);
-
 connectTab(window, (port) => {
+  const portAdapter = createPortMessageAdapter(() =>
+    browser.runtime.connect({ name: "tab" })
+  );
+
   createMessageBridge(portAdapter, createMessagePortMessageAdapter(port));
 });
