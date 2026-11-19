@@ -8,7 +8,6 @@ import type { ApolloClientDevtoolsMessage } from "./messages";
 import { serializeError } from "./errorSerialization";
 import { createId } from "../utils/createId";
 import type { DistributiveOmit } from "@/types";
-import { getPropertyFromUnknown } from "@/utils/getPropertyFromUnknown";
 
 type MessageListener = (message: unknown) => void;
 
@@ -45,16 +44,14 @@ export class MessageAdapter {
   addListener(listener: MessageListener) {
     let disconnect: () => void;
     const handleMessage: MessageListener = (message) => {
-      const messageId = getPropertyFromUnknown<string>(
-        getPropertyFromUnknown(message, "data"),
-        "id"
-      );
+      if (!isDevtoolsMessage(message)) return;
+
       // We don't want to trigger listeners for a message sent from this
       // adapter. This prevents situations where e.g. rpc messages were
       // accidentally echoing the rpc request back to the sender rather
       // than just the rpc response.
-      if (messageId && this.sentMessageIds.has(messageId)) {
-        return this.sentMessageIds.delete(messageId);
+      if (this.sentMessageIds.has(message.id)) {
+        return this.sentMessageIds.delete(message.id);
       }
 
       this.listeners.forEach((listener) => listener(message));
