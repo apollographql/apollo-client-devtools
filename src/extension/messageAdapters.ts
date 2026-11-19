@@ -116,8 +116,13 @@ export class MessageAdapter {
   }
 }
 
+interface PortMessageAdapterOptions {
+  onDisconnect?: () => void;
+}
+
 export function createPortMessageAdapter(
-  createPort: () => browser.Runtime.Port
+  createPort: () => browser.Runtime.Port,
+  options: PortMessageAdapterOptions = {}
 ): MessageAdapter {
   let port = createPort();
   const listeners = new Set<(message: unknown) => void>();
@@ -128,6 +133,7 @@ export function createPortMessageAdapter(
     });
 
     port.onDisconnect.removeListener(handleDisconnect);
+    options.onDisconnect?.();
     port = createPort();
 
     initializePort();
