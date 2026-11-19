@@ -25,7 +25,6 @@ interface MessageAdapterOptions {
 export class MessageAdapter {
   private listeners = new Set<(message: ApolloClientDevtoolsMessage) => void>();
   private source: MessageSource;
-  private sentMessageIds = new Set<string>();
   private disconnect: (() => void) | undefined;
 
   private jsonSerialize: boolean;
@@ -44,17 +43,9 @@ export class MessageAdapter {
 
   addListener(listener: (message: ApolloClientDevtoolsMessage) => void) {
     const handleMessage: MessageListener = (message) => {
-      if (!isDevtoolsMessage(message)) return;
-
-      // We don't want to trigger listeners for a message sent from this
-      // adapter. This prevents situations where e.g. rpc messages were
-      // accidentally echoing the rpc request back to the sender rather
-      // than just the rpc response.
-      if (this.sentMessageIds.has(message.id)) {
-        return this.sentMessageIds.delete(message.id);
+      if (isDevtoolsMessage(message)) {
+        this.listeners.forEach((listener) => listener(message));
       }
-
-      this.listeners.forEach((listener) => listener(message));
     };
 
     if (!this.listeners.size) {
@@ -73,15 +64,8 @@ export class MessageAdapter {
   }
 
   postMessage(
-    rawMessage: DistributiveOmit<ApolloClientDevtoolsMessage, "id" | "source">
+    message: DistributiveOmit<ApolloClientDevtoolsMessage, "id" | "source">
   ) {
-    const message = createDevtoolsMessage(rawMessage);
-
-    this.sentMessageIds.add(message.id);
-    // Avoid memory leaks by always cleaning up this ID in case the listener
-    // doesn't capture it
-    setTimeout(() => this.sentMessageIds.delete(message.id), 10);
-
     // In some cases, we need to JSON stringify the data transferred in case
     // the payload contains references to irregular data, such as `URL`
     // instances which are not cloneable via `structuredClone` (which
@@ -92,9 +76,11 @@ export class MessageAdapter {
     // https://github.com/apollographql/apollo-client-devtools/issues/1258
     // https://github.com/apollographql/apollo-client-devtools/issues/1479
     this.source.postMessage(
-      this.jsonSerialize
-        ? (JSON.parse(JSON.stringify(message)) as typeof message)
-        : message
+      createDevtoolsMessage(
+        this.jsonSerialize
+          ? (JSON.parse(JSON.stringify(message)) as typeof message)
+          : message
+      )
     );
   }
 }
