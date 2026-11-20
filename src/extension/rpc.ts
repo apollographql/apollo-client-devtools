@@ -25,10 +25,10 @@ export const SKIP_RESPONSE = Symbol("SKIP_RESPONSE");
 export type RPCRequest = {
   getClients(): ApolloClientInfo[];
   getClient(): ApolloClientInfo | null;
-  getV3Queries(clientId: IDv3): QueryV3Details[];
-  getV4Queries(clientId: IDv4): QueryV4Details[];
-  getV3Mutations(clientId: IDv3): MutationV3Details[];
-  getV4Mutations(clientId: IDv4): MutationV4Details[];
+  getV3Queries(): QueryV3Details[];
+  getV4Queries(): QueryV4Details[];
+  getV3Mutations(): MutationV3Details[];
+  getV4Mutations(): MutationV4Details[];
   getCache(): JSONObject;
   getErrorCodes(version: string): Promise<ErrorCodes | undefined>;
   getV3MemoryInternals(): MemoryInternalsV3 | undefined;

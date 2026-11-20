@@ -80,26 +80,6 @@ handleRpc("getClients", () => {
   return Array.from(knownClients).map(getClientInfo);
 });
 
-handleRpc(
-  "getV3Queries",
-  (clientId) => getHandlerByClientId(clientId)?.getQueries() ?? []
-);
-
-handleRpc(
-  "getV4Queries",
-  (clientId) => getHandlerByClientId(clientId)?.getQueries() ?? []
-);
-
-handleRpc(
-  "getV3Mutations",
-  (clientId) => getHandlerByClientId(clientId)?.getMutations() ?? []
-);
-
-handleRpc(
-  "getV4Mutations",
-  (clientId) => getHandlerByClientId(clientId)?.getMutations() ?? []
-);
-
 handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
   const slot = new Slot<boolean>();
   // Both v3 and v4 have the same options/return value so we can treat the
@@ -244,6 +224,13 @@ function connectClient(client: ApolloClient) {
   handleRpc(
     isV4Client(client) ? "getV4MemoryInternals" : "getV3MemoryInternals",
     () => client.getMemoryInternals?.()
+  );
+
+  handleRpc(isV4Client(client) ? "getV4Queries" : "getV3Queries", () =>
+    handler.getQueries()
+  );
+  handleRpc(isV4Client(client) ? "getV4Mutations" : "getV3Mutations", () =>
+    handler.getMutations()
   );
 }
 

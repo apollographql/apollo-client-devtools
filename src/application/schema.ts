@@ -174,10 +174,7 @@ function createResolvers(): Resolvers {
     ClientV3Queries: {
       total: (client) => client.queryCount,
       items: async (client) => {
-        const queries = await withRpcClient().request(
-          "getV3Queries",
-          client.id
-        );
+        const queries = await withRpcClient(client.id).request("getV3Queries");
 
         return queries.map((query) => {
           return {
@@ -197,10 +194,7 @@ function createResolvers(): Resolvers {
     ClientV4Queries: {
       total: (client) => client.queryCount,
       items: async (client) => {
-        const queries = await withRpcClient().request(
-          "getV4Queries",
-          client.id
-        );
+        const queries = await withRpcClient(client.id).request("getV4Queries");
 
         return queries.map((query) => {
           return {
@@ -220,9 +214,8 @@ function createResolvers(): Resolvers {
     ClientV3Mutations: {
       total: (client) => client.mutationCount,
       items: async (client) => {
-        const mutations = await withRpcClient().request(
-          "getV3Mutations",
-          client.id
+        const mutations = await withRpcClient(client.id).request(
+          "getV3Mutations"
         );
 
         return mutations.map((mutation, index) => ({
@@ -247,9 +240,8 @@ function createResolvers(): Resolvers {
     ClientV4Mutations: {
       total: (client) => client.mutationCount,
       items: async (client) => {
-        const mutations = await withRpcClient().request(
-          "getV4Mutations",
-          client.id
+        const mutations = await withRpcClient(client.id).request(
+          "getV4Mutations"
         );
 
         return mutations.map((mutation, index) => ({
