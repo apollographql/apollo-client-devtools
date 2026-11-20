@@ -235,27 +235,7 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
 }
 
 export function createRpcHandler(adapter: MessageAdapter) {
-  const listeners = new Map<string, (message: RPCRequestMessage) => void>();
-  let removeListener: (() => void) | null = null;
-
-  function handleMessage(message: ApolloClientDevtoolsMessage) {
-    if (message.type === MessageType.RPCRequest) {
-      listeners.get(message.name)?.(message);
-    }
-  }
-
-  function startListening() {
-    if (!removeListener) {
-      removeListener = adapter.addListener(handleMessage);
-    }
-  }
-
-  function stopListening() {
-    if (removeListener) {
-      removeListener();
-      removeListener = null;
-    }
-  }
+  const listeners = new Set<string>();
 
   return function <TName extends keyof RPCRequest & string>(
     name: TName,
@@ -270,7 +250,15 @@ export function createRpcHandler(adapter: MessageAdapter) {
       throw new Error("Only one rpc handler can be registered per type");
     }
 
-    listeners.set(name, async ({ id, params }) => {
+    listeners.add(name);
+
+    const unsubscribe = adapter.addListener(async (message) => {
+      if (message.type !== MessageType.RPCRequest || message.name !== name) {
+        return;
+      }
+
+      const { id, params } = message;
+
       try {
         const result = await Promise.resolve(
           handler(...(params as Parameters<RPCRequest[TName]>))
@@ -296,18 +284,13 @@ export function createRpcHandler(adapter: MessageAdapter) {
       }
     });
 
-    startListening();
-
     const cleanup = () => {
       listeners.delete(name);
-
-      if (listeners.size === 0) {
-        stopListening();
-      }
+      unsubscribe();
     };
-    if (options.signal) {
-      options.signal.addEventListener("abort", cleanup, { once: true });
-    }
+
+    options.signal?.addEventListener("abort", cleanup, { once: true });
+
     return cleanup;
   };
 }

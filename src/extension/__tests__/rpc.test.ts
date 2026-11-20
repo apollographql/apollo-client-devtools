@@ -273,21 +273,6 @@ test("does not add listener to adapter until first subscribed handler", () => {
   expect(source.addListener).toHaveBeenCalled();
 });
 
-test("adds a single listener regardless of active handlers", () => {
-  const adapter = new MessageAdapter(createTestSource());
-  const handle = createRpcHandler(adapter);
-
-  jest.spyOn(adapter, "addListener");
-
-  expect(adapter.addListener).not.toHaveBeenCalled();
-
-  handle("getClient", defaultGetClient);
-  handle("getV3Queries", () => []);
-  handle("getV3Mutations", () => []);
-
-  expect(adapter.addListener).toHaveBeenCalledTimes(1);
-});
-
 test("can unsubscribe from a handler by calling the returned function", () => {
   const source = createTestSource();
   const handle = createRpcHandler(new MessageAdapter(source));
