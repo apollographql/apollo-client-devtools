@@ -4,7 +4,7 @@ import { createId } from "../utils/createId";
 import { RPC_MESSAGE_TIMEOUT } from "./errorMessages";
 import { deserializeError, serializeError } from "./errorSerialization";
 import type { MessageAdapter } from "./messageAdapters";
-import { MessageType } from "./messages";
+import { createTypeFilter, MessageType, type TypeFilter } from "./messages";
 import type { IDv3, IDv4 } from "./tab/clientHandler";
 import type {
   MutationV3Details,
@@ -45,6 +45,17 @@ export type RPCRequest = {
 
 export interface RPCStream {
   cacheWrite(clientId: IDv3 | IDv4): CacheWrite;
+}
+
+export class RPC {
+  static createFilter(options: TypeFilter<keyof RPCRequest | keyof RPCStream>) {
+    return createTypeFilter(options, (message) =>
+      message.type === MessageType.RPCRequest ||
+      message.type === MessageType.RPCStartStream
+        ? message.name
+        : undefined
+    );
+  }
 }
 
 export interface RpcClient {

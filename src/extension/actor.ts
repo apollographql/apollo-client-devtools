@@ -1,4 +1,4 @@
-import { MessageType } from "./messages";
+import { createTypeFilter, MessageType, type TypeFilter } from "./messages";
 import type { MessageAdapter } from "./messageAdapters";
 import type { ApolloClientInfo, ExplorerResponse } from "../types";
 import type { DocumentNode, FetchPolicy } from "@apollo/client";
@@ -45,15 +45,21 @@ export interface ActorDevtoolsMessage {
   message: ActorMessage;
 }
 
-export interface Actor {
-  on: <TName extends ActorMessage["type"]>(
+export abstract class Actor {
+  static createFilter(options: TypeFilter<ActorMessage["type"]>) {
+    return createTypeFilter(options, (message) =>
+      message.type === MessageType.Actor ? message.message.type : undefined
+    );
+  }
+
+  abstract on: <TName extends ActorMessage["type"]>(
     name: TName,
     callback: Extract<ActorMessage, { type: TName }> extends infer Message
       ? (message: Message) => void
       : never,
     options?: OptionsWithAbortSignal
   ) => () => void;
-  send: (message: ActorMessage) => void;
+  abstract send: (message: ActorMessage) => void;
 }
 
 export function createActor(adapter: MessageAdapter): Actor {

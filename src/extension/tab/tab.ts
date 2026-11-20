@@ -6,26 +6,21 @@ import {
   createPortMessageAdapter,
 } from "../messageAdapters";
 import { connectTab } from "./controlChannel";
-import { createActor } from "../actor";
-import { createRpcHandler } from "../rpc";
-import { MessageType, type DevtoolsMessage } from "../messages";
+import { Actor, createActor } from "../actor";
+import { RPC, createRpcHandler } from "../rpc";
+import type { DevtoolsMessage } from "../messages";
 
 const portAdapter = createPortMessageAdapter(() =>
   browser.runtime.connect({ name: "tab" })
 );
 
+const forwardRpc = RPC.createFilter({ excludeTypes: ["connectClient"] });
+const forwardActor = Actor.createFilter({
+  excludeTypes: ["disconnectClient", "clientReady"],
+});
+
 function shouldForward(message: DevtoolsMessage) {
-  return (
-    !(
-      message.type === MessageType.RPCRequest &&
-      message.name === "connectClient"
-    ) &&
-    !(
-      message.type === MessageType.Actor &&
-      (message.message.type === "disconnectClient" ||
-        message.message.type === "clientReady")
-    )
-  );
+  return forwardRpc(message) && forwardActor(message);
 }
 
 connectTab(window, (port) => {

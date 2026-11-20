@@ -1,7 +1,25 @@
 import { createTestSource } from "@/testUtils/createTestSource";
-import { createActor } from "../actor";
+import { Actor, createActor } from "../actor";
 import { MessageAdapter } from "../messageAdapters";
 import { MessageType } from "../messages";
+
+test("filters named actor messages", () => {
+  const include = Actor.createFilter({ includeTypes: ["clientReady"] });
+  const exclude = Actor.createFilter({ excludeTypes: ["clientReady"] });
+  const ready = {
+    type: MessageType.Actor,
+    message: { type: "clientReady" },
+  } as const;
+  const reply = {
+    type: MessageType.RPCResponse,
+    sourceId: "1",
+    result: null,
+  } as const;
+  expect(include(ready)).toBe(true);
+  expect(exclude(ready)).toBe(false);
+  expect(include(reply)).toBe(false);
+  expect(exclude(reply)).toBe(true);
+});
 
 test("sends messages to specified adapter in devtools message format", () => {
   const source = createTestSource();

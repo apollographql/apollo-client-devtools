@@ -4,14 +4,49 @@ import type { ApolloClientInfo } from "../../types";
 import { RPC_MESSAGE_TIMEOUT } from "../errorMessages";
 import { serializeError } from "../errorSerialization";
 import { createMessageBridge, MessageAdapter } from "../messageAdapters";
-import { MessageType } from "../messages";
+import { MessageType, type DevtoolsMessage } from "../messages";
 import type { RPCRequestMessage, RPCStreamStartMessage } from "../rpc";
 import {
+  RPC,
   createRpcClient,
   createRpcHandler,
   createRpcStreamHandler,
 } from "../rpc";
 import { createId } from "@/utils/createId";
+
+test("filters RPC requests and stream starts by name", () => {
+  const include = RPC.createFilter({
+    includeTypes: ["connectClient", "cacheWrite"],
+  });
+  const exclude = RPC.createFilter({
+    excludeTypes: ["connectClient", "cacheWrite"],
+  });
+  const messages: DevtoolsMessage[] = [
+    {
+      type: MessageType.RPCRequest,
+      id: "1",
+      name: "connectClient",
+      params: [],
+    },
+    {
+      type: MessageType.RPCStartStream,
+      id: "2",
+      name: "cacheWrite",
+      params: [],
+    },
+  ];
+  for (const message of messages) {
+    expect(include(message)).toBe(true);
+    expect(exclude(message)).toBe(false);
+  }
+  const reply = {
+    type: MessageType.RPCResponse,
+    sourceId: "1",
+    result: null,
+  } as const;
+  expect(include(reply)).toBe(false);
+  expect(exclude(reply)).toBe(true);
+});
 
 type TestStreamValue = { id: string; value: any };
 
