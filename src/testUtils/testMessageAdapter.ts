@@ -1,13 +1,15 @@
-import type { MessageAdapter } from "../extension/messageAdapters";
-import { MessageType } from "../extension/messages";
+import { MessageAdapter } from "../extension/messageAdapters";
+import type { ApolloClientDevtoolsMessage } from "../extension/messages";
+import { isDevtoolsMessage, MessageType } from "../extension/messages";
 import type { RPCRequestMessage, RPCResponseMessage } from "../extension/rpc";
-import { isRPCRequestMessage, type RPCRequest } from "../extension/rpc";
+import type { RPCRequest } from "../extension/rpc";
 import type { SafeAny } from "../types";
 import { createId } from "../utils/createId";
 
 export interface TestAdapter extends MessageAdapter {
-  mocks: { messages: unknown[] };
-  postMessage: jest.Mock<void, [message: unknown]>;
+  mocks: { messages: ApolloClientDevtoolsMessage[] };
+  addListener: jest.MockedFunction<MessageAdapter["addListener"]>;
+  postMessage: jest.MockedFunction<MessageAdapter["postMessage"]>;
   mockClear: () => void;
   handleRpcRequest: <TName extends keyof RPCRequest>(
     name: TName,
@@ -20,7 +22,7 @@ export interface TestAdapter extends MessageAdapter {
 export function createTestAdapter(): TestAdapter {
   const rpcHandlers = new Map<string, (...args: unknown[]) => unknown>();
   const listeners = new Set<(message: unknown) => void>();
-  const messages: unknown[] = [];
+  const mocks: TestAdapter["mocks"] = { messages: [] };
 
   async function handleRpcRequest(message: RPCRequestMessage) {
     const handler = rpcHandlers.get(message.name);
@@ -43,31 +45,37 @@ export function createTestAdapter(): TestAdapter {
     listeners.forEach((listener) => listener(response));
   }
 
-  const adapter: TestAdapter = {
-    mocks: { messages },
-    addListener: jest.fn((fn) => {
-      listeners.add(fn);
+  const adapter = new MessageAdapter({
+    addListener: (listener) => {
+      listeners.add(listener);
 
-      return () => listeners.delete(fn);
-    }),
-    postMessage: jest.fn((message) => {
-      messages.push(message);
+      return () => listeners.delete(listener);
+    },
+    postMessage: (message) => {
+      mocks.messages.push(message);
 
-      if (isRPCRequestMessage(message)) {
+      if (
+        isDevtoolsMessage(message) &&
+        message.type === MessageType.RPCRequest
+      ) {
         handleRpcRequest(message);
       }
-    }),
-    handleRpcRequest: (name, callback) => {
-      rpcHandlers.set(name, callback as SafeAny);
     },
+  });
+
+  jest.spyOn(adapter, "addListener");
+  jest.spyOn(adapter, "postMessage");
+
+  return Object.assign(adapter, {
+    mocks,
+    handleRpcRequest: ((name, callback) => {
+      rpcHandlers.set(name, callback as SafeAny);
+    }) satisfies TestAdapter["handleRpcRequest"],
     mockClear: () => {
-      adapter.mocks.messages = [];
-      listeners.clear();
-      (adapter.addListener as jest.Mock).mockClear();
-      adapter.postMessage.mockClear();
+      mocks.messages = [];
+      jest.mocked(adapter.addListener).mockClear();
+      jest.mocked(adapter.postMessage).mockClear();
       rpcHandlers.clear();
     },
-  };
-
-  return adapter;
+  }) as TestAdapter;
 }
