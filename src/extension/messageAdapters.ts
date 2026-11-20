@@ -12,7 +12,7 @@ import { serializeError } from "./errorSerialization";
 
 type MessageListener = (message: unknown) => void;
 
-interface MessageSource {
+interface MessageAdapterSource {
   addListener: (listener: MessageListener) => () => void;
   postMessage: (message: ApolloClientDevtoolsMessage) => void;
 }
@@ -25,7 +25,7 @@ interface MessageAdapterOptions {
 
 export class MessageAdapter {
   private listeners = new Set<(message: ApolloClientDevtoolsMessage) => void>();
-  private source: MessageSource;
+  private source: MessageAdapterSource;
   private disconnect: (() => void) | undefined;
 
   private jsonSerialize: boolean;
