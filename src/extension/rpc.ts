@@ -252,8 +252,8 @@ export function createRpcHandler(adapter: MessageAdapter) {
 
     listeners.add(name);
 
-    const unsubscribe = adapter.addListener(async (message) => {
-      if (message.type !== MessageType.RPCRequest || message.name !== name) {
+    const unsubscribe = adapter.on(MessageType.RPCRequest, async (message) => {
+      if (message.name !== name) {
         return;
       }
 
