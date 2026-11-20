@@ -14,15 +14,17 @@ export function connectTab(
 ) {
   function handleMessage(event: MessageEvent) {
     if (
+      event.isTrusted &&
       event.source === window &&
       event.data?.source === SOURCE &&
       event.data.type === "connect" &&
       event.ports.length === 1
     ) {
-      window.removeEventListener("message", handleMessage);
+      event.stopImmediatePropagation();
+      window.removeEventListener("message", handleMessage, { capture: true });
       connected(event.ports[0]);
     }
   }
 
-  window.addEventListener("message", handleMessage);
+  window.addEventListener("message", handleMessage, { capture: true });
 }
