@@ -54,9 +54,13 @@ test("can send and receive rpc messages", async () => {
 
   handle("getClient", defaultGetClient);
 
-  const result = await client.request("getClient", "1");
+  const { signal } = new AbortController();
+  const add = jest.spyOn(signal, "addEventListener");
+  const remove = jest.spyOn(signal, "removeEventListener");
+  const result = await client.withSignal(signal).request("getClient", "1");
 
   expect(result).toEqual(defaultGetClient("1"));
+  expect(remove).toHaveBeenCalledWith("abort", add.mock.calls[0][1]);
 });
 
 test("resolves async handlers", async () => {
