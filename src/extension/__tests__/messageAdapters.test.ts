@@ -256,3 +256,15 @@ test("re-adds listener on source when subscribing after disconnecting", () => {
 
   expect(handleMessage).toHaveBeenCalledTimes(1);
 });
+
+test("only removes listener on source once when unsubscribing multiple times", () => {
+  const source = createTestSource();
+  const adapter = new MessageAdapter(source);
+
+  const unsubscribe = adapter.addListener(() => {});
+
+  unsubscribe();
+  unsubscribe();
+
+  expect(source.mocks.removeListener).toHaveBeenCalledTimes(1);
+});

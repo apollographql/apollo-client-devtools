@@ -60,6 +60,7 @@ export class MessageAdapter {
 
       if (this.listeners.size === 0) {
         this.disconnect?.();
+        this.disconnect = undefined;
       }
     };
   }
