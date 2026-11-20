@@ -1,5 +1,7 @@
+import type { ActorMessage } from "../actor";
 import { createActor } from "../actor";
-import { MessageType } from "../messages";
+import { MessageAdapter } from "../messageAdapters";
+import { createDevtoolsMessage, MessageType } from "../messages";
 
 function createTestAdapter() {
   let listener: ((message: unknown) => void) | null;
@@ -7,24 +9,39 @@ function createTestAdapter() {
     listener = null;
   });
 
-  return {
+  const adapter = new MessageAdapter({
+    addListener: (fn) => {
+      listener = fn;
+
+      return removeListener;
+    },
+    postMessage() {},
+  });
+
+  jest.spyOn(adapter, "addListener");
+  jest.spyOn(adapter, "postMessage");
+
+  return Object.assign(adapter, {
     mocks: { removeListener },
     simulatePlainMessage: (message: unknown) => {
       listener?.(message);
     },
     simulateDevtoolsMessage: (message: Record<string, unknown>) => {
-      listener?.({
-        source: "apollo-client-devtools",
-        type: MessageType.Actor,
-        message,
-      });
+      listener?.(
+        createDevtoolsMessage({
+          type: MessageType.Actor,
+          message: message as ActorMessage,
+        })
+      );
     },
-    addListener: jest.fn((fn) => {
-      listener = fn;
-
-      return removeListener;
-    }),
-    postMessage: jest.fn(),
+  }) as MessageAdapter & {
+    addListener: jest.SpiedFunction<MessageAdapter["addListener"]>;
+    postMessage: jest.SpiedFunction<MessageAdapter["postMessage"]>;
+    mocks: {
+      removeListener: typeof removeListener;
+    };
+    simulatePlainMessage: (message: unknown) => void;
+    simulateDevtoolsMessage: (message: Record<string, unknown>) => void;
   };
 }
 
@@ -35,8 +52,6 @@ test("sends messages to specified adapter in devtools message format", () => {
   actor.send({ type: "clientTerminated", clientId: "1" });
 
   expect(adapter.postMessage).toHaveBeenCalledWith({
-    id: expect.any(String),
-    source: "apollo-client-devtools",
     type: MessageType.Actor,
     message: {
       type: "clientTerminated",
