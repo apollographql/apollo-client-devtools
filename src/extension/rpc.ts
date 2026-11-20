@@ -4,6 +4,7 @@ import { createId } from "../utils/createId";
 import { RPC_MESSAGE_TIMEOUT } from "./errorMessages";
 import { deserializeError, serializeError } from "./errorSerialization";
 import type { MessageAdapter } from "./messageAdapters";
+import type { MessageTarget } from "./messages";
 import { MessageType } from "./messages";
 import type {
   MutationV3Details,
@@ -41,7 +42,7 @@ export interface RPCStream {
 export interface RpcClient {
   readonly timeout: number;
   readonly signal?: AbortSignal;
-  readonly clientId?: string;
+  readonly target?: MessageTarget;
   withClientId: (clientId: string) => RpcClient;
   withTimeout: (timeoutMs: number) => RpcClient;
   withSignal: (abortSignal?: AbortSignal) => RpcClient;
@@ -102,7 +103,7 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
   return {
     timeout: DEFAULT_TIMEOUT,
     withClientId(clientId) {
-      return { ...this, clientId };
+      return { ...this, target: { type: "client", clientId } };
     },
     withTimeout(timeoutMs) {
       return { ...this, timeout: timeoutMs };
@@ -111,7 +112,7 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
       return { ...this, signal };
     },
     request(name, ...params) {
-      const { clientId, signal } = this;
+      const { target, signal } = this;
 
       if (signal?.aborted) {
         return Promise.reject(getAbortError(signal));
@@ -170,7 +171,7 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
             name,
             params,
           },
-          clientId ? { type: "client", clientId } : undefined
+          target
         );
       });
     },
