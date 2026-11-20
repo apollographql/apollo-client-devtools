@@ -295,6 +295,22 @@ function connectDevtoolsPort(port: browser.Runtime.Port) {
 
   const tab = getTab(tabId);
   tab.devtools = port;
+
+  port.onMessage.addListener((message) => {
+    if (!isDevtoolsMessage(message)) return;
+
+    if (message.clientId) {
+      const connection = tab.clients.get(message.clientId);
+      postMessage(connection?.port ?? null, message);
+    }
+  });
+
+  port.onDisconnect.addListener(() => {
+    if (tab.devtools !== port) return;
+
+    tab.devtools = null;
+    maybeRemoveTab(tabId);
+  });
 }
 
 function connectClientPort(port: browser.Runtime.Port) {
@@ -307,7 +323,9 @@ function connectClientPort(port: browser.Runtime.Port) {
   tab.clients.set(clientId, { port });
 
   port.onMessage.addListener((message) => {
-    postMessage(tab.devtools, message);
+    if (isDevtoolsMessage(message)) {
+      postMessage(tab.devtools, { ...message, clientId });
+    }
   });
 
   port.onDisconnect.addListener(() => {
