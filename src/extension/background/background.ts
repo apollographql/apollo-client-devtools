@@ -8,6 +8,28 @@ import {
   isDevtoolsMessage,
   MessageType,
 } from "../messages";
+import { createId } from "@/utils/createId";
+
+interface ClientConnection {
+  port: browser.Runtime.Port;
+}
+
+interface TabConnection {
+  clients: Map<string, ClientConnection>;
+  devtools: browser.Runtime.Port | null;
+}
+
+const tabs = new Map<number, TabConnection>();
+
+function getTab(id: number) {
+  let tab = tabs.get(id);
+
+  if (!tab) {
+    tabs.set(id, (tab = { clients: new Map(), devtools: null }));
+  }
+
+  return tab;
+}
 
 // Type guards for message routing
 function isActorMessage(message: unknown): message is {
@@ -253,11 +275,13 @@ function connectDevtoolsPort(port: browser.Runtime.Port) {
 
 function connectClientPort(port: browser.Runtime.Port) {
   const tabId = port.sender?.tab?.id;
-  if (!tabId) return;
+  if (tabId == null) return;
 
   const frameId = port.sender?.frameId ?? 0;
+  const tab = getTab(tabId);
+  const connectionId = createId();
 
-  console.log({ tabId, frameId });
+  tab.clients.set(connectionId, { port });
 }
 
 browser.runtime.onConnect.addListener((port) => {
