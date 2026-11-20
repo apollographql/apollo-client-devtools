@@ -1,7 +1,5 @@
-import type { ApolloClientDevtoolsMessage } from "./messages";
 import { MessageType } from "./messages";
 import type { MessageAdapter } from "./messageAdapters";
-import { createWindowMessageAdapter } from "./messageAdapters";
 import type {
   ApolloClientInfo,
   DevtoolsMessage,
@@ -78,10 +76,6 @@ export function createActor(adapter: MessageAdapter): Actor {
       adapter.postMessage({ type: MessageType.Actor, message });
     },
   };
-}
-
-export function createWindowActor(window: Window) {
-  return createActor(createWindowMessageAdapter(window));
 }
 
 export interface OptionsWithAbortSignal {
