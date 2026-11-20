@@ -7,6 +7,8 @@ import { createDevtoolsMessage, MessageType } from "@/extension/messages";
 import type { RPCResponseMessage } from "@/extension/rpc";
 import type { DistributiveOmit } from "@/types";
 
+export type TestSource = ReturnType<typeof createTestSource>;
+
 export function createTestSource() {
   let listener: ((message: unknown) => void) | null = null;
   const messages: ApolloClientDevtoolsMessage[] = [];
