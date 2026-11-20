@@ -43,7 +43,10 @@ export function createTestSource() {
       simulateDevtoolsMessage({ type: MessageType.Actor, message });
     },
     simulateRPCResponse<TResult = unknown>(
-      message: DistributiveOmit<RPCResponseMessage<TResult>, "source" | "type">
+      message: DistributiveOmit<
+        RPCResponseMessage<TResult>,
+        "id" | "source" | "type"
+      >
     ) {
       simulateDevtoolsMessage({ ...message, type: MessageType.RPCResponse });
     },
