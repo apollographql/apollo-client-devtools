@@ -11,8 +11,7 @@ import { App } from "./App";
 import { fragmentRegistry } from "./fragmentRegistry";
 import * as Tooltip from "@radix-ui/react-tooltip";
 
-import { getRpcClient } from "../extension/devtools/panelRpcClient";
-import { createSchemaWithRpcClient } from "./schema";
+import { createSchema } from "./schema";
 import type {
   DevToolsActor,
   DevToolsMachineEvents,
@@ -36,9 +35,7 @@ import { getItemSync } from "./utilities/storage";
 loadDevMessages();
 loadErrorMessages();
 
-const rpcClient = getRpcClient();
-const schema = createSchemaWithRpcClient(rpcClient);
-
+const schema = createSchema();
 const schemaLink = new SchemaLink({ schema });
 
 const extensionInvalidatedLink = new ApolloLink((operation, forward) => {

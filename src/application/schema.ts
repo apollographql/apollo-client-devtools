@@ -1,4 +1,3 @@
-import type { RpcClient } from "../extension/rpc";
 import typeDefs from "./localSchema.graphql";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import type {
@@ -16,18 +15,19 @@ import { isExtensionInvalidatedError } from "@/extension/errorMessages";
 import type { CacheWrite } from "@/extension/tab/shared/types";
 import { diff } from "./utilities/diff";
 import { createId } from "@/utils/createId";
+import { getRpcClient } from "@/extension/devtools/panelRpcClient";
 
-export function createSchemaWithRpcClient(rpcClient: RpcClient) {
+export function createSchema() {
   return makeExecutableSchema({
     typeDefs,
-    resolvers: createResolvers(rpcClient),
+    resolvers: createResolvers(),
   });
 }
 
 const diffResolver = ({ cache }: CacheWrite) => diff(cache.before, cache.after);
 
-function createResolvers(client: RpcClient): Resolvers {
-  const rpcClient = client.withTimeout(10_000);
+function createResolvers(): Resolvers {
+  const rpcClient = getRpcClient().withTimeout(10_000);
 
   const request = (async (...args) => {
     try {
