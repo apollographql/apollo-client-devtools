@@ -63,7 +63,7 @@ function createClientV3(dataMasking: boolean) {
 function runIntrospection(handler: ClientHandler<any>) {
   return firstValueFrom(
     handler.executeOperation({
-      clientId: handler.id,
+      clientId: "selected-client",
       operation: parse(getIntrospectionQuery()),
       operationName: "IntrospectionQuery",
       variables: undefined,

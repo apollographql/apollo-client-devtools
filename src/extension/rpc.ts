@@ -4,7 +4,7 @@ import { createId } from "../utils/createId";
 import { RPC_MESSAGE_TIMEOUT } from "./errorMessages";
 import { deserializeError, serializeError } from "./errorSerialization";
 import type { MessageAdapter } from "./messageAdapters";
-import { MessageType } from "./messages";
+import { createTypeFilter, MessageType, type TypeFilter } from "./messages";
 import type { IDv3, IDv4 } from "./tab/clientHandler";
 import type {
   MutationV3Details,
@@ -19,11 +19,19 @@ import type {
 import type { CacheWrite } from "./tab/shared/types";
 import { createActor } from "./actor";
 
-// Symbol to indicate a handler should not send a response (for multi-frame support)
-export const SKIP_RESPONSE = Symbol("SKIP_RESPONSE");
+const transferableClasses = [MessagePort];
+
+function getTransferList(values: readonly unknown[]) {
+  const matches = values.filter((value): value is Transferable =>
+    transferableClasses.some((type) => value instanceof type)
+  );
+  return matches.length ? [...new Set(matches)] : undefined;
+}
 
 export type RPCRequest = {
+  connectClient(): MessagePort;
   getClients(): ApolloClientInfo[];
+  getClientMetadata(): Omit<ApolloClientInfo, "id">;
   getClient(id: string): ApolloClientInfo | null;
   getV3Queries(clientId: IDv3): QueryV3Details[];
   getV4Queries(clientId: IDv4): QueryV4Details[];
@@ -37,6 +45,17 @@ export type RPCRequest = {
 
 export interface RPCStream {
   cacheWrite(clientId: IDv3 | IDv4): CacheWrite;
+}
+
+export class RPC {
+  static createFilter(options: TypeFilter<keyof RPCRequest | keyof RPCStream>) {
+    return createTypeFilter(options, (message) =>
+      message.type === MessageType.RPCRequest ||
+      message.type === MessageType.RPCStartStream
+        ? message.name
+        : undefined
+    );
+  }
 }
 
 export interface RpcClient {
@@ -116,10 +135,13 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
       return new Promise<SafeAny>((resolve, reject) => {
         const id = createId();
 
-        const timeout = setTimeout(() => {
-          cleanup();
-          reject(new Error(RPC_MESSAGE_TIMEOUT));
-        }, this.timeout);
+        const timeout =
+          this.timeout === Infinity
+            ? undefined
+            : setTimeout(() => {
+                cleanup();
+                reject(new Error(RPC_MESSAGE_TIMEOUT));
+              }, this.timeout);
 
         const removeListener = adapter.addListener((message) => {
           if (
@@ -159,12 +181,15 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
 
         signal?.addEventListener("abort", onAbort);
         try {
-          adapter.postMessage({
-            type: MessageType.RPCRequest,
-            id,
-            name,
-            params,
-          });
+          adapter.postMessage(
+            {
+              type: MessageType.RPCRequest,
+              id,
+              name,
+              params,
+            },
+            getTransferList(params)
+          );
         } catch (error) {
           cleanup();
           reject(error);
@@ -207,12 +232,15 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
             }
           });
 
-          adapter.postMessage({
-            type: MessageType.RPCStartStream,
-            id: streamId,
-            name,
-            params,
-          });
+          adapter.postMessage(
+            {
+              type: MessageType.RPCStartStream,
+              id: streamId,
+              name,
+              params,
+            },
+            getTransferList(params)
+          );
 
           if (signal) {
             signal.addEventListener(
@@ -257,22 +285,21 @@ export function createRpcHandler(adapter: MessageAdapter) {
       const { id, params } = message;
 
       try {
-        const result = await Promise.resolve(
-          handler(...(params as Parameters<RPCRequest[TName]>))
+        const result = await handler(
+          ...(params as Parameters<RPCRequest[TName]>)
         );
+        if (options.signal?.aborted) return;
 
-        // If handler returns SKIP_RESPONSE, don't send a response
-        // This is used for multi-frame support where only frames with clients should respond
-        if (result === SKIP_RESPONSE) {
-          return;
-        }
-
-        adapter.postMessage({
-          type: MessageType.RPCResponse,
-          sourceId: id,
-          result,
-        });
+        adapter.postMessage(
+          {
+            type: MessageType.RPCResponse,
+            sourceId: id,
+            result,
+          },
+          getTransferList([result])
+        );
       } catch (e) {
+        if (options.signal?.aborted) return;
         adapter.postMessage({
           type: MessageType.RPCResponse,
           sourceId: id,
@@ -313,7 +340,7 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
       const message = messageQueue.shift();
 
       if (message) {
-        adapter.postMessage(message);
+        adapter.postMessage(message, getTransferList([message.value]));
       }
 
       processQueue();

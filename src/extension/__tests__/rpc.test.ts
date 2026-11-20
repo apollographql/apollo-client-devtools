@@ -4,15 +4,49 @@ import type { ApolloClientInfo } from "../../types";
 import { RPC_MESSAGE_TIMEOUT } from "../errorMessages";
 import { serializeError } from "../errorSerialization";
 import { createMessageBridge, MessageAdapter } from "../messageAdapters";
-import { MessageType } from "../messages";
+import { MessageType, type DevtoolsMessage } from "../messages";
 import type { RPCRequestMessage, RPCStreamStartMessage } from "../rpc";
 import {
+  RPC,
   createRpcClient,
   createRpcHandler,
   createRpcStreamHandler,
-  SKIP_RESPONSE,
 } from "../rpc";
 import { createId } from "@/utils/createId";
+
+test("filters RPC requests and stream starts by name", () => {
+  const include = RPC.createFilter({
+    includeTypes: ["connectClient", "cacheWrite"],
+  });
+  const exclude = RPC.createFilter({
+    excludeTypes: ["connectClient", "cacheWrite"],
+  });
+  const messages: DevtoolsMessage[] = [
+    {
+      type: MessageType.RPCRequest,
+      id: "1",
+      name: "connectClient",
+      params: [],
+    },
+    {
+      type: MessageType.RPCStartStream,
+      id: "2",
+      name: "cacheWrite",
+      params: [],
+    },
+  ];
+  for (const message of messages) {
+    expect(include(message)).toBe(true);
+    expect(exclude(message)).toBe(false);
+  }
+  const reply = {
+    type: MessageType.RPCResponse,
+    sourceId: "1",
+    result: null,
+  } as const;
+  expect(include(reply)).toBe(false);
+  expect(exclude(reply)).toBe(true);
+});
 
 type TestStreamValue = { id: string; value: any };
 
@@ -498,7 +532,7 @@ test("forwards rpc messages from one adapter to another with bridge", () => {
   });
 
   expect(source2.postMessage).toHaveBeenCalledTimes(1);
-  expect(source2.postMessage).toHaveBeenCalledWith({
+  expect(source2.mocks.messages[0]).toEqual({
     source: "apollo-client-devtools",
     type: MessageType.RPCRequest,
     id: "abc",
@@ -514,7 +548,7 @@ test("forwards rpc messages from one adapter to another with bridge", () => {
   });
 
   expect(source1.postMessage).toHaveBeenCalledTimes(1);
-  expect(source1.postMessage).toHaveBeenCalledWith({
+  expect(source1.mocks.messages[0]).toEqual({
     source: "apollo-client-devtools",
     type: MessageType.RPCRequest,
     id: "xyz",
@@ -925,43 +959,29 @@ test("runs cleanup and closes stream when calling close", async () => {
   });
 });
 
-test("does not send response when handler returns SKIP_RESPONSE", async () => {
-  const handlerSource = createTestSource();
-
-  const handle = createRpcHandler(new MessageAdapter(handlerSource));
-  handle("getClient", () => SKIP_RESPONSE as any);
-
-  // Simulate an RPC request
-  handlerSource.simulateDevtoolsMessage({
-    type: MessageType.RPCRequest,
-    id: createId(),
-    name: "getClient",
-    params: ["1"],
-  });
-
-  // Give time for any response to be sent
-  await wait(10);
-
-  // No response should have been posted
-  expect(handlerSource.postMessage).not.toHaveBeenCalled();
-});
-
-test("SKIP_RESPONSE allows handler to be re-registered after unsubscribe", async () => {
-  const handlerSource = createTestSource();
-  const clientSource = createTestSource();
-  createBridge(clientSource, handlerSource);
-
-  const client = createRpcClient(new MessageAdapter(clientSource));
-  const handle = createRpcHandler(new MessageAdapter(handlerSource));
-
-  // First handler skips
-  const unsubscribe = handle("getClient", () => SKIP_RESPONSE as any);
-
-  unsubscribe();
-
-  // Re-register with a real handler
-  handle("getClient", defaultGetClient);
-
-  const result = await client.request("getClient", "1");
-  expect(result).toEqual(defaultGetClient("1"));
-});
+test.each(["resolve", "reject"] as const)(
+  "does not reply when an in-flight handler settles after disconnect (%s)",
+  async (outcome) => {
+    const source = createTestSource();
+    const handle = createRpcHandler(new MessageAdapter(source));
+    const controller = new AbortController();
+    let settle!: () => void;
+    const pending = new Promise<null>((resolve, reject) => {
+      settle = () =>
+        outcome === "resolve" ? resolve(null) : reject(new Error("failed"));
+    });
+    const getClient = jest.fn(() => pending);
+    handle("getClient", getClient, { signal: controller.signal });
+    source.simulateDevtoolsMessage({
+      type: MessageType.RPCRequest,
+      id: createId(),
+      name: "getClient",
+      params: ["1"],
+    });
+    expect(getClient).toHaveBeenCalledWith("1");
+    controller.abort();
+    settle();
+    await Promise.resolve();
+    expect(source.postMessage).not.toHaveBeenCalled();
+  }
+);

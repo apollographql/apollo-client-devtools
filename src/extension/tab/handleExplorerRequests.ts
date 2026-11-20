@@ -1,21 +1,17 @@
 import type { Actor, OptionsWithAbortSignal } from "../actor";
-import type { ApolloClient } from "@apollo/client";
+import type { ApolloClient } from "@/types";
 import type { ClientHandler } from "./clientHandler";
 
 export function handleExplorerRequests(
   actor: Actor,
-  getHandlerByClientId: (
-    clientId: string
-  ) => ClientHandler<ApolloClient> | undefined,
+  getHandler: () => ClientHandler<ApolloClient> | undefined,
   options: OptionsWithAbortSignal = {}
 ) {
   return actor.on(
     "explorerRequest",
     ({ payload }) => {
-      const handler = getHandlerByClientId(payload.clientId);
+      const handler = getHandler();
 
-      // In multi-frame scenarios (iframes), another frame may have this client
-      // so we silently return instead of throwing
       if (!handler) {
         return;
       }
@@ -25,18 +21,15 @@ export function handleExplorerRequests(
         actor.send({ type: "explorerResponse", payload });
       });
 
-      actor.on(
-        "explorerSubscriptionTermination",
-        () => subscription.unsubscribe(),
-        options
-      );
+      if (subscription.closed) return;
+      const stop = () => subscription.unsubscribe();
+      const { signal } = options;
+      if (signal?.aborted) return stop();
 
-      if (options.signal) {
-        options.signal.addEventListener(
-          "abort",
-          () => subscription.unsubscribe(),
-          { once: true }
-        );
+      subscription.add(actor.on("explorerSubscriptionTermination", stop));
+      if (signal) {
+        signal.addEventListener("abort", stop);
+        subscription.add(() => signal.removeEventListener("abort", stop));
       }
     },
     options

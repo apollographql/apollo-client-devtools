@@ -37,9 +37,8 @@ function channel() {
   return { router: adapter(left, right), peer: adapter(right, left) };
 }
 
-const metadata: ApolloClientInfo = {
+const metadata: Omit<ApolloClientInfo, "id"> = {
   name: undefined,
-  id: "client-id",
   version: "4.0.9",
   queryCount: 0,
   mutationCount: 0,
@@ -52,16 +51,16 @@ function setup() {
   const rpc = createRpcClient(panel.peer);
   const actor = createActor(panel.peer);
   const disconnects = [disconnectPanel];
-  function frame(name: string) {
+  function client(name: string) {
     const transport = channel();
-    const info = { ...metadata, id: name, name };
+    const info = { ...metadata, name };
     const handle = createRpcHandler(transport.peer);
-    handle("getClients", () => [info]);
-    handle("getClient", () => info);
-    const disconnect = router.connectFrame(transport.router);
+    const stopResponding = handle("getClientMetadata", () => info);
+    const disconnect = router.connectClient(transport.router);
     disconnects.push(disconnect);
     return {
       ...transport,
+      stopResponding,
       handle,
       actor: createActor(transport.peer),
       disconnect,
@@ -72,25 +71,28 @@ function setup() {
     panel,
     rpc,
     actor,
-    frame,
+    client,
     disconnectPanel,
     cleanup: () => disconnects.forEach((disconnect) => disconnect()),
   };
 }
 
-it("preserves upstream client IDs and sends inspection only to the owning frame", async () => {
+it("assigns IDs to client connections and sends inspection only to the owning client", async () => {
   const test = setup();
   try {
-    const a = test.frame("a");
-    const b = test.frame("b");
+    const a = test.client("a");
+    const b = test.client("b");
     a.handle("getCache", () => ({ secret: "a" }));
     b.handle("getCache", () => ({ secret: "b" }));
     const infos = await test.rpc.request("getClients");
-    expect(infos.map(({ id }) => id).sort()).toEqual(["a", "b"]);
+    expect(new Set(infos.map(({ id }) => id)).size).toBe(2);
     const id = infos.find(({ name }) => name === "a")!.id;
     b.router.postMessage.mockClear();
     expect(await test.rpc.request("getCache", id)).toEqual({ secret: "a" });
     expect(b.router.postMessage).not.toHaveBeenCalled();
+    await expect(test.rpc.request("getCache", "unknown")).rejects.toThrow(
+      "Apollo Client is no longer connected"
+    );
 
     b.actor.send({ type: "clientTerminated", clientId: id });
     expect(await test.rpc.request("getCache", id)).toEqual({ secret: "a" });
@@ -98,19 +100,76 @@ it("preserves upstream client IDs and sends inspection only to the owning frame"
       id,
       name: "a",
     });
-    await expect(test.rpc.request("getCache", "unknown")).rejects.toThrow(
-      "no longer connected"
-    );
   } finally {
     test.cleanup();
   }
 });
 
-it("targets Explorer requests and never forwards frame-originated commands", async () => {
+it("keeps frame control traffic separate from client discovery and operations", async () => {
+  const test = setup();
+  const control = channel();
+  const disconnect = test.router.connectFrame(control.router);
+  try {
+    createActor(control.peer).send({
+      type: "registerClient",
+      payload: { ...metadata, id: "forged" },
+    });
+    await expect(
+      createRpcClient(control.peer).request("getErrorCodes", "unknown-version")
+    ).resolves.toBeUndefined();
+    expect(await test.rpc.request("getClients")).toEqual([]);
+    const a = test.client("a");
+    a.handle("getCache", () => ({ secret: true }));
+    const [info] = await test.rpc.request("getClients");
+    control.router.postMessage.mockClear();
+    expect(await test.rpc.request("getCache", info.id)).toEqual({
+      secret: true,
+    });
+    expect(control.router.postMessage).not.toHaveBeenCalled();
+  } finally {
+    disconnect();
+    test.cleanup();
+  }
+});
+
+it("ignores client-supplied IDs and termination events until the port disconnects", async () => {
+  const test = setup();
+  const transport = channel();
+  createRpcHandler(transport.peer)("getClientMetadata", () => ({
+    ...metadata,
+    name: "untrusted",
+    id: "supplied-id",
+  }));
+  const disconnect = test.router.connectClient(transport.router);
+  try {
+    const sibling = test.client("sibling");
+    sibling.handle("getCache", () => ({ alive: true }));
+    const infos = await test.rpc.request("getClients");
+    const untrusted = infos.find(({ name }) => name === "untrusted")!;
+    const trusted = infos.find(({ name }) => name === "sibling")!;
+    expect(untrusted.id).not.toBe("supplied-id");
+    const stop = { type: "clientTerminated" as const, clientId: trusted.id };
+    createActor(transport.peer).send(stop);
+    expect(await test.rpc.request("getClients")).toEqual(infos);
+
+    disconnect();
+    expect(await test.rpc.request("getClients")).toEqual([
+      expect.objectContaining({ id: trusted.id }),
+    ]);
+    expect(await test.rpc.request("getCache", trusted.id)).toEqual({
+      alive: true,
+    });
+  } finally {
+    disconnect();
+    test.cleanup();
+  }
+});
+
+it("targets Explorer requests and never forwards client-originated commands", async () => {
   const test = setup();
   try {
-    const a = test.frame("a");
-    const b = test.frame("b");
+    const a = test.client("a");
+    const b = test.client("b");
     const infos = await test.rpc.request("getClients");
     const id = infos.find(({ name }) => name === "a")!.id;
     const requests = jest.fn();
@@ -157,11 +216,11 @@ it("targets Explorer requests and never forwards frame-originated commands", asy
   }
 });
 
-it("forwards cache streams and cancels only the owning frame's stream", async () => {
+it("forwards cache streams and cancels only the owning client's stream", async () => {
   const test = setup();
   try {
-    const a = test.frame("a");
-    const b = test.frame("b");
+    const a = test.client("a");
+    const b = test.client("b");
     const cancelled = jest.fn();
     let push!: (value: never) => void;
     createRpcStreamHandler(a.peer)("cacheWrite", (controller) => {
@@ -182,7 +241,8 @@ it("forwards cache streams and cancels only the owning frame's stream", async ()
       expect.objectContaining({
         type: MessageType.RPCStartStream,
         id: start.id,
-      })
+      }),
+      undefined
     );
     b.peer.postMessage({
       type: MessageType.RPCStreamChunk,
@@ -206,8 +266,8 @@ it("forwards cache streams and cancels only the owning frame's stream", async ()
 it("forwards requests without method-specific handlers and rejects sibling replies", async () => {
   const test = setup();
   try {
-    const a = test.frame("a");
-    const b = test.frame("b");
+    const a = test.client("a");
+    const b = test.client("b");
     const infos = await test.rpc.request("getClients");
     const id = infos.find(({ name }) => name === "a")!.id;
     a.router.postMessage.mockClear();
@@ -249,11 +309,11 @@ it("forwards requests without method-specific handlers and rejects sibling repli
   }
 });
 
-it("aborts pending work when a frame disconnects and leaves its sibling connected", async () => {
+it("aborts pending work when a client disconnects and leaves its sibling connected", async () => {
   const test = setup();
   try {
-    const a = test.frame("a");
-    const b = test.frame("b");
+    const a = test.client("a");
+    const b = test.client("b");
     const pending = jest.fn(() => new Promise<Record<string, never>>(() => {}));
     a.handle("getCache", pending);
     b.handle("getCache", () => ({ sibling: true }));
@@ -277,10 +337,10 @@ it("aborts pending work when a frame disconnects and leaves its sibling connecte
   }
 });
 
-it("cleans up frame-side streams when the panel disconnects", async () => {
+it("cleans up client-side streams when the panel disconnects", async () => {
   const test = setup();
   try {
-    const a = test.frame("a");
+    const a = test.client("a");
     const cancelled = jest.fn();
     const started = jest.fn(() => cancelled);
     createRpcStreamHandler(a.peer)("cacheWrite", started);
@@ -295,12 +355,27 @@ it("cleans up frame-side streams when the panel disconnects", async () => {
   }
 });
 
-it("returns discoveries from responsive frames even when another frame is silent", async () => {
+it("keeps the last metadata when a connected client misses a refresh", async () => {
+  const test = setup();
+  try {
+    const client = test.client("slow");
+    const infos = await test.rpc.request("getClients");
+    expect(infos).toHaveLength(1);
+    client.stopResponding();
+    expect(await test.rpc.request("getClients")).toEqual(infos);
+    client.disconnect();
+    expect(await test.rpc.request("getClients")).toEqual([]);
+  } finally {
+    test.cleanup();
+  }
+});
+
+it("returns discoveries from responsive clients even when another client is silent", async () => {
   const test = setup();
   const silent = channel();
-  const disconnect = test.router.connectFrame(silent.router);
+  const disconnect = test.router.connectClient(silent.router);
   try {
-    test.frame("responsive");
+    test.client("responsive");
     expect(await test.rpc.request("getClients")).toEqual([
       expect.objectContaining({ name: "responsive" }),
     ]);

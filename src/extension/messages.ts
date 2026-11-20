@@ -39,6 +39,22 @@ export type ApolloClientDevtoolsMessage = DevtoolsMessage & {
   readonly id: string;
 };
 
+export type TypeFilter<T extends string> =
+  | { includeTypes: readonly T[]; excludeTypes?: never }
+  | { excludeTypes: readonly T[]; includeTypes?: never };
+
+export function createTypeFilter<T extends string>(
+  options: TypeFilter<T>,
+  getType: (message: DevtoolsMessage) => string | undefined
+) {
+  const types = new Set<string>(options.includeTypes ?? options.excludeTypes);
+  const include = options.includeTypes !== undefined;
+  return (message: DevtoolsMessage) => {
+    const type = getType(message);
+    return (type !== undefined && types.has(type)) === include;
+  };
+}
+
 export function isDevtoolsMessage(
   message: unknown
 ): message is ApolloClientDevtoolsMessage {
