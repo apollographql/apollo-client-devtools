@@ -116,6 +116,22 @@ export class MessageAdapter {
   }
 }
 
+/**
+ * Use when `port` is externally controlled and cannot be reconnected automatically.
+ * Otherwise, prefer `createPortMessageAdapter`.
+ */
+export function createExternalPortMessageAdapter(
+  port: browser.Runtime.Port
+): MessageAdapter {
+  return new MessageAdapter({
+    addListener(listener) {
+      port.onMessage.addListener(listener);
+      return () => port.onMessage.removeListener(listener);
+    },
+    postMessage: (message) => port.postMessage(message),
+  });
+}
+
 export function createPortMessageAdapter(
   createPort: () => browser.Runtime.Port
 ): MessageAdapter {

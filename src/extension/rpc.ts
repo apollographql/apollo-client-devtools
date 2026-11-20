@@ -117,16 +117,11 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
         const id = createId();
 
         const timeout = setTimeout(() => {
-          removeListener();
+          cleanup();
           reject(new Error(RPC_MESSAGE_TIMEOUT));
         }, this.timeout);
 
         const removeListener = adapter.addListener((message) => {
-          function cleanup() {
-            clearTimeout(timeout);
-            removeListener();
-          }
-
           if (
             message.type === MessageType.PostMessageError &&
             message.sourceId === id
@@ -151,20 +146,29 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
           cleanup();
         });
 
-        if (signal) {
-          signal.addEventListener("abort", () => {
-            clearTimeout(timeout);
-            removeListener();
-            reject(getAbortError(signal));
-          });
+        function cleanup() {
+          clearTimeout(timeout);
+          removeListener();
+          signal?.removeEventListener("abort", onAbort);
         }
 
-        adapter.postMessage({
-          type: MessageType.RPCRequest,
-          id,
-          name,
-          params,
-        });
+        function onAbort() {
+          cleanup();
+          reject(getAbortError(signal!));
+        }
+
+        signal?.addEventListener("abort", onAbort);
+        try {
+          adapter.postMessage({
+            type: MessageType.RPCRequest,
+            id,
+            name,
+            params,
+          });
+        } catch (error) {
+          cleanup();
+          reject(error);
+        }
       });
     },
     stream(name, ...params) {
@@ -301,7 +305,11 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
       return;
     }
 
-    requestIdleCallback(() => {
+    const schedule =
+      typeof requestIdleCallback === "function"
+        ? requestIdleCallback
+        : setTimeout;
+    schedule(() => {
       const message = messageQueue.shift();
 
       if (message) {
