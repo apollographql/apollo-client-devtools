@@ -4,7 +4,7 @@ import { createActor } from "../actor";
 import { createRpcClient, createRpcHandler } from "../rpc";
 import { createHandler } from "../tab/helpers";
 import { loadErrorCodes } from "../tab/loadErrorCodes";
-import type { MessageAdapter } from "../messageAdapters";
+import { MessageAdapter } from "../messageAdapters";
 import { handleExplorerRequests } from "../tab/handleExplorerRequests";
 import { setMaxListeners, WeakRef, FinalizationRegistry } from "./polyfills";
 import { createId } from "../../utils/createId";
@@ -200,7 +200,7 @@ function registerClient(
 }
 
 function createWsAdapter(ws: WebSocket, signal: AbortSignal): MessageAdapter {
-  return {
+  return new MessageAdapter({
     addListener(listener) {
       const wrappedListener = (ev: MessageEvent<any>) => {
         listener(JSON.parse(ev.data));
@@ -211,7 +211,7 @@ function createWsAdapter(ws: WebSocket, signal: AbortSignal): MessageAdapter {
     postMessage(message) {
       ws.send(JSON.stringify(message));
     },
-  };
+  });
 }
 
 function getCleanupController() {

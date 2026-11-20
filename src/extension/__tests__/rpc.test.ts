@@ -1,30 +1,25 @@
-import type { ApolloClientInfo, DistributiveOmit } from "../../types";
-import { createId } from "../../utils/createId";
+import type { TestSource } from "@/testUtils/createTestSource";
+import { createTestSource } from "@/testUtils/createTestSource";
+import type { ApolloClientInfo } from "../../types";
 import { RPC_MESSAGE_TIMEOUT } from "../errorMessages";
 import { serializeError } from "../errorSerialization";
-import type { MessageAdapter } from "../messageAdapters";
-import { createMessageBridge } from "../messageAdapters";
-import type { PostMessageError } from "../messages";
+import { createMessageBridge, MessageAdapter } from "../messageAdapters";
 import { MessageType } from "../messages";
-import type {
-  RPCRequestMessage,
-  RPCResponseMessage,
-  RPCStreamStartMessage,
-} from "../rpc";
+import type { RPCRequestMessage, RPCStreamStartMessage } from "../rpc";
 import {
   createRpcClient,
   createRpcHandler,
   createRpcStreamHandler,
   SKIP_RESPONSE,
 } from "../rpc";
-
-type RPCMessage = RPCRequestMessage | RPCResponseMessage;
+import { createId } from "@/utils/createId";
 
 type TestStreamValue = { id: string; value: any };
 
 declare module "../rpc" {
   export interface RPCStream {
     testStream(id: string): TestStreamValue;
+    otherTestStream(id: string): TestStreamValue;
   }
 }
 
@@ -32,69 +27,9 @@ function wait(ms: number) {
   return new Promise<void>((resolve) => setTimeout(resolve, ms));
 }
 
-interface TestAdapter extends MessageAdapter {
-  mocks: { listeners: Set<(message: unknown) => void>; messages: unknown[] };
-  simulateMessage: (message: unknown) => void;
-  simulateRPCMessage: (message: DistributiveOmit<RPCMessage, "source">) => void;
-  simulateRPCStreamChunk: <TValue = unknown>(
-    streamId: string,
-    value: TValue
-  ) => void;
-  postMessage: jest.Mock<void, [message: unknown]>;
-  connect: (adapter: TestAdapter) => void;
-}
-
-function createTestAdapter(): TestAdapter {
-  let proxy: TestAdapter | undefined;
-  const listeners = new Set<(message: unknown) => void>();
-  const messages: unknown[] = [];
-
-  return {
-    mocks: { listeners, messages },
-    simulateMessage: (message) => {
-      listeners.forEach((fn) => fn(message));
-    },
-    simulateRPCMessage: (message) => {
-      listeners.forEach((fn) =>
-        fn({
-          ...message,
-          source: "apollo-client-devtools",
-        })
-      );
-    },
-    simulateRPCStreamChunk: (streamId, value) => {
-      listeners.forEach((fn) =>
-        fn({
-          source: "apollo-client-devtools",
-          type: MessageType.RPCStreamChunk,
-          id: createId(),
-          streamId,
-          value,
-        })
-      );
-    },
-    addListener: jest.fn((fn) => {
-      listeners.add(fn);
-
-      return () => listeners.delete(fn);
-    }),
-    postMessage: jest.fn((message) => {
-      messages.push(message);
-      proxy?.simulateMessage(message);
-    }),
-    // Connects two adapters so that a postMessage from one adapter calls
-    // listeners on the proxy adapter. This isn't forwarding, but rather tries
-    // to simulate the window.postMessage(), window.addEventListener('message')
-    // behavior.
-    connect: (adapter: TestAdapter) => {
-      proxy = adapter;
-    },
-  };
-}
-
-function createBridge(adapter1: TestAdapter, adapter2: TestAdapter) {
-  adapter1.connect(adapter2);
-  adapter2.connect(adapter1);
+function createBridge(source1: TestSource, source2: TestSource) {
+  source1.connect(source2);
+  source2.connect(source1);
 }
 
 function defaultGetClient(id: string) {
@@ -110,12 +45,12 @@ function defaultGetClient(id: string) {
 test("can send and receive rpc messages", async () => {
   // Since these are sent over separate instances in the real world, we want to
   // simulate that as best as we can with separate adapters
-  const handlerAdapter = createTestAdapter();
-  const clientAdapter = createTestAdapter();
-  createBridge(clientAdapter, handlerAdapter);
+  const handlerSource = createTestSource();
+  const clientSource = createTestSource();
+  createBridge(clientSource, handlerSource);
 
-  const client = createRpcClient(clientAdapter);
-  const handle = createRpcHandler(handlerAdapter);
+  const client = createRpcClient(new MessageAdapter(clientSource));
+  const handle = createRpcHandler(new MessageAdapter(handlerSource));
 
   handle("getClient", defaultGetClient);
 
@@ -127,12 +62,12 @@ test("can send and receive rpc messages", async () => {
 test("resolves async handlers", async () => {
   // Since these are sent over separate instances in the real world, we want to
   // simulate that as best as we can with separate adapters
-  const handlerAdapter = createTestAdapter();
-  const clientAdapter = createTestAdapter();
-  createBridge(clientAdapter, handlerAdapter);
+  const handlerSource = createTestSource();
+  const clientSource = createTestSource();
+  createBridge(clientSource, handlerSource);
 
-  const client = createRpcClient(clientAdapter);
-  const handle = createRpcHandler(handlerAdapter);
+  const client = createRpcClient(new MessageAdapter(clientSource));
+  const handle = createRpcHandler(new MessageAdapter(handlerSource));
 
   handle("getClient", (id) => {
     return new Promise<ApolloClientInfo>((resolve) => {
@@ -148,16 +83,14 @@ test("resolves async handlers", async () => {
 });
 
 test("does not mistakenly handle messages from different rpc calls", async () => {
-  const clientAdapter = createTestAdapter();
-  const client = createRpcClient(clientAdapter);
+  const clientSource = createTestSource();
+  const client = createRpcClient(new MessageAdapter(clientSource));
 
   const promise = client.request("getClient", "1");
 
-  const { id } = clientAdapter.mocks.messages[0] as RPCRequestMessage;
+  const { id } = clientSource.mocks.messages[0];
 
-  clientAdapter.simulateRPCMessage({
-    id: "zef",
-    type: MessageType.RPCResponse,
+  clientSource.simulateRPCResponse({
     sourceId: id + "zzz",
     result: {
       id: "2",
@@ -168,9 +101,7 @@ test("does not mistakenly handle messages from different rpc calls", async () =>
     },
   });
 
-  clientAdapter.simulateRPCMessage({
-    type: MessageType.RPCResponse,
-    id: "abcdefg",
+  clientSource.simulateRPCResponse({
     sourceId: id,
     result: defaultGetClient("1"),
   });
@@ -181,12 +112,12 @@ test("does not mistakenly handle messages from different rpc calls", async () =>
 test("rejects when handler throws error", async () => {
   // Since these are sent over separate instances in the real world, we want to
   // simulate that as best as we can with separate adapters
-  const handlerAdapter = createTestAdapter();
-  const clientAdapter = createTestAdapter();
-  createBridge(clientAdapter, handlerAdapter);
+  const handlerSource = createTestSource();
+  const clientSource = createTestSource();
+  createBridge(clientSource, handlerSource);
 
-  const client = createRpcClient(clientAdapter);
-  const handle = createRpcHandler(handlerAdapter);
+  const client = createRpcClient(new MessageAdapter(clientSource));
+  const handle = createRpcHandler(new MessageAdapter(handlerSource));
 
   handle("getClient", () => {
     throw new Error("Could not get client");
@@ -200,12 +131,12 @@ test("rejects when handler throws error", async () => {
 test("rejects when async handler rejects", async () => {
   // Since these are sent over separate instances in the real world, we want to
   // simulate that as best as we can with separate adapters
-  const handlerAdapter = createTestAdapter();
-  const clientAdapter = createTestAdapter();
-  createBridge(clientAdapter, handlerAdapter);
+  const handlerSource = createTestSource();
+  const clientSource = createTestSource();
+  createBridge(clientSource, handlerSource);
 
-  const client = createRpcClient(clientAdapter);
-  const handle = createRpcHandler(handlerAdapter);
+  const client = createRpcClient(new MessageAdapter(clientSource));
+  const handle = createRpcHandler(new MessageAdapter(handlerSource));
 
   handle("getClient", () => Promise.reject(new Error("Could not get client")));
 
@@ -215,12 +146,12 @@ test("rejects when async handler rejects", async () => {
 });
 
 test("maintains error name", async () => {
-  const handlerAdapter = createTestAdapter();
-  const clientAdapter = createTestAdapter();
-  createBridge(clientAdapter, handlerAdapter);
+  const handlerSource = createTestSource();
+  const clientSource = createTestSource();
+  createBridge(clientSource, handlerSource);
 
-  const client = createRpcClient(clientAdapter);
-  const handle = createRpcHandler(handlerAdapter);
+  const client = createRpcClient(new MessageAdapter(clientSource));
+  const handle = createRpcHandler(new MessageAdapter(handlerSource));
 
   handle("getClient", () => Promise.reject(new SyntaxError()));
 
@@ -234,12 +165,12 @@ test("maintains error name", async () => {
 });
 
 test("can handle multiple rpc messages", async () => {
-  const handlerAdapter = createTestAdapter();
-  const clientAdapter = createTestAdapter();
-  createBridge(clientAdapter, handlerAdapter);
+  const handlerSource = createTestSource();
+  const clientSource = createTestSource();
+  createBridge(clientSource, handlerSource);
 
-  const client = createRpcClient(clientAdapter);
-  const handle = createRpcHandler(handlerAdapter);
+  const client = createRpcClient(new MessageAdapter(clientSource));
+  const handle = createRpcHandler(new MessageAdapter(handlerSource));
 
   handle("getClient", defaultGetClient);
   handle("getV3Queries", () => Promise.resolve([]));
@@ -252,7 +183,7 @@ test("can handle multiple rpc messages", async () => {
 });
 
 test("only allows one handler per type", async () => {
-  const handle = createRpcHandler(createTestAdapter());
+  const handle = createRpcHandler(new MessageAdapter(createTestSource()));
 
   handle("getClient", defaultGetClient);
 
@@ -271,12 +202,12 @@ test.skip("can handle any parameter format", async () => {
   //   getStoredValues(): number[];
   // };
   //
-  // const handlerAdapter = createTestAdapter();
-  // const clientAdapter = createTestAdapter();
-  // createBridge(clientAdapter, handlerAdapter);
+  // const handlerSource = createTestSource();
+  // const clientSource = createTestSource();
+  // createBridge(clientSource, handlerSource);
   //
-  // const client = createRpcClient<Message>(clientAdapter);
-  // const handle = createRpcHandler<Message>(handlerAdapter);
+  // const client = createRpcClient<Message>(new MessageAdapter(clientSource));
+  // const handle = createRpcHandler<Message>(new MessageAdapter(handlerSource));
   //
   // handle("add", (x, y) => x + y);
   // handle("shout", (text) => text.toUpperCase());
@@ -301,13 +232,13 @@ test.skip("can handle any parameter format", async () => {
 });
 
 test("ignores messages that don't originate from devtools", () => {
-  const adapter = createTestAdapter();
-  const handle = createRpcHandler(adapter);
+  const source = createTestSource();
+  const handle = createRpcHandler(new MessageAdapter(source));
 
   const callback = jest.fn();
   handle("getClient", callback);
 
-  adapter.simulateMessage({ type: "getClient", clientId: "1" });
+  source.simulatePlainMessage({ type: "getClient", clientId: "1" });
 
   expect(callback).not.toHaveBeenCalled();
 });
@@ -316,13 +247,14 @@ test("ignores messages that don't originate from devtools", () => {
 // actor message type collides with an rpc message type, we want to ignore the
 // actor message type.
 test("ignores messages that aren't rpc messages", () => {
-  const adapter = createTestAdapter();
-  const handle = createRpcHandler(adapter);
+  const source = createTestSource();
+  const handle = createRpcHandler(new MessageAdapter(source));
 
   const getClient = jest.fn();
   handle("getClient", getClient);
 
-  adapter.simulateMessage({
+  source.simulatePlainMessage({
+    id: createId(),
     source: "apollo-client-devtools",
     type: MessageType.Actor,
     payload: { type: "getClient", clientId: "1" },
@@ -332,39 +264,26 @@ test("ignores messages that aren't rpc messages", () => {
 });
 
 test("does not add listener to adapter until first subscribed handler", () => {
-  const adapter = createTestAdapter();
-  const handle = createRpcHandler(adapter);
+  const source = createTestSource();
+  const handle = createRpcHandler(new MessageAdapter(source));
 
-  expect(adapter.addListener).not.toHaveBeenCalled();
-
-  handle("getClient", defaultGetClient);
-
-  expect(adapter.addListener).toHaveBeenCalled();
-});
-
-test("adds a single listener regardless of active handlers", () => {
-  const adapter = createTestAdapter();
-  const handle = createRpcHandler(adapter);
-
-  expect(adapter.addListener).not.toHaveBeenCalled();
+  expect(source.addListener).not.toHaveBeenCalled();
 
   handle("getClient", defaultGetClient);
-  handle("getV3Queries", () => []);
-  handle("getV3Mutations", () => []);
 
-  expect(adapter.addListener).toHaveBeenCalledTimes(1);
+  expect(source.addListener).toHaveBeenCalled();
 });
 
 test("can unsubscribe from a handler by calling the returned function", () => {
-  const adapter = createTestAdapter();
-  const handle = createRpcHandler(adapter);
+  const source = createTestSource();
+  const handle = createRpcHandler(new MessageAdapter(source));
 
   const getClient = jest.fn();
   const unsubscribe = handle("getClient", getClient);
 
-  adapter.simulateRPCMessage({
-    id: "abc",
+  source.simulateDevtoolsMessage({
     type: MessageType.RPCRequest,
+    id: createId(),
     name: "getClient",
     params: ["1"],
   });
@@ -374,9 +293,9 @@ test("can unsubscribe from a handler by calling the returned function", () => {
   getClient.mockClear();
   unsubscribe();
 
-  adapter.simulateRPCMessage({
-    id: "xyz",
+  source.simulateDevtoolsMessage({
     type: MessageType.RPCRequest,
+    id: createId(),
     name: "getClient",
     params: ["2"],
   });
@@ -385,37 +304,41 @@ test("can unsubscribe from a handler by calling the returned function", () => {
 });
 
 test("removes listener on adapter when unsubscribing from last handler", () => {
-  const adapter = createTestAdapter();
-  const handle = createRpcHandler(adapter);
+  const source = createTestSource();
+  const handle = createRpcHandler(new MessageAdapter(source));
 
   const unsubscribeGetClient = handle("getClient", defaultGetClient);
   const unsubscribeGetQueries = handle("getV3Queries", () => []);
 
   unsubscribeGetClient();
-  expect(adapter.mocks.listeners.size).toBe(1);
+  expect(source.mocks.removeListener).not.toHaveBeenCalled();
 
   unsubscribeGetQueries();
-  expect(adapter.mocks.listeners.size).toBe(0);
+  expect(source.mocks.removeListener).toHaveBeenCalledTimes(1);
 });
 
 test("re-adds listener on adapter when subscribing after unsubscribing", () => {
-  const adapter = createTestAdapter();
-  const handle = createRpcHandler(adapter);
+  const source = createTestSource();
+  const handle = createRpcHandler(new MessageAdapter(source));
 
   const unsubscribe = handle("getClient", defaultGetClient);
 
+  expect(source.addListener).toHaveBeenCalledTimes(1);
+
   unsubscribe();
-  expect(adapter.mocks.listeners.size).toBe(0);
+  expect(source.mocks.removeListener).toHaveBeenCalledTimes(1);
+
+  source.addListener.mockClear();
 
   handle("getClient", defaultGetClient);
-  expect(adapter.mocks.listeners.size).toBe(1);
+  expect(source.addListener).toHaveBeenCalledTimes(1);
 });
 
 test("times out if no message received within default timeout", async () => {
   jest.useFakeTimers();
 
-  const adapter = createTestAdapter();
-  const client = createRpcClient(adapter);
+  const source = createTestSource();
+  const client = createRpcClient(new MessageAdapter(source));
 
   const promise = client.request("getClient", "1");
 
@@ -429,8 +352,8 @@ test("times out if no message received within default timeout", async () => {
 test("times out if no message received within configured timeout", async () => {
   jest.useFakeTimers();
 
-  const adapter = createTestAdapter();
-  const client = createRpcClient(adapter);
+  const source = createTestSource();
+  const client = createRpcClient(new MessageAdapter(source));
 
   const promise = client.withTimeout(1000).request("getClient", "1");
 
@@ -444,8 +367,8 @@ test("times out if no message received within configured timeout", async () => {
 test("resets timeout to default timeout after sending request", async () => {
   jest.useFakeTimers();
 
-  const adapter = createTestAdapter();
-  const client = createRpcClient(adapter);
+  const source = createTestSource();
+  const client = createRpcClient(new MessageAdapter(source));
 
   const t1 = client.withTimeout(1000);
   const t2 = client.withTimeout(2000);
@@ -509,8 +432,8 @@ test("resets timeout to default timeout after sending request", async () => {
 });
 
 test("rejects with abort error when provided signal aborts", async () => {
-  const adapter = createTestAdapter();
-  const client = createRpcClient(adapter);
+  const source = createTestSource();
+  const client = createRpcClient(new MessageAdapter(source));
   const controller = new AbortController();
 
   const promise = client
@@ -526,8 +449,8 @@ test("rejects with abort error when provided signal aborts", async () => {
 });
 
 test("rejects when provided signal is already aborted", async () => {
-  const adapter = createTestAdapter();
-  const client = createRpcClient(adapter);
+  const source = createTestSource();
+  const client = createRpcClient(new MessageAdapter(source));
   const controller = new AbortController();
   controller.abort();
 
@@ -541,8 +464,8 @@ test("rejects when provided signal is already aborted", async () => {
 });
 
 test("forwards abort reason if provided", async () => {
-  const adapter = createTestAdapter();
-  const client = createRpcClient(adapter);
+  const source = createTestSource();
+  const client = createRpcClient(new MessageAdapter(source));
   const controller = new AbortController();
 
   const promise = client
@@ -558,20 +481,20 @@ test("forwards abort reason if provided", async () => {
 });
 
 test("forwards rpc messages from one adapter to another with bridge", () => {
-  const adapter1 = createTestAdapter();
-  const adapter2 = createTestAdapter();
+  const source1 = createTestSource();
+  const source2 = createTestSource();
 
-  createMessageBridge(adapter1, adapter2);
+  createMessageBridge(new MessageAdapter(source1), new MessageAdapter(source2));
 
-  adapter1.simulateRPCMessage({
+  source1.simulateDevtoolsMessage({
     id: "abc",
     type: MessageType.RPCRequest,
     name: "add",
     params: [{ x: 1, y: 2 }],
   });
 
-  expect(adapter2.postMessage).toHaveBeenCalledTimes(1);
-  expect(adapter2.postMessage).toHaveBeenCalledWith({
+  expect(source2.postMessage).toHaveBeenCalledTimes(1);
+  expect(source2.postMessage).toHaveBeenCalledWith({
     source: "apollo-client-devtools",
     type: MessageType.RPCRequest,
     id: "abc",
@@ -579,15 +502,15 @@ test("forwards rpc messages from one adapter to another with bridge", () => {
     params: [{ x: 1, y: 2 }],
   });
 
-  adapter2.simulateRPCMessage({
+  source2.simulateDevtoolsMessage({
     id: "xyz",
     type: MessageType.RPCRequest,
     name: "add",
     params: [{ x: 1, y: 2 }],
   });
 
-  expect(adapter1.postMessage).toHaveBeenCalledTimes(1);
-  expect(adapter1.postMessage).toHaveBeenCalledWith({
+  expect(source1.postMessage).toHaveBeenCalledTimes(1);
+  expect(source1.postMessage).toHaveBeenCalledWith({
     source: "apollo-client-devtools",
     type: MessageType.RPCRequest,
     id: "xyz",
@@ -597,86 +520,83 @@ test("forwards rpc messages from one adapter to another with bridge", () => {
 });
 
 test("unsubscribes connection on bridge when calling returned function", () => {
-  const adapter1 = createTestAdapter();
-  const adapter2 = createTestAdapter();
+  const source1 = createTestSource();
+  const source2 = createTestSource();
 
-  const unsubscribe = createMessageBridge(adapter1, adapter2);
+  const unsubscribe = createMessageBridge(
+    new MessageAdapter(source1),
+    new MessageAdapter(source2)
+  );
 
-  adapter1.simulateRPCMessage({
+  source1.simulateDevtoolsMessage({
     id: "abc",
     type: MessageType.RPCRequest,
     name: "add",
     params: [{ x: 1, y: 2 }],
   });
-  expect(adapter2.postMessage).toHaveBeenCalled();
+  expect(source2.postMessage).toHaveBeenCalled();
 
-  adapter2.simulateRPCMessage({
+  source2.simulateDevtoolsMessage({
     id: "xyz",
     type: MessageType.RPCRequest,
     name: "add",
     params: [{ x: 1, y: 2 }],
   });
-  expect(adapter1.postMessage).toHaveBeenCalled();
+  expect(source1.postMessage).toHaveBeenCalled();
 
-  adapter1.postMessage.mockClear();
-  adapter2.postMessage.mockClear();
+  source1.postMessage.mockClear();
+  source2.postMessage.mockClear();
   unsubscribe();
 
-  adapter1.simulateRPCMessage({
+  source1.simulateDevtoolsMessage({
     id: "def",
     type: MessageType.RPCRequest,
     name: "add",
     params: [{ x: 1, y: 2 }],
   });
-  expect(adapter2.postMessage).not.toHaveBeenCalled();
+  expect(source2.postMessage).not.toHaveBeenCalled();
 
-  adapter2.simulateRPCMessage({
+  source2.simulateDevtoolsMessage({
     id: "uvw",
     type: MessageType.RPCRequest,
     name: "add",
     params: [{ x: 1, y: 2 }],
   });
-  expect(adapter1.postMessage).not.toHaveBeenCalled();
+  expect(source1.postMessage).not.toHaveBeenCalled();
 });
 
 test("rejects with post message errors", async () => {
-  const clientAdapter = createTestAdapter();
-  const client = createRpcClient(clientAdapter);
+  const clientSource = createTestSource();
+  const client = createRpcClient(new MessageAdapter(clientSource));
 
   const promise = client.request("getClient", "1");
 
-  const { id } = clientAdapter.mocks.messages[0] as RPCRequestMessage;
+  const { id } = clientSource.mocks.messages[0] as RPCRequestMessage;
 
-  clientAdapter.simulateMessage({
-    id: "zef",
+  clientSource.simulateDevtoolsMessage({
     type: MessageType.PostMessageError,
     sourceId: id,
     error: serializeError(new Error("Could not send")),
-    source: "apollo-client-devtools",
-  } satisfies PostMessageError);
+  });
 
   await expect(promise).rejects.toThrow(new Error("Could not send"));
 });
 
 test("ignores post message errors for a different rpc request", async () => {
-  const clientAdapter = createTestAdapter();
-  const client = createRpcClient(clientAdapter);
+  const clientSource = createTestSource();
+  const client = createRpcClient(new MessageAdapter(clientSource));
 
   const promise = client.request("getClient", "1");
 
-  const { id } = clientAdapter.mocks.messages[0] as RPCRequestMessage;
+  const { id } = clientSource.mocks.messages[0] as RPCRequestMessage;
 
-  clientAdapter.simulateMessage({
-    id: "zef",
+  clientSource.simulateDevtoolsMessage({
     type: MessageType.PostMessageError,
     sourceId: id + "zzz",
     error: serializeError(new Error("Could not send")),
-    source: "apollo-client-devtools",
-  } satisfies PostMessageError);
+  });
 
-  clientAdapter.simulateRPCMessage({
-    type: MessageType.RPCResponse,
-    id: "abcdefg",
+  clientSource.simulateRPCResponse({
     sourceId: id,
     result: defaultGetClient("1"),
   });
@@ -685,18 +605,18 @@ test("ignores post message errors for a different rpc request", async () => {
 });
 
 test("can stream messages from adapter", async () => {
-  const adapter = createTestAdapter();
-  const client = createRpcClient(adapter);
+  const source = createTestSource();
+  const client = createRpcClient(new MessageAdapter(source));
 
   const stream = client.stream("testStream", "1");
   const reader = stream.getReader();
-  const { id } = adapter.mocks.messages[0] as RPCStreamStartMessage;
+  const { id } = source.mocks.messages[0] as RPCStreamStartMessage;
 
-  adapter.simulateRPCStreamChunk<TestStreamValue>(id, {
+  source.simulateRPCStreamChunk<TestStreamValue>(id, {
     id: "1",
     value: true,
   });
-  adapter.simulateRPCStreamChunk<TestStreamValue>(id, {
+  source.simulateRPCStreamChunk<TestStreamValue>(id, {
     id: "1",
     value: false,
   });
@@ -718,15 +638,15 @@ test("can stream messages from adapter", async () => {
 });
 
 test("closes stream when abort controller aborts", async () => {
-  const adapter = createTestAdapter();
-  const client = createRpcClient(adapter);
+  const source = createTestSource();
+  const client = createRpcClient(new MessageAdapter(source));
   const controller = new AbortController();
 
   const stream = client.withSignal(controller.signal).stream("testStream", "1");
   const reader = stream.getReader();
-  const { id } = adapter.mocks.messages[0] as RPCStreamStartMessage;
+  const { id } = source.mocks.messages[0] as RPCStreamStartMessage;
 
-  adapter.simulateRPCStreamChunk<TestStreamValue>(id, {
+  source.simulateRPCStreamChunk<TestStreamValue>(id, {
     id: "1",
     value: true,
   });
@@ -748,13 +668,13 @@ test("closes stream when abort controller aborts", async () => {
 });
 
 test("does not mistakenly handle messages from different rpc streams", async () => {
-  const adapter = createTestAdapter();
-  const client = createRpcClient(adapter);
+  const source = createTestSource();
+  const client = createRpcClient(new MessageAdapter(source));
 
   const stream = client.stream("testStream", "1");
   const reader = stream.getReader();
 
-  adapter.simulateRPCStreamChunk<TestStreamValue>("xyz", {
+  source.simulateRPCStreamChunk<TestStreamValue>("xyz", {
     id: "xyz",
     value: true,
   });
@@ -770,12 +690,14 @@ test("does not mistakenly handle messages from different rpc streams", async () 
 });
 
 test("can handle rpc streams and send messages back", async () => {
-  const handlerAdapter = createTestAdapter();
-  const clientAdapter = createTestAdapter();
-  createBridge(clientAdapter, handlerAdapter);
+  const handlerSource = createTestSource();
+  const clientSource = createTestSource();
+  createBridge(clientSource, handlerSource);
 
-  const client = createRpcClient(clientAdapter);
-  const handleRpcStream = createRpcStreamHandler(handlerAdapter);
+  const client = createRpcClient(new MessageAdapter(clientSource));
+  const handleRpcStream = createRpcStreamHandler(
+    new MessageAdapter(handlerSource)
+  );
 
   handleRpcStream("testStream", ({ push }, id) => {
     push({ id, value: true });
@@ -796,12 +718,14 @@ test("can handle rpc streams and send messages back", async () => {
 });
 
 test("can create multiple streams with same handler", async () => {
-  const handlerAdapter = createTestAdapter();
-  const clientAdapter = createTestAdapter();
-  createBridge(clientAdapter, handlerAdapter);
+  const handlerSource = createTestSource();
+  const clientSource = createTestSource();
+  createBridge(clientSource, handlerSource);
 
-  const client = createRpcClient(clientAdapter);
-  const handleRpcStream = createRpcStreamHandler(handlerAdapter);
+  const client = createRpcClient(new MessageAdapter(clientSource));
+  const handleRpcStream = createRpcStreamHandler(
+    new MessageAdapter(handlerSource)
+  );
 
   handleRpcStream("testStream", ({ push }, id) => {
     push({ id, value: id === "1" });
@@ -823,14 +747,80 @@ test("can create multiple streams with same handler", async () => {
   });
 });
 
-test("cleanup function is called when the stream terminates", async () => {
-  const handlerAdapter = createTestAdapter();
-  const clientAdapter = createTestAdapter();
-  const controller = new AbortController();
-  createBridge(clientAdapter, handlerAdapter);
+test("only calls the stream handler matching the stream name", async () => {
+  const handlerSource = createTestSource();
+  const clientSource = createTestSource();
+  createBridge(clientSource, handlerSource);
 
-  const client = createRpcClient(clientAdapter).withSignal(controller.signal);
-  const handleRpcStream = createRpcStreamHandler(handlerAdapter);
+  const client = createRpcClient(new MessageAdapter(clientSource));
+  const handleRpcStream = createRpcStreamHandler(
+    new MessageAdapter(handlerSource)
+  );
+
+  const handleTestStream = jest.fn(({ push }, id) => {
+    push({ id, value: true });
+  });
+  const handleOtherTestStream = jest.fn();
+
+  handleRpcStream("testStream", handleTestStream);
+  handleRpcStream("otherTestStream", handleOtherTestStream);
+
+  const stream = client.stream("testStream", "1");
+  const reader = stream.getReader();
+
+  expect(handleTestStream).toHaveBeenCalledTimes(1);
+  expect(handleOtherTestStream).not.toHaveBeenCalled();
+
+  await expect(reader.read()).resolves.toEqual({
+    value: { id: "1", value: true },
+    done: false,
+  });
+});
+
+test("can start a new stream after a previous stream terminates", async () => {
+  const handlerSource = createTestSource();
+  const clientSource = createTestSource();
+  const controller = new AbortController();
+  createBridge(clientSource, handlerSource);
+
+  const client = createRpcClient(new MessageAdapter(clientSource));
+  const handleRpcStream = createRpcStreamHandler(
+    new MessageAdapter(handlerSource)
+  );
+
+  const handler = jest.fn(({ push }, id) => {
+    push({ id, value: true });
+  });
+  handleRpcStream("testStream", handler);
+
+  client.withSignal(controller.signal).stream("testStream", "1");
+  controller.abort();
+
+  expect(handler).toHaveBeenCalledTimes(1);
+
+  const stream = client.stream("testStream", "2");
+  const reader = stream.getReader();
+
+  expect(handler).toHaveBeenCalledTimes(2);
+
+  await expect(reader.read()).resolves.toEqual({
+    value: { id: "2", value: true },
+    done: false,
+  });
+});
+
+test("cleanup function is called when the stream terminates", async () => {
+  const handlerSource = createTestSource();
+  const clientSource = createTestSource();
+  const controller = new AbortController();
+  createBridge(clientSource, handlerSource);
+
+  const client = createRpcClient(new MessageAdapter(clientSource)).withSignal(
+    controller.signal
+  );
+  const handleRpcStream = createRpcStreamHandler(
+    new MessageAdapter(handlerSource)
+  );
 
   const cleanup = jest.fn();
   handleRpcStream("testStream", () => cleanup);
@@ -842,12 +832,14 @@ test("cleanup function is called when the stream terminates", async () => {
 });
 
 test("calls cleanup function when unsubscribing stream handler", async () => {
-  const handlerAdapter = createTestAdapter();
-  const clientAdapter = createTestAdapter();
-  createBridge(clientAdapter, handlerAdapter);
+  const handlerSource = createTestSource();
+  const clientSource = createTestSource();
+  createBridge(clientSource, handlerSource);
 
-  const client = createRpcClient(clientAdapter);
-  const handleRpcStream = createRpcStreamHandler(handlerAdapter);
+  const client = createRpcClient(new MessageAdapter(clientSource));
+  const handleRpcStream = createRpcStreamHandler(
+    new MessageAdapter(handlerSource)
+  );
 
   const cleanup = jest.fn();
   const unsubscribe = handleRpcStream("testStream", () => cleanup);
@@ -858,13 +850,15 @@ test("calls cleanup function when unsubscribing stream handler", async () => {
 });
 
 test("runs cleanup only on terminated handler", async () => {
-  const handlerAdapter = createTestAdapter();
-  const clientAdapter = createTestAdapter();
+  const handlerSource = createTestSource();
+  const clientSource = createTestSource();
   const controller = new AbortController();
-  createBridge(clientAdapter, handlerAdapter);
+  createBridge(clientSource, handlerSource);
 
-  const client = createRpcClient(clientAdapter);
-  const handleRpcStream = createRpcStreamHandler(handlerAdapter);
+  const client = createRpcClient(new MessageAdapter(clientSource));
+  const handleRpcStream = createRpcStreamHandler(
+    new MessageAdapter(handlerSource)
+  );
 
   const cleanup = jest.fn();
   handleRpcStream("testStream", ({ push }, id) => {
@@ -891,12 +885,14 @@ test("runs cleanup only on terminated handler", async () => {
 });
 
 test("runs cleanup and closes stream when calling close", async () => {
-  const handlerAdapter = createTestAdapter();
-  const clientAdapter = createTestAdapter();
-  createBridge(clientAdapter, handlerAdapter);
+  const handlerSource = createTestSource();
+  const clientSource = createTestSource();
+  createBridge(clientSource, handlerSource);
 
-  const client = createRpcClient(clientAdapter);
-  const handleRpcStream = createRpcStreamHandler(handlerAdapter);
+  const client = createRpcClient(new MessageAdapter(clientSource));
+  const handleRpcStream = createRpcStreamHandler(
+    new MessageAdapter(handlerSource)
+  );
 
   const cleanup = jest.fn();
   handleRpcStream("testStream", ({ push, close }, id) => {
@@ -926,15 +922,15 @@ test("runs cleanup and closes stream when calling close", async () => {
 });
 
 test("does not send response when handler returns SKIP_RESPONSE", async () => {
-  const handlerAdapter = createTestAdapter();
+  const handlerSource = createTestSource();
 
-  const handle = createRpcHandler(handlerAdapter);
+  const handle = createRpcHandler(new MessageAdapter(handlerSource));
   handle("getClient", () => SKIP_RESPONSE as any);
 
   // Simulate an RPC request
-  handlerAdapter.simulateRPCMessage({
-    id: "abc",
+  handlerSource.simulateDevtoolsMessage({
     type: MessageType.RPCRequest,
+    id: createId(),
     name: "getClient",
     params: ["1"],
   });
@@ -943,16 +939,16 @@ test("does not send response when handler returns SKIP_RESPONSE", async () => {
   await wait(10);
 
   // No response should have been posted
-  expect(handlerAdapter.postMessage).not.toHaveBeenCalled();
+  expect(handlerSource.postMessage).not.toHaveBeenCalled();
 });
 
 test("SKIP_RESPONSE allows handler to be re-registered after unsubscribe", async () => {
-  const handlerAdapter = createTestAdapter();
-  const clientAdapter = createTestAdapter();
-  createBridge(clientAdapter, handlerAdapter);
+  const handlerSource = createTestSource();
+  const clientSource = createTestSource();
+  createBridge(clientSource, handlerSource);
 
-  const client = createRpcClient(clientAdapter);
-  const handle = createRpcHandler(handlerAdapter);
+  const client = createRpcClient(new MessageAdapter(clientSource));
+  const handle = createRpcHandler(new MessageAdapter(handlerSource));
 
   // First handler skips
   const unsubscribe = handle("getClient", () => SKIP_RESPONSE as any);

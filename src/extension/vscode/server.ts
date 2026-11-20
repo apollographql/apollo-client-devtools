@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { WebSocketServer, RawData, WebSocket } from "ws";
-import type { MessageAdapter } from "../messageAdapters";
+import { MessageAdapter } from "../messageAdapters";
 import { createRpcClient, createRpcHandler } from "../rpc";
 import type { Actor } from "../actor";
 import { createActor } from "../actor";
@@ -105,7 +105,7 @@ export function runServer(
 }
 
 function createSocketMessageAdapter(ws: WebSocket): MessageAdapter {
-  return {
+  return new MessageAdapter({
     addListener(listener) {
       const wrappedListener = (message: RawData) =>
         listener(JSON.parse(message.toString()));
@@ -115,5 +115,5 @@ function createSocketMessageAdapter(ws: WebSocket): MessageAdapter {
     postMessage(message) {
       ws.send(JSON.stringify(message));
     },
-  };
+  });
 }

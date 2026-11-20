@@ -1,6 +1,6 @@
 import type { SerializedErrorLike } from "./errors";
 import { createId } from "@/utils/createId";
-import type { ApolloClientDevtoolsActorMessage } from "./actor";
+import type { ActorDevtoolsMessage } from "./actor";
 import type {
   RPCRequestMessage,
   RPCResponseMessage,
@@ -8,12 +8,9 @@ import type {
   RPCStreamStartMessage,
   RPCTerminateStreamMessage,
 } from "./rpc";
-import type { DistributiveOmit } from "@/types";
 
 export interface PostMessageError {
-  source: "apollo-client-devtools";
   type: MessageType.PostMessageError;
-  id: string;
   sourceId: string;
   error: SerializedErrorLike;
 }
@@ -28,14 +25,19 @@ export const enum MessageType {
   PostMessageError = "postMessageError",
 }
 
-export type ApolloClientDevtoolsMessage =
-  | ApolloClientDevtoolsActorMessage
+export type DevtoolsMessage =
+  | ActorDevtoolsMessage
   | RPCRequestMessage
   | RPCResponseMessage
   | PostMessageError
   | RPCStreamStartMessage
   | RPCTerminateStreamMessage
   | RPCStreamChunkMessage;
+
+export type ApolloClientDevtoolsMessage = DevtoolsMessage & {
+  readonly source: "apollo-client-devtools";
+  readonly id: string;
+};
 
 export function isDevtoolsMessage(
   message: unknown
@@ -48,16 +50,12 @@ export function isDevtoolsMessage(
   );
 }
 
-export function isPostMessageError(
-  message: unknown
-): message is PostMessageError {
-  return (
-    isDevtoolsMessage(message) && message.type === MessageType.PostMessageError
-  );
-}
-
 export function createDevtoolsMessage(
-  message: DistributiveOmit<ApolloClientDevtoolsMessage, "id" | "source">
+  message: DevtoolsMessage & { id?: string }
 ): ApolloClientDevtoolsMessage {
-  return { ...message, id: createId(), source: "apollo-client-devtools" };
+  return {
+    ...message,
+    id: message.id ?? createId(),
+    source: "apollo-client-devtools",
+  };
 }
