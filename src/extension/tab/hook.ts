@@ -111,10 +111,10 @@ function isV4Client(client: ApolloClient): client is ApolloClient4 {
 
 function connectClient(client: ApolloClient) {
   const handler = handlers.get(client)!;
-  const port = createClientPort(window, handler.id);
-  const adapter = createMessagePortMessageAdapter(port, {
-    jsonSerialize: true,
-  });
+  const adapter = createMessagePortMessageAdapter(
+    createClientPort(window, handler.id),
+    { jsonSerialize: true }
+  );
   const handleRpc = createRpcHandler(adapter);
   const handleRpcStream = createRpcStreamHandler(adapter);
 
