@@ -10,7 +10,7 @@ import type { ApolloClient, ApolloClientInfo } from "@/types";
 import type { JSONObject } from "../../application/types/json";
 import { createActor } from "../actor";
 import { createMessagePortMessageAdapter } from "../messageAdapters";
-import { connectHook } from "./controlChannel";
+import { connectHook, createClientPort } from "./controlChannel";
 import {
   createRpcClient,
   createRpcHandler,
@@ -246,6 +246,11 @@ function watchForClientTermination(client: ApolloClient) {
   };
 }
 
+function connectClient(client: ApolloClient) {
+  const port = createClientPort(window);
+  const adapter = createMessagePortMessageAdapter(port);
+}
+
 function registerClient(client: ApolloClient) {
   if (!knownClients.has(client)) {
     knownClients.add(client);
@@ -254,6 +259,8 @@ function registerClient(client: ApolloClient) {
     watchForClientTermination(client);
 
     tab.send({ type: "registerClient", payload: getClientInfo(client) });
+
+    connectClient(client);
   }
 
   // TODO: Repurpose this callback. The message it sent was not listened by

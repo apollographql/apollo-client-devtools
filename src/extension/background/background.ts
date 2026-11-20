@@ -251,9 +251,22 @@ function connectExtensionPort(port: browser.Runtime.Port) {
   }
 }
 
+function connectClientPort(port: browser.Runtime.Port) {
+  const tabId = port.sender?.tab?.id;
+  if (!tabId) return;
+
+  const frameId = port.sender?.frameId ?? 0;
+
+  console.log({ tabId, frameId });
+}
+
 browser.runtime.onConnect.addListener((port) => {
   if (port.name === "tab") {
     return connectTabPort(port);
+  }
+
+  if (port.name === "client") {
+    return connectClientPort(port);
   }
 
   // The devtools port is identified by the tab id

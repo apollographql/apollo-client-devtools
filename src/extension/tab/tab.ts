@@ -5,11 +5,19 @@ import {
   createMessagePortMessageAdapter,
   createPortMessageAdapter,
 } from "../messageAdapters";
-import { connectTab } from "./controlChannel";
+import { connectClient, connectTab } from "./controlChannel";
 
 connectTab(window, (port) => {
   const portAdapter = createPortMessageAdapter(() =>
     browser.runtime.connect({ name: "tab" })
+  );
+
+  createMessageBridge(portAdapter, createMessagePortMessageAdapter(port));
+});
+
+connectClient(window, (port) => {
+  const portAdapter = createPortMessageAdapter(() =>
+    browser.runtime.connect({ name: "client" })
   );
 
   createMessageBridge(portAdapter, createMessagePortMessageAdapter(port));

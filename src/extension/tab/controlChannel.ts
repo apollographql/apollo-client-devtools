@@ -4,7 +4,7 @@ const SOURCE = "apollo-client-devtools-channel";
 // listener is installed synchronously before the hook sends its message.
 export function connectHook(window: Window): MessagePort {
   const { port1, port2 } = new MessageChannel();
-  window.postMessage({ source: SOURCE, type: "connect" }, "*", [port2]);
+  window.postMessage({ source: SOURCE, type: "old-connect" }, "*", [port2]);
   return port1;
 }
 
@@ -17,7 +17,7 @@ export function connectTab(
       event.isTrusted &&
       event.source === window &&
       event.data?.source === SOURCE &&
-      event.data.type === "connect" &&
+      event.data.type === "old-connect" &&
       event.ports.length === 1
     ) {
       event.stopImmediatePropagation();
@@ -27,4 +27,28 @@ export function connectTab(
   }
 
   window.addEventListener("message", handleMessage, { capture: true });
+}
+
+export function createClientPort(window: Window) {
+  const { port1, port2 } = new MessageChannel();
+  window.postMessage({ source: SOURCE, type: "connect" }, "*", [port2]);
+  return port1;
+}
+
+export function connectClient(
+  window: Window,
+  connected: (port: MessagePort) => void
+) {
+  function handleMessage(event: MessageEvent) {
+    if (
+      event.source === window &&
+      event.data?.source === SOURCE &&
+      event.data.type === "connect" &&
+      event.ports.length === 1
+    ) {
+      connected(event.ports[0]);
+    }
+  }
+
+  window.addEventListener("message", handleMessage);
 }
