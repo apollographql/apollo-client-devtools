@@ -23,6 +23,7 @@ import type {
   MemoryInternalsV4,
 } from "./tab/v4/types";
 import type { CacheWrite } from "./tab/shared/types";
+import { createActor } from "./actor";
 
 // Symbol to indicate a handler should not send a response (for multi-frame support)
 export const SKIP_RESPONSE = Symbol("SKIP_RESPONSE");
@@ -295,6 +296,7 @@ export function createRpcHandler(adapter: MessageAdapter) {
 }
 
 export function createRpcStreamHandler(adapter: MessageAdapter) {
+  const actor = createActor(adapter);
   const listeners = new Set<string>();
 
   // In case messages in the stream get pushed very fast, we want to keep the
@@ -349,13 +351,9 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
       cleanupFnsByStreamId.get(streamId)?.();
     };
 
-    const unsubscribeDisconnected = adapter.on(
-      MessageType.Actor,
-      ({ message }) => {
-        if (message.type === "devtoolsDisconnected") {
-          cleanupAll();
-        }
-      }
+    const unsubscribeDisconnected = actor.on(
+      "devtoolsDisconnected",
+      cleanupAll
     );
 
     const unsubscribeTerminate = adapter.on(
