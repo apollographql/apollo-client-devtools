@@ -8,7 +8,6 @@ import {
   isDevtoolsMessage,
   MessageType,
 } from "../messages";
-import { createId } from "@/utils/createId";
 
 interface ClientConnection {
   port: browser.Runtime.Port;
@@ -283,16 +282,16 @@ function connectDevtoolsPort(port: browser.Runtime.Port) {
 
 function connectClientPort(port: browser.Runtime.Port) {
   const tabId = port.sender?.tab?.id;
+  const clientId = port.name.replace("client:", "");
+
   if (tabId == null) return;
 
-  const frameId = port.sender?.frameId ?? 0;
   const tab = getTab(tabId);
-  const connectionId = createId();
 
-  tab.clients.set(connectionId, { port });
+  tab.clients.set(clientId, { port });
 
   port.onDisconnect.addListener(() => {
-    tab.clients.delete(connectionId);
+    tab.clients.delete(clientId);
     maybeRemoveTab(tabId);
   });
 }
@@ -302,7 +301,7 @@ browser.runtime.onConnect.addListener((port) => {
     return connectTabPort(port);
   }
 
-  if (port.name === "client") {
+  if (port.name.startsWith("client:")) {
     return connectClientPort(port);
   }
 

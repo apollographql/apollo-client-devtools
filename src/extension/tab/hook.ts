@@ -247,7 +247,8 @@ function watchForClientTermination(client: ApolloClient) {
 }
 
 function connectClient(client: ApolloClient) {
-  const port = createClientPort(window);
+  const handler = handlers.get(client)!;
+  const port = createClientPort(window, handler.id);
   const adapter = createMessagePortMessageAdapter(port);
 }
 
