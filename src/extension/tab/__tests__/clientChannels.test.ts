@@ -36,11 +36,11 @@ function runtimePair(name: string) {
         if (!closed) received[1 - side].forEach((listener) => listener(data));
       });
     }),
-    disconnect() {
+    disconnect: jest.fn(() => {
       if (closed) return;
       closed = true;
       disconnected[1 - side].forEach((listener) => listener());
-    },
+    }),
   }));
   return {
     local: ports[0],
@@ -137,7 +137,14 @@ it("bridges a frame and its clients 1:1, binds requests to ports, and cleans up 
         });
         client.writeQuery({ query, data: { secret: name } });
         clients.push(client);
-        hookWindow[Symbol.for("apollo.devtools")]!.push(client);
+        // Let the usual RPC deadline pass before the real MessagePort can deliver.
+        jest.useFakeTimers({ doNotFake: ["queueMicrotask"] });
+        try {
+          hookWindow[Symbol.for("apollo.devtools")]!.push(client);
+          jest.advanceTimersByTime(31_000);
+        } finally {
+          jest.useRealTimers();
+        }
       }
       await waitFor(() =>
         expect(
@@ -152,8 +159,8 @@ it("bridges a frame and its clients 1:1, binds requests to ports, and cleans up 
       expect(frames).toHaveLength(1);
       expect(frames[0].local.postMessage).not.toHaveBeenCalledWith(
         expect.objectContaining({
-          type: "actor",
-          message: expect.objectContaining({ type: "connectClient" }),
+          type: "rpcRequest",
+          name: "connectClient",
         })
       );
       const a = infos.find(({ name }) => name === "a")!;
@@ -211,7 +218,9 @@ it("bridges a frame and its clients 1:1, binds requests to ports, and cleans up 
       const reconnected = await rpc.request("getClients");
       expect(reconnected.find(({ name }) => name === "b")!.id).toBe(b.id);
       const reconnectedA = reconnected.find(({ name }) => name === "a")!;
-      const activeReader = rpc.stream("cacheWrite", reconnectedA.id).getReader();
+      const activeReader = rpc
+        .stream("cacheWrite", reconnectedA.id)
+        .getReader();
       await waitFor(() =>
         expect(clients[0].cache.write).not.toBe(originalWrite)
       );
@@ -238,6 +247,29 @@ it("bridges a frame and its clients 1:1, binds requests to ports, and cleans up 
       }
       expect(pairs.filter(({ local }) => local.name === "client")).toHaveLength(
         3
+      );
+
+      const stopped = new ApolloClient({
+        cache: new InMemoryCache(),
+        link: ApolloLink.empty(),
+        devtools: { enabled: false },
+      });
+      hookWindow[Symbol.for("apollo.devtools")]!.push(stopped);
+      stopped.stop(); // The isolated script has not delivered its port yet.
+      const next = new ApolloClient({
+        cache: new InMemoryCache(),
+        link: ApolloLink.empty(),
+        devtools: { enabled: false, name: "next" },
+      });
+      clients.push(next);
+      hookWindow[Symbol.for("apollo.devtools")]!.push(next);
+      await waitFor(async () =>
+        expect(
+          (await rpc.request("getClients")).map(({ name }) => name).sort()
+        ).toEqual(["b", "next"])
+      );
+      expect(pairs.filter(({ local }) => local.name === "client")).toHaveLength(
+        4
       );
     });
   } finally {

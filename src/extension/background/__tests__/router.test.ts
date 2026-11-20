@@ -241,7 +241,8 @@ it("forwards cache streams and cancels only the owning client's stream", async (
       expect.objectContaining({
         type: MessageType.RPCStartStream,
         id: start.id,
-      })
+      }),
+      undefined
     );
     b.peer.postMessage({
       type: MessageType.RPCStreamChunk,

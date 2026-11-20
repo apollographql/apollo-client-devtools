@@ -19,7 +19,17 @@ import type {
 import type { CacheWrite } from "./tab/shared/types";
 import { createActor } from "./actor";
 
+const transferableClasses = [MessagePort];
+
+function getTransferList(values: readonly unknown[]) {
+  const matches = values.filter((value): value is Transferable =>
+    transferableClasses.some((type) => value instanceof type)
+  );
+  return matches.length ? [...new Set(matches)] : undefined;
+}
+
 export type RPCRequest = {
+  connectClient(): MessagePort;
   getClients(): ApolloClientInfo[];
   getClientMetadata(): Omit<ApolloClientInfo, "id">;
   getClient(id: string): ApolloClientInfo | null;
@@ -114,10 +124,13 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
       return new Promise<SafeAny>((resolve, reject) => {
         const id = createId();
 
-        const timeout = setTimeout(() => {
-          cleanup();
-          reject(new Error(RPC_MESSAGE_TIMEOUT));
-        }, this.timeout);
+        const timeout =
+          this.timeout === Infinity
+            ? undefined
+            : setTimeout(() => {
+                cleanup();
+                reject(new Error(RPC_MESSAGE_TIMEOUT));
+              }, this.timeout);
 
         const removeListener = adapter.addListener((message) => {
           if (
@@ -157,12 +170,15 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
 
         signal?.addEventListener("abort", onAbort);
         try {
-          adapter.postMessage({
-            type: MessageType.RPCRequest,
-            id,
-            name,
-            params,
-          });
+          adapter.postMessage(
+            {
+              type: MessageType.RPCRequest,
+              id,
+              name,
+              params,
+            },
+            getTransferList(params)
+          );
         } catch (error) {
           cleanup();
           reject(error);
@@ -205,12 +221,15 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
             }
           });
 
-          adapter.postMessage({
-            type: MessageType.RPCStartStream,
-            id: streamId,
-            name,
-            params,
-          });
+          adapter.postMessage(
+            {
+              type: MessageType.RPCStartStream,
+              id: streamId,
+              name,
+              params,
+            },
+            getTransferList(params)
+          );
 
           if (signal) {
             signal.addEventListener(
@@ -260,11 +279,14 @@ export function createRpcHandler(adapter: MessageAdapter) {
         );
         if (options.signal?.aborted) return;
 
-        adapter.postMessage({
-          type: MessageType.RPCResponse,
-          sourceId: id,
-          result,
-        });
+        adapter.postMessage(
+          {
+            type: MessageType.RPCResponse,
+            sourceId: id,
+            result,
+          },
+          getTransferList([result])
+        );
       } catch (e) {
         if (options.signal?.aborted) return;
         adapter.postMessage({
@@ -307,7 +329,7 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
       const message = messageQueue.shift();
 
       if (message) {
-        adapter.postMessage(message);
+        adapter.postMessage(message, getTransferList([message.value]));
       }
 
       processQueue();

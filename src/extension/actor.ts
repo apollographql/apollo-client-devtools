@@ -6,6 +6,7 @@ import type { JSONObject } from "../application/types/json";
 import type { DevToolsMachineEvents } from "../application/machines/devtoolsMachine";
 
 export type ActorMessage =
+  | { type: "clientReady" }
   | { type: "disconnectClient" }
   | { type: "registerClient"; payload: ApolloClientInfo }
   | { type: "clientTerminated"; clientId: string }

@@ -9,7 +9,10 @@ const { version: devtoolsVersion } = manifest;
 import type { ApolloClient, ApolloClientInfo } from "@/types";
 import type { JSONObject } from "../../application/types/json";
 import { createActor } from "../actor";
-import { createMessagePortMessageAdapter } from "../messageAdapters";
+import {
+  createMessagePortMessageAdapter,
+  type MessageAdapter,
+} from "../messageAdapters";
 import { connectHook } from "./controlChannel";
 import {
   createRpcClient,
@@ -46,7 +49,6 @@ const DEVTOOLS_KEY = Symbol.for("apollo.devtools");
 const messageAdapter = createMessagePortMessageAdapter(connectHook(window), {
   jsonSerialize: true,
 });
-const frameActor = createActor(messageAdapter);
 const rpcClient = createRpcClient(messageAdapter);
 
 const knownClients = new WeakSet<ApolloClient>();
@@ -73,13 +75,10 @@ function getClientInfo(
 
 function connectClient(
   handler: ClientHandler<ApolloClient>,
-  port: MessagePort,
+  adapter: MessageAdapter,
   signal: AbortSignal
 ) {
   const client = handler.getClient();
-  const adapter = createMessagePortMessageAdapter(port, {
-    jsonSerialize: true,
-  });
   const actor = createActor(adapter);
   const handleRpc = createRpcHandler(adapter);
   const handleRpcStream = createRpcStreamHandler(adapter);
@@ -129,6 +128,7 @@ function connectClient(
     options
   );
   handleExplorerRequests(actor, () => handler, options);
+  actor.send({ type: "clientReady" });
   return actor;
 }
 
@@ -235,15 +235,37 @@ function registerClient(client: ApolloClient) {
     knownClients.add(client);
 
     const handler = createHandler(client);
-    const { port1, port2 } = new MessageChannel();
     const abort = new AbortController();
-    const actor = connectClient(handler, port1, abort.signal);
-    watchForClientTermination(client, () => {
-      actor.send({ type: "disconnectClient" });
-      abort.abort();
-      port1.close();
+    watchForClientTermination(client, () => abort.abort());
+    async function connect() {
+      const port = await rpcClient
+        .withTimeout(Infinity)
+        .withSignal(abort.signal)
+        .request("connectClient");
+      const adapter = createMessagePortMessageAdapter(port, {
+        jsonSerialize: true,
+      });
+      if (abort.signal.aborted) {
+        adapter.close();
+        return;
+      }
+      const actor = connectClient(handler, adapter, abort.signal);
+      abort.signal.addEventListener(
+        "abort",
+        () => {
+          actor.send({ type: "disconnectClient" });
+          adapter.close();
+        },
+        { once: true }
+      );
+    }
+    void connect().catch((error) => {
+      if (!abort.signal.aborted) {
+        knownClients.delete(client);
+        abort.abort();
+        console.warn("Apollo DevTools could not connect to the client", error);
+      }
     });
-    frameActor.send({ type: "connectClient", port: port2 }, [port2]);
   }
 
   // TODO: Repurpose this callback. The message it sent was not listened by

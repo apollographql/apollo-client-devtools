@@ -192,32 +192,48 @@ interface MessagePortMessageAdapterOptions {
 }
 
 const call = Function.prototype.call;
-const portPostMessage = call.bind(MessagePort.prototype.postMessage);
+const bind = call.bind(Function.prototype.bind);
+const { postMessage, start, addEventListener, removeEventListener, close } =
+  MessagePort.prototype;
 const getMessageEventData = call.bind(
   Object.getOwnPropertyDescriptor(MessageEvent.prototype, "data")!.get!
 );
 
-export function createMessagePortMessageAdapter(
-  port: MessagePort,
-  options: MessagePortMessageAdapterOptions = {}
-): MessageAdapter {
-  port.start();
-
-  return new MessageAdapter({
-    jsonSerialize: options.jsonSerialize,
-    addListener(listener) {
+function wrapMessagePort(port: MessagePort) {
+  const add = bind(addEventListener, port);
+  const remove = bind(removeEventListener, port);
+  return {
+    postMessage: bind(postMessage, port),
+    start: bind(start, port),
+    addListener(listener: MessageListener) {
       const handleMessage = (event: MessageEvent) =>
         listener(getMessageEventData(event));
-      port.addEventListener("message", handleMessage);
+      add("message", handleMessage);
+      return () => remove("message", handleMessage);
+    },
+    close: bind(close, port),
+  };
+}
 
-      return () => {
-        port.removeEventListener("message", handleMessage);
-      };
-    },
-    postMessage(message, transfer = []) {
-      portPostMessage(port, message, transfer);
-    },
-  });
+export function createMessagePortMessageAdapter(
+  messagePort: MessagePort,
+  options: MessagePortMessageAdapterOptions = {}
+): MessageAdapter & { close: () => void } {
+  const port = wrapMessagePort(messagePort);
+  port.start();
+
+  return Object.assign(
+    new MessageAdapter({
+      jsonSerialize: options.jsonSerialize,
+      addListener: port.addListener,
+      postMessage(message, transfer) {
+        port.postMessage(message, { transfer });
+      },
+    }),
+    {
+      close: port.close,
+    }
+  );
 }
 
 interface WindowMessageAdapterOptions {
