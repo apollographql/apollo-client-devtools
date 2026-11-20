@@ -4,14 +4,8 @@ import type { ApolloClientInfo, ExplorerResponse } from "../types";
 import type { DocumentNode, FetchPolicy } from "@apollo/client";
 import type { JSONObject } from "../application/types/json";
 import type { DevToolsMachineEvents } from "../application/machines/devtoolsMachine";
-declare const NeedsTransfer: unique symbol;
 
 export type ActorMessage =
-  | {
-      type: "connectClient";
-      port: MessagePort;
-      [NeedsTransfer]?: [MessagePort];
-    }
   | { type: "disconnectClient" }
   | { type: "registerClient"; payload: ApolloClientInfo }
   | { type: "clientTerminated"; clientId: string }
@@ -58,14 +52,7 @@ export interface Actor {
       : never,
     options?: OptionsWithAbortSignal
   ) => () => void;
-  send: <Message extends ActorMessage>(
-    message: Message,
-    ...args: Extract<ActorMessage, { type: Message["type"] }> extends {
-      [NeedsTransfer]?: infer T;
-    }
-      ? [T]
-      : [never?]
-  ) => void;
+  send: (message: ActorMessage) => void;
 }
 
 export function createActor(adapter: MessageAdapter): Actor {
@@ -82,8 +69,8 @@ export function createActor(adapter: MessageAdapter): Actor {
 
   return {
     on,
-    send: (message: ActorMessage, transfer?: any) => {
-      adapter.postMessage({ type: MessageType.Actor, message }, transfer);
+    send: (message) => {
+      adapter.postMessage({ type: MessageType.Actor, message });
     },
   };
 }
