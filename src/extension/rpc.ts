@@ -10,7 +10,6 @@ import { createId } from "../utils/createId";
 import { RPC_MESSAGE_TIMEOUT } from "./errorMessages";
 import { deserializeError, serializeError } from "./errorSerialization";
 import type { MessageAdapter } from "./messageAdapters";
-import type { ApolloClientDevtoolsMessage } from "./messages";
 import { MessageType } from "./messages";
 import type { IDv3, IDv4 } from "./tab/clientHandler";
 import type {
@@ -296,10 +295,9 @@ export function createRpcHandler(adapter: MessageAdapter) {
 }
 
 export function createRpcStreamHandler(adapter: MessageAdapter) {
-  const listeners = new Map<string, (message: RPCStreamStartMessage) => void>();
+  const listeners = new Set<string>();
   const cleanupFnsByStreamId = new Map<string, () => void>();
   const streamIdsByName = new Map<string, Set<string>>();
-  let removeListener: (() => void) | null = null;
 
   // In case messages in the stream get pushed very fast, we want to keep the
   // source app fast so we process the messages async
@@ -326,36 +324,6 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
     processQueue();
   }
 
-  function handleMessage(message: ApolloClientDevtoolsMessage) {
-    if (message.type === MessageType.RPCStartStream) {
-      listeners.get(message.name)?.(message);
-    }
-
-    if (message.type === MessageType.RPCTerminateStream) {
-      cleanupFnsByStreamId.get(message.streamId)?.();
-    }
-
-    if (
-      message.type === MessageType.Actor &&
-      message.message.type === "devtoolsDisconnected"
-    ) {
-      cleanupFnsByStreamId.forEach((cleanup) => cleanup());
-    }
-  }
-
-  function startListening() {
-    if (!removeListener) {
-      removeListener = adapter.addListener(handleMessage);
-    }
-  }
-
-  function stopListening() {
-    if (removeListener) {
-      removeListener();
-      removeListener = null;
-    }
-  }
-
   return function <TName extends keyof RPCStream & string>(
     name: TName,
     handler: (
@@ -371,63 +339,91 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
       throw new Error("Only one rpc handler can be registered per type");
     }
 
+    listeners.add(name);
     streamIdsByName.set(name, new Set());
 
-    listeners.set(name, async ({ id: streamId, params }) => {
-      let closed = false;
-      streamIdsByName.get(name)!.add(streamId);
+    const cleanupStream = (streamId: string) => {
+      cleanupFnsByStreamId.get(streamId)?.();
+    };
 
-      function push(value: ReturnType<RPCStream[TName]>) {
-        if (closed) {
-          return;
+    const unsubscribeDisconnected = adapter.on(
+      MessageType.Actor,
+      ({ message }) => {
+        if (message.type === "devtoolsDisconnected") {
+          const streamIds = streamIdsByName.get(name);
+          streamIds?.forEach((streamId) => {
+            cleanupStream(streamId);
+          });
+        }
+      }
+    );
+
+    const unsubscribeTerminate = adapter.on(
+      MessageType.RPCTerminateStream,
+      ({ streamId }) => {
+        cleanupStream(streamId);
+      }
+    );
+
+    const unsubscribeStream = adapter.on(
+      MessageType.RPCStartStream,
+      (message) => {
+        if (message.name !== name) return;
+
+        const { id: streamId, params } = message;
+        let closed = false;
+        streamIdsByName.get(name)!.add(streamId);
+
+        function push(value: ReturnType<RPCStream[TName]>) {
+          if (closed) {
+            return;
+          }
+
+          postMessage({
+            source: "apollo-client-devtools",
+            type: MessageType.RPCStreamChunk,
+            id: createId(),
+            streamId: streamId,
+            value,
+          });
         }
 
-        postMessage({
-          source: "apollo-client-devtools",
-          type: MessageType.RPCStreamChunk,
-          id: createId(),
-          streamId: streamId,
-          value,
+        function close() {
+          if (closed) {
+            return;
+          }
+
+          cleanupStream(streamId);
+          adapter.postMessage({
+            type: MessageType.RPCTerminateStream,
+            streamId,
+          });
+        }
+
+        const cleanup = handler(
+          { push, close },
+          ...(params as Parameters<RPCStream[TName]>)
+        );
+
+        cleanupFnsByStreamId.set(streamId, () => {
+          closed = true;
+          cleanup?.();
+          streamIdsByName.get(name)!.delete(streamId);
+          cleanupFnsByStreamId.delete(streamId);
         });
       }
-
-      function close() {
-        if (closed) {
-          return;
-        }
-
-        cleanupFnsByStreamId.get(streamId)?.();
-        adapter.postMessage({ type: MessageType.RPCTerminateStream, streamId });
-      }
-
-      const cleanup = handler(
-        { push, close },
-        ...(params as Parameters<RPCStream[TName]>)
-      );
-
-      cleanupFnsByStreamId.set(streamId, () => {
-        closed = true;
-        cleanup?.();
-        streamIdsByName.get(name)!.delete(streamId);
-        cleanupFnsByStreamId.delete(streamId);
-      });
-    });
-
-    startListening();
+    );
 
     const cleanup = () => {
       streamIdsByName.get(name)?.forEach((streamId) => {
-        cleanupFnsByStreamId.get(streamId)?.();
+        cleanupStream(streamId);
       });
       listeners.delete(name);
-
-      if (listeners.size === 0) {
-        stopListening();
-      }
+      unsubscribeStream();
+      unsubscribeDisconnected();
+      unsubscribeTerminate();
     };
-    if (options.signal) {
-      options.signal.addEventListener("abort", cleanup, { once: true });
-    }
+    options.signal?.addEventListener("abort", cleanup, { once: true });
     return cleanup;
   };
 }
