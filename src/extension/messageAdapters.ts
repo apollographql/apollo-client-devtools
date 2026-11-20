@@ -202,7 +202,7 @@ export function createWindowMessageAdapter(
         // adapter. This prevents situations where e.g. rpc messages were
         // accidentally echoing the rpc request back to the sender rather
         // than just the rpc response.
-        if (sentMessageIds.has(data.id)) {
+        if (sentMessageIds.has(data?.id)) {
           return sentMessageIds.delete(data.id);
         }
 
