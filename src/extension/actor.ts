@@ -60,9 +60,9 @@ export interface Actor {
 
 export function createActor(adapter: MessageAdapter): Actor {
   const on: Actor["on"] = (name, callback, options = {}) => {
-    const unsubscribe = adapter.addListener((message) => {
-      if (message.type === MessageType.Actor && message.message.type === name) {
-        callback(message.message);
+    const unsubscribe = adapter.on(MessageType.Actor, ({ message }) => {
+      if (message.type === name) {
+        callback(message);
       }
     });
 
