@@ -86,7 +86,12 @@ export class MessageAdapter {
   ) {
     return this.addListener((message) => {
       if (message.type === type) {
-        listener(message as any);
+        listener(
+          message as Extract<
+            ApolloClientDevtoolsMessage,
+            { type: TMessageType }
+          >
+        );
       }
     });
   }

@@ -380,8 +380,7 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
           });
         }
 
-        // eslint-disable-next-line prefer-const
-        let cleanup: (() => void) | void;
+        let cleanup: (() => void) | void = undefined;
         cleanupFnsByStreamId.set(streamId, () => {
           closed = true;
           cleanup?.();
