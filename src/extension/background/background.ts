@@ -240,7 +240,7 @@ function connectTabPort(port: browser.Runtime.Port) {
   }
 }
 
-function connectExtensionPort(port: browser.Runtime.Port) {
+function connectDevtoolsPort(port: browser.Runtime.Port) {
   const tabId = +port.name;
 
   registerTab(tabId);
@@ -271,7 +271,7 @@ browser.runtime.onConnect.addListener((port) => {
 
   // The devtools port is identified by the tab id
   if (!isNaN(+port.name)) {
-    return connectExtensionPort(port);
+    return connectDevtoolsPort(port);
   }
 
   throw new Error(`Unknown port ${port.name} connected`);
