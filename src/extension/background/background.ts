@@ -269,7 +269,10 @@ function connectTabPort(port: browser.Runtime.Port) {
   }
 }
 
-function postMessage(port: browser.Runtime.Port | null, message: unknown) {
+function postMessage(
+  port: browser.Runtime.Port | null | undefined,
+  message: unknown
+) {
   try {
     port?.postMessage(message);
   } catch (e) {
@@ -301,7 +304,7 @@ function connectDevtoolsPort(port: browser.Runtime.Port) {
 
     if (message.clientId) {
       const connection = tab.clients.get(message.clientId);
-      postMessage(connection?.port ?? null, message);
+      postMessage(connection?.port, message);
     }
   });
 
