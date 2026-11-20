@@ -268,3 +268,214 @@ test("only removes listener on source once when unsubscribing multiple times", (
 
   expect(source.mocks.removeListener).toHaveBeenCalledTimes(1);
 });
+
+test("on: calls listener with messages matching the given type", () => {
+  const source = createTestSource();
+  const adapter = new MessageAdapter(source);
+
+  const handleMessage = jest.fn();
+  adapter.on(MessageType.Actor, handleMessage);
+
+  source.simulateActorMessage({ type: "clientTerminated", clientId: "1" });
+
+  expect(handleMessage).toHaveBeenCalledTimes(1);
+  expect(handleMessage).toHaveBeenCalledWith({
+    id: expect.any(String),
+    source: "apollo-client-devtools",
+    type: MessageType.Actor,
+    message: { type: "clientTerminated", clientId: "1" },
+  });
+});
+
+test("on: ignores messages that don't match the given type", () => {
+  const source = createTestSource();
+  const adapter = new MessageAdapter(source);
+
+  const handleMessage = jest.fn();
+  adapter.on(MessageType.Actor, handleMessage);
+
+  source.simulateRPCResponse({ sourceId: "abc", result: null });
+  source.simulateRPCStreamChunk("abc", { value: true });
+  source.simulateDevtoolsMessage({
+    type: MessageType.RPCRequest,
+    name: "getClient",
+    params: ["1"],
+  });
+
+  expect(handleMessage).not.toHaveBeenCalled();
+});
+
+test("on: ignores messages that don't originate from devtools", () => {
+  const source = createTestSource();
+  const adapter = new MessageAdapter(source);
+
+  const handleMessage = jest.fn();
+  adapter.on(MessageType.Actor, handleMessage);
+
+  source.simulatePlainMessage({
+    type: MessageType.Actor,
+    message: { type: "clientTerminated", clientId: "1" },
+  });
+
+  expect(handleMessage).not.toHaveBeenCalled();
+});
+
+test("on: routes messages to listeners for each type", () => {
+  const source = createTestSource();
+  const adapter = new MessageAdapter(source);
+
+  const handleActor = jest.fn();
+  const handleResponse = jest.fn();
+  adapter.on(MessageType.Actor, handleActor);
+  adapter.on(MessageType.RPCResponse, handleResponse);
+
+  source.simulateActorMessage({ type: "clientTerminated", clientId: "1" });
+
+  expect(handleActor).toHaveBeenCalledTimes(1);
+  expect(handleResponse).not.toHaveBeenCalled();
+
+  handleActor.mockClear();
+
+  source.simulateRPCResponse({ sourceId: "abc", result: 1 });
+
+  expect(handleActor).not.toHaveBeenCalled();
+  expect(handleResponse).toHaveBeenCalledTimes(1);
+  expect(handleResponse).toHaveBeenCalledWith({
+    id: expect.any(String),
+    source: "apollo-client-devtools",
+    type: MessageType.RPCResponse,
+    sourceId: "abc",
+    result: 1,
+  });
+});
+
+test("on: calls all listeners for the same type", () => {
+  const source = createTestSource();
+  const adapter = new MessageAdapter(source);
+
+  const handleMessage = jest.fn();
+  const handleMessage2 = jest.fn();
+  adapter.on(MessageType.Actor, handleMessage);
+  adapter.on(MessageType.Actor, handleMessage2);
+
+  source.simulateActorMessage({ type: "clientTerminated", clientId: "1" });
+
+  expect(handleMessage).toHaveBeenCalledTimes(1);
+  expect(handleMessage2).toHaveBeenCalledTimes(1);
+});
+
+test("on: calls both typed and untyped listeners for the same message", () => {
+  const source = createTestSource();
+  const adapter = new MessageAdapter(source);
+
+  const handleTyped = jest.fn();
+  const handleAll = jest.fn();
+  adapter.on(MessageType.Actor, handleTyped);
+  adapter.addListener(handleAll);
+
+  source.simulateActorMessage({ type: "clientTerminated", clientId: "1" });
+
+  expect(handleTyped).toHaveBeenCalledTimes(1);
+  expect(handleAll).toHaveBeenCalledTimes(1);
+});
+
+test("on: adds a single listener to source regardless of typed listeners", () => {
+  const source = createTestSource();
+  const adapter = new MessageAdapter(source);
+
+  expect(source.addListener).not.toHaveBeenCalled();
+
+  adapter.on(MessageType.Actor, () => {});
+  adapter.on(MessageType.RPCResponse, () => {});
+  adapter.on(MessageType.RPCStreamChunk, () => {});
+  adapter.addListener(() => {});
+
+  expect(source.addListener).toHaveBeenCalledTimes(1);
+});
+
+test("on: can unsubscribe by calling the returned function", () => {
+  const source = createTestSource();
+  const adapter = new MessageAdapter(source);
+
+  const handleMessage = jest.fn();
+  const handleMessage2 = jest.fn();
+  const unsubscribe = adapter.on(MessageType.Actor, handleMessage);
+  adapter.on(MessageType.Actor, handleMessage2);
+
+  unsubscribe();
+
+  source.simulateActorMessage({ type: "clientTerminated", clientId: "1" });
+
+  expect(handleMessage).not.toHaveBeenCalled();
+  expect(handleMessage2).toHaveBeenCalledTimes(1);
+});
+
+test("on: treats each call as a separate subscription for the same listener", () => {
+  const source = createTestSource();
+  const adapter = new MessageAdapter(source);
+
+  const handleMessage = jest.fn();
+  const unsubscribe = adapter.on(MessageType.Actor, handleMessage);
+  adapter.on(MessageType.Actor, handleMessage);
+
+  source.simulateActorMessage({ type: "clientTerminated", clientId: "1" });
+
+  expect(handleMessage).toHaveBeenCalledTimes(2);
+
+  handleMessage.mockClear();
+  unsubscribe();
+
+  source.simulateActorMessage({ type: "clientTerminated", clientId: "1" });
+
+  expect(handleMessage).toHaveBeenCalledTimes(1);
+});
+
+test("on: removes listener on source when unsubscribing last listener", () => {
+  const source = createTestSource();
+  const adapter = new MessageAdapter(source);
+
+  const unsubscribe1 = adapter.on(MessageType.Actor, () => {});
+  const unsubscribe2 = adapter.on(MessageType.RPCResponse, () => {});
+  const unsubscribe3 = adapter.addListener(() => {});
+
+  unsubscribe1();
+  unsubscribe3();
+
+  expect(source.mocks.removeListener).not.toHaveBeenCalled();
+
+  unsubscribe2();
+
+  expect(source.mocks.removeListener).toHaveBeenCalledTimes(1);
+});
+
+test("on: re-adds listener on source when subscribing after disconnecting", () => {
+  const source = createTestSource();
+  const adapter = new MessageAdapter(source);
+
+  const handleMessage = jest.fn();
+  const unsubscribe = adapter.on(MessageType.Actor, handleMessage);
+
+  unsubscribe();
+  expect(source.mocks.removeListener).toHaveBeenCalledTimes(1);
+
+  source.addListener.mockClear();
+
+  adapter.on(MessageType.Actor, handleMessage);
+  expect(source.addListener).toHaveBeenCalledTimes(1);
+
+  source.simulateActorMessage({ type: "clientTerminated", clientId: "1" });
+
+  expect(handleMessage).toHaveBeenCalledTimes(1);
+});
+
+test("on: only removes listener on source once when unsubscribing multiple times", () => {
+  const source = createTestSource();
+  const adapter = new MessageAdapter(source);
+
+  const unsubscribe = adapter.on(MessageType.Actor, () => {});
+
+  unsubscribe();
+  unsubscribe();
+
+  expect(source.mocks.removeListener).toHaveBeenCalledTimes(1);
+});

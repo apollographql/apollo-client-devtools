@@ -65,6 +65,19 @@ export class MessageAdapter {
     };
   }
 
+  on<TMessageType extends MessageType>(
+    type: TMessageType,
+    listener: (
+      message: Extract<ApolloClientDevtoolsMessage, { type: TMessageType }>
+    ) => void
+  ) {
+    return this.addListener((message) => {
+      if (message.type === type) {
+        listener(message as any);
+      }
+    });
+  }
+
   postMessage(message: DevtoolsPostMessage) {
     // In some cases, we need to JSON stringify the data transferred in case
     // the payload contains references to irregular data, such as `URL`
