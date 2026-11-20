@@ -11,12 +11,13 @@ type MessageListener = (message: unknown) => void;
 
 interface MessageAdapterSource {
   addListener: (listener: MessageListener) => () => void;
-  postMessage: (message: ApolloClientDevtoolsMessage) => void;
+  postMessage: (
+    message: ApolloClientDevtoolsMessage,
+    transfer?: Transferable[]
+  ) => void;
 }
 
-interface MessageAdapterOptions {
-  addListener: (listener: MessageListener) => () => void;
-  postMessage: (message: ApolloClientDevtoolsMessage) => void;
+interface MessageAdapterOptions extends MessageAdapterSource {
   jsonSerialize?: boolean;
 }
 
@@ -96,7 +97,7 @@ export class MessageAdapter {
     });
   }
 
-  postMessage(message: DevtoolsMessage) {
+  postMessage(message: DevtoolsMessage, transfer?: Transferable[]) {
     // In some cases, we need to JSON stringify the data transferred in case
     // the payload contains references to irregular data, such as `URL`
     // instances which are not cloneable via `structuredClone` (which
@@ -106,12 +107,14 @@ export class MessageAdapter {
     //
     // https://github.com/apollographql/apollo-client-devtools/issues/1258
     // https://github.com/apollographql/apollo-client-devtools/issues/1479
+
     this.source.postMessage(
       createDevtoolsMessage(
-        this.jsonSerialize
+        this.jsonSerialize && !transfer?.length
           ? (JSON.parse(JSON.stringify(message)) as typeof message)
           : message
-      )
+      ),
+      transfer
     );
   }
 }
@@ -133,7 +136,8 @@ export function createExternalPortMessageAdapter(
 }
 
 export function createPortMessageAdapter(
-  createPort: () => browser.Runtime.Port
+  createPort: () => browser.Runtime.Port,
+  options: { signal?: AbortSignal; onDisconnect?: () => void } = {}
 ): MessageAdapter {
   let port = createPort();
   const listeners = new Set<(message: unknown) => void>();
@@ -144,6 +148,7 @@ export function createPortMessageAdapter(
     });
 
     port.onDisconnect.removeListener(handleDisconnect);
+    options.onDisconnect?.();
     port = createPort();
 
     initializePort();
@@ -155,6 +160,16 @@ export function createPortMessageAdapter(
   }
 
   initializePort();
+  options.signal?.addEventListener(
+    "abort",
+    () => {
+      port.onDisconnect.removeListener(handleDisconnect);
+      listeners.forEach((listener) => port.onMessage.removeListener(listener));
+      listeners.clear();
+      port.disconnect();
+    },
+    { once: true }
+  );
 
   return new MessageAdapter({
     addListener(listener) {
@@ -199,8 +214,8 @@ export function createMessagePortMessageAdapter(
         port.removeEventListener("message", handleMessage);
       };
     },
-    postMessage(message) {
-      portPostMessage(port, message);
+    postMessage(message, transfer = []) {
+      portPostMessage(port, message, transfer);
     },
   });
 }
@@ -248,10 +263,11 @@ export function createWindowMessageAdapter(
 
 export function createMessageBridge(
   adapter1: MessageAdapter,
-  adapter2: MessageAdapter
+  adapter2: MessageAdapter,
+  shouldForward?: (message: ApolloClientDevtoolsMessage) => boolean
 ) {
-  const removeListener1 = forward(adapter1, adapter2);
-  const removeListener2 = forward(adapter2, adapter1);
+  const removeListener1 = forward(adapter1, adapter2, shouldForward);
+  const removeListener2 = forward(adapter2, adapter1, shouldForward);
 
   return () => {
     removeListener1();
@@ -259,8 +275,13 @@ export function createMessageBridge(
   };
 }
 
-function forward(source: MessageAdapter, target: MessageAdapter) {
+function forward(
+  source: MessageAdapter,
+  target: MessageAdapter,
+  shouldForward?: (message: ApolloClientDevtoolsMessage) => boolean
+) {
   return source.addListener((message) => {
+    if (shouldForward && !shouldForward(message)) return;
     try {
       target.postMessage(message);
     } catch (e) {

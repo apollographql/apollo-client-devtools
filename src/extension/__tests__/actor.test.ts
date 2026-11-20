@@ -9,7 +9,7 @@ test("sends messages to specified adapter in devtools message format", () => {
 
   actor.send({ type: "clientTerminated", clientId: "1" });
 
-  expect(source.postMessage).toHaveBeenCalledWith({
+  expect(source.mocks.messages[0]).toEqual({
     id: expect.any(String),
     source: "apollo-client-devtools",
     type: MessageType.Actor,

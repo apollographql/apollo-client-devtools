@@ -20,7 +20,7 @@ test("sends messages to the source in devtools message format", () => {
   });
 
   expect(source.postMessage).toHaveBeenCalledTimes(1);
-  expect(source.postMessage).toHaveBeenCalledWith({
+  expect(source.mocks.messages[0]).toEqual({
     id: expect.any(String),
     source: "apollo-client-devtools",
     type: MessageType.Actor,
@@ -57,7 +57,7 @@ test("preserves the id when one is provided", () => {
     params: [],
   });
 
-  expect(source.postMessage).toHaveBeenCalledWith({
+  expect(source.mocks.messages[0]).toEqual({
     id: "abc",
     source: "apollo-client-devtools",
     type: MessageType.RPCRequest,
@@ -94,7 +94,7 @@ test("JSON serializes the message when using jsonSerialize", () => {
     params: [new URL("https://example.com"), undefined],
   });
 
-  expect(source.postMessage).toHaveBeenCalledWith({
+  expect(source.mocks.messages[0]).toEqual({
     id: "abc",
     source: "apollo-client-devtools",
     type: MessageType.RPCRequest,

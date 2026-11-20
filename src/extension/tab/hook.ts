@@ -18,10 +18,11 @@ import {
 } from "../rpc";
 import { loadErrorCodes } from "./loadErrorCodes";
 import { handleExplorerRequests } from "./handleExplorerRequests";
-import type { ClientHandler, IDv3, IDv4 } from "./clientHandler";
+import type { ClientHandler } from "./clientHandler";
 import type { ClientV3Handler } from "./v3/handler";
 import type { ClientV4Handler } from "./v4/handler";
 import type { Cache } from "@/application/types/scalars";
+import type { CacheWrite } from "./shared/types";
 import { createHandler } from "./helpers";
 import { patch } from "@/application/utilities/patch";
 
@@ -45,13 +46,10 @@ const DEVTOOLS_KEY = Symbol.for("apollo.devtools");
 const messageAdapter = createMessagePortMessageAdapter(connectHook(window), {
   jsonSerialize: true,
 });
-const tab = createActor(messageAdapter);
-const handleRpc = createRpcHandler(messageAdapter);
-const handleRpcStream = createRpcStreamHandler(messageAdapter);
+const frameActor = createActor(messageAdapter);
 const rpcClient = createRpcClient(messageAdapter);
 
-const knownClients = new Set<ApolloClient>();
-const handlers = new Map<ApolloClient, ClientHandler<ApolloClient>>();
+const knownClients = new WeakSet<ApolloClient>();
 
 Object.defineProperty(window, "__APOLLO_DEVTOOLS_GLOBAL_HOOK__", {
   get(): Hook {
@@ -60,11 +58,12 @@ Object.defineProperty(window, "__APOLLO_DEVTOOLS_GLOBAL_HOOK__", {
   configurable: true,
 });
 
-function getClientInfo(client: ApolloClient): ApolloClientInfo {
-  const handler = handlers.get(client)!;
+function getClientInfo(
+  handler: ClientHandler<ApolloClient>
+): Omit<ApolloClientInfo, "id"> {
+  const client = handler.getClient();
 
   return {
-    id: handler.id,
     name: "devtoolsConfig" in client ? client.devtoolsConfig.name : undefined,
     version: client.version,
     queryCount: handler.getQueries().length,
@@ -72,54 +71,75 @@ function getClientInfo(client: ApolloClient): ApolloClientInfo {
   };
 }
 
-handleRpc("getClients", () => {
-  return Array.from(knownClients).map(getClientInfo);
-});
+function connectClient(
+  handler: ClientHandler<ApolloClient>,
+  port: MessagePort,
+  signal: AbortSignal
+) {
+  const client = handler.getClient();
+  const adapter = createMessagePortMessageAdapter(port, {
+    jsonSerialize: true,
+  });
+  const actor = createActor(adapter);
+  const handleRpc = createRpcHandler(adapter);
+  const handleRpcStream = createRpcStreamHandler(adapter);
+  const options = { signal };
 
-handleRpc("getClient", (clientId) => {
-  const client = getClientById(clientId);
+  // The port selects the client. Payload IDs never select another instance.
+  handleRpc("getClientMetadata", () => getClientInfo(handler), options);
+  handleRpc(
+    "getV3Queries",
+    () => (handler as ClientV3Handler).getQueries(),
+    options
+  );
+  handleRpc(
+    "getV4Queries",
+    () => (handler as ClientV4Handler).getQueries(),
+    options
+  );
+  handleRpc(
+    "getV3Mutations",
+    () => (handler as ClientV3Handler).getMutations(),
+    options
+  );
+  handleRpc(
+    "getV4Mutations",
+    () => (handler as ClientV4Handler).getMutations(),
+    options
+  );
+  handleRpc(
+    "getCache",
+    () => client.cache.extract(true) as JSONObject,
+    options
+  );
+  handleRpc(
+    "getV3MemoryInternals",
+    () => (client as ApolloClient3<any>).getMemoryInternals?.(),
+    options
+  );
+  handleRpc(
+    "getV4MemoryInternals",
+    () => (client as ApolloClient4).getMemoryInternals?.(),
+    options
+  );
 
-  return client ? getClientInfo(client) : null;
-});
+  handleRpcStream(
+    "cacheWrite",
+    ({ push }) => observeCacheWrites(client, push),
+    options
+  );
+  handleExplorerRequests(actor, () => handler, options);
+  return actor;
+}
 
-handleRpc(
-  "getV3Queries",
-  (clientId) => getHandlerByClientId(clientId)?.getQueries() ?? []
-);
-
-handleRpc(
-  "getV4Queries",
-  (clientId) => getHandlerByClientId(clientId)?.getQueries() ?? []
-);
-
-handleRpc(
-  "getV3Mutations",
-  (clientId) => getHandlerByClientId(clientId)?.getMutations() ?? []
-);
-
-handleRpc(
-  "getV4Mutations",
-  (clientId) => getHandlerByClientId(clientId)?.getMutations() ?? []
-);
-
-handleRpc("getCache", (clientId) => {
-  return (getClientById(clientId)?.cache.extract(true) as JSONObject) ?? {};
-});
-
-handleRpc("getV3MemoryInternals", (clientId) => {
-  return getClientById(clientId)?.getMemoryInternals?.();
-});
-
-handleRpc("getV4MemoryInternals", (clientId) => {
-  return getClientById(clientId)?.getMemoryInternals?.();
-});
-
-handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
+function observeCacheWrites(
+  client: ApolloClient,
+  push: (value: CacheWrite) => void
+) {
   const slot = new Slot<boolean>();
   // Both v3 and v4 have the same options/return value so we can treat the
   // client the same for both versions
-  const client = getClientById(clientId) as ApolloClient4;
-  const { cache } = client;
+  const { cache } = client as ApolloClient4;
   const revertPatches = new Set<() => void>();
 
   function run<TReturn>(fn: () => TReturn): {
@@ -134,13 +154,6 @@ handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
 
     return { result, timestamp, cache: { before, after } };
   }
-
-  revertPatches.add(
-    patch(client, "stop", function (original, ...args) {
-      close();
-      return original.apply(this, args);
-    })
-  );
 
   revertPatches.add(
     patch(cache, "modify", function (originalModify, ...args) {
@@ -203,40 +216,15 @@ handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
   return () => {
     revertPatches.forEach((revert) => revert());
   };
-});
-
-function getClientById(clientId: IDv3): ApolloClient3<any>;
-function getClientById(clientId: IDv4): ApolloClient4;
-function getClientById(
-  clientId: IDv3 | IDv4
-): ApolloClient3<any> | ApolloClient4;
-
-function getClientById(clientId: IDv3 | IDv4): ApolloClient | undefined {
-  return getHandlerByClientId(clientId as any)?.getClient();
 }
 
-function getHandlerByClientId(clientId: IDv3): ClientV3Handler | undefined;
-function getHandlerByClientId(clientId: IDv4): ClientV4Handler | undefined;
-
-function getHandlerByClientId(clientId: IDv3 | IDv4) {
-  return [...handlers.values()].find((handler) => handler.id === clientId);
-}
-
-handleExplorerRequests(tab, getHandlerByClientId);
-
-function watchForClientTermination(client: ApolloClient) {
+function watchForClientTermination(client: ApolloClient, onStop: () => void) {
   const originalStop = client.stop;
-
   client.stop = () => {
-    knownClients.delete(client);
-    const handler = handlers.get(client);
-    handlers.delete(client);
-
-    if (window.__APOLLO_CLIENT__ === client) {
-      window.__APOLLO_CLIENT__ = undefined;
-    }
-    if (handler) {
-      tab.send({ type: "clientTerminated", clientId: handler.id });
+    if (knownClients.delete(client)) {
+      onStop();
+      if (window.__APOLLO_CLIENT__ === client)
+        window.__APOLLO_CLIENT__ = undefined;
     }
     originalStop.call(client);
   };
@@ -246,10 +234,16 @@ function registerClient(client: ApolloClient) {
   if (!knownClients.has(client)) {
     knownClients.add(client);
 
-    handlers.set(client, createHandler(client));
-    watchForClientTermination(client);
-
-    tab.send({ type: "registerClient", payload: getClientInfo(client) });
+    const handler = createHandler(client);
+    const { port1, port2 } = new MessageChannel();
+    const abort = new AbortController();
+    const actor = connectClient(handler, port1, abort.signal);
+    watchForClientTermination(client, () => {
+      actor.send({ type: "disconnectClient" });
+      abort.abort();
+      port1.close();
+    });
+    frameActor.send({ type: "connectClient", port: port2 }, [port2]);
   }
 
   // TODO: Repurpose this callback. The message it sent was not listened by

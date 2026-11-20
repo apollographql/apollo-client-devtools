@@ -1,4 +1,5 @@
 import type { ApolloClientInfo } from "@/types";
+import { createId } from "../../utils/createId";
 import type browser from "webextension-polyfill";
 import { createExternalPortMessageAdapter } from "../messageAdapters";
 import { handleErrorCodes } from "./errorcodes";
@@ -8,19 +9,29 @@ import { MessageType, type ApolloClientDevtoolsMessage } from "../messages";
 import { serializeError } from "../errorSerialization";
 import { createRpcClient, createRpcHandler } from "../rpc";
 
+function failureReply(
+  id: string,
+  stream: boolean,
+  error: unknown = new Error("Apollo Client is no longer connected")
+) {
+  return stream
+    ? { type: MessageType.RPCTerminateStream as const, streamId: id }
+    : {
+        type: MessageType.RPCResponse as const,
+        sourceId: id,
+        error: serializeError(error),
+      };
+}
+
 interface Connection {
   adapter: MessageAdapter;
   actor: Actor;
   rpc: ReturnType<typeof createRpcClient>;
   abort: AbortController;
-  clients: Map<string, Client>;
+  id: string;
+  info?: ApolloClientInfo;
   requests: Set<string>;
   streams: Set<string>;
-}
-
-interface Client {
-  connection: Connection;
-  info: ApolloClientInfo;
 }
 
 export function createBackgroundRouter() {
@@ -34,7 +45,7 @@ export function createBackgroundRouter() {
 
   return {
     onConnect(port: browser.Runtime.Port) {
-      const isContentScript = port.name === "tab";
+      const isContentScript = port.name === "tab" || port.name === "client";
       const tabId = isContentScript ? port.sender?.tab?.id : Number(port.name);
       if (tabId == null || !Number.isInteger(tabId)) return;
 
@@ -44,9 +55,12 @@ export function createBackgroundRouter() {
         tabs.set(tabId, tab);
       }
       const adapter = createExternalPortMessageAdapter(port);
-      const disconnect = isContentScript
-        ? tab.router.connectFrame(adapter)
-        : tab.router.connectPanel(adapter);
+      const disconnect =
+        port.name === "tab"
+          ? tab.router.connectFrame(adapter)
+          : port.name === "client"
+            ? tab.router.connectClient(adapter)
+            : tab.router.connectPanel(adapter);
       tab.connections++;
       port.onDisconnect.addListener(() => {
         disconnect();
@@ -56,9 +70,8 @@ export function createBackgroundRouter() {
   };
 }
 
-// Each tab keeps its own clients and panel, preserving upstream client IDs.
+// Each client connection gets its sole ID here. Frame connections carry control traffic.
 export function createTabRouter() {
-  const connections = new Set<Connection>();
   const clientConnections = new Map<string, Connection>();
   let panel: Actor | undefined;
   let panelAdapter: MessageAdapter | undefined;
@@ -94,41 +107,18 @@ export function createTabRouter() {
   }
   let disconnectPanel: (() => void) | undefined;
 
-  function register(connection: Connection, info: ApolloClientInfo) {
-    let client = connection.clients.get(info.id);
-    if (!client) {
-      client = {
-        connection,
-        info,
-      };
-      connection.clients.set(info.id, client);
-      clientConnections.set(client.info.id, connection);
-      panel?.send({ type: "registerClient", payload: client.info });
-    } else {
-      client.info = info;
-    }
-    return client;
-  }
-
-  function unregister(client: Client) {
-    client.connection.clients.delete(client.info.id);
-    clientConnections.delete(client.info.id);
-    panel?.send({ type: "clientTerminated", clientId: client.info.id });
-  }
-
   async function discover(connection: Connection) {
     try {
-      const infos = await connection.rpc
+      const metadata = await connection.rpc
         .withTimeout(1000)
-        .request("getClients");
+        .request("getClientMetadata");
       if (connection.abort.signal.aborted) return;
-      const ids = new Set(infos.map((info) => info.id));
-      for (const client of connection.clients.values()) {
-        if (!ids.has(client.info.id)) unregister(client);
-      }
-      infos.forEach((info) => register(connection, info));
+      const first = !connection.info;
+      connection.info = { ...metadata, id: connection.id };
+      if (first)
+        panel?.send({ type: "registerClient", payload: connection.info });
     } catch {
-      // An unresponsive frame must not prevent discovery in other frames.
+      // Keep the last metadata when a connected client misses a refresh.
     }
   }
 
@@ -136,64 +126,48 @@ export function createTabRouter() {
     connectFrame(adapter: MessageAdapter) {
       const abort = new AbortController();
       handleErrorCodes(adapter, abort.signal);
+      return () => abort.abort();
+    },
+
+    connectClient(adapter: MessageAdapter) {
+      const abort = new AbortController();
       const connection: Connection = {
         adapter,
         actor: createActor(adapter),
         rpc: createRpcClient(adapter).withSignal(abort.signal),
         abort,
-        clients: new Map(),
+        id: createId(),
         requests: new Set(),
         streams: new Set(),
       };
-      connections.add(connection);
+      clientConnections.set(connection.id, connection);
       const removeListener = adapter.addListener((message) =>
         receive(connection, message)
-      );
-      connection.actor.on(
-        "registerClient",
-        ({ payload }) => {
-          register(connection, payload);
-        },
-        { signal: abort.signal }
-      );
-      connection.actor.on(
-        "clientTerminated",
-        ({ clientId }) => {
-          const client = connection.clients.get(clientId);
-          if (client) unregister(client);
-        },
-        { signal: abort.signal }
       );
       connection.actor.on(
         "explorerResponse",
         (message) => panel?.send(message),
         { signal: abort.signal }
       );
-      // Registrations sent before a runtime reconnect may have been lost.
+      // A newly connected or reconnected client supplies its current metadata.
       void discover(connection);
-      return () => {
+      function disconnect() {
+        if (abort.signal.aborted) return;
         removeListener();
         abort.abort();
-        connections.delete(connection);
+        clientConnections.delete(connection.id);
         for (const id of connection.requests) {
-          panelAdapter?.postMessage({
-            type: MessageType.RPCResponse,
-            sourceId: id,
-            error: serializeError(
-              new Error("Apollo Client is no longer connected")
-            ),
-          });
+          panelAdapter?.postMessage(failureReply(id, false));
         }
         for (const id of connection.streams) {
-          panelAdapter?.postMessage({
-            type: MessageType.RPCTerminateStream,
-            streamId: id,
-          });
+          panelAdapter?.postMessage(failureReply(id, true));
         }
         connection.requests.clear();
         connection.streams.clear();
-        for (const client of connection.clients.values()) unregister(client);
-      };
+        if (connection.info)
+          panel?.send({ type: "clientTerminated", clientId: connection.id });
+      }
+      return disconnect;
     },
 
     connectPanel(adapter: MessageAdapter) {
@@ -207,16 +181,27 @@ export function createTabRouter() {
       handle(
         "getClients",
         async () => {
-          await Promise.all([...connections].map(discover));
-          return [...connections].flatMap((connection) =>
-            [...connection.clients.values()].map(({ info }) => info)
+          await Promise.all([...clientConnections.values()].map(discover));
+          return [...clientConnections.values()].flatMap(({ info }) =>
+            info ? [info] : []
           );
+        },
+        options
+      );
+      handle(
+        "getClient",
+        async (id) => {
+          const connection = clientConnections.get(id);
+          if (!connection) return null;
+          const info = await connection.rpc.request("getClientMetadata");
+          if (connection.abort.signal.aborted) return null;
+          return { ...info, id: connection.id };
         },
         options
       );
       const removeListener = adapter.addListener((message) => {
         if (message.type === MessageType.RPCTerminateStream) {
-          for (const connection of connections) {
+          for (const connection of clientConnections.values()) {
             if (connection.streams.delete(message.streamId)) {
               connection.adapter.postMessage(message);
               break;
@@ -231,30 +216,14 @@ export function createTabRouter() {
           return;
         if (
           message.type === MessageType.RPCRequest &&
-          message.name === "getClients"
+          (message.name === "getClients" || message.name === "getClient")
         )
           return;
         const clientId = message.params[0] as string;
         const connection = clientConnections.get(clientId);
         const stream = message.type === MessageType.RPCStartStream;
         if (!connection) {
-          adapter.postMessage(
-            stream
-              ? { type: MessageType.RPCTerminateStream, streamId: message.id }
-              : message.name === "getClient"
-                ? {
-                    type: MessageType.RPCResponse,
-                    sourceId: message.id,
-                    result: null,
-                  }
-                : {
-                    type: MessageType.RPCResponse,
-                    sourceId: message.id,
-                    error: serializeError(
-                      new Error("Apollo Client is no longer connected")
-                    ),
-                  }
-          );
+          adapter.postMessage(failureReply(message.id, stream));
           return;
         }
         // Preserve panel IDs; accept replies only from the selected connection.
@@ -265,15 +234,7 @@ export function createTabRouter() {
           connection.adapter.postMessage(message);
         } catch (error) {
           pending.delete(id);
-          adapter.postMessage(
-            stream
-              ? { type: MessageType.RPCTerminateStream, streamId: id }
-              : {
-                  type: MessageType.RPCResponse,
-                  sourceId: id,
-                  error: serializeError(error),
-                }
-          );
+          adapter.postMessage(failureReply(id, stream, error));
         }
       });
 
@@ -287,7 +248,8 @@ export function createTabRouter() {
       actor.on(
         "explorerSubscriptionTermination",
         (message) => {
-          for (const connection of connections) connection.actor.send(message);
+          for (const connection of clientConnections.values())
+            connection.actor.send(message);
         },
         options
       );
@@ -295,7 +257,7 @@ export function createTabRouter() {
       const disconnect = () => {
         removeListener();
         abort.abort();
-        for (const connection of connections) {
+        for (const connection of clientConnections.values()) {
           for (const id of connection.streams) {
             connection.adapter.postMessage({
               type: MessageType.RPCTerminateStream,
