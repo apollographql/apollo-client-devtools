@@ -19,6 +19,7 @@ type TestStreamValue = { id: string; value: any };
 declare module "../rpc" {
   export interface RPCStream {
     testStream(id: string): TestStreamValue;
+    otherTestStream(id: string): TestStreamValue;
   }
 }
 
@@ -741,6 +742,68 @@ test("can create multiple streams with same handler", async () => {
 
   await expect(reader2.read()).resolves.toEqual({
     value: { id: "2", value: false },
+    done: false,
+  });
+});
+
+test("only calls the stream handler matching the stream name", async () => {
+  const handlerSource = createTestSource();
+  const clientSource = createTestSource();
+  createBridge(clientSource, handlerSource);
+
+  const client = createRpcClient(new MessageAdapter(clientSource));
+  const handleRpcStream = createRpcStreamHandler(
+    new MessageAdapter(handlerSource)
+  );
+
+  const handleTestStream = jest.fn(({ push }, id) => {
+    push({ id, value: true });
+  });
+  const handleOtherTestStream = jest.fn();
+
+  handleRpcStream("testStream", handleTestStream);
+  handleRpcStream("otherTestStream", handleOtherTestStream);
+
+  const stream = client.stream("testStream", "1");
+  const reader = stream.getReader();
+
+  expect(handleTestStream).toHaveBeenCalledTimes(1);
+  expect(handleOtherTestStream).not.toHaveBeenCalled();
+
+  await expect(reader.read()).resolves.toEqual({
+    value: { id: "1", value: true },
+    done: false,
+  });
+});
+
+test("can start a new stream after a previous stream terminates", async () => {
+  const handlerSource = createTestSource();
+  const clientSource = createTestSource();
+  const controller = new AbortController();
+  createBridge(clientSource, handlerSource);
+
+  const client = createRpcClient(new MessageAdapter(clientSource));
+  const handleRpcStream = createRpcStreamHandler(
+    new MessageAdapter(handlerSource)
+  );
+
+  const handler = jest.fn(({ push }, id) => {
+    push({ id, value: true });
+  });
+  handleRpcStream("testStream", handler);
+
+  client.withSignal(controller.signal).stream("testStream", "1");
+  controller.abort();
+
+  expect(handler).toHaveBeenCalledTimes(1);
+
+  const stream = client.stream("testStream", "2");
+  const reader = stream.getReader();
+
+  expect(handler).toHaveBeenCalledTimes(2);
+
+  await expect(reader.read()).resolves.toEqual({
+    value: { id: "2", value: true },
     done: false,
   });
 });
