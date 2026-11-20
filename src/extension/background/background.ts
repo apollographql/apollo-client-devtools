@@ -282,6 +282,10 @@ function connectClientPort(port: browser.Runtime.Port) {
   const connectionId = createId();
 
   tab.clients.set(connectionId, { port });
+
+  port.onDisconnect.addListener(() => {
+    tab.clients.delete(connectionId);
+  });
 }
 
 browser.runtime.onConnect.addListener((port) => {
