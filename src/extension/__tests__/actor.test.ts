@@ -116,21 +116,6 @@ test("does not add listener to adapter until first subscribed actor listener", (
   expect(source.addListener).toHaveBeenCalledTimes(1);
 });
 
-test("adds a single listener to adapter regardless of subscribed actor listeners", () => {
-  const source = createTestSource();
-  const adapter = new MessageAdapter(source);
-  const actor = createActor(adapter);
-
-  jest.spyOn(adapter, "addListener");
-
-  actor.on("initializePanel", () => {});
-  actor.on("registerClient", () => {});
-  actor.on("clientTerminated", () => {});
-  actor.on("panelShown", () => {});
-
-  expect(adapter.addListener).toHaveBeenCalledTimes(1);
-});
-
 test("can unsubscribe from a message by calling the returned function", () => {
   const source = createTestSource();
   const actor = createActor(new MessageAdapter(source));

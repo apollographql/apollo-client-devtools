@@ -61,65 +61,15 @@ export interface Actor {
 }
 
 export function createActor(adapter: MessageAdapter): Actor {
-  let removeListener: (() => void) | null = null;
-  const messageListeners = new Map<
-    ActorMessage["type"],
-    Set<(message: ActorMessage) => void>
-  >();
-
-  function handleMessage(message: ApolloClientDevtoolsMessage) {
-    if (message.type !== MessageType.Actor) {
-      return;
-    }
-
-    const listeners = messageListeners.get(message.message.type);
-
-    if (listeners) {
-      for (const listener of listeners) {
-        listener(message.message);
-      }
-    }
-  }
-
-  function startListening() {
-    if (!removeListener) {
-      removeListener = adapter.addListener(handleMessage);
-    }
-  }
-
-  function stopListening() {
-    if (removeListener) {
-      removeListener();
-      removeListener = null;
-    }
-  }
-
   const on: Actor["on"] = (name, callback, options = {}) => {
-    let listeners = messageListeners.get(name) as Set<typeof callback>;
-
-    if (!listeners) {
-      listeners = new Set();
-      messageListeners.set(name, listeners);
-    }
-
-    listeners.add(callback);
-    startListening();
-
-    const cleanup = () => {
-      listeners!.delete(callback);
-
-      if (listeners.size === 0) {
-        messageListeners.delete(name);
+    const unsubscribe = adapter.addListener((message) => {
+      if (message.type === MessageType.Actor && message.message.type === name) {
+        callback(message.message);
       }
+    });
 
-      if (messageListeners.size === 0) {
-        stopListening();
-      }
-    };
-    if (options.signal) {
-      options.signal.addEventListener("abort", cleanup, { once: true });
-    }
-    return cleanup;
+    options.signal?.addEventListener("abort", unsubscribe, { once: true });
+    return unsubscribe;
   };
 
   return {
