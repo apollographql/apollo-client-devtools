@@ -31,6 +31,14 @@ function getTab(id: number) {
   return tab;
 }
 
+function maybeRemoveTab(tabId: number) {
+  const tab = tabs.get(tabId);
+
+  if (tab && tab.clients.size === 0 && !tab.devtools) {
+    tabs.delete(tabId);
+  }
+}
+
 // Type guards for message routing
 function isActorMessage(message: unknown): message is {
   type: MessageType.Actor;
@@ -285,6 +293,7 @@ function connectClientPort(port: browser.Runtime.Port) {
 
   port.onDisconnect.addListener(() => {
     tab.clients.delete(connectionId);
+    maybeRemoveTab(tabId);
   });
 }
 
