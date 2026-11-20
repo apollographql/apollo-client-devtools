@@ -24,7 +24,7 @@ export const SKIP_RESPONSE = Symbol("SKIP_RESPONSE");
 
 export type RPCRequest = {
   getClients(): ApolloClientInfo[];
-  getClient(id: string): ApolloClientInfo | null;
+  getClient(): ApolloClientInfo | null;
   getV3Queries(clientId: IDv3): QueryV3Details[];
   getV4Queries(clientId: IDv4): QueryV4Details[];
   getV3Mutations(clientId: IDv3): MutationV3Details[];

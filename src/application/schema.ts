@@ -59,7 +59,7 @@ function createResolvers(): Resolvers {
   return {
     Query: {
       clients: () => withRpcClient().request("getClients"),
-      client: (_, { id }) => withRpcClient().request("getClient", id),
+      client: (_, { id }) => withRpcClient(id).request("getClient"),
     },
     Subscription: {
       cacheWritten: {

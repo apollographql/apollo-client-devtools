@@ -80,12 +80,6 @@ handleRpc("getClients", () => {
   return Array.from(knownClients).map(getClientInfo);
 });
 
-handleRpc("getClient", (clientId) => {
-  const client = getClientById(clientId);
-
-  return client ? getClientInfo(client) : null;
-});
-
 handleRpc(
   "getV3Queries",
   (clientId) => getHandlerByClientId(clientId)?.getQueries() ?? []
@@ -250,6 +244,9 @@ function connectClient(client: ApolloClient) {
   const handler = handlers.get(client)!;
   const port = createClientPort(window, handler.id);
   const adapter = createMessagePortMessageAdapter(port);
+  const handleRpc = createRpcHandler(adapter);
+
+  handleRpc("getClient", () => getClientInfo(client));
 }
 
 function registerClient(client: ApolloClient) {
