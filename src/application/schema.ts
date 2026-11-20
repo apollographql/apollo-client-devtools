@@ -113,7 +113,7 @@ function createResolvers(): Resolvers {
       },
     },
     ClientV3: {
-      cache: (client) => withRpcClient().request("getCache", client.id),
+      cache: (client) => withRpcClient(client.id).request("getCache"),
       cacheWrites: () => [],
       queries: (client) => client,
       mutations: (client) => client,
@@ -139,7 +139,7 @@ function createResolvers(): Resolvers {
       },
     },
     ClientV4: {
-      cache: (client) => withRpcClient().request("getCache", client.id),
+      cache: (client) => withRpcClient(client.id).request("getCache"),
       cacheWrites: () => [],
       queries: (client) => client,
       mutations: (client) => client,

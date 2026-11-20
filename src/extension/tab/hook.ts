@@ -100,10 +100,6 @@ handleRpc(
   (clientId) => getHandlerByClientId(clientId)?.getMutations() ?? []
 );
 
-handleRpc("getCache", (clientId) => {
-  return (getClientById(clientId)?.cache.extract(true) as JSONObject) ?? {};
-});
-
 handleRpc("getV3MemoryInternals", (clientId) => {
   return getClientById(clientId)?.getMemoryInternals?.();
 });
@@ -247,6 +243,7 @@ function connectClient(client: ApolloClient) {
   const handleRpc = createRpcHandler(adapter);
 
   handleRpc("getClient", () => getClientInfo(client));
+  handleRpc("getCache", () => client.cache.extract(true));
 }
 
 function registerClient(client: ApolloClient) {
