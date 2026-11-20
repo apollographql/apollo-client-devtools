@@ -2,9 +2,11 @@ import type { ApolloClientInfo, DistributiveOmit } from "../../types";
 import { createId } from "../../utils/createId";
 import { RPC_MESSAGE_TIMEOUT } from "../errorMessages";
 import { serializeError } from "../errorSerialization";
-import type { MessageAdapter } from "../messageAdapters";
-import { createMessageBridge } from "../messageAdapters";
-import type { PostMessageError } from "../messages";
+import { createMessageBridge, MessageAdapter } from "../messageAdapters";
+import type {
+  ApolloClientDevtoolsMessage,
+  PostMessageError,
+} from "../messages";
 import { MessageType } from "../messages";
 import type {
   RPCRequestMessage,
@@ -33,63 +35,68 @@ function wait(ms: number) {
 }
 
 interface TestAdapter extends MessageAdapter {
-  mocks: { listeners: Set<(message: unknown) => void>; messages: unknown[] };
+  mocks: {
+    listeners: Set<(message: unknown) => void>;
+    messages: ApolloClientDevtoolsMessage[];
+  };
   simulateMessage: (message: unknown) => void;
   simulateRPCMessage: (message: DistributiveOmit<RPCMessage, "source">) => void;
   simulateRPCStreamChunk: <TValue = unknown>(
     streamId: string,
     value: TValue
   ) => void;
-  postMessage: jest.Mock<void, [message: unknown]>;
+  addListener: jest.MockedFunction<MessageAdapter["addListener"]>;
+  postMessage: jest.MockedFunction<MessageAdapter["postMessage"]>;
   connect: (adapter: TestAdapter) => void;
 }
 
 function createTestAdapter(): TestAdapter {
   let proxy: TestAdapter | undefined;
   const listeners = new Set<(message: unknown) => void>();
-  const messages: unknown[] = [];
+  const messages: ApolloClientDevtoolsMessage[] = [];
 
-  return {
-    mocks: { listeners, messages },
-    simulateMessage: (message) => {
-      listeners.forEach((fn) => fn(message));
-    },
-    simulateRPCMessage: (message) => {
-      listeners.forEach((fn) =>
-        fn({
-          ...message,
-          source: "apollo-client-devtools",
-        })
-      );
-    },
-    simulateRPCStreamChunk: (streamId, value) => {
-      listeners.forEach((fn) =>
-        fn({
-          source: "apollo-client-devtools",
-          type: MessageType.RPCStreamChunk,
-          id: createId(),
-          streamId,
-          value,
-        })
-      );
-    },
-    addListener: jest.fn((fn) => {
-      listeners.add(fn);
+  function simulateMessage(message: unknown) {
+    listeners.forEach((fn) => fn(message));
+  }
 
-      return () => listeners.delete(fn);
-    }),
-    postMessage: jest.fn((message) => {
+  const adapter = new MessageAdapter({
+    addListener: (listener) => {
+      listeners.add(listener);
+
+      return () => listeners.delete(listener);
+    },
+    postMessage: (message) => {
       messages.push(message);
       proxy?.simulateMessage(message);
-    }),
+    },
+  });
+
+  jest.spyOn(adapter, "addListener");
+  jest.spyOn(adapter, "postMessage");
+
+  return Object.assign(adapter, {
+    mocks: { listeners, messages },
+    simulateMessage,
+    simulateRPCMessage: (message: DistributiveOmit<RPCMessage, "source">) => {
+      simulateMessage({ ...message, source: "apollo-client-devtools" });
+    },
+    simulateRPCStreamChunk: (streamId: string, value: unknown) => {
+      simulateMessage({
+        source: "apollo-client-devtools",
+        type: MessageType.RPCStreamChunk,
+        id: createId(),
+        streamId,
+        value,
+      });
+    },
     // Connects two adapters so that a postMessage from one adapter calls
     // listeners on the proxy adapter. This isn't forwarding, but rather tries
     // to simulate the window.postMessage(), window.addEventListener('message')
     // behavior.
-    connect: (adapter: TestAdapter) => {
-      proxy = adapter;
+    connect: (other: TestAdapter) => {
+      proxy = other;
     },
-  };
+  }) as TestAdapter;
 }
 
 function createBridge(adapter1: TestAdapter, adapter2: TestAdapter) {
