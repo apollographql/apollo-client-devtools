@@ -269,6 +269,16 @@ function connectTabPort(port: browser.Runtime.Port) {
   }
 }
 
+function postMessage(port: browser.Runtime.Port | null, message: unknown) {
+  try {
+    port?.postMessage(message);
+  } catch (e) {
+    if (process.env.NODE_ENV === "development") {
+      console.error("Failed to post connection to disconnected port", e);
+    }
+  }
+}
+
 function connectExtensionPort(port: browser.Runtime.Port) {
   const tabId = +port.name;
 
@@ -295,6 +305,10 @@ function connectClientPort(port: browser.Runtime.Port) {
 
   const tab = getTab(tabId);
   tab.clients.set(clientId, { port });
+
+  port.onMessage.addListener((message) => {
+    postMessage(tab.devtools, message);
+  });
 
   port.onDisconnect.addListener(() => {
     tab.clients.delete(clientId);
