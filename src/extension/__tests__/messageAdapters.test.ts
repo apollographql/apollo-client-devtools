@@ -1,36 +1,6 @@
-import type { ActorMessage } from "../actor";
+import { createTestSource } from "@/testUtils/createTestSource";
 import { MessageAdapter } from "../messageAdapters";
-import type { ApolloClientDevtoolsMessage } from "../messages";
-import { createDevtoolsMessage, MessageType } from "../messages";
-
-function createTestSource() {
-  let listener: ((message: unknown) => void) | null = null;
-  const messages: ApolloClientDevtoolsMessage[] = [];
-  const removeListener = jest.fn(() => {
-    listener = null;
-  });
-
-  return {
-    addListener: jest.fn((fn: (message: unknown) => void) => {
-      listener = fn;
-
-      return removeListener;
-    }),
-    postMessage: jest.fn((message) => messages.push(message)),
-    mocks: { messages, removeListener },
-    simulatePlainMessage: (message: unknown) => {
-      listener?.(message);
-    },
-    simulateDevtoolsMessage: (message: Record<string, unknown>) => {
-      listener?.(
-        createDevtoolsMessage({
-          type: MessageType.Actor,
-          message: message as ActorMessage,
-        })
-      );
-    },
-  };
-}
+import { MessageType } from "../messages";
 
 test("sends messages to the source in devtools message format", () => {
   const source = createTestSource();
@@ -131,14 +101,14 @@ test("calls listener with devtools messages", () => {
   const handleMessage = jest.fn();
   adapter.addListener(handleMessage);
 
-  source.simulateDevtoolsMessage({ type: "initializePanel" });
+  source.simulateActorMessage({ type: "initializePanel", initialContext: {} });
 
   expect(handleMessage).toHaveBeenCalledTimes(1);
   expect(handleMessage).toHaveBeenCalledWith({
     id: expect.any(String),
     source: "apollo-client-devtools",
     type: MessageType.Actor,
-    message: { type: "initializePanel" },
+    message: { type: "initializePanel", initialContext: {} },
   });
 });
 
@@ -154,7 +124,7 @@ test("calls all listeners for the same message", () => {
   adapter.addListener(handleMessage2);
   adapter.addListener(handleMessage3);
 
-  source.simulateDevtoolsMessage({ type: "initializePanel" });
+  source.simulateActorMessage({ type: "initializePanel", initialContext: {} });
 
   expect(handleMessage).toHaveBeenCalledTimes(1);
   expect(handleMessage2).toHaveBeenCalledTimes(1);
@@ -216,7 +186,7 @@ test("can unsubscribe by calling the returned function", () => {
   const unsubscribe = adapter.addListener(handleMessage);
   adapter.addListener(handleMessage2);
 
-  source.simulateDevtoolsMessage({ type: "initializePanel" });
+  source.simulateActorMessage({ type: "initializePanel", initialContext: {} });
 
   expect(handleMessage).toHaveBeenCalledTimes(1);
   expect(handleMessage2).toHaveBeenCalledTimes(1);
@@ -225,7 +195,7 @@ test("can unsubscribe by calling the returned function", () => {
   handleMessage2.mockClear();
   unsubscribe();
 
-  source.simulateDevtoolsMessage({ type: "initializePanel" });
+  source.simulateActorMessage({ type: "initializePanel", initialContext: {} });
 
   expect(handleMessage).not.toHaveBeenCalled();
   expect(handleMessage2).toHaveBeenCalledTimes(1);
@@ -282,7 +252,7 @@ test("re-adds listener on source when subscribing after disconnecting", () => {
   adapter.addListener(handleMessage);
   expect(source.addListener).toHaveBeenCalledTimes(1);
 
-  source.simulateDevtoolsMessage({ type: "initializePanel" });
+  source.simulateActorMessage({ type: "initializePanel", initialContext: {} });
 
   expect(handleMessage).toHaveBeenCalledTimes(1);
 });
