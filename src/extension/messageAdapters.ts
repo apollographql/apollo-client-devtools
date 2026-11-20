@@ -172,6 +172,27 @@ const getMessageEventData = call.bind(
   Object.getOwnPropertyDescriptor(MessageEvent.prototype, "data")!.get!
 );
 
+export function createClientMessageAdapter(
+  adapter: MessageAdapter,
+  clientId: string
+) {
+  return new MessageAdapter({
+    addListener(listener) {
+      return adapter.addListener((message) => {
+        if (message.clientId === clientId) {
+          listener(message);
+        }
+      });
+    },
+    postMessage(message) {
+      return adapter.postMessage({
+        ...message,
+        clientId,
+      } as ApolloClientDevtoolsMessage & { clientId?: string });
+    },
+  });
+}
+
 export function createMessagePortMessageAdapter(
   port: MessagePort,
   options: MessagePortMessageAdapterOptions = {}
