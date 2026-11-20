@@ -393,16 +393,20 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
           });
         }
 
-        const cleanup = handler(
-          { push, close },
-          ...(params as Parameters<RPCStream[TName]>)
-        );
-
+        // eslint-disable-next-line prefer-const
+        let cleanup: (() => void) | void;
         cleanupFnsByStreamId.set(streamId, () => {
           closed = true;
           cleanup?.();
           cleanupFnsByStreamId.delete(streamId);
         });
+
+        cleanup = handler(
+          { push, close },
+          ...(params as Parameters<RPCStream[TName]>)
+        );
+
+        if (closed) cleanup?.();
       }
     );
 
