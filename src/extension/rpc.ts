@@ -347,10 +347,6 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
       cleanupFnsByStreamId.forEach((cleanup) => cleanup());
     };
 
-    const cleanupStream = (streamId: string) => {
-      cleanupFnsByStreamId.get(streamId)?.();
-    };
-
     const unsubscribeDisconnected = actor.on(
       "devtoolsDisconnected",
       cleanupAll
@@ -359,7 +355,7 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
     const unsubscribeTerminate = adapter.on(
       MessageType.RPCTerminateStream,
       ({ streamId }) => {
-        cleanupStream(streamId);
+        cleanupFnsByStreamId.get(streamId)?.();
       }
     );
 
@@ -390,7 +386,7 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
             return;
           }
 
-          cleanupStream(streamId);
+          cleanupFnsByStreamId.get(streamId)?.();
           adapter.postMessage({
             type: MessageType.RPCTerminateStream,
             streamId,
