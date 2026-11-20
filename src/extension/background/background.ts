@@ -269,7 +269,7 @@ function connectTabPort(port: browser.Runtime.Port) {
   }
 }
 
-function connectDevtoolsPort(port: browser.Runtime.Port) {
+function connectExtensionPort(port: browser.Runtime.Port) {
   const tabId = +port.name;
 
   registerTab(tabId);
@@ -280,6 +280,13 @@ function connectDevtoolsPort(port: browser.Runtime.Port) {
   }
 }
 
+function connectDevtoolsPort(port: browser.Runtime.Port) {
+  const tabId = +port.name;
+
+  const tab = getTab(tabId);
+  tab.devtools = port;
+}
+
 function connectClientPort(port: browser.Runtime.Port) {
   const tabId = port.sender?.tab?.id;
   const clientId = port.name.replace("client:", "");
@@ -287,7 +294,6 @@ function connectClientPort(port: browser.Runtime.Port) {
   if (tabId == null) return;
 
   const tab = getTab(tabId);
-
   tab.clients.set(clientId, { port });
 
   port.onDisconnect.addListener(() => {
@@ -307,7 +313,8 @@ browser.runtime.onConnect.addListener((port) => {
 
   // The devtools port is identified by the tab id
   if (!isNaN(+port.name)) {
-    return connectDevtoolsPort(port);
+    connectDevtoolsPort(port);
+    return connectExtensionPort(port);
   }
 
   throw new Error(`Unknown port ${port.name} connected`);
