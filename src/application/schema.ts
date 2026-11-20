@@ -68,9 +68,9 @@ function createResolvers(): Resolvers {
           id: createId(),
         }),
         subscribe: (_, args, context: { abortSignal?: AbortSignal }) => {
-          return withRpcClient()
+          return withRpcClient(args.clientId)
             .withSignal(context.abortSignal)
-            .stream("cacheWrite", args.clientId);
+            .stream("cacheWrite");
         },
       },
     },

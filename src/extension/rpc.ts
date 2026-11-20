@@ -5,7 +5,6 @@ import { RPC_MESSAGE_TIMEOUT } from "./errorMessages";
 import { deserializeError, serializeError } from "./errorSerialization";
 import type { MessageAdapter } from "./messageAdapters";
 import { MessageType } from "./messages";
-import type { IDv3, IDv4 } from "./tab/clientHandler";
 import type {
   MutationV3Details,
   QueryV3Details,
@@ -36,7 +35,7 @@ export type RPCRequest = {
 };
 
 export interface RPCStream {
-  cacheWrite(clientId: IDv3 | IDv4): CacheWrite;
+  cacheWrite(): CacheWrite;
 }
 
 export interface RpcClient {
