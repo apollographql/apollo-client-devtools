@@ -15,7 +15,36 @@ import { isExtensionInvalidatedError } from "@/extension/errorMessages";
 import type { CacheWrite } from "@/extension/tab/shared/types";
 import { diff } from "./utilities/diff";
 import { createId } from "@/utils/createId";
-import { getRpcClient } from "@/extension/devtools/panelRpcClient";
+import {
+  getRpcClient,
+  getRpcClientById,
+} from "@/extension/devtools/panelRpcClient";
+import type { RpcClient } from "@/extension/rpc";
+
+function withRpcClient(id?: string): RpcClient {
+  const rpcClient = (id ? getRpcClientById(id) : getRpcClient()).withTimeout(
+    10_000
+  );
+
+  return {
+    ...rpcClient,
+    request: (async (...args) => {
+      try {
+        return await rpcClient.request(...args);
+      } catch (e) {
+        if (isExtensionInvalidatedError(e)) {
+          throw new GraphQLError(e.message, {
+            extensions: {
+              code: "EXTENSION_INVALIDATED",
+            },
+          });
+        } else {
+          throw e;
+        }
+      }
+    }) as typeof rpcClient.request,
+  };
+}
 
 export function createSchema() {
   return makeExecutableSchema({
@@ -27,28 +56,10 @@ export function createSchema() {
 const diffResolver = ({ cache }: CacheWrite) => diff(cache.before, cache.after);
 
 function createResolvers(): Resolvers {
-  const rpcClient = getRpcClient().withTimeout(10_000);
-
-  const request = (async (...args) => {
-    try {
-      return await rpcClient.request(...args);
-    } catch (e) {
-      if (isExtensionInvalidatedError(e)) {
-        throw new GraphQLError(e.message, {
-          extensions: {
-            code: "EXTENSION_INVALIDATED",
-          },
-        });
-      } else {
-        throw e;
-      }
-    }
-  }) as typeof rpcClient.request;
-
   return {
     Query: {
-      clients: () => request("getClients"),
-      client: (_, { id }) => request("getClient", id),
+      clients: () => withRpcClient().request("getClients"),
+      client: (_, { id }) => withRpcClient().request("getClient", id),
     },
     Subscription: {
       cacheWritten: {
@@ -57,7 +68,7 @@ function createResolvers(): Resolvers {
           id: createId(),
         }),
         subscribe: (_, args, context: { abortSignal?: AbortSignal }) => {
-          return rpcClient
+          return withRpcClient()
             .withSignal(context.abortSignal)
             .stream("cacheWrite", args.clientId);
         },
@@ -102,12 +113,12 @@ function createResolvers(): Resolvers {
       },
     },
     ClientV3: {
-      cache: (client) => request("getCache", client.id),
+      cache: (client) => withRpcClient().request("getCache", client.id),
       cacheWrites: () => [],
       queries: (client) => client,
       mutations: (client) => client,
       memoryInternals: async (client) => {
-        const memoryInternals = await request(
+        const memoryInternals = await withRpcClient().request(
           "getV3MemoryInternals",
           client.id
         );
@@ -128,12 +139,12 @@ function createResolvers(): Resolvers {
       },
     },
     ClientV4: {
-      cache: (client) => request("getCache", client.id),
+      cache: (client) => withRpcClient().request("getCache", client.id),
       cacheWrites: () => [],
       queries: (client) => client,
       mutations: (client) => client,
       memoryInternals: async (client) => {
-        const memoryInternals = await request(
+        const memoryInternals = await withRpcClient().request(
           "getV4MemoryInternals",
           client.id
         );
@@ -165,7 +176,10 @@ function createResolvers(): Resolvers {
     ClientV3Queries: {
       total: (client) => client.queryCount,
       items: async (client) => {
-        const queries = await request("getV3Queries", client.id);
+        const queries = await withRpcClient().request(
+          "getV3Queries",
+          client.id
+        );
 
         return queries.map((query) => {
           return {
@@ -185,7 +199,10 @@ function createResolvers(): Resolvers {
     ClientV4Queries: {
       total: (client) => client.queryCount,
       items: async (client) => {
-        const queries = await request("getV4Queries", client.id);
+        const queries = await withRpcClient().request(
+          "getV4Queries",
+          client.id
+        );
 
         return queries.map((query) => {
           return {
@@ -205,7 +222,10 @@ function createResolvers(): Resolvers {
     ClientV3Mutations: {
       total: (client) => client.mutationCount,
       items: async (client) => {
-        const mutations = await request("getV3Mutations", client.id);
+        const mutations = await withRpcClient().request(
+          "getV3Mutations",
+          client.id
+        );
 
         return mutations.map((mutation, index) => ({
           id: String(index),
@@ -229,7 +249,10 @@ function createResolvers(): Resolvers {
     ClientV4Mutations: {
       total: (client) => client.mutationCount,
       items: async (client) => {
-        const mutations = await request("getV4Mutations", client.id);
+        const mutations = await withRpcClient().request(
+          "getV4Mutations",
+          client.id
+        );
 
         return mutations.map((mutation, index) => ({
           id: String(index),
