@@ -41,8 +41,3 @@ export interface SerializedError {
   name: string;
   stack?: string;
 }
-
-export interface DevtoolsMessage {
-  readonly source: "apollo-client-devtools";
-  readonly id: string;
-}

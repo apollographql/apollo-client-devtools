@@ -1,3 +1,4 @@
+import { createId } from "@/utils/createId";
 import { createTestSource } from "@/testUtils/createTestSource";
 import { MessageAdapter } from "../messageAdapters";
 import { MessageType } from "../messages";
@@ -65,6 +66,7 @@ test("sends the message as-is when not using jsonSerialize", () => {
 
   adapter.postMessage({
     type: MessageType.RPCRequest,
+    id: "abc",
     name: "getClients",
     params: [url],
   });
@@ -298,6 +300,7 @@ test("on: ignores messages that don't match the given type", () => {
   source.simulateRPCStreamChunk("abc", { value: true });
   source.simulateDevtoolsMessage({
     type: MessageType.RPCRequest,
+    id: createId(),
     name: "getClient",
     params: ["1"],
   });

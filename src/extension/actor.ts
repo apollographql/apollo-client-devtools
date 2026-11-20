@@ -1,10 +1,6 @@
 import { MessageType } from "./messages";
 import type { MessageAdapter } from "./messageAdapters";
-import type {
-  ApolloClientInfo,
-  DevtoolsMessage,
-  ExplorerResponse,
-} from "../types";
+import type { ApolloClientInfo, ExplorerResponse } from "../types";
 import type { DocumentNode, FetchPolicy } from "@apollo/client";
 import type { JSONObject } from "../application/types/json";
 import type { DevToolsMachineEvents } from "../application/machines/devtoolsMachine";
@@ -42,7 +38,7 @@ export type ActorMessage =
       { type: "initializePanel" | "port.changed" }
     >;
 
-export interface ApolloClientDevtoolsActorMessage extends DevtoolsMessage {
+export interface ActorDevtoolsMessage {
   type: MessageType.Actor;
   message: ActorMessage;
 }

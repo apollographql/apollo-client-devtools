@@ -283,6 +283,7 @@ test("can unsubscribe from a handler by calling the returned function", () => {
 
   source.simulateDevtoolsMessage({
     type: MessageType.RPCRequest,
+    id: createId(),
     name: "getClient",
     params: ["1"],
   });
@@ -294,6 +295,7 @@ test("can unsubscribe from a handler by calling the returned function", () => {
 
   source.simulateDevtoolsMessage({
     type: MessageType.RPCRequest,
+    id: createId(),
     name: "getClient",
     params: ["2"],
   });
@@ -572,7 +574,6 @@ test("rejects with post message errors", async () => {
   const { id } = clientSource.mocks.messages[0] as RPCRequestMessage;
 
   clientSource.simulateDevtoolsMessage({
-    id: "zef",
     type: MessageType.PostMessageError,
     sourceId: id,
     error: serializeError(new Error("Could not send")),
@@ -929,6 +930,7 @@ test("does not send response when handler returns SKIP_RESPONSE", async () => {
   // Simulate an RPC request
   handlerSource.simulateDevtoolsMessage({
     type: MessageType.RPCRequest,
+    id: createId(),
     name: "getClient",
     params: ["1"],
   });

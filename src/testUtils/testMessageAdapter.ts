@@ -1,13 +1,14 @@
 import { MessageAdapter } from "../extension/messageAdapters";
 import type { ApolloClientDevtoolsMessage } from "../extension/messages";
-import { isDevtoolsMessage, MessageType } from "../extension/messages";
-import type { RPCRequestMessage, RPCResponseMessage } from "../extension/rpc";
+import { createDevtoolsMessage, MessageType } from "../extension/messages";
+import type { RPCRequestMessage } from "../extension/rpc";
 import type { RPCRequest } from "../extension/rpc";
 import type { SafeAny } from "../types";
-import { createId } from "../utils/createId";
 
 export interface TestAdapter extends MessageAdapter {
-  mocks: { messages: ApolloClientDevtoolsMessage[] };
+  mocks: {
+    messages: ApolloClientDevtoolsMessage[];
+  };
   addListener: jest.MockedFunction<MessageAdapter["addListener"]>;
   postMessage: jest.MockedFunction<MessageAdapter["postMessage"]>;
   mockClear: () => void;
@@ -34,13 +35,11 @@ export function createTestAdapter(): TestAdapter {
     }
 
     const result = await Promise.resolve(handler(...message.params));
-    const response: RPCResponseMessage = {
-      source: "apollo-client-devtools",
+    const response = createDevtoolsMessage({
       type: MessageType.RPCResponse,
-      id: createId(),
       sourceId: message.id,
       result,
-    };
+    });
 
     listeners.forEach((listener) => listener(response));
   }
@@ -54,10 +53,7 @@ export function createTestAdapter(): TestAdapter {
     postMessage: (message) => {
       mocks.messages.push(message);
 
-      if (
-        isDevtoolsMessage(message) &&
-        message.type === MessageType.RPCRequest
-      ) {
+      if (message.type === MessageType.RPCRequest) {
         handleRpcRequest(message);
       }
     },

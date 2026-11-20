@@ -1,11 +1,5 @@
 import type { JSONObject } from "../application/types/json";
-import type {
-  ApolloClientInfo,
-  DevtoolsMessage,
-  ErrorCodes,
-  NoInfer,
-  SafeAny,
-} from "@/types";
+import type { ApolloClientInfo, ErrorCodes, NoInfer, SafeAny } from "@/types";
 import { createId } from "../utils/createId";
 import { RPC_MESSAGE_TIMEOUT } from "./errorMessages";
 import { deserializeError, serializeError } from "./errorSerialization";
@@ -60,39 +54,38 @@ export interface RpcClient {
   ) => ReadableStream<ReturnType<RPCStream[TName]>>;
 }
 
-interface RPCErrorResponseMessage extends DevtoolsMessage {
+interface RPCErrorResponseMessage {
   type: MessageType.RPCResponse;
   sourceId: string;
   error: { name?: string; message: string; stack?: string };
 }
 
-interface RPCSuccessResponseMessage<Result = unknown> extends DevtoolsMessage {
+interface RPCSuccessResponseMessage<Result = unknown> {
   type: MessageType.RPCResponse;
   sourceId: string;
   result: Result;
 }
 
-export interface RPCRequestMessage<Params extends SafeAny[] = unknown[]>
-  extends DevtoolsMessage {
+export interface RPCRequestMessage<Params extends SafeAny[] = unknown[]> {
   type: MessageType.RPCRequest;
+  id: string;
   name: string;
   params: Params;
 }
 
-export interface RPCStreamStartMessage<Params extends any[] = unknown[]>
-  extends DevtoolsMessage {
+export interface RPCStreamStartMessage<Params extends any[] = unknown[]> {
   type: MessageType.RPCStartStream;
+  id: string;
   name: string;
   params: Params;
 }
 
-export interface RPCTerminateStreamMessage extends DevtoolsMessage {
+export interface RPCTerminateStreamMessage {
   type: MessageType.RPCTerminateStream;
   streamId: string;
 }
 
-export interface RPCStreamChunkMessage<Value = unknown>
-  extends DevtoolsMessage {
+export interface RPCStreamChunkMessage<Value = unknown> {
   type: MessageType.RPCStreamChunk;
   streamId: string;
   value: Value;
@@ -372,13 +365,7 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
             return;
           }
 
-          postMessage({
-            source: "apollo-client-devtools",
-            type: MessageType.RPCStreamChunk,
-            id: createId(),
-            streamId: streamId,
-            value,
-          });
+          postMessage({ type: MessageType.RPCStreamChunk, streamId, value });
         }
 
         function close() {

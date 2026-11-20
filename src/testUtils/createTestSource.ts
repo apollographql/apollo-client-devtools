@@ -1,7 +1,7 @@
 import type { ActorMessage } from "@/extension/actor";
 import type {
   ApolloClientDevtoolsMessage,
-  DevtoolsPostMessage,
+  DevtoolsMessage,
 } from "@/extension/messages";
 import { createDevtoolsMessage, MessageType } from "@/extension/messages";
 import type { RPCResponseMessage } from "@/extension/rpc";
@@ -22,7 +22,7 @@ export function createTestSource() {
     listener?.(message);
   };
 
-  const simulateDevtoolsMessage = (message: DevtoolsPostMessage) => {
+  const simulateDevtoolsMessage = (message: DevtoolsMessage) => {
     simulatePlainMessage(createDevtoolsMessage(message));
   };
 
@@ -43,10 +43,7 @@ export function createTestSource() {
       simulateDevtoolsMessage({ type: MessageType.Actor, message });
     },
     simulateRPCResponse<TResult = unknown>(
-      message: DistributiveOmit<
-        RPCResponseMessage<TResult>,
-        "id" | "source" | "type"
-      >
+      message: DistributiveOmit<RPCResponseMessage<TResult>, "type">
     ) {
       simulateDevtoolsMessage({ ...message, type: MessageType.RPCResponse });
     },
