@@ -296,8 +296,6 @@ export function createRpcHandler(adapter: MessageAdapter) {
 
 export function createRpcStreamHandler(adapter: MessageAdapter) {
   const listeners = new Set<string>();
-  const cleanupFnsByStreamId = new Map<string, () => void>();
-  const streamIdsByName = new Map<string, Set<string>>();
 
   // In case messages in the stream get pushed very fast, we want to keep the
   // source app fast so we process the messages async
@@ -340,7 +338,12 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
     }
 
     listeners.add(name);
-    streamIdsByName.set(name, new Set());
+
+    const cleanupFnsByStreamId = new Map<string, () => void>();
+
+    const cleanupAll = () => {
+      cleanupFnsByStreamId.forEach((cleanup) => cleanup());
+    };
 
     const cleanupStream = (streamId: string) => {
       cleanupFnsByStreamId.get(streamId)?.();
@@ -350,10 +353,7 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
       MessageType.Actor,
       ({ message }) => {
         if (message.type === "devtoolsDisconnected") {
-          const streamIds = streamIdsByName.get(name);
-          streamIds?.forEach((streamId) => {
-            cleanupStream(streamId);
-          });
+          cleanupAll();
         }
       }
     );
@@ -372,7 +372,6 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
 
         const { id: streamId, params } = message;
         let closed = false;
-        streamIdsByName.get(name)!.add(streamId);
 
         function push(value: ReturnType<RPCStream[TName]>) {
           if (closed) {
@@ -408,16 +407,13 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
         cleanupFnsByStreamId.set(streamId, () => {
           closed = true;
           cleanup?.();
-          streamIdsByName.get(name)!.delete(streamId);
           cleanupFnsByStreamId.delete(streamId);
         });
       }
     );
 
     const cleanup = () => {
-      streamIdsByName.get(name)?.forEach((streamId) => {
-        cleanupStream(streamId);
-      });
+      cleanupAll();
       listeners.delete(name);
       unsubscribeStream();
       unsubscribeDisconnected();
