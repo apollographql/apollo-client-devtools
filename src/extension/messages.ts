@@ -37,6 +37,7 @@ export type DevtoolsMessage =
 export type ApolloClientDevtoolsMessage = DevtoolsMessage & {
   readonly source: "apollo-client-devtools";
   readonly id: string;
+  readonly clientId?: string;
 };
 
 export function isDevtoolsMessage(
@@ -51,7 +52,7 @@ export function isDevtoolsMessage(
 }
 
 export function createDevtoolsMessage(
-  message: DevtoolsMessage & { id?: string }
+  message: DevtoolsMessage & { id?: string; clientId?: string }
 ): ApolloClientDevtoolsMessage {
   return {
     ...message,
