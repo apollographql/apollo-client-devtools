@@ -4,6 +4,8 @@ import type {
   DevtoolsPostMessage,
 } from "@/extension/messages";
 import { createDevtoolsMessage, MessageType } from "@/extension/messages";
+import type { RPCResponseMessage } from "@/extension/rpc";
+import type { DistributiveOmit } from "@/types";
 
 export function createTestSource() {
   let listener: ((message: unknown) => void) | null = null;
@@ -30,6 +32,11 @@ export function createTestSource() {
     simulateDevtoolsMessage,
     simulateActorMessage: (message: ActorMessage) => {
       simulateDevtoolsMessage({ type: MessageType.Actor, message });
+    },
+    simulateRPCResponse<TResult = unknown>(
+      message: DistributiveOmit<RPCResponseMessage<TResult>, "source">
+    ) {
+      simulateDevtoolsMessage({ ...message, type: MessageType.RPCResponse });
     },
   };
 }
