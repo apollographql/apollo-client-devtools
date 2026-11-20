@@ -34,10 +34,12 @@ export type DevtoolsMessage =
   | RPCTerminateStreamMessage
   | RPCStreamChunkMessage;
 
+export type MessageTarget = { type: "client"; clientId: string };
+
 export type ApolloClientDevtoolsMessage = DevtoolsMessage & {
   readonly source: "apollo-client-devtools";
   readonly id: string;
-  readonly clientId?: string;
+  readonly target?: MessageTarget;
 };
 
 export function isDevtoolsMessage(
@@ -52,10 +54,16 @@ export function isDevtoolsMessage(
 }
 
 export function createDevtoolsMessage(
-  message: DevtoolsMessage & { id?: string; clientId?: string }
+  message: DevtoolsMessage & {
+    id?: string;
+    clientId?: string;
+    target?: MessageTarget;
+  },
+  target?: MessageTarget
 ): ApolloClientDevtoolsMessage {
   return {
     ...message,
+    target: target ?? message.target,
     id: message.id ?? createId(),
     source: "apollo-client-devtools",
   };

@@ -41,6 +41,8 @@ export interface RPCStream {
 export interface RpcClient {
   readonly timeout: number;
   readonly signal?: AbortSignal;
+  readonly clientId?: string;
+  withClientId: (clientId: string) => RpcClient;
   withTimeout: (timeoutMs: number) => RpcClient;
   withSignal: (abortSignal?: AbortSignal) => RpcClient;
   request: <TName extends keyof RPCRequest & string>(
@@ -99,6 +101,9 @@ const DEFAULT_TIMEOUT = 30_000;
 export function createRpcClient(adapter: MessageAdapter): RpcClient {
   return {
     timeout: DEFAULT_TIMEOUT,
+    withClientId(clientId) {
+      return { ...this, clientId };
+    },
     withTimeout(timeoutMs) {
       return { ...this, timeout: timeoutMs };
     },
@@ -106,7 +111,7 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
       return { ...this, signal };
     },
     request(name, ...params) {
-      const { signal } = this;
+      const { clientId, signal } = this;
 
       if (signal?.aborted) {
         return Promise.reject(getAbortError(signal));
@@ -158,12 +163,15 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
 
         signal?.addEventListener("abort", handleAbort, { once: true });
 
-        adapter.postMessage({
-          type: MessageType.RPCRequest,
-          id,
-          name,
-          params,
-        });
+        adapter.postMessage(
+          {
+            type: MessageType.RPCRequest,
+            id,
+            name,
+            params,
+          },
+          clientId ? { type: "client", clientId } : undefined
+        );
       });
     },
     stream(name, ...params) {

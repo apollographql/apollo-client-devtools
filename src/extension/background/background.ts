@@ -302,8 +302,8 @@ function connectDevtoolsPort(port: browser.Runtime.Port) {
   port.onMessage.addListener((message) => {
     if (!isDevtoolsMessage(message)) return;
 
-    if (message.clientId) {
-      const connection = tab.clients.get(message.clientId);
+    if (message.target?.type === "client") {
+      const connection = tab.clients.get(message.target.clientId);
       postMessage(connection?.port, message);
     }
   });
@@ -327,7 +327,7 @@ function connectClientPort(port: browser.Runtime.Port) {
 
   port.onMessage.addListener((message) => {
     if (isDevtoolsMessage(message)) {
-      postMessage(tab.devtools, { ...message, clientId });
+      postMessage(tab.devtools, message);
     }
   });
 

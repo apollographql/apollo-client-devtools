@@ -15,16 +15,15 @@ import { isExtensionInvalidatedError } from "@/extension/errorMessages";
 import type { CacheWrite } from "@/extension/tab/shared/types";
 import { diff } from "./utilities/diff";
 import { createId } from "@/utils/createId";
-import {
-  getRpcClient,
-  getRpcClientById,
-} from "@/extension/devtools/panelRpcClient";
+import { getRpcClient } from "@/extension/devtools/panelRpcClient";
 import type { RpcClient } from "@/extension/rpc";
 
 function withRpcClient(id?: string): RpcClient {
-  const rpcClient = (id ? getRpcClientById(id) : getRpcClient()).withTimeout(
-    10_000
-  );
+  let rpcClient = getRpcClient().withTimeout(10_000);
+
+  if (id) {
+    rpcClient = rpcClient.withClientId(id);
+  }
 
   return {
     ...rpcClient,

@@ -4,7 +4,11 @@ import {
   isDevtoolsMessage,
   MessageType,
 } from "./messages";
-import type { ApolloClientDevtoolsMessage, DevtoolsMessage } from "./messages";
+import type {
+  ApolloClientDevtoolsMessage,
+  DevtoolsMessage,
+  MessageTarget,
+} from "./messages";
 import { serializeError } from "./errorSerialization";
 
 type MessageListener = (message: unknown) => void;
@@ -96,7 +100,7 @@ export class MessageAdapter {
     });
   }
 
-  postMessage(message: DevtoolsMessage) {
+  postMessage(message: DevtoolsMessage, target?: MessageTarget) {
     // In some cases, we need to JSON stringify the data transferred in case
     // the payload contains references to irregular data, such as `URL`
     // instances which are not cloneable via `structuredClone` (which
@@ -110,7 +114,8 @@ export class MessageAdapter {
       createDevtoolsMessage(
         this.jsonSerialize
           ? (JSON.parse(JSON.stringify(message)) as typeof message)
-          : message
+          : message,
+        target
       )
     );
   }
@@ -171,27 +176,6 @@ const portPostMessage = call.bind(MessagePort.prototype.postMessage);
 const getMessageEventData = call.bind(
   Object.getOwnPropertyDescriptor(MessageEvent.prototype, "data")!.get!
 );
-
-export function createClientMessageAdapter(
-  adapter: MessageAdapter,
-  clientId: string
-) {
-  return new MessageAdapter({
-    addListener(listener) {
-      return adapter.addListener((message) => {
-        if (message.clientId === clientId) {
-          listener(message);
-        }
-      });
-    },
-    postMessage(message) {
-      return adapter.postMessage({
-        ...message,
-        clientId,
-      } as ApolloClientDevtoolsMessage & { clientId?: string });
-    },
-  });
-}
 
 export function createMessagePortMessageAdapter(
   port: MessagePort,
