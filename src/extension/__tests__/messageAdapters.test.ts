@@ -3,6 +3,13 @@ import { createTestSource } from "@/testUtils/createTestSource";
 import { MessageAdapter } from "../messageAdapters";
 import { MessageType } from "../messages";
 
+const originalReportError = globalThis.reportError;
+
+afterEach(() => {
+  globalThis.reportError = originalReportError;
+  jest.restoreAllMocks();
+});
+
 test("sends messages to the source in devtools message format", () => {
   const source = createTestSource();
   const adapter = new MessageAdapter(source);
@@ -481,4 +488,76 @@ test("on: only removes listener on source once when unsubscribing multiple times
   unsubscribe();
 
   expect(source.mocks.removeListener).toHaveBeenCalledTimes(1);
+});
+
+test("continues calling remaining listeners when a listener throws", () => {
+  globalThis.reportError = jest.fn();
+  const source = createTestSource();
+  const adapter = new MessageAdapter(source);
+
+  const handleMessage = jest.fn();
+  adapter.addListener(() => {
+    throw new Error("Oops");
+  });
+  adapter.addListener(handleMessage);
+
+  source.simulateActorMessage({ type: "clientTerminated", clientId: "1" });
+
+  expect(handleMessage).toHaveBeenCalledTimes(1);
+});
+
+test("continues calling remaining listeners registered with on when a listener throws", () => {
+  globalThis.reportError = jest.fn();
+  const source = createTestSource();
+  const adapter = new MessageAdapter(source);
+
+  const handleMessage = jest.fn();
+  adapter.on(MessageType.Actor, () => {
+    throw new Error("Oops");
+  });
+  adapter.on(MessageType.Actor, handleMessage);
+
+  source.simulateActorMessage({ type: "clientTerminated", clientId: "1" });
+
+  expect(handleMessage).toHaveBeenCalledTimes(1);
+});
+
+test("reports errors thrown by listeners with reportError", () => {
+  const reportError = jest.fn();
+  globalThis.reportError = reportError;
+  const source = createTestSource();
+  const adapter = new MessageAdapter(source);
+
+  const error = new Error("Oops");
+  adapter.addListener(() => {
+    throw error;
+  });
+
+  source.simulateActorMessage({ type: "clientTerminated", clientId: "1" });
+
+  expect(reportError).toHaveBeenCalledTimes(1);
+  expect(reportError).toHaveBeenCalledWith(error);
+});
+
+test("rethrows errors thrown by listeners in a microtask when reportError is unavailable", () => {
+  // @ts-expect-error simulating environments without reportError (Node)
+  globalThis.reportError = undefined;
+  const queueMicrotask = jest
+    .spyOn(globalThis, "queueMicrotask")
+    .mockImplementation(() => {});
+  const source = createTestSource();
+  const adapter = new MessageAdapter(source);
+
+  const error = new Error("Oops");
+  adapter.addListener(() => {
+    throw error;
+  });
+
+  source.simulateActorMessage({ type: "clientTerminated", clientId: "1" });
+
+  expect(queueMicrotask).toHaveBeenCalledTimes(1);
+
+  const [[callback]] = queueMicrotask.mock.calls;
+
+  expect(callback).toThrow(error);
 });

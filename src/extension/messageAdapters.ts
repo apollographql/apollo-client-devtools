@@ -20,6 +20,16 @@ interface MessageAdapterOptions {
   jsonSerialize?: boolean;
 }
 
+function reportListenerError(error: unknown) {
+  if (typeof reportError === "function") {
+    reportError(error);
+  } else {
+    queueMicrotask(() => {
+      throw error;
+    });
+  }
+}
+
 export class MessageAdapter {
   private listeners = new Set<(message: ApolloClientDevtoolsMessage) => void>();
   private source: MessageAdapterSource;
@@ -42,7 +52,13 @@ export class MessageAdapter {
   addListener(listener: (message: ApolloClientDevtoolsMessage) => void) {
     const handleMessage: MessageListener = (message) => {
       if (isDevtoolsMessage(message)) {
-        this.listeners.forEach((listener) => listener(message));
+        this.listeners.forEach((listener) => {
+          try {
+            listener(message);
+          } catch (e) {
+            reportListenerError(e);
+          }
+        });
       }
     };
 
