@@ -16,8 +16,14 @@ export function createTestSource() {
     listener = null;
   });
 
+  let proxy: { simulatePlainMessage: typeof simulatePlainMessage } | undefined;
+
+  const simulatePlainMessage = (message: unknown) => {
+    listener?.(message);
+  };
+
   const simulateDevtoolsMessage = (message: DevtoolsPostMessage) => {
-    listener?.(createDevtoolsMessage(message));
+    simulatePlainMessage(createDevtoolsMessage(message));
   };
 
   return {
@@ -26,19 +32,34 @@ export function createTestSource() {
 
       return removeListener;
     }),
-    postMessage: jest.fn((message) => messages.push(message)),
+    postMessage: jest.fn((message) => {
+      messages.push(message);
+      proxy?.simulatePlainMessage(message);
+    }),
     mocks: { messages, removeListener },
-    simulatePlainMessage: (message: unknown) => {
-      listener?.(message);
-    },
+    simulatePlainMessage,
     simulateDevtoolsMessage,
     simulateActorMessage: (message: ActorMessage) => {
       simulateDevtoolsMessage({ type: MessageType.Actor, message });
     },
     simulateRPCResponse<TResult = unknown>(
-      message: DistributiveOmit<RPCResponseMessage<TResult>, "source">
+      message: DistributiveOmit<RPCResponseMessage<TResult>, "source" | "type">
     ) {
       simulateDevtoolsMessage({ ...message, type: MessageType.RPCResponse });
+    },
+    simulateRPCStreamChunk<TValue = unknown>(streamId: string, value: TValue) {
+      simulateDevtoolsMessage({
+        type: MessageType.RPCStreamChunk,
+        streamId,
+        value,
+      });
+    },
+    // Connects this source to another source so that a postMessage from this
+    // source calls listeners on the other source. This isn't forwarding, but
+    // rather tries to simulate the window.postMessage(),
+    // window.addEventListener('message') behavior.
+    connect(other: { simulatePlainMessage: typeof simulatePlainMessage }) {
+      proxy = other;
     },
   };
 }
