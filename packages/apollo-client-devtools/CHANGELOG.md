@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.26.8
+
+### Patch Changes
+
+- [#1917](https://github.com/apollographql/apollo-client-devtools/pull/1917) [`c6e6bbf`](https://github.com/apollographql/apollo-client-devtools/commit/c6e6bbf54b6481368e54fc18aafcaeae0b86be2a) Thanks [@phryneas](https://github.com/phryneas)! - Avoid unneccesary propagation of internal registration event.
+
 ## 4.26.7
 
 ### Patch Changes
