@@ -7,7 +7,6 @@ import { Slot } from "@wry/context";
 import * as manifest from "../chrome/manifest.json";
 const { version: devtoolsVersion } = manifest;
 import type { ApolloClient, ApolloClientInfo } from "@/types";
-import type { JSONObject } from "../../application/types/json";
 import { createActor } from "../actor";
 import { createMessagePortMessageAdapter } from "../messageAdapters";
 import { connectHook, createClientPort } from "./controlChannel";
@@ -25,6 +24,7 @@ import type { ClientV4Handler } from "./v4/handler";
 import type { Cache } from "@/application/types/scalars";
 import { createHandler } from "./helpers";
 import { patch } from "@/application/utilities/patch";
+import { gte } from "semver";
 
 declare global {
   type TCache = any;
@@ -99,14 +99,6 @@ handleRpc(
   "getV4Mutations",
   (clientId) => getHandlerByClientId(clientId)?.getMutations() ?? []
 );
-
-handleRpc("getV3MemoryInternals", (clientId) => {
-  return getClientById(clientId)?.getMemoryInternals?.();
-});
-
-handleRpc("getV4MemoryInternals", (clientId) => {
-  return getClientById(clientId)?.getMemoryInternals?.();
-});
 
 handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
   const slot = new Slot<boolean>();
@@ -236,6 +228,10 @@ function watchForClientTermination(client: ApolloClient) {
   };
 }
 
+function isV4Client(client: ApolloClient): client is ApolloClient4 {
+  return gte(client.version, "4.0.0");
+}
+
 function connectClient(client: ApolloClient) {
   const handler = handlers.get(client)!;
   const port = createClientPort(window, handler.id);
@@ -244,6 +240,11 @@ function connectClient(client: ApolloClient) {
 
   handleRpc("getClient", () => getClientInfo(client));
   handleRpc("getCache", () => client.cache.extract(true));
+
+  handleRpc(
+    isV4Client(client) ? "getV4MemoryInternals" : "getV3MemoryInternals",
+    () => client.getMemoryInternals?.()
+  );
 }
 
 function registerClient(client: ApolloClient) {

@@ -118,9 +118,8 @@ function createResolvers(): Resolvers {
       queries: (client) => client,
       mutations: (client) => client,
       memoryInternals: async (client) => {
-        const memoryInternals = await withRpcClient().request(
-          "getV3MemoryInternals",
-          client.id
+        const memoryInternals = await withRpcClient(client.id).request(
+          "getV3MemoryInternals"
         );
 
         if (!memoryInternals) {
@@ -144,9 +143,8 @@ function createResolvers(): Resolvers {
       queries: (client) => client,
       mutations: (client) => client,
       memoryInternals: async (client) => {
-        const memoryInternals = await withRpcClient().request(
-          "getV4MemoryInternals",
-          client.id
+        const memoryInternals = await withRpcClient(client.id).request(
+          "getV4MemoryInternals"
         );
 
         if (!memoryInternals) {

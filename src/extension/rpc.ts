@@ -31,8 +31,8 @@ export type RPCRequest = {
   getV4Mutations(clientId: IDv4): MutationV4Details[];
   getCache(): JSONObject;
   getErrorCodes(version: string): Promise<ErrorCodes | undefined>;
-  getV3MemoryInternals(clientId: IDv3): MemoryInternalsV3 | undefined;
-  getV4MemoryInternals(clientId: IDv4): MemoryInternalsV4 | undefined;
+  getV3MemoryInternals(): MemoryInternalsV3 | undefined;
+  getV4MemoryInternals(): MemoryInternalsV4 | undefined;
 };
 
 export interface RPCStream {
