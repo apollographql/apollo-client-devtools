@@ -93,23 +93,6 @@ function postMessage(
   }
 }
 
-function connectTabPort(port: browser.Runtime.Port) {
-  const tabId = port.sender?.tab?.id;
-  if (tabId == null) return;
-
-  const tab = getTab(tabId);
-
-  port.onMessage.addListener((message) => {
-    if (isDevtoolsMessage(message)) {
-      postMessage(tab.devtools, message);
-    }
-  });
-
-  port.onDisconnect.addListener(() => {
-    maybeRemoveTab(tabId);
-  });
-}
-
 function connectDevtoolsPort(port: browser.Runtime.Port) {
   const tabId = +port.name;
 
@@ -183,7 +166,9 @@ function connectClientPort(port: browser.Runtime.Port) {
 
 browser.runtime.onConnect.addListener((port) => {
   if (port.name === "tab") {
-    return connectTabPort(port);
+    // the tab port is only used to get error codes which is handled by a
+    // separate listener
+    return;
   }
 
   if (port.name.startsWith("client:")) {
