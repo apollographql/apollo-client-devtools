@@ -88,7 +88,10 @@ function executeOperation({
       if (isSubscription) {
         const checkForSubscriptionTermination = (event: MessageEvent) => {
           if (event.data.name.startsWith(EXPLORER_SUBSCRIPTION_TERMINATION)) {
-            panelWindow.send({ type: "explorerSubscriptionTermination" });
+            panelWindow.send(
+              { type: "explorerSubscriptionTermination" },
+              { type: "client", clientId }
+            );
             observer.complete();
             window.removeEventListener(
               "message",
