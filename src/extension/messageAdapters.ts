@@ -154,38 +154,30 @@ export function createPortMessageAdapter(
   createPort: () => browser.Runtime.Port
 ): MessageAdapter {
   let port = createPort();
-  const listeners = new Set<(message: unknown) => void>();
-
-  function handleDisconnect() {
-    listeners.forEach((listener) => {
-      port.onMessage.removeListener(listener);
-    });
-
-    port.onDisconnect.removeListener(handleDisconnect);
-    port = createPort();
-
-    initializePort();
-  }
-
-  function initializePort() {
-    listeners.forEach((listener) => port.onMessage.addListener(listener));
-    port.onDisconnect.addListener(handleDisconnect);
-  }
-
-  initializePort();
 
   return new MessageAdapter({
     addListener(listener) {
-      listeners.add(listener);
-      port.onMessage.addListener(listener);
+      const current = port;
+      current.onMessage.addListener(listener);
 
       return () => {
-        listeners.delete(listener);
-        port.onMessage.removeListener(listener);
+        current.onMessage.removeListener(listener);
       };
     },
     postMessage(message) {
       return port.postMessage(message);
+    },
+    connect(reconnect) {
+      function handleDisconnect() {
+        port = createPort();
+        port.onDisconnect.removeListener(handleDisconnect);
+        reconnect();
+      }
+
+      port.onDisconnect.addListener(handleDisconnect);
+    },
+    disconnect() {
+      port.disconnect();
     },
   });
 }
