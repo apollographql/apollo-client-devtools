@@ -12,6 +12,7 @@ type MessageListener = (message: unknown) => void;
 interface MessageAdapterSource {
   addListener: (listener: MessageListener) => () => void;
   postMessage: (message: ApolloClientDevtoolsMessage) => void;
+  connect?: (reconnect: () => void) => void;
 }
 
 interface MessageAdapterOptions extends MessageAdapterSource {
@@ -41,6 +42,8 @@ export class MessageAdapter {
     this.source = source;
     this.jsonSerialize = jsonSerialize;
     this.handleMessage = this.handleMessage.bind(this);
+
+    this.source.connect?.call(this, () => this.resubscribe());
   }
 
   get closed() {
@@ -99,6 +102,13 @@ export class MessageAdapter {
           : message
       )
     );
+  }
+
+  private resubscribe() {
+    if (this.closed || !this.unsubscribe) return;
+
+    this.unsubscribe();
+    this.unsubscribe = this.source.addListener(this.handleMessage);
   }
 
   private handleMessage(message: unknown) {
