@@ -53,6 +53,8 @@ export class MessageAdapter {
   }
 
   addListener(listener: (message: ApolloClientDevtoolsMessage) => void) {
+    if (this.closed) return () => {};
+
     if (!this.listeners.size) {
       this.unsubscribe = this.source.addListener(this.handleMessage);
     }
@@ -88,6 +90,7 @@ export class MessageAdapter {
   }
 
   postMessage(message: DevtoolsMessage) {
+    if (this.closed) return;
     // In some cases, we need to JSON stringify the data transferred in case
     // the payload contains references to irregular data, such as `URL`
     // instances which are not cloneable via `structuredClone` (which
@@ -107,6 +110,8 @@ export class MessageAdapter {
   }
 
   onDisconnect(listener: () => void) {
+    if (this.closed) return () => {};
+
     this.disconnectListeners.add(listener);
 
     return () => {
