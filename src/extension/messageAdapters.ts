@@ -40,6 +40,7 @@ export class MessageAdapter {
   constructor({ jsonSerialize = false, ...source }: MessageAdapterOptions) {
     this.source = source;
     this.jsonSerialize = jsonSerialize;
+    this.handleMessage = this.handleMessage.bind(this);
   }
 
   get closed() {
@@ -47,20 +48,8 @@ export class MessageAdapter {
   }
 
   addListener(listener: (message: ApolloClientDevtoolsMessage) => void) {
-    const handleMessage: MessageListener = (message) => {
-      if (isDevtoolsMessage(message)) {
-        this.listeners.forEach((listener) => {
-          try {
-            listener(message);
-          } catch (e) {
-            reportListenerError(e);
-          }
-        });
-      }
-    };
-
     if (!this.listeners.size) {
-      this.unsubscribe = this.source.addListener(handleMessage);
+      this.unsubscribe = this.source.addListener(this.handleMessage);
     }
 
     this.listeners.add(listener);
@@ -110,6 +99,18 @@ export class MessageAdapter {
           : message
       )
     );
+  }
+
+  private handleMessage(message: unknown) {
+    if (!isDevtoolsMessage(message)) return;
+
+    this.listeners.forEach((listener) => {
+      try {
+        listener(message);
+      } catch (e) {
+        reportListenerError(e);
+      }
+    });
   }
 }
 
