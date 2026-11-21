@@ -122,10 +122,10 @@ export class MessageAdapter {
   disconnect() {
     if (this.closed) return;
 
-    this._closed = true;
     this.unsubscribe?.();
     this.listeners.clear();
     this.source.disconnect?.call(this);
+    this._closed = true;
     this.disconnectListeners.forEach((listener) => listener());
     this.disconnectListeners.clear();
   }
