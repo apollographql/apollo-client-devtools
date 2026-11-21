@@ -14,9 +14,7 @@ interface MessageAdapterSource {
   postMessage: (message: ApolloClientDevtoolsMessage) => void;
 }
 
-interface MessageAdapterOptions {
-  addListener: (listener: MessageListener) => () => void;
-  postMessage: (message: ApolloClientDevtoolsMessage) => void;
+interface MessageAdapterOptions extends MessageAdapterSource {
   jsonSerialize?: boolean;
 }
 
