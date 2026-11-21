@@ -12,7 +12,7 @@ type MessageListener = (message: unknown) => void;
 interface MessageAdapterSource {
   addListener: (listener: MessageListener) => () => void;
   postMessage: (message: ApolloClientDevtoolsMessage) => void;
-  connect?: (reconnect: () => void) => void;
+  connect?: (this: MessageAdapter, reconnect: () => void) => void;
   disconnect?: (this: MessageAdapter) => void;
 }
 
