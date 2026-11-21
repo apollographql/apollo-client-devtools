@@ -254,7 +254,7 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
     },
     stream(name, ...params) {
       const streamId = createId();
-      const { signal } = this;
+      const { signal, target } = this;
       let removeListener!: () => void;
 
       function cleanup() {
@@ -288,12 +288,15 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
             }
           });
 
-          adapter.postMessage({
-            type: MessageType.RPCStartStream,
-            id: streamId,
-            name,
-            params,
-          });
+          adapter.postMessage(
+            {
+              type: MessageType.RPCStartStream,
+              id: streamId,
+              name,
+              params,
+            },
+            target
+          );
 
           if (signal) {
             signal.addEventListener(
