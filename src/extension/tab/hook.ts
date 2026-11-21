@@ -106,6 +106,7 @@ function connectClient(client: ApolloClient) {
   // The background script loads error codes by listening for messages from the
   // tab port, so we need to use that instead of a client port
   loadErrorCodes(tabRpcClient, client.version);
+  watchForClientTermination(client);
 
   handleExplorerRequests(actor, () => handler);
 
@@ -220,7 +221,6 @@ function registerClient(client: ApolloClient) {
     knownClients.add(client);
 
     handlers.set(client, createHandler(client));
-    watchForClientTermination(client);
 
     tab.send({ type: "registerClient", payload: getClientInfo(client) });
 
