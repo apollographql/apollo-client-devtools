@@ -29,6 +29,8 @@ class AggregateRequest {
     for (const [, { port }] of this.connection.clients) {
       postMessage(port, message);
     }
+
+    this.maybeRespond();
   }
 
   complete(clientId: string, message: DevtoolsMessage) {
@@ -38,17 +40,21 @@ class AggregateRequest {
 
     this.pending.delete(clientId);
     this.messages[index] = message;
+    this.maybeRespond();
+  }
 
-    if (this.pending.size === 0) {
-      postMessage(
-        this.connection.devtools,
-        createDevtoolsMessage({
-          type: MessageType.AggregateResponse,
-          results: this.messages,
-          target: this.target,
-        })
-      );
-    }
+  private maybeRespond() {
+    if (this.pending.size > 0) return;
+
+    aggregateRequests.delete(this.target.id);
+    postMessage(
+      this.connection.devtools,
+      createDevtoolsMessage({
+        type: MessageType.AggregateResponse,
+        results: this.messages.filter(Boolean),
+        target: this.target,
+      })
+    );
   }
 }
 
