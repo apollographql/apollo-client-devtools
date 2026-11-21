@@ -46,9 +46,7 @@ const tabPortAdapter = createMessagePortMessageAdapter(
   createTabMessagePort(window),
   { jsonSerialize: true }
 );
-const tab = createActor(tabPortAdapter);
 const tabRpcClient = createRpcClient(tabPortAdapter);
-
 const knownClients = new Set<ApolloClient>();
 
 Object.defineProperty(window, "__APOLLO_DEVTOOLS_GLOBAL_HOOK__", {
@@ -91,8 +89,6 @@ function isV4Client(client: ApolloClient): client is ApolloClient4 {
 
 function connectClient(client: ApolloClient) {
   const handler = createHandler(client);
-
-  tab.send({ type: "registerClient", payload: getClientInfo(client, handler) });
 
   const adapter = createMessagePortMessageAdapter(
     createClientMessagePort(window, handler.id),

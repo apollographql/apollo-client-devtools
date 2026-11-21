@@ -1,13 +1,13 @@
 import type { MessageTarget } from "./messages";
 import { MessageType } from "./messages";
 import type { MessageAdapter } from "./messageAdapters";
-import type { ApolloClientInfo, ExplorerResponse } from "../types";
+import type { ExplorerResponse } from "../types";
 import type { DocumentNode, FetchPolicy } from "@apollo/client";
 import type { JSONObject } from "../application/types/json";
 import type { DevToolsMachineEvents } from "../application/machines/devtoolsMachine";
 
 export type ActorMessage =
-  | { type: "registerClient"; payload: ApolloClientInfo }
+  | { type: "registerClient"; clientId: string }
   | { type: "clientTerminated"; clientId: string }
   | {
       type: "explorerRequest";

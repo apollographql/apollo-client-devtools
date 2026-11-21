@@ -154,6 +154,14 @@ function connectClientPort(port: browser.Runtime.Port) {
   const tab = getTab(tabId);
   tab.clients.set(clientId, { port });
 
+  postMessage(
+    tab.devtools,
+    createDevtoolsMessage({
+      type: MessageType.Actor,
+      message: { type: "registerClient", clientId },
+    })
+  );
+
   port.onMessage.addListener((message) => {
     if (!isDevtoolsMessage(message)) return;
 
