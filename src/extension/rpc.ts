@@ -165,13 +165,13 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
 
           const message = rawMessage as AggregateResponse<RPCResponseMessage>;
 
-          const results: RPCResponseMessage[] = [];
+          const results: unknown[] = [];
           for (const result of message.results) {
             if ("error" in result) {
               reject(deserializeError(result.error));
               break;
             } else {
-              results.push(result);
+              results.push(result.result);
             }
           }
 
