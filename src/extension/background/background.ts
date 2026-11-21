@@ -43,6 +43,13 @@ class AggregateRequest {
     this.maybeRespond();
   }
 
+  remove(clientId: string) {
+    if (!this.pending.has(clientId)) return;
+
+    this.pending.delete(clientId);
+    this.maybeRespond();
+  }
+
   private maybeRespond() {
     if (this.pending.size > 0) return;
 
@@ -176,6 +183,11 @@ function connectClientPort(port: browser.Runtime.Port) {
       createDevtoolsMessage({ type: MessageType.DisconnectClient, clientId })
     );
     tab.clients.delete(clientId);
+
+    for (const request of aggregateRequests.values()) {
+      request.remove(clientId);
+    }
+
     maybeRemoveTab(tabId);
   });
 }
