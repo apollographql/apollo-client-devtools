@@ -57,7 +57,10 @@ const diffResolver = ({ cache }: CacheWrite) => diff(cache.before, cache.after);
 function createResolvers(): Resolvers {
   return {
     Query: {
-      clients: () => withRpcClient().request("getClients"),
+      clients: () =>
+        withRpcClient()
+          .aggregate("getClient")
+          .then((clients) => clients.filter(Boolean)),
       client: (_, { id }) => withRpcClient(id).request("getClient"),
     },
     Subscription: {
