@@ -4,7 +4,7 @@ import type { ApolloClientInfo } from "../../types";
 import { RPC_MESSAGE_TIMEOUT } from "../errorMessages";
 import { serializeError } from "../errorSerialization";
 import { createMessageBridge, MessageAdapter } from "../messageAdapters";
-import { createDevtoolsMessage, MessageType } from "../messages";
+import { MessageType } from "../messages";
 import type { RPCRequestMessage, RPCStreamStartMessage } from "../rpc";
 import {
   createRpcClient,
@@ -244,15 +244,13 @@ test("handler responds with the target of the request", async () => {
 
   handle("getClient", () => defaultGetClient("1"));
 
-  source.simulatePlainMessage(
-    createDevtoolsMessage({
-      type: MessageType.RPCRequest,
-      id: "abc",
-      target: { type: "client", clientId: "1" },
-      name: "getClient",
-      params: [],
-    })
-  );
+  source.simulateDevtoolsMessage({
+    type: MessageType.RPCRequest,
+    id: "abc",
+    target: { type: "client", clientId: "1" },
+    name: "getClient",
+    params: [],
+  });
 
   await wait(0);
 
@@ -303,26 +301,24 @@ test("resolves aggregate request with results from all clients", async () => {
   const promise = client.aggregate("getClient");
   const { id } = source.mocks.messages[0] as RPCRequestMessage;
 
-  source.simulatePlainMessage(
-    createDevtoolsMessage({
-      type: MessageType.AggregateResponse,
-      target: { type: "aggregate", id },
-      results: [
-        {
-          type: MessageType.RPCResponse,
-          target: { type: "aggregate", id: id },
-          sourceId: id,
-          result: defaultGetClient("1"),
-        },
-        {
-          type: MessageType.RPCResponse,
-          target: { type: "aggregate", id: id },
-          sourceId: id,
-          result: defaultGetClient("2"),
-        },
-      ],
-    })
-  );
+  source.simulateDevtoolsMessage({
+    type: MessageType.AggregateResponse,
+    target: { type: "aggregate", id },
+    results: [
+      {
+        type: MessageType.RPCResponse,
+        target: { type: "aggregate", id: id },
+        sourceId: id,
+        result: defaultGetClient("1"),
+      },
+      {
+        type: MessageType.RPCResponse,
+        target: { type: "aggregate", id: id },
+        sourceId: id,
+        result: defaultGetClient("2"),
+      },
+    ],
+  });
 
   await expect(promise).resolves.toEqual([
     defaultGetClient("1"),
@@ -337,13 +333,11 @@ test("resolves aggregate request with empty array when there are no clients", as
   const promise = client.aggregate("getClient");
   const { id } = source.mocks.messages[0] as RPCRequestMessage;
 
-  source.simulatePlainMessage(
-    createDevtoolsMessage({
-      type: MessageType.AggregateResponse,
-      target: { type: "aggregate", id },
-      results: [],
-    })
-  );
+  source.simulateDevtoolsMessage({
+    type: MessageType.AggregateResponse,
+    target: { type: "aggregate", id },
+    results: [],
+  });
 
   await expect(promise).resolves.toEqual([]);
 });
@@ -355,35 +349,31 @@ test("ignores aggregate responses for a different request", async () => {
   const promise = client.aggregate("getClient");
   const { id } = source.mocks.messages[0] as RPCRequestMessage;
 
-  source.simulatePlainMessage(
-    createDevtoolsMessage({
-      type: MessageType.AggregateResponse,
-      target: { type: "aggregate", id: id + "zzz" },
-      results: [
-        {
-          type: MessageType.RPCResponse,
-          target: { type: "aggregate", id: id + "zzz" },
-          sourceId: id + "zzz",
-          result: defaultGetClient("2"),
-        },
-      ],
-    })
-  );
+  source.simulateDevtoolsMessage({
+    type: MessageType.AggregateResponse,
+    target: { type: "aggregate", id: id + "zzz" },
+    results: [
+      {
+        type: MessageType.RPCResponse,
+        target: { type: "aggregate", id: id + "zzz" },
+        sourceId: id + "zzz",
+        result: defaultGetClient("2"),
+      },
+    ],
+  });
 
-  source.simulatePlainMessage(
-    createDevtoolsMessage({
-      type: MessageType.AggregateResponse,
-      target: { type: "aggregate", id },
-      results: [
-        {
-          type: MessageType.RPCResponse,
-          target: { type: "aggregate", id: id },
-          sourceId: id,
-          result: defaultGetClient("1"),
-        },
-      ],
-    })
-  );
+  source.simulateDevtoolsMessage({
+    type: MessageType.AggregateResponse,
+    target: { type: "aggregate", id },
+    results: [
+      {
+        type: MessageType.RPCResponse,
+        target: { type: "aggregate", id: id },
+        sourceId: id,
+        result: defaultGetClient("1"),
+      },
+    ],
+  });
 
   await expect(promise).resolves.toEqual([defaultGetClient("1")]);
 });
@@ -395,26 +385,24 @@ test("rejects aggregate request when any client responds with an error", async (
   const promise = client.aggregate("getClient");
   const { id } = source.mocks.messages[0] as RPCRequestMessage;
 
-  source.simulatePlainMessage(
-    createDevtoolsMessage({
-      type: MessageType.AggregateResponse,
-      target: { type: "aggregate", id },
-      results: [
-        {
-          type: MessageType.RPCResponse,
-          target: { type: "aggregate", id: id },
-          sourceId: id,
-          result: defaultGetClient("1"),
-        },
-        {
-          type: MessageType.RPCResponse,
-          target: { type: "aggregate", id: id },
-          sourceId: id,
-          error: serializeError(new Error("Could not get client")),
-        },
-      ],
-    })
-  );
+  source.simulateDevtoolsMessage({
+    type: MessageType.AggregateResponse,
+    target: { type: "aggregate", id },
+    results: [
+      {
+        type: MessageType.RPCResponse,
+        target: { type: "aggregate", id: id },
+        sourceId: id,
+        result: defaultGetClient("1"),
+      },
+      {
+        type: MessageType.RPCResponse,
+        target: { type: "aggregate", id: id },
+        sourceId: id,
+        error: serializeError(new Error("Could not get client")),
+      },
+    ],
+  });
 
   await expect(promise).rejects.toEqual(new Error("Could not get client"));
 });
