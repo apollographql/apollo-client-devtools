@@ -8,9 +8,6 @@ import { MessageAdapter } from "../messageAdapters";
 import { handleExplorerRequests } from "../tab/handleExplorerRequests";
 import { setMaxListeners, WeakRef, FinalizationRegistry } from "./polyfills";
 import { createId } from "../../utils/createId";
-import type { ClientHandler, IDv3, IDv4 } from "../tab/clientHandler";
-import type { ClientV3Handler } from "../tab/v3/handler";
-import type { ClientV4Handler } from "../tab/v4/handler";
 import type {
   MemoryInternalsV3,
   MutationV3Details,
@@ -87,10 +84,6 @@ function registerClient(
 ): ApolloClientDevToolsConnection {
   const { signal, cleanup, onCleanup } = getCleanupController();
 
-  function getClientHandler(clientId: IDv3): ClientV3Handler | undefined;
-  function getClientHandler(clientId: IDv4): ClientV4Handler | undefined;
-  function getClientHandler(): ClientHandler<ApolloClient> | undefined;
-
   function getClientHandler() {
     const client = clientRef.deref();
     if (client) {
@@ -119,43 +112,43 @@ function registerClient(
   const wsRpcHandler = createRpcHandler(wsAdapter);
   const wsActor = createActor(wsAdapter);
 
-  function getQueries(clientId: IDv3): QueryV3Details[];
-  function getQueries(clientId: IDv4): QueryV4Details[];
-  function getQueries(): QueryV3Details[] | QueryV4Details[];
-
-  function getQueries() {
+  function getQueries(): QueryV3Details[] | QueryV4Details[] {
     return getClientHandler()?.getQueries() ?? [];
   }
 
-  function getMutations(clientId: IDv3): MutationV3Details[];
-  function getMutations(clientId: IDv4): MutationV4Details[];
-  function getMutations(): MutationV3Details[] | MutationV4Details[];
-
-  function getMutations() {
+  function getMutations(): MutationV3Details[] | MutationV4Details[] {
     return getClientHandler()?.getMutations() ?? [];
   }
 
-  function getMemoryInternalsForClient(
-    clientId: IDv3
-  ): MemoryInternalsV3 | undefined;
-  function getMemoryInternalsForClient(
-    clientId: IDv4
-  ): MemoryInternalsV4 | undefined;
   function getMemoryInternalsForClient():
     | MemoryInternalsV3
     | MemoryInternalsV4
-    | undefined;
-
-  function getMemoryInternalsForClient() {
+    | undefined {
     return getClientHandler()?.getClient().getMemoryInternals?.();
   }
 
-  wsRpcHandler("getV3Queries", getQueries, { signal });
-  wsRpcHandler("getV4Queries", getQueries, { signal });
-  wsRpcHandler("getV3Mutations", getMutations, { signal });
-  wsRpcHandler("getV4Mutations", getMutations, { signal });
-  wsRpcHandler("getV3MemoryInternals", getMemoryInternalsForClient, { signal });
-  wsRpcHandler("getV4MemoryInternals", getMemoryInternalsForClient, { signal });
+  wsRpcHandler("getV3Queries", () => getQueries() as QueryV3Details[], {
+    signal,
+  });
+  wsRpcHandler("getV4Queries", () => getQueries() as QueryV4Details[], {
+    signal,
+  });
+  wsRpcHandler("getV3Mutations", () => getMutations() as MutationV3Details[], {
+    signal,
+  });
+  wsRpcHandler("getV4Mutations", () => getMutations() as MutationV4Details[], {
+    signal,
+  });
+  wsRpcHandler(
+    "getV3MemoryInternals",
+    () => getMemoryInternalsForClient() as MemoryInternalsV3 | undefined,
+    { signal }
+  );
+  wsRpcHandler(
+    "getV4MemoryInternals",
+    () => getMemoryInternalsForClient() as MemoryInternalsV4 | undefined,
+    { signal }
+  );
   wsRpcHandler(
     "getCache",
     () => getClientHandler()?.getClient().cache.extract(true) ?? {},
