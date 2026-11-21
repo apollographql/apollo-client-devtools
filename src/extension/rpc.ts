@@ -73,7 +73,7 @@ interface RPCSuccessResponseMessage<Result = unknown> {
 export interface RPCRequestMessage<Params extends SafeAny[] = unknown[]> {
   type: MessageType.RPCRequest;
   id: string;
-  target: MessageTarget | undefined;
+  target?: MessageTarget;
   name: string;
   params: Params;
 }
