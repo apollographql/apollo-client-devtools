@@ -18,10 +18,11 @@ connectTabMessagePort(window, (port) => {
 });
 
 connectClientMessagePort(window, (port, clientId) => {
-  createMessageBridge(
-    createPortMessageAdapter(() =>
-      browser.runtime.connect({ name: `client:${clientId}` })
-    ),
-    createMessagePortMessageAdapter(port)
+  const portAdapter = createPortMessageAdapter(() =>
+    browser.runtime.connect({ name: `client:${clientId}` })
   );
+  const messagePortAdapter = createMessagePortMessageAdapter(port);
+
+  messagePortAdapter.onDisconnect(() => portAdapter.disconnect());
+  createMessageBridge(portAdapter, messagePortAdapter);
 });
