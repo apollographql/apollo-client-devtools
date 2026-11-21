@@ -19,9 +19,7 @@ import {
 } from "../rpc";
 import { loadErrorCodes } from "./loadErrorCodes";
 import { handleExplorerRequests } from "./handleExplorerRequests";
-import type { ClientHandler, IDv3, IDv4 } from "./clientHandler";
-import type { ClientV3Handler } from "./v3/handler";
-import type { ClientV4Handler } from "./v4/handler";
+import type { ClientHandler } from "./clientHandler";
 import type { Cache } from "@/application/types/scalars";
 import { createHandler } from "./helpers";
 import { patch } from "@/application/utilities/patch";
