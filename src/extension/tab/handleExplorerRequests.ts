@@ -4,12 +4,18 @@ import type { ClientHandler } from "./clientHandler";
 
 export function handleExplorerRequests(
   actor: Actor,
-  handler: ClientHandler<ApolloClient>,
+  getHandler: () => ClientHandler<ApolloClient> | undefined,
   options: OptionsWithAbortSignal = {}
 ) {
   return actor.on(
     "explorerRequest",
     ({ payload }) => {
+      const handler = getHandler();
+
+      if (!handler) {
+        return;
+      }
+
       const observable = handler.executeOperation(payload);
       const subscription = observable.subscribe((payload) => {
         actor.send({ type: "explorerResponse", payload });

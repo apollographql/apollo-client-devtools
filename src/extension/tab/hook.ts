@@ -107,7 +107,7 @@ function connectClient(client: ApolloClient) {
   // tab port, so we need to use that instead of a client port
   loadErrorCodes(tabRpcClient, client.version);
 
-  handleExplorerRequests(actor, handler);
+  handleExplorerRequests(actor, () => handler);
 
   handleRpc("getClient", () => getClientInfo(client));
   handleRpc("getCache", () => client.cache.extract(true));
