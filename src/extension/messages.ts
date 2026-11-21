@@ -25,12 +25,16 @@ export const enum MessageType {
   AggregateResponse = "aggregateResponse",
   PostMessageError = "postMessageError",
   CloseMessagePort = "closeMessagePort",
+  ConnectClient = "connectClient",
+  DisconnectClient = "disconnectClient",
 }
 
 export type DevtoolsMessage =
   | ActorDevtoolsMessage
   | AggregateResponse
   | CloseMessagePortMessage
+  | ConnectClientMessage
+  | DisconnectClientMessage
   | RPCRequestMessage
   | RPCResponseMessage
   | PostMessageError
@@ -41,6 +45,16 @@ export type DevtoolsMessage =
 export type MessageTarget =
   | { type: "client"; clientId: string }
   | { type: "aggregate"; id: string };
+
+export interface ConnectClientMessage {
+  type: MessageType.ConnectClient;
+  clientId: string;
+}
+
+export interface DisconnectClientMessage {
+  type: MessageType.DisconnectClient;
+  clientId: string;
+}
 
 export interface CloseMessagePortMessage {
   type: MessageType.CloseMessagePort;
