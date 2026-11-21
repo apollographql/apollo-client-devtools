@@ -35,15 +35,8 @@ export class MessageAdapter {
 
   private jsonSerialize: boolean;
 
-  constructor({
-    addListener,
-    postMessage,
-    jsonSerialize = false,
-  }: MessageAdapterOptions) {
-    this.source = {
-      addListener,
-      postMessage,
-    };
+  constructor({ jsonSerialize = false, ...source }: MessageAdapterOptions) {
+    this.source = source;
     this.jsonSerialize = jsonSerialize;
   }
 
