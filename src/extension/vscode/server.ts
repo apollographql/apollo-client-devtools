@@ -98,7 +98,10 @@ export function runServer(
         actor: wsActor,
         rpcClient: wsRpcClient,
       });
-      vscodeActor.send(message);
+      messageAdapter.postMessage({
+        type: MessageType.ConnectClient,
+        clientId: id,
+      });
     });
     wsActor.on("explorerResponse", (message) => {
       vscodeActor.send(message);
@@ -110,7 +113,10 @@ export function runServer(
     });
     ws.on("close", () => {
       if (id && clients.has(id)) {
-        vscodeActor.send({ type: "clientTerminated", clientId: id });
+        messageAdapter.postMessage({
+          type: MessageType.DisconnectClient,
+          clientId: id,
+        });
         clients.delete(id);
       }
     });
