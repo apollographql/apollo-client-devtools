@@ -32,6 +32,8 @@ class AggregateRequest {
   }
 
   complete(clientId: string, message: DevtoolsMessage) {
+    if (!this.pending.has(clientId)) return;
+
     const index = this.ids.findIndex((id) => id === clientId);
 
     this.pending.delete(clientId);
