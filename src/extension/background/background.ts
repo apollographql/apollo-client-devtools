@@ -1,5 +1,5 @@
 import browser from "webextension-polyfill";
-import "./errorcodes";
+import { handleErrorCodes } from "./errorcodes";
 import type { DevtoolsMessage, MessageTarget } from "../messages";
 import {
   createDevtoolsMessage,
@@ -166,9 +166,7 @@ function connectClientPort(port: browser.Runtime.Port) {
 
 browser.runtime.onConnect.addListener((port) => {
   if (port.name === "tab") {
-    // the tab port is only used to get error codes which is handled by a
-    // separate listener
-    return;
+    return handleErrorCodes(port);
   }
 
   if (port.name.startsWith("client:")) {
