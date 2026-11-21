@@ -4,7 +4,7 @@ import { createId } from "../utils/createId";
 import { RPC_MESSAGE_TIMEOUT } from "./errorMessages";
 import { deserializeError, serializeError } from "./errorSerialization";
 import type { MessageAdapter } from "./messageAdapters";
-import type { MessageTarget } from "./messages";
+import type { AggregateResponse, MessageTarget } from "./messages";
 import { MessageType } from "./messages";
 import type {
   MutationV3Details,
@@ -46,6 +46,10 @@ export interface RpcClient {
   withClientId: (clientId: string) => RpcClient;
   withTimeout: (timeoutMs: number) => RpcClient;
   withSignal: (abortSignal?: AbortSignal) => RpcClient;
+  aggregate: <TName extends keyof RPCRequest & string>(
+    name: TName,
+    ...params: Parameters<RPCRequest[TName]>
+  ) => Promise<Array<Awaited<ReturnType<RPCRequest[TName]>>>>;
   request: <TName extends keyof RPCRequest & string>(
     name: TName,
     ...params: Parameters<RPCRequest[TName]>
@@ -110,6 +114,83 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
     },
     withSignal(signal?: AbortSignal) {
       return { ...this, signal };
+    },
+    aggregate(name, ...params) {
+      const { target, timeout, signal } = this;
+
+      if (target) {
+        return Promise.reject(
+          new Error("Cannot aggregate a request with client target")
+        );
+      }
+
+      if (signal?.aborted) {
+        return Promise.reject(getAbortError(signal));
+      }
+
+      return new Promise<SafeAny>((resolve, reject) => {
+        const id = createId();
+
+        const timeoutId = setTimeout(() => {
+          cleanup();
+          reject(new Error(RPC_MESSAGE_TIMEOUT));
+        }, timeout);
+
+        function handleAbort() {
+          cleanup();
+          reject(getAbortError(signal!));
+        }
+
+        function cleanup() {
+          clearTimeout(timeoutId);
+          removeListener();
+          signal?.removeEventListener("abort", handleAbort);
+        }
+
+        const removeListener = adapter.addListener((rawMessage) => {
+          if (
+            rawMessage.type === MessageType.PostMessageError &&
+            rawMessage.sourceId === id
+          ) {
+            reject(deserializeError(rawMessage.error));
+            return cleanup();
+          }
+
+          if (
+            rawMessage.type !== MessageType.AggregateResponse ||
+            rawMessage.target.id !== id
+          ) {
+            return;
+          }
+
+          const message = rawMessage as AggregateResponse<RPCResponseMessage>;
+
+          const results: RPCResponseMessage[] = [];
+          for (const result of message.results) {
+            if ("error" in result) {
+              reject(deserializeError(result.error));
+              break;
+            } else {
+              results.push(result);
+            }
+          }
+
+          resolve(results);
+          cleanup();
+        });
+
+        signal?.addEventListener("abort", handleAbort, { once: true });
+
+        adapter.postMessage(
+          {
+            type: MessageType.RPCRequest,
+            id,
+            name,
+            params,
+          },
+          { type: "aggregate", id }
+        );
+      });
     },
     request(name, ...params) {
       const { target, signal } = this;
