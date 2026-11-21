@@ -59,9 +59,10 @@ Object.defineProperty(window, "__APOLLO_DEVTOOLS_GLOBAL_HOOK__", {
   configurable: true,
 });
 
-function getClientInfo(client: ApolloClient): ApolloClientInfo {
-  const handler = handlers.get(client)!;
-
+function getClientInfo(
+  client: ApolloClient,
+  handler: ClientHandler<any>
+): ApolloClientInfo {
   return {
     id: handler.id,
     name: "devtoolsConfig" in client ? client.devtoolsConfig.name : undefined,
@@ -93,7 +94,7 @@ function connectClient(client: ApolloClient) {
   const handler = createHandler(client);
   handlers.set(client, handler);
 
-  tab.send({ type: "registerClient", payload: getClientInfo(client) });
+  tab.send({ type: "registerClient", payload: getClientInfo(client, handler) });
 
   const adapter = createMessagePortMessageAdapter(
     createClientMessagePort(window, handler.id),
@@ -114,7 +115,7 @@ function connectClient(client: ApolloClient) {
 
   handleExplorerRequests(actor, () => handler);
 
-  handleRpc("getClient", () => getClientInfo(client));
+  handleRpc("getClient", () => getClientInfo(client, handler));
   handleRpc("getCache", () => client.cache.extract(true));
 
   handleRpc(
