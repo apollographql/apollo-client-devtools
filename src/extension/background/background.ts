@@ -380,18 +380,18 @@ function connectClientPort(port: browser.Runtime.Port) {
   tab.clients.set(clientId, { port });
 
   port.onMessage.addListener((message) => {
-    if (isDevtoolsMessage(message)) {
-      const { target } = message;
+    if (!isDevtoolsMessage(message)) return;
 
-      if (target?.type === "aggregate") {
-        const request = aggregateRequests.get(target.id);
+    const { target } = message;
 
-        request?.complete(clientId, message);
-        return;
-      }
+    if (target?.type === "aggregate") {
+      const request = aggregateRequests.get(target.id);
 
-      postMessage(tab.devtools, message);
+      request?.complete(clientId, message);
+      return;
     }
+
+    postMessage(tab.devtools, message);
   });
 
   port.onDisconnect.addListener(() => {
