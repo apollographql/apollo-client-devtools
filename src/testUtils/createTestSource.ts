@@ -43,9 +43,17 @@ export function createTestSource() {
       simulateDevtoolsMessage({ type: MessageType.Actor, message });
     },
     simulateRPCResponse<TResult = unknown>(
-      message: DistributiveOmit<RPCResponseMessage<TResult>, "type">
+      message: DistributiveOmit<
+        RPCResponseMessage<TResult>,
+        "type" | "target"
+      > &
+        Partial<Pick<RPCResponseMessage, "target">>
     ) {
-      simulateDevtoolsMessage({ ...message, type: MessageType.RPCResponse });
+      simulateDevtoolsMessage({
+        target: undefined,
+        ...message,
+        type: MessageType.RPCResponse,
+      });
     },
     simulateRPCStreamChunk<TValue = unknown>(streamId: string, value: TValue) {
       simulateDevtoolsMessage({
