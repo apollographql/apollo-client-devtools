@@ -2,32 +2,46 @@ import type { IDv3, IDv4 } from "./clientHandler";
 
 const SOURCE = "apollo-client-devtools-channel";
 
-interface ConnectMessage {
+interface ConnectClientMessage {
   source: typeof SOURCE;
-  type: "connect";
+  type: "connectClient";
   clientId: string;
 }
 
-function isConnectMessage(message: unknown): message is ConnectMessage {
+interface ConnectTabMessage {
+  source: typeof SOURCE;
+  type: "connectTab";
+}
+
+type ConnectMessage = ConnectClientMessage | ConnectTabMessage;
+
+function isConnectMessage<MessageType extends ConnectMessage["type"]>(
+  message: unknown,
+  type: MessageType
+): message is Extract<ConnectMessage, { type: MessageType }> {
   return (
     message != null &&
     typeof message === "object" &&
     "source" in message &&
     message.source === SOURCE &&
     "type" in message &&
-    message.type === "connect"
+    message.type === type
   );
 }
 
 // Both manifests inject tab.js before hook.js at document_start, so the tab's
 // listener is installed synchronously before the hook sends its message.
-export function connectHook(window: Window): MessagePort {
+export function createTabPort(window: Window): MessagePort {
   const { port1, port2 } = new MessageChannel();
-  window.postMessage({ source: SOURCE, type: "old-connect" }, "*", [port2]);
+  window.postMessage(
+    { source: SOURCE, type: "connectTab" } satisfies ConnectTabMessage,
+    "*",
+    [port2]
+  );
   return port1;
 }
 
-export function connectTab(
+export function connectTabPort(
   window: Window,
   connected: (port: MessagePort) => void
 ) {
@@ -35,8 +49,7 @@ export function connectTab(
     if (
       event.isTrusted &&
       event.source === window &&
-      event.data?.source === SOURCE &&
-      event.data.type === "old-connect" &&
+      isConnectMessage(event.data, "connectTab") &&
       event.ports.length === 1
     ) {
       event.stopImmediatePropagation();
@@ -51,7 +64,11 @@ export function connectTab(
 export function createClientPort(window: Window, clientId: IDv3 | IDv4) {
   const { port1, port2 } = new MessageChannel();
   window.postMessage(
-    { source: SOURCE, type: "connect", clientId } satisfies ConnectMessage,
+    {
+      source: SOURCE,
+      type: "connectClient",
+      clientId,
+    } satisfies ConnectClientMessage,
     "*",
     [port2]
   );
@@ -63,7 +80,10 @@ export function connectClient(
   connected: (port: MessagePort, clientId: string) => void
 ) {
   function handleMessage(event: MessageEvent) {
-    if (event.source === window && isConnectMessage(event.data)) {
+    if (
+      event.source === window &&
+      isConnectMessage(event.data, "connectClient")
+    ) {
       connected(event.ports[0], event.data.clientId);
     }
   }
