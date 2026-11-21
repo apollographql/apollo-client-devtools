@@ -156,10 +156,7 @@ function connectClientPort(port: browser.Runtime.Port) {
 
   postMessage(
     tab.devtools,
-    createDevtoolsMessage({
-      type: MessageType.Actor,
-      message: { type: "registerClient", clientId },
-    })
+    createDevtoolsMessage({ type: MessageType.ConnectClient, clientId })
   );
 
   port.onMessage.addListener((message) => {
