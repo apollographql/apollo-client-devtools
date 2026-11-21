@@ -569,3 +569,237 @@ test("rethrows errors thrown by listeners in a microtask when reportError is una
 
   expect(callback).toThrow(error);
 });
+
+test("connect: calls source connect with the adapter on creation", () => {
+  const source = createTestSource();
+  const connect = jest.fn();
+  const adapter = new MessageAdapter({ ...source, connect });
+
+  expect(connect).toHaveBeenCalledTimes(1);
+  expect(connect).toHaveBeenCalledWith(expect.any(Function));
+  expect(connect.mock.contexts[0]).toBe(adapter);
+});
+
+test("connect: reconnect resubscribes the listener on source", () => {
+  const source = createTestSource();
+  let reconnect!: () => void;
+  const adapter = new MessageAdapter({
+    ...source,
+    connect: (fn) => {
+      reconnect = fn;
+    },
+  });
+
+  const handleMessage = jest.fn();
+  adapter.addListener(handleMessage);
+
+  expect(source.addListener).toHaveBeenCalledTimes(1);
+
+  reconnect();
+
+  expect(source.mocks.removeListener).toHaveBeenCalledTimes(1);
+  expect(source.addListener).toHaveBeenCalledTimes(2);
+
+  source.simulateActorMessage({ type: "initializePanel", initialContext: {} });
+
+  expect(handleMessage).toHaveBeenCalledTimes(1);
+});
+
+test("connect: reconnect does not subscribe on source without listeners", () => {
+  const source = createTestSource();
+  let reconnect!: () => void;
+  const adapter = new MessageAdapter({
+    ...source,
+    connect: (fn) => {
+      reconnect = fn;
+    },
+  });
+
+  reconnect();
+
+  expect(source.addListener).not.toHaveBeenCalled();
+
+  const unsubscribe = adapter.addListener(() => {});
+  unsubscribe();
+  source.addListener.mockClear();
+
+  reconnect();
+
+  expect(source.addListener).not.toHaveBeenCalled();
+});
+
+test("connect: reconnect does nothing after disconnect", () => {
+  const source = createTestSource();
+  let reconnect!: () => void;
+  const adapter = new MessageAdapter({
+    ...source,
+    connect: (fn) => {
+      reconnect = fn;
+    },
+  });
+
+  adapter.addListener(() => {});
+  adapter.disconnect();
+  source.addListener.mockClear();
+
+  reconnect();
+
+  expect(source.addListener).not.toHaveBeenCalled();
+});
+
+test("connect: source can disconnect the adapter", () => {
+  const source = createTestSource();
+  let disconnectFromSource!: () => void;
+  const adapter = new MessageAdapter({
+    ...source,
+    connect() {
+      disconnectFromSource = () => this.disconnect();
+    },
+  });
+
+  const handleDisconnect = jest.fn();
+  adapter.onDisconnect(handleDisconnect);
+
+  disconnectFromSource();
+
+  expect(adapter.closed).toBe(true);
+  expect(handleDisconnect).toHaveBeenCalledTimes(1);
+});
+
+test("disconnect: calls source disconnect with the adapter", () => {
+  const source = createTestSource();
+  const disconnect = jest.fn();
+  const adapter = new MessageAdapter({ ...source, disconnect });
+
+  adapter.disconnect();
+
+  expect(disconnect).toHaveBeenCalledTimes(1);
+  expect(disconnect.mock.contexts[0]).toBe(adapter);
+});
+
+test("disconnect: marks the adapter as closed", () => {
+  const source = createTestSource();
+  const adapter = new MessageAdapter(source);
+
+  expect(adapter.closed).toBe(false);
+
+  adapter.disconnect();
+
+  expect(adapter.closed).toBe(true);
+});
+
+test("disconnect: allows source disconnect to post messages", () => {
+  const source = createTestSource();
+  const adapter = new MessageAdapter({
+    ...source,
+    disconnect() {
+      this.postMessage({ type: MessageType.CloseMessagePort });
+    },
+  });
+
+  adapter.disconnect();
+
+  expect(source.postMessage).toHaveBeenCalledTimes(1);
+  expect(source.postMessage).toHaveBeenCalledWith({
+    id: expect.any(String),
+    source: "apollo-client-devtools",
+    type: MessageType.CloseMessagePort,
+  });
+});
+
+test("disconnect: removes listener on source", () => {
+  const source = createTestSource();
+  const adapter = new MessageAdapter(source);
+
+  const handleMessage = jest.fn();
+  adapter.addListener(handleMessage);
+  adapter.disconnect();
+
+  expect(source.mocks.removeListener).toHaveBeenCalledTimes(1);
+
+  source.simulateActorMessage({ type: "initializePanel", initialContext: {} });
+
+  expect(handleMessage).not.toHaveBeenCalled();
+});
+
+test("disconnect: calls disconnect listeners", () => {
+  const source = createTestSource();
+  const adapter = new MessageAdapter(source);
+
+  const handleDisconnect1 = jest.fn();
+  const handleDisconnect2 = jest.fn();
+  adapter.onDisconnect(handleDisconnect1);
+  adapter.onDisconnect(handleDisconnect2);
+
+  adapter.disconnect();
+
+  expect(handleDisconnect1).toHaveBeenCalledTimes(1);
+  expect(handleDisconnect2).toHaveBeenCalledTimes(1);
+});
+
+test("disconnect: does nothing when called multiple times", () => {
+  const source = createTestSource();
+  const disconnect = jest.fn();
+  const adapter = new MessageAdapter({ ...source, disconnect });
+
+  const handleDisconnect = jest.fn();
+  adapter.onDisconnect(handleDisconnect);
+
+  adapter.disconnect();
+  adapter.disconnect();
+
+  expect(disconnect).toHaveBeenCalledTimes(1);
+  expect(handleDisconnect).toHaveBeenCalledTimes(1);
+});
+
+test("disconnect: does not post messages after disconnect", () => {
+  const source = createTestSource();
+  const adapter = new MessageAdapter(source);
+
+  adapter.disconnect();
+  adapter.postMessage({
+    type: MessageType.Actor,
+    message: { type: "vscode:openExternal", uri: "1" },
+  });
+
+  expect(source.postMessage).not.toHaveBeenCalled();
+});
+
+test("disconnect: does not add listener on source after disconnect", () => {
+  const source = createTestSource();
+  const adapter = new MessageAdapter(source);
+
+  adapter.disconnect();
+
+  const handleMessage = jest.fn();
+  adapter.addListener(handleMessage);
+  adapter.on(MessageType.Actor, handleMessage);
+
+  expect(source.addListener).not.toHaveBeenCalled();
+});
+
+test("onDisconnect: can unsubscribe by calling the returned function", () => {
+  const source = createTestSource();
+  const adapter = new MessageAdapter(source);
+
+  const handleDisconnect = jest.fn();
+  const unsubscribe = adapter.onDisconnect(handleDisconnect);
+
+  unsubscribe();
+  adapter.disconnect();
+
+  expect(handleDisconnect).not.toHaveBeenCalled();
+});
+
+test("onDisconnect: does not call listeners added after disconnect", () => {
+  const source = createTestSource();
+  const adapter = new MessageAdapter(source);
+
+  adapter.disconnect();
+
+  const handleDisconnect = jest.fn();
+  adapter.onDisconnect(handleDisconnect);
+  adapter.disconnect();
+
+  expect(handleDisconnect).not.toHaveBeenCalled();
+});
