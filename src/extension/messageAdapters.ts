@@ -31,7 +31,7 @@ function reportListenerError(error: unknown) {
 export class MessageAdapter {
   private listeners = new Set<(message: ApolloClientDevtoolsMessage) => void>();
   private source: MessageAdapterSource;
-  private disconnect: (() => void) | undefined;
+  private unsubscribe: (() => void) | undefined;
 
   private jsonSerialize: boolean;
 
@@ -54,7 +54,7 @@ export class MessageAdapter {
     };
 
     if (!this.listeners.size) {
-      this.disconnect = this.source.addListener(handleMessage);
+      this.unsubscribe = this.source.addListener(handleMessage);
     }
 
     this.listeners.add(listener);
@@ -63,8 +63,8 @@ export class MessageAdapter {
       this.listeners.delete(listener);
 
       if (this.listeners.size === 0) {
-        this.disconnect?.();
-        this.disconnect = undefined;
+        this.unsubscribe?.();
+        this.unsubscribe = undefined;
       }
     };
   }
