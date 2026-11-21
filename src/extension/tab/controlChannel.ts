@@ -1,5 +1,3 @@
-import type { IDv3, IDv4 } from "./clientHandler";
-
 const SOURCE = "apollo-client-devtools-channel";
 
 interface ConnectClientMessage {
@@ -61,7 +59,7 @@ export function connectTabMessagePort(
   window.addEventListener("message", handleMessage, { capture: true });
 }
 
-export function createClientMessagePort(window: Window, clientId: IDv3 | IDv4) {
+export function createClientMessagePort(window: Window, clientId: string) {
   const { port1, port2 } = new MessageChannel();
   window.postMessage(
     {
