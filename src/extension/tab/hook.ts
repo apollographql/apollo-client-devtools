@@ -71,20 +71,16 @@ function getClientInfo(client: ApolloClient): ApolloClientInfo {
   };
 }
 
-function watchForClientTermination(client: ApolloClient) {
+function watchForClientTermination(client: ApolloClient, cleanup: () => void) {
   const originalStop = client.stop;
 
   client.stop = () => {
     knownClients.delete(client);
-    const handler = handlers.get(client);
-    handlers.delete(client);
 
     if (window.__APOLLO_CLIENT__ === client) {
       window.__APOLLO_CLIENT__ = undefined;
     }
-    if (handler) {
-      tab.send({ type: "clientTerminated", clientId: handler.id });
-    }
+    cleanup();
     originalStop.call(client);
   };
 }
@@ -110,7 +106,11 @@ function connectClient(client: ApolloClient) {
   // The background script loads error codes by listening for messages from the
   // tab port, so we need to use that instead of a client port
   loadErrorCodes(tabRpcClient, client.version);
-  watchForClientTermination(client);
+  watchForClientTermination(client, () => {
+    handlers.delete(client);
+    tab.send({ type: "clientTerminated", clientId: handler.id });
+    adapter.disconnect();
+  });
 
   handleExplorerRequests(actor, () => handler);
 
