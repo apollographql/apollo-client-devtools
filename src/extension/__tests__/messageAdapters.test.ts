@@ -53,7 +53,6 @@ test("preserves the id when one is provided", () => {
   adapter.postMessage({
     type: MessageType.RPCRequest,
     id: "abc",
-    target: undefined,
     name: "getClient",
     params: [],
   });
@@ -75,7 +74,6 @@ test("sends the message as-is when not using jsonSerialize", () => {
   adapter.postMessage({
     type: MessageType.RPCRequest,
     id: "abc",
-    target: undefined,
     name: "getClient",
     params: [url],
   });
@@ -92,7 +90,6 @@ test("JSON serializes the message when using jsonSerialize", () => {
   adapter.postMessage({
     type: MessageType.RPCRequest,
     id: "abc",
-    target: undefined,
     name: "getClient",
     params: [new URL("https://example.com"), undefined],
   });
@@ -307,7 +304,6 @@ test("on: ignores messages that don't match the given type", () => {
   adapter.on(MessageType.Actor, handleMessage);
 
   source.simulateRPCResponse({
-    target: undefined,
     sourceId: "abc",
     result: null,
   });
@@ -315,7 +311,6 @@ test("on: ignores messages that don't match the given type", () => {
   source.simulateDevtoolsMessage({
     type: MessageType.RPCRequest,
     id: createId(),
-    target: undefined,
     name: "getClient",
     params: ["1"],
   });
@@ -354,7 +349,7 @@ test("on: routes messages to listeners for each type", () => {
 
   handleActor.mockClear();
 
-  source.simulateRPCResponse({ target: undefined, sourceId: "abc", result: 1 });
+  source.simulateRPCResponse({ sourceId: "abc", result: 1 });
 
   expect(handleActor).not.toHaveBeenCalled();
   expect(handleResponse).toHaveBeenCalledTimes(1);
