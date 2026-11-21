@@ -97,6 +97,8 @@ function connectClient(client: ApolloClient) {
   const handler = createHandler(client);
   handlers.set(client, handler);
 
+  tab.send({ type: "registerClient", payload: getClientInfo(client) });
+
   const adapter = createMessagePortMessageAdapter(
     createClientMessagePort(window, handler.id),
     { jsonSerialize: true }
@@ -221,7 +223,6 @@ function connectClient(client: ApolloClient) {
 function registerClient(client: ApolloClient) {
   if (!knownClients.has(client)) {
     knownClients.add(client);
-    tab.send({ type: "registerClient", payload: getClientInfo(client) });
     connectClient(client);
   }
 
