@@ -62,16 +62,19 @@ function executeOperation({
   clientId: string;
 }) {
   return new Observable<ExplorerResponse>((observer) => {
-    panelWindow.send({
-      type: "explorerRequest",
-      payload: {
-        clientId,
-        operation: gql(operation),
-        operationName,
-        variables,
-        fetchPolicy,
+    panelWindow.send(
+      {
+        type: "explorerRequest",
+        payload: {
+          clientId,
+          operation: gql(operation),
+          operationName,
+          variables,
+          fetchPolicy,
+        },
       },
-    });
+      { type: "client", clientId }
+    );
 
     const removeListener = panelWindow.on("explorerResponse", (message) => {
       const { payload } = message;

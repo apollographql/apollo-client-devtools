@@ -73,15 +73,6 @@ function getClientInfo(client: ApolloClient): ApolloClientInfo {
   };
 }
 
-function getHandlerByClientId(clientId: IDv3): ClientV3Handler | undefined;
-function getHandlerByClientId(clientId: IDv4): ClientV4Handler | undefined;
-
-function getHandlerByClientId(clientId: IDv3 | IDv4) {
-  return [...handlers.values()].find((handler) => handler.id === clientId);
-}
-
-handleExplorerRequests(tab, getHandlerByClientId);
-
 function watchForClientTermination(client: ApolloClient) {
   const originalStop = client.stop;
 
@@ -110,12 +101,15 @@ function connectClient(client: ApolloClient) {
     createClientMessagePort(window, handler.id),
     { jsonSerialize: true }
   );
+  const actor = createActor(adapter);
   const handleRpc = createRpcHandler(adapter);
   const handleRpcStream = createRpcStreamHandler(adapter);
 
   // The background script loads error codes by listening for messages from the
   // tab port, so we need to use that instead of a client port
   loadErrorCodes(tabRpcClient, client.version);
+
+  handleExplorerRequests(actor, handler);
 
   handleRpc("getClient", () => getClientInfo(client));
   handleRpc("getCache", () => client.cache.extract(true));
