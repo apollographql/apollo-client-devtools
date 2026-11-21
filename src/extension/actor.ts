@@ -1,3 +1,4 @@
+import type { MessageTarget } from "./messages";
 import { MessageType } from "./messages";
 import type { MessageAdapter } from "./messageAdapters";
 import type { ApolloClientInfo, ExplorerResponse } from "../types";
@@ -7,7 +8,6 @@ import type { DevToolsMachineEvents } from "../application/machines/devtoolsMach
 
 export type ActorMessage =
   | { type: "registerClient"; payload: ApolloClientInfo }
-  | { type: "clientTerminated"; clientId: string }
   | {
       type: "explorerRequest";
       payload: {
@@ -40,6 +40,7 @@ export type ActorMessage =
 
 export interface ActorDevtoolsMessage {
   type: MessageType.Actor;
+  target?: MessageTarget | undefined;
   message: ActorMessage;
 }
 
@@ -51,7 +52,7 @@ export interface Actor {
       : never,
     options?: OptionsWithAbortSignal
   ) => () => void;
-  send: (message: ActorMessage) => void;
+  send: (message: ActorMessage, target?: MessageTarget) => void;
 }
 
 export function createActor(adapter: MessageAdapter): Actor {
@@ -68,8 +69,8 @@ export function createActor(adapter: MessageAdapter): Actor {
 
   return {
     on,
-    send: (message) => {
-      adapter.postMessage({ type: MessageType.Actor, message });
+    send: (message, target) => {
+      adapter.postMessage({ type: MessageType.Actor, message, target });
     },
   };
 }

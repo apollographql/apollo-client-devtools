@@ -62,16 +62,19 @@ function executeOperation({
   clientId: string;
 }) {
   return new Observable<ExplorerResponse>((observer) => {
-    panelWindow.send({
-      type: "explorerRequest",
-      payload: {
-        clientId,
-        operation: gql(operation),
-        operationName,
-        variables,
-        fetchPolicy,
+    panelWindow.send(
+      {
+        type: "explorerRequest",
+        payload: {
+          clientId,
+          operation: gql(operation),
+          operationName,
+          variables,
+          fetchPolicy,
+        },
       },
-    });
+      { type: "client", clientId }
+    );
 
     const removeListener = panelWindow.on("explorerResponse", (message) => {
       const { payload } = message;
@@ -85,7 +88,10 @@ function executeOperation({
       if (isSubscription) {
         const checkForSubscriptionTermination = (event: MessageEvent) => {
           if (event.data.name.startsWith(EXPLORER_SUBSCRIPTION_TERMINATION)) {
-            panelWindow.send({ type: "explorerSubscriptionTermination" });
+            panelWindow.send(
+              { type: "explorerSubscriptionTermination" },
+              { type: "client", clientId }
+            );
             observer.complete();
             window.removeEventListener(
               "message",

@@ -43,9 +43,17 @@ export function createTestSource() {
       simulateDevtoolsMessage({ type: MessageType.Actor, message });
     },
     simulateRPCResponse<TResult = unknown>(
-      message: DistributiveOmit<RPCResponseMessage<TResult>, "type">
+      message: DistributiveOmit<
+        RPCResponseMessage<TResult>,
+        "type" | "target"
+      > &
+        Partial<Pick<RPCResponseMessage, "target">>
     ) {
-      simulateDevtoolsMessage({ ...message, type: MessageType.RPCResponse });
+      simulateDevtoolsMessage({
+        target: undefined,
+        ...message,
+        type: MessageType.RPCResponse,
+      });
     },
     simulateRPCStreamChunk<TValue = unknown>(streamId: string, value: TValue) {
       simulateDevtoolsMessage({
@@ -58,7 +66,7 @@ export function createTestSource() {
     // source calls listeners on the other source. This isn't forwarding, but
     // rather tries to simulate the window.postMessage(),
     // window.addEventListener('message') behavior.
-    connect(other: { simulatePlainMessage: typeof simulatePlainMessage }) {
+    proxy(other: { simulatePlainMessage: typeof simulatePlainMessage }) {
       proxy = other;
     },
   };

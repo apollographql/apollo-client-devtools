@@ -1,21 +1,17 @@
+import type { ApolloClient } from "@/types";
 import type { Actor, OptionsWithAbortSignal } from "../actor";
-import type { ApolloClient } from "@apollo/client";
 import type { ClientHandler } from "./clientHandler";
 
 export function handleExplorerRequests(
   actor: Actor,
-  getHandlerByClientId: (
-    clientId: string
-  ) => ClientHandler<ApolloClient> | undefined,
+  getHandler: () => ClientHandler<ApolloClient> | undefined,
   options: OptionsWithAbortSignal = {}
 ) {
   return actor.on(
     "explorerRequest",
     ({ payload }) => {
-      const handler = getHandlerByClientId(payload.clientId);
+      const handler = getHandler();
 
-      // In multi-frame scenarios (iframes), another frame may have this client
-      // so we silently return instead of throwing
       if (!handler) {
         return;
       }

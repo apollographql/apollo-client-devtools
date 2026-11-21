@@ -1,5 +1,4 @@
 import type { ApolloClient as ApolloClient4 } from "@apollo/client";
-import type { ApolloClient as ApolloClient3 } from "@apollo/client-3";
 import { Slot } from "@wry/context";
 
 // All manifests should contain the same version number so it shouldn't matter
@@ -7,24 +6,24 @@ import { Slot } from "@wry/context";
 import * as manifest from "../chrome/manifest.json";
 const { version: devtoolsVersion } = manifest;
 import type { ApolloClient, ApolloClientInfo } from "@/types";
-import type { JSONObject } from "../../application/types/json";
 import { createActor } from "../actor";
 import { createMessagePortMessageAdapter } from "../messageAdapters";
-import { connectHook } from "./controlChannel";
+import {
+  createTabMessagePort,
+  createClientMessagePort,
+} from "./controlChannel";
 import {
   createRpcClient,
   createRpcHandler,
   createRpcStreamHandler,
-  SKIP_RESPONSE,
 } from "../rpc";
 import { loadErrorCodes } from "./loadErrorCodes";
 import { handleExplorerRequests } from "./handleExplorerRequests";
-import type { ClientHandler, IDv3, IDv4 } from "./clientHandler";
-import type { ClientV3Handler } from "./v3/handler";
-import type { ClientV4Handler } from "./v4/handler";
+import type { ClientHandler } from "./clientHandler";
 import type { Cache } from "@/application/types/scalars";
 import { createHandler } from "./helpers";
 import { patch } from "@/application/utilities/patch";
+import { gte } from "semver";
 
 declare global {
   type TCache = any;
@@ -43,16 +42,12 @@ type Hook = {
 
 const DEVTOOLS_KEY = Symbol.for("apollo.devtools");
 
-const messageAdapter = createMessagePortMessageAdapter(connectHook(window), {
-  jsonSerialize: true,
-});
-const tab = createActor(messageAdapter);
-const handleRpc = createRpcHandler(messageAdapter);
-const handleRpcStream = createRpcStreamHandler(messageAdapter);
-const rpcClient = createRpcClient(messageAdapter);
-
+const tabPortAdapter = createMessagePortMessageAdapter(
+  createTabMessagePort(window),
+  { jsonSerialize: true }
+);
+const tabRpcClient = createRpcClient(tabPortAdapter);
 const knownClients = new Set<ApolloClient>();
-const handlers = new Map<ApolloClient, ClientHandler<ApolloClient>>();
 
 Object.defineProperty(window, "__APOLLO_DEVTOOLS_GLOBAL_HOOK__", {
   get(): Hook {
@@ -61,9 +56,10 @@ Object.defineProperty(window, "__APOLLO_DEVTOOLS_GLOBAL_HOOK__", {
   configurable: true,
 });
 
-function getClientInfo(client: ApolloClient): ApolloClientInfo {
-  const handler = handlers.get(client)!;
-
+function getClientInfo(
+  client: ApolloClient,
+  handler: ClientHandler<any>
+): ApolloClientInfo {
   return {
     id: handler.id,
     name: "devtoolsConfig" in client ? client.devtoolsConfig.name : undefined,
@@ -73,207 +69,166 @@ function getClientInfo(client: ApolloClient): ApolloClientInfo {
   };
 }
 
-handleRpc("getClients", () => {
-  if (knownClients.size === 0) {
-    return SKIP_RESPONSE as any;
-  }
-  return Array.from(knownClients).map(getClientInfo);
-});
-
-handleRpc("getClient", (clientId) => {
-  const client = getClientById(clientId);
-
-  return client ? getClientInfo(client) : null;
-});
-
-handleRpc(
-  "getV3Queries",
-  (clientId) => getHandlerByClientId(clientId)?.getQueries() ?? []
-);
-
-handleRpc(
-  "getV4Queries",
-  (clientId) => getHandlerByClientId(clientId)?.getQueries() ?? []
-);
-
-handleRpc(
-  "getV3Mutations",
-  (clientId) => getHandlerByClientId(clientId)?.getMutations() ?? []
-);
-
-handleRpc(
-  "getV4Mutations",
-  (clientId) => getHandlerByClientId(clientId)?.getMutations() ?? []
-);
-
-handleRpc("getCache", (clientId) => {
-  return (getClientById(clientId)?.cache.extract(true) as JSONObject) ?? {};
-});
-
-handleRpc("getV3MemoryInternals", (clientId) => {
-  return getClientById(clientId)?.getMemoryInternals?.();
-});
-
-handleRpc("getV4MemoryInternals", (clientId) => {
-  return getClientById(clientId)?.getMemoryInternals?.();
-});
-
-handleRpcStream("cacheWrite", ({ push, close }, clientId) => {
-  const slot = new Slot<boolean>();
-  // Both v3 and v4 have the same options/return value so we can treat the
-  // client the same for both versions
-  const client = getClientById(clientId) as ApolloClient4;
-  const { cache } = client;
-  const revertPatches = new Set<() => void>();
-
-  function run<TReturn>(fn: () => TReturn): {
-    result: TReturn;
-    timestamp: Date;
-    cache: { before: Cache; after: Cache };
-  } {
-    const timestamp = new Date();
-    const before = cache.extract(true) as Cache;
-    const result = slot.withValue(true, fn);
-    const after = cache.extract(true) as Cache;
-
-    return { result, timestamp, cache: { before, after } };
-  }
-
-  revertPatches.add(
-    patch(client, "stop", function (original, ...args) {
-      close();
-      return original.apply(this, args);
-    })
-  );
-
-  revertPatches.add(
-    patch(cache, "modify", function (originalModify, ...args) {
-      const [options] = args;
-      const { result, ...rest } = run(() => originalModify.apply(this, args));
-
-      const fields =
-        typeof options.fields === "function"
-          ? options.fields.toString()
-          : Object.fromEntries(
-              Object.entries(options.fields).map(([key, modifier]) => {
-                return [key, modifier?.toString()];
-              })
-            );
-
-      push({ type: "modify", options: { ...options, fields }, ...rest });
-
-      return result;
-    })
-  );
-
-  revertPatches.add(
-    patch(cache, "write", function (originalWrite, ...args) {
-      if (slot.getValue()) {
-        return originalWrite.apply(this, args);
-      }
-
-      const { result, ...rest } = run(() => originalWrite.apply(this, args));
-
-      push({ type: "write", options: args[0], ...rest });
-
-      return result;
-    })
-  );
-
-  revertPatches.add(
-    patch(cache, "writeQuery", function (originalWriteQuery, ...args) {
-      const { result, ...rest } = run(() =>
-        originalWriteQuery.apply(this, args)
-      );
-
-      push({ type: "writeQuery", options: args[0], ...rest });
-
-      return result;
-    })
-  );
-
-  revertPatches.add(
-    patch(cache, "writeFragment", function (originalWriteFragment, ...args) {
-      const { result, ...rest } = run(() =>
-        originalWriteFragment.apply(this, args)
-      );
-
-      push({ type: "writeFragment", options: args[0], ...rest });
-
-      return result;
-    })
-  );
-
-  return () => {
-    revertPatches.forEach((revert) => revert());
-  };
-});
-
-function getClientById(clientId: IDv3): ApolloClient3<any>;
-function getClientById(clientId: IDv4): ApolloClient4;
-function getClientById(
-  clientId: IDv3 | IDv4
-): ApolloClient3<any> | ApolloClient4;
-
-function getClientById(clientId: IDv3 | IDv4): ApolloClient | undefined {
-  return getHandlerByClientId(clientId as any)?.getClient();
-}
-
-function getHandlerByClientId(clientId: IDv3): ClientV3Handler | undefined;
-function getHandlerByClientId(clientId: IDv4): ClientV4Handler | undefined;
-
-function getHandlerByClientId(clientId: IDv3 | IDv4) {
-  return [...handlers.values()].find((handler) => handler.id === clientId);
-}
-
-handleExplorerRequests(tab, getHandlerByClientId);
-
-function watchForClientTermination(client: ApolloClient) {
+function watchForClientTermination(client: ApolloClient, cleanup: () => void) {
   const originalStop = client.stop;
 
   client.stop = () => {
     knownClients.delete(client);
-    const handler = handlers.get(client);
-    handlers.delete(client);
 
     if (window.__APOLLO_CLIENT__ === client) {
       window.__APOLLO_CLIENT__ = undefined;
     }
-    if (handler) {
-      tab.send({ type: "clientTerminated", clientId: handler.id });
-    }
+    cleanup();
     originalStop.call(client);
   };
 }
 
-function registerClient(client: ApolloClient) {
-  if (!knownClients.has(client)) {
-    knownClients.add(client);
-
-    handlers.set(client, createHandler(client));
-    watchForClientTermination(client);
-
-    tab.send({ type: "registerClient", payload: getClientInfo(client) });
-  }
-
-  // TODO: Repurpose this callback. The message it sent was not listened by
-  // anything, so the broadcast was useless. Currently the devtools rely on
-  // polling the client every second for updates, rather than relying on
-  // this callback to update the devtools state.
-  // client.__actionHookForDevTools(() => {
-  //   if (client !== hook.ApolloClient) {
-  //     // if the client has changed, don't send the action hook
-  //     return;
-  //   }
-  // });
-
-  loadErrorCodes(rpcClient, client.version);
+function isV4Client(client: ApolloClient): client is ApolloClient4 {
+  return gte(client.version, "4.0.0");
 }
 
+function connectClient(client: ApolloClient) {
+  if (knownClients.has(client)) return;
+  knownClients.add(client);
+
+  const handler = createHandler(client);
+
+  const adapter = createMessagePortMessageAdapter(
+    createClientMessagePort(window, handler.id),
+    { jsonSerialize: true }
+  );
+  const actor = createActor(adapter);
+  const handleRpc = createRpcHandler(adapter);
+  const handleRpcStream = createRpcStreamHandler(adapter);
+
+  // The background script loads error codes by listening for messages from the
+  // tab port, so we need to use that instead of a client port
+  loadErrorCodes(tabRpcClient, client.version);
+  watchForClientTermination(client, () => adapter.disconnect());
+
+  handleExplorerRequests(actor, () => handler);
+
+  handleRpc("getClient", () => getClientInfo(client, handler));
+  handleRpc("getCache", () => client.cache.extract(true));
+
+  handleRpc(
+    isV4Client(client) ? "getV4MemoryInternals" : "getV3MemoryInternals",
+    () => client.getMemoryInternals?.()
+  );
+
+  handleRpc(isV4Client(client) ? "getV4Queries" : "getV3Queries", () =>
+    handler.getQueries()
+  );
+  handleRpc(isV4Client(client) ? "getV4Mutations" : "getV3Mutations", () =>
+    handler.getMutations()
+  );
+
+  handleRpcStream("cacheWrite", ({ push, close }) => {
+    const slot = new Slot<boolean>();
+    // Both v3 and v4 have the same options/return value so we can treat the
+    // client the same for both versions
+    const { cache } = client as ApolloClient4;
+    const revertPatches = new Set<() => void>();
+
+    function run<TReturn>(fn: () => TReturn): {
+      result: TReturn;
+      timestamp: Date;
+      cache: { before: Cache; after: Cache };
+    } {
+      const timestamp = new Date();
+      const before = cache.extract(true) as Cache;
+      const result = slot.withValue(true, fn);
+      const after = cache.extract(true) as Cache;
+
+      return { result, timestamp, cache: { before, after } };
+    }
+
+    revertPatches.add(
+      patch(client, "stop", function (original, ...args) {
+        close();
+        return original.apply(this, args);
+      })
+    );
+
+    revertPatches.add(
+      patch(cache, "modify", function (originalModify, ...args) {
+        const [options] = args;
+        const { result, ...rest } = run(() => originalModify.apply(this, args));
+
+        const fields =
+          typeof options.fields === "function"
+            ? options.fields.toString()
+            : Object.fromEntries(
+                Object.entries(options.fields).map(([key, modifier]) => {
+                  return [key, modifier?.toString()];
+                })
+              );
+
+        push({ type: "modify", options: { ...options, fields }, ...rest });
+
+        return result;
+      })
+    );
+
+    revertPatches.add(
+      patch(cache, "write", function (originalWrite, ...args) {
+        if (slot.getValue()) {
+          return originalWrite.apply(this, args);
+        }
+
+        const { result, ...rest } = run(() => originalWrite.apply(this, args));
+
+        push({ type: "write", options: args[0], ...rest });
+
+        return result;
+      })
+    );
+
+    revertPatches.add(
+      patch(cache, "writeQuery", function (originalWriteQuery, ...args) {
+        const { result, ...rest } = run(() =>
+          originalWriteQuery.apply(this, args)
+        );
+
+        push({ type: "writeQuery", options: args[0], ...rest });
+
+        return result;
+      })
+    );
+
+    revertPatches.add(
+      patch(cache, "writeFragment", function (originalWriteFragment, ...args) {
+        const { result, ...rest } = run(() =>
+          originalWriteFragment.apply(this, args)
+        );
+
+        push({ type: "writeFragment", options: args[0], ...rest });
+
+        return result;
+      })
+    );
+
+    return () => {
+      revertPatches.forEach((revert) => revert());
+    };
+  });
+}
+
+// TODO: Repurpose this callback. The message it sent was not listened by
+// anything, so the broadcast was useless. Currently the devtools rely on
+// polling the client every second for updates, rather than relying on
+// this callback to update the devtools state.
+// client.__actionHookForDevTools(() => {
+//   if (client !== hook.ApolloClient) {
+//     // if the client has changed, don't send the action hook
+//     return;
+//   }
+// });
+
 const preExisting = window[DEVTOOLS_KEY];
-window[DEVTOOLS_KEY] = { push: registerClient };
+window[DEVTOOLS_KEY] = { push: connectClient };
 if (Array.isArray(preExisting)) {
-  (preExisting as Array<ApolloClient>).forEach(registerClient);
+  (preExisting as Array<ApolloClient>).forEach(connectClient);
 }
 
 // Handles registering legacy clients (< v3.7) which do not use the new
@@ -289,7 +244,7 @@ Object.defineProperty(window, "__APOLLO_CLIENT__", {
       // instantiated before the property on window is assigned since it
       // connects from the constructor of ApolloClient. This allows
       // initialization to finish before we register it.
-      setTimeout(() => registerClient(client));
+      setTimeout(() => connectClient(client));
     }
 
     globalClient = client;
@@ -298,5 +253,5 @@ Object.defineProperty(window, "__APOLLO_CLIENT__", {
 });
 
 if (globalClient) {
-  registerClient(globalClient);
+  connectClient(globalClient);
 }

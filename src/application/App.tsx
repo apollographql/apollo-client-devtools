@@ -44,6 +44,8 @@ import { ExternalLink } from "./components/ExternalLink";
 import { MemoryInternals } from "./components/MemoryInternals";
 import { CacheWritesSubscription } from "./components/CacheWritesSubscription";
 import { useLocalStorage } from "./hooks/useLocalStorage";
+import { useDevtoolsMessage } from "./hooks/useDevtoolsMessage";
+import { MessageType } from "@/extension/messages";
 
 const APP_QUERY: TypedDocumentNode<AppQuery, AppQueryVariables> = gql`
   query AppQuery {
@@ -77,7 +79,7 @@ export const App = () => {
   const { send } = useDevToolsActorRef();
   const { data, refetch } = useQuery(APP_QUERY);
 
-  useActorEvent("registerClient", () => {
+  useDevtoolsMessage(MessageType.ConnectClient, () => {
     // Unfortunately after we clear the store above, the query ends up "stuck"
     // holding onto the old list of clients even if we manually write a cache
     // update to properly resolve the list. Instead we refetch the list again to
@@ -85,8 +87,8 @@ export const App = () => {
     refetch();
   });
 
-  useActorEvent("clientTerminated", (message) => {
-    removeClient(message.clientId);
+  useDevtoolsMessage(MessageType.DisconnectClient, ({ clientId }) => {
+    removeClient(clientId);
   });
 
   useActorEvent("pageNavigated", () => {

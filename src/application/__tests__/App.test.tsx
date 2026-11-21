@@ -21,7 +21,7 @@ beforeEach(() => {
 
 describe("<App />", () => {
   test("renders the selected screen", async () => {
-    testAdapter.handleRpcRequest("getClients", () => []);
+    testAdapter.handleRpcRequest("getClient", () => null);
 
     // Suspense boundary won't resolve without this `act` call
     // https://github.com/testing-library/react-testing-library/issues/1385

@@ -45,8 +45,8 @@ describe("<Queries />", () => {
 
   function mockRpcRequests(queries: QueryV3Details[] = defaultQueries) {
     getRpcClientMock.__adapter.handleRpcRequest("getV3Queries", () => queries);
-    getRpcClientMock.__adapter.handleRpcRequest("getClient", (id) => ({
-      id,
+    getRpcClientMock.__adapter.handleRpcRequest("getClient", () => ({
+      id: "1",
       name: undefined,
       version: "3.10.0",
       queryCount: queries.length,

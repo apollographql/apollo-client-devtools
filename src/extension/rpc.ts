@@ -4,8 +4,8 @@ import { createId } from "../utils/createId";
 import { RPC_MESSAGE_TIMEOUT } from "./errorMessages";
 import { deserializeError, serializeError } from "./errorSerialization";
 import type { MessageAdapter } from "./messageAdapters";
+import type { AggregateResponse, MessageTarget } from "./messages";
 import { MessageType } from "./messages";
-import type { IDv3, IDv4 } from "./tab/clientHandler";
 import type {
   MutationV3Details,
   QueryV3Details,
@@ -17,33 +17,34 @@ import type {
   MemoryInternalsV4,
 } from "./tab/v4/types";
 import type { CacheWrite } from "./tab/shared/types";
-import { createActor } from "./actor";
-
-// Symbol to indicate a handler should not send a response (for multi-frame support)
-export const SKIP_RESPONSE = Symbol("SKIP_RESPONSE");
 
 export type RPCRequest = {
-  getClients(): ApolloClientInfo[];
-  getClient(id: string): ApolloClientInfo | null;
-  getV3Queries(clientId: IDv3): QueryV3Details[];
-  getV4Queries(clientId: IDv4): QueryV4Details[];
-  getV3Mutations(clientId: IDv3): MutationV3Details[];
-  getV4Mutations(clientId: IDv4): MutationV4Details[];
-  getCache(clientId: string): JSONObject;
+  getClient(): ApolloClientInfo | null;
+  getV3Queries(): QueryV3Details[];
+  getV4Queries(): QueryV4Details[];
+  getV3Mutations(): MutationV3Details[];
+  getV4Mutations(): MutationV4Details[];
+  getCache(): JSONObject;
   getErrorCodes(version: string): Promise<ErrorCodes | undefined>;
-  getV3MemoryInternals(clientId: IDv3): MemoryInternalsV3 | undefined;
-  getV4MemoryInternals(clientId: IDv4): MemoryInternalsV4 | undefined;
+  getV3MemoryInternals(): MemoryInternalsV3 | undefined;
+  getV4MemoryInternals(): MemoryInternalsV4 | undefined;
 };
 
 export interface RPCStream {
-  cacheWrite(clientId: IDv3 | IDv4): CacheWrite;
+  cacheWrite(): CacheWrite;
 }
 
 export interface RpcClient {
   readonly timeout: number;
   readonly signal?: AbortSignal;
+  readonly target?: MessageTarget;
+  withClientId: (clientId: string) => RpcClient;
   withTimeout: (timeoutMs: number) => RpcClient;
   withSignal: (abortSignal?: AbortSignal) => RpcClient;
+  aggregate: <TName extends keyof RPCRequest & string>(
+    name: TName,
+    ...params: Parameters<RPCRequest[TName]>
+  ) => Promise<Array<Awaited<ReturnType<RPCRequest[TName]>>>>;
   request: <TName extends keyof RPCRequest & string>(
     name: TName,
     ...params: Parameters<RPCRequest[TName]>
@@ -56,12 +57,14 @@ export interface RpcClient {
 
 interface RPCErrorResponseMessage {
   type: MessageType.RPCResponse;
+  target: MessageTarget | undefined;
   sourceId: string;
   error: { name?: string; message: string; stack?: string };
 }
 
 interface RPCSuccessResponseMessage<Result = unknown> {
   type: MessageType.RPCResponse;
+  target: MessageTarget | undefined;
   sourceId: string;
   result: Result;
 }
@@ -69,12 +72,14 @@ interface RPCSuccessResponseMessage<Result = unknown> {
 export interface RPCRequestMessage<Params extends SafeAny[] = unknown[]> {
   type: MessageType.RPCRequest;
   id: string;
+  target?: MessageTarget;
   name: string;
   params: Params;
 }
 
 export interface RPCStreamStartMessage<Params extends any[] = unknown[]> {
   type: MessageType.RPCStartStream;
+  target: MessageTarget | undefined;
   id: string;
   name: string;
   params: Params;
@@ -100,14 +105,92 @@ const DEFAULT_TIMEOUT = 30_000;
 export function createRpcClient(adapter: MessageAdapter): RpcClient {
   return {
     timeout: DEFAULT_TIMEOUT,
+    withClientId(clientId) {
+      return { ...this, target: { type: "client", clientId } };
+    },
     withTimeout(timeoutMs) {
       return { ...this, timeout: timeoutMs };
     },
     withSignal(signal?: AbortSignal) {
       return { ...this, signal };
     },
+    aggregate(name, ...params) {
+      const { target, timeout, signal } = this;
+
+      if (target) {
+        return Promise.reject(
+          new Error("Cannot aggregate a request with client target")
+        );
+      }
+
+      if (signal?.aborted) {
+        return Promise.reject(getAbortError(signal));
+      }
+
+      return new Promise<SafeAny>((resolve, reject) => {
+        const id = createId();
+
+        const timeoutId = setTimeout(() => {
+          cleanup();
+          reject(new Error(RPC_MESSAGE_TIMEOUT));
+        }, timeout);
+
+        function handleAbort() {
+          cleanup();
+          reject(getAbortError(signal!));
+        }
+
+        function cleanup() {
+          clearTimeout(timeoutId);
+          removeListener();
+          signal?.removeEventListener("abort", handleAbort);
+        }
+
+        const removeListener = adapter.addListener((rawMessage) => {
+          if (
+            rawMessage.type === MessageType.PostMessageError &&
+            rawMessage.sourceId === id
+          ) {
+            reject(deserializeError(rawMessage.error));
+            return cleanup();
+          }
+
+          if (
+            rawMessage.type !== MessageType.AggregateResponse ||
+            rawMessage.target.id !== id
+          ) {
+            return;
+          }
+
+          const message = rawMessage as AggregateResponse<RPCResponseMessage>;
+
+          const results: unknown[] = [];
+          for (const result of message.results) {
+            if ("error" in result) {
+              reject(deserializeError(result.error));
+              break;
+            } else {
+              results.push(result.result);
+            }
+          }
+
+          resolve(results);
+          cleanup();
+        });
+
+        signal?.addEventListener("abort", handleAbort, { once: true });
+
+        adapter.postMessage({
+          type: MessageType.RPCRequest,
+          target: { type: "aggregate", id },
+          id,
+          name,
+          params,
+        });
+      });
+    },
     request(name, ...params) {
-      const { signal } = this;
+      const { target, signal } = this;
 
       if (signal?.aborted) {
         return Promise.reject(getAbortError(signal));
@@ -117,16 +200,22 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
         const id = createId();
 
         const timeout = setTimeout(() => {
-          removeListener();
+          cleanup();
           reject(new Error(RPC_MESSAGE_TIMEOUT));
         }, this.timeout);
 
-        const removeListener = adapter.addListener((message) => {
-          function cleanup() {
-            clearTimeout(timeout);
-            removeListener();
-          }
+        function handleAbort() {
+          cleanup();
+          reject(getAbortError(signal!));
+        }
 
+        function cleanup() {
+          clearTimeout(timeout);
+          removeListener();
+          signal?.removeEventListener("abort", handleAbort);
+        }
+
+        const removeListener = adapter.addListener((message) => {
           if (
             message.type === MessageType.PostMessageError &&
             message.sourceId === id
@@ -151,16 +240,11 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
           cleanup();
         });
 
-        if (signal) {
-          signal.addEventListener("abort", () => {
-            clearTimeout(timeout);
-            removeListener();
-            reject(getAbortError(signal));
-          });
-        }
+        signal?.addEventListener("abort", handleAbort, { once: true });
 
         adapter.postMessage({
           type: MessageType.RPCRequest,
+          target,
           id,
           name,
           params,
@@ -169,7 +253,7 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
     },
     stream(name, ...params) {
       const streamId = createId();
-      const { signal } = this;
+      const { signal, target } = this;
       let removeListener!: () => void;
 
       function cleanup() {
@@ -205,6 +289,7 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
 
           adapter.postMessage({
             type: MessageType.RPCStartStream,
+            target,
             id: streamId,
             name,
             params,
@@ -257,20 +342,16 @@ export function createRpcHandler(adapter: MessageAdapter) {
           handler(...(params as Parameters<RPCRequest[TName]>))
         );
 
-        // If handler returns SKIP_RESPONSE, don't send a response
-        // This is used for multi-frame support where only frames with clients should respond
-        if (result === SKIP_RESPONSE) {
-          return;
-        }
-
         adapter.postMessage({
           type: MessageType.RPCResponse,
+          target: message.target,
           sourceId: id,
           result,
         });
       } catch (e) {
         adapter.postMessage({
           type: MessageType.RPCResponse,
+          target: message.target,
           sourceId: id,
           error: serializeError(e),
         });
@@ -280,16 +361,17 @@ export function createRpcHandler(adapter: MessageAdapter) {
     const cleanup = () => {
       listeners.delete(name);
       unsubscribe();
+      unsubscribeDisconnect();
     };
 
     options.signal?.addEventListener("abort", cleanup, { once: true });
+    const unsubscribeDisconnect = adapter.onDisconnect(cleanup);
 
     return cleanup;
   };
 }
 
 export function createRpcStreamHandler(adapter: MessageAdapter) {
-  const actor = createActor(adapter);
   const listeners = new Set<string>();
 
   // In case messages in the stream get pushed very fast, we want to keep the
@@ -340,8 +422,8 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
       cleanupFnsByStreamId.forEach((cleanup) => cleanup());
     };
 
-    const unsubscribeDisconnected = actor.on(
-      "devtoolsDisconnected",
+    const unsubscribeDevtoolsDisconnected = adapter.on(
+      MessageType.DevtoolsDisconnected,
       cleanupAll
     );
 
@@ -400,10 +482,13 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
       cleanupAll();
       listeners.delete(name);
       unsubscribeStream();
-      unsubscribeDisconnected();
       unsubscribeTerminate();
+      unsubscribeDevtoolsDisconnected();
+      unsubscribeDisconnect();
     };
     options.signal?.addEventListener("abort", cleanup, { once: true });
+    const unsubscribeDisconnect = adapter.onDisconnect(cleanup);
+
     return cleanup;
   };
 }

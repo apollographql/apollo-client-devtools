@@ -12,11 +12,11 @@ type MessageListener = (message: unknown) => void;
 interface MessageAdapterSource {
   addListener: (listener: MessageListener) => () => void;
   postMessage: (message: ApolloClientDevtoolsMessage) => void;
+  connect?: (this: MessageAdapter, reconnect: () => void) => void;
+  disconnect?: (this: MessageAdapter) => void;
 }
 
-interface MessageAdapterOptions {
-  addListener: (listener: MessageListener) => () => void;
-  postMessage: (message: ApolloClientDevtoolsMessage) => void;
+interface MessageAdapterOptions extends MessageAdapterSource {
   jsonSerialize?: boolean;
 }
 
@@ -32,38 +32,31 @@ function reportListenerError(error: unknown) {
 
 export class MessageAdapter {
   private listeners = new Set<(message: ApolloClientDevtoolsMessage) => void>();
+  private disconnectListeners = new Set<() => void>();
   private source: MessageAdapterSource;
-  private disconnect: (() => void) | undefined;
+  private unsubscribe: (() => void) | undefined;
 
   private jsonSerialize: boolean;
 
-  constructor({
-    addListener,
-    postMessage,
-    jsonSerialize = false,
-  }: MessageAdapterOptions) {
-    this.source = {
-      addListener,
-      postMessage,
-    };
+  private _closed = false;
+
+  constructor({ jsonSerialize = false, ...source }: MessageAdapterOptions) {
+    this.source = source;
     this.jsonSerialize = jsonSerialize;
+    this.handleMessage = this.handleMessage.bind(this);
+
+    this.source.connect?.call(this, () => this.resubscribe());
+  }
+
+  get closed() {
+    return this._closed;
   }
 
   addListener(listener: (message: ApolloClientDevtoolsMessage) => void) {
-    const handleMessage: MessageListener = (message) => {
-      if (isDevtoolsMessage(message)) {
-        this.listeners.forEach((listener) => {
-          try {
-            listener(message);
-          } catch (e) {
-            reportListenerError(e);
-          }
-        });
-      }
-    };
+    if (this.closed) return () => {};
 
     if (!this.listeners.size) {
-      this.disconnect = this.source.addListener(handleMessage);
+      this.unsubscribe = this.source.addListener(this.handleMessage);
     }
 
     this.listeners.add(listener);
@@ -72,8 +65,8 @@ export class MessageAdapter {
       this.listeners.delete(listener);
 
       if (this.listeners.size === 0) {
-        this.disconnect?.();
-        this.disconnect = undefined;
+        this.unsubscribe?.();
+        this.unsubscribe = undefined;
       }
     };
   }
@@ -97,6 +90,7 @@ export class MessageAdapter {
   }
 
   postMessage(message: DevtoolsMessage) {
+    if (this.closed) return;
     // In some cases, we need to JSON stringify the data transferred in case
     // the payload contains references to irregular data, such as `URL`
     // instances which are not cloneable via `structuredClone` (which
@@ -114,44 +108,97 @@ export class MessageAdapter {
       )
     );
   }
+
+  onDisconnect(listener: () => void) {
+    if (this.closed) return () => {};
+
+    this.disconnectListeners.add(listener);
+
+    return () => {
+      this.disconnectListeners.delete(listener);
+    };
+  }
+
+  disconnect() {
+    if (this.closed) return;
+
+    this.unsubscribe?.();
+    this.listeners.clear();
+    this.source.disconnect?.call(this);
+    this._closed = true;
+    this.disconnectListeners.forEach((listener) => listener());
+    this.disconnectListeners.clear();
+  }
+
+  private resubscribe() {
+    if (this.closed || !this.unsubscribe) return;
+
+    this.unsubscribe();
+    this.unsubscribe = this.source.addListener(this.handleMessage);
+  }
+
+  private handleMessage(message: unknown) {
+    if (!isDevtoolsMessage(message)) return;
+
+    this.listeners.forEach((listener) => {
+      try {
+        listener(message);
+      } catch (e) {
+        reportListenerError(e);
+      }
+    });
+  }
+}
+
+export function connectStaticPortMessageAdapter(
+  port: browser.Runtime.Port
+): MessageAdapter {
+  return new MessageAdapter({
+    addListener(listener) {
+      port.onMessage.addListener(listener);
+
+      return () => port.onMessage.removeListener(listener);
+    },
+    postMessage(message) {
+      port.postMessage(message);
+    },
+    connect() {
+      port.onDisconnect.addListener(() => this.disconnect());
+    },
+    disconnect() {
+      port.disconnect();
+    },
+  });
 }
 
 export function createPortMessageAdapter(
   createPort: () => browser.Runtime.Port
 ): MessageAdapter {
   let port = createPort();
-  const listeners = new Set<(message: unknown) => void>();
-
-  function handleDisconnect() {
-    listeners.forEach((listener) => {
-      port.onMessage.removeListener(listener);
-    });
-
-    port.onDisconnect.removeListener(handleDisconnect);
-    port = createPort();
-
-    initializePort();
-  }
-
-  function initializePort() {
-    listeners.forEach((listener) => port.onMessage.addListener(listener));
-    port.onDisconnect.addListener(handleDisconnect);
-  }
-
-  initializePort();
 
   return new MessageAdapter({
     addListener(listener) {
-      listeners.add(listener);
-      port.onMessage.addListener(listener);
+      const current = port;
+      current.onMessage.addListener(listener);
 
       return () => {
-        listeners.delete(listener);
-        port.onMessage.removeListener(listener);
+        current.onMessage.removeListener(listener);
       };
     },
     postMessage(message) {
       return port.postMessage(message);
+    },
+    connect(reconnect) {
+      function handleDisconnect() {
+        port = createPort();
+        port.onDisconnect.addListener(handleDisconnect);
+        reconnect();
+      }
+
+      port.onDisconnect.addListener(handleDisconnect);
+    },
+    disconnect() {
+      port.disconnect();
     },
   });
 }
@@ -185,6 +232,13 @@ export function createMessagePortMessageAdapter(
     },
     postMessage(message) {
       portPostMessage(port, message);
+    },
+    connect() {
+      this.on(MessageType.CloseMessagePort, () => this.disconnect());
+    },
+    disconnect() {
+      this.postMessage({ type: MessageType.CloseMessagePort });
+      port.close();
     },
   });
 }

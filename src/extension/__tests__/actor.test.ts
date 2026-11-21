@@ -7,15 +7,15 @@ test("sends messages to specified adapter in devtools message format", () => {
   const source = createTestSource();
   const actor = createActor(new MessageAdapter(source));
 
-  actor.send({ type: "clientTerminated", clientId: "1" });
+  actor.send({ type: "vscode:openExternal", uri: "1" });
 
   expect(source.postMessage).toHaveBeenCalledWith({
     id: expect.any(String),
     source: "apollo-client-devtools",
     type: MessageType.Actor,
     message: {
-      type: "clientTerminated",
-      clientId: "1",
+      type: "vscode:openExternal",
+      uri: "1",
     },
   });
 });
@@ -28,7 +28,7 @@ test("calls message callback when subscribing to a message", () => {
   const handleDisconnect = jest.fn();
 
   actor.on("initializePanel", handleConnect);
-  actor.on("clientTerminated", handleDisconnect);
+  actor.on("vscode:openExternal", handleDisconnect);
 
   source.simulateActorMessage({ type: "initializePanel", initialContext: {} });
 
@@ -39,17 +39,17 @@ test("calls message callback when subscribing to a message", () => {
   });
   expect(handleDisconnect).not.toHaveBeenCalled();
 
-  source.simulateActorMessage({ type: "clientTerminated", clientId: "1" });
-  source.simulateActorMessage({ type: "clientTerminated", clientId: "2" });
+  source.simulateActorMessage({ type: "vscode:openExternal", uri: "1" });
+  source.simulateActorMessage({ type: "vscode:openExternal", uri: "2" });
 
   expect(handleDisconnect).toHaveBeenCalledTimes(2);
   expect(handleDisconnect).toHaveBeenCalledWith({
-    type: "clientTerminated",
-    clientId: "1",
+    type: "vscode:openExternal",
+    uri: "1",
   });
   expect(handleDisconnect).toHaveBeenCalledWith({
-    type: "clientTerminated",
-    clientId: "2",
+    type: "vscode:openExternal",
+    uri: "2",
   });
 });
 
@@ -142,7 +142,10 @@ test("removes listener on adapter when unsubscribing from last actor listener", 
   const handleConnect = jest.fn();
   const handleDisconnect = jest.fn();
   const unsubscribeConnect = actor.on("initializePanel", handleConnect);
-  const unsubscribeDisconnect = actor.on("clientTerminated", handleDisconnect);
+  const unsubscribeDisconnect = actor.on(
+    "vscode:openExternal",
+    handleDisconnect
+  );
 
   unsubscribeConnect();
 

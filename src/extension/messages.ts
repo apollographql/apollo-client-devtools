@@ -22,11 +22,21 @@ export const enum MessageType {
   RPCTerminateStream = "rpcTerminateStream",
   RPCStreamChunk = "rpcStreamChunk",
   Actor = "actor",
+  AggregateResponse = "aggregateResponse",
   PostMessageError = "postMessageError",
+  CloseMessagePort = "closeMessagePort",
+  ConnectClient = "connectClient",
+  DisconnectClient = "disconnectClient",
+  DevtoolsDisconnected = "devtoolsDisconnected",
 }
 
 export type DevtoolsMessage =
   | ActorDevtoolsMessage
+  | AggregateResponse
+  | CloseMessagePortMessage
+  | ConnectClientMessage
+  | DevtoolsDisconnectedMessage
+  | DisconnectClientMessage
   | RPCRequestMessage
   | RPCResponseMessage
   | PostMessageError
@@ -34,9 +44,40 @@ export type DevtoolsMessage =
   | RPCTerminateStreamMessage
   | RPCStreamChunkMessage;
 
+export type MessageTarget =
+  | { type: "client"; clientId: string }
+  | { type: "aggregate"; id: string };
+
+export interface ConnectClientMessage {
+  type: MessageType.ConnectClient;
+  clientId: string;
+}
+
+export interface DisconnectClientMessage {
+  type: MessageType.DisconnectClient;
+  clientId: string;
+}
+
+export interface DevtoolsDisconnectedMessage {
+  type: MessageType.DevtoolsDisconnected;
+}
+
+export interface CloseMessagePortMessage {
+  type: MessageType.CloseMessagePort;
+}
+
+export interface AggregateResponse<
+  Result extends DevtoolsMessage = DevtoolsMessage,
+> {
+  type: MessageType.AggregateResponse;
+  target: Extract<MessageTarget, { type: "aggregate" }>;
+  results: Array<Result>;
+}
+
 export type ApolloClientDevtoolsMessage = DevtoolsMessage & {
   readonly source: "apollo-client-devtools";
   readonly id: string;
+  readonly target?: MessageTarget;
 };
 
 export function isDevtoolsMessage(
@@ -51,11 +92,15 @@ export function isDevtoolsMessage(
 }
 
 export function createDevtoolsMessage(
-  message: DevtoolsMessage & { id?: string }
+  message: DevtoolsMessage & {
+    id?: string;
+    clientId?: string;
+    target?: MessageTarget;
+  }
 ): ApolloClientDevtoolsMessage {
   return {
     ...message,
     id: message.id ?? createId(),
     source: "apollo-client-devtools",
-  };
+  } as ApolloClientDevtoolsMessage;
 }
