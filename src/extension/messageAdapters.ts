@@ -212,6 +212,13 @@ export function createMessagePortMessageAdapter(
     postMessage(message) {
       portPostMessage(port, message);
     },
+    connect() {
+      this.on(MessageType.CloseMessagePort, () => this.disconnect());
+    },
+    disconnect() {
+      this.postMessage({ type: MessageType.CloseMessagePort });
+      port.close();
+    },
   });
 }
 
