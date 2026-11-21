@@ -22,7 +22,7 @@ export const enum MessageType {
   RPCTerminateStream = "rpcTerminateStream",
   RPCStreamChunk = "rpcStreamChunk",
   Actor = "actor",
-  AggregateResponse = "AggregateResponse",
+  AggregateResponse = "aggregateResponse",
   PostMessageError = "postMessageError",
 }
 
