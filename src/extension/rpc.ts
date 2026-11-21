@@ -424,11 +424,6 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
       cleanupFnsByStreamId.forEach((cleanup) => cleanup());
     };
 
-    const unsubscribeDisconnected = actor.on(
-      "devtoolsDisconnected",
-      cleanupAll
-    );
-
     const unsubscribeTerminate = adapter.on(
       MessageType.RPCTerminateStream,
       ({ streamId }) => {
@@ -484,7 +479,6 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
       cleanupAll();
       listeners.delete(name);
       unsubscribeStream();
-      unsubscribeDisconnected();
       unsubscribeTerminate();
       unsubscribeDisconnect();
     };
