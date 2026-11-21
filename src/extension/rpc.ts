@@ -271,17 +271,23 @@ export function createRpcHandler(adapter: MessageAdapter) {
           return;
         }
 
-        adapter.postMessage({
-          type: MessageType.RPCResponse,
-          sourceId: id,
-          result,
-        });
+        adapter.postMessage(
+          {
+            type: MessageType.RPCResponse,
+            sourceId: id,
+            result,
+          },
+          message.target
+        );
       } catch (e) {
-        adapter.postMessage({
-          type: MessageType.RPCResponse,
-          sourceId: id,
-          error: serializeError(e),
-        });
+        adapter.postMessage(
+          {
+            type: MessageType.RPCResponse,
+            sourceId: id,
+            error: serializeError(e),
+          },
+          message.target
+        );
       }
     });
 
