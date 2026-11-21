@@ -4,7 +4,7 @@ import type { ApolloClientInfo } from "../../types";
 import { RPC_MESSAGE_TIMEOUT } from "../errorMessages";
 import { serializeError } from "../errorSerialization";
 import { createMessageBridge, MessageAdapter } from "../messageAdapters";
-import { MessageType } from "../messages";
+import { createDevtoolsMessage, MessageType } from "../messages";
 import type { RPCRequestMessage, RPCStreamStartMessage } from "../rpc";
 import {
   createRpcClient,
@@ -31,7 +31,7 @@ function createBridge(source1: TestSource, source2: TestSource) {
   source2.connect(source1);
 }
 
-function defaultGetClient(id: string) {
+function defaultGetClient(id = "1") {
   return {
     id,
     name: "Test",
@@ -53,7 +53,7 @@ test("can send and receive rpc messages", async () => {
 
   handle("getClient", defaultGetClient);
 
-  const result = await client.request("getClient", "1");
+  const result = await client.request("getClient");
 
   expect(result).toEqual(defaultGetClient("1"));
 });
@@ -68,15 +68,15 @@ test("resolves async handlers", async () => {
   const client = createRpcClient(new MessageAdapter(clientSource));
   const handle = createRpcHandler(new MessageAdapter(handlerSource));
 
-  handle("getClient", (id) => {
+  handle("getClient", () => {
     return new Promise<ApolloClientInfo>((resolve) => {
       setTimeout(() => {
-        resolve(defaultGetClient(id));
+        resolve(defaultGetClient());
       }, 10);
     });
   });
 
-  const result = await client.request("getClient", "1");
+  const result = await client.request("getClient");
 
   expect(result).toEqual(defaultGetClient("1"));
 });
@@ -85,7 +85,7 @@ test("does not mistakenly handle messages from different rpc calls", async () =>
   const clientSource = createTestSource();
   const client = createRpcClient(new MessageAdapter(clientSource));
 
-  const promise = client.request("getClient", "1");
+  const promise = client.request("getClient");
 
   const { id } = clientSource.mocks.messages[0];
 
@@ -122,7 +122,7 @@ test("rejects when handler throws error", async () => {
     throw new Error("Could not get client");
   });
 
-  await expect(client.request("getClient", "1")).rejects.toEqual(
+  await expect(client.request("getClient")).rejects.toEqual(
     new Error("Could not get client")
   );
 });
@@ -139,7 +139,7 @@ test("rejects when async handler rejects", async () => {
 
   handle("getClient", () => Promise.reject(new Error("Could not get client")));
 
-  await expect(client.request("getClient", "1")).rejects.toEqual(
+  await expect(client.request("getClient")).rejects.toEqual(
     new Error("Could not get client")
   );
 });
@@ -155,7 +155,7 @@ test("maintains error name", async () => {
   handle("getClient", () => Promise.reject(new SyntaxError()));
 
   try {
-    await client.request("getClient", "1");
+    await client.request("getClient");
     throw new Error("Should not reach");
   } catch (e) {
     expect(e).toBeInstanceOf(SyntaxError);
@@ -174,8 +174,8 @@ test("can handle multiple rpc messages", async () => {
   handle("getClient", defaultGetClient);
   handle("getV3Queries", () => Promise.resolve([]));
 
-  const result = await client.request("getClient", "1");
-  const queries = await client.request("getV3Queries", "1");
+  const result = await client.request("getClient");
+  const queries = await client.request("getV3Queries");
 
   expect(result).toEqual(defaultGetClient("1"));
   expect(queries).toEqual([]);
@@ -284,7 +284,7 @@ test("can unsubscribe from a handler by calling the returned function", () => {
     type: MessageType.RPCRequest,
     id: createId(),
     name: "getClient",
-    params: ["1"],
+    params: [],
   });
 
   expect(getClient).toHaveBeenCalledTimes(1);
@@ -296,7 +296,7 @@ test("can unsubscribe from a handler by calling the returned function", () => {
     type: MessageType.RPCRequest,
     id: createId(),
     name: "getClient",
-    params: ["2"],
+    params: [],
   });
 
   expect(getClient).not.toHaveBeenCalled();
@@ -339,7 +339,7 @@ test("times out if no message received within default timeout", async () => {
   const source = createTestSource();
   const client = createRpcClient(new MessageAdapter(source));
 
-  const promise = client.request("getClient", "1");
+  const promise = client.request("getClient");
 
   jest.advanceTimersByTime(30_000);
 
@@ -354,7 +354,7 @@ test("times out if no message received within configured timeout", async () => {
   const source = createTestSource();
   const client = createRpcClient(new MessageAdapter(source));
 
-  const promise = client.withTimeout(1000).request("getClient", "1");
+  const promise = client.withTimeout(1000).request("getClient");
 
   jest.advanceTimersByTime(1000);
 
@@ -378,14 +378,14 @@ test("resets timeout to default timeout after sending request", async () => {
 
   const finished = new Set<Promise<ApolloClientInfo | null>>();
 
-  const promise1 = t1.request("getClient", "1");
+  const promise1 = t1.request("getClient");
   promise1
     .finally(() => finished.add(promise1))
     .catch(() => {
       /* prevent unhandled rejection warning */
     });
 
-  const promise2 = t2.request("getClient", "2");
+  const promise2 = t2.request("getClient");
   promise2
     .finally(() => finished.add(promise2))
     .catch(() => {
@@ -407,7 +407,7 @@ test("resets timeout to default timeout after sending request", async () => {
   expect(finished).toContain(promise2);
   await expect(promise2).rejects.toEqual(new Error(RPC_MESSAGE_TIMEOUT));
 
-  const promise3 = client.request("getClient", "1");
+  const promise3 = client.request("getClient");
   promise3
     .finally(() => finished.add(promise3))
     .catch(() => {
@@ -435,9 +435,7 @@ test("rejects with abort error when provided signal aborts", async () => {
   const client = createRpcClient(new MessageAdapter(source));
   const controller = new AbortController();
 
-  const promise = client
-    .withSignal(controller.signal)
-    .request("getClient", "1");
+  const promise = client.withSignal(controller.signal).request("getClient");
 
   await wait(10);
   controller.abort();
@@ -453,9 +451,7 @@ test("rejects when provided signal is already aborted", async () => {
   const controller = new AbortController();
   controller.abort();
 
-  const promise = client
-    .withSignal(controller.signal)
-    .request("getClient", "1");
+  const promise = client.withSignal(controller.signal).request("getClient");
 
   await expect(promise).rejects.toEqual(
     new DOMException("The operation was aborted.", "AbortError")
@@ -467,9 +463,7 @@ test("forwards abort reason if provided", async () => {
   const client = createRpcClient(new MessageAdapter(source));
   const controller = new AbortController();
 
-  const promise = client
-    .withSignal(controller.signal)
-    .request("getClient", "1");
+  const promise = client.withSignal(controller.signal).request("getClient");
 
   await wait(10);
   controller.abort("Manually aborted");
@@ -568,7 +562,7 @@ test("rejects with post message errors", async () => {
   const clientSource = createTestSource();
   const client = createRpcClient(new MessageAdapter(clientSource));
 
-  const promise = client.request("getClient", "1");
+  const promise = client.request("getClient");
 
   const { id } = clientSource.mocks.messages[0] as RPCRequestMessage;
 
@@ -585,7 +579,7 @@ test("ignores post message errors for a different rpc request", async () => {
   const clientSource = createTestSource();
   const client = createRpcClient(new MessageAdapter(clientSource));
 
-  const promise = client.request("getClient", "1");
+  const promise = client.request("getClient");
 
   const { id } = clientSource.mocks.messages[0] as RPCRequestMessage;
 
