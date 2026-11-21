@@ -88,6 +88,9 @@ function isV4Client(client: ApolloClient): client is ApolloClient4 {
 }
 
 function connectClient(client: ApolloClient) {
+  if (knownClients.has(client)) return;
+  knownClients.add(client);
+
   const handler = createHandler(client);
 
   const adapter = createMessagePortMessageAdapter(
@@ -211,28 +214,21 @@ function connectClient(client: ApolloClient) {
   });
 }
 
-function registerClient(client: ApolloClient) {
-  if (!knownClients.has(client)) {
-    knownClients.add(client);
-    connectClient(client);
-  }
-
-  // TODO: Repurpose this callback. The message it sent was not listened by
-  // anything, so the broadcast was useless. Currently the devtools rely on
-  // polling the client every second for updates, rather than relying on
-  // this callback to update the devtools state.
-  // client.__actionHookForDevTools(() => {
-  //   if (client !== hook.ApolloClient) {
-  //     // if the client has changed, don't send the action hook
-  //     return;
-  //   }
-  // });
-}
+// TODO: Repurpose this callback. The message it sent was not listened by
+// anything, so the broadcast was useless. Currently the devtools rely on
+// polling the client every second for updates, rather than relying on
+// this callback to update the devtools state.
+// client.__actionHookForDevTools(() => {
+//   if (client !== hook.ApolloClient) {
+//     // if the client has changed, don't send the action hook
+//     return;
+//   }
+// });
 
 const preExisting = window[DEVTOOLS_KEY];
-window[DEVTOOLS_KEY] = { push: registerClient };
+window[DEVTOOLS_KEY] = { push: connectClient };
 if (Array.isArray(preExisting)) {
-  (preExisting as Array<ApolloClient>).forEach(registerClient);
+  (preExisting as Array<ApolloClient>).forEach(connectClient);
 }
 
 // Handles registering legacy clients (< v3.7) which do not use the new
@@ -248,7 +244,7 @@ Object.defineProperty(window, "__APOLLO_CLIENT__", {
       // instantiated before the property on window is assigned since it
       // connects from the constructor of ApolloClient. This allows
       // initialization to finish before we register it.
-      setTimeout(() => registerClient(client));
+      setTimeout(() => connectClient(client));
     }
 
     globalClient = client;
@@ -257,5 +253,5 @@ Object.defineProperty(window, "__APOLLO_CLIENT__", {
 });
 
 if (globalClient) {
-  registerClient(globalClient);
+  connectClient(globalClient);
 }
