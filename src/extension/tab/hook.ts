@@ -109,6 +109,10 @@ function connectClient(client: ApolloClient) {
   const handleRpc = createRpcHandler(adapter);
   const handleRpcStream = createRpcStreamHandler(adapter);
 
+  // The background script loads error codes by listening for messages from the
+  // tab port, so we need to use that instead of a client port
+  loadErrorCodes(tabRpcClient, client.version);
+
   handleRpc("getClient", () => getClientInfo(client));
   handleRpc("getCache", () => client.cache.extract(true));
 
@@ -237,8 +241,6 @@ function registerClient(client: ApolloClient) {
   //     return;
   //   }
   // });
-
-  loadErrorCodes(rpcClient, client.version);
 }
 
 const preExisting = window[DEVTOOLS_KEY];
