@@ -170,6 +170,13 @@ function connectClientPort(port: browser.Runtime.Port) {
   });
 
   port.onDisconnect.addListener(() => {
+    postMessage(
+      tab.devtools,
+      createDevtoolsMessage({
+        type: MessageType.Actor,
+        message: { type: "clientTerminated", clientId },
+      })
+    );
     tab.clients.delete(clientId);
     maybeRemoveTab(tabId);
   });
