@@ -23,7 +23,6 @@ import { createActor } from "./actor";
 export const SKIP_RESPONSE = Symbol("SKIP_RESPONSE");
 
 export type RPCRequest = {
-  getClients(): ApolloClientInfo[];
   getClient(): ApolloClientInfo | null;
   getV3Queries(): QueryV3Details[];
   getV4Queries(): QueryV4Details[];

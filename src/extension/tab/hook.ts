@@ -46,7 +46,6 @@ const messageAdapter = createMessagePortMessageAdapter(connectHook(window), {
   jsonSerialize: true,
 });
 const tab = createActor(messageAdapter);
-const handleRpc = createRpcHandler(messageAdapter);
 const rpcClient = createRpcClient(messageAdapter);
 
 const knownClients = new Set<ApolloClient>();
@@ -70,13 +69,6 @@ function getClientInfo(client: ApolloClient): ApolloClientInfo {
     mutationCount: handler.getMutations().length,
   };
 }
-
-handleRpc("getClients", () => {
-  if (knownClients.size === 0) {
-    return SKIP_RESPONSE as any;
-  }
-  return Array.from(knownClients).map(getClientInfo);
-});
 
 function getHandlerByClientId(clientId: IDv3): ClientV3Handler | undefined;
 function getHandlerByClientId(clientId: IDv4): ClientV4Handler | undefined;
