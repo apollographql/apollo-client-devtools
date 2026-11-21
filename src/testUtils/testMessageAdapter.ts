@@ -37,6 +37,7 @@ export function createTestAdapter(): TestAdapter {
     const result = await Promise.resolve(handler(...message.params));
     const response = createDevtoolsMessage({
       type: MessageType.RPCResponse,
+      target: undefined,
       sourceId: message.id,
       result,
     });

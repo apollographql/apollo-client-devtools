@@ -41,6 +41,7 @@ export type ActorMessage =
 
 export interface ActorDevtoolsMessage {
   type: MessageType.Actor;
+  target?: MessageTarget | undefined;
   message: ActorMessage;
 }
 
@@ -70,7 +71,7 @@ export function createActor(adapter: MessageAdapter): Actor {
   return {
     on,
     send: (message, target) => {
-      adapter.postMessage({ type: MessageType.Actor, message }, target);
+      adapter.postMessage({ type: MessageType.Actor, message, target });
     },
   };
 }

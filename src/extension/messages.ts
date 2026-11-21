@@ -70,12 +70,10 @@ export function createDevtoolsMessage(
     id?: string;
     clientId?: string;
     target?: MessageTarget;
-  },
-  target?: MessageTarget
+  }
 ): ApolloClientDevtoolsMessage {
   return {
     ...message,
-    target: target ?? message.target,
     id: message.id ?? createId(),
     source: "apollo-client-devtools",
   } as ApolloClientDevtoolsMessage;

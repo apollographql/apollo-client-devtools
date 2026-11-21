@@ -58,12 +58,14 @@ export interface RpcClient {
 
 interface RPCErrorResponseMessage {
   type: MessageType.RPCResponse;
+  target: MessageTarget | undefined;
   sourceId: string;
   error: { name?: string; message: string; stack?: string };
 }
 
 interface RPCSuccessResponseMessage<Result = unknown> {
   type: MessageType.RPCResponse;
+  target: MessageTarget | undefined;
   sourceId: string;
   result: Result;
 }
@@ -71,12 +73,14 @@ interface RPCSuccessResponseMessage<Result = unknown> {
 export interface RPCRequestMessage<Params extends SafeAny[] = unknown[]> {
   type: MessageType.RPCRequest;
   id: string;
+  target: MessageTarget | undefined;
   name: string;
   params: Params;
 }
 
 export interface RPCStreamStartMessage<Params extends any[] = unknown[]> {
   type: MessageType.RPCStartStream;
+  target: MessageTarget | undefined;
   id: string;
   name: string;
   params: Params;
@@ -177,15 +181,13 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
 
         signal?.addEventListener("abort", handleAbort, { once: true });
 
-        adapter.postMessage(
-          {
-            type: MessageType.RPCRequest,
-            id,
-            name,
-            params,
-          },
-          { type: "aggregate", id }
-        );
+        adapter.postMessage({
+          type: MessageType.RPCRequest,
+          target: { type: "aggregate", id },
+          id,
+          name,
+          params,
+        });
       });
     },
     request(name, ...params) {
@@ -241,15 +243,13 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
 
         signal?.addEventListener("abort", handleAbort, { once: true });
 
-        adapter.postMessage(
-          {
-            type: MessageType.RPCRequest,
-            id,
-            name,
-            params,
-          },
-          target
-        );
+        adapter.postMessage({
+          type: MessageType.RPCRequest,
+          target,
+          id,
+          name,
+          params,
+        });
       });
     },
     stream(name, ...params) {
@@ -288,15 +288,13 @@ export function createRpcClient(adapter: MessageAdapter): RpcClient {
             }
           });
 
-          adapter.postMessage(
-            {
-              type: MessageType.RPCStartStream,
-              id: streamId,
-              name,
-              params,
-            },
-            target
-          );
+          adapter.postMessage({
+            type: MessageType.RPCStartStream,
+            target,
+            id: streamId,
+            name,
+            params,
+          });
 
           if (signal) {
             signal.addEventListener(
@@ -345,23 +343,19 @@ export function createRpcHandler(adapter: MessageAdapter) {
           handler(...(params as Parameters<RPCRequest[TName]>))
         );
 
-        adapter.postMessage(
-          {
-            type: MessageType.RPCResponse,
-            sourceId: id,
-            result,
-          },
-          message.target
-        );
+        adapter.postMessage({
+          type: MessageType.RPCResponse,
+          target: message.target,
+          sourceId: id,
+          result,
+        });
       } catch (e) {
-        adapter.postMessage(
-          {
-            type: MessageType.RPCResponse,
-            sourceId: id,
-            error: serializeError(e),
-          },
-          message.target
-        );
+        adapter.postMessage({
+          type: MessageType.RPCResponse,
+          target: message.target,
+          sourceId: id,
+          error: serializeError(e),
+        });
       }
     });
 
