@@ -5,16 +5,19 @@ import {
   createMessagePortMessageAdapter,
   createPortMessageAdapter,
 } from "../messageAdapters";
-import { connectClient, connectTab } from "./controlChannel";
+import {
+  connectClientMessagePort,
+  connectTabMessagePort,
+} from "./controlChannel";
 
-connectTab(window, (port) => {
+connectTabMessagePort(window, (port) => {
   createMessageBridge(
     createPortMessageAdapter(() => browser.runtime.connect({ name: "tab" })),
     createMessagePortMessageAdapter(port)
   );
 });
 
-connectClient(window, (port, clientId) => {
+connectClientMessagePort(window, (port, clientId) => {
   createMessageBridge(
     createPortMessageAdapter(() =>
       browser.runtime.connect({ name: `client:${clientId}` })

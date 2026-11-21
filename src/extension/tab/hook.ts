@@ -8,7 +8,10 @@ const { version: devtoolsVersion } = manifest;
 import type { ApolloClient, ApolloClientInfo } from "@/types";
 import { createActor } from "../actor";
 import { createMessagePortMessageAdapter } from "../messageAdapters";
-import { createTabPort, createClientPort } from "./controlChannel";
+import {
+  createTabMessagePort,
+  createClientMessagePort,
+} from "./controlChannel";
 import {
   createRpcClient,
   createRpcHandler,
@@ -41,9 +44,10 @@ type Hook = {
 
 const DEVTOOLS_KEY = Symbol.for("apollo.devtools");
 
-const tabPortAdapter = createMessagePortMessageAdapter(createTabPort(window), {
-  jsonSerialize: true,
-});
+const tabPortAdapter = createMessagePortMessageAdapter(
+  createTabMessagePort(window),
+  { jsonSerialize: true }
+);
 const tab = createActor(tabPortAdapter);
 const tabRpcClient = createRpcClient(tabPortAdapter);
 
@@ -103,7 +107,7 @@ function isV4Client(client: ApolloClient): client is ApolloClient4 {
 function connectClient(client: ApolloClient) {
   const handler = handlers.get(client)!;
   const adapter = createMessagePortMessageAdapter(
-    createClientPort(window, handler.id),
+    createClientMessagePort(window, handler.id),
     { jsonSerialize: true }
   );
   const handleRpc = createRpcHandler(adapter);

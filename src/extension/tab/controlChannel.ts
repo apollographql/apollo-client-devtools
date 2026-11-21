@@ -31,7 +31,7 @@ function isConnectMessage<MessageType extends ConnectMessage["type"]>(
 
 // Both manifests inject tab.js before hook.js at document_start, so the tab's
 // listener is installed synchronously before the hook sends its message.
-export function createTabPort(window: Window): MessagePort {
+export function createTabMessagePort(window: Window): MessagePort {
   const { port1, port2 } = new MessageChannel();
   window.postMessage(
     { source: SOURCE, type: "connectTab" } satisfies ConnectTabMessage,
@@ -41,7 +41,7 @@ export function createTabPort(window: Window): MessagePort {
   return port1;
 }
 
-export function connectTabPort(
+export function connectTabMessagePort(
   window: Window,
   connected: (port: MessagePort) => void
 ) {
@@ -61,7 +61,7 @@ export function connectTabPort(
   window.addEventListener("message", handleMessage, { capture: true });
 }
 
-export function createClientPort(window: Window, clientId: IDv3 | IDv4) {
+export function createClientMessagePort(window: Window, clientId: IDv3 | IDv4) {
   const { port1, port2 } = new MessageChannel();
   window.postMessage(
     {
@@ -75,7 +75,7 @@ export function createClientPort(window: Window, clientId: IDv3 | IDv4) {
   return port1;
 }
 
-export function connectClient(
+export function connectClientMessagePort(
   window: Window,
   connected: (port: MessagePort, clientId: string) => void
 ) {
