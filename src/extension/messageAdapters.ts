@@ -35,9 +35,15 @@ export class MessageAdapter {
 
   private jsonSerialize: boolean;
 
+  private _closed = false;
+
   constructor({ jsonSerialize = false, ...source }: MessageAdapterOptions) {
     this.source = source;
     this.jsonSerialize = jsonSerialize;
+  }
+
+  get closed() {
+    return this._closed;
   }
 
   addListener(listener: (message: ApolloClientDevtoolsMessage) => void) {
