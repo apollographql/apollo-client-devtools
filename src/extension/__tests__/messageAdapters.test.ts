@@ -16,7 +16,7 @@ test("sends messages to the source in devtools message format", () => {
 
   adapter.postMessage({
     type: MessageType.Actor,
-    message: { type: "clientTerminated", clientId: "1" },
+    message: { type: "vscode:openExternal", uri: "1" },
   });
 
   expect(source.postMessage).toHaveBeenCalledTimes(1);
@@ -24,7 +24,7 @@ test("sends messages to the source in devtools message format", () => {
     id: expect.any(String),
     source: "apollo-client-devtools",
     type: MessageType.Actor,
-    message: { type: "clientTerminated", clientId: "1" },
+    message: { type: "vscode:openExternal", uri: "1" },
   });
 });
 
@@ -34,11 +34,11 @@ test("generates a unique id for each sent message", () => {
 
   adapter.postMessage({
     type: MessageType.Actor,
-    message: { type: "clientTerminated", clientId: "1" },
+    message: { type: "vscode:openExternal", uri: "1" },
   });
   adapter.postMessage({
     type: MessageType.Actor,
-    message: { type: "clientTerminated", clientId: "1" },
+    message: { type: "vscode:openExternal", uri: "1" },
   });
 
   const [message1, message2] = source.mocks.messages;
@@ -53,7 +53,8 @@ test("preserves the id when one is provided", () => {
   adapter.postMessage({
     type: MessageType.RPCRequest,
     id: "abc",
-    name: "getClients",
+    target: undefined,
+    name: "getClient",
     params: [],
   });
 
@@ -61,7 +62,7 @@ test("preserves the id when one is provided", () => {
     id: "abc",
     source: "apollo-client-devtools",
     type: MessageType.RPCRequest,
-    name: "getClients",
+    name: "getClient",
     params: [],
   });
 });
@@ -74,7 +75,8 @@ test("sends the message as-is when not using jsonSerialize", () => {
   adapter.postMessage({
     type: MessageType.RPCRequest,
     id: "abc",
-    name: "getClients",
+    target: undefined,
+    name: "getClient",
     params: [url],
   });
 
@@ -90,7 +92,8 @@ test("JSON serializes the message when using jsonSerialize", () => {
   adapter.postMessage({
     type: MessageType.RPCRequest,
     id: "abc",
-    name: "getClients",
+    target: undefined,
+    name: "getClient",
     params: [new URL("https://example.com"), undefined],
   });
 
@@ -98,7 +101,7 @@ test("JSON serializes the message when using jsonSerialize", () => {
     id: "abc",
     source: "apollo-client-devtools",
     type: MessageType.RPCRequest,
-    name: "getClients",
+    name: "getClient",
     params: ["https://example.com/", null],
   });
 });
@@ -167,7 +170,7 @@ test("does not add listener to source until first adapter listener", () => {
 
   adapter.postMessage({
     type: MessageType.Actor,
-    message: { type: "clientTerminated", clientId: "1" },
+    message: { type: "vscode:openExternal", uri: "1" },
   });
   expect(source.addListener).not.toHaveBeenCalled();
 
@@ -285,14 +288,14 @@ test("on: calls listener with messages matching the given type", () => {
   const handleMessage = jest.fn();
   adapter.on(MessageType.Actor, handleMessage);
 
-  source.simulateActorMessage({ type: "clientTerminated", clientId: "1" });
+  source.simulateActorMessage({ type: "vscode:openExternal", uri: "1" });
 
   expect(handleMessage).toHaveBeenCalledTimes(1);
   expect(handleMessage).toHaveBeenCalledWith({
     id: expect.any(String),
     source: "apollo-client-devtools",
     type: MessageType.Actor,
-    message: { type: "clientTerminated", clientId: "1" },
+    message: { type: "vscode:openExternal", uri: "1" },
   });
 });
 
@@ -303,11 +306,16 @@ test("on: ignores messages that don't match the given type", () => {
   const handleMessage = jest.fn();
   adapter.on(MessageType.Actor, handleMessage);
 
-  source.simulateRPCResponse({ sourceId: "abc", result: null });
+  source.simulateRPCResponse({
+    target: undefined,
+    sourceId: "abc",
+    result: null,
+  });
   source.simulateRPCStreamChunk("abc", { value: true });
   source.simulateDevtoolsMessage({
     type: MessageType.RPCRequest,
     id: createId(),
+    target: undefined,
     name: "getClient",
     params: ["1"],
   });
@@ -324,7 +332,7 @@ test("on: ignores messages that don't originate from devtools", () => {
 
   source.simulatePlainMessage({
     type: MessageType.Actor,
-    message: { type: "clientTerminated", clientId: "1" },
+    message: { type: "vscode:openExternal", uri: "1" },
   });
 
   expect(handleMessage).not.toHaveBeenCalled();
@@ -339,14 +347,14 @@ test("on: routes messages to listeners for each type", () => {
   adapter.on(MessageType.Actor, handleActor);
   adapter.on(MessageType.RPCResponse, handleResponse);
 
-  source.simulateActorMessage({ type: "clientTerminated", clientId: "1" });
+  source.simulateActorMessage({ type: "vscode:openExternal", uri: "1" });
 
   expect(handleActor).toHaveBeenCalledTimes(1);
   expect(handleResponse).not.toHaveBeenCalled();
 
   handleActor.mockClear();
 
-  source.simulateRPCResponse({ sourceId: "abc", result: 1 });
+  source.simulateRPCResponse({ target: undefined, sourceId: "abc", result: 1 });
 
   expect(handleActor).not.toHaveBeenCalled();
   expect(handleResponse).toHaveBeenCalledTimes(1);
@@ -368,7 +376,7 @@ test("on: calls all listeners for the same type", () => {
   adapter.on(MessageType.Actor, handleMessage);
   adapter.on(MessageType.Actor, handleMessage2);
 
-  source.simulateActorMessage({ type: "clientTerminated", clientId: "1" });
+  source.simulateActorMessage({ type: "vscode:openExternal", uri: "1" });
 
   expect(handleMessage).toHaveBeenCalledTimes(1);
   expect(handleMessage2).toHaveBeenCalledTimes(1);
@@ -383,7 +391,7 @@ test("on: calls both typed and untyped listeners for the same message", () => {
   adapter.on(MessageType.Actor, handleTyped);
   adapter.addListener(handleAll);
 
-  source.simulateActorMessage({ type: "clientTerminated", clientId: "1" });
+  source.simulateActorMessage({ type: "vscode:openExternal", uri: "1" });
 
   expect(handleTyped).toHaveBeenCalledTimes(1);
   expect(handleAll).toHaveBeenCalledTimes(1);
@@ -414,7 +422,7 @@ test("on: can unsubscribe by calling the returned function", () => {
 
   unsubscribe();
 
-  source.simulateActorMessage({ type: "clientTerminated", clientId: "1" });
+  source.simulateActorMessage({ type: "vscode:openExternal", uri: "1" });
 
   expect(handleMessage).not.toHaveBeenCalled();
   expect(handleMessage2).toHaveBeenCalledTimes(1);
@@ -428,14 +436,14 @@ test("on: treats each call as a separate subscription for the same listener", ()
   const unsubscribe = adapter.on(MessageType.Actor, handleMessage);
   adapter.on(MessageType.Actor, handleMessage);
 
-  source.simulateActorMessage({ type: "clientTerminated", clientId: "1" });
+  source.simulateActorMessage({ type: "vscode:openExternal", uri: "1" });
 
   expect(handleMessage).toHaveBeenCalledTimes(2);
 
   handleMessage.mockClear();
   unsubscribe();
 
-  source.simulateActorMessage({ type: "clientTerminated", clientId: "1" });
+  source.simulateActorMessage({ type: "vscode:openExternal", uri: "1" });
 
   expect(handleMessage).toHaveBeenCalledTimes(1);
 });
@@ -473,7 +481,7 @@ test("on: re-adds listener on source when subscribing after disconnecting", () =
   adapter.on(MessageType.Actor, handleMessage);
   expect(source.addListener).toHaveBeenCalledTimes(1);
 
-  source.simulateActorMessage({ type: "clientTerminated", clientId: "1" });
+  source.simulateActorMessage({ type: "vscode:openExternal", uri: "1" });
 
   expect(handleMessage).toHaveBeenCalledTimes(1);
 });
@@ -501,7 +509,7 @@ test("continues calling remaining listeners when a listener throws", () => {
   });
   adapter.addListener(handleMessage);
 
-  source.simulateActorMessage({ type: "clientTerminated", clientId: "1" });
+  source.simulateActorMessage({ type: "vscode:openExternal", uri: "1" });
 
   expect(handleMessage).toHaveBeenCalledTimes(1);
 });
@@ -517,7 +525,7 @@ test("continues calling remaining listeners registered with on when a listener t
   });
   adapter.on(MessageType.Actor, handleMessage);
 
-  source.simulateActorMessage({ type: "clientTerminated", clientId: "1" });
+  source.simulateActorMessage({ type: "vscode:openExternal", uri: "1" });
 
   expect(handleMessage).toHaveBeenCalledTimes(1);
 });
@@ -533,7 +541,7 @@ test("reports errors thrown by listeners with reportError", () => {
     throw error;
   });
 
-  source.simulateActorMessage({ type: "clientTerminated", clientId: "1" });
+  source.simulateActorMessage({ type: "vscode:openExternal", uri: "1" });
 
   expect(reportError).toHaveBeenCalledTimes(1);
   expect(reportError).toHaveBeenCalledWith(error);
@@ -553,7 +561,7 @@ test("rethrows errors thrown by listeners in a microtask when reportError is una
     throw error;
   });
 
-  source.simulateActorMessage({ type: "clientTerminated", clientId: "1" });
+  source.simulateActorMessage({ type: "vscode:openExternal", uri: "1" });
 
   expect(queueMicrotask).toHaveBeenCalledTimes(1);
 
