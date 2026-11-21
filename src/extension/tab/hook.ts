@@ -50,7 +50,6 @@ const tab = createActor(tabPortAdapter);
 const tabRpcClient = createRpcClient(tabPortAdapter);
 
 const knownClients = new Set<ApolloClient>();
-const handlers = new Map<ApolloClient, ClientHandler<ApolloClient>>();
 
 Object.defineProperty(window, "__APOLLO_DEVTOOLS_GLOBAL_HOOK__", {
   get(): Hook {
@@ -92,7 +91,6 @@ function isV4Client(client: ApolloClient): client is ApolloClient4 {
 
 function connectClient(client: ApolloClient) {
   const handler = createHandler(client);
-  handlers.set(client, handler);
 
   tab.send({ type: "registerClient", payload: getClientInfo(client, handler) });
 
@@ -108,7 +106,6 @@ function connectClient(client: ApolloClient) {
   // tab port, so we need to use that instead of a client port
   loadErrorCodes(tabRpcClient, client.version);
   watchForClientTermination(client, () => {
-    handlers.delete(client);
     tab.send({ type: "clientTerminated", clientId: handler.id });
     adapter.disconnect();
   });
