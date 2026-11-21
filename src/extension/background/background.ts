@@ -3,11 +3,55 @@
 // https://github.com/facebook/react/blob/18a9dd1c60fdb711982f32ce5d91acfe8f158fe1/LICENSE
 import browser from "webextension-polyfill";
 import "./errorcodes";
+import type { DevtoolsMessage, MessageTarget } from "../messages";
 import {
   createDevtoolsMessage,
   isDevtoolsMessage,
   MessageType,
 } from "../messages";
+
+type AggregateMessageTarget = Extract<MessageTarget, { type: "aggregate" }>;
+
+class AggregateRequest {
+  private readonly ids: string[];
+
+  private pending: Set<string>;
+  private messages: DevtoolsMessage[] = [];
+
+  private connection: TabConnection;
+  private target: AggregateMessageTarget;
+
+  constructor(connection: TabConnection, target: AggregateMessageTarget) {
+    this.connection = connection;
+    this.ids = Array.from(connection.clients.keys());
+    this.pending = new Set(this.ids);
+    this.target = target;
+  }
+
+  send(message: DevtoolsMessage) {
+    for (const [, { port }] of this.connection.clients) {
+      postMessage(port, message);
+    }
+  }
+
+  complete(clientId: string, message: DevtoolsMessage) {
+    const index = this.ids.findIndex((id) => id === clientId);
+
+    this.pending.delete(clientId);
+    this.messages[index] = message;
+
+    if (this.pending.size === 0) {
+      postMessage(
+        this.connection.devtools,
+        createDevtoolsMessage({
+          type: MessageType.AggregateResponse,
+          results: this.messages,
+          target: this.target,
+        })
+      );
+    }
+  }
+}
 
 interface ClientConnection {
   port: browser.Runtime.Port;
@@ -19,6 +63,7 @@ interface TabConnection {
 }
 
 const tabs = new Map<number, TabConnection>();
+const aggregateRequests = new Map<string, AggregateRequest>();
 
 function getTab(id: number) {
   let tab = tabs.get(id);
@@ -302,9 +347,18 @@ function connectDevtoolsPort(port: browser.Runtime.Port) {
   port.onMessage.addListener((message) => {
     if (!isDevtoolsMessage(message)) return;
 
-    if (message.target?.type === "client") {
-      const connection = tab.clients.get(message.target.clientId);
+    const { target } = message;
+
+    if (target?.type === "client") {
+      const connection = tab.clients.get(target.clientId);
       postMessage(connection?.port, message);
+    }
+
+    if (target?.type === "aggregate") {
+      const request = new AggregateRequest(tab, target);
+      aggregateRequests.set(target.id, request);
+
+      request.send(message);
     }
   });
 
@@ -327,6 +381,15 @@ function connectClientPort(port: browser.Runtime.Port) {
 
   port.onMessage.addListener((message) => {
     if (isDevtoolsMessage(message)) {
+      const { target } = message;
+
+      if (target?.type === "aggregate") {
+        const request = aggregateRequests.get(target.id);
+
+        request?.complete(clientId, message);
+        return;
+      }
+
       postMessage(tab.devtools, message);
     }
   });
