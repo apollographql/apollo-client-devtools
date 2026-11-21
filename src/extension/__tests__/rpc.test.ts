@@ -181,6 +181,279 @@ test("can handle multiple rpc messages", async () => {
   expect(queries).toEqual([]);
 });
 
+test("sends request without a target by default", () => {
+  const source = createTestSource();
+  const client = createRpcClient(new MessageAdapter(source));
+
+  void client
+    .withTimeout(10)
+    .request("getClient")
+    .catch(() => {});
+
+  expect(source.mocks.messages[0].target).toBeUndefined();
+});
+
+test("sends client target with request when using withClientId", () => {
+  const source = createTestSource();
+  const client = createRpcClient(new MessageAdapter(source));
+
+  void client
+    .withTimeout(10)
+    .withClientId("1")
+    .request("getClient")
+    .catch(() => {});
+
+  expect(source.mocks.messages[0]).toMatchObject({
+    type: MessageType.RPCRequest,
+    name: "getClient",
+    params: [],
+    target: { type: "client", clientId: "1" },
+  });
+});
+
+test("withClientId does not change the target of the original client", () => {
+  const source = createTestSource();
+  const client = createRpcClient(new MessageAdapter(source));
+
+  const client1 = client.withClientId("1");
+  const client2 = client.withClientId("2");
+
+  expect(client.target).toBeUndefined();
+  expect(client1.target).toEqual({ type: "client", clientId: "1" });
+  expect(client2.target).toEqual({ type: "client", clientId: "2" });
+});
+
+test("resolves request sent with client target", async () => {
+  const handlerSource = createTestSource();
+  const clientSource = createTestSource();
+  createBridge(clientSource, handlerSource);
+
+  const client = createRpcClient(new MessageAdapter(clientSource));
+  const handle = createRpcHandler(new MessageAdapter(handlerSource));
+
+  handle("getClient", () => defaultGetClient("1"));
+
+  const result = await client.withClientId("1").request("getClient");
+
+  expect(result).toEqual(defaultGetClient("1"));
+});
+
+test("handler responds with the target of the request", async () => {
+  const source = createTestSource();
+  const handle = createRpcHandler(new MessageAdapter(source));
+
+  handle("getClient", () => defaultGetClient("1"));
+
+  source.simulatePlainMessage(
+    createDevtoolsMessage(
+      {
+        type: MessageType.RPCRequest,
+        id: "abc",
+        name: "getClient",
+        params: [],
+      },
+      { type: "client", clientId: "1" }
+    )
+  );
+
+  await wait(0);
+
+  expect(source.mocks.messages[0]).toMatchObject({
+    type: MessageType.RPCResponse,
+    sourceId: "abc",
+    result: defaultGetClient("1"),
+    target: { type: "client", clientId: "1" },
+  });
+});
+
+test("sends client target when starting a stream with withClientId", () => {
+  const source = createTestSource();
+  const client = createRpcClient(new MessageAdapter(source));
+
+  client.withClientId("1").stream("testStream", "1");
+
+  expect(source.mocks.messages[0]).toMatchObject({
+    type: MessageType.RPCStartStream,
+    name: "testStream",
+    target: { type: "client", clientId: "1" },
+  });
+});
+
+test("sends aggregate requests with an aggregate target", () => {
+  const source = createTestSource();
+  const client = createRpcClient(new MessageAdapter(source));
+
+  void client
+    .withTimeout(10)
+    .aggregate("getClient")
+    .catch(() => {});
+
+  const message = source.mocks.messages[0] as RPCRequestMessage;
+
+  expect(message).toMatchObject({
+    type: MessageType.RPCRequest,
+    name: "getClient",
+    params: [],
+    target: { type: "aggregate", id: message.id },
+  });
+});
+
+test("resolves aggregate request with results from all clients", async () => {
+  const source = createTestSource();
+  const client = createRpcClient(new MessageAdapter(source));
+
+  const promise = client.aggregate("getClient");
+  const { id } = source.mocks.messages[0] as RPCRequestMessage;
+
+  source.simulatePlainMessage(
+    createDevtoolsMessage({
+      type: MessageType.AggregateResponse,
+      target: { type: "aggregate", id },
+      results: [
+        {
+          type: MessageType.RPCResponse,
+          sourceId: id,
+          result: defaultGetClient("1"),
+        },
+        {
+          type: MessageType.RPCResponse,
+          sourceId: id,
+          result: defaultGetClient("2"),
+        },
+      ],
+    })
+  );
+
+  await expect(promise).resolves.toEqual([
+    defaultGetClient("1"),
+    defaultGetClient("2"),
+  ]);
+});
+
+test("resolves aggregate request with empty array when there are no clients", async () => {
+  const source = createTestSource();
+  const client = createRpcClient(new MessageAdapter(source));
+
+  const promise = client.aggregate("getClient");
+  const { id } = source.mocks.messages[0] as RPCRequestMessage;
+
+  source.simulatePlainMessage(
+    createDevtoolsMessage({
+      type: MessageType.AggregateResponse,
+      target: { type: "aggregate", id },
+      results: [],
+    })
+  );
+
+  await expect(promise).resolves.toEqual([]);
+});
+
+test("ignores aggregate responses for a different request", async () => {
+  const source = createTestSource();
+  const client = createRpcClient(new MessageAdapter(source));
+
+  const promise = client.aggregate("getClient");
+  const { id } = source.mocks.messages[0] as RPCRequestMessage;
+
+  source.simulatePlainMessage(
+    createDevtoolsMessage({
+      type: MessageType.AggregateResponse,
+      target: { type: "aggregate", id: id + "zzz" },
+      results: [
+        {
+          type: MessageType.RPCResponse,
+          sourceId: id + "zzz",
+          result: defaultGetClient("2"),
+        },
+      ],
+    })
+  );
+
+  source.simulatePlainMessage(
+    createDevtoolsMessage({
+      type: MessageType.AggregateResponse,
+      target: { type: "aggregate", id },
+      results: [
+        {
+          type: MessageType.RPCResponse,
+          sourceId: id,
+          result: defaultGetClient("1"),
+        },
+      ],
+    })
+  );
+
+  await expect(promise).resolves.toEqual([defaultGetClient("1")]);
+});
+
+test("rejects aggregate request when any client responds with an error", async () => {
+  const source = createTestSource();
+  const client = createRpcClient(new MessageAdapter(source));
+
+  const promise = client.aggregate("getClient");
+  const { id } = source.mocks.messages[0] as RPCRequestMessage;
+
+  source.simulatePlainMessage(
+    createDevtoolsMessage({
+      type: MessageType.AggregateResponse,
+      target: { type: "aggregate", id },
+      results: [
+        {
+          type: MessageType.RPCResponse,
+          sourceId: id,
+          result: defaultGetClient("1"),
+        },
+        {
+          type: MessageType.RPCResponse,
+          sourceId: id,
+          error: serializeError(new Error("Could not get client")),
+        },
+      ],
+    })
+  );
+
+  await expect(promise).rejects.toEqual(new Error("Could not get client"));
+});
+
+test("rejects aggregate request when client has a client target", async () => {
+  const source = createTestSource();
+  const client = createRpcClient(new MessageAdapter(source));
+
+  await expect(client.withClientId("1").aggregate("getClient")).rejects.toEqual(
+    new Error("Cannot aggregate a request with client target")
+  );
+  expect(source.postMessage).not.toHaveBeenCalled();
+});
+
+test("times out aggregate request if no response received", async () => {
+  jest.useFakeTimers();
+
+  const source = createTestSource();
+  const client = createRpcClient(new MessageAdapter(source));
+
+  const promise = client.withTimeout(1000).aggregate("getClient");
+
+  jest.advanceTimersByTime(1000);
+
+  await expect(promise).rejects.toEqual(new Error(RPC_MESSAGE_TIMEOUT));
+
+  jest.useRealTimers();
+});
+
+test("rejects aggregate request when provided signal aborts", async () => {
+  const source = createTestSource();
+  const client = createRpcClient(new MessageAdapter(source));
+  const controller = new AbortController();
+
+  const promise = client.withSignal(controller.signal).aggregate("getClient");
+
+  controller.abort();
+
+  await expect(promise).rejects.toEqual(
+    new DOMException("The operation was aborted.", "AbortError")
+  );
+});
+
 test("only allows one handler per type", async () => {
   const handle = createRpcHandler(new MessageAdapter(createTestSource()));
 
