@@ -118,26 +118,6 @@ function registerTab(tabId: number) {
   }
 }
 
-function registerTabPort(
-  tabId: number,
-  port: browser.Runtime.Port,
-  frameId: number
-) {
-  ports[tabId].tabPorts.set(port, frameId);
-
-  port.onDisconnect.addListener(() => {
-    ports[tabId].tabPorts.delete(port);
-    for (const [clientId, fId] of ports[tabId].clientFrames) {
-      if (fId === frameId) {
-        ports[tabId].clientFrames.delete(clientId);
-      }
-    }
-    if (ports[tabId].tabPorts.size === 0) {
-      ports[tabId].disconnectPorts?.();
-    }
-  });
-}
-
 function registerExtensionPort(tabId: number, port: browser.Runtime.Port) {
   ports[tabId].extension = port;
 
@@ -266,54 +246,6 @@ function connectPorts(tabId: number) {
   }
 }
 
-function connectTabPort(port: browser.Runtime.Port) {
-  if (port.sender?.tab?.id == null) {
-    return;
-  }
-
-  const tabId = port.sender.tab.id;
-  const frameId = port.sender.frameId ?? 0;
-
-  registerTab(tabId);
-  registerTabPort(tabId, port, frameId);
-
-  if (ports[tabId].extension) {
-    connectPorts(tabId);
-    // If already connected, add listener for this new port
-    if (ports[tabId].disconnectPorts) {
-      // Need to add message listener for this new tab port
-      const extensionPort = ports[tabId].extension!;
-      const clientFrames = ports[tabId].clientFrames;
-      const listener = (message: unknown) => {
-        if (isActorMessage(message)) {
-          if (
-            message.message.type === "registerClient" &&
-            message.message.payload?.id
-          ) {
-            clientFrames.set(message.message.payload.id, frameId);
-          } else if (
-            message.message.type === "clientTerminated" &&
-            message.message.clientId
-          ) {
-            clientFrames.delete(message.message.clientId);
-          }
-        }
-        try {
-          extensionPort.postMessage(message);
-        } catch (e) {
-          if (process.env.NODE_ENV === "development") {
-            console.error(`Broken connection ${tabId}`);
-          }
-        }
-      };
-      port.onMessage.addListener(listener);
-      port.onDisconnect.addListener(() => {
-        port.onMessage.removeListener(listener);
-      });
-    }
-  }
-}
-
 function postMessage(
   port: browser.Runtime.Port | null | undefined,
   message: unknown
@@ -336,6 +268,23 @@ function connectExtensionPort(port: browser.Runtime.Port) {
   if (ports[tabId].tabPorts.size > 0) {
     connectPorts(tabId);
   }
+}
+
+function connectTabPort(port: browser.Runtime.Port) {
+  const tabId = port.sender?.tab?.id;
+  if (tabId == null) return;
+
+  const tab = getTab(tabId);
+
+  port.onMessage.addListener((message) => {
+    if (isDevtoolsMessage(message)) {
+      postMessage(tab.devtools, message);
+    }
+  });
+
+  port.onDisconnect.addListener(() => {
+    maybeRemoveTab(tabId);
+  });
 }
 
 function connectDevtoolsPort(port: browser.Runtime.Port) {
