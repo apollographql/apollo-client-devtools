@@ -362,9 +362,11 @@ export function createRpcHandler(adapter: MessageAdapter) {
     const cleanup = () => {
       listeners.delete(name);
       unsubscribe();
+      unsubscribeDisconnect();
     };
 
     options.signal?.addEventListener("abort", cleanup, { once: true });
+    const unsubscribeDisconnect = adapter.onDisconnect(cleanup);
 
     return cleanup;
   };
@@ -484,8 +486,11 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
       unsubscribeStream();
       unsubscribeDisconnected();
       unsubscribeTerminate();
+      unsubscribeDisconnect();
     };
     options.signal?.addEventListener("abort", cleanup, { once: true });
+    const unsubscribeDisconnect = adapter.onDisconnect(cleanup);
+
     return cleanup;
   };
 }

@@ -1190,3 +1190,49 @@ test("runs cleanup and closes stream when calling close", async () => {
     done: true,
   });
 });
+
+test("runs cleanup for all active streams when adapter disconnects", () => {
+  const handlerSource = createTestSource();
+  const clientSource = createTestSource();
+  createBridge(clientSource, handlerSource);
+
+  const handlerAdapter = new MessageAdapter(handlerSource);
+  const client = createRpcClient(new MessageAdapter(clientSource));
+  const handleRpcStream = createRpcStreamHandler(handlerAdapter);
+
+  const cleanup = jest.fn();
+  handleRpcStream("testStream", (_, id) => () => cleanup(id));
+
+  client.stream("testStream", "1");
+  client.stream("testStream", "2");
+
+  handlerAdapter.disconnect();
+
+  expect(cleanup).toHaveBeenCalledTimes(2);
+  expect(cleanup).toHaveBeenCalledWith("1");
+  expect(cleanup).toHaveBeenCalledWith("2");
+});
+
+test("does not push stream values after adapter disconnects", async () => {
+  const handlerSource = createTestSource();
+  const clientSource = createTestSource();
+  createBridge(clientSource, handlerSource);
+
+  const handlerAdapter = new MessageAdapter(handlerSource);
+  const client = createRpcClient(new MessageAdapter(clientSource));
+  const handleRpcStream = createRpcStreamHandler(handlerAdapter);
+
+  let push!: (value: TestStreamValue) => void;
+  handleRpcStream("testStream", (controller) => {
+    push = controller.push;
+  });
+
+  client.stream("testStream", "1");
+  handlerAdapter.disconnect();
+  handlerSource.postMessage.mockClear();
+
+  push({ id: "1", value: true });
+  await wait(10);
+
+  expect(handlerSource.postMessage).not.toHaveBeenCalled();
+});
