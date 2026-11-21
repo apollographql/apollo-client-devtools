@@ -10,7 +10,6 @@ import {
   createRpcClient,
   createRpcHandler,
   createRpcStreamHandler,
-  SKIP_RESPONSE,
 } from "../rpc";
 import { createId } from "@/utils/createId";
 
@@ -919,45 +918,4 @@ test("runs cleanup and closes stream when calling close", async () => {
     value: undefined,
     done: true,
   });
-});
-
-test("does not send response when handler returns SKIP_RESPONSE", async () => {
-  const handlerSource = createTestSource();
-
-  const handle = createRpcHandler(new MessageAdapter(handlerSource));
-  handle("getClient", () => SKIP_RESPONSE as any);
-
-  // Simulate an RPC request
-  handlerSource.simulateDevtoolsMessage({
-    type: MessageType.RPCRequest,
-    id: createId(),
-    name: "getClient",
-    params: ["1"],
-  });
-
-  // Give time for any response to be sent
-  await wait(10);
-
-  // No response should have been posted
-  expect(handlerSource.postMessage).not.toHaveBeenCalled();
-});
-
-test("SKIP_RESPONSE allows handler to be re-registered after unsubscribe", async () => {
-  const handlerSource = createTestSource();
-  const clientSource = createTestSource();
-  createBridge(clientSource, handlerSource);
-
-  const client = createRpcClient(new MessageAdapter(clientSource));
-  const handle = createRpcHandler(new MessageAdapter(handlerSource));
-
-  // First handler skips
-  const unsubscribe = handle("getClient", () => SKIP_RESPONSE as any);
-
-  unsubscribe();
-
-  // Re-register with a real handler
-  handle("getClient", defaultGetClient);
-
-  const result = await client.request("getClient", "1");
-  expect(result).toEqual(defaultGetClient("1"));
 });

@@ -13,7 +13,6 @@ import {
   createRpcClient,
   createRpcHandler,
   createRpcStreamHandler,
-  SKIP_RESPONSE,
 } from "../rpc";
 import { loadErrorCodes } from "./loadErrorCodes";
 import { handleExplorerRequests } from "./handleExplorerRequests";
