@@ -17,7 +17,6 @@ import type {
   MemoryInternalsV4,
 } from "./tab/v4/types";
 import type { CacheWrite } from "./tab/shared/types";
-import { createActor } from "./actor";
 
 export type RPCRequest = {
   getClient(): ApolloClientInfo | null;
@@ -373,7 +372,6 @@ export function createRpcHandler(adapter: MessageAdapter) {
 }
 
 export function createRpcStreamHandler(adapter: MessageAdapter) {
-  const actor = createActor(adapter);
   const listeners = new Set<string>();
 
   // In case messages in the stream get pushed very fast, we want to keep the
@@ -419,10 +417,6 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
     listeners.add(name);
 
     const cleanupFnsByStreamId = new Map<string, () => void>();
-
-    const cleanupAll = () => {
-      cleanupFnsByStreamId.forEach((cleanup) => cleanup());
-    };
 
     const unsubscribeTerminate = adapter.on(
       MessageType.RPCTerminateStream,
@@ -476,7 +470,7 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
     );
 
     const cleanup = () => {
-      cleanupAll();
+      cleanupFnsByStreamId.forEach((cleanup) => cleanup());
       listeners.delete(name);
       unsubscribeStream();
       unsubscribeTerminate();
