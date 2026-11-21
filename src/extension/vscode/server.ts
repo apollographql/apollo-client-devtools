@@ -1,7 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { WebSocketServer, RawData, WebSocket } from "ws";
 import { MessageAdapter } from "../messageAdapters";
+import type { RPCRequest, RPCRequestMessage, RPCResponseMessage } from "../rpc";
 import { createRpcClient, createRpcHandler } from "../rpc";
+import { MessageType } from "../messages";
+import { serializeError } from "../errorSerialization";
 import type { Actor } from "../actor";
 import { createActor } from "../actor";
 import type { ApolloClientInfo } from "../../types";
@@ -29,34 +32,58 @@ export function runServer(
 
   const messageAdapter = adapter as MessageAdapter;
   const vscodeActor = createActor(messageAdapter);
-  const handleRpc = createRpcHandler(messageAdapter);
 
-  handleRpc("getClients", () =>
-    Array.from(clients.values()).map(({ info }) => info)
-  );
-  handleRpc("getClient", (id) => clients.get(id)!.info);
-  handleRpc("getV3Queries", (id) =>
-    clients.get(id)!.rpcClient.request("getV3Queries", id)
-  );
-  handleRpc("getV4Queries", (id) =>
-    clients.get(id)!.rpcClient.request("getV4Queries", id)
-  );
-  handleRpc("getV3Mutations", (id) =>
-    clients.get(id)!.rpcClient.request("getV3Mutations", id)
-  );
-  handleRpc("getV4Mutations", (id) =>
-    clients.get(id)!.rpcClient.request("getV4Mutations", id)
-  );
-  handleRpc("getCache", (id) =>
-    clients.get(id)!.rpcClient.request("getCache", id)
-  );
+  messageAdapter.addListener((message) => {
+    const { target } = message;
 
-  handleRpc("getV3MemoryInternals", (id) =>
-    clients.get(id)!.rpcClient.request("getV3MemoryInternals", id)
-  );
-  handleRpc("getV4MemoryInternals", (id) =>
-    clients.get(id)!.rpcClient.request("getV4MemoryInternals", id)
-  );
+    if (message.type !== MessageType.RPCRequest || !target) {
+      return;
+    }
+
+    if (target.type === "client" && clients.has(target.clientId)) {
+      void handleRpcRequest(target.clientId, message).then((response) =>
+        messageAdapter.postMessage(response)
+      );
+    }
+
+    if (target.type === "aggregate") {
+      void Promise.all(
+        Array.from(clients.keys(), (id) => handleRpcRequest(id, message))
+      ).then((results) =>
+        messageAdapter.postMessage({
+          type: MessageType.AggregateResponse,
+          target,
+          results,
+        })
+      );
+    }
+  });
+
+  function handleRpcRequest(
+    clientId: string,
+    { id: sourceId, name, params, target }: RPCRequestMessage
+  ) {
+    const client = clients.get(clientId)!;
+    const result =
+      name === "getClient"
+        ? Promise.resolve(client.info)
+        : client.rpcClient.request(name as keyof RPCRequest, ...(params as []));
+
+    return result.then(
+      (result): RPCResponseMessage => ({
+        type: MessageType.RPCResponse,
+        target,
+        sourceId,
+        result,
+      }),
+      (error): RPCResponseMessage => ({
+        type: MessageType.RPCResponse,
+        target,
+        sourceId,
+        error: serializeError(error),
+      })
+    );
+  }
 
   server.on("connection", function connection(ws) {
     let id: string | undefined;
