@@ -83,6 +83,7 @@ export function connectClientMessagePort(
       event.source === window &&
       isConnectMessage(event.data, "connectClient")
     ) {
+      event.stopImmediatePropagation();
       connected(event.ports[0], event.data.clientId);
     }
   }
