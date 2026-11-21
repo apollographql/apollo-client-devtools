@@ -13,7 +13,7 @@ interface MessageAdapterSource {
   addListener: (listener: MessageListener) => () => void;
   postMessage: (message: ApolloClientDevtoolsMessage) => void;
   connect?: (reconnect: () => void) => void;
-  disconnect?: () => void;
+  disconnect?: (this: MessageAdapter) => void;
 }
 
 interface MessageAdapterOptions extends MessageAdapterSource {
@@ -125,7 +125,7 @@ export class MessageAdapter {
     this._closed = true;
     this.unsubscribe?.();
     this.listeners.clear();
-    this.source.disconnect?.();
+    this.source.disconnect?.call(this);
     this.disconnectListeners.forEach((listener) => listener());
     this.disconnectListeners.clear();
   }
