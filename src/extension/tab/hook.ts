@@ -41,11 +41,11 @@ type Hook = {
 
 const DEVTOOLS_KEY = Symbol.for("apollo.devtools");
 
-const messageAdapter = createMessagePortMessageAdapter(createTabPort(window), {
+const tabPortAdapter = createMessagePortMessageAdapter(createTabPort(window), {
   jsonSerialize: true,
 });
-const tab = createActor(messageAdapter);
-const rpcClient = createRpcClient(messageAdapter);
+const tab = createActor(tabPortAdapter);
+const tabRpcClient = createRpcClient(tabPortAdapter);
 
 const knownClients = new Set<ApolloClient>();
 const handlers = new Map<ApolloClient, ClientHandler<ApolloClient>>();
