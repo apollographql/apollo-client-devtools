@@ -37,10 +37,20 @@ export function createTestAdapter(): TestAdapter {
     const result = await Promise.resolve(handler(...message.params));
     const response = createDevtoolsMessage({
       type: MessageType.RPCResponse,
-      target: undefined,
+      target: message.target,
       sourceId: message.id,
       result,
     });
+
+    if (message.target?.type === "aggregate") {
+      const aggregateResponse = createDevtoolsMessage({
+        type: MessageType.AggregateResponse,
+        target: message.target,
+        results: [response],
+      });
+
+      return listeners.forEach((listener) => listener(aggregateResponse));
+    }
 
     listeners.forEach((listener) => listener(response));
   }
