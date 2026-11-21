@@ -31,6 +31,7 @@ function reportListenerError(error: unknown) {
 
 export class MessageAdapter {
   private listeners = new Set<(message: ApolloClientDevtoolsMessage) => void>();
+  private disconnectListeners = new Set<() => void>();
   private source: MessageAdapterSource;
   private unsubscribe: (() => void) | undefined;
 
@@ -102,6 +103,14 @@ export class MessageAdapter {
           : message
       )
     );
+  }
+
+  onDisconnect(listener: () => void) {
+    this.disconnectListeners.add(listener);
+
+    return () => {
+      this.disconnectListeners.delete(listener);
+    };
   }
 
   private resubscribe() {
