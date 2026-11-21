@@ -22,11 +22,13 @@ export const enum MessageType {
   RPCTerminateStream = "rpcTerminateStream",
   RPCStreamChunk = "rpcStreamChunk",
   Actor = "actor",
+  AggregateResponse = "AggregateResponse",
   PostMessageError = "postMessageError",
 }
 
 export type DevtoolsMessage =
   | ActorDevtoolsMessage
+  | AggregateResponse
   | RPCRequestMessage
   | RPCResponseMessage
   | PostMessageError
@@ -34,7 +36,17 @@ export type DevtoolsMessage =
   | RPCTerminateStreamMessage
   | RPCStreamChunkMessage;
 
-export type MessageTarget = { type: "client"; clientId: string };
+export type MessageTarget =
+  | { type: "client"; clientId: string }
+  | { type: "aggregate"; id: string };
+
+export interface AggregateResponse<
+  Result extends DevtoolsMessage = DevtoolsMessage,
+> {
+  type: MessageType.AggregateResponse;
+  target: Extract<MessageTarget, { type: "aggregate" }>;
+  results: Array<Result>;
+}
 
 export type ApolloClientDevtoolsMessage = DevtoolsMessage & {
   readonly source: "apollo-client-devtools";
@@ -66,5 +78,5 @@ export function createDevtoolsMessage(
     target: target ?? message.target,
     id: message.id ?? createId(),
     source: "apollo-client-devtools",
-  };
+  } as ApolloClientDevtoolsMessage;
 }
