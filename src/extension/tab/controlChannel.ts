@@ -79,6 +79,7 @@ export function connectClientMessagePort(
 ) {
   function handleMessage(event: MessageEvent) {
     if (
+      event.isTrusted &&
       event.source === window &&
       isConnectMessage(event.data, "connectClient")
     ) {
