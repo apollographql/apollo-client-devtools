@@ -245,15 +245,13 @@ test("handler responds with the target of the request", async () => {
   handle("getClient", () => defaultGetClient("1"));
 
   source.simulatePlainMessage(
-    createDevtoolsMessage(
-      {
-        type: MessageType.RPCRequest,
-        id: "abc",
-        name: "getClient",
-        params: [],
-      },
-      { type: "client", clientId: "1" }
-    )
+    createDevtoolsMessage({
+      type: MessageType.RPCRequest,
+      id: "abc",
+      target: { type: "client", clientId: "1" },
+      name: "getClient",
+      params: [],
+    })
   );
 
   await wait(0);
@@ -312,11 +310,13 @@ test("resolves aggregate request with results from all clients", async () => {
       results: [
         {
           type: MessageType.RPCResponse,
+          target: { type: "aggregate", id: id },
           sourceId: id,
           result: defaultGetClient("1"),
         },
         {
           type: MessageType.RPCResponse,
+          target: { type: "aggregate", id: id },
           sourceId: id,
           result: defaultGetClient("2"),
         },
@@ -362,6 +362,7 @@ test("ignores aggregate responses for a different request", async () => {
       results: [
         {
           type: MessageType.RPCResponse,
+          target: { type: "aggregate", id: id + "zzz" },
           sourceId: id + "zzz",
           result: defaultGetClient("2"),
         },
@@ -376,6 +377,7 @@ test("ignores aggregate responses for a different request", async () => {
       results: [
         {
           type: MessageType.RPCResponse,
+          target: { type: "aggregate", id: id },
           sourceId: id,
           result: defaultGetClient("1"),
         },
@@ -400,11 +402,13 @@ test("rejects aggregate request when any client responds with an error", async (
       results: [
         {
           type: MessageType.RPCResponse,
+          target: { type: "aggregate", id: id },
           sourceId: id,
           result: defaultGetClient("1"),
         },
         {
           type: MessageType.RPCResponse,
+          target: { type: "aggregate", id: id },
           sourceId: id,
           error: serializeError(new Error("Could not get client")),
         },
