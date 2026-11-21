@@ -24,11 +24,13 @@ export const enum MessageType {
   Actor = "actor",
   AggregateResponse = "aggregateResponse",
   PostMessageError = "postMessageError",
+  CloseMessagePort = "closeMessagePort",
 }
 
 export type DevtoolsMessage =
   | ActorDevtoolsMessage
   | AggregateResponse
+  | CloseMessagePortMessage
   | RPCRequestMessage
   | RPCResponseMessage
   | PostMessageError
@@ -39,6 +41,10 @@ export type DevtoolsMessage =
 export type MessageTarget =
   | { type: "client"; clientId: string }
   | { type: "aggregate"; id: string };
+
+export interface CloseMessagePortMessage {
+  type: MessageType.CloseMessagePort;
+}
 
 export interface AggregateResponse<
   Result extends DevtoolsMessage = DevtoolsMessage,
