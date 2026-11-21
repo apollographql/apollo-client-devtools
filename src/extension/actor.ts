@@ -7,8 +7,6 @@ import type { JSONObject } from "../application/types/json";
 import type { DevToolsMachineEvents } from "../application/machines/devtoolsMachine";
 
 export type ActorMessage =
-  | { type: "registerClient"; clientId: string }
-  | { type: "clientTerminated"; clientId: string }
   | {
       type: "explorerRequest";
       payload: {
