@@ -58,7 +58,7 @@ export function createTestSource() {
     // source calls listeners on the other source. This isn't forwarding, but
     // rather tries to simulate the window.postMessage(),
     // window.addEventListener('message') behavior.
-    connect(other: { simulatePlainMessage: typeof simulatePlainMessage }) {
+    proxy(other: { simulatePlainMessage: typeof simulatePlainMessage }) {
       proxy = other;
     },
   };

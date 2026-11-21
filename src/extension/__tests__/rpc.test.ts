@@ -27,8 +27,8 @@ function wait(ms: number) {
 }
 
 function createBridge(source1: TestSource, source2: TestSource) {
-  source1.connect(source2);
-  source2.connect(source1);
+  source1.proxy(source2);
+  source2.proxy(source1);
 }
 
 function defaultGetClient(id = "1") {
