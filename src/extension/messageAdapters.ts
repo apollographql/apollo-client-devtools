@@ -150,6 +150,27 @@ export class MessageAdapter {
   }
 }
 
+export function connectStaticPortMessageAdapter(
+  port: browser.Runtime.Port
+): MessageAdapter {
+  return new MessageAdapter({
+    addListener(listener) {
+      port.onMessage.addListener(listener);
+
+      return () => port.onMessage.removeListener(listener);
+    },
+    postMessage(message) {
+      port.postMessage(message);
+    },
+    connect() {
+      port.onDisconnect.addListener(() => this.disconnect());
+    },
+    disconnect() {
+      port.disconnect();
+    },
+  });
+}
+
 export function createPortMessageAdapter(
   createPort: () => browser.Runtime.Port
 ): MessageAdapter {
