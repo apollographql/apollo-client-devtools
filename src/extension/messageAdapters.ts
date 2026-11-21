@@ -191,7 +191,7 @@ export function createPortMessageAdapter(
     connect(reconnect) {
       function handleDisconnect() {
         port = createPort();
-        port.onDisconnect.removeListener(handleDisconnect);
+        port.onDisconnect.addListener(handleDisconnect);
         reconnect();
       }
 
