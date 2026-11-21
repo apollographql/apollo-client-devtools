@@ -1236,3 +1236,54 @@ test("does not push stream values after adapter disconnects", async () => {
 
   expect(handlerSource.postMessage).not.toHaveBeenCalled();
 });
+
+test("runs cleanup for all active streams when devtools disconnects", () => {
+  const handlerSource = createTestSource();
+  const clientSource = createTestSource();
+  createBridge(clientSource, handlerSource);
+
+  const client = createRpcClient(new MessageAdapter(clientSource));
+  const handleRpcStream = createRpcStreamHandler(
+    new MessageAdapter(handlerSource)
+  );
+
+  const cleanup = jest.fn();
+  handleRpcStream("testStream", (_, id) => () => cleanup(id));
+
+  client.stream("testStream", "1");
+  client.stream("testStream", "2");
+
+  handlerSource.simulateDevtoolsMessage({
+    type: MessageType.DevtoolsDisconnected,
+  });
+
+  expect(cleanup).toHaveBeenCalledTimes(2);
+  expect(cleanup).toHaveBeenCalledWith("1");
+  expect(cleanup).toHaveBeenCalledWith("2");
+});
+
+test("handles new streams after devtools disconnects", async () => {
+  const handlerSource = createTestSource();
+  const clientSource = createTestSource();
+  createBridge(clientSource, handlerSource);
+
+  const client = createRpcClient(new MessageAdapter(clientSource));
+  const handleRpcStream = createRpcStreamHandler(
+    new MessageAdapter(handlerSource)
+  );
+
+  handleRpcStream("testStream", ({ push }, id) => {
+    push({ id, value: true });
+  });
+
+  handlerSource.simulateDevtoolsMessage({
+    type: MessageType.DevtoolsDisconnected,
+  });
+
+  const reader = client.stream("testStream", "1").getReader();
+
+  await expect(reader.read()).resolves.toEqual({
+    value: { id: "1", value: true },
+    done: false,
+  });
+});

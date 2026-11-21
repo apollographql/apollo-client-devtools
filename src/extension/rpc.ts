@@ -418,6 +418,15 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
 
     const cleanupFnsByStreamId = new Map<string, () => void>();
 
+    const cleanupAll = () => {
+      cleanupFnsByStreamId.forEach((cleanup) => cleanup());
+    };
+
+    const unsubscribeDevtoolsDisconnected = adapter.on(
+      MessageType.DevtoolsDisconnected,
+      cleanupAll
+    );
+
     const unsubscribeTerminate = adapter.on(
       MessageType.RPCTerminateStream,
       ({ streamId }) => {
@@ -470,10 +479,11 @@ export function createRpcStreamHandler(adapter: MessageAdapter) {
     );
 
     const cleanup = () => {
-      cleanupFnsByStreamId.forEach((cleanup) => cleanup());
+      cleanupAll();
       listeners.delete(name);
       unsubscribeStream();
       unsubscribeTerminate();
+      unsubscribeDevtoolsDisconnected();
       unsubscribeDisconnect();
     };
     options.signal?.addEventListener("abort", cleanup, { once: true });

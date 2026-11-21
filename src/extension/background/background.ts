@@ -121,6 +121,14 @@ function connectDevtoolsPort(port: browser.Runtime.Port) {
     if (tab.devtools !== port) return;
 
     tab.devtools = null;
+
+    for (const [, { port }] of tab.clients) {
+      postMessage(
+        port,
+        createDevtoolsMessage({ type: MessageType.DevtoolsDisconnected })
+      );
+    }
+
     maybeRemoveTab(tabId);
   });
 }

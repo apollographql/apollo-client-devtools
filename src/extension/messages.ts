@@ -27,6 +27,7 @@ export const enum MessageType {
   CloseMessagePort = "closeMessagePort",
   ConnectClient = "connectClient",
   DisconnectClient = "disconnectClient",
+  DevtoolsDisconnected = "devtoolsDisconnected",
 }
 
 export type DevtoolsMessage =
@@ -34,6 +35,7 @@ export type DevtoolsMessage =
   | AggregateResponse
   | CloseMessagePortMessage
   | ConnectClientMessage
+  | DevtoolsDisconnectedMessage
   | DisconnectClientMessage
   | RPCRequestMessage
   | RPCResponseMessage
@@ -54,6 +56,10 @@ export interface ConnectClientMessage {
 export interface DisconnectClientMessage {
   type: MessageType.DisconnectClient;
   clientId: string;
+}
+
+export interface DevtoolsDisconnectedMessage {
+  type: MessageType.DevtoolsDisconnected;
 }
 
 export interface CloseMessagePortMessage {
