@@ -87,8 +87,8 @@ export const App = () => {
     refetch();
   });
 
-  useActorEvent("clientTerminated", (message) => {
-    removeClient(message.clientId);
+  useDevtoolsMessage(MessageType.DisconnectClient, ({ clientId }) => {
+    removeClient(clientId);
   });
 
   useActorEvent("pageNavigated", () => {
