@@ -27,7 +27,7 @@ export const ExternalLink = forwardRef<
         }
         if (e.isDefaultPrevented()) return;
 
-        getPanelActor(window).send({
+        getPanelActor().send({
           type: "vscode:openExternal",
           uri: props.href,
         });

@@ -1,5 +1,17 @@
 # Changelog
 
+## 4.26.8
+
+### Patch Changes
+
+- [#1917](https://github.com/apollographql/apollo-client-devtools/pull/1917) [`c6e6bbf`](https://github.com/apollographql/apollo-client-devtools/commit/c6e6bbf54b6481368e54fc18aafcaeae0b86be2a) Thanks [@phryneas](https://github.com/phryneas)! - Avoid unneccesary propagation of internal registration event.
+
+## 4.26.7
+
+### Patch Changes
+
+- [#1911](https://github.com/apollographql/apollo-client-devtools/pull/1911) [`552c353`](https://github.com/apollographql/apollo-client-devtools/commit/552c353cf14fd809346481c2f2d689b43c0414d0) Thanks [@jerelmiller](https://github.com/jerelmiller)! - Use `MessageChannel` to communicate between the devtools and content scripts.
+
 ## 4.26.6
 
 ### Patch Changes

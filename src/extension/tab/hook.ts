@@ -8,8 +8,9 @@ import * as manifest from "../chrome/manifest.json";
 const { version: devtoolsVersion } = manifest;
 import type { ApolloClient, ApolloClientInfo } from "@/types";
 import type { JSONObject } from "../../application/types/json";
-import { createWindowActor } from "../actor";
-import { createWindowMessageAdapter } from "../messageAdapters";
+import { createActor } from "../actor";
+import { createMessagePortMessageAdapter } from "../messageAdapters";
+import { connectHook } from "./controlChannel";
 import {
   createRpcClient,
   createRpcHandler,
@@ -42,10 +43,10 @@ type Hook = {
 
 const DEVTOOLS_KEY = Symbol.for("apollo.devtools");
 
-const tab = createWindowActor(window);
-const messageAdapter = createWindowMessageAdapter(window, {
+const messageAdapter = createMessagePortMessageAdapter(connectHook(window), {
   jsonSerialize: true,
 });
+const tab = createActor(messageAdapter);
 const handleRpc = createRpcHandler(messageAdapter);
 const handleRpcStream = createRpcStreamHandler(messageAdapter);
 const rpcClient = createRpcClient(messageAdapter);
