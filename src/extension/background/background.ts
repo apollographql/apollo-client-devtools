@@ -204,9 +204,11 @@ function connectTabPort(port: browser.Runtime.Port) {
   registerTabPort(tabId, port, frameId);
 
   if (ports[tabId].extension) {
+    // connectPorts only attaches listeners to tab ports when it creates a new
+    // connection, so only an already existing connection needs one for this port
+    const wasConnected = !!ports[tabId].disconnectPorts;
     connectPorts(tabId);
-    // If already connected, add listener for this new port
-    if (ports[tabId].disconnectPorts) {
+    if (wasConnected) {
       // Need to add message listener for this new tab port
       const extensionPort = ports[tabId].extension!;
       const clientFrames = ports[tabId].clientFrames;
