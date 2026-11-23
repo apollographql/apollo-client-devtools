@@ -18,7 +18,10 @@ export const renderWithApolloClient = (
   const devtoolsActor = createActor(
     devtoolsMachine.provide({
       actions: {
-        resetStore: () => {},
+        resetStore: async ({ self }) => {
+          await client.clearStore().catch(() => {});
+          self.send({ type: "emit.store.didReset" });
+        },
         renderUI: () => {},
       },
     }),
@@ -36,5 +39,5 @@ export const renderWithApolloClient = (
     </DevToolsMachineContext.Provider>,
     renderOptions
   );
-  return { ...utils, user: userEvent.setup() };
+  return { ...utils, actor: devtoolsActor, user: userEvent.setup() };
 };
